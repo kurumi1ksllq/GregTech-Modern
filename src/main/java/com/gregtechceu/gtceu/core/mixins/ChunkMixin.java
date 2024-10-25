@@ -24,10 +24,11 @@ public class ChunkMixin {
     Level level;
 
     // We want to be as quick as possible here
-    @Inject(method = "setBlockState", at =@At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/world/level/block/state/BlockState;hasBlockEntity()Z",
-            ordinal = 2))
+    @Inject(method = "setBlockState",
+            at = @At(
+                     value = "INVOKE",
+                     target = "Lnet/minecraft/world/level/block/state/BlockState;hasBlockEntity()Z",
+                     ordinal = 2))
     private void gtceu$onChunkChanged(BlockPos pos, BlockState state, boolean isMoving,
                                       CallbackInfoReturnable<BlockState> cir) {
         MinecraftServer server = level.getServer();

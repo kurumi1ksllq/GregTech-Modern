@@ -17,6 +17,9 @@ import com.gregtechceu.gtceu.api.multiblock.MultiblockWorldSavedData;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
 import com.gregtechceu.gtceu.common.capability.LocalizedHazardSavedData;
+import com.gregtechceu.gtceu.common.capability.MedicalConditionTracker;
+import com.gregtechceu.gtceu.common.capability.WorldIDSaveData;
+import com.gregtechceu.gtceu.common.commands.GTClientCommands;
 import com.gregtechceu.gtceu.common.commands.GTCommands;
 import com.gregtechceu.gtceu.common.commands.HazardCommands;
 import com.gregtechceu.gtceu.common.commands.MedicalConditionCommands;
@@ -35,6 +38,9 @@ import com.gregtechceu.gtceu.data.loader.BedrockFluidLoader;
 import com.gregtechceu.gtceu.data.loader.BedrockOreLoader;
 import com.gregtechceu.gtceu.data.loader.GTOreLoader;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
+import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
+import com.gregtechceu.gtceu.integration.map.WaypointManager;
+import com.gregtechceu.gtceu.integration.map.cache.server.ServerCache;
 import com.gregtechceu.gtceu.utils.TaskHandler;
 
 import net.minecraft.server.level.ServerLevel;
@@ -67,6 +73,16 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import com.tterrag.registrate.util.entry.BlockEntry;
+import com.tterrag.registrate.util.entry.ItemEntry;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.gregtechceu.gtceu.utils.FormattingUtil.toLowerCaseUnder;
 
 /**
  * @author KilaBash
@@ -160,6 +176,10 @@ public class ForgeCommonEventListener {
         HazardCommands.register(event.getDispatcher(), event.getBuildContext());
     }
 
+    public static void registerClientCommand(RegisterClientCommandsEvent event) {
+        GTClientCommands.register(event.getDispatcher(), event.getBuildContext());
+    }
+
     @SubscribeEvent
     public static void registerReloadListeners(AddReloadListenerEvent event) {
         event.addListener(new GTOreLoader());
@@ -179,15 +199,38 @@ public class ForgeCommonEventListener {
     }
 
     @SubscribeEvent
-    public static void worldUnload(LevelEvent.Unload event) {
-        if (event.getLevel() instanceof ServerLevel serverLevel) {
-            TaskHandler.onWorldUnLoad(serverLevel);
-            MultiblockWorldSavedData.getOrCreate(serverLevel).releaseExecutorService();
+    public static void worldLoad(LevelEvent.Load event) {
+        if (event.getLevel().isClientSide()) {
+            WaypointManager.updateDimension(event.getLevel());
+        } else if (event.getLevel() instanceof ServerLevel serverLevel) {
+            ServerCache.instance.maybeInitWorld(serverLevel);
         }
     }
 
     @SubscribeEvent
-    public static void onServerStopping(ServerStoppingEvent event) {
+    public static void worldUnload(LevelEvent.Unload event) {
+        if (event.getLevel() instanceof ServerLevel serverLevel) {
+            TaskHandler.onWorldUnLoad(serverLevel);
+            MultiblockWorldSavedData.getOrCreate(serverLevel).releaseExecutorService();
+            ServerCache.instance.invalidateWorld(serverLevel);
+        } else if (event.getLevel().isClientSide()) {
+            ClientCacheManager.saveCaches();
+        }
+    }
+
+    @SubscribeEvent
+    public static void serverStarting(ServerStartingEvent event) {
+        WorldIDSaveData.init(event.getServer().overworld());
+    }
+
+    @SubscribeEvent
+    public static void serverStopped(ServerStoppedEvent event) {
+        ClientCacheManager.clearCaches();
+        ServerCache.instance.clear();
+    }
+
+    @SubscribeEvent
+    public static void serverStopping(ServerStoppingEvent event) {
         var levels = event.getServer().getAllLevels();
         for (var level : levels) {
             if (!level.isClientSide()) {
@@ -204,6 +247,7 @@ public class ForgeCommonEventListener {
                     new SPacketSyncFluidVeins(GTRegistries.BEDROCK_FLUID_DEFINITIONS.registry()));
             PacketDistributor.sendToPlayer(serverPlayer,
                     new SPacketSyncBedrockOreVeins(GTRegistries.BEDROCK_ORE_DEFINITIONS.registry()));
+            GTNetwork.NETWORK.sendToPlayer(new SPacketSendWorldID(), serverPlayer);
 
             if (!ConfigHolder.INSTANCE.gameplay.environmentalHazards)
                 return;
@@ -212,6 +256,11 @@ public class ForgeCommonEventListener {
             var data = EnvironmentalHazardSavedData.getOrCreate(level);
             PacketDistributor.sendToPlayer(serverPlayer, new SPacketSyncLevelHazards(data.getHazardZones()));
         }
+    }
+
+    @SubscribeEvent
+    public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
+        ClientCacheManager.allowReinit();
     }
 
     @SubscribeEvent

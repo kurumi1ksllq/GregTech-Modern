@@ -12,45 +12,53 @@ dependencies {
     jarJar(forge.configuration)
 
     // Create and its dependencies
-    createCompileOnly("com.simibubi.create:create-${libs.versions.minecraftVeryOld.get()}:${forge.versions.createForge.get()}:all") { transitive = false }
-    createCompileOnly forge.flywheel
+    compileOnly("com.simibubi.create:create-${libs.versions.minecraftVeryOld.get()}:${forge.versions.createForge.get()}:all") { transitive = false }
+    compileOnly forge.flywheel
 
     // JEI
-    jeiCompileOnly(forge.jei.common.api) { transitive = false }
-    jeiCompileOnly(forge.jei.forge.api) { transitive = false }
-    jeiCompileOnly(forge.jei.forge.impl) { transitive = false }
+    compileOnly(forge.jei.common.api) { transitive = false }
+    compileOnly(forge.jei.forge.api) { transitive = false }
+    compileOnly(forge.jei.forge.impl) { transitive = false }
 
     // REI
-    reiCompileOnlyApi forge.rei.plugin
-    reiCompileOnlyApi forge.rei.api
-    reiCompileOnly forge.rei.forge
+    compileOnly forge.rei.plugin
+    compileOnly forge.rei.api
+    compileOnly forge.rei.forge
 
     // EMI
-    emiCompileOnlyApi("dev.emi:emi-neoforge:${forge.versions.emi.get()}:api")
-    emiImplementation forge.emi
+    compileOnlyApi("dev.emi:emi-neoforge:${forge.versions.emi.get()}:api")
+    implementation forge.emi
 
     // TOP
-    topCompileOnlyApi(forge.theoneprobe) { transitive = false }
+    compileOnly(forge.theoneprobe) { transitive = false }
 
     // Jade
-    jadeCompileOnlyApi(forge.jade)
+    compileOnly(forge.jade)
 
     // Curios
-    curiosCompileOnlyApi("top.theillusivec4.curios:curios-neoforge:${forge.versions.curios.get()}:api")
-    curiosRuntimeOnly(forge.curios)
+    compileOnly("top.theillusivec4.curios:curios-neoforge:${forge.versions.curios.get()}:api")
+    runtimeOnly(forge.curios)
 
     // AE2
-    ae2CompileOnlyApi(forge.ae2) { transitive = false }
+    compileOnly(forge.ae2) { transitive = false }
     compileOnly("curse.maven:ae2wtlib-459929:5217955")
 
     // KJS
-    kjsImplementation forge.kubejs
+    implementation(forge.kubejs)
 
     // Shimmer
-    shimmerCompileOnly(forge.shimmer.forge) { transitive = false }
+    compileOnly(forge.shimmer.forge) { transitive = false }
     compileOnly("maven.modrinth:embeddium:1.0.0-beta.1+mc1.21")
     runtimeOnly("maven.modrinth:embeddium:1.0.0-beta.1+mc1.21")
-    shimmerCompileOnly("maven.modrinth:oculus:1.20.1-1.6.9")
+    compileOnly("maven.modrinth:oculus:1.20.1-1.6.9")
+
+    // Xaero's map
+    compileOnly(forge.xaerosminimap)
+    compileOnly(forge.xaerosworldmap)
+
+    // journeyMap
+    compileOnly(forge.journeymap.api)
+    compileOnly(forge.journeymap.forge)
 
     // JAVD
     compileOnly(forge.javd) { transitive = false }

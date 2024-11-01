@@ -39,6 +39,10 @@ dependencyResolutionManagement {
         def jadeForgeVersion = "5366595"
         def worldStripperForgeFile = "4578579"
         def javdVersion = "4803995"
+        def xaerosWorldMapVersion = "5987169"
+        def xaerosMinimapVersion = "6012855"
+        def journeyMapVersion = "5972765"
+        def journeyMapApiVersion = "2.0.0"
         def ftbteamsForgeFile = "5631446"
         def ftblibraryForgeFile = "5754910"
         def argonautsForgeFile = "5263580"
@@ -108,6 +112,18 @@ dependencyResolutionManagement {
 
             def ae2 = version("ae2", ae2Version)
             library("ae2", "appeng", "appliedenergistics2-neoforge").versionRef(ae2)
+
+            def xaerosWorldMap = version("xaerosWorldMap", xaerosWorldMapVersion)
+            library("xaerosworldmap", "curse.maven", "xaeros-world-map-317780").versionRef(xaerosWorldMap)
+
+            def xaerosMiniMap = version("xaerosMinimap", xaerosMinimapVersion)
+            library("xaerosminimap", "curse.maven", "xaeros-minimap-263420").versionRef(xaerosMiniMap)
+
+            def journeyMapApi = version("journeyMapApi", journeyMapApiVersion + "-" + minecraftVersion + "-SNAPSHOT")
+            library("journeymap-api", "info.journeymap", "journeymap-api-neoforge").versionRef(journeyMapApi)
+
+            def journeyMap = version("journeyMap", journeyMapVersion)
+            library("journeymap-forge", "curse.maven", "journeymap-32274").versionRef(journeyMap)
 
             def javd = version("javd", javdVersion)
             library("javd", "curse.maven", "javd-370890").versionRef(javd)

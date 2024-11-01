@@ -16,7 +16,13 @@
         "LevelRendererMixin",
         "ModelManagerMixin",
         "MultiPlayerGameModeMixin",
-        "rei.FluidEntryRendererMixin"
+        "journeymap.FullscreenMixin",
+        "rei.FluidEntryRendererMixin",
+        "xaeroworldmap.GuiMapMixin",
+        "xaeroworldmap.MapElementRenderHandlerBuilderMixin",
+        "xaerominimap.HighlighterRegistryMixin",
+        "xaerominimap.MinimapFBORendererMixin",
+        "xaeroworldmap.WorldMapSessionMixin"
     ],
     "mixins": [
         "AbstractRegistrateAccessor",
@@ -29,6 +35,7 @@
         "CreeperMixin",
         "DataFixTypesMixin",
         "EntityMixin",
+        "ForgeHooksMixin",
         "FluidStackAccessor",
         "IFoliagePlacerTypeAccessor",
         "IHolderReferenceAccessor",

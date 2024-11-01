@@ -25,5 +25,10 @@ public class GTNetwork {
                 SPacketSyncHazardZoneStrength::execute);
         registar.playToClient(SPacketSyncLevelHazards.TYPE, SPacketSyncLevelHazards.CODEC,
                 SPacketSyncLevelHazards::execute);
+
+        registar.playToClient(SPacketOreProspect.TYPE, SpacketOreProspect.CODEC, SPacketOreProspect::execute);
+        registar.playToClient(SPacketSendWorldID.TYPE, SPacketSendWorldID.CODEC, SPacketSendWorldID::execute);
+        registar.playToClient(SCPacketShareProspection.TYPE, SCPacketShareProspection.CODEC,
+                SCPacketShareProspection::execute);
     }
 }

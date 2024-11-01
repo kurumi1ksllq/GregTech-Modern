@@ -45,6 +45,11 @@ repositories {
             includeGroup "dev.latvian.apps"
         }
     }
+    // JourneyMap API releases are here
+    maven {
+        name = "JourneyMap (Public)"
+        url = "https://jm.gserv.me/repository/maven-public/"
+    }
     maven { url = "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
     maven { url 'https://jitpack.io' } // Mixin Extras, Fabric ASM
     maven { url = "https://maven.ithundxr.dev/snapshots" } // Registrate Fork

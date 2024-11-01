@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.block;
 import com.gregtechceu.gtceu.api.item.SurfaceRockBlockItem;
 import com.gregtechceu.gtceu.api.material.material.Material;
 import com.gregtechceu.gtceu.client.renderer.block.SurfaceRockRenderer;
+import com.gregtechceu.gtceu.integration.map.cache.server.ServerCache;
 
 import com.lowdragmc.lowdraglib.Platform;
 
@@ -66,6 +67,13 @@ public class SurfaceRockBlock extends Block {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
+        if (!level.isClientSide) {
+            ServerCache.instance.prospectSurfaceRockMaterial(
+                    level.dimension(),
+                    this.material,
+                    pos,
+                    (ServerPlayer) player);
+        }
         if (level.destroyBlock(pos, true, player)) {
             return InteractionResult.SUCCESS;
         }

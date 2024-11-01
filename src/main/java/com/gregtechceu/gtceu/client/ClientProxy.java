@@ -11,12 +11,19 @@ import com.gregtechceu.gtceu.api.worldgen.bedrockfluid.BedrockFluidDefinition;
 import com.gregtechceu.gtceu.api.worldgen.bedrockore.BedrockOreDefinition;
 import com.gregtechceu.gtceu.client.particle.HazardParticle;
 import com.gregtechceu.gtceu.client.renderer.entity.GTExplosiveRenderer;
+import com.gregtechceu.gtceu.common.CommonProxy;
 import com.gregtechceu.gtceu.client.renderer.item.GTItemBarRenderer;
 import com.gregtechceu.gtceu.data.blockentity.GTBlockEntities;
 import com.gregtechceu.gtceu.data.entity.GTEntityTypes;
 import com.gregtechceu.gtceu.data.particle.GTParticleTypes;
+import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
+import com.gregtechceu.gtceu.integration.map.cache.client.GTClientCache;
+import com.gregtechceu.gtceu.integration.map.layer.Layers;
+import com.gregtechceu.gtceu.integration.map.layer.builtin.FluidRenderLayer;
+import com.gregtechceu.gtceu.integration.map.layer.builtin.OreRenderLayer;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
 
+import com.lowdragmc.lowdraglib.Platform;
 import com.lowdragmc.lowdraglib.gui.compass.CompassManager;
 import com.lowdragmc.lowdraglib.gui.compass.component.RecipeComponent;
 
@@ -59,6 +66,11 @@ public class ClientProxy {
         RecipeComponent.registerRecipeViewCreator(new GTRecipeViewCreator());
         CompassManager.INSTANCE.registerUIConfig(GTCEu.MOD_ID, new GTCompassUIConfig());
         CompassManager.INSTANCE.registerAction("multiblock", MultiblockAction::new);
+        if (!Platform.isDatagen()) {
+            ClientCacheManager.registerClientCache(GTClientCache.instance, "gtceu");
+            Layers.registerLayer(OreRenderLayer::new, "ore_veins");
+            Layers.registerLayer(FluidRenderLayer::new, "bedrock_fluids");
+        }
     }
 
     public static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {

@@ -15,6 +15,8 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Supplier;
+
 import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 
 /**
@@ -27,9 +29,7 @@ public class GTFluids {
     public static void init() {
         handleNonMaterialFluids(GTMaterials.Water, Fluids.WATER);
         handleNonMaterialFluids(GTMaterials.Lava, Fluids.LAVA);
-        if (NeoForgeMod.MILK.asOptional().isPresent()) {
-            handleNonMaterialFluids(GTMaterials.Milk, NeoForgeMod.MILK.get());
-        }
+        handleNonMaterialFluids(GTMaterials.Milk, ForgeMod.MILK);
         REGISTRATE.creativeModeTab(() -> GTCreativeModeTabs.MATERIAL_FLUID);
         // register fluids for materials
         for (MaterialRegistry registry : GTCEuAPI.materialManager.getRegistries()) {
@@ -47,5 +47,10 @@ public class GTFluids {
     public static void handleNonMaterialFluids(@NotNull Material material, @NotNull Fluid fluid) {
         var property = material.getProperty(PropertyKey.FLUID);
         property.getStorage().store(FluidStorageKeys.LIQUID, () -> fluid, null);
+    }
+
+    public static void handleNonMaterialFluids(@NotNull Material material, @NotNull Supplier<Fluid> fluid) {
+        var property = material.getProperty(PropertyKey.FLUID);
+        property.getStorage().store(FluidStorageKeys.LIQUID, fluid, null);
     }
 }

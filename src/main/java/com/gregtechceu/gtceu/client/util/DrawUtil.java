@@ -63,4 +63,18 @@ public class DrawUtil {
         consumer.addVertex(matrix4f, (float) x2, (float) y2, (float) z).setColor(r2, g2, b2, a2);
         consumer.addVertex(matrix4f, (float) x2, (float) y1, (float) z).setColor(r2, g2, b2, a2);
     }
+
+    /**
+     * Converts an (A)RGB integer color into an array of floats, for use in GL calls
+     * 
+     * @return float[]{R, G, B, A}
+     */
+    public static float[] floats(int argb) {
+        return new float[] {
+                (float) (argb >> 16 & 255) / 255.0F,
+                (float) (argb >> 8 & 255) / 255.0F,
+                (float) (argb & 255) / 255.0F,
+                (float) (argb >> 24 & 255) / 255.0F
+        };
+    }
 }

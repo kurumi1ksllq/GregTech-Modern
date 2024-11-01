@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.worldgen.generator.indicators;
 
+import com.gregtechceu.gtceu.api.material.material.Material;
 import com.gregtechceu.gtceu.api.worldgen.generator.IndicatorGenerator;
 import com.gregtechceu.gtceu.api.worldgen.ores.GeneratedVeinMetadata;
 import com.gregtechceu.gtceu.api.worldgen.ores.OreIndicatorPlacer;
@@ -8,8 +9,11 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.state.BlockState;
 
-import com.mojang.serialization.MapCodec;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Map;
@@ -33,6 +37,12 @@ public class NoopIndicatorGenerator extends IndicatorGenerator {
     @Override
     public int getSearchRadiusModifier(int veinRadius) {
         return 0;
+    }
+
+    @Nullable
+    @Override
+    public Either<BlockState, Material> block() {
+        return null;
     }
 
     @Override

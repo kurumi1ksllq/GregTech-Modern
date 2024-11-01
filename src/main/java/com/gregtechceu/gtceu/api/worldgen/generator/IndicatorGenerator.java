@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.worldgen.generator;
 
+import com.gregtechceu.gtceu.api.material.material.Material;
 import com.gregtechceu.gtceu.api.worldgen.GTOreDefinition;
 import com.gregtechceu.gtceu.api.worldgen.WorldGeneratorUtils;
 import com.gregtechceu.gtceu.api.worldgen.ores.GeneratedVeinMetadata;
@@ -10,11 +11,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.state.BlockState;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Optional;
@@ -60,6 +64,9 @@ public abstract class IndicatorGenerator {
     public GTOreDefinition parent() {
         return entry;
     }
+
+    @Nullable
+    public abstract Either<BlockState, Material> block();
 
     public abstract MapCodec<? extends IndicatorGenerator> codec();
 

@@ -30,6 +30,7 @@ import com.gregtechceu.gtceu.common.item.DrumMachineItem;
 import com.gregtechceu.gtceu.common.item.armor.GTArmorMaterials;
 import com.gregtechceu.gtceu.common.item.tool.rotation.CustomBlockRotations;
 import com.gregtechceu.gtceu.common.material.MaterialRegistryManager;
+import com.gregtechceu.gtceu.common.machine.multiblock.electric.FusionReactorMachine;
 import com.gregtechceu.gtceu.common.network.GTNetwork;
 import com.gregtechceu.gtceu.common.registry.GTRegistration;
 import com.gregtechceu.gtceu.config.ConfigHolder;
@@ -211,6 +212,10 @@ public class CommonProxy {
         CustomBlockRotations.init();
         KeyBind.init();
         GTDataFixers.init();
+
+        FusionReactorMachine.registerFusionTier(GTValues.LuV, " (MKI)");
+        FusionReactorMachine.registerFusionTier(GTValues.ZPM, " (MKII)");
+        FusionReactorMachine.registerFusionTier(GTValues.UV, " (MKIII)");
     }
 
     private static void initMaterials() {

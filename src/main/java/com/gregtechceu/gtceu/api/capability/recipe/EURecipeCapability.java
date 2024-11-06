@@ -43,6 +43,8 @@ public class EURecipeCapability extends RecipeCapability<Long> {
 
     @Override
     public int limitParallel(GTRecipe recipe, IRecipeCapabilityHolder holder, int multiplier) {
+        if (holder instanceof ICustomParallel p) return p.limitParallel(recipe, multiplier);
+
         long maxVoltage = Long.MAX_VALUE;
         if (holder instanceof IOverclockMachine overclockMachine) {
             maxVoltage = overclockMachine.getOverclockVoltage();
@@ -71,5 +73,17 @@ public class EURecipeCapability extends RecipeCapability<Long> {
             return Integer.MAX_VALUE;
         }
         return Math.abs(Ints.saturatedCast(maxVoltage / recipeEUt));
+    }
+
+    public interface ICustomParallel {
+
+        /**
+         * Custom impl of the parallel limiter used by ParallelLogic to limit by outputs
+         * 
+         * @param recipe     Recipe
+         * @param multiplier Initial multiplier
+         * @return Limited multiplier
+         */
+        int limitParallel(GTRecipe recipe, int multiplier);
     }
 }

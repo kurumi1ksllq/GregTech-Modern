@@ -23,9 +23,9 @@ dependencyResolutionManagement {
 
         // Mod Dependencies Versions
         // Common
-        def jeiVersion = "19.17.0.193"
-        def reiVersion = "16.0.762"
-        def emiVersion = "1.1.13"
+        def jeiVersion = "19.21.0.247"
+        def reiVersion = "16.0.788"
+        def emiVersion = "1.1.18"
         def ae2Version = "19.0.4-alpha"
         def kjsVersion = "2101.7.1-build.181"
 

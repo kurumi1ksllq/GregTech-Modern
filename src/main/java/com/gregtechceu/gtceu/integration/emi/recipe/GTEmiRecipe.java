@@ -14,10 +14,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class GTEmiRecipe extends ModularEmiRecipe<WidgetGroup> {
 
-    final GTRecipeTypeEmiCategory category;
+    final GTRecipeEMICategory category;
     final RecipeHolder<GTRecipe> recipe;
 
-    public GTEmiRecipe(GTRecipeTypeEmiCategory category, RecipeHolder<GTRecipe> recipe) {
+    public GTEmiRecipe(GTRecipeEMICategory category, RecipeHolder<GTRecipe> recipe) {
         super(() -> new GTRecipeWidget(recipe));
         this.category = category;
         this.recipe = recipe;

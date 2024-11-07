@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.block.GTBlocks;
 import com.gregtechceu.gtceu.data.machine.GTMachines;
@@ -13,7 +14,7 @@ import com.gregtechceu.gtceu.integration.rei.oreprocessing.GTOreProcessingDispla
 import com.gregtechceu.gtceu.integration.rei.orevein.GTBedrockFluidDisplayCategory;
 import com.gregtechceu.gtceu.integration.rei.orevein.GTBedrockOreDisplayCategory;
 import com.gregtechceu.gtceu.integration.rei.orevein.GTOreVeinDisplayCategory;
-import com.gregtechceu.gtceu.integration.rei.recipe.GTRecipeTypeDisplayCategory;
+import com.gregtechceu.gtceu.integration.rei.recipe.GTRecipeREICategory;
 
 import com.lowdragmc.lowdraglib.Platform;
 
@@ -56,12 +57,14 @@ public class GTREIPlugin implements REIClientPlugin {
         for (RecipeType<?> recipeType : BuiltInRegistries.RECIPE_TYPE) {
             if (recipeType instanceof GTRecipeType gtRecipeType) {
                 if (Platform.isDevEnv() || gtRecipeType.getRecipeUI().isXEIVisible()) {
-                    registry.add(new GTRecipeTypeDisplayCategory(gtRecipeType));
+                    for (GTRecipeCategory category : gtRecipeType.getRecipesByCategory().keySet()) {
+                        registry.add(new GTRecipeREICategory(gtRecipeType, category));
+                    }
                 }
             }
         }
         // workstations
-        GTRecipeTypeDisplayCategory.registerWorkStations(registry);
+        GTRecipeREICategory.registerWorkStations(registry);
         if (!ConfigHolder.INSTANCE.compat.hideOreProcessingDiagrams)
             GTOreProcessingDisplayCategory.registerWorkstations(registry);
         GTOreVeinDisplayCategory.registerWorkstations(registry);
@@ -77,11 +80,14 @@ public class GTREIPlugin implements REIClientPlugin {
         registry.addWorkstations(SMELTING, EntryStacks.of(GTMachines.STEAM_FURNACE.right().asStack()));
         registry.addWorkstations(SMELTING, EntryStacks.of(GTMachines.STEAM_OVEN.asStack()));
         registry.addWorkstations(SMELTING, EntryStacks.of(GTMachines.MULTI_SMELTER.asStack()));
+        registry.addWorkstations(
+                GTRecipeREICategory.CATEGORIES.apply(GTRecipeCategory.of(GTRecipeTypes.CHEMICAL_RECIPES)),
+                EntryStacks.of(GTMachines.LARGE_CHEMICAL_REACTOR.asStack()));
     }
 
     @Override
     public void registerDisplays(DisplayRegistry registry) {
-        GTRecipeTypeDisplayCategory.registerDisplays(registry);
+        GTRecipeREICategory.registerDisplays(registry);
         MultiblockInfoDisplayCategory.registerDisplays(registry);
         if (!ConfigHolder.INSTANCE.compat.hideOreProcessingDiagrams)
             GTOreProcessingDisplayCategory.registerDisplays(registry);

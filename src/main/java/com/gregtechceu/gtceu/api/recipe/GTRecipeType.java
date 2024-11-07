@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.gui.SteamTexture;
 import com.gregtechceu.gtceu.api.material.material.stack.UnificationEntry;
+import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.recipe.chance.boost.ChanceBoostFunction;
 import com.gregtechceu.gtceu.api.recipe.lookup.GTRecipeLookup;
 import com.gregtechceu.gtceu.api.recipe.ui.GTRecipeTypeUI;
@@ -36,6 +37,7 @@ import lombok.experimental.Accessors;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -97,6 +99,8 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
     protected boolean hasResearchSlot;
     @Getter
     protected final Map<RecipeType<?>, List<RecipeHolder<GTRecipe>>> proxyRecipes;
+    @Getter
+    private final Map<GTRecipeCategory, List<RecipeHolder<GTRecipe>>> recipeByCategory = new Object2ObjectOpenHashMap<>();
     private CompoundTag customUICache;
     @Getter
     private final GTRecipeLookup lookup = new GTRecipeLookup(this);
@@ -114,6 +118,8 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
         this.registryName = registryName;
         this.group = group;
         recipeBuilder = new GTRecipeBuilder(registryName, this);
+        recipeBuilder.category(
+                GTRecipeCategory.of(GTCEu.MOD_ID, registryName.getPath(), registryName.toLanguageKey(), this));
         // must be linked to stop json contents from shuffling
         Map<RecipeType<?>, List<RecipeHolder<GTRecipe>>> map = new Object2ObjectLinkedOpenHashMap<>();
         for (RecipeType<?> proxyRecipe : proxyRecipes) {
@@ -343,6 +349,12 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
 
     public Component getName() {
         return Component.translatable(getTranslationKey());
+    }
+
+    @NotNull
+    @UnmodifiableView
+    public Map<GTRecipeCategory, List<RecipeHolder<GTRecipe>>> getRecipesByCategory() {
+        return Collections.unmodifiableMap(recipeByCategory);
     }
 
     public interface ICustomRecipeLogic {

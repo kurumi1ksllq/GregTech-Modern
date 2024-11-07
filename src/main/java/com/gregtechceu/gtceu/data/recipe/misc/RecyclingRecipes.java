@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.material.material.stack.MaterialStack;
 import com.gregtechceu.gtceu.api.material.material.stack.UnificationEntry;
 import com.gregtechceu.gtceu.api.tag.TagPrefix;
 import com.gregtechceu.gtceu.data.material.GTMaterials;
+import com.gregtechceu.gtceu.data.recipe.GTRecipeCategories;
 import com.gregtechceu.gtceu.data.recipe.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -123,7 +124,8 @@ public class RecyclingRecipes {
         GTRecipeBuilder builder = GTRecipeTypes.MACERATOR_RECIPES.recipeBuilder("macerate_" + itemPath.getPath())
                 .outputItems(outputs.toArray(ItemStack[]::new))
                 .duration(calculateDuration(outputs))
-                .EUt(2L * multiplier);
+                .EUt(2L * multiplier)
+                .category(GTRecipeCategories.MACERATOR_RECYCLING);
         if (inputTag == null) {
             builder.inputItems(input.copy());
         } else {
@@ -162,7 +164,8 @@ public class RecyclingRecipes {
             GTRecipeBuilder builder = GTRecipeTypes.EXTRACTOR_RECIPES.recipeBuilder("extract_" + itemPath.getPath())
                     .outputFluids(m.getFluid((int) (ms.amount() * L / M)))
                     .duration((int) Math.max(1, ms.amount() * ms.material().getMass() / M))
-                    .EUt((long) GTValues.VA[GTValues.LV] * multiplier);
+                    .EUt((long) GTValues.VA[GTValues.LV] * multiplier)
+                    .category(GTRecipeCategories.EXTRACTOR_RECYCLING);
             if (inputTag == null) {
                 builder.inputItems(input.copy());
             } else {
@@ -199,7 +202,8 @@ public class RecyclingRecipes {
                 .recipeBuilder("extract_" + itemPath.getPath())
                 .outputFluids(fluidMs.material().getFluid((int) (fluidMs.amount() * L / M)))
                 .duration((int) duration)
-                .EUt((long) GTValues.VA[GTValues.LV] * multiplier);
+                .EUt((long) GTValues.VA[GTValues.LV] * multiplier)
+                .category(GTRecipeCategories.EXTRACTOR_RECYCLING);
 
         if (inputTag == null) {
             extractorBuilder.inputItems(input.copy());
@@ -246,6 +250,11 @@ public class RecyclingRecipes {
                 } else {
                     builder.inputItems(inputTag);
                 }
+
+                if (ms.material().hasFlag(IS_MAGNETIC) ||
+                        ms.material() == ms.material().getProperty(PropertyKey.INGOT).getArcSmeltingInto()) {
+                    builder.category(GTRecipeCategories.ARC_FURNACE_RECYCLING);
+                }
                 builder.save(provider);
             }
             return;
@@ -280,7 +289,27 @@ public class RecyclingRecipes {
             builder.inputItems(inputTag);
         }
 
+        if (needsRecyclingCategory(prefix, ms, outputs)) {
+            builder.category(GTRecipeCategories.ARC_FURNACE_RECYCLING);
+        }
+
         builder.save(provider);
+    }
+
+    private static boolean needsRecyclingCategory(@Nullable TagPrefix prefix, @Nullable MaterialStack inputStack,
+                                                  @NotNull List<ItemStack> outputs) {
+        if (prefix == TagPrefix.nugget || prefix == TagPrefix.ingot || prefix == TagPrefix.block) {
+            if (outputs.size() == 1) {
+                UnificationEntry entry = ChemicalHelper.getUnificationEntry(outputs.get(0).getItem());
+                if (entry != null && inputStack != null) {
+                    Material mat = inputStack.material();
+                    if (mat.hasFlag(IS_MAGNETIC) && mat.hasProperty(PropertyKey.INGOT)) {
+                        return mat.getProperty(PropertyKey.INGOT).getArcSmeltingInto() != entry.material;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     private static MaterialStack getArcSmeltingResult(MaterialStack materialStack) {

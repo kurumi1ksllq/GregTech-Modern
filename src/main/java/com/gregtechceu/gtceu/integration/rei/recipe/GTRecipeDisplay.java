@@ -9,15 +9,19 @@ import com.lowdragmc.lowdraglib.rei.ModularDisplay;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
+import lombok.Getter;
+
 import java.util.Optional;
 
 public class GTRecipeDisplay extends ModularDisplay<WidgetGroup> {
 
+    @Getter
+    private final GTRecipeREICategory category;
     private final RecipeHolder<GTRecipe> recipe;
 
-    public GTRecipeDisplay(RecipeHolder<GTRecipe> recipe) {
-        super(() -> new GTRecipeWidget(recipe),
-                GTRecipeTypeDisplayCategory.CATEGORIES.apply(recipe.value().recipeType));
+    public GTRecipeDisplay(GTRecipeREICategory category, RecipeHolder<GTRecipe> recipe) {
+        super(() -> new GTRecipeWidget(recipe), GTRecipeREICategory.CATEGORIES.apply(recipe.recipeCategory));
+        this.category = category;
         this.recipe = recipe;
     }
 

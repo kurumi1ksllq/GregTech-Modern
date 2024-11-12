@@ -1,6 +1,8 @@
 package com.gregtechceu.gtceu.common.item.tool.behavior;
 
 import com.gregtechceu.gtceu.api.item.datacomponents.ToolBehaviors;
+import com.gregtechceu.gtceu.api.item.tool.GTToolType;
+import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.item.tool.behavior.IToolBehavior;
 import com.gregtechceu.gtceu.api.item.tool.behavior.ToolBehaviorType;
 import com.gregtechceu.gtceu.data.tag.GTDataComponents;
@@ -31,22 +33,22 @@ import static com.gregtechceu.gtceu.api.item.tool.ToolHelper.getBehaviorsCompone
 
 public class ToolModeSwitchBehavior implements IToolBehavior<ToolModeSwitchBehavior> {
 
-    public static final ToolModeSwitchBehavior INSTANCE = new ToolModeSwitchBehavior(ModeType.BOTH);
+    public static final ToolModeSwitchBehavior INSTANCE = new ToolModeSwitchBehavior(WrenchModeType.BOTH);
 
     public static final Codec<ToolModeSwitchBehavior> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ModeType.CODEC.lenientOptionalFieldOf("mode_type", ModeType.BOTH)
+            WrenchModeType.CODEC.lenientOptionalFieldOf("mode_type", WrenchModeType.BOTH)
                     .forGetter(val -> val.modeType))
             .apply(instance, ToolModeSwitchBehavior::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ToolModeSwitchBehavior> STREAM_CODEC = StreamCodec
             .composite(
-                    ModeType.STREAM_CODEC, ToolModeSwitchBehavior::getModeType,
+                    WrenchModeType.STREAM_CODEC, ToolModeSwitchBehavior::getModeType,
                     ToolModeSwitchBehavior::new);
 
     @Getter
-    private final ToolModeSwitchBehavior.ModeType modeType;
+    private final ToolModeSwitchBehavior.WrenchModeType modeType;
 
-    protected ToolModeSwitchBehavior(ToolModeSwitchBehavior.ModeType type) {
+    protected ToolModeSwitchBehavior(ToolModeSwitchBehavior.WrenchModeType type) {
         this.modeType = type;
     }
 
@@ -55,13 +57,17 @@ public class ToolModeSwitchBehavior implements IToolBehavior<ToolModeSwitchBehav
                                                                         @NotNull InteractionHand hand) {
         var itemStack = player.getItemInHand(hand);
         if (player.isShiftKeyDown()) {
-            ToolModeSwitchBehavior.ModeType type = ModeType.values()[(this.modeType.ordinal() + 1) %
-                    ModeType.values().length];
-            itemStack.update(GTDataComponents.TOOL_BEHAVIORS, ToolBehaviors.EMPTY,
-                    behavior -> behavior.withBehavior(new ToolModeSwitchBehavior(type)));
 
-            player.displayClientMessage(Component.translatable("metaitem.machine_configuration.mode", type.getName()),
-                    true);
+
+            var toolTypes = ToolHelper.getToolTypes(itemStack);
+            if (toolTypes.contains(GTToolType.WRENCH)) {
+                ToolModeSwitchBehavior.WrenchModeType type = WrenchModeType.values()[(this.modeType.ordinal() + 1) %
+                        WrenchModeType.values().length];
+                itemStack.update(GTDataComponents.TOOL_BEHAVIORS, ToolBehaviors.EMPTY,
+                        behavior -> behavior.withBehavior(new ToolModeSwitchBehavior(type)));
+                player.displayClientMessage(
+                        Component.translatable("metaitem.machine_configuration.mode", type.getName()), true);
+            }
             return InteractionResultHolder.success(itemStack.copy());
         }
 
@@ -76,28 +82,31 @@ public class ToolModeSwitchBehavior implements IToolBehavior<ToolModeSwitchBehav
     @Override
     public void addInformation(@NotNull ItemStack stack, Item.TooltipContext context, @NotNull List<Component> tooltip,
                                @NotNull TooltipFlag flag) {
-        var component = getBehaviorsComponent(stack);
-        ToolModeSwitchBehavior behavior = component.getBehavior(GTToolBehaviors.MODE_SWITCH);
-        tooltip.add(Component.translatable("metaitem.machine_configuration.mode",
-                (behavior != null ? behavior.modeType : ModeType.BOTH).getName()));
+        var toolTypes = ToolHelper.getToolTypes(stack);
+        if (toolTypes.contains(GTToolType.WRENCH)) {
+            var component = getBehaviorsComponent(stack);
+            ToolModeSwitchBehavior behavior = component.getBehavior(GTToolBehaviors.MODE_SWITCH);
+            tooltip.add(Component.translatable("metaitem.machine_configuration.mode",
+                    (behavior != null ? behavior.modeType : WrenchModeType.BOTH).getName()));
+        }
     }
 
-    public enum ModeType implements StringRepresentable {
+    public enum WrenchModeType implements StringRepresentable {
 
         ITEM("item", Component.translatable("gtceu.mode.item")),
         FLUID("fluid", Component.translatable("gtceu.mode.fluid")),
         BOTH("both", Component.translatable("gtceu.mode.both"));
 
-        public static final Codec<ModeType> CODEC = StringRepresentable.fromEnum(ModeType::values);
-        public static final StreamCodec<ByteBuf, ModeType> STREAM_CODEC = ByteBufCodecs.BYTE
-                .map(aByte -> ModeType.values()[aByte], val -> (byte) val.ordinal());
+        public static final Codec<WrenchModeType> CODEC = StringRepresentable.fromEnum(WrenchModeType::values);
+        public static final StreamCodec<ByteBuf, WrenchModeType> STREAM_CODEC = ByteBufCodecs.BYTE
+                .map(aByte -> WrenchModeType.values()[aByte], val -> (byte) val.ordinal());
 
         @Getter
         private final String id;
         @Getter
         private final Component name;
 
-        ModeType(String id, Component name) {
+        WrenchModeType(String id, Component name) {
             this.id = id;
             this.name = name;
         }

@@ -145,7 +145,7 @@ public class GTToolType {
     public static final GTToolType SOFT_MALLET = GTToolType.builder("mallet")
             .toolTag(TagUtil.createItemTag("tools/mallets", false))
             .toolStats(b -> b.tool(new Tool(List.of(), 1.0F, 1))
-                    .crafting().cannotAttack())
+                    .crafting().sneakBypassUse().cannotAttack().behaviors(ToolModeSwitchBehavior.INSTANCE))
             .sound(GTSoundEntries.SOFT_MALLET_TOOL)
             .symbol('r')
             .build();

@@ -81,8 +81,6 @@ import java.util.function.Predicate;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.gregtechceu.gtceu.api.item.tool.ToolHelper.getBehaviorsComponent;
-import static com.gregtechceu.gtceu.common.item.tool.behavior.ToolModeSwitchBehavior.ModeType.BOTH;
-import static com.gregtechceu.gtceu.common.item.tool.behavior.ToolModeSwitchBehavior.ModeType.ITEM;
 
 /**
  * @author KilaBash
@@ -387,17 +385,20 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
                 return ItemInteractionResult.CONSUME;
             var itemStack = playerIn.getItemInHand(hand);
             var component = getBehaviorsComponent(itemStack);
-            ToolModeSwitchBehavior.ModeType type = Optional
+            ToolModeSwitchBehavior.WrenchModeType type = Optional
                     .ofNullable(component.getBehavior(GTToolBehaviors.MODE_SWITCH))
-                    .map(ToolModeSwitchBehavior::getModeType).orElse(BOTH);
+                    .map(ToolModeSwitchBehavior::getModeType)
+                    .orElse(ToolModeSwitchBehavior.WrenchModeType.BOTH);
 
-            if (type == ToolModeSwitchBehavior.ModeType.ITEM || type == ToolModeSwitchBehavior.ModeType.BOTH) {
+            if (type == ToolModeSwitchBehavior.WrenchModeType.ITEM ||
+                    type == ToolModeSwitchBehavior.WrenchModeType.BOTH) {
                 if (this instanceof IAutoOutputItem autoOutputItem &&
                         (!hasFrontFacing() || gridSide != getFrontFacing())) {
                     autoOutputItem.setOutputFacingItems(gridSide);
                 }
             }
-            if (type == ToolModeSwitchBehavior.ModeType.FLUID || type == ToolModeSwitchBehavior.ModeType.BOTH) {
+            if (type == ToolModeSwitchBehavior.WrenchModeType.FLUID ||
+                    type == ToolModeSwitchBehavior.WrenchModeType.BOTH) {
                 if (this instanceof IAutoOutputFluid autoOutputFluid &&
                         (!hasFrontFacing() || gridSide != getFrontFacing())) {
                     autoOutputFluid.setOutputFacingFluids(gridSide);
@@ -413,9 +414,14 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
         var controllable = GTCapabilityHelper.getControllable(getLevel(), getPos(), gridSide);
         if (controllable != null) {
             if (!isRemote()) {
-                controllable.setWorkingEnabled(!controllable.isWorkingEnabled());
-                playerIn.sendSystemMessage(Component.translatable(controllable.isWorkingEnabled() ?
-                        "behaviour.soft_hammer.enabled" : "behaviour.soft_hammer.disabled"));
+                if (!playerIn.isShiftKeyDown() || !controllable.isWorkingEnabled()) {
+                    controllable.setWorkingEnabled(!controllable.isWorkingEnabled());
+                    playerIn.sendSystemMessage(Component.translatable(controllable.isWorkingEnabled() ?
+                            "behaviour.soft_hammer.enabled" : "behaviour.soft_hammer.disabled"));
+                } else {
+                    controllable.setSuspendAfterFinish(true);
+                    playerIn.sendSystemMessage(Component.translatable("behaviour.soft_hammer.idle_after_cycle"));
+                }
             }
             playerIn.swing(hand);
             return ItemInteractionResult.CONSUME;

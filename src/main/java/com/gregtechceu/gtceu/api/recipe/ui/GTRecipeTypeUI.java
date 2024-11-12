@@ -273,7 +273,7 @@ public class GTRecipeTypeUI {
                                 widget -> {
                                     var index = WidgetUtils.widgetIdIndex(widget);
                                     cap.applyWidgetInfo(widget, index, isJEI, io, recipeHolder, recipeType, null, null,
-                                            storage);
+                                            storage, 0, 0);
                                 });
                     }
                 }

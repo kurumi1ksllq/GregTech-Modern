@@ -2182,7 +2182,7 @@ public class GTItems {
             .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Zinc, GTValues.M * 2),
                     new MaterialStack(GTMaterials.Steel, GTValues.M))))
             .onRegister(compassNode(GTCompassSections.COVERS, GTCompassNodes.COVER)).register();
-    public static ItemEntry<ComponentItem> ORE_DICTIONARY_FILTER = REGISTRATE
+    public static ItemEntry<ComponentItem> TAG_FILTER = REGISTRATE
             .item("item_tag_filter", ComponentItem::new)
             .lang("Item Tag Filter")
             .onRegister(attach(new ItemFilterBehaviour(TagItemFilter::loadFilter),

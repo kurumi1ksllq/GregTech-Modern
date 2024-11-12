@@ -2189,6 +2189,13 @@ public class GTItems {
                     new CoverPlaceBehavior(GTCovers.ITEM_FILTER)))
             .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Zinc, GTValues.M * 2))))
             .onRegister(compassNode(GTCompassSections.COVERS, GTCompassNodes.COVER)).register();
+    public static ItemEntry<ComponentItem> SMART_ITEM_FILTER = REGISTRATE
+            .item("item_smart_filter", ComponentItem::create)
+            .lang("Smart Item Filter")
+            .onRegister(attach(new ItemFilterBehaviour(SmartItemFilter::loadFilter),
+                    new CoverPlaceBehavior(GTCovers.ITEM_FILTER)))
+            .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Zinc, GTValues.M * 3 / 2))))
+            .register();
     public static ItemEntry<ComponentItem> FLUID_FILTER = REGISTRATE.item("fluid_filter", ComponentItem::new)
             .onRegister(attach(new FluidFilterBehaviour(SimpleFluidFilter::loadFilter),
                     new CoverPlaceBehavior(GTCovers.FLUID_FILTER)))

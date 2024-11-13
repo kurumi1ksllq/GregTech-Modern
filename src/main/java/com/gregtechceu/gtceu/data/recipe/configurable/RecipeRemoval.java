@@ -75,6 +75,12 @@ public class RecipeRemoval {
         registry.accept(ResourceLocation.withDefaultNamespace("soul_torch"));
         registry.accept(ResourceLocation.withDefaultNamespace("soul_lantern"));
         registry.accept(ResourceLocation.withDefaultNamespace("leather_horse_armor"));
+
+        // remove vanilla dye recipes to gregify
+        registry.accept(ResourceLocation.withDefaultNamespace("white_dye"));
+        registry.accept(ResourceLocation.withDefaultNamespace("black_dye"));
+        registry.accept(ResourceLocation.withDefaultNamespace("black_dye_from_wither_rose"));
+        registry.accept(ResourceLocation.withDefaultNamespace("blue_dye"));
     }
 
     /**

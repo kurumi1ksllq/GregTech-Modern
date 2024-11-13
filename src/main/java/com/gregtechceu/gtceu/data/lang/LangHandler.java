@@ -741,6 +741,7 @@ public class LangHandler {
         provider.add("metaitem.prospector.tooltip.radius", "Scans range in a %s Chunk Radius");
         provider.add("metaitem.prospector.tooltip.modes", "Available Modes:");
         provider.add("behavior.prospector.not_enough_energy", "Not Enough Energy!");
+        provider.add("behavior.prospector.added_waypoint", "Created waypoint named %s!");
         provider.add("metaitem.tricorder_scanner.tooltip", "Tricorder");
         provider.add("metaitem.debug_scanner.tooltip", "Tricorder");
         provider.add("behavior.portable_scanner.bedrock_fluid.amount", "Fluid In Deposit: %s %s - %s%%");

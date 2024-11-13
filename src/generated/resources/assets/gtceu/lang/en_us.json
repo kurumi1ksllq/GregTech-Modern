@@ -54,6 +54,7 @@
   "behavior.portable_scanner.workable_production": "Probably Produces: %s EU/t at %s A",
   "behavior.portable_scanner.workable_progress": "Progress: %s s / %s s",
   "behavior.portable_scanner.workable_stored_energy": "Stored Energy: %s EU / %s EU",
+  "behavior.prospector.added_waypoint": "Created waypoint named %s!",
   "behavior.prospector.not_enough_energy": "Not Enough Energy!",
   "behavior.toggle_energy_consumer.tooltip": "Use to toggle mode",
   "behaviour.boor.by": "by %s",

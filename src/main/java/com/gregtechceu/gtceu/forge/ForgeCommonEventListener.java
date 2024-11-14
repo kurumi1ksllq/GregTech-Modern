@@ -19,13 +19,13 @@ import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
 import com.gregtechceu.gtceu.common.capability.LocalizedHazardSavedData;
 import com.gregtechceu.gtceu.common.capability.MedicalConditionTracker;
 import com.gregtechceu.gtceu.common.capability.WorldIDSaveData;
-import com.gregtechceu.gtceu.common.commands.GTClientCommands;
 import com.gregtechceu.gtceu.common.commands.GTCommands;
 import com.gregtechceu.gtceu.common.commands.HazardCommands;
 import com.gregtechceu.gtceu.common.commands.MedicalConditionCommands;
 import com.gregtechceu.gtceu.common.item.armor.IJetpack;
 import com.gregtechceu.gtceu.common.item.armor.IStepAssist;
 import com.gregtechceu.gtceu.common.item.behavior.ToggleEnergyConsumerBehavior;
+import com.gregtechceu.gtceu.common.network.packets.SPacketSendWorldID;
 import com.gregtechceu.gtceu.common.network.packets.SPacketSyncBedrockOreVeins;
 import com.gregtechceu.gtceu.common.network.packets.SPacketSyncFluidVeins;
 import com.gregtechceu.gtceu.common.network.packets.SPacketSyncOreVeins;
@@ -68,6 +68,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -176,10 +178,6 @@ public class ForgeCommonEventListener {
         HazardCommands.register(event.getDispatcher(), event.getBuildContext());
     }
 
-    public static void registerClientCommand(RegisterClientCommandsEvent event) {
-        GTClientCommands.register(event.getDispatcher(), event.getBuildContext());
-    }
-
     @SubscribeEvent
     public static void registerReloadListeners(AddReloadListenerEvent event) {
         event.addListener(new GTOreLoader());
@@ -247,7 +245,7 @@ public class ForgeCommonEventListener {
                     new SPacketSyncFluidVeins(GTRegistries.BEDROCK_FLUID_DEFINITIONS.registry()));
             PacketDistributor.sendToPlayer(serverPlayer,
                     new SPacketSyncBedrockOreVeins(GTRegistries.BEDROCK_ORE_DEFINITIONS.registry()));
-            GTNetwork.NETWORK.sendToPlayer(new SPacketSendWorldID(), serverPlayer);
+            PacketDistributor.sendToPlayer(serverPlayer, new SPacketSendWorldID());
 
             if (!ConfigHolder.INSTANCE.gameplay.environmentalHazards)
                 return;
@@ -256,11 +254,6 @@ public class ForgeCommonEventListener {
             var data = EnvironmentalHazardSavedData.getOrCreate(level);
             PacketDistributor.sendToPlayer(serverPlayer, new SPacketSyncLevelHazards(data.getHazardZones()));
         }
-    }
-
-    @SubscribeEvent
-    public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
-        ClientCacheManager.allowReinit();
     }
 
     @SubscribeEvent

@@ -14,9 +14,12 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 
 /**
  * @author KilaBash
@@ -54,5 +57,10 @@ public class ForgeClientEventListener {
     @SubscribeEvent
     public static void registerClientCommand(RegisterClientCommandsEvent event) {
         GTClientCommands.register(event.getDispatcher(), event.getBuildContext());
+    }
+
+    @SubscribeEvent
+    public static void serverStopped(ServerStoppedEvent event) {
+        ClientCacheManager.clearCaches();
     }
 }

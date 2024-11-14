@@ -223,7 +223,6 @@ public class ForgeCommonEventListener {
 
     @SubscribeEvent
     public static void serverStopped(ServerStoppedEvent event) {
-        ClientCacheManager.clearCaches();
         ServerCache.instance.clear();
     }
 

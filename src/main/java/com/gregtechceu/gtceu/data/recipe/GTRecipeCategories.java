@@ -24,6 +24,21 @@ public class GTRecipeCategories {
             .of(GTCEu.MOD_ID, "extractor_recycling", GTRecipeTypes.EXTRACTOR_RECIPES)
             .setIcon(GuiTextures.EXTRACTOR_RECYCLING_CATEGORY);
 
+    public static final GTRecipeCategory ORE_CRUSHING = GTRecipeCategory
+            .of(GTCEu.MOD_ID, "ore_crushing", GTRecipeTypes.MACERATOR_RECIPES);
+
+    public static final GTRecipeCategory ORE_FORGING = GTRecipeCategory
+            .of(GTCEu.MOD_ID, "ore_forging", GTRecipeTypes.FORGE_HAMMER_RECIPES);
+
+    public static final GTRecipeCategory ORE_BATHING = GTRecipeCategory
+            .of(GTCEu.MOD_ID, "ore_bathing", GTRecipeTypes.CHEMICAL_BATH_RECIPES);
+
+    public static final GTRecipeCategory CHEM_DYES = GTRecipeCategory
+            .of(GTCEu.MOD_ID, "chem_dyes", GTRecipeTypes.CHEMICAL_BATH_RECIPES);
+
+    public static final GTRecipeCategory INGOT_MOLDING = GTRecipeCategory
+            .of(GTCEu.MOD_ID, "ingot_molding", GTRecipeTypes.ALLOY_SMELTER_RECIPES);
+
     public static void init() {
         GTRegistries.RECIPE_CATEGORIES.remove(DUMMY.getResourceLocation());
         ModLoader.postEvent(new GTCEuAPI.RegisterEvent(GTRegistries.RECIPE_CATEGORIES));

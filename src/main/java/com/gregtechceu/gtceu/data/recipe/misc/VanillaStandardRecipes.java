@@ -552,6 +552,7 @@ public class VanillaStandardRecipes {
                     .inputFluids(Water.getFluid(1000))
                     .outputItems(new ItemStack(
                             BuiltInRegistries.ITEM.get(ResourceLocation.withDefaultNamespace(dyeName + "_concrete"))))
+                    .category(GTRecipeCategories.CHEM_DYES)
                     .save(provider);
 
             if (color != DyeColor.WHITE) {
@@ -561,6 +562,7 @@ public class VanillaStandardRecipes {
                         .outputItems(
                                 new ItemStack(BuiltInRegistries.ITEM
                                         .get(ResourceLocation.withDefaultNamespace(dyeName + "_concrete"))))
+                        .category(GTRecipeCategories.CHEM_DYES)
                         .save(provider);
             }
 
@@ -570,6 +572,7 @@ public class VanillaStandardRecipes {
                     .outputItems(
                             new ItemStack(BuiltInRegistries.ITEM
                                     .get(ResourceLocation.withDefaultNamespace(dyeName + "_terracotta"))))
+                    .category(GTRecipeCategories.CHEM_DYES)
                     .save(provider);
 
             CHEMICAL_BATH_RECIPES.recipeBuilder("dye_glass_to_" + dyeName).duration(20).EUt(VA[ULV])
@@ -578,6 +581,7 @@ public class VanillaStandardRecipes {
                     .outputItems(
                             new ItemStack(BuiltInRegistries.ITEM
                                     .get(ResourceLocation.withDefaultNamespace(dyeName + "_stained_glass"))))
+                    .category(GTRecipeCategories.CHEM_DYES)
                     .save(provider);
 
             CHEMICAL_BATH_RECIPES.recipeBuilder("dye_glass_pane_to_" + dyeName).duration(20).EUt(VA[ULV])
@@ -586,6 +590,7 @@ public class VanillaStandardRecipes {
                     .outputItems(new ItemStack(
                             BuiltInRegistries.ITEM
                                     .get(ResourceLocation.withDefaultNamespace(dyeName + "_stained_glass_pane"))))
+                    .category(GTRecipeCategories.CHEM_DYES)
                     .save(provider);
 
             CUTTER_RECIPES.recipeBuilder("cut_" + dyeName + "_glass_to_pane").duration(20).EUt(VA[ULV])
@@ -600,6 +605,7 @@ public class VanillaStandardRecipes {
                     .inputFluids(CHEMICAL_DYES[color.ordinal()].getFluid(L / 8))
                     .outputItems(new ItemStack(
                             BuiltInRegistries.ITEM.get(ResourceLocation.withDefaultNamespace(dyeName + "_candle"))))
+                    .category(GTRecipeCategories.CHEM_DYES)
                     .save(provider);
 
             if (color != DyeColor.WHITE) {
@@ -608,6 +614,7 @@ public class VanillaStandardRecipes {
                         .inputFluids(CHEMICAL_DYES[color.ordinal()].getFluid(L))
                         .outputItems(new ItemStack(
                                 BuiltInRegistries.ITEM.get(ResourceLocation.withDefaultNamespace(dyeName + "_wool"))))
+                        .category(GTRecipeCategories.CHEM_DYES)
                         .save(provider);
 
                 CHEMICAL_BATH_RECIPES.recipeBuilder("dye_bed_to_" + dyeName).duration(20).EUt(VA[ULV])
@@ -615,6 +622,7 @@ public class VanillaStandardRecipes {
                         .inputFluids(CHEMICAL_DYES[color.ordinal()].getFluid(L))
                         .outputItems(new ItemStack(BuiltInRegistries.ITEM.get(
                                 ResourceLocation.withDefaultNamespace(dyeName + "_bed"))))
+                        .category(GTRecipeCategories.CHEM_DYES)
                         .save(provider);
             }
 
@@ -640,6 +648,7 @@ public class VanillaStandardRecipes {
                 .inputItems(IntersectionIngredient.of(Ingredient.of(ItemTags.WOOL), Ingredient.of(Tags.Items.DYED)))
                 .inputFluids(Chlorine.getFluid(50))
                 .outputItems(new ItemStack(Blocks.WHITE_WOOL))
+                .category(GTRecipeCategories.CHEM_DYES)
                 .duration(400).EUt(2).save(provider);
 
         CHEMICAL_BATH_RECIPES.recipeBuilder("decolor_carpet")
@@ -647,6 +656,7 @@ public class VanillaStandardRecipes {
                         IntersectionIngredient.of(Ingredient.of(ItemTags.WOOL_CARPETS), Ingredient.of(Tags.Items.DYED)))
                 .inputFluids(Chlorine.getFluid(25))
                 .outputItems(new ItemStack(Blocks.WHITE_CARPET))
+                .category(GTRecipeCategories.CHEM_DYES)
                 .duration(400).EUt(2).save(provider);
 
         CHEMICAL_BATH_RECIPES.recipeBuilder("decolor_terracotta")
@@ -654,6 +664,7 @@ public class VanillaStandardRecipes {
                         IntersectionIngredient.of(Ingredient.of(ItemTags.TERRACOTTA), Ingredient.of(Tags.Items.DYED)))
                 .inputFluids(Chlorine.getFluid(50))
                 .outputItems(Items.TERRACOTTA)
+                .category(GTRecipeCategories.CHEM_DYES)
                 .duration(400).EUt(2).save(provider);
 
         CHEMICAL_BATH_RECIPES.recipeBuilder("decolor_stained_glass")
@@ -661,6 +672,7 @@ public class VanillaStandardRecipes {
                         Ingredient.of(Tags.Items.DYED)))
                 .inputFluids(Chlorine.getFluid(50))
                 .outputItems(Items.GLASS)
+                .category(GTRecipeCategories.CHEM_DYES)
                 .duration(400).EUt(2).save(provider);
 
         CHEMICAL_BATH_RECIPES.recipeBuilder("decolor_stained_glass_pane")
@@ -668,12 +680,14 @@ public class VanillaStandardRecipes {
                         Ingredient.of(Tags.Items.DYED)))
                 .inputFluids(Chlorine.getFluid(20))
                 .outputItems(Items.GLASS_PANE)
+                .category(GTRecipeCategories.CHEM_DYES)
                 .duration(400).EUt(2).save(provider);
 
         CHEMICAL_BATH_RECIPES.recipeBuilder("decolor_concrete")
                 .inputItems(Tags.Items.CONCRETES)
                 .inputFluids(Chlorine.getFluid(20))
                 .outputItems(Items.WHITE_CONCRETE)
+                .category(GTRecipeCategories.CHEM_DYES)
                 .duration(400).EUt(2).save(provider);
 
         CHEMICAL_BATH_RECIPES.recipeBuilder("sticky_piston_to_piston")
@@ -686,12 +700,14 @@ public class VanillaStandardRecipes {
                 .inputItems(ItemTags.CANDLES)
                 .inputFluids(Chlorine.getFluid(20))
                 .outputItems(Items.CANDLE)
+                .category(GTRecipeCategories.CHEM_DYES)
                 .duration(400).EUt(2).save(provider);
 
         CHEMICAL_BATH_RECIPES.recipeBuilder("decolor_bed")
                 .inputItems(ItemTags.BEDS)
                 .inputFluids(Chlorine.getFluid(20))
                 .outputItems(Items.WHITE_BED)
+                .category(GTRecipeCategories.CHEM_DYES)
                 .duration(400).EUt(2).save(provider);
     }
 

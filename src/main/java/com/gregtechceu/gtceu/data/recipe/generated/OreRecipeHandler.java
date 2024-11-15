@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.material.material.stack.UnificationEntry;
 import com.gregtechceu.gtceu.api.tag.TagPrefix;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.material.GTMaterials;
+import com.gregtechceu.gtceu.data.recipe.GTRecipeCategories;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -78,6 +79,7 @@ public class OreRecipeHandler {
                 .recipeBuilder("hammer_" + prefixString + material.getName() + "_ore_to_crushed_ore")
                 .inputItems(IntersectionIngredient.of(Ingredient.of(orePrefix.getItemTags(material)[0]),
                         Ingredient.of(orePrefix.getItemParentTags()[0])))
+                .category(GTRecipeCategories.ORE_FORGING)
                 .duration(10).EUt(16);
         if (material.hasProperty(PropertyKey.GEM) && !gem.isIgnored(material)) {
             builder.outputItems(GTUtil.copyAmount(amountOfCrushedOre * oreTypeMultiplier,
@@ -129,6 +131,7 @@ public class OreRecipeHandler {
                     .outputItems(GTUtil.copyAmount(2 * oreMultiplier, crushedStack))
                     .chancedOutput(byproductStack, 1400, 850)
                     .EUt(2)
+                    .category(GTRecipeCategories.ORE_CRUSHING)
                     .duration(400);
 
             Supplier<Material> outputDustMat = ORES.get(orePrefix).material();
@@ -177,6 +180,7 @@ public class OreRecipeHandler {
             GTRecipeBuilder builder = FORGE_HAMMER_RECIPES
                     .recipeBuilder("hammer_" + orePrefix.name + "_" + material.getName() + "_to_crushed_ore")
                     .inputItems(orePrefix, material)
+                    .category(GTRecipeCategories.ORE_FORGING)
                     .duration(10).EUt(16);
             if (material.hasProperty(PropertyKey.GEM) && !gem.isIgnored(material)) {
                 builder.outputItems(ChemicalHelper.get(gem, material, crushedStack.getCount()));
@@ -189,6 +193,7 @@ public class OreRecipeHandler {
                     .recipeBuilder("macerate_" + orePrefix.name + "_" + material.getName() + "_ore_to_crushed_ore")
                     .inputItems(orePrefix, material)
                     .outputItems(GTUtil.copyAmount(crushedStack.getCount() * 2, crushedStack))
+                    .category(GTRecipeCategories.ORE_CRUSHING)
                     .EUt(2)
                     .duration(400);
 
@@ -241,6 +246,7 @@ public class OreRecipeHandler {
         FORGE_HAMMER_RECIPES.recipeBuilder("decompress_" + material.getName() + "_to_raw_ore")
                 .inputItems(rawOreBlock, material)
                 .outputItems(rawOre, material, 9)
+                .category(GTRecipeCategories.ORE_FORGING)
                 .duration(300).EUt(2).save(provider);
     }
 
@@ -253,6 +259,7 @@ public class OreRecipeHandler {
                 .inputItems(crushedPrefix, material)
                 .outputItems(impureDustStack)
                 .duration(10).EUt(16)
+                .category(GTRecipeCategories.ORE_FORGING)
                 .save(provider);
 
         MACERATOR_RECIPES.recipeBuilder("macerate_" + material.getName() + "_crushed_ore_to_impure_dust")
@@ -261,6 +268,7 @@ public class OreRecipeHandler {
                 .duration(400).EUt(2)
                 .chancedOutput(ChemicalHelper.get(dust, byproductMaterial, property.getByProductMultiplier()), 1400,
                         850)
+                .category(GTRecipeCategories.ORE_CRUSHING)
                 .save(provider);
 
         ItemStack crushedPurifiedOre = GTUtil.copy(
@@ -315,6 +323,7 @@ public class OreRecipeHandler {
                             580)
                     .chancedOutput(ChemicalHelper.get(dust, Stone), 4000, 650)
                     .duration(200).EUt(VA[LV])
+                    .category(GTRecipeCategories.ORE_BATHING)
                     .save(provider);
         }
 
@@ -334,6 +343,7 @@ public class OreRecipeHandler {
                 .inputItems(centrifugedPrefix, material)
                 .outputItems(dustStack)
                 .duration(10).EUt(16)
+                .category(GTRecipeCategories.ORE_FORGING)
                 .save(provider);
 
         MACERATOR_RECIPES.recipeBuilder("macerate_" + material.getName() + "_refined_ore_to_dust")
@@ -341,6 +351,7 @@ public class OreRecipeHandler {
                 .outputItems(dustStack)
                 .chancedOutput(byproductStack, 1400, 850)
                 .duration(400).EUt(2)
+                .category(GTRecipeCategories.ORE_CRUSHING)
                 .save(provider);
 
         VanillaRecipeHelper.addShapelessRecipe(provider,
@@ -363,6 +374,7 @@ public class OreRecipeHandler {
                 .outputItems(dustStack)
                 .duration(10)
                 .EUt(16)
+                .category(GTRecipeCategories.ORE_FORGING)
                 .save(provider);
 
         MACERATOR_RECIPES.recipeBuilder("macerate_" + material.getName() + "_crushed_ore_to_dust")
@@ -370,6 +382,7 @@ public class OreRecipeHandler {
                 .outputItems(dustStack)
                 .chancedOutput(byproductStack, 1400, 850)
                 .duration(400).EUt(2)
+                .category(GTRecipeCategories.ORE_CRUSHING)
                 .save(provider);
 
         VanillaRecipeHelper.addShapelessRecipe(provider, String.format("purified_ore_to_dust_%s", material.getName()),

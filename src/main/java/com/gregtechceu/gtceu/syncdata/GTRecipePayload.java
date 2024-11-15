@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeSerializer;
 import com.gregtechceu.gtceu.data.recipe.GTRecipeTypes;
 
-import com.lowdragmc.lowdraglib.Platform;
 import com.lowdragmc.lowdraglib.syncdata.payload.ObjectTypedPayload;
 
 import net.minecraft.client.Minecraft;
@@ -22,6 +21,8 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -44,7 +45,9 @@ public class GTRecipePayload extends ObjectTypedPayload<GTRecipe> {
 
     @Override
     public void deserializeNBT(Tag tag, HolderLookup.Provider provider) {
-        RecipeManager recipeManager = Platform.getMinecraftServer().getRecipeManager();
+        RecipeManager recipeManager;
+        if (FMLEnvironment.dist.isClient()) recipeManager = Client.getRecipeManager();
+        else recipeManager = ServerLifecycleHooks.getCurrentServer().getRecipeManager();
         if (tag instanceof CompoundTag compoundTag) {
             NbtOps.INSTANCE.getMap(compoundTag.get("recipe")).ifSuccess(
                     map -> payload = GTRecipeSerializer.CODEC.decode(NbtOps.INSTANCE, map).result().orElse(null))
@@ -78,19 +81,22 @@ public class GTRecipePayload extends ObjectTypedPayload<GTRecipe> {
 
     @Override
     public void readPayload(RegistryFriendlyByteBuf buf) {
-        buf.readResourceLocation();
+        var id = buf.readResourceLocation();
         if (buf.isReadable()) {
             buf.resetReaderIndex();
             this.payload = GTRecipeSerializer.STREAM_CODEC.decode(buf);
         } else { // Backwards Compatibility
             RecipeManager recipeManager;
-            if (!Platform.isClient()) {
-                recipeManager = Platform.getMinecraftServer().getRecipeManager();
-            } else {
-                recipeManager = Minecraft.getInstance().getConnection().getRecipeManager();
-            }
-            var holder = recipeManager.byKey(buf.readResourceLocation()).orElse(null);
-            this.payload = holder == null ? null : (GTRecipe) holder.value();
+            if (FMLEnvironment.dist.isClient()) recipeManager = Client.getRecipeManager();
+            else recipeManager = ServerLifecycleHooks.getCurrentServer().getRecipeManager();
+            this.payload = (GTRecipe) recipeManager.byKey(id).map(RecipeHolder::value).orElse(null);
+        }
+    }
+
+    static class Client {
+
+        static RecipeManager getRecipeManager() {
+            return Minecraft.getInstance().getConnection().getRecipeManager();
         }
     }
 }

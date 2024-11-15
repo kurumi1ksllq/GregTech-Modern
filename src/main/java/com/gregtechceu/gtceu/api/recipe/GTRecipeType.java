@@ -100,7 +100,7 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
     @Getter
     protected final Map<RecipeType<?>, List<RecipeHolder<GTRecipe>>> proxyRecipes;
     @Getter
-    private final Map<GTRecipeCategory, List<RecipeHolder<GTRecipe>>> recipeByCategory = new Object2ObjectOpenHashMap<>();
+    private final Map<GTRecipeCategory, Set<RecipeHolder<GTRecipe>>> categoryMap = new Object2ObjectOpenHashMap<>();
     private CompoundTag customUICache;
     @Getter
     private final GTRecipeLookup lookup = new GTRecipeLookup(this);
@@ -119,7 +119,7 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
         this.group = group;
         recipeBuilder = new GTRecipeBuilder(registryName, this);
         recipeBuilder.category(
-                GTRecipeCategory.of(GTCEu.MOD_ID, registryName.getPath(), registryName.toLanguageKey(), this));
+                GTRecipeCategory.of(GTCEu.MOD_ID, registryName.getPath(), this, registryName.toLanguageKey()));
         // must be linked to stop json contents from shuffling
         Map<RecipeType<?>, List<RecipeHolder<GTRecipe>>> map = new Object2ObjectLinkedOpenHashMap<>();
         for (RecipeType<?> proxyRecipe : proxyRecipes) {
@@ -353,8 +353,8 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
 
     @NotNull
     @UnmodifiableView
-    public Map<GTRecipeCategory, List<RecipeHolder<GTRecipe>>> getRecipesByCategory() {
-        return Collections.unmodifiableMap(recipeByCategory);
+    public Map<GTRecipeCategory, Set<RecipeHolder<GTRecipe>>> getRecipesByCategory() {
+        return Collections.unmodifiableMap(categoryMap);
     }
 
     public interface ICustomRecipeLogic {

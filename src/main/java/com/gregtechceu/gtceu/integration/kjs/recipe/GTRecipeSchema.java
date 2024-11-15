@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.material.material.Material;
 import com.gregtechceu.gtceu.api.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.recipe.ResearchData;
 import com.gregtechceu.gtceu.api.recipe.ResearchRecipeBuilder;
+import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
@@ -127,6 +128,12 @@ public interface GTRecipeSchema {
         public GTKubeRecipe addCondition(RecipeCondition condition) {
             if (getValue(CONDITIONS) == null) setValue(CONDITIONS, new ArrayList<>());
             getValue(CONDITIONS).add(condition);
+            save();
+            return this;
+        }
+
+        public GTRecipeJS recipeCategory(GTRecipeCategory category) {
+            setValue(CATEGORY, category.getResourceLocation());
             save();
             return this;
         }
@@ -768,6 +775,7 @@ public interface GTRecipeSchema {
     RecipeKey<CapabilityMap> ALL_INPUTS = GTRecipeComponents.IN.key("inputs", ComponentRole.INPUT).defaultOptional();
     RecipeKey<CapabilityMap> ALL_TICK_INPUTS = GTRecipeComponents.TICK_IN.key("tickInputs", ComponentRole.INPUT)
             .defaultOptional();
+    RecipeKey<ResourceLocation> CATEGORY = GTRecipeComponents.RESOURCE_LOCATION.key("category").defaultOptional();
 
     RecipeKey<CapabilityMap> ALL_OUTPUTS = GTRecipeComponents.OUT.key("outputs", ComponentRole.OUTPUT)
             .defaultOptional();
@@ -786,7 +794,7 @@ public interface GTRecipeSchema {
     RecipeSchema SCHEMA = new RecipeSchema(DURATION, DATA, CONDITIONS, ALL_INPUTS,
             ALL_TICK_INPUTS, ALL_OUTPUTS, ALL_TICK_OUTPUTS,
             INPUT_CHANCE_LOGICS, OUTPUT_CHANCE_LOGICS, TICK_INPUT_CHANCE_LOGICS, TICK_OUTPUT_CHANCE_LOGICS,
-            IS_FUEL)
+            CATEGORY)
             .factory(new KubeRecipeFactory(GTCEu.id("recipe"), GTKubeRecipe.class, GTKubeRecipe::new))
             .constructor(new IDRecipeConstructor());
 }

@@ -18,11 +18,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -123,7 +125,13 @@ public class GTRecipe implements Recipe<RecipeInput> {
         this.data = data != null ? data : new CompoundTag();
         this.duration = duration;
         this.isFuel = isFuel;
-        this.recipeCategory = recipeCategory;
+        this.recipeCategory = (recipeCategory != GTRecipeCategory.EMPTY) ?
+                recipeCategory : GTRecipeCategory.of(recipeType);
+        if (id != null) {
+            this.recipeType.getCategoryMap()
+                    .computeIfAbsent(this.recipeCategory, k -> new ObjectLinkedOpenHashSet<>())
+                    .add(new RecipeHolder<>(id, this));
+        }
     }
 
     public Map<RecipeCapability<?>, List<Content>> copyContents(Map<RecipeCapability<?>, List<Content>> contents,

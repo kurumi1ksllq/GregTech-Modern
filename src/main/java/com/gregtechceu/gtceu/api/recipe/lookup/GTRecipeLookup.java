@@ -6,8 +6,10 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
+import com.gregtechceu.gtceu.common.item.armor.PowerlessJetpack;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
+import com.gregtechceu.gtceu.data.recipe.GTRecipeTypes;
 import com.lowdragmc.lowdraglib.Platform;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -15,9 +17,12 @@ import net.minecraft.world.item.ItemStack;
 
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -460,7 +465,7 @@ public class GTRecipeLookup {
     public void removeAllRecipes() {
         this.lookup.getNodes().clear();
         this.lookup.getSpecialNodes().clear();
-        this.recipeType.getRecipeByCategory().clear();
+        this.recipeType.getCategoryMap().clear();
     }
 
     /**
@@ -475,21 +480,18 @@ public class GTRecipeLookup {
         }
         if (recipe.recipeCategory == null) {
             recipe.recipeCategory = GTRecipeCategory.of(GTCEu.MOD_ID, recipe.recipeType.registryName.getPath(),
-                    recipe.recipeType.registryName.toLanguageKey(), recipe.recipeType);
+                    recipe.recipeType, recipe.recipeType.registryName.toLanguageKey());
         }
         // Add combustion fuels to the Powerless Jetpack
         if (recipe.getType() == GTRecipeTypes.COMBUSTION_GENERATOR_FUELS) {
             Content content = recipe.getInputContents(FluidRecipeCapability.CAP).get(0);
-            FluidIngredient fluid = FluidRecipeCapability.CAP.of(content.content);
-            PowerlessJetpack.FUELS.put(fluid, recipe.duration);
+            SizedFluidIngredient fluid = FluidRecipeCapability.CAP.of(content.content);
+            //PowerlessJetpack.FUELS.put(fluid, recipe.duration);
         }
         List<List<AbstractMapIngredient>> items = fromRecipe(recipe);
         if (recurseIngredientTreeAdd(recipe, items, lookup, 0, 0)) {
-            recipeType.getRecipeByCategory().compute(recipe.recipeCategory, (k, v) -> {
-                if (v == null) v = new ArrayList<>();
-                v.add(recipe);
-                return v;
-            });
+            recipeType.getCategoryMap().computeIfAbsent(recipe.recipeCategory, k -> new ObjectLinkedOpenHashSet<>())
+                    .add(new RecipeHolder<>(recipe.id, recipe));
             return true;
         }
         return false;

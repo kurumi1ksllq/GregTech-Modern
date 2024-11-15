@@ -736,7 +736,6 @@ public class GTRecipeTypes {
         }
         ModLoader.postEvent(new GTCEuAPI.RegisterEvent(GTRegistries.RECIPE_TYPES));
         GTRegistries.RECIPE_TYPES.freeze();
-        ModLoader.get().postEvent(new GTCEuAPI.RegisterEvent<>(GTRegistries.RECIPE_CATEGORIES, GTRecipeCategory.class));
 
         GTRegistries.register(BuiltInRegistries.RECIPE_SERIALIZER, GTCEu.id("crafting_facade_cover"),
                 FacadeCoverRecipe.SERIALIZER);

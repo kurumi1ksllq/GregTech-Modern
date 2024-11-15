@@ -62,6 +62,7 @@ import com.gregtechceu.gtceu.data.pack.GTDynamicResourcePack;
 import com.gregtechceu.gtceu.data.pack.GTPackSource;
 import com.gregtechceu.gtceu.data.particle.GTParticleTypes;
 import com.gregtechceu.gtceu.data.recipe.GTRecipeCapabilities;
+import com.gregtechceu.gtceu.data.recipe.GTRecipeCategories;
 import com.gregtechceu.gtceu.data.recipe.GTRecipeConditions;
 import com.gregtechceu.gtceu.data.recipe.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.sound.GTSoundEntries;
@@ -174,6 +175,7 @@ public class CommonProxy {
         GTEntityTypes.init();
         GTBlockEntities.init();
         GTRecipeTypes.init();
+        GTRecipeCategories.init();
         GTMachines.init();
         GTFoods.init();
         GTToolBehaviors.init();

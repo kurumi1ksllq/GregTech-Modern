@@ -16,6 +16,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 
@@ -32,6 +33,15 @@ import org.jetbrains.annotations.Nullable;
  */
 public class GTRecipePayload extends ObjectTypedPayload<GTRecipe> {
 
+    private static RecipeManager getRecipeManager() {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server != null && Thread.currentThread() == server.getRunningThread()) {
+            return server.getRecipeManager();
+        } else {
+            return Client.getRecipeManager();
+        }
+    }
+
     @Nullable
     @Override
     public Tag serializeNBT(HolderLookup.Provider provider) {
@@ -45,9 +55,7 @@ public class GTRecipePayload extends ObjectTypedPayload<GTRecipe> {
 
     @Override
     public void deserializeNBT(Tag tag, HolderLookup.Provider provider) {
-        RecipeManager recipeManager;
-        if (FMLEnvironment.dist.isClient()) recipeManager = Client.getRecipeManager();
-        else recipeManager = ServerLifecycleHooks.getCurrentServer().getRecipeManager();
+        RecipeManager recipeManager = getRecipeManager();
         if (tag instanceof CompoundTag compoundTag) {
             NbtOps.INSTANCE.getMap(compoundTag.get("recipe")).ifSuccess(
                     map -> payload = GTRecipeSerializer.CODEC.decode(NbtOps.INSTANCE, map).result().orElse(null))
@@ -86,9 +94,7 @@ public class GTRecipePayload extends ObjectTypedPayload<GTRecipe> {
             buf.resetReaderIndex();
             this.payload = GTRecipeSerializer.STREAM_CODEC.decode(buf);
         } else { // Backwards Compatibility
-            RecipeManager recipeManager;
-            if (FMLEnvironment.dist.isClient()) recipeManager = Client.getRecipeManager();
-            else recipeManager = ServerLifecycleHooks.getCurrentServer().getRecipeManager();
+            RecipeManager recipeManager = getRecipeManager();
             this.payload = (GTRecipe) recipeManager.byKey(id).map(RecipeHolder::value).orElse(null);
         }
     }

@@ -127,12 +127,12 @@ public class BlockBreakerMachine extends TieredEnergyMachine
         return MANAGED_FIELD_HOLDER;
     }
 
-    protected CustomItemStackHandler createChargerItemHandler(Object... args) {
-        var transfer = new CustomItemStackHandler();
-        transfer.setFilter(item -> item.get(GTDataComponents.ENERGY_CONTENT) != null ||
+    protected CustomItemStackHandler createChargerItemHandler() {
+        var handler = new CustomItemStackHandler();
+        handler.setFilter(item -> GTCapabilityHelper.getElectricItem(item) != null ||
                 (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE &&
                         GTCapabilityHelper.getForgeEnergyItem(item) != null));
-        return transfer;
+        return handler;
     }
 
     protected NotifiableItemStackHandler createCacheItemHandler(Object... args) {

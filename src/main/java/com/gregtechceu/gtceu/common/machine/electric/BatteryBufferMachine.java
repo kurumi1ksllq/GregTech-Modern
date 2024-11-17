@@ -84,17 +84,17 @@ public class BatteryBufferMachine extends TieredEnergyMachine
     }
 
     protected CustomItemStackHandler createBatteryInventory(Object... ignoredArgs) {
-        var itemTransfer = new CustomItemStackHandler(this.inventorySize) {
+        var handler = new CustomItemStackHandler(this.inventorySize) {
 
             @Override
             public int getSlotLimit(int slot) {
                 return 1;
             }
         };
-        itemTransfer.setFilter(item -> item.get(GTDataComponents.ENERGY_CONTENT) != null ||
+        handler.setFilter(item -> GTCapabilityHelper.getElectricItem(item) != null ||
                 (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE &&
                         GTCapabilityHelper.getForgeEnergyItem(item) != null));
-        return itemTransfer;
+        return handler;
     }
 
     @Override

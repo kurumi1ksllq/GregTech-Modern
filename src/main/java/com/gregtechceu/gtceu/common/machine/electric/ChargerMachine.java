@@ -96,11 +96,11 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
     }
 
     protected CustomItemStackHandler createChargerInventory(Object... args) {
-        var itemTransfer = new CustomItemStackHandler(this.inventorySize);
-        itemTransfer.setFilter(item -> item.get(GTDataComponents.ENERGY_CONTENT) != null ||
+        var handler = new CustomItemStackHandler(this.inventorySize);
+        handler.setFilter(item -> GTCapabilityHelper.getElectricItem(item) != null ||
                 (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE &&
                         GTCapabilityHelper.getForgeEnergyItem(item) != null));
-        return itemTransfer;
+        return handler;
     }
 
     @Override

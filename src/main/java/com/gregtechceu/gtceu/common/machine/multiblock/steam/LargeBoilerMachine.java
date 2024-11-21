@@ -117,9 +117,9 @@ public class LargeBoilerMachine extends WorkableMultiblockMachine implements IEx
 
         if (currentTemperature >= 100 && getOffsetTimer() % TICKS_PER_STEAM_GENERATION == 0) {
             // drain water
-            int maxDrain = currentTemperature * throttle * TICKS_PER_STEAM_GENERATION * FluidHelper.getBucket() /
-                    (ConfigHolder.INSTANCE.machines.largeBoilers.steamPerWater * 100000);
-            List<SizedFluidIngredient> drainWater = List.of(SizedFluidIngredient.of(Fluids.WATER, maxDrain));
+            int maxDrain = currentTemperature * throttle * TICKS_PER_STEAM_GENERATION /
+                    (ConfigHolder.INSTANCE.machines.largeBoilers.steamPerWater * 100);
+            var drainWater = List.of(SizedFluidIngredient.of(Fluids.WATER, maxDrain));
             List<IRecipeHandler<?>> inputTanks = new ArrayList<>();
             if (getCapabilitiesProxy().contains(IO.IN, FluidRecipeCapability.CAP)) {
                 inputTanks.addAll(Objects.requireNonNull(getCapabilitiesProxy().get(IO.IN, FluidRecipeCapability.CAP)));

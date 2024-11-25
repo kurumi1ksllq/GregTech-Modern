@@ -10,7 +10,6 @@ import com.gregtechceu.gtceu.api.item.datacomponents.AoESymmetrical;
 import com.gregtechceu.gtceu.api.item.datacomponents.GTTool;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.IGTToolDefinition;
-import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.item.tool.TreeFellingHelper;
 import com.gregtechceu.gtceu.api.item.tool.behavior.IToolBehavior;
 import com.gregtechceu.gtceu.api.material.ChemicalHelper;
@@ -564,10 +563,7 @@ public interface IGTTool extends HeldItemUIFactory.IHeldItemUIHolder, ItemLike {
 
         // electric info
         if (this.isElectric()) {
-            tooltip.add(Component.translatable("metaitem.generic.electric_item.tooltip",
-                    FormattingUtil.formatNumbers(getCharge(stack)),
-                    FormattingUtil.formatNumbers(getMaxCharge(stack)),
-                    GTValues.VNF[getElectricTier()]));
+            ElectricStats.addCurrentChargeTooltip(tooltip, getCharge(stack), getMaxCharge(stack), getElectricTier());
         }
 
         // durability info
@@ -579,7 +575,8 @@ public interface IGTTool extends HeldItemUIFactory.IHeldItemUIHolder, ItemLike {
                 tooltip.add(Component.translatable("item.gtceu.tool.tooltip.crafting_uses", FormattingUtil
                         .formatNumbers(damageRemaining / Math.max(1, toolStats.getToolDamagePerCraft(stack)))));
             }
-
+            tooltip.add(Component.translatable("item.gtceu.tool.tooltip.max_uses",
+                    FormattingUtil.formatNumbers(tool.getTotalMaxDurability(stack))));
             tooltip.add(Component.translatable("item.gtceu.tool.tooltip.general_uses",
                     FormattingUtil.formatNumbers(damageRemaining)));
         }
@@ -609,7 +606,7 @@ public interface IGTTool extends HeldItemUIFactory.IHeldItemUIHolder, ItemLike {
 
         // behaviors
         boolean addedBehaviorNewLine = false;
-        AoESymmetrical aoeDefinition = ToolHelper.getAoEDefinition(stack);
+        AoESymmetrical aoeDefinition = getAoEDefinition(stack);
 
         if (aoeDefinition != AoESymmetrical.none()) {
             addedBehaviorNewLine = tooltip.add(Component.literal(""));

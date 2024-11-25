@@ -16,10 +16,10 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,8 +45,8 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<SizedFluid
     public final IO capabilityIO;
     @Persisted(subPersisted = true)
     @Getter
-    private final CustomFluidTank[] storages;
-    @Setter
+    protected final CustomFluidTank[] storages;
+    @Getter
     protected boolean allowSameFluids; // Can different tanks be filled with the same fluid. It should be determined
                                        // while creating tanks.
     private Boolean isEmpty;
@@ -54,7 +54,9 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<SizedFluid
     @Persisted
     @DescSynced
     @Getter
-    protected CustomFluidTank lockedFluid = new CustomFluidTank(FluidHelper.getBucket());
+    protected CustomFluidTank lockedFluid = new CustomFluidTank(FluidType.BUCKET_VOLUME);
+    @Getter
+    protected Predicate<FluidStack> filter = f -> true;
 
     public NotifiableFluidTank(MetaMachine machine, int slots, int capacity, IO io, IO capabilityIO) {
         super(machine);
@@ -209,7 +211,8 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<SizedFluid
     }
 
     public NotifiableFluidTank setFilter(Predicate<FluidStack> filter) {
-        for (CustomFluidTank storage : getStorages()) {
+        this.filter = filter;
+        for (CustomFluidTank storage : storages) {
             storage.setValidator(filter);
         }
         return this;

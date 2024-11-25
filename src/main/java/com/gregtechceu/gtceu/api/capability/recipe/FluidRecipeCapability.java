@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.capability.recipe;
 
+import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
@@ -13,14 +14,13 @@ import com.gregtechceu.gtceu.client.TooltipsHandler;
 import com.gregtechceu.gtceu.integration.GTRecipeWidget;
 import com.gregtechceu.gtceu.utils.FluidKey;
 import com.gregtechceu.gtceu.utils.GTHashMaps;
-import com.gregtechceu.gtceu.utils.OverlayedFluidHandler;
+import com.gregtechceu.gtceu.utils.OverlayedTankHandler;
 import com.gregtechceu.gtceu.utils.OverlayingFluidStorage;
 
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
 import com.lowdragmc.lowdraglib.gui.widget.TankWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.jei.IngredientIO;
-import com.lowdragmc.lowdraglib.misc.FluidTransferList;
 import com.lowdragmc.lowdraglib.side.fluid.IFluidHandlerModifiable;
 import com.lowdragmc.lowdraglib.utils.TagOrCycleFluidTransfer;
 
@@ -30,14 +30,11 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.crafting.*;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -158,13 +155,14 @@ public class FluidRecipeCapability extends RecipeCapability<SizedFluidIngredient
         int minMultiplier = 0;
         int maxMultiplier = multiplier;
 
-        OverlayedFluidHandler overlayedFluidHandler = new OverlayedFluidHandler(new FluidTransferList(
-                Objects.requireNonNullElseGet(holder.getCapabilitiesProxy().get(IO.OUT, FluidRecipeCapability.CAP),
+        OverlayedTankHandler overlayedFluidHandler = new OverlayedTankHandler(
+                Objects.requireNonNullElseGet(
+                        holder.getCapabilitiesProxy().get(IO.OUT, FluidRecipeCapability.CAP),
                         Collections::emptyList)
                         .stream()
-                        .filter(IFluidHandler.class::isInstance)
-                        .map(IFluidHandler.class::cast)
-                        .toList()));
+                        .filter(NotifiableFluidTank.class::isInstance)
+                        .map(NotifiableFluidTank.class::cast)
+                        .toList());
 
         List<FluidStack> recipeOutputs = recipe.getOutputContents(FluidRecipeCapability.CAP)
                 .stream()
@@ -188,7 +186,7 @@ public class FluidRecipeCapability extends RecipeCapability<SizedFluidIngredient
                 } else {
                     amountToInsert = fluidStack.getAmount() * multiplier;
                 }
-                returnedAmount = amountToInsert - overlayedFluidHandler.insertFluid(fluidStack, amountToInsert);
+                returnedAmount = amountToInsert - overlayedFluidHandler.tryFill(fluidStack, amountToInsert);
                 if (returnedAmount > 0) {
                     break;
                 }

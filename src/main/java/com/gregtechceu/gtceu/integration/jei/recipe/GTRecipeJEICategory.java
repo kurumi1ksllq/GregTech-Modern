@@ -4,8 +4,8 @@ import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
-import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 
+import com.gregtechceu.gtceu.data.recipe.GTRecipeTypes;
 import com.lowdragmc.lowdraglib.Platform;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.jei.ModularUIRecipeCategory;
@@ -78,7 +78,7 @@ public class GTRecipeJEICategory extends ModularUIRecipeCategory<GTRecipeWrapper
             var type = category.getRecipeType();
             if (type == GTRecipeTypes.FURNACE_RECIPES) continue;
             if (!type.getRecipeUI().isXEIVisible() && !Platform.isDevEnv()) continue;
-            var recipes = type.getCategoryMap().get(category).stream();
+            var recipes = type.getCategoryMap().getOrDefault(category, Set.of()).stream();
             var wrapped = Stream.concat(recipes, type.getRepresentativeRecipes().stream()
                             .map(recipe -> new RecipeHolder<>(recipe.id, recipe)))
                     .map(GTRecipeWrapper::new)

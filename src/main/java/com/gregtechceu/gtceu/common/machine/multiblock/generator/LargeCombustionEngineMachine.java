@@ -21,6 +21,7 @@ import com.gregtechceu.gtceu.data.material.GTMaterials;
 import com.gregtechceu.gtceu.data.recipe.GTRecipeModifiers;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
@@ -32,7 +33,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-import com.google.common.primitives.Ints;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -215,8 +215,8 @@ public class LargeCombustionEngineMachine extends WorkableElectricMultiblockMach
         }
         FluidStack requiredFluidInput = RecipeHelper.getInputFluids(recipe).get(0);
 
-        int ocAmount = Ints.saturatedCast(getMaxVoltage() / RecipeHelper.getOutputEUt(recipe));
-        int neededAmount = (int) (ocAmount * requiredFluidInput.getAmount());
+        long ocAmount = getMaxVoltage() / RecipeHelper.getOutputEUt(recipe);
+        int neededAmount = GTMath.saturatedCast(ocAmount * requiredFluidInput.getAmount());
         return ChatFormatting.RED + FormattingUtil.formatNumbers(neededAmount) + "mB";
     }
 

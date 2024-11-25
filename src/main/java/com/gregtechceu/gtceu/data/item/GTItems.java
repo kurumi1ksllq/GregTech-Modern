@@ -667,7 +667,7 @@ public class GTItems {
             .properties(p -> p.stacksTo(32))
             .onRegister(compassNodeExist(GTCompassSections.ITEMS, "empty_cell"))
             .onRegister(attach(cellName(),
-                    ThermalFluidStats.create(FluidHelper.getBucket() * 512,
+                    ThermalFluidStats.create(FluidType.BUCKET_VOLUME * 512,
                             GTMaterials.TungstenSteel.getProperty(PropertyKey.FLUID_PIPE).getMaxFluidTemperature(),
                             true, false, false, false, true),
                     new ItemFluidContainer()))

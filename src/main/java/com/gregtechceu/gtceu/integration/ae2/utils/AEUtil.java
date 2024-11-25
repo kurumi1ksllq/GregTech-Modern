@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.integration.ae2.utils;
 
+import com.gregtechceu.gtceu.utils.GTMath;
+
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
@@ -29,7 +31,7 @@ public class AEUtil {
     }
 
     public static FluidStack toFluidStack(AEFluidKey key, long amount) {
-        return key.toStack((int) amount);
+        return key.toStack(GTMath.saturatedCast(amount));
     }
 
     public static ItemStack[] toItemStacks(GenericStack stack) {

@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.data.material.GTMaterials;
+import com.gregtechceu.gtceu.utils.GTMath;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
@@ -37,7 +38,7 @@ public class SteamEnergyRecipeHandler implements IRecipeHandler<Long> {
                                         @Nullable String slotName,
                                         boolean simulate) {
         long sum = left.stream().reduce(0L, Long::sum);
-        int realSum = (int) Math.ceil(sum * conversionRate);
+        int realSum = GTMath.saturatedCast((long) Math.ceil(sum * conversionRate));
         if (realSum > 0) {
             var steam = io == IO.IN ? GTMaterials.Steam.asFluidIngredient(realSum) :
                     GTMaterials.Steam.asSingleFluidIngredient(realSum);

@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.list.AEListGridWidget;
 import com.gregtechceu.gtceu.integration.ae2.utils.KeyStorage;
+import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -20,7 +21,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 
 import appeng.api.config.Actionable;
 import appeng.api.stacks.AEFluidKey;
-import com.google.common.primitives.Ints;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -164,7 +164,7 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine implements IMac
         public int fill(FluidStack resource, FluidAction action) {
             var key = AEFluidKey.of(resource);
             int amount = resource.getAmount();
-            int oldValue = Ints.saturatedCast(internalBuffer.storage.getOrDefault(key, 0));
+            int oldValue = GTMath.saturatedCast(internalBuffer.storage.getOrDefault(key, 0));
             int changeValue = Math.min(Integer.MAX_VALUE - oldValue, amount);
             if (changeValue > 0 && action.execute()) {
                 internalBuffer.storage.put(key, oldValue + changeValue);

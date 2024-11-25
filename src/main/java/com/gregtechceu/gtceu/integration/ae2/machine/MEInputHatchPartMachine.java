@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.data.tag.GTDataComponents;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.AEFluidConfigWidget;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidList;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidSlot;
+import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -88,9 +89,10 @@ public class MEInputHatchPartMachine extends MEHatchPartMachine implements IData
             // Try to clear the wrong fluid
             GenericStack exceedFluid = aeTank.exceedStack();
             if (exceedFluid != null) {
-                int total = (int) exceedFluid.amount();
-                int inserted = (int) networkInv.insert(exceedFluid.what(), exceedFluid.amount(), Actionable.MODULATE,
-                        this.actionSource);
+                int total = GTMath.saturatedCast(exceedFluid.amount());
+                int inserted = GTMath
+                        .saturatedCast(networkInv.insert(exceedFluid.what(), exceedFluid.amount(), Actionable.MODULATE,
+                                this.actionSource));
                 if (inserted > 0) {
                     aeTank.drain(inserted, IFluidHandler.FluidAction.EXECUTE);
                     continue;

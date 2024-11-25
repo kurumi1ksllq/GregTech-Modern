@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.integration.ae2.slot;
 
 import com.lowdragmc.lowdraglib.side.fluid.IFluidHandlerModifiable;
+import com.gregtechceu.gtceu.utils.GTMath;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -9,7 +10,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 import appeng.api.stacks.AEFluidKey;
 import appeng.api.stacks.GenericStack;
-import com.google.common.primitives.Ints;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -52,7 +53,7 @@ public class ExportOnlyAEFluidSlot extends ExportOnlyAESlot implements IFluidHan
     @Override
     public FluidStack getFluid() {
         if (this.stock != null && this.stock.what() instanceof AEFluidKey fluidKey) {
-            return fluidKey.toStack(Ints.saturatedCast(this.stock.amount()));
+            return fluidKey.toStack(GTMath.saturatedCast(this.stock.amount()));
         }
         return FluidStack.EMPTY;
     }
@@ -64,7 +65,7 @@ public class ExportOnlyAEFluidSlot extends ExportOnlyAESlot implements IFluidHan
 
     @Override
     public int getFluidAmount() {
-        return this.stock != null ? Ints.saturatedCast(this.stock.amount()) : 0;
+        return this.stock != null ? GTMath.saturatedCast(this.stock.amount()) : 0;
     }
 
     @Override

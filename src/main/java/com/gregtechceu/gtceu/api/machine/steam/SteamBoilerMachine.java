@@ -201,9 +201,8 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
 
         if (getOffsetTimer() % 10 == 0) {
             if (currentTemperature >= 100) {
-                int fillAmount = (int) (getBaseSteamOutput() * (currentTemperature / (getMaxTemperature() * 1.0)) / 2);
-                boolean hasDrainedWater = !waterTank
-                        .drainInternal(FluidHelper.getBucket() / 1000, IFluidHandler.FluidAction.EXECUTE).isEmpty();
+                int fillAmount = (int) (getBaseSteamOutput() * ((float) currentTemperature / getMaxTemperature()) / 2);
+                boolean hasDrainedWater = !waterTank.drainInternal(1, FluidAction.EXECUTE).isEmpty();
                 var filledSteam = 0L;
                 if (hasDrainedWater) {
                     filledSteam = steamTank.fillInternal(
@@ -313,7 +312,7 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
                                 GuiTextures.PROGRESS_BAR_BOILER_HEAT)
                         .setFillDirection(ProgressTexture.FillDirection.DOWN_TO_UP)
                         .setDynamicHoverTips(pct -> I18n.get("gtceu.multiblock.large_boiler.temperature",
-                                (int) (currentTemperature + 274.15), (int) (getMaxTemperature() + 274.15))))
+                                currentTemperature + 274, getMaxTemperature() + 274)))
                 .widget(new TankWidget(waterTank.getStorages()[0], 83, 26, 10, 54, false, true)
                         .setShowAmount(false)
                         .setFillDirection(ProgressTexture.FillDirection.DOWN_TO_UP)

@@ -288,7 +288,7 @@ public class FluidRecipeCapability extends RecipeCapability<SizedFluidIngredient
                 }
             }
             if (available >= needed) {
-                int ratio = (int) Math.min(parallelAmount, available / needed);
+                int ratio = (int) Math.min(parallelAmount, (float) available / needed);
                 if (ratio < minMultiplier) {
                     minMultiplier = ratio;
                 }

@@ -6,8 +6,8 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.content.SerializerLong;
+import com.gregtechceu.gtceu.utils.GTMath;
 
-import com.google.common.primitives.Ints;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -56,7 +56,7 @@ public class EURecipeCapability extends RecipeCapability<Long> {
         if (recipeEUt == 0) {
             return Integer.MAX_VALUE;
         }
-        return Math.abs(Ints.saturatedCast(maxVoltage / recipeEUt));
+        return Math.abs(GTMath.saturatedCast(maxVoltage / recipeEUt));
     }
 
     @Override
@@ -72,7 +72,7 @@ public class EURecipeCapability extends RecipeCapability<Long> {
         if (recipeEUt == 0) {
             return Integer.MAX_VALUE;
         }
-        return Math.abs(Ints.saturatedCast(maxVoltage / recipeEUt));
+        return Math.abs(GTMath.saturatedCast(maxVoltage / recipeEUt));
     }
 
     public interface ICustomParallel {

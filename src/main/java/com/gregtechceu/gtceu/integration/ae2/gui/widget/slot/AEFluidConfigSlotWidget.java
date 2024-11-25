@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidSlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAESlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlot;
 import com.gregtechceu.gtceu.integration.ae2.utils.AEUtil;
+import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
 import com.lowdragmc.lowdraglib.gui.util.TextFormattingUtil;
@@ -211,8 +212,7 @@ public class AEFluidConfigSlotWidget extends AEConfigSlotWidget implements IGhos
                 currentStack.setCount(newStackSize);
                 gui.getModularUIContainer().setCarried(currentStack);
 
-                FluidStack stack = new FluidStack(key.getFluid(), (int) slot.getStock().amount());
-
+                FluidStack stack = new FluidStack(key.getFluid(), GTMath.saturatedCast(slot.getStock().amount()));
                 // this is inverted for some reason
                 if (!key.hasComponents()) {
                     stack.applyComponents(key.toStack(1).getComponents());

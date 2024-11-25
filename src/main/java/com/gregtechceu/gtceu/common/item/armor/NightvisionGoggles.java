@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorLogicSuite;
 import com.gregtechceu.gtceu.api.item.datacomponents.GTArmor;
 import com.gregtechceu.gtceu.data.tag.GTDataComponents;
+import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
 
 import net.minecraft.network.chat.Component;
@@ -38,47 +39,47 @@ public class NightvisionGoggles extends ArmorLogicSuite {
         }
         GTArmor data = itemStack.getOrDefault(GTDataComponents.ARMOR_DATA, new GTArmor());
         byte toggleTimer = data.toggleTimer();
-        if (!player.getItemBySlot(EquipmentSlot.HEAD).is(itemStack.getItem())) {
-            disableNightVision(world, player, false);
-        }
+        int nightVisionTimer = data.nightVisionTimer();
         if (type == ArmorItem.Type.HELMET) {
-            boolean nightvision = data.nightVision();
+            boolean nightVision = data.nightVision();
             if (toggleTimer == 0 && KeyBind.ARMOR_MODE_SWITCH.isKeyDown(player)) {
+                nightVision = !nightVision;
                 toggleTimer = 5;
-                if (!nightvision && item.getCharge() >= energyPerUse) {
-                    nightvision = true;
-                    if (!world.isClientSide)
-                        player.displayClientMessage(Component.translatable("metaarmor.message.nightvision.enabled"),
-                                true);
-                } else if (nightvision) {
-                    nightvision = false;
-                    disableNightVision(world, player, true);
+                if (item.getCharge() < ArmorUtils.MIN_NIGHTVISION_CHARGE) {
+                    nightVision = false;
+                    player.displayClientMessage(Component.translatable("metaarmor.nms.nightvision.error"), true);
                 } else {
-                    if (!world.isClientSide) {
-                        player.displayClientMessage(Component.translatable("metaarmor.message.nightvision.error"),
-                                true);
-                    }
-                }
-
-                if (!world.isClientSide) {
-                    final boolean finalNightvision = nightvision;
-                    itemStack.update(GTDataComponents.ARMOR_DATA, new GTArmor(),
-                            data1 -> data1.setNightVision(finalNightvision));
+                    player.displayClientMessage(Component
+                            .translatable("metaarmor.nms.nightvision." + (nightVision ? "enabled" : "disabled")), true);
                 }
             }
 
-            if (nightvision && !world.isClientSide && item.getCharge() >= energyPerUse) {
+            if (nightVision) {
                 player.removeEffect(MobEffects.BLINDNESS);
-                player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 999999, 0, true, false));
-                item.discharge((energyPerUse), this.tier, true, false, false);
+                if (toggleTimer <= ArmorUtils.NIGHT_VISION_RESET) {
+                    toggleTimer = (byte) ArmorUtils.NIGHTVISION_DURATION;
+                    player.addEffect(
+                            new MobEffectInstance(MobEffects.NIGHT_VISION, ArmorUtils.NIGHTVISION_DURATION, 0, true,
+                                    false));
+                    item.discharge((energyPerUse), this.tier, true, false, false);
+                }
+            } else {
+                player.removeEffect(MobEffects.NIGHT_VISION);
             }
-
-            if (toggleTimer > 0) --toggleTimer;
 
             final byte finalToggleTimer = toggleTimer;
+            final boolean finalNightVision = nightVision;
             itemStack.update(GTDataComponents.ARMOR_DATA, new GTArmor(),
-                    data1 -> data1.setToggleTimer(finalToggleTimer));
+                    data1 -> data1.setToggleTimer(finalToggleTimer).setNightVision(finalNightVision));
         }
+
+        if (nightVisionTimer > 0) nightVisionTimer--;
+        if (toggleTimer > 0) toggleTimer--;
+
+        final int finalNightVisionTimer = nightVisionTimer;
+        final byte finalToggleTimer = toggleTimer;
+        itemStack.update(GTDataComponents.ARMOR_DATA, new GTArmor(),
+                data1 -> data1.setToggleTimer(finalToggleTimer).setNightVisionTimer(finalNightVisionTimer));
     }
 
     public static void disableNightVision(@NotNull Level world, Player player, boolean sendMsg) {
@@ -108,4 +109,5 @@ public class NightvisionGoggles extends ArmorLogicSuite {
             }
         }
     }
+
 }

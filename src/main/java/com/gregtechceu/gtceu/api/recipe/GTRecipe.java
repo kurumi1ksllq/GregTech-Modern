@@ -176,6 +176,7 @@ public class GTRecipe implements Recipe<RecipeInput> {
         if (modifyDuration) {
             copied.duration = modifier.apply(this.duration).intValue();
         }
+        copied.parallels = parallels;
         return copied;
     }
 

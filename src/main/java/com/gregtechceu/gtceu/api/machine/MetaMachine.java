@@ -664,10 +664,10 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
         return item -> true;
     }
 
-    public Predicate<FluidStack> getFluidCapFilter(@Nullable Direction side) {
+    public Predicate<FluidStack> getFluidCapFilter(@Nullable Direction side, IO io) {
         if (side != null) {
             var cover = getCoverContainer().getCoverAtSide(side);
-            if (cover instanceof FluidFilterCover filterCover) {
+            if (cover instanceof FluidFilterCover filterCover && filterCover.getFilterMode().filters(io)) {
                 return filterCover.getFluidFilter();
             }
         }
@@ -713,11 +713,12 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
             io = IO.OUT;
         }
 
-        IOFluidTransferList transferList = new IOFluidTransferList(list, io, getFluidCapFilter(side));
-        if (!useCoverCapability || side == null) return transferList;
+        IOFluidTransferList handlerList = new IOFluidTransferList(list, io, getFluidCapFilter(side, IO.IN),
+                getFluidCapFilter(side, IO.OUT));
+        if (!useCoverCapability || side == null) return handlerList;
 
         CoverBehavior cover = getCoverContainer().getCoverAtSide(side);
-        return cover != null ? cover.getFluidTransferCap(transferList) : transferList;
+        return cover != null ? cover.getFluidTransferCap(handlerList) : handlerList;
     }
 
     //////////////////////////////////////

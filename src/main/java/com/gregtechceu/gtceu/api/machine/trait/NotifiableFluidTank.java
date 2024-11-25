@@ -271,9 +271,9 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<SizedFluid
         var level = getMachine().getLevel();
         var pos = getMachine().getPos();
         for (Direction facing : facings) {
-            FluidTransferHelper.exportToTarget(this, Integer.MAX_VALUE, getMachine().getFluidCapFilter(facing), level,
-                    pos.relative(facing),
-                    facing.getOpposite());
+            var filter = getMachine().getFluidCapFilter(facing, IO.OUT);
+            GTTransferUtils.getAdjacentFluidHandler(level, pos, facing)
+                    .ifPresent(adj -> GTTransferUtils.transferFluidsFiltered(this, adj, filter));
         }
     }
 
@@ -281,9 +281,9 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<SizedFluid
         var level = getMachine().getLevel();
         var pos = getMachine().getPos();
         for (Direction facing : facings) {
-            FluidTransferHelper.importToTarget(this, Integer.MAX_VALUE, getMachine().getFluidCapFilter(facing), level,
-                    pos.relative(facing),
-                    facing.getOpposite());
+            var filter = getMachine().getFluidCapFilter(facing, IO.IN);
+            GTTransferUtils.getAdjacentFluidHandler(level, pos, facing)
+                    .ifPresent(adj -> GTTransferUtils.transferFluidsFiltered(adj, this, filter));
         }
     }
 

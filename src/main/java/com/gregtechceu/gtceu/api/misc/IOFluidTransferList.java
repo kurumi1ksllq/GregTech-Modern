@@ -23,29 +23,43 @@ public class IOFluidTransferList extends FluidTransferList implements IFluidHand
 
     @Getter
     private final IO io;
+    private final Predicate<FluidStack> inFilter;
+    private final Predicate<FluidStack> outFilter;
 
-    public IOFluidTransferList(List<IFluidHandler> transfers, IO io, Predicate<FluidStack> filter) {
+    public IOFluidTransferList(List<IFluidHandler> transfers, IO io,
+                               Predicate<FluidStack> inFilter, Predicate<FluidStack> outFilter) {
         super(transfers);
         this.io = io;
-        setFilter(filter);
+        this.inFilter = inFilter;
+        this.outFilter = outFilter;
     }
 
     @Override
     public int fill(FluidStack resource, FluidAction action) {
-        if (io != IO.IN && io != IO.BOTH) return 0;
+        if (!io.support(IO.IN) || !inFilter.test(resource)) return 0;
         return super.fill(resource, action);
     }
 
     @Override
-    public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
-        if (io != IO.OUT && io != IO.BOTH) return FluidStack.EMPTY;
-        return super.drain(maxDrain, action);
+    public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+        if (!io.support(IO.OUT) || !outFilter.test(resource)) return FluidStack.EMPTY;
+        return super.drain(resource, action);
     }
 
     @Override
-    public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
-        if (io != IO.OUT && io != IO.BOTH) return FluidStack.EMPTY;
-        return super.drain(resource, action);
+    public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+        if (!io.support(IO.OUT)) return FluidStack.EMPTY;
+        var fluidStack = super.drain(maxDrain, FluidAction.SIMULATE);
+        if (fluidStack.isEmpty() || !outFilter.test(fluidStack)) return FluidStack.EMPTY;
+        return action.simulate() ? fluidStack : super.drain(maxDrain, action);
+    }
+
+    @Override
+    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+        Predicate<FluidStack> filter = s -> true;
+        if (io.support(IO.IN)) filter = inFilter.and(filter);
+        if (io.support(IO.OUT)) filter = outFilter.and(filter);
+        return filter.test(stack) && super.isFluidValid(tank, stack);
     }
 
     @Override

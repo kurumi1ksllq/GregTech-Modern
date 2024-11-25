@@ -12,7 +12,9 @@ import com.gregtechceu.gtceu.api.fluid.attribute.FluidAttribute;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IDataInfoProvider;
 import com.gregtechceu.gtceu.api.material.material.properties.FluidPipeProperties;
+import com.gregtechceu.gtceu.api.misc.IOFluidTransferList;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
+import com.gregtechceu.gtceu.common.cover.FluidFilterCover;
 import com.gregtechceu.gtceu.common.cover.PumpCover;
 import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
 import com.gregtechceu.gtceu.common.item.behavior.PortableScannerBehavior;
@@ -59,6 +61,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPipeProperties>
                                   implements IDataInfoProvider {
@@ -109,6 +112,16 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
                     null;
         }
         return false;
+    }
+
+    private Predicate<FluidStack> getFluidCapFilter(@Nullable Direction side, IO io) {
+        if (side != null) {
+            var cover = getCoverContainer().getCoverAtSide(side);
+            if (cover instanceof FluidFilterCover filterCover && filterCover.getFilterMode().filters(io)) {
+                return filterCover.getFluidFilter();
+            }
+        }
+        return fluid -> true;
     }
 
     public int getCapacityPerTank() {
@@ -209,11 +222,8 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
         // Now distribute
         for (FluidTransaction transaction : tanks) {
             if (availableCapacity > maxAmount) {
-                transaction.amount = Mth.floor(transaction.amount * maxAmount / availableCapacity); // Distribute fluids
-                                                                                                    // based on
-                                                                                                    // percentage
-                                                                                                    // available space
-                                                                                                    // at destination
+                // Distribute fluids based on percentage available space at destination
+                transaction.amount = Mth.floor(transaction.amount * maxAmount / availableCapacity);
             }
             if (transaction.amount == 0) {
                 if (tank.getFluidAmount() <= 0) break; // If there is no more stored fluid, stop transferring to prevent

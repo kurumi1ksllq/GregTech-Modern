@@ -251,6 +251,11 @@ public class DrumMachine extends MetaMachine implements IAutoOutputFluid, IDropS
     }
 
     @Override
+    public boolean saveBreak() {
+        return !stored.isEmpty();
+    }
+
+    @Override
     protected ItemInteractionResult onScrewdriverClick(Player playerIn, InteractionHand hand, Direction gridSide,
                                                        BlockHitResult hitResult) {
         if (!isRemote()) {

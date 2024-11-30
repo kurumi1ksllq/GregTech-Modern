@@ -17,6 +17,8 @@ import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.recipe.OverclockingLogic;
 import com.gregtechceu.gtceu.api.tag.TagPrefix;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.DistillationTowerMachine;
+import com.gregtechceu.gtceu.common.machine.multiblock.electric.gcym.LargeChemicalBathMachine;
+import com.gregtechceu.gtceu.common.machine.multiblock.electric.gcym.LargeMixerMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ParallelHatchPartMachine;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.compass.GTCompassSections;
@@ -104,13 +106,16 @@ public class GCYMMachines {
             .register();
 
     public final static MultiblockMachineDefinition LARGE_CHEMICAL_BATH = REGISTRATE
-            .multiblock("large_chemical_bath", WorkableElectricMultiblockMachine::new)
+            .multiblock("large_chemical_bath", LargeChemicalBathMachine::new)
             .langValue("Large Chemical Bath")
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_2.tooltip",
                     ORE_WASHER_RECIPES.getName(), CHEMICAL_BATH_RECIPES.getName()))
             .rotationState(RotationState.ALL)
             .recipeTypes(CHEMICAL_BATH_RECIPES, ORE_WASHER_RECIPES)
+            .renderer(() -> new LargeChemicalBathRenderer(GTCEu.id("block/casings/gcym/watertight_casing"),
+                    GTCEu.id("block/multiblock/gcym/large_chemical_bath")))
+            .hasTESR(true)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
             .appearanceBlock(CASING_WATERTIGHT)
@@ -129,8 +134,6 @@ public class GCYMMachines {
                     .where(' ', Predicates.air())
                     .where('T', Predicates.blocks(CASING_TITANIUM_PIPE.get()))
                     .build())
-            .workableCasingRenderer(GTCEu.id("block/casings/gcym/watertight_casing"),
-                    GTCEu.id("block/multiblock/gcym/large_chemical_bath"))
             .compassSections(GTCompassSections.TIER[IV])
             .compassNodeSelf()
             .register();
@@ -167,13 +170,16 @@ public class GCYMMachines {
             .register();
 
     public final static MultiblockMachineDefinition LARGE_MIXER = REGISTRATE
-            .multiblock("large_mixer", WorkableElectricMultiblockMachine::new)
+            .multiblock("large_mixer", LargeMixerMachine::new)
             .langValue("Large Mixing Vessel")
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     MIXER_RECIPES.getName()))
             .rotationState(RotationState.ALL)
             .recipeType(MIXER_RECIPES)
+            .renderer(() -> new LargeMixerRenderer(GTCEu.id("block/casings/gcym/reaction_safe_mixing_casing"),
+                    GTCEu.id("block/multiblock/gcym/large_mixer")))
+            .hasTESR(true)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
             .appearanceBlock(CASING_REACTION_SAFE)
@@ -193,8 +199,6 @@ public class GCYMMachines {
                     .where('A', Predicates.air())
                     .where('#', Predicates.any())
                     .build())
-            .workableCasingRenderer(GTCEu.id("block/casings/gcym/reaction_safe_mixing_casing"),
-                    GTCEu.id("block/multiblock/gcym/large_mixer"))
             .compassSections(GTCompassSections.TIER[IV])
             .compassNodeSelf()
             .register();

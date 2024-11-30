@@ -18,7 +18,7 @@ import java.util.Arrays;
 
 import static com.gregtechceu.gtceu.api.item.tool.GTToolType.*;
 
-public class ToolProperty implements IMaterialProperty<ToolProperty> {
+public class ToolProperty implements IMaterialProperty {
 
     /**
      * Harvest speed of tools made from this Material.

@@ -75,7 +75,7 @@ public class PipeRecipeHandler {
                 'P', new UnificationEntry(unrestrictive, material), 'R', ChemicalHelper.get(ring, Iron));
     }
 
-    private static void processPipeTiny(TagPrefix pipePrefix, Material material, IMaterialProperty<?> property,
+    private static void processPipeTiny(TagPrefix pipePrefix, Material material, IMaterialProperty property,
                                         RecipeOutput provider) {
         if (material.hasProperty(PropertyKey.WOOD)) return;
         ItemStack pipeStack = ChemicalHelper.get(pipePrefix, material);
@@ -102,7 +102,7 @@ public class PipeRecipeHandler {
         }
     }
 
-    private static void processPipeSmall(TagPrefix pipePrefix, Material material, IMaterialProperty<?> property,
+    private static void processPipeSmall(TagPrefix pipePrefix, Material material, IMaterialProperty property,
                                          RecipeOutput provider) {
         if (material.hasProperty(PropertyKey.WOOD)) return;
         ItemStack pipeStack = ChemicalHelper.get(pipePrefix, material);
@@ -129,7 +129,7 @@ public class PipeRecipeHandler {
         }
     }
 
-    private static void processPipeNormal(TagPrefix pipePrefix, Material material, IMaterialProperty<?> property,
+    private static void processPipeNormal(TagPrefix pipePrefix, Material material, IMaterialProperty property,
                                           RecipeOutput provider) {
         if (material.hasProperty(PropertyKey.WOOD)) return;
         ItemStack pipeStack = ChemicalHelper.get(pipePrefix, material);
@@ -156,7 +156,7 @@ public class PipeRecipeHandler {
         }
     }
 
-    private static void processPipeLarge(TagPrefix pipePrefix, Material material, IMaterialProperty<?> property,
+    private static void processPipeLarge(TagPrefix pipePrefix, Material material, IMaterialProperty property,
                                          RecipeOutput provider) {
         if (material.hasProperty(PropertyKey.WOOD)) return;
         ItemStack pipeStack = ChemicalHelper.get(pipePrefix, material);
@@ -183,7 +183,7 @@ public class PipeRecipeHandler {
         }
     }
 
-    private static void processPipeHuge(TagPrefix pipePrefix, Material material, IMaterialProperty<?> property,
+    private static void processPipeHuge(TagPrefix pipePrefix, Material material, IMaterialProperty property,
                                         RecipeOutput provider) {
         if (material.hasProperty(PropertyKey.WOOD)) return;
         ItemStack pipeStack = ChemicalHelper.get(pipePrefix, material);

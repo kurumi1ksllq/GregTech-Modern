@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.api.material.material.properties;
 
 import com.gregtechceu.gtceu.api.material.material.info.MaterialFlags;
 
-public class PolymerProperty implements IMaterialProperty<PolymerProperty> {
+public class PolymerProperty implements IMaterialProperty {
 
     @Override
     public void verifyProperty(MaterialProperties properties) {

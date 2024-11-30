@@ -49,7 +49,7 @@ import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.multiblock.Predicates.*;
 import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 import static com.gregtechceu.gtceu.data.block.GTBlocks.*;
-import static com.gregtechceu.gtceu.data.machine.GTMachines.createCreativeTooltips;
+import static com.gregtechceu.gtceu.data.machine.GTMachines.CREATIVE_TOOLTIPS;
 
 @SuppressWarnings("unused")
 @net.minecraft.MethodsReturnNonnullByDefault
@@ -351,8 +351,11 @@ public class GTResearchMachines {
             .tier(MAX)
             .rotationState(RotationState.ALL)
             .abilities(PartAbility.DATA_ACCESS)
-            .tooltips(Component.translatable("gtceu.machine.data_access_hatch.tooltip.0"))
-            .tooltipBuilder(createCreativeTooltips(true))
+            .tooltipBuilder((s, list) -> {
+                CREATIVE_TOOLTIPS.accept(s, list);
+                list.add(1, Component.translatable("gtceu.machine.data_access_hatch.tooltip.0"));
+            })
+            .tooltips(Component.translatable("gtceu.universal.enabled"))
             .overlayTieredHullRenderer("data_access_hatch_creative")
             .register();
 

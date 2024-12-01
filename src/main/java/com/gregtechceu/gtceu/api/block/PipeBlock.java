@@ -346,7 +346,8 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         }
 
         Set<GTToolType> types = ToolHelper.getToolTypes(stack);
-        if (!types.isEmpty() && ToolHelper.canUse(stack)) {
+        if (!types.isEmpty() && ToolHelper.canUse(stack) ||
+                (types.isEmpty() && player.isShiftKeyDown())) {
             var result = pipeBlockEntity.onToolClick(types, stack, new UseOnContext(player, hand, hit));
             if (result.getSecond() == ItemInteractionResult.CONSUME && player instanceof ServerPlayer serverPlayer) {
                 ToolHelper.playToolSound(result.getFirst(), serverPlayer);

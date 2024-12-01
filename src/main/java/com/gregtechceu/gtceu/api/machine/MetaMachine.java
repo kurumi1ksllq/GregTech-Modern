@@ -15,7 +15,7 @@ import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyTooltip;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
-import com.gregtechceu.gtceu.api.item.tool.IToolGridHighLight;
+import com.gregtechceu.gtceu.api.item.tool.IToolGridHighlight;
 import com.gregtechceu.gtceu.api.machine.feature.*;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
@@ -92,7 +92,7 @@ import static com.gregtechceu.gtceu.api.item.tool.ToolHelper.getBehaviorsCompone
  */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscription, IAppearance, IToolGridHighLight,
+public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscription, IAppearance, IToolGridHighlight,
                          IFancyTooltip, IPaintable, IRedstoneSignalMachine {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MetaMachine.class);
@@ -326,6 +326,11 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
         if (gridSide == null) gridSide = hitResult.getDirection();
 
         // Prioritize covers where they apply (Screwdriver, Soft Mallet)
+        if (toolType.isEmpty() && playerIn.isShiftKeyDown()) {
+            if (coverBehavior != null) {
+                return Pair.of(null, coverBehavior.onScrewdriverClick(playerIn, hand, hitResult));
+            }
+        }
         if (toolType.contains(GTToolType.SCREWDRIVER)) {
             if (coverBehavior != null) {
                 return Pair.of(GTToolType.SCREWDRIVER, coverBehavior.onScrewdriverClick(playerIn, hand, hitResult));

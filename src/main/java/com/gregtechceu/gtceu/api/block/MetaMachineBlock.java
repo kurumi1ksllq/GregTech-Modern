@@ -307,9 +307,9 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
         }
 
         Set<GTToolType> types = ToolHelper.getToolTypes(stack);
-        if (machine != null && !types.isEmpty() && ToolHelper.canUse(stack)) {
-            var result = machine.onToolClick(types, stack,
-                    new UseOnContext(player, hand, hit));
+        if (machine != null && !types.isEmpty() && ToolHelper.canUse(stack) ||
+                (types.isEmpty() && player.isShiftKeyDown())) {
+            var result = machine.onToolClick(types, stack, new UseOnContext(player, hand, hit));
             if (result.getSecond() == ItemInteractionResult.CONSUME && player instanceof ServerPlayer serverPlayer) {
                 ToolHelper.playToolSound(result.getFirst(), serverPlayer);
 

@@ -24,7 +24,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +66,7 @@ public class GTRecipe implements Recipe<RecipeInput> {
     public int duration;
     public int parallels = 1;
     public int ocLevel = 0;
-    public GTRecipeCategory recipeCategory = null;
+    public final GTRecipeCategory recipeCategory;
     @Getter
     public boolean isFuel;
 
@@ -125,13 +124,8 @@ public class GTRecipe implements Recipe<RecipeInput> {
         this.data = data != null ? data : new CompoundTag();
         this.duration = duration;
         this.isFuel = isFuel;
-        this.recipeCategory = (recipeCategory != GTRecipeCategory.EMPTY) ?
-                recipeCategory : GTRecipeCategory.of(recipeType);
-        if (id != null) {
-            this.recipeType.getCategoryMap()
-                    .computeIfAbsent(this.recipeCategory, k -> new ObjectLinkedOpenHashSet<>())
-                    .add(new RecipeHolder<>(id, this));
-        }
+        this.recipeCategory = (recipeCategory != GTRecipeCategory.DEFAULT) ? recipeCategory : recipeType.getCategory();
+        if (id != null) this.recipeType.addToCategoryMap(this.recipeCategory, new RecipeHolder<>(this.id, this));
     }
 
     public Map<RecipeCapability<?>, List<Content>> copyContents(Map<RecipeCapability<?>, List<Content>> contents,

@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.material.material.Material;
 import com.gregtechceu.gtceu.api.material.material.info.MaterialIconSet;
 import com.gregtechceu.gtceu.api.material.material.info.MaterialIconType;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
+import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.registry.GTRegistry;
 import com.gregtechceu.gtceu.api.registry.registrate.BuilderBase;
@@ -50,6 +51,9 @@ public class GTRegistryInfo<K, V> {
             MaterialRegistryManager.getInstance().getRegistry(GTCEu.MOD_ID), Material.class);
     public static final GTRegistryInfo<ResourceLocation, GTRecipeType> RECIPE_TYPE = add(GTRegistries.RECIPE_TYPES,
             GTRecipeType.class);
+    public static final GTRegistryInfo<ResourceLocation, GTRecipeCategory> RECIPE_CATEGORY = add(
+            GTRegistries.RECIPE_CATEGORIES,
+            GTRecipeCategory.class);
     public static final GTRegistryInfo<ResourceLocation, MachineDefinition> MACHINE = add(GTRegistries.MACHINES,
             MachineDefinition.class);
     public static final GTRegistryInfo<String, MaterialIconSet> MATERIAL_ICON_SET = add(GTCEu.id("material_icon_set"),

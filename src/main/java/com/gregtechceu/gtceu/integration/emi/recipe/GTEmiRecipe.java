@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.integration.GTRecipeWidget;
 import com.lowdragmc.lowdraglib.emi.ModularEmiRecipe;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
@@ -14,18 +15,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class GTEmiRecipe extends ModularEmiRecipe<WidgetGroup> {
 
-    final GTRecipeEMICategory category;
+    @Getter
+    final EmiRecipeCategory category;
     final RecipeHolder<GTRecipe> recipe;
 
-    public GTEmiRecipe(GTRecipeEMICategory category, RecipeHolder<GTRecipe> recipe) {
+    public GTEmiRecipe(RecipeHolder<GTRecipe> recipe, EmiRecipeCategory category) {
         super(() -> new GTRecipeWidget(recipe));
         this.category = category;
         this.recipe = recipe;
-    }
-
-    @Override
-    public EmiRecipeCategory getCategory() {
-        return category;
     }
 
     @Override

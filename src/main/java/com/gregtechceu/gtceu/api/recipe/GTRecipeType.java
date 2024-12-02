@@ -100,6 +100,8 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
     @Getter
     protected final Map<RecipeType<?>, List<RecipeHolder<GTRecipe>>> proxyRecipes;
     @Getter
+    private final GTRecipeCategory category;
+    @Getter
     private final Map<GTRecipeCategory, Set<RecipeHolder<GTRecipe>>> categoryMap = new Object2ObjectOpenHashMap<>();
     private CompoundTag customUICache;
     @Getter
@@ -117,9 +119,8 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
     public GTRecipeType(ResourceLocation registryName, String group, RecipeType<?>... proxyRecipes) {
         this.registryName = registryName;
         this.group = group;
+        this.category = GTRecipeCategory.registerDefault(this);
         recipeBuilder = new GTRecipeBuilder(registryName, this);
-        recipeBuilder.category(
-                GTRecipeCategory.of(GTCEu.MOD_ID, registryName.getPath(), this, registryName.toLanguageKey()));
         // must be linked to stop json contents from shuffling
         Map<RecipeType<?>, List<RecipeHolder<GTRecipe>>> map = new Object2ObjectLinkedOpenHashMap<>();
         for (RecipeType<?> proxyRecipe : proxyRecipes) {
@@ -187,7 +188,7 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
     }
 
     public GTRecipeType setXEIVisible(boolean XEIVisible) {
-        this.recipeUI.setXEIVisible(XEIVisible);
+        this.category.setXEIVisible(XEIVisible);
         return this;
     }
 
@@ -343,18 +344,16 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
         return recipes;
     }
 
-    public String getTranslationKey() {
-        return this.registryName.toLanguageKey(LANGUAGE_KEY_PATH);
+    public void addToCategoryMap(GTRecipeCategory category, RecipeHolder<GTRecipe> recipe) {
+        categoryMap.computeIfAbsent(category, k -> new ObjectLinkedOpenHashSet<>()).add(recipe);
     }
 
-    public Component getName() {
-        return Component.translatable(getTranslationKey());
+    public Set<GTRecipeCategory> getCategories() {
+        return Collections.unmodifiableSet(categoryMap.keySet());
     }
 
-    @NotNull
-    @UnmodifiableView
-    public Map<GTRecipeCategory, Set<RecipeHolder<GTRecipe>>> getRecipesByCategory() {
-        return Collections.unmodifiableMap(categoryMap);
+    public Set<RecipeHolder<GTRecipe>> getRecipesInCategory(GTRecipeCategory category) {
+        return Collections.unmodifiableSet(categoryMap.getOrDefault(category, Set.of()));
     }
 
     public interface ICustomRecipeLogic {

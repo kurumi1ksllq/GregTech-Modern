@@ -17,9 +17,11 @@ import com.gregtechceu.gtceu.api.recipe.condition.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntCircuitIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderIngredient;
-import com.gregtechceu.gtceu.api.tag.TagPrefix;
-import com.gregtechceu.gtceu.api.tag.TagUtil;
-import com.gregtechceu.gtceu.common.recipe.*;
+import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredient;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
+import com.gregtechceu.gtceu.common.data.GTRecipeCategories;
+import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
+import com.gregtechceu.gtceu.common.recipe.condition.*;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.GTRecipeTypes;
 import com.gregtechceu.gtceu.utils.ResearchManager;
@@ -104,7 +106,7 @@ public class GTRecipeBuilder {
     public GTRecipeBuilder(ResourceLocation id, GTRecipeType recipeType) {
         this.id = id;
         this.recipeType = recipeType;
-        this.recipeCategory = GTRecipeCategory.of(recipeType);
+        this.recipeCategory = recipeType.getCategory();
     }
 
     public GTRecipeBuilder(GTRecipe toCopy, GTRecipeType recipeType) {
@@ -160,7 +162,7 @@ public class GTRecipeBuilder {
     }
 
     public GTRecipeBuilder copyFrom(GTRecipeBuilder builder) {
-        return builder.copy(builder.id).onSave(null).recipeType(recipeType);
+        return builder.copy(builder.id).onSave(null).recipeType(recipeType).category(recipeCategory);
     }
 
     public <T> GTRecipeBuilder input(RecipeCapability<T> capability, T obj) {
@@ -1122,7 +1124,7 @@ public class GTRecipeBuilder {
         if (recipeType != null) {
             if (recipeCategory == null) {
                 GTCEu.LOGGER.error("Recipes must have a category", new IllegalArgumentException());
-            } else if (recipeCategory != GTRecipeCategory.EMPTY && recipeCategory.getRecipeType() != recipeType) {
+            } else if (recipeCategory != GTRecipeCategory.DEFAULT && recipeCategory.getRecipeType() != recipeType) {
                 GTCEu.LOGGER.error("Cannot apply Category with incompatible RecipeType",
                         new IllegalArgumentException());
             }

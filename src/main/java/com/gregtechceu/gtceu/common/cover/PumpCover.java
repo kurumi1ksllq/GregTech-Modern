@@ -41,6 +41,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 import com.google.common.math.IntMath;
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -62,15 +63,15 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(PumpCover.class,
             CoverBehavior.MANAGED_FIELD_HOLDER);
 
-    protected static final int MILLIBUCKET_SIZE = FluidHelper.getBucket() / 1000;
+    // .5b 2b 8b
+    public static final Int2IntFunction PUMP_SCALING = tier -> 64 * (int) Math.pow(4, Math.min(tier - 1, GTValues.IV));
 
     public final int tier;
-    public final int maxMilliBucketsPerTick;
-
+    public final int maxFluidTransferRate;
     @Persisted
     @DescSynced
     @Getter
-    protected int currentMilliBucketsPerTick;
+    protected int transferRate;
     @Persisted
     @DescSynced
     @Getter
@@ -88,7 +89,7 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
     @Persisted
     @Getter
     protected boolean isWorkingEnabled = true;
-    protected int milliBucketsLeftToTransferLastSecond;
+    protected int mBLeftToTransferLastSecond;
 
     @Persisted
     @DescSynced
@@ -96,25 +97,24 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
     protected final ConditionalSubscriptionHandler subscriptionHandler;
     private NumberInputWidget<Integer> transferRateWidget;
 
-    /*
-     * Transfer rate variables are treated as liters/millibuckets per tick.
-     * The actual conversion to the platform's values happens inside tick handling.
-     */
-
-    public PumpCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier) {
+    public PumpCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier,
+                     int maxTransferRate) {
         super(definition, coverHolder, attachedSide);
         this.tier = tier;
 
-        this.maxMilliBucketsPerTick = 64 * IntMath.pow(4, Math.min(tier - 1, GTValues.IV)); // .5b 2b 8b
-
-        this.currentMilliBucketsPerTick = maxMilliBucketsPerTick;
-        this.milliBucketsLeftToTransferLastSecond = currentMilliBucketsPerTick * 20;
+        this.maxFluidTransferRate = maxTransferRate;
+        this.transferRate = maxFluidTransferRate;
+        this.mBLeftToTransferLastSecond = transferRate * 20;
 
         subscriptionHandler = new ConditionalSubscriptionHandler(coverHolder, this::update, this::isSubscriptionActive);
         filterHandler = FilterHandlers.fluid(this)
                 .onFilterLoaded(f -> configureFilter())
                 .onFilterUpdated(f -> configureFilter())
                 .onFilterRemoved(f -> configureFilter());
+    }
+
+    public PumpCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier) {
+        this(definition, coverHolder, attachedSide, tier, PUMP_SCALING.applyAsInt(tier));
     }
 
     protected boolean isSubscriptionActive() {
@@ -188,7 +188,7 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
     //////////////////////////////////////
 
     public void setTransferRate(int milliBucketsPerTick) {
-        this.currentMilliBucketsPerTick = Math.min(Math.max(milliBucketsPerTick, 0), maxMilliBucketsPerTick);
+        this.transferRate = Math.min(Math.max(milliBucketsPerTick, 0), maxFluidTransferRate);
     }
 
     public void setBucketMode(BucketMode bucketMode) {
@@ -203,7 +203,7 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
             transferRateWidget.setValue(getCurrentBucketModeTransferRate());
         }
 
-        transferRateWidget.setMax(maxMilliBucketsPerTick / bucketMode.multiplier);
+        transferRateWidget.setMax(maxFluidTransferRate / bucketMode.multiplier);
 
         if (newMultiplier > oldMultiplier) {
             transferRateWidget.setValue(getCurrentBucketModeTransferRate());
@@ -220,19 +220,19 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
         if (timer % 5 != 0)
             return;
 
-        if (milliBucketsLeftToTransferLastSecond > 0) {
-            long platformTransferredFluid = doTransferFluids(milliBucketsLeftToTransferLastSecond * MILLIBUCKET_SIZE);
-            this.milliBucketsLeftToTransferLastSecond -= platformTransferredFluid / MILLIBUCKET_SIZE;
+        if (mBLeftToTransferLastSecond > 0) {
+            int platformTransferredFluid = doTransferFluids(mBLeftToTransferLastSecond);
+            this.mBLeftToTransferLastSecond -= platformTransferredFluid;
         }
 
         if (timer % 20 == 0) {
-            this.milliBucketsLeftToTransferLastSecond = currentMilliBucketsPerTick * 20;
+            this.mBLeftToTransferLastSecond = transferRate * 20;
         }
 
         subscriptionHandler.updateSubscription();
     }
 
-    private long doTransferFluids(int platformTransferLimit) {
+    private int doTransferFluids(int platformTransferLimit) {
         var adjacentFluidTransfer = getAdjacentFluidTransfer();
         var adjacentModifiable = adjacentFluidTransfer instanceof IFluidHandlerModifiable modifiable ? modifiable :
                 new ModifiableFluidHandlerWrapper(adjacentFluidTransfer);
@@ -242,7 +242,7 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
             return switch (io) {
                 case IN -> doTransferFluidsInternal(adjacentModifiable, ownFluidTransfer, platformTransferLimit);
                 case OUT -> doTransferFluidsInternal(ownFluidTransfer, adjacentModifiable, platformTransferLimit);
-                default -> 0L;
+                default -> 0;
             };
         }
         return 0;
@@ -309,7 +309,7 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
 
         group.addWidget(new EnumSelectorWidget<>(
                 146, 20, 20, 20,
-                Arrays.stream(BucketMode.values()).filter(m -> m.multiplier <= maxMilliBucketsPerTick).toList(),
+                Arrays.stream(BucketMode.values()).filter(m -> m.multiplier <= maxFluidTransferRate).toList(),
                 bucketMode, this::setBucketMode).setTooltipSupplier(this::getBucketModeTooltip));
 
         group.addWidget(new EnumSelectorWidget<>(10, 45, 20, 20, List.of(IO.IN, IO.OUT), io, this::setIo));
@@ -332,7 +332,7 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
     }
 
     private int getCurrentBucketModeTransferRate() {
-        return this.currentMilliBucketsPerTick / this.bucketMode.multiplier;
+        return this.transferRate / this.bucketMode.multiplier;
     }
 
     private void setCurrentBucketModeTransferRate(int transferRate) {

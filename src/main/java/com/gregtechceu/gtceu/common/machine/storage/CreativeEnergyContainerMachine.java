@@ -237,7 +237,7 @@ public class CreativeEnergyContainerMachine extends MetaMachine implements ILase
                 .widget(new SelectorWidget(7, 7, 30, 20, Arrays.stream(GTValues.VNF).toList(), -1)
                         .setOnChanged(tier -> {
                             setTier = ArrayUtils.indexOf(GTValues.VNF, tier);
-                            voltage = GTValues.V[setTier];
+                            voltage = GTValues.VEX[setTier];
                         })
                         .setSupplier(() -> GTValues.VNF[setTier])
                         .setButtonBackground(ResourceBorderTexture.BUTTON_COMMON)

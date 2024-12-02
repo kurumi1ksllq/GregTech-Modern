@@ -143,6 +143,7 @@ public class CustomTags {
     public static final TagKey<Block> CONCRETE_POWDER_BLOCK = TagUtil.createBlockTag("concrete_powders");
     public static final TagKey<Block> CREATE_SEATS = TagUtil.optionalTag(Registries.BLOCK,
             ResourceLocation.fromNamespaceAndPath(GTValues.MODID_CREATE, "seats"));
+    public static final TagKey<Block> CLEANROOM_FLOORS = TagUtil.createModBlockTag("cleanroom_floors");
 
     public static final TagKey<Biome> HAS_RUBBER_TREE = TagUtil.createModTag(Registries.BIOME, "has_rubber_tree");
 

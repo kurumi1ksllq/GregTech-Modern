@@ -14,7 +14,18 @@ import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.api.item.datacomponents.AoESymmetrical;
 import com.gregtechceu.gtceu.api.item.datacomponents.ToolBehaviors;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
+import com.gregtechceu.gtceu.api.item.tool.IGTToolDefinition;
 import com.gregtechceu.gtceu.api.item.tool.MaterialToolTier;
+import com.gregtechceu.gtceu.api.material.ChemicalHelper;
+import com.gregtechceu.gtceu.api.material.material.MarkerMaterial;
+import com.gregtechceu.gtceu.api.material.material.MarkerMaterials;
+import com.gregtechceu.gtceu.api.material.material.Material;
+import com.gregtechceu.gtceu.api.material.material.properties.PropertyKey;
+import com.gregtechceu.gtceu.api.material.material.properties.ToolProperty;
+import com.gregtechceu.gtceu.api.material.material.registry.MaterialRegistry;
+import com.gregtechceu.gtceu.api.material.material.stack.ItemMaterialInfo;
+import com.gregtechceu.gtceu.api.material.material.stack.MaterialStack;
+import com.gregtechceu.gtceu.api.material.material.stack.UnificationEntry;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.gregtechceu.gtceu.api.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.tag.TagUtil;
@@ -23,8 +34,6 @@ import com.gregtechceu.gtceu.common.item.behavior.*;
 import com.gregtechceu.gtceu.common.item.tool.behavior.LighterBehavior;
 import com.gregtechceu.gtceu.common.item.tool.behavior.MetaMachineConfigCopyBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import com.gregtechceu.gtceu.data.compass.GTCompassNodes;
-import com.gregtechceu.gtceu.data.compass.GTCompassSections;
 import com.gregtechceu.gtceu.data.cover.GTCovers;
 import com.gregtechceu.gtceu.data.enumproxy.GTEnumProxies;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
@@ -38,6 +47,8 @@ import com.gregtechceu.gtceu.utils.SupplierMemoizer;
 
 import com.lowdragmc.lowdraglib.LDLib;
 
+import com.lowdragmc.lowdraglib.side.fluid.FluidHelper;
+import com.lowdragmc.lowdraglib.side.fluid.FluidTransferHelper;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
@@ -2383,7 +2394,7 @@ public class GTItems {
     public static ItemEntry<Item> PLUGIN_FAKE_GUI;
     public static ItemEntry<Item> PLUGIN_ADVANCED_MONITOR;
 
-    public static ItemEntry<ComponentItem> INTEGRATED_CIRCUIT = REGISTRATE
+    public static ItemEntry<ComponentItem> PROGRAMMED_CIRCUIT = REGISTRATE
             .item("programmed_circuit", ComponentItem::new)
             .lang("Programmed Circuit")
             .model(overrideModel(GTCEu.id("circuit"), 33))

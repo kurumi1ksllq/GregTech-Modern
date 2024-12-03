@@ -19,6 +19,7 @@ import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
@@ -41,7 +42,7 @@ public class IntCircuitBehaviour implements IItemUIFactory, IAddInformation {
     public static final int CIRCUIT_MAX = 32;
 
     public static ItemStack stack(int configuration) {
-        var stack = GTItems.INTEGRATED_CIRCUIT.asStack();
+        var stack = GTItems.PROGRAMMED_CIRCUIT.asStack();
         setCircuitConfiguration(stack, configuration);
         return stack;
     }
@@ -62,7 +63,11 @@ public class IntCircuitBehaviour implements IItemUIFactory, IAddInformation {
     }
 
     public static boolean isIntegratedCircuit(ItemStack itemStack) {
-        return GTItems.INTEGRATED_CIRCUIT.isIn(itemStack);
+        boolean isCircuit = GTItems.PROGRAMMED_CIRCUIT.isIn(itemStack);
+        if (isCircuit && !itemStack.has(GTDataComponents.CIRCUIT_CONFIG)) {
+            itemStack.set(GTDataComponents.CIRCUIT_CONFIG, 0);
+        }
+        return isCircuit;
     }
 
     // deprecated, not needed (for now)

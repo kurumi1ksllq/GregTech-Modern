@@ -52,7 +52,7 @@ public class IntCircuitIngredient implements ICustomIngredient {
     @Override
     public boolean test(@Nullable ItemStack stack) {
         if (stack == null) return false;
-        return stack.is(GTItems.INTEGRATED_CIRCUIT.get()) &&
+        return stack.is(GTItems.PROGRAMMED_CIRCUIT.get()) &&
                 IntCircuitBehaviour.getCircuitConfiguration(stack) == this.configuration;
     }
 

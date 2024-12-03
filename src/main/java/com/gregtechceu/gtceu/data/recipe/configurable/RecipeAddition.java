@@ -175,6 +175,7 @@ public class RecipeAddition {
         ASSEMBLER_RECIPES.recipeBuilder("chain_iron")
                 .inputItems(ring, Iron, 3)
                 .outputItems(new ItemStack(Items.CHAIN, 2))
+                .circuitMeta(1)
                 .duration(40).EUt(10).save(provider);
 
         VanillaRecipeHelper.addShapedRecipe(provider, "chain_wrought_iron", new ItemStack(Items.CHAIN, 2), " R ",
@@ -184,6 +185,7 @@ public class RecipeAddition {
         ASSEMBLER_RECIPES.recipeBuilder("chain_wrought_iron")
                 .inputItems(ring, WroughtIron, 3)
                 .outputItems(new ItemStack(Items.CHAIN, 3))
+                .circuitMeta(1)
                 .duration(40).EUt(10).save(provider);
 
         VanillaRecipeHelper.addShapedRecipe(provider, "chain_steel", new ItemStack(Items.CHAIN, 3), " R ",
@@ -193,6 +195,7 @@ public class RecipeAddition {
         ASSEMBLER_RECIPES.recipeBuilder("chain_steel")
                 .inputItems(ring, Steel, 3)
                 .outputItems(new ItemStack(Items.CHAIN, 6))
+                .circuitMeta(1)
                 .duration(40).EUt(10).save(provider);
     }
 

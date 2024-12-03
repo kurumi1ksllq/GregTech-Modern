@@ -1,11 +1,5 @@
 package com.gregtechceu.gtceu.client;
 
-import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.gui.compass.GTCompassUIConfig;
-import com.gregtechceu.gtceu.api.gui.compass.GTRecipeViewCreator;
-import com.gregtechceu.gtceu.api.gui.compass.MultiblockAction;
-import com.gregtechceu.gtceu.api.item.IComponentItem;
-import com.gregtechceu.gtceu.api.item.IGTTool;
 import com.gregtechceu.gtceu.api.worldgen.GTOreDefinition;
 import com.gregtechceu.gtceu.api.worldgen.bedrockfluid.BedrockFluidDefinition;
 import com.gregtechceu.gtceu.api.worldgen.bedrockore.BedrockOreDefinition;
@@ -24,8 +18,6 @@ import com.gregtechceu.gtceu.integration.map.layer.builtin.OreRenderLayer;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
 
 import com.lowdragmc.lowdraglib.Platform;
-import com.lowdragmc.lowdraglib.gui.compass.CompassManager;
-import com.lowdragmc.lowdraglib.gui.compass.component.RecipeComponent;
 
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
@@ -63,9 +55,6 @@ public class ClientProxy {
     }
 
     public static void init() {
-        RecipeComponent.registerRecipeViewCreator(new GTRecipeViewCreator());
-        CompassManager.INSTANCE.registerUIConfig(GTCEu.MOD_ID, new GTCompassUIConfig());
-        CompassManager.INSTANCE.registerAction("multiblock", MultiblockAction::new);
         if (!Platform.isDatagen()) {
             ClientCacheManager.registerClientCache(GTClientCache.instance, "gtceu");
             Layers.registerLayer(OreRenderLayer::new, "ore_veins");

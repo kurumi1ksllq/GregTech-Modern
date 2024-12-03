@@ -20,7 +20,6 @@ import com.gregtechceu.gtceu.common.recipe.DimensionCondition;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import com.lowdragmc.lowdraglib.LDLib;
-import com.lowdragmc.lowdraglib.gui.compass.CompassManager;
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
@@ -40,6 +39,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import net.neoforged.fml.loading.FMLLoader;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
@@ -225,9 +225,9 @@ public class GTRecipeWidget extends WidgetGroup {
         int y = getSize().height - 30;
         addWidget(
                 new PredicatedButtonWidget(x, y, 15, 15, new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("ID")),
-                        cd -> Minecraft.getInstance().keyboardHandler.setClipboard(recipeId.toString()),
-                        () -> CompassManager.INSTANCE.devMode, CompassManager.INSTANCE.devMode)
-                        .setHoverTooltips("click to copy: " + recipeId));
+                        cd -> Minecraft.getInstance().keyboardHandler.setClipboard(recipe.id.toString()),
+                        () -> !FMLLoader.isProduction(), !FMLLoader.isProduction())
+                        .setHoverTooltips("click to copy: " + recipe.id));
     }
 
     private int getVoltageXOffset() {

@@ -8,7 +8,6 @@
         "BlockColorsMixin",
         "BlockModelMixin",
         "ClientLevelAccessor",
-        "CompassManagerMixin",
         "GuiGraphicsAccessor",
         "GuiGraphicsMixin",
         "GuiHeartTypeMixin",

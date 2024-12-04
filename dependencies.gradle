@@ -11,9 +11,18 @@ dependencies {
     api(forge.configuration)
     jarJar(forge.configuration)
 
-    // Create and its dependencies
-    compileOnly("com.simibubi.create:create-${libs.versions.minecraftVeryOld.get()}:${forge.versions.createForge.get()}:all") { transitive = false }
-    compileOnly forge.flywheel
+    // Configuration
+    api(forge.configuration)
+    jarJar(forge.configuration)
+
+    // Mixin (& Extras)
+    api(annotationProcessor("io.github.llamalad7:mixinextras-common:${this.forge.versions.mixinextras.get()}"))
+    jarJar("io.github.llamalad7:mixinextras-forge:${this.forge.versions.mixinextras.get()}")
+    annotationProcessor 'org.spongepowered:mixin:0.8.7:processor'
+
+    // Create and Flywheel
+    compileOnly("com.simibubi.create:create-${libs.versions.minecraft.get()}:${forge.versions.createForge.get()}:slim") { transitive = false }
+    compileOnly(forge.flywheel)
 
     // JEI
     compileOnly(forge.jei.common.api) { transitive = false }
@@ -21,13 +30,13 @@ dependencies {
     compileOnly(forge.jei.forge.impl) { transitive = false }
 
     // REI
-    compileOnly forge.rei.plugin
-    compileOnly forge.rei.api
-    compileOnly forge.rei.forge
+    compileOnly(forge.rei.plugin)
+    compileOnly(forge.rei.api)
+    compileOnly(forge.rei.forge)
 
     // EMI
-    compileOnlyApi("dev.emi:emi-neoforge:${forge.versions.emi.get()}:api")
-    implementation forge.emi
+    //compileOnly("dev.emi:emi-forge:${forge.versions.emi.get()}:api")
+    compileOnly(forge.emi)
 
     // TOP
     compileOnly(forge.theoneprobe) { transitive = false }
@@ -36,21 +45,22 @@ dependencies {
     compileOnly(forge.jade)
 
     // Curios
-    compileOnly("top.theillusivec4.curios:curios-neoforge:${forge.versions.curios.get()}:api")
-    runtimeOnly(forge.curios)
+    compileOnly("top.theillusivec4.curios:curios-forge:${forge.versions.curios.get()}:api")
 
     // AE2
     compileOnly(forge.ae2) { transitive = false }
     compileOnly("curse.maven:ae2wtlib-459929:5217955")
 
     // KJS
-    implementation(forge.kubejs)
+    compileOnly(forge.kubejs) { transitive = false }
+    compileOnly(forge.architectury)
+    compileOnly(forge.rhino)
 
     // Shimmer
     compileOnly(forge.shimmer.forge) { transitive = false }
-    compileOnly("maven.modrinth:embeddium:1.0.0-beta.1+mc1.21")
-    runtimeOnly("maven.modrinth:embeddium:1.0.0-beta.1+mc1.21")
-    compileOnly("maven.modrinth:oculus:1.20.1-1.6.9")
+    compileOnly("maven.rinth:embeddium:1.0.0-beta.1+mc1.21")
+    runtimeOnly("maven.rinth:embeddium:1.0.0-beta.1+mc1.21")
+    compileOnly("maven.rinth:oculus:1.20.1-1.6.9")
 
     // Xaero's map
     compileOnly(forge.xaerosminimap)
@@ -63,9 +73,58 @@ dependencies {
     // JAVD
     compileOnly(forge.javd) { transitive = false }
 
+    // FTB Teams
     compileOnly(forge.ftbteams)
     compileOnly(forge.ftblibrary)
 
+    // Argonauts
     compileOnly(forge.argonauts)
     compileOnly(forge.resourceful)
+
+    // xaerosWorldMap
+    compileOnly(forge.xaerosminimap)
+    compileOnly(forge.xaerosworldmap)
+
+    // journeyMap
+    compileOnly(forge.journeymap.api)
+    compileOnly(forge.journeymap.forge)
+
+    // Standard runtime s //
+    runtimeOnly(forge.jade)
+    runtimeOnly(forge.ae2)
+    runtimeOnly(forge.kotlinforforge)
+
+    // Runtime Recipe Viewers - uncomment whichever group you want to use //
+    runtimeOnly(forge.emi)
+
+//    runtimeOnly(forge.jei.forge.impl)
+
+//    runtimeOnly(forge.rei.forge)
+//    runtimeOnly(forge.architectury)
+//    runtimeOnly("me.shedaniel.cloth:cloth-config-forge:11.1.136")
+
+    //////////////////////////////////////////////////////
+    // Runtime s for dev testing with unclean client //
+    // Non-transitive by default                        //
+    //////////////////////////////////////////////////////
+    extraRuntimeOnly(forge.javd)
+    extraRuntimeOnly("curse.maven:trenzalore-870210:4848244")
+
+    extraRuntimeOnly("com.simibubi.create:create-${libs.versions.minecraft.get()}:${forge.versions.createForge.get()}:slim")
+    extraRuntimeOnly(forge.flywheel)
+
+    extraRuntimeOnly(forge.kubejs)
+    extraRuntimeOnly(forge.architectury)
+    extraRuntimeOnly(forge.rhino)
+
+    extraRuntimeOnly(forge.xaerosminimap)
+    extraRuntimeOnly(forge.xaerosworldmap)
+    extraRuntimeOnly(forge.journeymap.forge)
+
+    extraRuntimeOnly("top.theillusivec4.curios:curios-forge:${forge.versions.curios.get()}")
+    extraRuntimeOnly("curse.maven:spark-361579:4738952")
+    extraRuntimeOnly("curse.maven:observable-509575:5643037")
+    //////////////////////////
+
+    testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }

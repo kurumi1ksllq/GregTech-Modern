@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.integration;
+package com.gregtechceu.gtceu.integration.xei.widgets;
 
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.material.material.Material;

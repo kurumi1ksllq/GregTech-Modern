@@ -11,7 +11,7 @@ import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.fluid.*;
 import com.gregtechceu.gtceu.api.recipe.modifier.ParallelLogic;
 import com.gregtechceu.gtceu.api.recipe.ui.GTRecipeTypeUI;
 import com.gregtechceu.gtceu.client.TooltipsHandler;
-import com.gregtechceu.gtceu.integration.GTRecipeWidget;
+import com.gregtechceu.gtceu.integration.xei.widgets.GTRecipeWidget;
 import com.gregtechceu.gtceu.utils.FluidKey;
 import com.gregtechceu.gtceu.utils.GTHashMaps;
 import com.gregtechceu.gtceu.utils.OverlayedTankHandler;

@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.network.packets;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.worldgen.GTOreDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
+import com.gregtechceu.gtceu.integration.map.cache.client.GTClientCache;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -61,6 +62,7 @@ public class SPacketSyncOreVeins implements CustomPacketPayload {
     public static void execute(SPacketSyncOreVeins packet, IPayloadContext handler) {
         ClientProxy.CLIENT_ORE_VEINS.clear();
         ClientProxy.CLIENT_ORE_VEINS.putAll(packet.veins);
+        GTClientCache.instance.oreVeinDefinitionsChanged(ClientProxy.CLIENT_ORE_VEINS);
     }
 
     @Override

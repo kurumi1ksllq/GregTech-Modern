@@ -16,6 +16,7 @@ import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.ingredient.*;
 import com.gregtechceu.gtceu.api.tag.TagPrefix;
 import com.gregtechceu.gtceu.common.recipe.*;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.integration.kjs.recipe.components.CapabilityMap;
@@ -100,6 +101,13 @@ public interface GTRecipeSchema {
             }
             if (map != null) {
                 for (Object object : obj) {
+                    var recipeType = GTRegistries.RECIPE_TYPES.get(this.type.id);
+                    if (map.get(capability) != null &&
+                            map.get(capability).length >= recipeType.getMaxInputs(capability)) {
+                        ConsoleJS.SERVER.warn(String.format(
+                                "Trying to add more inputs than RecipeType can support, id: %s, Max %s%sInputs: %s",
+                                id, (perTick ? "Tick " : ""), capability.name, recipeType.getMaxInputs(capability)));
+                    }
                     map.add(capability, new Content(object, chance, maxChance, tierChanceBoost, null, null));
                 }
             }
@@ -118,6 +126,13 @@ public interface GTRecipeSchema {
             }
             if (map != null) {
                 for (Object object : obj) {
+                    var recipeType = GTRegistries.RECIPE_TYPES.get(this.type.id);
+                    if (map.get(capability) != null &&
+                            map.get(capability).length >= recipeType.getMaxOutputs(capability)) {
+                        ConsoleJS.SERVER.warn(String.format(
+                                "Trying to add more outputs than RecipeType can support, id: %s, Max %s%sOutputs: %s",
+                                id, (perTick ? "Tick " : ""), capability.name, recipeType.getMaxOutputs(capability)));
+                    }
                     map.add(capability, new Content(object, chance, maxChance, tierChanceBoost, null, null));
                 }
             }
@@ -132,7 +147,7 @@ public interface GTRecipeSchema {
             return this;
         }
 
-        public GTRecipeJS category(GTRecipeCategory category) {
+        public GTKubeRecipe category(GTRecipeCategory category) {
             setValue(CATEGORY, category.registryKey);
             save();
             return this;
@@ -143,6 +158,9 @@ public interface GTRecipeSchema {
         }
 
         public GTKubeRecipe EUt(long eu) {
+            if (eu == 0) {
+                throw new IllegalArgumentException(String.format("EUt can't be explicitly set to 0, id: %s", id));
+            }
             var lastPerTick = perTick;
             perTick = true;
             if (eu > 0) {
@@ -163,6 +181,9 @@ public interface GTRecipeSchema {
         }
 
         public GTKubeRecipe CWUt(int cwu) {
+            if (cwu == 0) {
+                throw new IllegalArgumentException(String.format("CWUt can't be explicitly set to 0, id: %s", id));
+            }
             var lastPerTick = perTick;
             perTick = true;
             if (cwu > 0) {
@@ -239,9 +260,9 @@ public interface GTRecipeSchema {
 
         public GTKubeRecipe chancedInput(SizedIngredient stack, int chance, int tierChanceBoost) {
             if (0 >= chance || chance > ChanceLogic.getMaxChancedValue()) {
-                GTCEu.LOGGER.error("Chance cannot be less or equal to 0 or more than {}. Actual: {}.",
-                        ChanceLogic.getMaxChancedValue(), chance, new Throwable());
-                return this;
+                throw new IllegalArgumentException(
+                        String.format("Chance cannot be less or equal to 0 or more than %s, Actual: %s, id: %s",
+                                ChanceLogic.getMaxChancedValue(), chance, id, new Throwable()));
             }
             int lastChance = this.chance;
             int lastTierChanceBoost = this.tierChanceBoost;
@@ -256,9 +277,9 @@ public interface GTRecipeSchema {
         @HideFromJS
         public GTKubeRecipe chancedOutput(SizedIngredient stack, int chance, int tierChanceBoost) {
             if (0 >= chance || chance > ChanceLogic.getMaxChancedValue()) {
-                GTCEu.LOGGER.error("Chance cannot be less or equal to 0 or more than {}. Actual: {}.",
-                        ChanceLogic.getMaxChancedValue(), chance, new Throwable());
-                return this;
+                throw new RecipeExceptionJS(
+                        String.format("Chance cannot be less or equal to 0 or more than %s, Actual: %s, id: %s",
+                                ChanceLogic.getMaxChancedValue(), chance, id, new Throwable()));
             }
             int lastChance = this.chance;
             int lastTierChanceBoost = this.tierChanceBoost;
@@ -273,9 +294,9 @@ public interface GTRecipeSchema {
         public GTKubeRecipe chancedFluidInput(SizedFluidIngredient stack, int chance,
                                               int tierChanceBoost) {
             if (0 >= chance || chance > ChanceLogic.getMaxChancedValue()) {
-                GTCEu.LOGGER.error("Chance cannot be less or equal to 0 or more than {}. Actual: {}.",
-                        ChanceLogic.getMaxChancedValue(), chance, new Throwable());
-                return this;
+                throw new RecipeExceptionJS(
+                        String.format("Chance cannot be less or equal to 0 or more than %s, Actual: %s, id: %s",
+                                ChanceLogic.getMaxChancedValue(), chance, id, new Throwable()));
             }
             int lastChance = this.chance;
             int lastTierChanceBoost = this.tierChanceBoost;
@@ -304,10 +325,9 @@ public interface GTRecipeSchema {
 
             String[] split = fraction.split("/");
             if (split.length > 2) {
-                GTCEu.LOGGER.error(
-                        "Fraction or number was not parsed correctly! Expected format is \"1/3\" or \"1000\". Actual: \"{}\".",
-                        fraction, new Throwable());
-                return this;
+                throw new RecipeExceptionJS(String.format(
+                        "Fraction or number was not parsed correctly! Expected format is \"1/3\" or \"1000\". Actual: \"%s\".",
+                        fraction, new Throwable()));
             }
 
             int chance;
@@ -317,10 +337,9 @@ public interface GTRecipeSchema {
                 try {
                     chance = (int) Double.parseDouble(split[0]);
                 } catch (NumberFormatException e) {
-                    GTCEu.LOGGER.error(
-                            "Fraction or number was not parsed correctly! Expected format is \"1/3\" or \"1000\". Actual: \"{}\".",
-                            fraction, new Throwable());
-                    return this;
+                    throw new RecipeExceptionJS(String.format(
+                            "Fraction or number was not parsed correctly! Expected format is \"1/3\" or \"1000\". Actual: \"%s\".",
+                            fraction, new Throwable()));
                 }
                 return chancedOutput(stack, chance, tierChanceBoost);
             }
@@ -328,21 +347,20 @@ public interface GTRecipeSchema {
                 chance = Integer.parseInt(split[0]);
                 maxChance = Integer.parseInt(split[1]);
             } catch (NumberFormatException e) {
-                GTCEu.LOGGER.error(
-                        "Fraction or number was not parsed correctly! Expected format is \"1/3\" or \"1000\". Actual: \"{}\".",
-                        fraction, new Throwable());
-                return this;
+                throw new RecipeExceptionJS(String.format(
+                        "Fraction or number was not parsed correctly! Expected format is \"1/3\" or \"1000\". Actual: \"%s\".",
+                        fraction, new Throwable()));
             }
 
             if (0 >= chance || chance > ChanceLogic.getMaxChancedValue()) {
-                GTCEu.LOGGER.error("Chance cannot be less or equal to 0 or more than {}. Actual: {}.",
-                        ChanceLogic.getMaxChancedValue(), chance, new Throwable());
-                return this;
+                throw new RecipeExceptionJS(
+                        String.format("Chance cannot be less or equal to 0 or more than %s, Actual: %s, id: %s",
+                                ChanceLogic.getMaxChancedValue(), chance, id, new Throwable()));
             }
             if (chance >= maxChance || maxChance > ChanceLogic.getMaxChancedValue()) {
-                GTCEu.LOGGER.error("Max Chance cannot be less or equal to Chance or more than {}. Actual: {}.",
-                        ChanceLogic.getMaxChancedValue(), maxChance, new Throwable());
-                return this;
+                throw new RecipeExceptionJS(String.format(
+                        "Max Chance cannot be less or equal to Chance or more than %s, Actual: %s, id: %s",
+                        ChanceLogic.getMaxChancedValue(), maxChance, id, new Throwable()));
             }
 
             int scalar = Math.floorDiv(ChanceLogic.getMaxChancedValue(), maxChance);
@@ -375,9 +393,9 @@ public interface GTRecipeSchema {
 
         public GTKubeRecipe chancedFluidOutput(SizedFluidIngredient stack, int chance, int tierChanceBoost) {
             if (0 >= chance || chance > ChanceLogic.getMaxChancedValue()) {
-                GTCEu.LOGGER.error("Chance cannot be less or equal to 0 or more than {}. Actual: {}.",
-                        ChanceLogic.getMaxChancedValue(), chance, new Throwable());
-                return this;
+                throw new RecipeExceptionJS(
+                        String.format("Chance cannot be less or equal to 0 or more than %s, Actual: %s, id: %s",
+                                ChanceLogic.getMaxChancedValue(), chance, id, new Throwable()));
             }
             int lastChance = this.chance;
             int lastTierChanceBoost = this.tierChanceBoost;
@@ -400,10 +418,9 @@ public interface GTRecipeSchema {
 
             String[] split = fraction.split("/");
             if (split.length > 2) {
-                GTCEu.LOGGER.error(
-                        "Fraction or number was not parsed correctly! Expected format is \"1/3\" or \"1000\". Actual: \"{}\".",
-                        fraction, new Throwable());
-                return this;
+                throw new RecipeExceptionJS(String.format(
+                        "Fraction or number was not parsed correctly! Expected format is \"1/3\" or \"1000\". Actual: \"%s\".",
+                        fraction, new Throwable()));
             }
 
             int chance;
@@ -413,10 +430,9 @@ public interface GTRecipeSchema {
                 try {
                     chance = (int) Double.parseDouble(split[0]);
                 } catch (NumberFormatException e) {
-                    GTCEu.LOGGER.error(
-                            "Fraction or number was not parsed correctly! Expected format is \"1/3\" or \"1000\". Actual: \"{}\".",
-                            fraction, new Throwable());
-                    return this;
+                    throw new RecipeExceptionJS(String.format(
+                            "Fraction or number was not parsed correctly! Expected format is \"1/3\" or \"1000\". Actual: \"%s\".",
+                            fraction, new Throwable()));
                 }
                 return chancedFluidOutput(stack, chance, tierChanceBoost);
             }
@@ -425,21 +441,20 @@ public interface GTRecipeSchema {
                 chance = Integer.parseInt(split[0]);
                 maxChance = Integer.parseInt(split[1]);
             } catch (NumberFormatException e) {
-                GTCEu.LOGGER.error(
-                        "Fraction or number was not parsed correctly! Expected format is \"1/3\" or \"1000\". Actual: \"{}\".",
-                        fraction, new Throwable());
-                return this;
+                throw new RecipeExceptionJS(String.format(
+                        "Fraction or number was not parsed correctly! Expected format is \"1/3\" or \"1000\". Actual: \"%s\".",
+                        fraction, e));
             }
 
             if (0 >= chance || chance > ChanceLogic.getMaxChancedValue()) {
-                GTCEu.LOGGER.error("Chance cannot be less or equal to 0 or more than {}. Actual: {}.",
-                        ChanceLogic.getMaxChancedValue(), chance, new Throwable());
-                return this;
+                throw new RecipeExceptionJS(
+                        String.format("Chance cannot be less or equal to 0 or more than %s, Actual: %s, id: %s",
+                                ChanceLogic.getMaxChancedValue(), chance, id, new Throwable()));
             }
             if (chance >= maxChance || maxChance > ChanceLogic.getMaxChancedValue()) {
-                GTCEu.LOGGER.error("Max Chance cannot be less or equal to Chance or more than {}. Actual: {}.",
-                        ChanceLogic.getMaxChancedValue(), maxChance, new Throwable());
-                return this;
+                throw new RecipeExceptionJS(String.format(
+                        "Max Chance cannot be less or equal to Chance or more than %s, Actual: %s, id: %s",
+                        ChanceLogic.getMaxChancedValue(), maxChance, id, new Throwable()));
             }
 
             int scalar = Math.floorDiv(ChanceLogic.getMaxChancedValue(), maxChance);
@@ -679,14 +694,13 @@ public interface GTRecipeSchema {
         private boolean applyResearchProperty(ResearchData.ResearchEntry researchEntry) {
             if (!ConfigHolder.INSTANCE.machines.enableResearch) return false;
             if (researchEntry == null) {
-                GTCEu.LOGGER.error("Assembly Line Research Entry cannot be empty.", new IllegalArgumentException());
-                return false;
+                throw new RecipeExceptionJS(
+                        String.format("Assembly Line Research Entry cannot be empty.", new IllegalArgumentException()));
             }
 
             if (!generatingRecipes) {
-                GTCEu.LOGGER.error("Cannot generate recipes when using researchWithoutRecipe()",
-                        new IllegalArgumentException());
-                return false;
+                throw new RecipeExceptionJS(String.format("Cannot generate recipes when using researchWithoutRecipe()",
+                        new IllegalArgumentException()));
             }
 
             if (getValue(CONDITIONS) == null) setValue(CONDITIONS, List.of());

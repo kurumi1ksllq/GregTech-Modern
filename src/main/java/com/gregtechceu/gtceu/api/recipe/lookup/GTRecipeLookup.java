@@ -481,11 +481,11 @@ public class GTRecipeLookup {
         if (recipe.getType() == GTRecipeTypes.COMBUSTION_GENERATOR_FUELS) {
             Content content = recipe.getInputContents(FluidRecipeCapability.CAP).get(0);
             SizedFluidIngredient fluid = FluidRecipeCapability.CAP.of(content.content);
-            //PowerlessJetpack.FUELS.put(fluid, recipe.duration);
+            //PowerlessJetpack.FUELS.putIfAbsent(fluid, recipe.duration);
         }
         List<List<AbstractMapIngredient>> items = fromRecipe(recipe);
         if (recurseIngredientTreeAdd(recipe, items, lookup, 0, 0)) {
-            recipeType.addToCategoryMap(recipe.recipeCategory, new RecipeHolder<>(recipe.id, recipe));
+            recipe.recipeCategory.addRecipe(recipe.recipeCategory, new RecipeHolder<>(recipe.id, recipe));
             return true;
         }
         return false;

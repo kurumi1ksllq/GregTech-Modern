@@ -25,7 +25,6 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 public class GTRecipeREICategory extends ModularUIDisplayCategory<GTRecipeDisplay> {
 
@@ -50,10 +49,9 @@ public class GTRecipeREICategory extends ModularUIDisplayCategory<GTRecipeDispla
         for (GTRecipeCategory category : GTRegistries.RECIPE_CATEGORIES) {
             if (!category.isXEIVisible() && !Platform.isDevEnv()) continue;
             var type = category.getRecipeType();
-            var recipes = type.getRecipesInCategory(category).stream();
+            if (category == type.getCategory()) type.buildRepresentativeRecipes();
             var identifier = CATEGORIES.apply(category);
-            Stream.concat(recipes, type.getRepresentativeRecipes().stream()
-                            .map(recipe -> new RecipeHolder<>(recipe.id, recipe)))
+            type.getRecipesInCategory(category).stream()
                     .map(r -> new GTRecipeDisplay(r, identifier))
                     .forEach(registry::add);
         }

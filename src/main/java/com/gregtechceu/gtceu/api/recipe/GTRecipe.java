@@ -125,7 +125,6 @@ public class GTRecipe implements Recipe<RecipeInput> {
         this.duration = duration;
         this.isFuel = isFuel;
         this.recipeCategory = (recipeCategory != GTRecipeCategory.DEFAULT) ? recipeCategory : recipeType.getCategory();
-        if (id != null) this.recipeType.addToCategoryMap(this.recipeCategory, new RecipeHolder<>(this.id, this));
     }
 
     public Map<RecipeCapability<?>, List<Content>> copyContents(Map<RecipeCapability<?>, List<Content>> contents,

@@ -77,7 +77,7 @@ neoForge {
 
         data {
             data()
-            sourceSet = sourceSets.main
+            sourceSet = sourceSets.extra
             ideName = "Data Generation"
 
             gameDirectory.set(file('run/data'))

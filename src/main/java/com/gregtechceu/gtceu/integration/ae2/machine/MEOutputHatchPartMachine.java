@@ -23,6 +23,7 @@ import appeng.api.config.Actionable;
 import appeng.api.stacks.AEFluidKey;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -114,12 +115,12 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine implements IMac
 
     private class InaccessibleInfiniteTank extends NotifiableFluidTank {
 
-        CustomFluidTank storage;
+        FluidStorageDelegate storage;
 
         public InaccessibleInfiniteTank(MetaMachine holder) {
             super(holder, List.of(new FluidStorageDelegate()), IO.OUT, IO.NONE);
             internalBuffer.setOnContentsChanged(this::onContentsChanged);
-            storage = getStorages()[0];
+            storage = (FluidStorageDelegate) getStorages()[0];
             allowSameFluids = true;
         }
 
@@ -129,9 +130,27 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine implements IMac
         }
 
         @Override
-        public FluidStack getFluidInTank(int tank) {
-            return storage.getFluid();
+        public List<Object> getContents() {
+            return Collections.emptyList();
         }
+
+        @Override
+        public double getTotalContentAmount() {
+            return 0;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public @NotNull FluidStack getFluidInTank(int tank) {
+            return FluidStack.EMPTY;
+        }
+
+        @Override
+        public void setFluidInTank(int tank, @NotNull FluidStack fluidStack) {}
 
         @Override
         public int getTankCapacity(int tank) {
@@ -140,7 +159,7 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine implements IMac
 
         @Override
         public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-            return storage.isFluidValid(stack);
+            return true;
         }
     }
 

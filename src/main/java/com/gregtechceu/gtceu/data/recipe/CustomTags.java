@@ -156,4 +156,5 @@ public class CustomTags {
 
     public static final TagKey<Fluid> LIGHTER_FLUIDS = TagUtil.createFluidTag("lighter_fluids");
     public static final TagKey<Fluid> MOLTEN_FLUIDS = TagUtil.createFluidTag("molten");
+    public static final TagKey<Fluid> POTION_FLUIDS = TagUtil.createFluidTag("potion");
 }

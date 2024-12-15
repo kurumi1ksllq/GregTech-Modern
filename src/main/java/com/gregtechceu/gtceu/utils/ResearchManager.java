@@ -200,13 +200,16 @@ public final class ResearchManager {
             emptyStick.set(DataComponents.CUSTOM_NAME, Component.translatable("gtceu.scanner.copy_stick_empty"));
             ItemStack resultStick = GTItems.TOOL_DATA_STICK.asStack();
             resultStick.set(DataComponents.CUSTOM_NAME, Component.translatable("gtceu.scanner.copy_stick_to"));
-            var recipe = GTRecipeTypes.SCANNER_RECIPES
+
+            GTRecipe recipe = GTRecipeTypes.SCANNER_RECIPES
                     .recipeBuilder("copy_" + GTStringUtils.itemStackToString(copiedStick))
                     .inputItems(emptyStick)
                     .notConsumable(copiedStick)
                     .outputItems(resultStick)
                     .duration(DURATION).EUt(EUT)
                     .build();
+            // for EMI to detect it's a synthetic recipe (not ever in JSON)
+            recipe.setId(recipe.getId().withPrefix("/"));
             GTRecipeTypes.SCANNER_RECIPES.addToMainCategory(recipe);
         }
     }

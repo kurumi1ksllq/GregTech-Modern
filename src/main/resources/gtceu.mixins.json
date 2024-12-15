@@ -48,6 +48,7 @@
         "LootPoolAccessor",
         "OreConfigurationMixin",
         "OreVeinifierMixin",
+        "PotionBrewingAccessor",
         "PrimedTntAccessor",
         "RecipeManagerAccessor",
         "RecipeManagerEarlyMixin",

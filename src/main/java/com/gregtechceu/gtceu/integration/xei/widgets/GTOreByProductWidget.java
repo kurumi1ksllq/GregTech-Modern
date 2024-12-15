@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 
+import com.gregtechceu.gtceu.integration.xei.handlers.item.CycleItemEntryHandler;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
@@ -16,19 +17,14 @@ import com.lowdragmc.lowdraglib.utils.TagOrCycleFluidTransfer;
 import com.lowdragmc.lowdraglib.utils.TagOrCycleItemStackTransfer;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.util.Either;
-import com.mojang.datafixers.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class GTOreByProductWidget extends WidgetGroup {
 
@@ -120,8 +116,8 @@ public class GTOreByProductWidget extends WidgetGroup {
             addWidget(new ImageWidget(0, 0, 176, 166, GuiTextures.OREBY_SIFT));
         }
 
-        List<Either<List<Pair<TagKey<Item>, Integer>>, List<ItemStack>>> itemInputs = recipeWrapper.itemInputs;
-        TagOrCycleItemStackTransfer itemInputsHandler = new TagOrCycleItemStackTransfer(itemInputs);
+        List<ItemEntryList> itemInputs = recipeWrapper.itemInputs;
+        CycleItemEntryHandler itemInputsHandler = new CycleItemEntryHandler(itemInputs);
         WidgetGroup itemStackGroup = new WidgetGroup();
         for (int i = 0; i < ITEM_INPUT_LOCATIONS.size(); i += 2) {
             final int finalI = i;
@@ -159,16 +155,18 @@ public class GTOreByProductWidget extends WidgetGroup {
             itemOutputExists.add(true);
         }
 
-        List<Either<List<Pair<TagKey<Fluid>, Integer>>, List<FluidStack>>> fluidInputs = recipeWrapper.fluidInputs;
-        TagOrCycleFluidTransfer fluidInputsHandler = new TagOrCycleFluidTransfer(fluidInputs);
+        List<FluidEntryList> fluidInputs = recipeWrapper.fluidInputs;
+        CycleFluidEntryHandler fluidInputsHandler = new CycleFluidEntryHandler(fluidInputs);
         WidgetGroup fluidStackGroup = new WidgetGroup();
         for (int i = 0; i < FLUID_LOCATIONS.size(); i += 2) {
             int slotIndex = i / 2;
-            if (!fluidInputs.get(slotIndex).map(Function.identity(), Function.identity()).isEmpty()) {
-                fluidStackGroup
-                        .addWidget(new TankWidget(new CustomFluidTank(fluidInputsHandler.getFluidInTank(slotIndex)),
-                                FLUID_LOCATIONS.get(i), FLUID_LOCATIONS.get(i + 1), false, false)
-                                .setIngredientIO(IngredientIO.INPUT).setBackground(GuiTextures.FLUID_SLOT));
+            if (!fluidInputs.get(slotIndex).isEmpty()) {
+                var tank = new TankWidget(new CustomFluidTank(fluidInputsHandler.getFluidInTank(slotIndex)),
+                        FLUID_LOCATIONS.get(i), FLUID_LOCATIONS.get(i + 1), false, false)
+                        .setIngredientIO(IngredientIO.INPUT)
+                        .setBackground(GuiTextures.FLUID_SLOT)
+                        .setShowAmount(false);
+                fluidStackGroup.addWidget(tank);
             }
         }
 

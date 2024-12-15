@@ -925,14 +925,17 @@ public class GTRecipeBuilder {
 
     public GTRecipeBuilder inputFluids(FluidStack input) {
         return input(FluidRecipeCapability.CAP, SizedFluidIngredient.of(
-                TagUtil.createFluidTag(BuiltInRegistries.FLUID.getKey(input.getFluid()).getPath()), input.getAmount()));
+                TagUtil.createFluidTag(BuiltInRegistries.FLUID.getKey(input.getFluid()).getPath()),
+                input.getAmount()
+                , input.getComponentsPatch()));
     }
 
     public GTRecipeBuilder inputFluids(FluidStack... inputs) {
         return input(FluidRecipeCapability.CAP, Arrays.stream(inputs).map(fluid -> {
             return SizedFluidIngredient.of(
                     TagUtil.createFluidTag(BuiltInRegistries.FLUID.getKey(fluid.getFluid()).getPath()),
-                    fluid.getAmount());
+                    fluid.getAmount(),
+                    fluid.getComponentsPatch());
         }).toArray(SizedFluidIngredient[]::new));
     }
 

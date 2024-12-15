@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.multiblock.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.integration.xei.handlers.item.CycleItemStackHandler;
 
 import com.lowdragmc.lowdraglib.LDLib;
 import com.lowdragmc.lowdraglib.Platform;

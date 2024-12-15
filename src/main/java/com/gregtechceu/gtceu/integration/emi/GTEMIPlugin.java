@@ -22,6 +22,8 @@ import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiStack;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.alchemy.Potions;
 
 /**
  * @author KilaBash
@@ -75,5 +77,15 @@ public class GTEMIPlugin implements EmiPlugin {
 
         // Comparators
         registry.setDefaultComparison(GTItems.PROGRAMMED_CIRCUIT.asItem(), Comparison.compareNbt());
+
+        Comparison potionComparison = Comparison.compareData(stack -> stack.get(DataComponents.POTION_CONTENTS));
+        PotionFluid potionFluid = GTFluids.POTION.get();
+        registry.setDefaultComparison(potionFluid.getSource(), potionComparison);
+        registry.setDefaultComparison(potionFluid.getFlowing(), potionComparison);
+
+        for (Potion potion : BuiltInRegistries.POTION) {
+            FluidStack stack = PotionFluidHelper.getFluidFromPotion(potion, PotionFluidHelper.BOTTLE_AMOUNT);
+            registry.addEmiStack(EmiStack.of(stack.getFluid(), stack.getTag()));
+        }
     }
 }

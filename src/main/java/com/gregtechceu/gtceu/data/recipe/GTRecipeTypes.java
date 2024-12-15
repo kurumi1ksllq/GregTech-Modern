@@ -19,7 +19,6 @@ import com.gregtechceu.gtceu.common.machine.trait.customlogic.CannerLogic;
 import com.gregtechceu.gtceu.common.machine.trait.customlogic.FormingPressLogic;
 import com.gregtechceu.gtceu.common.machine.trait.customlogic.LargeBoilerLogic;
 import com.gregtechceu.gtceu.common.machine.trait.customlogic.SteamBoilerLogic;
-import com.gregtechceu.gtceu.common.recipe.RPMCondition;
 import com.gregtechceu.gtceu.common.recipe.RockBreakerCondition;
 import com.gregtechceu.gtceu.data.machine.GTMachines;
 import com.gregtechceu.gtceu.data.material.GTMaterials;
@@ -47,7 +46,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
-import com.simibubi.create.AllBlocks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -68,7 +66,6 @@ public class GTRecipeTypes {
     public static final String GENERATOR = "generator";
     public static final String MULTIBLOCK = "multiblock";
     public static final String DUMMY = "dummy";
-    public static final String KINETIC = "kinetic";
 
     static {
         GTRegistries.RECIPE_TYPES.unfreeze();
@@ -704,28 +701,6 @@ public class GTRecipeTypes {
 
     public static void init() {
         GCYMRecipeTypes.init();
-        if (GTCEu.isCreateLoaded()) {
-            CREATE_MIXER_RECIPES = register("create_mixer", KINETIC).setMaxIOSize(6, 1, 2, 1).setEUIO(IO.IN)
-                    .setSlotOverlay(false, false, GuiTextures.DUST_OVERLAY)
-                    .setSlotOverlay(true, false, GuiTextures.DUST_OVERLAY)
-                    .setProgressBar(GuiTextures.PROGRESS_BAR_MIXER, LEFT_TO_RIGHT)
-                    .setSound(GTSoundEntries.MIXER)
-                    .setMaxTooltips(4)
-                    .setUiBuilder((recipe, group) -> {
-                        if (!recipe.conditions.isEmpty() && recipe.conditions.get(0) instanceof RPMCondition) {
-                            var transfer = new CustomItemStackHandler(AllBlocks.SHAFT.asStack());
-                            group.addWidget(new SlotWidget(transfer, 0, group.getSize().width - 30,
-                                    group.getSize().height - 30, false, false));
-                        }
-                    });
-            MIXER_RECIPES.onRecipeBuild((builder, provider) -> {
-                assert CREATE_MIXER_RECIPES != null;
-                CREATE_MIXER_RECIPES.copyFrom(builder)
-                        .duration(Math.max((builder.duration / 2), 1))
-                        .rpm(64)
-                        .save(provider);
-            });
-        }
         if (GTCEu.isKubeJSLoaded()) {
             GTRegistryInfo.registerFor(GTRegistries.RECIPE_TYPES.getRegistryName());
         }

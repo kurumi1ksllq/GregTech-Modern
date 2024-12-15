@@ -20,10 +20,6 @@ dependencies {
     jarJar("io.github.llamalad7:mixinextras-forge:${this.forge.versions.mixinextras.get()}")
     annotationProcessor 'org.spongepowered:mixin:0.8.7:processor'
 
-    // Create and Flywheel
-    compileOnly("com.simibubi.create:create-${libs.versions.minecraft.get()}:${forge.versions.createForge.get()}:slim") { transitive = false }
-    compileOnly(forge.flywheel)
-
     // JEI
     compileOnly(forge.jei.common.api) { transitive = false }
     compileOnly(forge.jei.forge.api) { transitive = false }
@@ -109,9 +105,6 @@ dependencies {
     //////////////////////////////////////////////////////
     extraRuntimeOnly(forge.javd)
     extraRuntimeOnly("curse.maven:trenzalore-870210:4848244")
-
-    extraRuntimeOnly("com.simibubi.create:create-${libs.versions.minecraft.get()}:${forge.versions.createForge.get()}:slim")
-    extraRuntimeOnly(forge.flywheel)
 
     extraRuntimeOnly(forge.kubejs)
     extraRuntimeOnly(forge.architectury)

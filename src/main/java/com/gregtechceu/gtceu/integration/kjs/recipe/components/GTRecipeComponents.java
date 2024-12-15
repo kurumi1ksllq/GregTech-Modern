@@ -113,7 +113,6 @@ public class GTRecipeComponents {
     public static final ContentJS<SizedFluidIngredient> FLUID = new ContentJS<>(SizedFluidIngredientComponent.NESTED,
             GTRecipeCapabilities.FLUID);
     public static final ContentJS<Long> EU = new ContentJS<>(NumberComponent.LONG, GTRecipeCapabilities.EU);
-    public static final ContentJS<Float> SU = new ContentJS<>(NumberComponent.FLOAT, GTRecipeCapabilities.SU);
     public static final ContentJS<Integer> CWU = new ContentJS<>(NumberComponent.INT, GTRecipeCapabilities.CWU);
 
     public static final CapabilityMapComponent IN = new CapabilityMapComponent(false);
@@ -133,7 +132,6 @@ public class GTRecipeComponents {
         VALID_CAPS.put(GTRecipeCapabilities.ITEM, ITEM);
         VALID_CAPS.put(GTRecipeCapabilities.FLUID, FLUID);
         VALID_CAPS.put(GTRecipeCapabilities.EU, EU);
-        VALID_CAPS.put(GTRecipeCapabilities.SU, SU);
         VALID_CAPS.put(GTRecipeCapabilities.CWU, CWU);
 
         KJSRecipeKeyEvent event = new KJSRecipeKeyEvent();

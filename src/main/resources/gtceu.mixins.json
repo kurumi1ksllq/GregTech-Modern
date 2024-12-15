@@ -61,7 +61,6 @@
         "StructureMixin",
         "TagLoaderMixin",
         "TagManagerMixin",
-        "create.RotationPropagatorMixin",
         "embeddium.BiomeColorCacheMixin",
         "embeddium.VanillaColorAdapterMixin",
         "emi.FluidEmiStackMixin",

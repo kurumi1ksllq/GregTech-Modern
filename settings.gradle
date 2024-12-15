@@ -35,8 +35,6 @@ dependencyResolutionManagement {
         // NeoForge
         def neoForgeVersion = "21.1.47"
         def registrateForgeVersion = "MC1.21-1.3.0+53"
-        def createForgeVersion = "0.5.1.d-9"
-        def flywheelForgeVersion = "0.6.9-5"
         def topForgeVersion = "1.20.4_neo-11.0.0-1"
         def curiosForgeVersion = "9.0.9"
         def jadeForgeVersion = "5366595"
@@ -76,12 +74,6 @@ dependencyResolutionManagement {
 
             def registrate = version("registrate", registrateForgeVersion)
             library("registrate", "com.tterrag.registrate", "Registrate").versionRef(registrate)
-
-            def createForge = version("createForge", createForgeVersion)
-            library("createForge", "com.simibubi.create", "create-${minecraftVersionVeryOld}").versionRef(createForge)
-
-            def flywheel = version("flywheel", flywheelForgeVersion)
-            library("flywheel", "com.jozufozu.flywheel", "flywheel-forge-${minecraftVersionVeryOld}").versionRef(flywheel)
 
             def jei = version("jei", jeiVersion)
             library("jei-common-api", "mezz.jei", "jei-${minecraftVersion}-common-api").versionRef(jei)

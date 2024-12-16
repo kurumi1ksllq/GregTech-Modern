@@ -64,7 +64,7 @@ public class FluidRecipeCapability extends RecipeCapability<SizedFluidIngredient
 
     @Override
     public SizedFluidIngredient copyWithModifier(SizedFluidIngredient content, ContentModifier modifier) {
-        return new SizedFluidIngredient(content.ingredient(), modifier.apply(content.amount()).intValue());
+        return new SizedFluidIngredient(content.ingredient(), modifier.apply(content.amount()));
     }
 
     @Override

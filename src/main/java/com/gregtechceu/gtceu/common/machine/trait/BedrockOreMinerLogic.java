@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.material.ChemicalHelper;
 import com.gregtechceu.gtceu.api.material.material.Material;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.worldgen.bedrockore.BedrockOreVeinSavedData;
 import com.gregtechceu.gtceu.api.worldgen.bedrockore.OreVeinWorldEntry;
@@ -64,10 +63,8 @@ public class BedrockOreMinerLogic extends RecipeLogic {
             }
             var match = getOreMinerRecipe();
             if (match != null) {
-                var copied = match.copy(new ContentModifier(match.duration, 0));
-                if (copied.matchRecipe(this.machine).isSuccess() &&
-                        copied.matchTickRecipe(this.machine).isSuccess()) {
-                    setupRecipe(copied);
+                if (match.matchRecipe(this.machine).isSuccess() && match.matchTickRecipe(this.machine).isSuccess()) {
+                    setupRecipe(match);
                 }
             }
         }
@@ -143,10 +140,8 @@ public class BedrockOreMinerLogic extends RecipeLogic {
         // try it again
         var match = getOreMinerRecipe();
         if (match != null) {
-            var copied = match.copy(new ContentModifier(match.duration, 0));
-            if (copied.matchRecipe(this.machine).isSuccess() &&
-                    copied.matchTickRecipe(this.machine).isSuccess()) {
-                setupRecipe(copied);
+            if (match.matchRecipe(this.machine).isSuccess() && match.matchTickRecipe(this.machine).isSuccess()) {
+                setupRecipe(match);
                 return;
             }
         }

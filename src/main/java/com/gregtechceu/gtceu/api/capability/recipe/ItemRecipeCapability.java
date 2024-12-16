@@ -84,19 +84,19 @@ public class ItemRecipeCapability extends RecipeCapability<SizedIngredient> {
     public SizedIngredient copyWithModifier(SizedIngredient content, ContentModifier modifier) {
         if (content instanceof SizedIngredient sizedIngredient) {
             return new SizedIngredient(sizedIngredient.ingredient(),
-                    modifier.apply(sizedIngredient.count()).intValue());
+                    modifier.apply(sizedIngredient.count()));
         } else if (content.ingredient().getCustomIngredient() instanceof IntProviderIngredient intProviderIngredient) {
             return new SizedIngredient(new IntProviderIngredient(intProviderIngredient.getInner(),
                     new FlooredInt(
                             new AddedFloat(
                                     new MultipliedFloat(
                                             new CastedFloat(intProviderIngredient.getCountProvider()),
-                                            ConstantFloat.of((float) modifier.getMultiplier())),
-                                    ConstantFloat.of((float) modifier.getAddition()))))
+                                            ConstantFloat.of((float) modifier.multiplier())),
+                                    ConstantFloat.of((float) modifier.addition()))))
                     .toVanilla(),
                     1);
         }
-        return new SizedIngredient(content.ingredient(), modifier.apply(1).intValue());
+        return new SizedIngredient(content.ingredient(), modifier.apply(1));
     }
 
     @Override

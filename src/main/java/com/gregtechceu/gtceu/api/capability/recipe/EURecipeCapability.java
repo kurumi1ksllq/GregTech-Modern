@@ -4,6 +4,8 @@ import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
+import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
+import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.content.SerializerLong;
 import com.gregtechceu.gtceu.utils.GTMath;
@@ -12,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author KilaBash
@@ -33,7 +36,7 @@ public class EURecipeCapability extends RecipeCapability<Long> {
 
     @Override
     public Long copyWithModifier(Long content, ContentModifier modifier) {
-        return modifier.apply(content).longValue();
+        return modifier.apply(content);
     }
 
     @Override
@@ -73,6 +76,27 @@ public class EURecipeCapability extends RecipeCapability<Long> {
             return Integer.MAX_VALUE;
         }
         return Math.abs(GTMath.saturatedCast(maxVoltage / recipeEUt));
+    }
+
+    /**
+     * Creates a {@code List<Content>} with the specified EU
+     * 
+     * @param eu EU/t value to put in the Content
+     * @return Singleton list of a new Content with the given EU value
+     */
+    public static List<Content> makeEUContent(Long eu) {
+        return List.of(
+                new Content(eu, ChanceLogic.getMaxChancedValue(), ChanceLogic.getMaxChancedValue(), 0, null, null));
+    }
+
+    /**
+     * Puts an EU Singleton Content in the given content map
+     * 
+     * @param contents content map
+     * @param eu       EU value to put inside content map
+     */
+    public static void putEUContent(Map<RecipeCapability<?>, List<Content>> contents, long eu) {
+        contents.put(EURecipeCapability.CAP, makeEUContent(eu));
     }
 
     public interface ICustomParallel {

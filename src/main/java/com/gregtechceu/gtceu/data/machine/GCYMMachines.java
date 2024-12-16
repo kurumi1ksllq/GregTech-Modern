@@ -9,19 +9,17 @@ import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.CoilWorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.material.ChemicalHelper;
 import com.gregtechceu.gtceu.api.multiblock.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
-import com.gregtechceu.gtceu.api.recipe.OverclockingLogic;
-import com.gregtechceu.gtceu.api.tag.TagPrefix;
+import com.gregtechceu.gtceu.client.renderer.machine.gcym.LargeChemicalBathRenderer;
+import com.gregtechceu.gtceu.client.renderer.machine.gcym.LargeMixerRenderer;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.DistillationTowerMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.gcym.LargeChemicalBathMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.gcym.LargeMixerMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ParallelHatchPartMachine;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import com.gregtechceu.gtceu.data.compass.GTCompassSections;
 import com.gregtechceu.gtceu.data.material.GTMaterials;
 import com.gregtechceu.gtceu.data.recipe.GTRecipeModifiers;
 import com.gregtechceu.gtceu.data.recipe.GTRecipeTypes;
@@ -83,7 +81,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeType(MACERATOR_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_SECURE_MACERATION)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXXXX", "XXXXX", "XXXXX", "XXXXX")
@@ -114,7 +112,7 @@ public class GCYMMachines {
                     GTCEu.id("block/multiblock/gcym/large_chemical_bath")))
             .hasTESR(true)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_WATERTIGHT)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXXXX", "XXXXX", "XXXXX")
@@ -142,7 +140,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeTypes(CENTRIFUGE_RECIPES, THERMAL_CENTRIFUGE_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_VIBRATION_SAFE)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("#XXX#", "XXXXX", "#XXX#")
@@ -174,7 +172,7 @@ public class GCYMMachines {
                     GTCEu.id("block/multiblock/gcym/large_mixer")))
             .hasTESR(true)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_REACTION_SAFE)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("#XXX#", "#XXX#", "#XXX#", "#XXX#", "#XXX#", "##F##")
@@ -203,7 +201,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeType(ELECTROLYZER_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_NONCONDUCTING)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXXXX", "XXXXX", "XXXXX")
@@ -230,7 +228,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeTypes(ELECTROMAGNETIC_SEPARATOR_RECIPES, POLARIZER_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_NONCONDUCTING)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXXXX", "XXXXX", "XXXXX")
@@ -256,7 +254,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.PACKER_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_TUNGSTENSTEEL_ROBUST)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXX", "XXX", "XXX")
@@ -287,7 +285,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeType(ASSEMBLER_RECIPES)
             .recipeModifiers(GTRecipeModifiers.DEFAULT_ENVIRONMENT_REQUIREMENT, GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_LARGE_SCALE_ASSEMBLING)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXXXXXXXX", "XXXXXXXXX", "XXXXXXXXX")
@@ -319,7 +317,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeType(CIRCUIT_ASSEMBLER_RECIPES)
             .recipeModifiers(GTRecipeModifiers.DEFAULT_ENVIRONMENT_REQUIREMENT, GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_LARGE_SCALE_ASSEMBLING)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXXXXXX", "XXXXXXX", "XXXXXXX")
@@ -352,7 +350,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeType(ARC_FURNACE_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_HIGH_TEMPERATURE_SMELTING)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("#XXX#", "#XXX#", "#XXX#", "#XXX#")
@@ -384,7 +382,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeType(LASER_ENGRAVER_RECIPES)
             .recipeModifiers(GTRecipeModifiers.DEFAULT_ENVIRONMENT_REQUIREMENT, GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_LASER_SAFE_ENGRAVING)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXXXX", "XXGXX", "XXGXX", "XXXXX")
@@ -414,7 +412,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeType(SIFTER_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_VIBRATION_SAFE)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("#X#X#", "#X#X#", "#XXX#", "XXXXX", "#XXX#")
@@ -511,7 +509,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeType(AUTOCLAVE_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_WATERTIGHT)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXX", "XXX", "XXX")
@@ -540,7 +538,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeTypes(BENDER_RECIPES, COMPRESSOR_RECIPES, FORGE_HAMMER_RECIPES, FORMING_PRESS_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_STRESS_PROOF)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXXXXXX", "XXXXXXX", "XXXXXXX")
@@ -568,7 +566,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeTypes(BREWING_RECIPES, FERMENTING_RECIPES, FLUID_HEATER_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_CORROSION_PROOF)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("#XXX#", "#XXX#", "#XXX#", "#XXX#", "#####")
@@ -599,7 +597,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeTypes(CUTTER_RECIPES, LATHE_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_SHOCK_PROOF)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXXXXXX", "XXXXXXX", "XXXXXXX", "##XXXXX")
@@ -628,7 +626,7 @@ public class GCYMMachines {
             .rotationState(RotationState.NON_Y_AXIS)
             .recipeTypes(DISTILLATION_RECIPES, DISTILLERY_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_WATERTIGHT)
             .pattern(definition -> {
                 TraceabilityPredicate casingPredicate = blocks(CASING_WATERTIGHT.get()).setMinGlobalLimited(40);
@@ -719,7 +717,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeTypes(EXTRACTOR_RECIPES, CANNER_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_WATERTIGHT)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXXXX", "XXXXX", "XXXXX")
@@ -745,7 +743,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeType(EXTRUDER_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_STRESS_PROOF)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("##XXX", "##XXX", "##XXX")
@@ -775,7 +773,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeType(FLUID_SOLIDFICATION_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_WATERTIGHT)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("#XXX#", "#XXX#", "#XXX#", "#XXX#")
@@ -804,7 +802,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeType(WIREMILL_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_STRESS_PROOF)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXXXX", "XXXXX", "XXX##")
@@ -1008,7 +1006,7 @@ public class GCYMMachines {
             .rotationState(RotationState.ALL)
             .recipeType(VACUUM_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
-                    GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK))
+                    GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_ALUMINIUM_FROSTPROOF)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXXXXXX#KKK", "XXXXXXX#KVK", "XXXXXXX#KVK", "XXXXXXX#KVK", "XXXXXXX#KKK", "XXXXXXX####",

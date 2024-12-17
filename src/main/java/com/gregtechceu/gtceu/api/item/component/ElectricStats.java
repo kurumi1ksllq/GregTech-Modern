@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.item.component;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapability;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
@@ -26,6 +27,10 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -94,34 +99,49 @@ public class ElectricStats implements IInteractionItem, ISubItemHandler, IAddInf
         if (!level.isClientSide && entity instanceof Player player && electricItem != null &&
                 electricItem.canProvideChargeExternally() &&
                 isInDischargeMode(stack) && electricItem.getCharge() > 0L) {
-            var inventoryPlayer = player.getInventory();
             long transferLimit = electricItem.getTransferLimit();
 
-            for (int i = 0; i < inventoryPlayer.getContainerSize(); i++) {
-                var itemInSlot = inventoryPlayer.getItem(i);
-                var slotElectricItem = GTCapabilityHelper.getElectricItem(itemInSlot);
-                if (slotElectricItem != null && !slotElectricItem.canProvideChargeExternally()) {
-                    long chargedAmount = chargeElectricItem(itemInSlot, transferLimit, electricItem, slotElectricItem);
+            if (GTCEu.isCuriosLoaded()) {
+                IItemHandler curios = CuriosApi.getCuriosInventory(player)
+                        .<IItemHandler>map(ICuriosItemHandler::getEquippedCurios)
+                        .orElse(EmptyItemHandler.INSTANCE);
+                for (int i = 0; i < curios.getSlots(); i++) {
+                    var itemInSlot = curios.getStackInSlot(i);
+                    long chargedAmount = chargeItemStack(transferLimit, electricItem, itemInSlot);
                     if (chargedAmount > 0L) {
                         transferLimit -= chargedAmount;
-                        if (transferLimit == 0L) break;
                     }
-                } else if (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE) {
-                    var feEnergyItem = GTCapabilityHelper.getForgeEnergyItem(itemInSlot);
-                    if (feEnergyItem != null && feEnergyItem.canReceive() &&
-                            feEnergyItem.getEnergyStored() < feEnergyItem.getMaxEnergyStored()) {
-                        long chargedAmount = chargeForgeEnergyItem(transferLimit, electricItem, feEnergyItem);
-                        if (chargedAmount > 0L) {
-                            transferLimit -= chargedAmount;
-                            if (transferLimit == 0L) break;
-                        }
-                    }
+                    if (transferLimit == 0L) break;
                 }
+            }
+
+            var inventoryPlayer = player.getInventory();
+            for (int i = 0; i < inventoryPlayer.getContainerSize(); i++) {
+                var itemInSlot = inventoryPlayer.getItem(i);
+                long chargedAmount = chargeItemStack(transferLimit, electricItem, itemInSlot);
+                if (chargedAmount > 0L) {
+                    transferLimit -= chargedAmount;
+                }
+                if (transferLimit == 0L) break;
             }
         }
     }
 
-    private static long chargeElectricItem(ItemStack stack, long maxDischargeAmount, IElectricItem source,
+    private static long chargeItemStack(long maxDischargeAmount, IElectricItem source, ItemStack target) {
+        var slotElectricItem = GTCapabilityHelper.getElectricItem(target);
+        if (slotElectricItem != null && !slotElectricItem.canProvideChargeExternally()) {
+            return chargeElectricItem(maxDischargeAmount, source, slotElectricItem);
+        } else if (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE) {
+            var feEnergyItem = GTCapabilityHelper.getForgeEnergyItem(target);
+            if (feEnergyItem != null && feEnergyItem.canReceive() &&
+                    feEnergyItem.getEnergyStored() < feEnergyItem.getMaxEnergyStored()) {
+                return chargeForgeEnergyItem(maxDischargeAmount, source, feEnergyItem);
+            }
+        }
+        return 0;
+    }
+
+    private static long chargeElectricItem(long maxDischargeAmount, IElectricItem source,
                                            IElectricItem target) {
         long maxDischarged = source.discharge(maxDischargeAmount, source.getTier(), false, false, true);
         long maxReceived = target.charge(maxDischarged, source.getTier(), false, true);

@@ -57,7 +57,7 @@ public class GTRecipeTypeBuilder extends BuilderBase<GTRecipeType> {
     @Setter
     protected BiConsumer<GTRecipe, WidgetGroup> uiBuilder;
 
-    public GTRecipeTypeBuilder(ResourceLocation i, Object... args) {
+    public GTRecipeTypeBuilder(ResourceLocation i) {
         super(i);
         name = i.getPath();
         maxInputs = new Object2IntOpenHashMap<>();

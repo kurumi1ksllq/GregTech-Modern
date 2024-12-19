@@ -584,10 +584,6 @@ public class Material implements Comparable<Material> {
             flags = new MaterialFlags();
         }
 
-        public Builder(ResourceLocation id, Object... args) {
-            this(id);
-        }
-
         /*
          * Material Types
          */

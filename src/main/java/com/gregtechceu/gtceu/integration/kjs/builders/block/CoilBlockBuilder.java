@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.block.SimpleCoilType;
 import com.gregtechceu.gtceu.api.material.material.Material;
 import com.gregtechceu.gtceu.common.block.CoilBlock;
-import com.gregtechceu.gtceu.integration.kjs.builders.RendererBlockItemBuilder;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -36,14 +35,6 @@ public class CoilBlockBuilder extends BlockBuilder {
     public CoilBlockBuilder coilMaterial(@NotNull Supplier<@Nullable Material> material) {
         this.material = material;
         return this;
-    }
-
-    @Override
-    public void generateAssets(KubeAssetGenerator generator) {}
-
-    @Override
-    protected ItemBuilder getOrCreateItemBuilder() {
-        return itemBuilder == null ? (itemBuilder = new RendererBlockItemBuilder(id)) : itemBuilder;
     }
 
     @Override

@@ -301,7 +301,7 @@ public class Sizing implements Animatable<Sizing> {
 
         @Override
         public float contentFactor() {
-            return this.first.contentFactor() + this.second.contentFactor();
+            return (this.first.contentFactor() + this.second.contentFactor()) / 2;
         }
 
         @Override

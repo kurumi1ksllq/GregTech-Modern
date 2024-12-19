@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -158,6 +159,17 @@ public class VanillaRecipeHelper {
     public static void addSmeltingRecipe(RecipeOutput provider, @NotNull String regName, ItemStack input,
                                          ItemStack output) {
         addSmeltingRecipe(provider, GTCEu.id(regName), input, output, 0.0f);
+    }
+
+    public static void addSmeltingRecipe(RecipeOutput provider, @NotNull String regName, Item input,
+                                         Item output) {
+        addSmeltingRecipe(provider, GTCEu.id(regName), input.getDefaultInstance(), output.getDefaultInstance(), 0.0f);
+    }
+
+    public static void addSmeltingRecipe(RecipeOutput provider, @NotNull String regName, Item input,
+                                         Item output, float experience) {
+        addSmeltingRecipe(provider, GTCEu.id(regName), input.getDefaultInstance(), output.getDefaultInstance(),
+                experience);
     }
 
     public static void addSmeltingRecipe(RecipeOutput provider, @NotNull String regName, ItemStack input,

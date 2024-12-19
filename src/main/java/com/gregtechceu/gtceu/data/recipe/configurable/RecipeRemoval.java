@@ -162,6 +162,7 @@ public class RecipeRemoval {
         registry.accept(ResourceLocation.withDefaultNamespace("light_weighted_pressure_plate"));
         registry.accept(ResourceLocation.withDefaultNamespace("stone_button"));
         registry.accept(ResourceLocation.withDefaultNamespace("polished_blackstone_button"));
+        registry.accept(ResourceLocation.withDefaultNamespace("calibrated_sculk_sensor>"));
     }
 
     private static void hardToolArmorRecipes(Consumer<ResourceLocation> registry) {
@@ -363,7 +364,6 @@ public class RecipeRemoval {
         registry.accept(ResourceLocation.withDefaultNamespace("polished_diorite"));
         registry.accept(ResourceLocation.withDefaultNamespace("polished_granite"));
         registry.accept(ResourceLocation.withDefaultNamespace("coarse_dirt"));
-        registry.accept(ResourceLocation.withDefaultNamespace("smooth_sandstone"));
         registry.accept(ResourceLocation.withDefaultNamespace("chiseled_sandstone"));
         registry.accept(ResourceLocation.withDefaultNamespace("chiseled_quartz_block"));
         registry.accept(ResourceLocation.withDefaultNamespace("stone_bricks"));
@@ -373,43 +373,43 @@ public class RecipeRemoval {
         registry.accept(ResourceLocation.withDefaultNamespace("red_nether_bricks"));
         registry.accept(ResourceLocation.withDefaultNamespace("red_sandstone"));
         registry.accept(ResourceLocation.withDefaultNamespace("chiseled_red_sandstone"));
-        registry.accept(ResourceLocation.withDefaultNamespace("smooth_red_sandstone"));
         registry.accept(ResourceLocation.withDefaultNamespace("bookshelf"));
         registry.accept(ResourceLocation.withDefaultNamespace("quartz_pillar"));
         registry.accept(ResourceLocation.withDefaultNamespace("sea_lantern"));
         registry.accept(ResourceLocation.withDefaultNamespace("white_wool_from_string"));
-        // TODO Add extruder/laser engraver recipes for all vanilla stones to keep parity with GT stones
         registry.accept(ResourceLocation.withDefaultNamespace("cracked_stone_bricks"));
         registry.accept(ResourceLocation.withDefaultNamespace("mossy_cobblestone_from_moss_block"));
         registry.accept(ResourceLocation.withDefaultNamespace("mossy_cobblestone_from_vine"));
-        // TODO add recipes for ALL of these. sigh where do the nitpicks end
-        // registry.accept(new ResourceLocation("minecraft:deepslate_bricks"));
-        // registry.accept(new ResourceLocation("minecraft:cracked_nether_bricks"));
-        // registry.accept(new ResourceLocation("minecraft:chiseled_nether_bricks"));
-        // registry.accept(new ResourceLocation("minecraft:polished_blackstone_bricks"));
-        // registry.accept(new ResourceLocation("minecraft:cracked_polished_blackstone_bricks"));
-        // registry.accept(new ResourceLocation("minecraft:quartz_bricks"));
-        // registry.accept(new ResourceLocation("minecraft:polished_deepslate"));
-        // registry.accept(new ResourceLocation("minecraft:polished_basalt"));
-        // registry.accept(new ResourceLocation("minecraft:chiseled_polished_blackstone"));
-        // registry.accept(new ResourceLocation("minecraft:deepslate_tiles"));
-        // registry.accept(new ResourceLocation("minecraft:cracked_deepslate_tiles"));
-        // registry.accept(new ResourceLocation("minecraft:chiseled_deepslate"));
-        // registry.accept(new ResourceLocation("minecraft:cracked_deepslate_bricks"));
-        // registry.accept(new ResourceLocation("minecraft:cut_red_sandstone"));
-        // registry.accept(new ResourceLocation("minecraft:polished_basalt"));
-        // registry.accept(new ResourceLocation("minecraft:polished_blackstone"));
-        // registry.accept(new ResourceLocation("minecraft:cut_copper"));
-        // registry.accept(new ResourceLocation("minecraft:exposed_cut_copper"));
-        // registry.accept(new ResourceLocation("minecraft:weathered_cut_copper"));
-        // registry.accept(new ResourceLocation("minecraft:oxidized_cut_copper"));
-        // registry.accept(new ResourceLocation("minecraft:waxed_cut_copper"));
-        // registry.accept(new ResourceLocation("minecraft:waxed_exposed_cut_copper"));
-        // registry.accept(new ResourceLocation("minecraft:waxed_weathered_cut_copper"));
-        // registry.accept(new ResourceLocation("minecraft:waxed_oxidized_cut_copper"));
-        // registry.accept(new ResourceLocation("minecraft:end_crystal"));
+        registry.accept(ResourceLocation.withDefaultNamespace("deepslate_bricks"));
+        registry.accept(ResourceLocation.withDefaultNamespace("cracked_nether_bricks"));
+        registry.accept(ResourceLocation.withDefaultNamespace("chiseled_nether_bricks"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_blackstone_bricks"));
+        registry.accept(ResourceLocation.withDefaultNamespace("cracked_polished_blackstone_bricks"));
+        registry.accept(ResourceLocation.withDefaultNamespace("quartz_bricks"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_deepslate"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_basalt"));
+        registry.accept(ResourceLocation.withDefaultNamespace("chiseled_polished_blackstone"));
+        registry.accept(ResourceLocation.withDefaultNamespace("deepslate_tiles"));
+        registry.accept(ResourceLocation.withDefaultNamespace("cracked_deepslate_tiles"));
+        registry.accept(ResourceLocation.withDefaultNamespace("chiseled_deepslate"));
+        registry.accept(ResourceLocation.withDefaultNamespace("cracked_deepslate_bricks"));
+        registry.accept(ResourceLocation.withDefaultNamespace("cut_red_sandstone"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_basalt"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_blackstone"));
+        registry.accept(ResourceLocation.withDefaultNamespace("cut_copper"));
+        registry.accept(ResourceLocation.withDefaultNamespace("exposed_cut_copper"));
+        registry.accept(ResourceLocation.withDefaultNamespace("weathered_cut_copper"));
+        registry.accept(ResourceLocation.withDefaultNamespace("oxidized_cut_copper"));
+        registry.accept(ResourceLocation.withDefaultNamespace("waxed_cut_copper"));
+        registry.accept(ResourceLocation.withDefaultNamespace("waxed_exposed_cut_copper"));
+        registry.accept(ResourceLocation.withDefaultNamespace("waxed_weathered_cut_copper"));
+        registry.accept(ResourceLocation.withDefaultNamespace("waxed_oxidized_cut_copper"));
+        registry.accept(ResourceLocation.withDefaultNamespace("end_crystal"));
         registry.accept(ResourceLocation.withDefaultNamespace("end_rod"));
-        // registry.accept(new ResourceLocation("minecraft:mud_bricks")); //no other way to obtain these rn
+        registry.accept(ResourceLocation.withDefaultNamespace("mud_bricks"));
+        registry.accept(ResourceLocation.withDefaultNamespace("mossy_stone_bricks_from_vine"));
+        registry.accept(ResourceLocation.withDefaultNamespace("mossy_stone_bricks_from_moss_block"));
+        registry.accept(ResourceLocation.withDefaultNamespace("packed_mud"));
 
         // Carpet replacement
         for (DyeColor color : DyeColor.values()) {
@@ -464,5 +464,70 @@ public class RecipeRemoval {
         registry.accept(ResourceLocation.withDefaultNamespace("polished_deepslate_slab"));
         registry.accept(ResourceLocation.withDefaultNamespace("deepslate_brick_slab"));
         registry.accept(ResourceLocation.withDefaultNamespace("deepslate_tile_slab"));
+        // stair
+        registry.accept(ResourceLocation.withDefaultNamespace("stone_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("cobblestone_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("mossy_cobblestone_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("stone_brick_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("mossy_stone_brick_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("granite_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_granite_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("diorite_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_diorite_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("andesite_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_andesite_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("cobbled_deepslate_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_deepslate_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("deepslate_brick_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("deepslate_tile_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("brick_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("mud_brick_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("sandstone_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("smooth_sandstone_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("red_sandstone_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("smooth_red_sandstone_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("prismarine_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("prismarine_brick_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("dark_prismarine_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("nether_brick_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("red_nether_brick_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("blackstone_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_blackstone_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_blackstone_brick_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("end_stone_brick_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("purpur_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("quartz_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("smooth_quartz_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("cut_copper_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("exposed_cut_copper_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("weathered_cut_copper_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("oxidized_cut_copper_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("waxed_cut_copper_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("waxed_exposed_cut_copper_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("waxed_weathered_cut_copper_stairs"));
+        registry.accept(ResourceLocation.withDefaultNamespace("waxed_oxidized_cut_copper_stairs"));
+        // wall
+        registry.accept(ResourceLocation.withDefaultNamespace("cobblestone_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("mossy_cobblestone_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("stone_brick_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("mossy_stone_brick_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("granite_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("diorite_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("andesite_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("cobbled_deepslate_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_deepslate_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("deepslate_brick_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("deepslate_tile_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("brick_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("mud_brick_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("sandstone_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("red_sandstone_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("prismarine_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("nether_brick_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("red_nether_brick_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("blackstone_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_blackstone_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("polished_blackstone_brick_wall"));
+        registry.accept(ResourceLocation.withDefaultNamespace("end_stone_brick_wall"));
     }
 }

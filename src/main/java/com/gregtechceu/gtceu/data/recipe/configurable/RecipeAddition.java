@@ -47,7 +47,7 @@ public class RecipeAddition {
         if (ConfigHolder.INSTANCE.recipes.nerfPaperCrafting) nerfPaperCrafting(provider);
         if (ConfigHolder.INSTANCE.recipes.hardAdvancedIronRecipes) hardAdvancedIronRecipes(provider);
         if (ConfigHolder.INSTANCE.recipes.flintAndSteelRequireSteel) flintAndSteelRequireSteel(provider);
-        if (ConfigHolder.INSTANCE.recipes.removeVanillaBlockRecipes) removeVanillaBlockRecipes(provider);
+        if (ConfigHolder.INSTANCE.recipes.removeVanillaBlockRecipes) vanillaBlockRecipes(provider);
     }
 
     private static void steelSteamMultiblocks(RecipeOutput provider) {
@@ -278,18 +278,6 @@ public class RecipeAddition {
                     .outputItems(new ItemStack(Blocks.PISTON, 16))
                     .duration(800).EUt(VA[LV]).save(provider);
 
-            VanillaRecipeHelper.addShapedRecipe(provider, "stone_pressure_plate",
-                    new ItemStack(Blocks.STONE_PRESSURE_PLATE, 2), "ShS", "LCL", "SdS",
-                    'S', new UnificationEntry(TagPrefix.screw, GTMaterials.Iron),
-                    'L', new ItemStack(Blocks.STONE_SLAB),
-                    'C', new UnificationEntry(TagPrefix.spring, GTMaterials.Iron));
-
-            VanillaRecipeHelper.addShapedRecipe(provider, "polished_blackstone_pressure_plate",
-                    new ItemStack(Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE, 2), "ShS", "LCL", "SdS",
-                    'S', new UnificationEntry(TagPrefix.screw, GTMaterials.Iron),
-                    'L', new ItemStack(Blocks.POLISHED_BLACKSTONE_SLAB),
-                    'C', new UnificationEntry(TagPrefix.spring, GTMaterials.Iron));
-
             VanillaRecipeHelper.addShapedRecipe(provider, "heavy_weighted_pressure_plate",
                     new ItemStack(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE), "ShS", "LCL", "SdS",
                     'S', new UnificationEntry(TagPrefix.screw, GTMaterials.Steel),
@@ -302,18 +290,6 @@ public class RecipeAddition {
                     'L', new UnificationEntry(TagPrefix.plate, GTMaterials.Iron),
                     'C', new UnificationEntry(TagPrefix.spring, GTMaterials.Steel));
 
-            ASSEMBLER_RECIPES.recipeBuilder("stone_pressure_plate")
-                    .inputItems(TagPrefix.spring, GTMaterials.Iron)
-                    .inputItems(new ItemStack(Blocks.STONE_SLAB, 2))
-                    .outputItems(new ItemStack(Blocks.STONE_PRESSURE_PLATE, 2))
-                    .duration(100).EUt(VA[ULV]).save(provider);
-
-            ASSEMBLER_RECIPES.recipeBuilder("polished_blackstone_pressure_plate")
-                    .inputItems(TagPrefix.spring, GTMaterials.Iron)
-                    .inputItems(new ItemStack(Blocks.POLISHED_BLACKSTONE_SLAB, 2))
-                    .outputItems(new ItemStack(Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE, 2))
-                    .duration(100).EUt(VA[ULV]).save(provider);
-
             ASSEMBLER_RECIPES.recipeBuilder("light_weighted_pressure_plate")
                     .inputItems(TagPrefix.spring, GTMaterials.Steel)
                     .inputItems(TagPrefix.plate, GTMaterials.Gold)
@@ -325,13 +301,6 @@ public class RecipeAddition {
                     .inputItems(TagPrefix.plate, GTMaterials.Iron)
                     .outputItems(new ItemStack(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE))
                     .duration(200).EUt(16).save(provider);
-
-            VanillaRecipeHelper.addShapedRecipe(provider, "stone_button", new ItemStack(Blocks.STONE_BUTTON, 6), "sP",
-                    'P', new ItemStack(Blocks.STONE_PRESSURE_PLATE));
-
-            VanillaRecipeHelper.addShapedRecipe(provider, "blackstone_button",
-                    new ItemStack(Blocks.POLISHED_BLACKSTONE_BUTTON, 6), "sP",
-                    'P', new ItemStack(Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE));
 
             CUTTER_RECIPES.recipeBuilder("stone_button")
                     .inputItems(new ItemStack(Blocks.STONE_PRESSURE_PLATE))
@@ -1249,6 +1218,15 @@ public class RecipeAddition {
                     .inputItems(Items.CRYING_OBSIDIAN, 6).inputItems(Items.GLOWSTONE, 3)
                     .outputItems(new ItemStack(Blocks.RESPAWN_ANCHOR)).save(provider);
         }
+    }
+
+    private static void vanillaBlockRecipes(RecipeOutput provider) {
+        COMPRESSOR_RECIPES.recipeBuilder("mud_bricks")
+                .inputItems(Items.PACKED_MUD, 1)
+                .outputItems(Items.MUD_BRICKS, 1)
+                .duration(200)
+                .EUt(4)
+                .save(provider);
     }
 
     private static void addBedRecipe(RecipeOutput provider, DyeColor color) {

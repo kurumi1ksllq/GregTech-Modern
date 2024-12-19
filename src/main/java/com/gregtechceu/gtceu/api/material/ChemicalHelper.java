@@ -414,5 +414,6 @@ public class ChemicalHelper {
         }
         GTItems.toUnify.forEach(ChemicalHelper::registerUnificationItems);
         WoodMachineRecipes.registerUnificationInfo();
+        StoneMachineRecipes.registerUnificationInfo();
     }
 }

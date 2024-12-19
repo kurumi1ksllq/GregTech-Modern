@@ -387,7 +387,7 @@ public class WoodMachineRecipes {
             }
             if (entry.addFenceGatesUnificationInfo) {
                 ChemicalHelper.registerMaterialInfo(entry.fenceGate,
-                        new ItemMaterialInfo(new MaterialStack(entry.material, M * 3)));
+                        new ItemMaterialInfo(new MaterialStack(entry.material, M * 2)));
             }
         }
 
@@ -397,7 +397,7 @@ public class WoodMachineRecipes {
             }
             if (entry.addStairsUnificationInfo) {
                 ChemicalHelper.registerMaterialInfo(entry.stairs,
-                        new ItemMaterialInfo(new MaterialStack(entry.material, (3 * M) / 2)));
+                        new ItemMaterialInfo(new MaterialStack(entry.material, (3 * M) / 4)));
             }
         }
 
@@ -418,7 +418,7 @@ public class WoodMachineRecipes {
 
         if (entry.pressurePlate != null && entry.addPressurePlatesUnificationInfo) {
             ChemicalHelper.registerMaterialInfo(entry.pressurePlate,
-                    new ItemMaterialInfo(new MaterialStack(entry.material, M)));
+                    new ItemMaterialInfo(new MaterialStack(entry.material, M / 4)));
         }
     }
 

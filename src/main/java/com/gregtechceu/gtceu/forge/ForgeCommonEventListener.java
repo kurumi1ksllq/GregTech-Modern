@@ -29,6 +29,9 @@ import com.gregtechceu.gtceu.common.network.packets.SPacketSendWorldID;
 import com.gregtechceu.gtceu.common.network.packets.SPacketSyncBedrockOreVeins;
 import com.gregtechceu.gtceu.common.network.packets.SPacketSyncFluidVeins;
 import com.gregtechceu.gtceu.common.network.packets.SPacketSyncOreVeins;
+import com.gregtechceu.gtceu.common.machine.owner.IMachineOwner;
+import com.gregtechceu.gtceu.common.network.GTNetwork;
+import com.gregtechceu.gtceu.common.network.packets.*;
 import com.gregtechceu.gtceu.common.network.packets.hazard.SPacketAddHazardZone;
 import com.gregtechceu.gtceu.common.network.packets.hazard.SPacketRemoveHazardZone;
 import com.gregtechceu.gtceu.common.network.packets.hazard.SPacketSyncLevelHazards;
@@ -168,7 +171,7 @@ public class ForgeCommonEventListener {
     public static void onBreakEvent(BlockEvent.BreakEvent event) {
         var machine = MetaMachine.getMachine(event.getLevel(), event.getPos());
         if (machine != null) {
-            if (!MetaMachineBlock.canBreakOwnerMachine(event.getPlayer(), machine.holder)) {
+            if (!IMachineOwner.canBreakOwnerMachine(event.getPlayer(), machine.holder)) {
                 event.setCanceled(true);
             }
         }

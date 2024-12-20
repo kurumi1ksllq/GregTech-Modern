@@ -334,24 +334,10 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
             if (result.result() != InteractionResult.PASS) return result;
         }
         if (shouldOpenUi && machine instanceof IUIMachine uiMachine &&
-                canOpenOwnerMachine(player, machine.getHolder())) {
+                IMachineOwner.canOpenOwnerMachine(player, machine.getHolder())) {
             return uiMachine.tryToOpenUI(player, hand, hit);
         }
         return shouldOpenUi ? ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION : ItemInteractionResult.CONSUME;
-    }
-
-    public boolean canOpenOwnerMachine(Player player, IMachineBlockEntity machine) {
-        if (!ConfigHolder.INSTANCE.machines.onlyOwnerGUI) return true;
-        if (player.hasPermissions(ConfigHolder.INSTANCE.machines.ownerOPBypass)) return true;
-        if (machine.getOwner() == null) return true;
-        return machine.getOwner().isPlayerInTeam(player) || machine.getOwner().isPlayerFriendly(player);
-    }
-
-    public static boolean canBreakOwnerMachine(Player player, IMachineBlockEntity machine) {
-        if (!ConfigHolder.INSTANCE.machines.onlyOwnerBreak) return true;
-        if (player.hasPermissions(ConfigHolder.INSTANCE.machines.ownerOPBypass)) return true;
-        if (machine.getOwner() == null) return true;
-        return machine.getOwner().isPlayerInTeam(player);
     }
 
     public boolean canConnectRedstone(BlockGetter level, BlockPos pos, Direction side) {

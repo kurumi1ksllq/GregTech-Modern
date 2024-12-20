@@ -1,19 +1,22 @@
 package com.gregtechceu.gtceu.common.item.behavior;
 
+import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IDataItem;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.data.tag.GTDataComponents;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEPatternBufferPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEPatternBufferProxyPartMachine;
+import com.gregtechceu.gtceu.common.machine.owner.IMachineOwner;
 import com.gregtechceu.gtceu.utils.ResearchManager;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
@@ -82,24 +85,24 @@ public class DataItemBehavior implements IInteractionItem, IAddInformation, IDat
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-        Level level = context.getLevel();
-        BlockPos pos = context.getClickedPos();
-        ItemStack stack = context.getItemInHand();
-        if (!level.isClientSide) {
-            MetaMachine machine = MetaMachine.getMachine(level, pos);
-            Pair<GTRecipeType, String> researchData = ResearchManager.readResearchId(stack);
-            if (machine instanceof MEPatternBufferPartMachine && researchData == null) {
-                stack.set(GTDataComponents.DATA_COPY_POS, pos);
-            } else if (machine instanceof MEPatternBufferProxyPartMachine proxy) {
-                if (stack.has(GTDataComponents.DATA_COPY_POS)) {
-                    BlockPos bufferPos = stack.get(GTDataComponents.DATA_COPY_POS);
-                    proxy.setBuffer(bufferPos);
+    public InteractionResult onItemUseFirst(ItemStack itemStack, UseOnContext context) {
+        if (context.getLevel().getBlockEntity(context.getClickedPos()) instanceof MetaMachineBlockEntity blockEntity) {
+            if (!IMachineOwner.canOpenOwnerMachine(context.getPlayer(), blockEntity)) {
+                return InteractionResult.FAIL;
+            }
+            var machine = blockEntity.getMetaMachine();
+            if (machine instanceof IDataStickInteractable interactable) {
+                if (context.isSecondaryUseActive()) {
+                    if (ResearchManager.readResearchId(itemStack) == null) {
+                        return interactable.onDataStickShiftUse(context.getPlayer(), itemStack);
+                    }
+                } else {
+                    return interactable.onDataStickUse(context.getPlayer(), itemStack);
                 }
             } else {
                 return InteractionResult.PASS;
             }
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.sidedSuccess(context.getLevel().isClientSide);
     }
 }

@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.integration.jade;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.common.blockentity.FluidPipeBlockEntity;
-import com.gregtechceu.gtceu.data.item.GTItems;
+import com.gregtechceu.gtceu.common.data.GTMaterialItems;
 import com.gregtechceu.gtceu.integration.jade.provider.*;
 
 import net.minecraft.world.item.Item;
@@ -83,7 +83,7 @@ public class GTJadePlugin implements IWailaPlugin {
     }
 
     static {
-        GTItems.TOOL_ITEMS.columnMap().forEach((type, map) -> {
+        GTMaterialItems.TOOL_ITEMS.columnMap().forEach((type, map) -> {
             if (type.toolDefinition.getTool().rules().isEmpty() || map.isEmpty()) return;
 
             List<Item> tools = map

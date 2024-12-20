@@ -7,7 +7,6 @@ import com.gregtechceu.gtceu.api.cover.filter.*;
 import com.gregtechceu.gtceu.api.gui.misc.ProspectorMode;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
-import com.gregtechceu.gtceu.api.item.IGTTool;
 import com.gregtechceu.gtceu.api.item.TagPrefixItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.component.*;
@@ -75,15 +74,11 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 
-import com.google.common.collect.ArrayTable;
-import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Table;
 import com.tterrag.registrate.builders.ItemBuilder;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 import com.tterrag.registrate.util.entry.ItemEntry;
-import com.tterrag.registrate.util.entry.ItemProviderEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
 import com.tterrag.registrate.util.nullness.NonNullFunction;
@@ -109,142 +104,6 @@ import static com.gregtechceu.gtceu.utils.FormattingUtil.toEnglishName;
  */
 @SuppressWarnings("unused")
 public class GTItems {
-
-    //////////////////////////////////////
-    // ***** Material Items ******//
-    //////////////////////////////////////
-
-    public static final Map<UnificationEntry, Supplier<? extends ItemLike>> toUnify = new HashMap<>();
-    public static final Map<TagPrefix, TagPrefix> purifyMap = new HashMap<>();
-
-    static {
-        purifyMap.put(TagPrefix.crushed, TagPrefix.crushedPurified);
-        purifyMap.put(TagPrefix.dustImpure, TagPrefix.dust);
-        purifyMap.put(TagPrefix.dustPure, TagPrefix.dust);
-    }
-
-    public static Table<TagPrefix, Material, ItemEntry<TagPrefixItem>> MATERIAL_ITEMS;
-
-    public static void generateMaterialItems() {
-        REGISTRATE.creativeModeTab(() -> MATERIAL_ITEM);
-        ImmutableTable.Builder<TagPrefix, Material, ItemEntry<TagPrefixItem>> builder = ImmutableTable.builder();
-        for (var tagPrefix : TagPrefix.values()) {
-            if (tagPrefix.doGenerateItem()) {
-                for (MaterialRegistry registry : GTCEuAPI.materialManager.getRegistries()) {
-                    GTRegistrate registrate = registry.getRegistrate();
-                    for (Material material : registry.getAllMaterials()) {
-                        if (tagPrefix.doGenerateItem(material)) {
-                            builder.put(tagPrefix, material, registrate
-                                    .item(tagPrefix.idPattern().formatted(material.getName()),
-                                            properties -> new TagPrefixItem(properties, tagPrefix, material))
-                                    .onRegister(TagPrefixItem::onRegister)
-                                    .setData(ProviderType.LANG, NonNullBiConsumer.noop())
-                                    .transform(unificationItem(tagPrefix, material))
-                                    .properties(p -> p.stacksTo(tagPrefix.maxStackSize()))
-                                    .model(NonNullBiConsumer.noop())
-                                    .color(() -> TagPrefixItem::tintColor)
-                                    .onRegister(GTItems::cauldronInteraction)
-                                    .register());
-                        }
-                    }
-                }
-            }
-        }
-        MATERIAL_ITEMS = builder.build();
-    }
-
-    //////////////////////////////////////
-    // ***** Material Tools ******//
-    //////////////////////////////////////
-    public final static Table<Material, GTToolType, ItemProviderEntry<IGTTool, ? extends IGTTool>> TOOL_ITEMS = ArrayTable
-            .create(GTCEuAPI.materialManager.getRegisteredMaterials().stream()
-                    .filter(mat -> mat.hasProperty(PropertyKey.TOOL)).toList(),
-                    GTToolType.getTypes().values().stream().toList());
-
-    public static void generateTools() {
-        REGISTRATE.creativeModeTab(() -> TOOL);
-
-        for (final GTToolType toolType : GTToolType.getTypes().values()) {
-            for (MaterialRegistry registry : GTCEuAPI.materialManager.getRegistries()) {
-                GTRegistrate registrate = registry.getRegistrate();
-                for (final Material material : registry.getAllMaterials()) {
-                    if (material.hasProperty(PropertyKey.TOOL)) {
-                        var property = material.getProperty(PropertyKey.TOOL);
-
-                        if (property.hasType(toolType)) {
-                            var tier = material.getToolTier();
-                            Tool tool = toolType.toolDefinition.getTool();
-                            List<Tool.Rule> rules = new ArrayList<>(tool.rules());
-                            rules.add(Tool.Rule.deniesDrops(tier.getIncorrectBlocksForDrops()));
-
-                            // noinspection unchecked
-                            TOOL_ITEMS.put(material, toolType,
-                                    (ItemProviderEntry<IGTTool, ? extends IGTTool>) (ItemProviderEntry<?, ?>) registrate
-                                            .item(toolType.idFormat.formatted(tier.material.getName()),
-                                                    p -> toolType.constructor.create(toolType, tier, material,
-                                                            toolType.toolDefinition, p).asItem())
-                                            .properties(p -> p.craftRemainder(Items.AIR)
-                                                    .component(DataComponents.TOOL,
-                                                            new Tool(rules, tool.defaultMiningSpeed(),
-                                                                    tool.damagePerBlock()))
-                                                    .component(GTDataComponents.TOOL_BEHAVIORS,
-                                                            new ToolBehaviors(
-                                                                    toolType.toolDefinition.getBehaviors())))
-                                            .properties(p -> {
-                                                if (toolType.toolDefinition.getAoEDefinition() !=
-                                                        AoESymmetrical.none()) {
-                                                    p.component(GTDataComponents.AOE,
-                                                            toolType.toolDefinition.getAoEDefinition());
-                                                }
-                                                return p;
-                                            })
-                                            .properties(p -> {
-                                                IGTToolDefinition toolStats = toolType.toolDefinition;
-                                                // Set other tool stats (durability)
-                                                ToolProperty toolProperty = material.getProperty(PropertyKey.TOOL);
-
-                                                // Durability formula we are working with:
-                                                // Final Durability = (material durability * material durability
-                                                // multiplier) + (tool definition durability *
-                                                // definition durability multiplier) - 1
-                                                // Subtracts 1 internally since Minecraft treats "0" as a valid
-                                                // durability, but we don't want to display this.
-
-                                                int durability = toolProperty.getDurability() *
-                                                        toolProperty.getDurabilityMultiplier();
-
-                                                // Most Tool Definitions do not set a base durability, which will lead
-                                                // to ignoring the multiplier if present. So
-                                                // apply the multiplier to the material durability if that would happen
-                                                if (toolStats.getBaseDurability() == 0) {
-                                                    durability *= (int) toolStats.getDurabilityMultiplier();
-                                                } else {
-                                                    durability += (int) (toolStats.getBaseDurability() *
-                                                            toolStats.getDurabilityMultiplier());
-                                                }
-
-                                                p.durability(durability - 1);
-                                                if (toolProperty.isUnbreakable()) {
-                                                    p.component(DataComponents.UNBREAKABLE, new Unbreakable(true));
-                                                }
-
-                                                // Set behaviours
-                                                if (toolProperty.isMagnetic()) {
-                                                    p.component(GTDataComponents.RELOCATE_MINED_BLOCKS, Unit.INSTANCE);
-                                                    p.component(GTDataComponents.RELOCATE_MOB_DROPS, Unit.INSTANCE);
-                                                }
-                                                return p;
-                                            })
-                                            .setData(ProviderType.LANG, NonNullBiConsumer.noop())
-                                            .model(NonNullBiConsumer.noop())
-                                            .color(() -> IGTTool::tintColor)
-                                            .register());
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     //////////////////////////////////////
     // ******* Misc Items ********//
@@ -641,7 +500,6 @@ public class GTItems {
             .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Glass, GTValues.M / 4))))
             .register();
 
-    // TODO Lighter
     public static ItemEntry<ComponentItem> TOOL_MATCHES = REGISTRATE.item("matches", ComponentItem::new)
             .lang("Matches")
             .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
@@ -1424,7 +1282,6 @@ public class GTItems {
                 lines.add(Component.translatable("item.gtceu.robot.arm.tooltip"));
                 lines.add(Component.translatable("gtceu.universal.tooltip.item_transfer_rate", 8));
             })))
-            .tag(CustomTags.ROBOT_ARMS)
             .tag(CustomTags.ROBOT_ARMS)
             .register();
     public static ItemEntry<ComponentItem> ROBOT_ARM_MV = REGISTRATE.item("mv_robot_arm", ComponentItem::new)
@@ -2753,8 +2610,8 @@ public class GTItems {
             .register();
 
     public static void init() {
-        generateMaterialItems();
-        generateTools();
+        GTMaterialItems.generateMaterialItems();
+        GTMaterialItems.generateTools();
     }
 
     public static <T extends ItemLike> NonNullConsumer<T> materialInfo(ItemMaterialInfo materialInfo) {
@@ -2768,7 +2625,7 @@ public class GTItems {
             builder.onRegister(item -> {
                 Supplier<ItemLike> supplier = SupplierMemoizer.memoize(() -> item);
                 UnificationEntry entry = new UnificationEntry(tagPrefix, mat);
-                toUnify.put(entry, supplier);
+                GTMaterialItems.toUnify.put(entry, supplier);
                 ChemicalHelper.registerUnificationItems(entry, supplier);
             });
             return builder;
@@ -2776,12 +2633,13 @@ public class GTItems {
     }
 
     public static <T extends Item> void cauldronInteraction(T item) {
-        if (item instanceof TagPrefixItem tagPrefixItem && purifyMap.containsKey(tagPrefixItem.tagPrefix)) {
+        if (item instanceof TagPrefixItem tagPrefixItem &&
+                GTMaterialItems.purifyMap.containsKey(tagPrefixItem.tagPrefix)) {
             CauldronInteraction.WATER.map().put(item, (state, world, pos, player, hand, stack) -> {
                 if (!world.isClientSide) {
                     Item stackItem = stack.getItem();
                     if (stackItem instanceof TagPrefixItem prefixItem) {
-                        if (!purifyMap.containsKey(prefixItem.tagPrefix))
+                        if (!GTMaterialItems.purifyMap.containsKey(prefixItem.tagPrefix))
                             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
                         if (!state.hasProperty(LayeredCauldronBlock.LEVEL)) {
                             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
@@ -2791,8 +2649,9 @@ public class GTItems {
                         if (level == 0)
                             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
-                        player.setItemInHand(hand, ChemicalHelper.get(purifyMap.get(prefixItem.tagPrefix),
-                                prefixItem.material, stack.getCount()));
+                        player.setItemInHand(hand,
+                                ChemicalHelper.get(GTMaterialItems.purifyMap.get(prefixItem.tagPrefix),
+                                        prefixItem.material, stack.getCount()));
                         player.awardStat(Stats.USE_CAULDRON);
                         player.awardStat(Stats.ITEM_USED.get(stackItem));
                         LayeredCauldronBlock.lowerFillLevel(state, world, pos);

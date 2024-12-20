@@ -106,7 +106,7 @@ public class ToolHeadReplaceRecipe extends CustomRecipe {
             SimpleEnergyContent powerUnit = realTool.get(GTDataComponents.ENERGY_CONTENT);
             if (toolHead == null) return ItemStack.EMPTY;
             GTToolType[] toolArray = TOOL_HEAD_TO_TOOL_MAP.get(toolHead.tagPrefix);
-            ItemStack newTool = GTItems.TOOL_ITEMS.get(toolHead.material, toolArray[tool.getElectricTier()])
+            ItemStack newTool = com.gregtechceu.gtceu.common.data.GTMaterialItems.TOOL_ITEMS.get(toolHead.material, toolArray[tool.getElectricTier()])
                     .get().get(powerUnit.charge(), powerUnit.maxCharge());
             if (newTool == null) return ItemStack.EMPTY;
 

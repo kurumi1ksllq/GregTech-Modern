@@ -127,7 +127,7 @@ public class ToolHelper {
 
     public static ItemStack get(GTToolType toolType, Material material) {
         if (material.hasProperty(PropertyKey.TOOL)) {
-            var entry = GTItems.TOOL_ITEMS.get(material, toolType);
+            var entry = GTMaterialItems.TOOL_ITEMS.get(material, toolType);
             if (entry != null) {
                 return entry.get().get();
             }
@@ -201,7 +201,7 @@ public class ToolHelper {
     public static ItemStack getAndSetToolData(GTToolType toolType, Material material, int maxDurability,
                                               int harvestLevel,
                                               float toolSpeed, float attackDamage) {
-        var entry = GTItems.TOOL_ITEMS.get(material, toolType);
+        var entry = GTMaterialItems.TOOL_ITEMS.get(material, toolType);
         if (entry == null) return ItemStack.EMPTY;
         ItemStack stack = entry.get().getRaw();
         stack.update(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(Collections.emptyList(), true),
@@ -383,7 +383,7 @@ public class ToolHelper {
                 Table<IO, RecipeCapability<?>, List<IRecipeHandler<?>>> caps = Tables
                         .newCustomTable(new EnumMap<>(IO.class), IdentityHashMap::new);
                 DummyMachineBlockEntity be = new DummyMachineBlockEntity(GTValues.LV,
-                        GTRecipeTypes.FORGE_HAMMER_RECIPES, GTMachines.defaultTankSizeFunction, caps);
+                        GTRecipeTypes.FORGE_HAMMER_RECIPES, GTMachineUtils.defaultTankSizeFunction, caps);
                 caps.put(IO.IN, EURecipeCapability.CAP, List.of(new InfiniteEnergyContainer(be.getMetaMachine(),
                         GTValues.V[GTValues.LV], GTValues.V[GTValues.LV], 1, GTValues.V[GTValues.LV], 1)));
                 caps.put(IO.IN, ItemRecipeCapability.CAP, List.of(new NotifiableItemStackHandler(be.getMetaMachine(), 1,
@@ -718,7 +718,7 @@ public class ToolHelper {
      */
     @NotNull
     public static List<ItemStack> getSilkTouchDrop(ServerLevel world, BlockPos origin, @NotNull BlockState state) {
-        ItemStack tool = GTItems.TOOL_ITEMS.get(GTMaterials.Neutronium, GTToolType.PICKAXE).get().get();
+        ItemStack tool = GTMaterialItems.TOOL_ITEMS.get(GTMaterials.Neutronium, GTToolType.PICKAXE).get().get();
         tool.enchant(
                 world.registryAccess().registryOrThrow(Registries.ENCHANTMENT)
                         .getHolderOrThrow(Enchantments.SILK_TOUCH),

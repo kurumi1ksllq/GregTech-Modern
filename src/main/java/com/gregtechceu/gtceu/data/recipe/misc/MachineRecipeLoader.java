@@ -1413,7 +1413,7 @@ public class MachineRecipeLoader {
             }
         }
 
-        for (int tier : MULTI_HATCH_TIERS) {
+        for (int tier : GTMachineUtils.MULTI_HATCH_TIERS) {
             var tierName = VN[tier].toLowerCase();
 
             var importHatch4x = FLUID_IMPORT_HATCH_4X[tier];
@@ -1440,7 +1440,7 @@ public class MachineRecipeLoader {
                     'B', importHatch9x.asStack());
         }
 
-        for (int tier : DUAL_HATCH_TIERS) {
+        for (int tier : GTMachineUtils.DUAL_HATCH_TIERS) {
             var tierName = VN[tier].toLowerCase();
 
             var inputBuffer = DUAL_IMPORT_HATCH[tier];

@@ -116,7 +116,7 @@ public class SurfaceIndicatorGenerator extends IndicatorGenerator {
     }
 
     private static void validateSurfaceRockMaterial(Material material) {
-        if (GTBlocks.SURFACE_ROCK_BLOCKS.get(material) == null)
+        if (GTMaterialBlocks.SURFACE_ROCK_BLOCKS.get(material) == null)
             throw new IllegalArgumentException("No surface rock registered for material " + material.getName());
     }
 
@@ -222,7 +222,8 @@ public class SurfaceIndicatorGenerator extends IndicatorGenerator {
         private static BlockState getBlockState(Either<BlockState, Material> block, Direction direction) {
             return block.map(
                     state -> state,
-                    material -> GTBlocks.SURFACE_ROCK_BLOCKS.get(material).get().getStateForDirection(direction));
+                    material -> GTMaterialBlocks.SURFACE_ROCK_BLOCKS.get(material).get()
+                            .getStateForDirection(direction));
         }
 
         @Override

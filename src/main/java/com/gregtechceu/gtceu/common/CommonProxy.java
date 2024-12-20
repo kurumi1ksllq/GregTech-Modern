@@ -173,7 +173,9 @@ public class CommonProxy {
         GTBlockEntities.init();
         GTRecipeTypes.init();
         GTRecipeCategories.init();
+        GTMachineUtils.init();
         GTMachines.init();
+
         GTFoods.init();
         GTToolBehaviors.init();
         GTDataComponents.DATA_COMPONENTS.register(modBus);

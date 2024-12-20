@@ -631,7 +631,7 @@ public class MaterialRecipeHandler {
             for (Material material : registry.getAllMaterials()) {
                 if (material.hasProperty(PropertyKey.ORE)) {
                     VanillaRecipeHelper.addShapedRecipe(provider, "%s_surface_indicator".formatted(material.getName()),
-                            GTBlocks.SURFACE_ROCK_BLOCKS.get(material).asStack(2),
+                            GTMaterialBlocks.SURFACE_ROCK_BLOCKS.get(material).asStack(2),
                             "DDD", "DGD", "DDD",
                             'D', ChemicalHelper.get(dustSmall, material),
                             'G', Items.GRAVEL);

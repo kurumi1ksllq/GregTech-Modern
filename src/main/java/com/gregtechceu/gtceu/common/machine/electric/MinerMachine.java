@@ -82,7 +82,7 @@ public class MinerMachine extends WorkableTieredMachine
 
     public MinerMachine(IMachineBlockEntity holder, int tier, int speed, int maximumRadius, int fortune,
                         Object... args) {
-        super(holder, tier, GTMachines.defaultTankSizeFunction, args, (tier + 1) * (tier + 1), fortune, speed,
+        super(holder, tier, GTMachineUtils.defaultTankSizeFunction, args, (tier + 1) * (tier + 1), fortune, speed,
                 maximumRadius);
         this.energyPerTick = GTValues.V[tier - 1];
         this.chargerInventory = createChargerItemHandler();

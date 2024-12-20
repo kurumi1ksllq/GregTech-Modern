@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.ui.event.WindowEvent;
 import com.gregtechceu.gtceu.api.ui.texture.NinePatchTexture;
 import com.gregtechceu.gtceu.core.mixins.ui.accessor.GuiGraphicsAccessor;
 
+import com.gregtechceu.gtceu.utils.GTMath;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -424,7 +425,7 @@ public class UIGuiGraphics extends GuiGraphics {
         for (int i = segments; i >= 0; i--) {
             double theta = Math.toRadians(angleFrom) + i * angleStep;
             buffer.vertex(matrix, (float) (centerX - Math.cos(theta) * radius),
-                    (float) (centerY - Math.sin(theta) * radius), 0)
+                            (float) (centerY - Math.sin(theta) * radius), 0)
                     .color(vColor).endVertex();
         }
 
@@ -458,10 +459,10 @@ public class UIGuiGraphics extends GuiGraphics {
             double theta = Math.toRadians(angleFrom) + i * angleStep;
 
             buffer.vertex(matrix, (float) (centerX - Math.cos(theta) * outerRadius),
-                    (float) (centerY - Math.sin(theta) * outerRadius), 0)
+                            (float) (centerY - Math.sin(theta) * outerRadius), 0)
                     .color(outColor).endVertex();
             buffer.vertex(matrix, (float) (centerX - Math.cos(theta) * innerRadius),
-                    (float) (centerY - Math.sin(theta) * innerRadius), 0)
+                            (float) (centerY - Math.sin(theta) * innerRadius), 0)
                     .color(inColor).endVertex();
         }
 
@@ -612,7 +613,7 @@ public class UIGuiGraphics extends GuiGraphics {
 
                 int inspectorX = child.x() + 1;
                 int inspectorY = child.y() + child.height() + child.margins().get().bottom() + 1;
-                int inspectorHeight = font.lineHeight * 2 + 4;
+                int inspectorHeight = font.lineHeight * 5 + 4;
 
                 if (inspectorY > client.getWindow().getGuiScaledHeight() - inspectorHeight) {
                     inspectorY -= child.fullSize().height() + inspectorHeight + 1;
@@ -623,7 +624,7 @@ public class UIGuiGraphics extends GuiGraphics {
                     }
                 }
 
-                final var nameText = Component.nullToEmpty(
+                final var nameText = Component.literal(
                         child.getClass().getSimpleName() + (child.id() != null ? " '" + child.id() + "'" : ""));
                 final var descriptor = Component.literal(child.x() + "," + child.y() + " (" + child.width() + "," +
                         child.height() + ")" + " <" + margins.top() + "," + margins.bottom() + "," + margins.left() +
@@ -633,13 +634,23 @@ public class UIGuiGraphics extends GuiGraphics {
                     descriptor.append(" >" + padding.top() + "," + padding.bottom() + "," + padding.left() + "," +
                             padding.right() + "<");
                 }
+                final var pos = Component.literal(child.positioning().get().toString());
+                final var sizeH = Component.literal("size_h=" + child.horizontalSizing().get().toString());
+                final var sizeV = Component.literal("size_v=" + child.verticalSizing().get().toString());
 
-                int width = Math.max(font.width(nameText), font.width(descriptor));
+                int width = GTMath.max(font.width(nameText), font.width(descriptor),
+                        font.width(pos), font.width(sizeH), font.width(sizeV));
                 fill(inspectorX, inspectorY, inspectorX + width + 3, inspectorY + inspectorHeight, 0xA7000000);
                 drawRectOutline(inspectorX, inspectorY, width + 3, inspectorHeight, 0xA7000000);
 
                 this.drawString(font, nameText, inspectorX + 2, inspectorY + 2, 0xFFFFFF, false);
                 this.drawString(font, descriptor, inspectorX + 2, inspectorY + font.lineHeight + 2, 0xFFFFFF, false);
+                this.drawString(font, pos, inspectorX + 2, inspectorY + font.lineHeight * 2 + 2,
+                        0xFFFFFF, false);
+                this.drawString(font, sizeH, inspectorX + 2, inspectorY + font.lineHeight * 3 + 2,
+                        0xFFFFFF, false);
+                this.drawString(font, sizeV, inspectorX + 2, inspectorY + font.lineHeight * 4 + 2,
+                        0xFFFFFF, false);
             }
         }
 
@@ -672,5 +683,7 @@ public class UIGuiGraphics extends GuiGraphics {
             Window window = event.getWindow();
             INSTANCE.init(event.getMinecraft(), window.getGuiScaledWidth(), window.getGuiScaledHeight());
         }
+
     }
+
 }

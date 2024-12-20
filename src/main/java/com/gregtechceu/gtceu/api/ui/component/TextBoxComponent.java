@@ -23,6 +23,8 @@ import org.lwjgl.glfw.GLFW;
 import org.w3c.dom.Element;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -246,10 +248,14 @@ public class TextBoxComponent extends EditBox {
     @Override
     public List<ClientTooltipComponent> tooltip() {
         List<ClientTooltipComponent> tooltip = super.tooltip();
+        if (tooltip == null) {
+            return List.of(ClientTooltipComponent.create(hover.getVisualOrderText()));
+        }
         if (hover != null) {
+            tooltip = new ArrayList<>(tooltip);
             tooltip.add(ClientTooltipComponent.create(hover.getVisualOrderText()));
         }
-        return tooltip;
+        return Collections.unmodifiableList(tooltip);
     }
 
     @Override

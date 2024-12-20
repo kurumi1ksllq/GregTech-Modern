@@ -7,7 +7,6 @@ import com.gregtechceu.gtceu.api.ui.container.FlowLayout;
 import com.gregtechceu.gtceu.api.ui.container.StackLayout;
 import com.gregtechceu.gtceu.api.ui.container.UIContainers;
 import com.gregtechceu.gtceu.api.ui.core.*;
-import com.gregtechceu.gtceu.api.ui.texture.TextTexture;
 import com.gregtechceu.gtceu.api.ui.texture.UITexture;
 import com.gregtechceu.gtceu.api.ui.util.ClickData;
 
@@ -55,14 +54,13 @@ public class TitleBarComponent extends StackLayout {
 
     protected TitleBarComponent(Consumer<ClickData> onBackClicked, Consumer<ClickData> onMenuClicked) {
         super(Sizing.fill(), Sizing.fixed(HEIGHT));
-        allowOverflow(true);
         this.padding(Insets.both(HORIZONTAL_MARGIN, 0));
         //this.margins(Insets.both(HORIZONTAL_MARGIN, 0));
         this.positioning(Positioning.absolute(HORIZONTAL_MARGIN, 0));
         this.innerHeight = HEIGHT - BORDER_SIZE;
 
         this.buttonGroup = UIContainers.horizontalFlow(Sizing.fill(), Sizing.fixed(innerHeight));
-        buttonGroup.positioning(Positioning.absolute(0, BORDER_SIZE));
+        buttonGroup.positioning(Positioning.relative(50, 100));
         buttonGroup.surface(Surface.TITLE_BAR_BACKGROUND);
         buttonGroup.child(this.backButton = UIComponents.button(Component.literal(" <"), onBackClicked)
                 .positioning(Positioning.absolute(0, BORDER_SIZE))
@@ -99,17 +97,8 @@ public class TitleBarComponent extends StackLayout {
 
         tabIcon.texture(currentPage.getTabIcon());
 
-        if (showBackButton && !mainSection.children().contains(backButton)) {
-            mainSection.child(backButton);
-        } else if (!showBackButton) {
-            mainSection.removeChild(backButton);
-        }
-
-        if (showMenuButton && !mainSection.children().contains(menuButton)) {
-            mainSection.child(menuButton);
-        } else if (!showBackButton) {
-            mainSection.removeChild(menuButton);
-        }
+        backButton.enabled(showBackButton);
+        menuButton.enabled(showMenuButton);
 
         updateLayout();
     }
@@ -125,8 +114,8 @@ public class TitleBarComponent extends StackLayout {
 
         int buttonGroupWidth = this.width - (BUTTON_WIDTH * hiddenButtons);
         buttonGroup.sizing(Sizing.fixed(buttonGroupWidth), Sizing.fixed(innerHeight));
-        buttonGroup.mount(this, showBackButton ? 0 : BUTTON_WIDTH, BORDER_SIZE);
-        menuButton.mount(this, buttonGroupWidth - BUTTON_WIDTH, BORDER_SIZE);
+        //buttonGroup.mount(this, showBackButton ? 0 : BUTTON_WIDTH, BORDER_SIZE);
+        //menuButton.mount(this, buttonGroupWidth - BUTTON_WIDTH, BORDER_SIZE);
 
         int mainSectionWidth = this.width - (BUTTON_WIDTH * 2);
         int titleWidth = mainSectionWidth - (2 * BORDER_SIZE) - innerHeight;

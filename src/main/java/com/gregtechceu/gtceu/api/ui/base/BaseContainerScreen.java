@@ -93,8 +93,10 @@ public abstract class BaseContainerScreen<R extends ParentUIComponent, C extends
                     this.onClose();
                     return;
                 }
-                this.addRenderableWidget(this.uiAdapter);
-                this.setFocused(this.uiAdapter);
+                if (!this.renderables.contains(this.uiAdapter)) {
+                    this.addRenderableWidget(this.uiAdapter);
+                    this.setFocused(this.uiAdapter);
+                }
 
                 this.uiAdapter.screen(this);
                 this.build(this.uiAdapter.rootComponent);

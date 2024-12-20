@@ -97,8 +97,10 @@ public abstract class BaseUIScreen<R extends ParentUIComponent> extends Screen i
                 }
                 super.init();
 
-                this.addRenderableWidget(this.uiAdapter);
-                this.setFocused(this.uiAdapter);
+                if (!this.renderables.contains(this.uiAdapter)) {
+                    this.addRenderableWidget(this.uiAdapter);
+                    this.setFocused(this.uiAdapter);
+                }
 
                 this.build(this.uiAdapter.rootComponent);
                 this.uiAdapter.rootComponent.containerAccess(this.uiAdapter);

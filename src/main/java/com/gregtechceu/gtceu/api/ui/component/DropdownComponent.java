@@ -9,6 +9,9 @@ import com.gregtechceu.gtceu.api.ui.parsing.UIModel;
 import com.gregtechceu.gtceu.api.ui.parsing.UIParsing;
 
 import com.gregtechceu.gtceu.api.ui.util.ClickData;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -25,11 +28,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@Accessors(fluent = true, chain = true)
 public class DropdownComponent extends FlowLayout {
 
     protected static final ResourceLocation ICONS_TEXTURE = new ResourceLocation("owo",
             "textures/gui/dropdown_icons.png");
     protected final FlowLayout entries;
+    @Getter
+    @Setter
     protected boolean closeWhenNotHovered = false;
 
     protected DropdownComponent(Sizing horizontalSizing) {
@@ -155,15 +161,6 @@ public class DropdownComponent extends FlowLayout {
             });
         }
         return super.removeChild(child);
-    }
-
-    public DropdownComponent closeWhenNotHovered(boolean closeWhenNotHovered) {
-        this.closeWhenNotHovered = closeWhenNotHovered;
-        return this;
-    }
-
-    public boolean closeWhenNotHovered() {
-        return this.closeWhenNotHovered;
     }
 
     @Override

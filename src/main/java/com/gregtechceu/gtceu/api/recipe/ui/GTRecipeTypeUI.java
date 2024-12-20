@@ -163,7 +163,7 @@ public class GTRecipeTypeUI {
      * Auto layout UI template for recipes.
      */
     public IEditableUI<FlowLayout, RecipeHolder> createEditableUITemplate(final boolean isSteam,
-                                                                                final boolean isHighPressure) {
+                                                                          final boolean isHighPressure) {
         return new IEditableUI.Normal<>(() -> {
             var isCustomUI = !isSteam && hasCustomUI();
             if (isCustomUI) {
@@ -173,20 +173,19 @@ public class GTRecipeTypeUI {
                 return group;
             }
 
-            var inputs = addInventorySlotGroup(false, isSteam, isHighPressure);
-            var outputs = addInventorySlotGroup(true, isSteam, isHighPressure);
             var group = UIContainers.horizontalFlow(Sizing.content(), Sizing.content());
-            group.gap(28);
+            group.gap(36)
+                    //.horizontalAlignment(HorizontalAlignment.LEFT)
+                    //.verticalAlignment(VerticalAlignment.TOP)
+                    .positioning(Positioning.relative(50, 50));
 
-            // TODO unhardcode the position in addInventorySlotGroup
-            //inputs.positioning(Positioning.relative(35, 45));
-            //outputs.positioning(Positioning.relative(65, 45));
+            var inputs = addInventorySlotGroup(false, isSteam, isHighPressure);
             group.child(inputs);
-            group.child(outputs);
 
             var progressWidget = UIComponents.progress(ProgressComponent.JEIProgress);
             progressWidget.progressTexture(progressBarTexture)
-                    .positioning(Positioning.relative(50, 45))
+                    .positioning(Positioning.relative(50, 50))
+                    //.positioning(Positioning.layout())
                     .sizing(Sizing.fixed(20));
             progressWidget.id("progress");
             group.child(progressWidget);
@@ -195,6 +194,10 @@ public class GTRecipeTypeUI {
                     steamProgressBarTexture.get(isHighPressure).getSubTexture(0, 0, 1, 0.5),
                     steamProgressBarTexture.get(isHighPressure).getSubTexture(0, 0.5, 1, 0.5))
                     .fillDirection(steamMoveType) : progressBarTexture);
+
+            // only add outputs *here* so that layout positioning works correctly.
+            var outputs = addInventorySlotGroup(true, isSteam, isHighPressure);
+            group.child(outputs);
 
             return group;
         }, (template, adapter, recipeHolder) -> {
@@ -296,18 +299,17 @@ public class GTRecipeTypeUI {
         int[] inputSlotGrid = determineSlotsGrid(map.getOrDefault(ItemRecipeCapability.CAP, 0));
         int itemSlotsToLeft = inputSlotGrid[0];
         int itemSlotsToDown = inputSlotGrid[1];
-        int startInputsX = isOutputs ? 106 : 70 - itemSlotsToLeft * 18;
+        int startInputsX = isOutputs ? 106 : 70 - itemSlotsToLeft * 18 - 18;
         int startInputsY = 33 - (int) (itemSlotsToDown / 2.0 * 18);
 
         boolean wasGroup = slotCountTotal == 12;
         if (wasGroup) startInputsY -= 9;
         else if (slotCountTotal >= 8 && !isOutputs) startInputsY -= 9;
 
-        StackLayout group = UIContainers.stack(Sizing.content(4), Sizing.content(8));
-        group.positioning(Positioning.relative(isOutputs ? 65 : 35, 65));
-        // isOutputs ? 75 : 35, 65
-        // startInputsX, startInputsY
-        group.padding(Insets.of(4));
+        StackLayout group = UIContainers.stack(Sizing.content(), Sizing.content());
+        // group.positioning(Positioning.across(isOutputs ? 60 : 10, 30));
+        // group.positioning(Positioning.relative(isOutputs ? 75 : 35, 65));
+        // group.positioning(Positioning.absolute(startInputsX, startInputsY));
         for (var entry : map.entrySet()) {
             RecipeCapability<?> cap = entry.getKey();
             if (cap.getWidgetClass() == null) {
@@ -321,7 +323,7 @@ public class GTRecipeTypeUI {
                     for (int j = 0; j < itemSlotsToLeft; j++) {
                         int slotIndex = i * itemSlotsToLeft + j;
                         if (slotIndex >= capCount) break;
-                        int x = 18 * j;
+                        int x = 18 * j + 18;
                         int y = 18 * i;
 
                         addSlot(group, cap, capCount, slotIndex, x, y, isOutputs, isSteam, isHighPressure);
@@ -331,7 +333,7 @@ public class GTRecipeTypeUI {
                 int offset = wasGroup ? 2 : 0;
 
                 if (itemSlotsToDown >= capCount && itemSlotsToLeft < 3) {
-                    int startSpecX = isOutputs ? itemSlotsToLeft * 18 : -18;
+                    int startSpecX = isOutputs ? itemSlotsToLeft * 18 : 0;
                     for (int i = 0; i < capCount; i++) {
                         int y = offset + 18 * i;
 
@@ -341,7 +343,7 @@ public class GTRecipeTypeUI {
                     int startSpecY = itemSlotsToDown * 18;
                     for (int i = 0; i < capCount; i++) {
                         int x = isOutputs ? 18 * (i % 3) :
-                                itemSlotsToLeft * 18 - 18 - 18 * (i % 3);
+                                itemSlotsToLeft * 18 - 18 * (i % 3);
                         int y = startSpecY + (i / 3) * 18;
 
                         addSlot(group, cap, capCount, i, x, y, isOutputs, isSteam, isHighPressure);
@@ -361,6 +363,7 @@ public class GTRecipeTypeUI {
         var component = cap.createUIComponent();
         // noinspection DataFlowIssue
         component.id(cap.slotName(isOutputs ? IO.OUT : IO.IN, index))
+                .sizing(Sizing.fill())
                 .positioning(Positioning.absolute(0, 0));
         var texture = UIComponents.texture(
                         getOverlaysForSlot(isOutputs, cap, index == capCount - 1, isSteam, isHighPressure))
@@ -369,7 +372,7 @@ public class GTRecipeTypeUI {
 
         StackLayout layout = UIContainers.stack(Sizing.fixed(18), Sizing.fixed(18));
         layout.positioning(Positioning.absolute(x, y));
-        layout.children(List.of(texture, component));
+        layout.children(List.of(component, texture));
         group.child(layout);
     }
 

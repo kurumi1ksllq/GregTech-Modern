@@ -245,6 +245,7 @@ public class CreativeEnergyContainerMachine extends MetaMachine implements ILase
                         .positioning(Positioning.absolute(0, 107))
                         .sizing(Sizing.fixed(77), Sizing.fixed(20)))
                 .child(UIComponents.switchComponent((clickData, value) -> {
+                            // TODO send message to server :)
                             source = value;
                             if (source) {
                                 voltage = 0;
@@ -273,7 +274,7 @@ public class CreativeEnergyContainerMachine extends MetaMachine implements ILase
                                         });
                             }
                         })
-                        //.buttonSurface(GuiTextures.VANILLA_BUTTON::draw)
+                        .closeWhenNotHovered(true)
                         .surface(Surface.flat(Color.BLACK.argb()))
                         .positioning(Positioning.absolute(0, -25))));
     }

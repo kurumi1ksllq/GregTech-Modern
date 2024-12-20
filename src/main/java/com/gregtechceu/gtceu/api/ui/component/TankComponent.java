@@ -83,7 +83,7 @@ public class TankComponent extends BaseUIComponent implements ClickableIngredien
     protected UITexture overlayTexture;
     @Getter
     @Setter
-    protected ProgressTexture.FillDirection fillDirection;
+    protected ProgressTexture.FillDirection fillDirection = ProgressTexture.FillDirection.ALWAYS_FULL;
     @Setter
     @Getter
     protected float recipeViewerChance = 1f;

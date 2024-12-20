@@ -313,7 +313,6 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
     public @Nullable UIComponent createUIComponent() {
         TankComponent tank = UIComponents.tank(EmptyFluidHandler.INSTANCE);
         tank.backgroundTexture(null);
-        tank.fillDirection(ProgressTexture.FillDirection.ALWAYS_FULL);
         return tank;
     }
 

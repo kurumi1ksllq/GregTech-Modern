@@ -134,4 +134,14 @@ public class Positioning implements Animatable<Positioning> {
     public int hashCode() {
         return Objects.hash(type, x, y);
     }
+
+    @Override
+    public String toString() {
+        return "Positioning{" +
+                "type=" + type +
+                ",x=" + x +
+                ",y=" + y +
+                '}';
+    }
+
 }

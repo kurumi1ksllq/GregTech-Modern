@@ -12,6 +12,7 @@ import com.gregtechceu.gtceu.api.ui.component.SlotComponent;
 import com.gregtechceu.gtceu.api.ui.component.UIComponents;
 import com.gregtechceu.gtceu.api.ui.container.StackLayout;
 import com.gregtechceu.gtceu.api.ui.container.UIContainers;
+import com.gregtechceu.gtceu.api.ui.core.Insets;
 import com.gregtechceu.gtceu.api.ui.core.Positioning;
 import com.gregtechceu.gtceu.api.ui.core.Sizing;
 import com.gregtechceu.gtceu.api.ui.texture.UITextures;
@@ -67,9 +68,10 @@ public class DimensionCondition extends RecipeCondition {
         return Component.translatable("recipe.condition.dimension.tooltip", dimension);
     }
 
-    public StackLayout setupDimensionMarkers(int xOffset, int yOffset) {
+    public StackLayout setupDimensionMarkers() {
         StackLayout layout = UIContainers.stack(Sizing.fixed(18), Sizing.fixed(18));
-        layout.positioning(Positioning.absolute(xOffset, yOffset));
+        layout.positioning(Positioning.relative(100, 100));
+        layout.margins(Insets.of(0, 32, 0, 44));
 
         DimensionMarker dimMarker = GTRegistries.DIMENSION_MARKERS.getOrDefault(this.dimension,
                 new DimensionMarker(DimensionMarker.MAX_TIER, () -> Blocks.BARRIER, this.dimension.toString()));

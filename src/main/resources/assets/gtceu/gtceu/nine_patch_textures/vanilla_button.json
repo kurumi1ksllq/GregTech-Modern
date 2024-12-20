@@ -1,9 +1,9 @@
 {
     "texture": "gtceu:textures/gui/widget/vanilla_button.png",
     "texture_width": 200,
-    "texture_height": 18,
+    "texture_height": 20,
     "u": 0,
-    "v": 22,
+    "v": 0,
     "repeat": true,
     "corner_patch_size": {
         "width": 1,
@@ -11,6 +11,6 @@
     },
     "center_patch_size": {
         "width": 198,
-        "height": 16
+        "height": 18
     }
 }

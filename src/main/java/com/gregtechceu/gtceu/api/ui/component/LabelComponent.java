@@ -217,8 +217,8 @@ public class LabelComponent extends BaseUIComponent {
             if (textType == TextTexture.TextType.NORMAL) {
                 lineHeight *= this.wrappedText.size();
                 for (int i = 0; i < this.wrappedText.size(); i++) {
-                    int renderY = lambdaY + i * (this.lineHeight() + 2);
-                    renderY += this.lineHeight() - lineHeight;
+                    int renderY = lambdaY + i * (lineHeight + 2);
+                    renderY += lineHeight - lineHeight;
 
                     var line = this.wrappedText.get(i);
                     switch (this.horizontalTextAlignment) {
@@ -233,8 +233,8 @@ public class LabelComponent extends BaseUIComponent {
             } else if (textType == TextTexture.TextType.LEFT) {
                 lineHeight *= this.wrappedText.size();
                 for (int i = 0; i < this.wrappedText.size(); i++) {
-                    int renderY = lambdaY + i * (this.lineHeight() + 2);
-                    renderY += this.lineHeight() - lineHeight;
+                    int renderY = lambdaY + i * (lineHeight + 2);
+                    renderY += lineHeight - lineHeight;
 
                     var line = this.wrappedText.get(i);
                     switch (this.horizontalTextAlignment) {
@@ -247,8 +247,8 @@ public class LabelComponent extends BaseUIComponent {
             } else if (textType == TextTexture.TextType.RIGHT) {
                 lineHeight *= this.wrappedText.size();
                 for (int i = 0; i < this.wrappedText.size(); i++) {
-                    int renderY = lambdaY + i * (this.lineHeight() + 2);
-                    renderY += this.lineHeight() - lineHeight;
+                    int renderY = lambdaY + i * (lineHeight + 2);
+                    renderY += lineHeight - lineHeight;
 
                     var line = this.wrappedText.get(i);
                     switch (this.horizontalTextAlignment) {
@@ -260,8 +260,8 @@ public class LabelComponent extends BaseUIComponent {
                     graphics.drawString(font, line, (renderX + width - lineWidth), renderY, color.get().argb(), shadow);
                 }
             } else if (textType == TextTexture.TextType.HIDE) {
-                int renderY = lambdaY * (this.lineHeight() + 2);
-                renderY += this.lineHeight() - lineHeight;
+                int renderY = lambdaY * (lineHeight + 2);
+                renderY += lineHeight - lineHeight;
                 FormattedCharSequence line = this.wrappedText.size() > 1 ?
                         FormattedCharSequence.composite(this.wrappedText.get(0),
                                 Component.literal("..").getVisualOrderText()) :
@@ -274,8 +274,8 @@ public class LabelComponent extends BaseUIComponent {
                     drawTextLine(graphics, renderX, renderY, width, height, font, lineHeight, line);
                 }
             } else if (textType == TextTexture.TextType.ROLL || textType == TextTexture.TextType.ROLL_ALWAYS) {
-                int renderY = lambdaY * (this.lineHeight() + 2);
-                renderY += this.lineHeight() - lineHeight;
+                int renderY = lambdaY * (lineHeight + 2);
+                renderY += lineHeight - lineHeight;
 
                 var line = this.wrappedText.get(0);
                 switch (this.horizontalTextAlignment) {
@@ -290,8 +290,8 @@ public class LabelComponent extends BaseUIComponent {
                     drawTextLine(graphics, renderX, renderY, width, height, font, lineHeight, line);
                 }
             } else if (textType == TextTexture.TextType.LEFT_HIDE) {
-                int renderY = lambdaY * (this.lineHeight() + 2);
-                renderY += this.lineHeight() - lineHeight;
+                int renderY = lambdaY * (lineHeight + 2);
+                renderY += lineHeight - lineHeight;
                 FormattedCharSequence line = this.wrappedText.size() > 1 ?
                         FormattedCharSequence.composite(this.wrappedText.get(0),
                                 Component.literal("..").getVisualOrderText()) :
@@ -309,8 +309,8 @@ public class LabelComponent extends BaseUIComponent {
                 }
             } else
                 if (textType == TextTexture.TextType.LEFT_ROLL || textType == TextTexture.TextType.LEFT_ROLL_ALWAYS) {
-                    int renderY = lambdaY * (this.lineHeight() + 2);
-                    renderY += this.lineHeight() - lineHeight;
+                    int renderY = lambdaY * (lineHeight + 2);
+                    renderY += lineHeight - lineHeight;
 
                     var line = this.wrappedText.get(0);
                     switch (this.horizontalTextAlignment) {

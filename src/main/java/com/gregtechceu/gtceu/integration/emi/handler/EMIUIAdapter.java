@@ -75,6 +75,11 @@ public class EMIUIAdapter extends Widget implements ContainerEventHandler {
     }
 
     @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        return this.adapter.mouseClicked(mouseX - this.adapter.x(), mouseY - this.adapter.y(), button);
+    }
+
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         return this.adapter.mouseScrolled(mouseX - this.adapter.x(), mouseY - this.adapter.y(), amount);
     }

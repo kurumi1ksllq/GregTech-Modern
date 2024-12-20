@@ -29,10 +29,20 @@ public class GTMath {
     }
 
     public static int saturatedCast(long value) {
-        if (value > 2147483647L) {
+        if (value > Integer.MAX_VALUE) {
             return Integer.MAX_VALUE;
         } else {
-            return value < -2147483648L ? Integer.MIN_VALUE : (int) value;
+            return value < Integer.MIN_VALUE ? Integer.MIN_VALUE : (int) value;
         }
+    }
+
+    public static int max(int... values) {
+        int max = Integer.MIN_VALUE;
+        for (int value : values) {
+            if (value > max) {
+                max = value;
+            }
+        }
+        return max;
     }
 }

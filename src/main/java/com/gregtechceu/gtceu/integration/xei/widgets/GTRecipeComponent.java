@@ -14,10 +14,7 @@ import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.logic.OCParams;
 import com.gregtechceu.gtceu.api.recipe.logic.OCResult;
 import com.gregtechceu.gtceu.api.ui.GuiTextures;
-import com.gregtechceu.gtceu.api.ui.component.LabelComponent;
-import com.gregtechceu.gtceu.api.ui.component.PredicatedButtonComponent;
-import com.gregtechceu.gtceu.api.ui.component.ProgressComponent;
-import com.gregtechceu.gtceu.api.ui.component.UIComponents;
+import com.gregtechceu.gtceu.api.ui.component.*;
 import com.gregtechceu.gtceu.api.ui.container.FlowLayout;
 import com.gregtechceu.gtceu.api.ui.container.StackLayout;
 import com.gregtechceu.gtceu.api.ui.core.*;
@@ -65,13 +62,15 @@ public class GTRecipeComponent extends FlowLayout {
     private final List<LabelComponent> recipeParaTexts = new ArrayList<>();
     private final int minTier;
     private int tier;
-    private LabelComponent voltageTextWidget;
+    private ButtonComponent voltageTextComponent;
 
     public GTRecipeComponent(GTRecipe recipe) {
         super(Sizing.fixed(recipe.recipeType.getRecipeUI().getRecipeViewerSize().width()),
                 Sizing.fixed(recipe.recipeType.getRecipeUI().getRecipeViewerSize().height()),
                 Algorithm.VERTICAL);
-        positioning(Positioning.absolute(getXOffset(recipe), 0));
+        positioning(Positioning.absolute(0, 0));
+        verticalAlignment(VerticalAlignment.TOP);
+        horizontalAlignment(HorizontalAlignment.LEFT);
         this.recipe = recipe;
         this.padding(Insets.of(0, 0, /*-getXOffset(recipe) + */3, 0));
         this.minTier = RecipeHelper.getRecipeEUtTier(recipe);
@@ -116,7 +115,7 @@ public class GTRecipeComponent extends FlowLayout {
         group.id(RECIPE_CONTENT_GROUP_ID);
         childrenByPattern(RECIPE_CONTENT_GROUP_ID_REGEX).forEach(this::removeChild);
 
-        child(group);
+        child(group.positioning(Positioning.relative(50, 0)));
 
         /*
         var EUt = RecipeHelper.getInputEUt(recipe);
@@ -147,9 +146,7 @@ public class GTRecipeComponent extends FlowLayout {
         for (RecipeCondition condition : recipe.conditions) {
             if (condition.getTooltips() == null) continue;
             if (condition instanceof DimensionCondition dimCondition) {
-                child(dimCondition
-                        .setupDimensionMarkers(recipe.recipeType.getRecipeUI().getRecipeViewerSize().width() - 44,
-                                recipe.recipeType.getRecipeUI().getRecipeViewerSize().height() - 32));
+                child(dimCondition.setupDimensionMarkers());
             } else child(UIComponents.label(condition.getTooltips()));
         }
         for (Function<CompoundTag, Component> dataInfo : recipe.recipeType.getDataInfos()) {
@@ -171,28 +168,26 @@ public class GTRecipeComponent extends FlowLayout {
             recipeParaTexts.add(labelWidget);
         }
         if (inputEUt > 0) {
-            LabelComponent voltageTextWidget = UIComponents.label(Component.literal(tierText)).color(Color.BLACK);
-            voltageTextWidget.sizing(Sizing.content(), Sizing.fixed(LINE_HEIGHT))
-                    .positioning(Positioning.absolute(100, 100))
-                    .margins(Insets.of(0, -LINE_HEIGHT, 0, getVoltageXOffset()));
+            ButtonComponent voltageTextComponent = UIComponents.button(Component.literal(tierText),
+                            cd -> setRecipeOC(cd.button, cd.isShiftClick))
+                    .configure(c -> c
+                            .sizing(Sizing.fixed(16), Sizing.fixed(10))
+                            .positioning(Positioning.relative(100, 100))
+                            .margins(Insets.of(0, LINE_HEIGHT, 0, getVoltageXOffset()))
+                            .tooltip(List.of(
+                                    Component.translatable("gtceu.oc.tooltip.0", GTValues.VNF[minTier]),
+                                    Component.translatable("gtceu.oc.tooltip.1"),
+                                    Component.translatable("gtceu.oc.tooltip.2"),
+                                    Component.translatable("gtceu.oc.tooltip.3"),
+                                    Component.translatable("gtceu.oc.tooltip.4"))));
             if (recipe.recipeType.isOffsetVoltageText()) {
-                voltageTextWidget
+                voltageTextComponent
                         .margins(Insets.of(0, recipe.recipeType.getVoltageTextOffset(), 0, getVoltageXOffset()));
             }
             // make it clickable
-            // voltageTextWidget.setBackground(new GuiTextureGroup(GuiTextures.BUTTON));
-            child(this.voltageTextWidget = voltageTextWidget);
-            updateLayout();
-            child(UIComponents.button(Component.empty(), cd -> setRecipeOC(cd.button, cd.isShiftClick))
-                    .sizing(voltageTextWidget.horizontalSizing().get(), voltageTextWidget.verticalSizing().get())
-                    .positioning(voltageTextWidget.positioning().get())
-                    .tooltip(List.of(
-                            Component.translatable("gtceu.oc.tooltip.0", GTValues.VNF[minTier]),
-                            Component.translatable("gtceu.oc.tooltip.1"),
-                            Component.translatable("gtceu.oc.tooltip.2"),
-                            Component.translatable("gtceu.oc.tooltip.3"),
-                            Component.translatable("gtceu.oc.tooltip.4"))));
+            child(this.voltageTextComponent = voltageTextComponent);
         }
+        updateLayout();
     }
 
     @NotNull
@@ -240,7 +235,7 @@ public class GTRecipeComponent extends FlowLayout {
     }
 
     private int getVoltageXOffset() {
-        int x = width() - switch (tier) {
+        int x = switch (tier) {
             case ULV, LuV, ZPM, UHV, UEV, UXV -> 20;
             case OpV, MAX -> 22;
             case UIV -> 18;
@@ -285,8 +280,7 @@ public class GTRecipeComponent extends FlowLayout {
         for (int i = 0; i < texts.size(); i++) {
             recipeParaTexts.get(i).text(texts.get(i));
         }
-        voltageTextWidget.text(Component.literal(tierText));
-        voltageTextWidget.margins(Insets.of(0, recipe.recipeType.getVoltageTextOffset(), 0, getVoltageXOffset()));
+        voltageTextComponent.setMessage(Component.literal(tierText));
         // TODO implement
         // detectAndSendChanges();
     }

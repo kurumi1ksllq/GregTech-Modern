@@ -287,8 +287,8 @@ public interface ParentUIComponent extends UIComponent {
             if (regex.matcher(Strings.nullToEmpty(component.id())).find()) {
                 list.add(component);
             }
-            if (component instanceof ParentUIComponent widgetGroup) {
-                widgetGroup.childrenByPattern(list, regex);
+            if (component instanceof ParentUIComponent parentComponent) {
+                parentComponent.childrenByPattern(list, regex);
             }
         }
     }

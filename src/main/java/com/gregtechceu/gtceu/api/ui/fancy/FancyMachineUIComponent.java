@@ -56,7 +56,9 @@ public class FancyMachineUIComponent extends StackLayout {
 
     protected Deque<NavigationEntry> previousPages = new ArrayDeque<>();
 
-    protected record NavigationEntry(IFancyUIProvider page, IFancyUIProvider homePage, Runnable onNavigation) {}
+    protected record NavigationEntry(IFancyUIProvider page, IFancyUIProvider homePage, Runnable onNavigation) {
+
+    }
 
     public FancyMachineUIComponent(IFancyUIProvider mainPage,
                                    Sizing horizontalSizing, Sizing verticalSizing) {
@@ -64,22 +66,21 @@ public class FancyMachineUIComponent extends StackLayout {
         //this.margins(Insets.of(-border));
         this.mainPage = mainPage;
 
-        child(this.pageContainer = UIContainers.horizontalFlow(horizontalSizing, verticalSizing)
-                .configure(c -> {
-                    c.allowOverflow(true);
-                    c.positioning(Positioning.absolute(20, 16));
-                }));
         child(this.background = UIComponents.texture(GuiTextures.BACKGROUND)
                 .configure(c -> {
                     c.positioning(Positioning.absolute(20, 16))
                             .sizing(horizontalSizing, verticalSizing);
                 }));
+        child(this.pageContainer = UIContainers.horizontalFlow(horizontalSizing, verticalSizing)
+                .configure(c -> {
+                    c.positioning(Positioning.absolute(20, 16));
+                }));
 
         if (mainPage.hasPlayerInventory()) {
             child(this.playerInventory = UIComponents.playerInventory()
                     .configure(c -> {
-                        c.margins(Insets.of(4, 4, 20 + 4, 4))
-                                .positioning(Positioning.relative(50, 100));
+                        c.margins(Insets.of(5, 5, 20 + 5, 5))
+                                .positioning(Positioning.relative(0, 100));
                     }));
         } else {
             playerInventory = null;
@@ -96,8 +97,7 @@ public class FancyMachineUIComponent extends StackLayout {
         child(this.tooltipsPanel = new TooltipsPanelComponent());
         child(this.configuratorPanel = new ConfiguratorPanelComponent()
                 .configure(c -> {
-                    c.allowOverflow(true)
-                            .positioning(Positioning.absolute(-(4 + 2), height));
+                    c.positioning(Positioning.absolute(-(4 + 2), height));
                 }));
         this.pageSwitcher = new PageSwitcherComponent(this::switchPage);
 
@@ -120,7 +120,8 @@ public class FancyMachineUIComponent extends StackLayout {
 
     ////////////////////////////////////////
     // ********* NAVIGATION *********//
-    ////////////////////////////////////////
+
+    /// /////////////////////////////////////
 
     protected void navigate(IFancyUIProvider newPage) {
         navigate(newPage, this.currentHomePage);
@@ -132,7 +133,8 @@ public class FancyMachineUIComponent extends StackLayout {
                 // In case the user manually navigates back one step, just remove it from the navigation stack
                 this.previousPages.pop();
             } else if (this.currentPage != null) {
-                this.previousPages.push(new NavigationEntry(this.currentPage, this.currentHomePage, () -> {}));
+                this.previousPages.push(new NavigationEntry(this.currentPage, this.currentHomePage, () -> {
+                }));
             }
         } else {
             this.previousPages.clear();
@@ -166,7 +168,8 @@ public class FancyMachineUIComponent extends StackLayout {
 
     ///////////////////////////////////////////////
     // *********** PAGE SWITCHER ***********//
-    ///////////////////////////////////////////////
+
+    /// ////////////////////////////////////////////
 
     protected void openPageSwitcher(ClickData clickData) {
         pageSwitcher.setPageList(allPages, currentHomePage);
@@ -202,7 +205,8 @@ public class FancyMachineUIComponent extends StackLayout {
 
     //////////////////////////////////////////////
     // *********** UI RENDERING ***********//
-    //////////////////////////////////////////////
+
+    /// ///////////////////////////////////////////
 
     protected void setupFancyUI(IFancyUIProvider fancyUI) {
         this.setupFancyUI(fancyUI, fancyUI.hasPlayerInventory());
@@ -231,16 +235,15 @@ public class FancyMachineUIComponent extends StackLayout {
         // layout
         Sizing horizontal = page.horizontalSizing().get().copy().min(172);
         Sizing vertical = page.verticalSizing().get().copy().min(86);
-        //this.sizing(horizontal.andThen(Sizing.fixed(20)), vertical
-        //        .andThen(Sizing.fixed(16 + (!showInventory || playerInventory == null ? 0 : 76))));
 
         final var margins = this.margins.get();
         int width = horizontal.inflate(this.space.width() - margins.horizontal(), page::determineHorizontalContentSize);
         int height = vertical.inflate(this.space.height() - margins.vertical(),
                 page::determineVerticalContentSize);
 
-        this.background.sizing(Sizing.fixed(width),
-                Sizing.fixed(height + (!showInventory || playerInventory == null ? 0 : 76)));
+        int wholeGuiHeight = height + (!showInventory || playerInventory == null ? 0 : 76);
+        this.sizing(Sizing.fixed(width + 20), Sizing.fixed(wholeGuiHeight + 16));
+        this.background.sizing(Sizing.fixed(width), Sizing.fixed(wholeGuiHeight));
 
         AbstractContainerScreen<?> screen = containerAccess().screen();
         if (screen != null) {
@@ -258,14 +261,12 @@ public class FancyMachineUIComponent extends StackLayout {
         }
 
         this.pageContainer.sizing(horizontal, vertical);
-        this.tooltipsPanel.positioning(Positioning.absolute(width + 2, 2));
+        this.tooltipsPanel.positioning(Positioning.absolute(width + 20 + 2, 2));
 
         setupInventoryPosition(showInventory);
 
         // setup
-        this.pageContainer.child(page.horizontalAlignment(HorizontalAlignment.CENTER)
-                .verticalAlignment(VerticalAlignment.CENTER)
-                .positioning(Positioning.relative(50, 50)));
+        this.pageContainer.child(page);
         fancyUI.attachConfigurators(configuratorPanel);
         configuratorPanel
                 .positioning(Positioning.absolute(-(4 + 2), screen.height - configuratorPanel.height() - 4));
@@ -300,4 +301,5 @@ public class FancyMachineUIComponent extends StackLayout {
         this.sideTabsComponent.clearSubTabs();
         currentHomePage.attachSideTabs(sideTabsComponent);
     }
+
 }

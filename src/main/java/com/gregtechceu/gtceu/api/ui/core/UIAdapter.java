@@ -99,10 +99,10 @@ public class UIAdapter<R extends ParentUIComponent>
      */
     public static <R extends ParentUIComponent> UIAdapter<R> create(Screen screen,
                                                                     BiFunction<Sizing, Sizing, R> rootComponentMaker) {
-        var rootComponent = rootComponentMaker.apply(Sizing.fill(100), Sizing.fill(100));
+        var rootComponent = rootComponentMaker.apply(Sizing.fill(), Sizing.fill());
 
         var adapter = new UIAdapter<>(0, 0, screen.width, screen.height, rootComponent, true);
-        //screen.addRenderableWidget(adapter);
+        screen.addRenderableWidget(adapter);
         screen.setFocused(adapter);
 
         return adapter;
@@ -122,7 +122,7 @@ public class UIAdapter<R extends ParentUIComponent>
      */
     public static <R extends ParentUIComponent> UIAdapter<R> createWithoutScreen(int x, int y, int width, int height,
                                                                                  BiFunction<Sizing, Sizing, R> rootComponentMaker) {
-        var rootComponent = rootComponentMaker.apply(Sizing.fill(100), Sizing.fill(100));
+        var rootComponent = rootComponentMaker.apply(Sizing.fill(), Sizing.fill());
         return new UIAdapter<>(x, y, width, height, rootComponent, false);
     }
 

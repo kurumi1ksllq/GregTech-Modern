@@ -197,6 +197,16 @@ public class Sizing implements Animatable<Sizing> {
         return Objects.hash(method, value, min, max);
     }
 
+    @Override
+    public String toString() {
+        return "Sizing{" +
+                "method=" + method +
+                ", value=" + value +
+                ", min=" + min +
+                ", max=" + max +
+                '}';
+    }
+
     private static class MergedSizing extends Sizing {
 
         private final Sizing first, second;
@@ -259,6 +269,16 @@ public class Sizing implements Animatable<Sizing> {
         public int hashCode() {
             return Objects.hash(super.hashCode(), first, second, delta);
         }
+
+        @Override
+        public String toString() {
+            return "MergedSizing{" +
+                    "first=" + first +
+                    ", second=" + second +
+                    ", delta=" + delta +
+                    '}';
+        }
+
     }
 
     private static class GroupedSizing extends Sizing {
@@ -309,7 +329,7 @@ public class Sizing implements Animatable<Sizing> {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             if (!super.equals(o)) return false;
-            MergedSizing that = (MergedSizing) o;
+            GroupedSizing that = (GroupedSizing) o;
             return Objects.equals(first, that.first) &&
                     Objects.equals(second, that.second);
         }
@@ -318,5 +338,14 @@ public class Sizing implements Animatable<Sizing> {
         public int hashCode() {
             return Objects.hash(super.hashCode(), first, second);
         }
+
+        @Override
+        public String toString() {
+            return "GroupedSizing{" +
+                    "first=" + first +
+                    ", second=" + second +
+                    '}';
+        }
+
     }
 }

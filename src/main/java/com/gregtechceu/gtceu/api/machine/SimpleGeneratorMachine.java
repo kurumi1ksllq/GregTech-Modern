@@ -198,7 +198,7 @@ public class SimpleGeneratorMachine extends WorkableTieredMachine
                 FlowLayout template = recipeType.getRecipeUI().createEditableUITemplate(false, false)
                         .createDefault();
                 StackLayout group = UIContainers.stack(Sizing.content(), Sizing.content().copy().min(78));
-                template.positioning(Positioning.relative(50, 50));
+                //template.positioning(Positioning.relative(50, 50));
                 group.child(template);
                 return group;
             }, (template, adapter, machine) -> {

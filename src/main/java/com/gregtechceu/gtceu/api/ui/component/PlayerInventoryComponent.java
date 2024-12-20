@@ -13,12 +13,10 @@ public class PlayerInventoryComponent extends StackLayout {
     protected PlayerInventoryComponent(Inventory inventory, UITexture slotTexture) {
         super(Sizing.fixed(162), Sizing.fixed(76));
         setByInventory(inventory, slotTexture);
-        this.allowOverflow(true);
     }
 
     protected PlayerInventoryComponent() {
         super(Sizing.fixed(162), Sizing.fixed(76));
-        this.allowOverflow(true);
     }
 
     public PlayerInventoryComponent setByInventory(Inventory inventory, UITexture slotTexture) {

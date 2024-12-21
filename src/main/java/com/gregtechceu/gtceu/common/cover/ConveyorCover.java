@@ -48,6 +48,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -340,7 +341,7 @@ public class ConveyorCover extends CoverBehavior implements IUICover, IControlla
             ItemStack extractedStack = sourceInventory.extractItem(i,
                     Math.min(itemInfo.totalCount, itemsLeftToTransfer), true);
 
-            ItemStack remainderStack = ItemTransferHelper.insertItem(targetInventory, extractedStack, true);
+            ItemStack remainderStack = ItemHandlerHelper.insertItemStacked(targetInventory, extractedStack, true);
             int amountToInsert = extractedStack.getCount() - remainderStack.getCount();
 
             if (amountToInsert > 0) {
@@ -348,7 +349,7 @@ public class ConveyorCover extends CoverBehavior implements IUICover, IControlla
 
                 if (!extractedStack.isEmpty()) {
 
-                    ItemTransferHelper.insertItem(targetInventory, extractedStack, false);
+                    ItemHandlerHelper.insertItemStacked(targetInventory, extractedStack, false);
                     itemsLeftToTransfer -= extractedStack.getCount();
                     itemInfo.totalCount -= extractedStack.getCount();
 

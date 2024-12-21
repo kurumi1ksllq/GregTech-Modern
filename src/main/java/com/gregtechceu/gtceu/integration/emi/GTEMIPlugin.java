@@ -77,6 +77,9 @@ public class GTEMIPlugin implements EmiPlugin {
 
         // Comparators
         registry.setDefaultComparison(GTItems.PROGRAMMED_CIRCUIT.asItem(), Comparison.compareNbt());
+        registry.removeEmiStacks(EmiStack.of(GTItems.PROGRAMMED_CIRCUIT.asStack()));
+        registry.addEmiStack(EmiStack.of(IntCircuitBehaviour.stack(0)));
+        registry.addWorkstation(GTProgrammedCircuitCategory.CATEGORY, EmiStack.of(IntCircuitBehaviour.stack(0)));
 
         Comparison potionComparison = Comparison.compareData(stack -> stack.get(DataComponents.POTION_CONTENTS));
         PotionFluid potionFluid = GTFluids.POTION.get();

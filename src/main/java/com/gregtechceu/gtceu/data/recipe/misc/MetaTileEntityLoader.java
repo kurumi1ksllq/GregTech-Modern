@@ -403,6 +403,11 @@ public class MetaTileEntityLoader {
                 CIRCUIT.getIngredient(GTValues.UV), 'M', GTMachines.AUTO_MAINTENANCE_HATCH.asStack(), 'R',
                 ROBOT_ARM.getIngredient(GTValues.UV), 'H', GTMachines.HULL[GTValues.UV].asStack(), 'W',
                 new UnificationEntry(TagPrefix.cableGtSingle, GTMaterials.YttriumBariumCuprate));
+        VanillaRecipeHelper.addShapedRecipe(provider, true, "maintenance_hatch_sterile",
+                GTMachines.STERILE_MAINTENANCE_HATCH.asStack(), "EFS", "FMF", "CBC",
+                'F', GTBlocks.FILTER_CASING_STERILE, 'M', GTMachines.CLEANING_MAINTENANCE_HATCH.asStack(),
+                'B', GTItems.BLACKLIGHT, 'E', GTItems.EMITTER_UV,
+                'S', GTItems.SENSOR_UV, 'C', new UnificationEntry(TagPrefix.wireGtOctal, GTMaterials.RutheniumTriniumAmericiumNeutronate));
 
         // TODO Access Interface
         // VanillaRecipeHelper.addShapedRecipe(provider, true, "machine_access_interface",

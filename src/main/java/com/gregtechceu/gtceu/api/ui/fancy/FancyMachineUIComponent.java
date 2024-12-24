@@ -204,8 +204,7 @@ public class FancyMachineUIComponent extends StackLayout {
 
     //////////////////////////////////////////////
     // *********** UI RENDERING ***********//
-
-    /// ///////////////////////////////////////////
+    //////////////////////////////////////////////
 
     protected void setupFancyUI(IFancyUIProvider fancyUI) {
         this.setupFancyUI(fancyUI, fancyUI.hasPlayerInventory());

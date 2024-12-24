@@ -215,10 +215,7 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IMachi
     protected ParentUIComponent createSingleSlotGUI() {
         var group = UIContainers.horizontalFlow(Sizing.fixed(89), Sizing.fixed(63));
         group.padding(Insets.of(4, 0, 4, 4));
-        group.surface((graphics, component) -> GuiTextures.DISPLAY.draw(graphics, 0, 0,
-                component.x(), component.y(), component.width(), component.height()));
-        group.child(UIComponents.texture(GuiTextures.DISPLAY)
-                .sizing(Sizing.fill()));
+        group.surface(Surface.UI_DISPLAY);
         TankComponent tankWidget;
 
         // Add input/output-specific widgets

@@ -6,18 +6,17 @@ import com.gregtechceu.gtceu.api.ui.parsing.UIModel;
 import com.gregtechceu.gtceu.api.ui.parsing.UIModelParsingException;
 import com.gregtechceu.gtceu.api.ui.parsing.UIParsing;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.item.ItemParser;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.lwjgl.opengl.GL11;
 import org.w3c.dom.Element;
 
 import java.util.Map;
@@ -39,7 +38,8 @@ public class ItemStackTexture extends TransformTexture {
     @Override
     protected void drawInternal(UIGuiGraphics graphics, int mouseX, int mouseY, float x, float y, float width,
                                 float height) {
-        RenderSystem.setShaderColor(this.color().red(), this.color().green(), this.color().blue(), this.color().alpha());
+        RenderSystem.setShaderColor(this.color().red(), this.color().green(), this.color().blue(),
+                this.color().alpha());
 
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);

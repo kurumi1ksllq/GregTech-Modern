@@ -489,7 +489,5 @@ public class SlotComponent extends BaseUIComponent implements ClickableIngredien
             this.index = index;
             ((SlotAccessor) inner).gtceu$setSlotIndex(index);
         }
-
     }
-
 }

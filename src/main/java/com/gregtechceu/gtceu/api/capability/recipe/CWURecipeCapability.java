@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.content.SerializerInteger;
 import com.gregtechceu.gtceu.api.ui.component.UIComponents;
 import com.gregtechceu.gtceu.api.ui.container.FlowLayout;
-import com.gregtechceu.gtceu.api.ui.container.StackLayout;
 
 import net.minecraft.network.chat.Component;
 

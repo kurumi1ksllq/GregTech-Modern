@@ -31,7 +31,6 @@ import com.gregtechceu.gtceu.integration.rei.recipe.GTRecipeREICategory;
 import com.lowdragmc.lowdraglib.LDLib;
 import com.lowdragmc.lowdraglib.jei.JEIPlugin;
 
-import lombok.extern.slf4j.Slf4j;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
@@ -43,6 +42,7 @@ import it.unimi.dsi.fastutil.bytes.Byte2ObjectArrayMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectMap;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import me.shedaniel.rei.api.client.view.ViewSearchBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -138,12 +138,12 @@ public class GTRecipeTypeUI {
      */
     @OnlyIn(Dist.CLIENT)
     public FlowLayout createUITemplate(DoubleSupplier progressSupplier,
-                                             UIAdapter<StackLayout> adapter,
-                                             Table<IO, RecipeCapability<?>, Object> storages,
-                                             CompoundTag data,
-                                             List<RecipeCondition> conditions,
-                                             boolean isSteam,
-                                             boolean isHighPressure) {
+                                       UIAdapter<StackLayout> adapter,
+                                       Table<IO, RecipeCapability<?>, Object> storages,
+                                       CompoundTag data,
+                                       List<RecipeCondition> conditions,
+                                       boolean isSteam,
+                                       boolean isHighPressure) {
         var template = createEditableUITemplate(isSteam, isHighPressure);
         var group = template.createDefault();
         template.setupUI(group, adapter,
@@ -152,10 +152,10 @@ public class GTRecipeTypeUI {
     }
 
     public FlowLayout createUITemplate(DoubleSupplier progressSupplier,
-                                             UIAdapter<StackLayout> adapter,
-                                             Table<IO, RecipeCapability<?>, Object> storages,
-                                             CompoundTag data,
-                                             List<RecipeCondition> conditions) {
+                                       UIAdapter<StackLayout> adapter,
+                                       Table<IO, RecipeCapability<?>, Object> storages,
+                                       CompoundTag data,
+                                       List<RecipeCondition> conditions) {
         return createUITemplate(progressSupplier, adapter, storages, data, conditions, false, false);
     }
 
@@ -175,8 +175,8 @@ public class GTRecipeTypeUI {
 
             var group = UIContainers.horizontalFlow(Sizing.content(), Sizing.content());
             group.gap(36)
-                    //.horizontalAlignment(HorizontalAlignment.LEFT)
-                    //.verticalAlignment(VerticalAlignment.TOP)
+                    // .horizontalAlignment(HorizontalAlignment.LEFT)
+                    // .verticalAlignment(VerticalAlignment.TOP)
                     .positioning(Positioning.relative(50, 50));
 
             var inputs = addInventorySlotGroup(false, isSteam, isHighPressure);
@@ -185,7 +185,7 @@ public class GTRecipeTypeUI {
             var progressWidget = UIComponents.progress(ProgressComponent.JEIProgress);
             progressWidget.progressTexture(progressBarTexture)
                     .positioning(Positioning.relative(50, 50))
-                    //.positioning(Positioning.layout())
+                    // .positioning(Positioning.layout())
                     .sizing(Sizing.fixed(20));
             progressWidget.id("progress");
             group.child(progressWidget);
@@ -254,24 +254,24 @@ public class GTRecipeTypeUI {
 
     protected UIComponent makeRecipeButton(UIComponent progressComponent) {
         return UIComponents.button(Component.empty(), cd -> {
-                    if (LDLib.isReiLoaded()) {
-                        ViewSearchBuilder.builder().addCategories(
-                                        recipeType.getCategories().stream()
-                                                .filter(GTRecipeCategory::isXEIVisible)
-                                                .map(GTRecipeREICategory::machineCategory)
-                                                .collect(Collectors.toList()))
-                                .open();
-                    } else if (LDLib.isJeiLoaded()) {
-                        JEIPlugin.jeiRuntime.getRecipesGui().showTypes(
-                                recipeType.getCategories().stream()
-                                        .filter(GTRecipeCategory::isXEIVisible)
-                                        .map(GTRecipeJEICategory::machineType)
-                                        .collect(Collectors.toList()));
-                    } else if (LDLib.isEmiLoaded()) {
-                        EmiApi.displayRecipeCategory(
-                                GTRecipeEMICategory.machineCategory(recipeType.getCategory()));
-                    }
-                }).renderer(ButtonComponent.Renderer.EMPTY)
+            if (LDLib.isReiLoaded()) {
+                ViewSearchBuilder.builder().addCategories(
+                        recipeType.getCategories().stream()
+                                .filter(GTRecipeCategory::isXEIVisible)
+                                .map(GTRecipeREICategory::machineCategory)
+                                .collect(Collectors.toList()))
+                        .open();
+            } else if (LDLib.isJeiLoaded()) {
+                JEIPlugin.jeiRuntime.getRecipesGui().showTypes(
+                        recipeType.getCategories().stream()
+                                .filter(GTRecipeCategory::isXEIVisible)
+                                .map(GTRecipeJEICategory::machineType)
+                                .collect(Collectors.toList()));
+            } else if (LDLib.isEmiLoaded()) {
+                EmiApi.displayRecipeCategory(
+                        GTRecipeEMICategory.machineCategory(recipeType.getCategory()));
+            }
+        }).renderer(ButtonComponent.Renderer.EMPTY)
                 .positioning(progressComponent.positioning().get())
                 .sizing(progressComponent.horizontalSizing().get(), progressComponent.verticalSizing().get())
                 .tooltip(List.of(Component.translatable("gtceu.recipe_type.show_recipes")));
@@ -359,14 +359,13 @@ public class GTRecipeTypeUI {
     private void addSlot(StackLayout group, RecipeCapability<?> cap, int capCount,
                          int index, int x, int y,
                          boolean isOutputs, boolean isSteam, boolean isHighPressure) {
-
         var component = cap.createUIComponent();
         // noinspection DataFlowIssue
         component.id(cap.slotName(isOutputs ? IO.OUT : IO.IN, index))
                 .sizing(Sizing.fill())
                 .positioning(Positioning.absolute(0, 0));
         var texture = UIComponents.texture(
-                        getOverlaysForSlot(isOutputs, cap, index == capCount - 1, isSteam, isHighPressure))
+                getOverlaysForSlot(isOutputs, cap, index == capCount - 1, isSteam, isHighPressure))
                 .sizing(Sizing.fill())
                 .positioning(Positioning.absolute(0, 0));
 

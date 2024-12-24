@@ -11,8 +11,10 @@ import com.gregtechceu.gtceu.api.ui.core.*;
 import com.gregtechceu.gtceu.api.ui.ops.ComponentOps;
 import com.gregtechceu.gtceu.api.ui.util.ClickData;
 import com.gregtechceu.gtceu.utils.CommandOpenedScreen;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,49 +40,49 @@ public class RenderdocScreen extends BaseUIScreen<FlowLayout> implements Command
 
         var overlayState = RenderDoc.getOverlayOptions();
         rootComponent.child(
-                        UIContainers.verticalFlow(Sizing.content(), Sizing.content())
-                                .child(UIComponents.label(Component.literal("RenderDoc Controls")).shadow(true).margins(Insets.top(5).withBottom(10)))
-                                .child(
-                                        UIContainers.grid(Sizing.content(), Sizing.content(), 2, 2)
-                                                .child(overlayControl(Component.literal("Enabled"), overlayState, RenderDoc.OverlayOption.ENABLED), 0, 0)
-                                                .child(overlayControl(Component.literal("Capture List"), overlayState, RenderDoc.OverlayOption.CAPTURE_LIST), 0, 1)
-                                                .child(overlayControl(Component.literal("Frame Rate"), overlayState, RenderDoc.OverlayOption.FRAME_RATE), 1, 0)
-                                                .child(overlayControl(Component.literal("Frame Number"), overlayState, RenderDoc.OverlayOption.FRAME_NUMBER), 1, 1)
-                                )
-                                .child(
-                                        UIComponents.box(Sizing.fixed(175), Sizing.fixed(1))
-                                                .color(Color.ofFormatting(ChatFormatting.DARK_GRAY))
-                                                .fill(true)
-                                                .margins(Insets.vertical(5))
-                                )
-                                .child(
-                                        UIContainers.grid(Sizing.content(), Sizing.content(), 2, 2)
-                                                .child(UIComponents.button(
-                                                        Component.literal("Launch UI"),
-                                                        (ClickData cd) -> RenderDoc.launchReplayUI(true)
-                                                ).horizontalSizing(Sizing.fixed(90)).margins(Insets.of(2)), 0, 0)
-                                                .child((this.captureKeyButton = UIComponents.button(
-                                                        Component.literal("Capture Hotkey"),
-                                                        (ClickData cd) -> {
-                                                            this.captureKeyButton.active(false);
-                                                            this.captureKeyButton.setMessage(Component.literal("Press..."));
+                UIContainers.verticalFlow(Sizing.content(), Sizing.content())
+                        .child(UIComponents.label(Component.literal("RenderDoc Controls")).shadow(true)
+                                .margins(Insets.top(5).withBottom(10)))
+                        .child(
+                                UIContainers.grid(Sizing.content(), Sizing.content(), 2, 2)
+                                        .child(overlayControl(Component.literal("Enabled"), overlayState,
+                                                RenderDoc.OverlayOption.ENABLED), 0, 0)
+                                        .child(overlayControl(Component.literal("Capture List"), overlayState,
+                                                RenderDoc.OverlayOption.CAPTURE_LIST), 0, 1)
+                                        .child(overlayControl(Component.literal("Frame Rate"), overlayState,
+                                                RenderDoc.OverlayOption.FRAME_RATE), 1, 0)
+                                        .child(overlayControl(Component.literal("Frame Number"), overlayState,
+                                                RenderDoc.OverlayOption.FRAME_NUMBER), 1, 1))
+                        .child(
+                                UIComponents.box(Sizing.fixed(175), Sizing.fixed(1))
+                                        .color(Color.ofFormatting(ChatFormatting.DARK_GRAY))
+                                        .fill(true)
+                                        .margins(Insets.vertical(5)))
+                        .child(
+                                UIContainers.grid(Sizing.content(), Sizing.content(), 2, 2)
+                                        .child(UIComponents.button(
+                                                Component.literal("Launch UI"),
+                                                (ClickData cd) -> RenderDoc.launchReplayUI(true))
+                                                .horizontalSizing(Sizing.fixed(90)).margins(Insets.of(2)), 0, 0)
+                                        .child((this.captureKeyButton = UIComponents.button(
+                                                Component.literal("Capture Hotkey"),
+                                                (ClickData cd) -> {
+                                                    this.captureKeyButton.active(false);
+                                                    this.captureKeyButton.setMessage(Component.literal("Press..."));
 
-                                                            this.setCaptureKey = true;
-                                                        }
-                                                )).horizontalSizing(Sizing.fixed(90)).margins(Insets.of(2)), 1, 0)
-                                                .child(UIComponents.button(
-                                                        Component.literal("Capture Frame"),
-                                                        (ClickData cd) -> RenderDoc.triggerCapture()
-                                                ).horizontalSizing(Sizing.fixed(90)).margins(Insets.of(2)), 0, 1)
-                                                .child(this.captureLabel = UIComponents.label(
-                                                        this.createCapturesText()
-                                                ), 1, 1)
-                                                .verticalAlignment(VerticalAlignment.CENTER).horizontalAlignment(HorizontalAlignment.CENTER)
-                                )
-                                .horizontalAlignment(HorizontalAlignment.CENTER)
-                                .padding(Insets.of(5))
-                                .surface(Surface.flat(0x77000000).and(Surface.outline(0x77000000)))
-                )
+                                                    this.setCaptureKey = true;
+                                                })).horizontalSizing(Sizing.fixed(90)).margins(Insets.of(2)), 1, 0)
+                                        .child(UIComponents.button(
+                                                Component.literal("Capture Frame"),
+                                                (ClickData cd) -> RenderDoc.triggerCapture())
+                                                .horizontalSizing(Sizing.fixed(90)).margins(Insets.of(2)), 0, 1)
+                                        .child(this.captureLabel = UIComponents.label(
+                                                this.createCapturesText()), 1, 1)
+                                        .verticalAlignment(VerticalAlignment.CENTER)
+                                        .horizontalAlignment(HorizontalAlignment.CENTER))
+                        .horizontalAlignment(HorizontalAlignment.CENTER)
+                        .padding(Insets.of(5))
+                        .surface(Surface.flat(0x77000000).and(Surface.outline(0x77000000))))
                 .verticalAlignment(VerticalAlignment.CENTER)
                 .horizontalAlignment(HorizontalAlignment.CENTER);
     }

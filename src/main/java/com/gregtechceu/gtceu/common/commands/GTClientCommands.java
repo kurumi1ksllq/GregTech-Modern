@@ -8,16 +8,16 @@ import com.gregtechceu.gtceu.common.network.GTNetwork;
 import com.gregtechceu.gtceu.common.network.packets.SCPacketShareProspection;
 import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.Component;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,7 +32,8 @@ public class GTClientCommands {
                 .then(literal("share_prospection_data")
                         .then(argument("player", GameProfileArgument.gameProfile())
                                 .executes(ctx -> {
-                                    Collection<GameProfile> players = GameProfileArgument.getGameProfiles(ctx, "player");
+                                    Collection<GameProfile> players = GameProfileArgument.getGameProfiles(ctx,
+                                            "player");
                                     for (GameProfile player : players) {
                                         Thread sendThread = new Thread(new ProspectingShareTask(
                                                 ctx.getSource().getPlayer().getUUID(), player.getId()));
@@ -49,7 +50,8 @@ public class GTClientCommands {
                     .then(argument("capture_index", IntegerArgumentType.integer(0))
                             .then(argument("comment", StringArgumentType.greedyString())
                                     .executes(context -> {
-                                        var capture = RenderDoc.getCapture(IntegerArgumentType.getInteger(context, "capture_index"));
+                                        var capture = RenderDoc
+                                                .getCapture(IntegerArgumentType.getInteger(context, "capture_index"));
                                         if (capture == null) {
                                             context.getSource().sendFailure(ComponentOps.concat(
                                                     Component.literal(GTCEu.NAME + " > "),
@@ -57,10 +59,11 @@ public class GTClientCommands {
                                             return 0;
                                         }
 
-                                        RenderDoc.setCaptureComments(capture, StringArgumentType.getString(context, "comment"));
+                                        RenderDoc.setCaptureComments(capture,
+                                                StringArgumentType.getString(context, "comment"));
                                         context.getSource().sendSuccess(() -> ComponentOps.concat(
-                                                        Component.literal(GTCEu.NAME + " > "),
-                                                        Component.literal("comment updated")),
+                                                Component.literal(GTCEu.NAME + " > "),
+                                                Component.literal("comment updated")),
                                                 false);
 
                                         return 1;
@@ -95,7 +98,5 @@ public class GTClientCommands {
                 }
             }
         }
-
     }
-
 }

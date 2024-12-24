@@ -2,10 +2,10 @@ package com.gregtechceu.gtceu.api.ui.core;
 
 import com.gregtechceu.gtceu.api.ui.parsing.UIModelParsingException;
 
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import net.minecraft.util.Mth;
 
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.w3c.dom.Element;
 
 import java.util.Locale;
@@ -278,7 +278,6 @@ public class Sizing implements Animatable<Sizing> {
                     ", delta=" + delta +
                     '}';
         }
-
     }
 
     private static class GroupedSizing extends Sizing {
@@ -346,6 +345,5 @@ public class Sizing implements Animatable<Sizing> {
                     ", second=" + second +
                     '}';
         }
-
     }
 }

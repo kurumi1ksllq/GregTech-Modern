@@ -319,7 +319,8 @@ public abstract class BaseContainerScreen<R extends ParentUIComponent, C extends
     @Override
     protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
         if (slot != null &&
-                uiAdapter.rootComponent.getHoveredComponent(slot.x - 1 + leftPos, slot.y - 1 + topPos) instanceof SlotComponent slotComponent) {
+                uiAdapter.rootComponent.getHoveredComponent(slot.x - 1 + leftPos,
+                        slot.y - 1 + topPos) instanceof SlotComponent slotComponent) {
             if (slotComponent.slotClick(mouseButton, type, this.menu.player())) {
                 return;
             }

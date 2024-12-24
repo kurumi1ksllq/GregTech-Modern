@@ -7,11 +7,8 @@ import com.gregtechceu.gtceu.api.ui.container.UIContainers;
 import com.gregtechceu.gtceu.api.ui.core.*;
 import com.gregtechceu.gtceu.api.ui.parsing.UIModel;
 import com.gregtechceu.gtceu.api.ui.parsing.UIParsing;
-
 import com.gregtechceu.gtceu.api.ui.util.ClickData;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -19,6 +16,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -278,7 +278,8 @@ public class DropdownComponent extends FlowLayout {
         protected final DropdownComponent parentDropdown;
         protected BiConsumer<ClickData, DropdownComponent> onClick;
 
-        protected Button(DropdownComponent parentDropdown, Component text, BiConsumer<ClickData, DropdownComponent> onClick) {
+        protected Button(DropdownComponent parentDropdown, Component text,
+                         BiConsumer<ClickData, DropdownComponent> onClick) {
             super(text);
             this.onClick = onClick;
             this.parentDropdown = parentDropdown;

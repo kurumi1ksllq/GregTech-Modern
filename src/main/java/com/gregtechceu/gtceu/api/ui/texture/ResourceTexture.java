@@ -4,11 +4,11 @@ import com.gregtechceu.gtceu.api.ui.core.UIGuiGraphics;
 import com.gregtechceu.gtceu.api.ui.parsing.UIModel;
 import com.gregtechceu.gtceu.api.ui.parsing.UIParsing;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.w3c.dom.Element;
@@ -82,7 +82,8 @@ public class ResourceTexture extends TransformTexture {
         var matrix4f = graphics.pose().last().pose();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         bufferbuilder.vertex(matrix4f, x, y + height, 0).uv(imageU, imageV + imageHeight).color(color).endVertex();
-        bufferbuilder.vertex(matrix4f, x + width, y + height, 0).uv(imageU + imageWidth, imageV + imageHeight).color(color).endVertex();
+        bufferbuilder.vertex(matrix4f, x + width, y + height, 0).uv(imageU + imageWidth, imageV + imageHeight)
+                .color(color).endVertex();
         bufferbuilder.vertex(matrix4f, x + width, y, 0).uv(imageU + imageWidth, imageV).color(color).endVertex();
         bufferbuilder.vertex(matrix4f, x, y, 0).uv(imageU, imageV).color(color).endVertex();
         BufferUploader.drawWithShader(bufferbuilder.end());

@@ -125,8 +125,9 @@ public interface Surface {
             surface = switch (child.getNodeName()) {
                 case "panel" -> surface.and(
                         child.getAttribute("inverse").equalsIgnoreCase("true") ? UI_BACKGROUND_INVERSE : UI_BACKGROUND);
-                case "steam-panel" -> surface.and(child.getAttribute("steel").equalsIgnoreCase("true") ? UI_BACKGROUND_STEEL :
-                        UI_BACKGROUND_BRONZE);
+                case "steam-panel" -> surface
+                        .and(child.getAttribute("steel").equalsIgnoreCase("true") ? UI_BACKGROUND_STEEL :
+                                UI_BACKGROUND_BRONZE);
                 case "tiled" -> {
                     UIParsing.expectAttributes(child, "texture-width", "texture-height");
                     yield surface.and(tiled(

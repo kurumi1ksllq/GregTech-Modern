@@ -1,8 +1,9 @@
 package com.gregtechceu.gtceu.integration.emi.handler.widget;
 
+import net.minecraft.client.gui.GuiGraphics;
+
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.widget.SlotWidget;
-import net.minecraft.client.gui.GuiGraphics;
 
 public class NoRenderEMISlotWidget extends SlotWidget {
 
@@ -15,5 +16,4 @@ public class NoRenderEMISlotWidget extends SlotWidget {
         // only render the overlays.
         this.drawOverlay(draw, mouseX, mouseY, delta);
     }
-
 }

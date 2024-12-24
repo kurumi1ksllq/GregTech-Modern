@@ -4,8 +4,8 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.ui.event.WindowEvent;
 import com.gregtechceu.gtceu.api.ui.texture.NinePatchTexture;
 import com.gregtechceu.gtceu.core.mixins.ui.accessor.GuiGraphicsAccessor;
-
 import com.gregtechceu.gtceu.utils.GTMath;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -425,7 +425,7 @@ public class UIGuiGraphics extends GuiGraphics {
         for (int i = segments; i >= 0; i--) {
             double theta = Math.toRadians(angleFrom) + i * angleStep;
             buffer.vertex(matrix, (float) (centerX - Math.cos(theta) * radius),
-                            (float) (centerY - Math.sin(theta) * radius), 0)
+                    (float) (centerY - Math.sin(theta) * radius), 0)
                     .color(vColor).endVertex();
         }
 
@@ -459,10 +459,10 @@ public class UIGuiGraphics extends GuiGraphics {
             double theta = Math.toRadians(angleFrom) + i * angleStep;
 
             buffer.vertex(matrix, (float) (centerX - Math.cos(theta) * outerRadius),
-                            (float) (centerY - Math.sin(theta) * outerRadius), 0)
+                    (float) (centerY - Math.sin(theta) * outerRadius), 0)
                     .color(outColor).endVertex();
             buffer.vertex(matrix, (float) (centerX - Math.cos(theta) * innerRadius),
-                            (float) (centerY - Math.sin(theta) * innerRadius), 0)
+                    (float) (centerY - Math.sin(theta) * innerRadius), 0)
                     .color(inColor).endVertex();
         }
 
@@ -683,7 +683,5 @@ public class UIGuiGraphics extends GuiGraphics {
             Window window = event.getWindow();
             INSTANCE.init(event.getMinecraft(), window.getGuiScaledWidth(), window.getGuiScaledHeight());
         }
-
     }
-
 }

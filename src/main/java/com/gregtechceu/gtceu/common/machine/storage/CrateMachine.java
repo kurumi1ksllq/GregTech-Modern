@@ -127,7 +127,7 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
         }
         parent.child(grid);
 
-        //parent.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+        // parent.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
     }
 
     @Override

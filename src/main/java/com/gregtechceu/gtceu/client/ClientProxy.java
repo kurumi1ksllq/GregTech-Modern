@@ -8,7 +8,6 @@ import com.gregtechceu.gtceu.api.ui.UIContainerScreen;
 import com.gregtechceu.gtceu.api.ui.parsing.UIModelLoader;
 import com.gregtechceu.gtceu.api.ui.texture.NinePatchTexture;
 import com.gregtechceu.gtceu.client.particle.HazardParticle;
-import com.gregtechceu.gtceu.client.renderdoc.RenderDoc;
 import com.gregtechceu.gtceu.client.renderer.entity.GTBoatRenderer;
 import com.gregtechceu.gtceu.client.renderer.entity.GTExplosiveRenderer;
 import com.gregtechceu.gtceu.client.ui.ScreenInternals;
@@ -70,7 +69,6 @@ public class ClientProxy extends CommonProxy {
 
         ScreenInternals.init();
     }
-
 
     private static final String LINUX_RENDERDOC_WARNING = """
 

@@ -55,7 +55,7 @@ public class TitleBarComponent extends StackLayout {
     protected TitleBarComponent(Consumer<ClickData> onBackClicked, Consumer<ClickData> onMenuClicked) {
         super(Sizing.fill(), Sizing.fixed(HEIGHT));
         this.padding(Insets.both(HORIZONTAL_MARGIN, 0));
-        //this.margins(Insets.both(HORIZONTAL_MARGIN, 0));
+        // this.margins(Insets.both(HORIZONTAL_MARGIN, 0));
         this.positioning(Positioning.absolute(HORIZONTAL_MARGIN, 0));
         this.innerHeight = HEIGHT - BORDER_SIZE;
 
@@ -67,7 +67,7 @@ public class TitleBarComponent extends StackLayout {
                 .sizing(Sizing.fixed(BUTTON_WIDTH), Sizing.fixed(innerHeight)));
         buttonGroup.child(this.menuButton = UIComponents.button(Component.literal("+"), onMenuClicked)
                 .positioning(Positioning.relative(100, 100))
-                //.margins(Insets.both(BUTTON_WIDTH, BORDER_SIZE))
+                // .margins(Insets.both(BUTTON_WIDTH, BORDER_SIZE))
                 .sizing(Sizing.fixed(BUTTON_WIDTH), Sizing.fixed(innerHeight)));
         child(buttonGroup);
 
@@ -76,11 +76,11 @@ public class TitleBarComponent extends StackLayout {
         mainSection.positioning(Positioning.absolute(BUTTON_WIDTH, 0));
         mainSection.surface(Surface.TITLE_BAR_BACKGROUND);
         mainSection.child(this.tabIcon = (TextureComponent) UIComponents.texture(UITexture.EMPTY)
-                        .sizing(Sizing.fixed(innerHeight - 2))
-                        .positioning(Positioning.absolute(BORDER_SIZE + 1, BORDER_SIZE + 1)))
+                .sizing(Sizing.fixed(innerHeight - 2))
+                .positioning(Positioning.absolute(BORDER_SIZE + 1, BORDER_SIZE + 1)))
                 .child(this.tabTitle = (LabelComponent) UIComponents.label(Component.empty())
                         .rollSpeed(ROLL_SPEED)
-                        //.textType(TextTexture.TextType.LEFT_ROLL)
+                        // .textType(TextTexture.TextType.LEFT_ROLL)
                         .positioning(Positioning.absolute(HEIGHT, BORDER_SIZE)));
         child(mainSection);
 
@@ -114,8 +114,8 @@ public class TitleBarComponent extends StackLayout {
 
         int buttonGroupWidth = this.width - (BUTTON_WIDTH * hiddenButtons);
         buttonGroup.sizing(Sizing.fixed(buttonGroupWidth), Sizing.fixed(innerHeight));
-        //buttonGroup.mount(this, showBackButton ? 0 : BUTTON_WIDTH, BORDER_SIZE);
-        //menuButton.mount(this, buttonGroupWidth - BUTTON_WIDTH, BORDER_SIZE);
+        // buttonGroup.mount(this, showBackButton ? 0 : BUTTON_WIDTH, BORDER_SIZE);
+        // menuButton.mount(this, buttonGroupWidth - BUTTON_WIDTH, BORDER_SIZE);
 
         int mainSectionWidth = this.width - (BUTTON_WIDTH * 2);
         int titleWidth = mainSectionWidth - (2 * BORDER_SIZE) - innerHeight;
@@ -125,5 +125,4 @@ public class TitleBarComponent extends StackLayout {
 
         super.updateLayout();
     }
-
 }

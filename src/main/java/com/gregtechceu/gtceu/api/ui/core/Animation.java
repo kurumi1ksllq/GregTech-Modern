@@ -3,10 +3,11 @@ package com.gregtechceu.gtceu.api.ui.core;
 import com.gregtechceu.gtceu.api.ui.util.EventSource;
 import com.gregtechceu.gtceu.api.ui.util.EventStream;
 
+import net.minecraft.util.Mth;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.util.Mth;
 
 import java.util.Arrays;
 import java.util.List;

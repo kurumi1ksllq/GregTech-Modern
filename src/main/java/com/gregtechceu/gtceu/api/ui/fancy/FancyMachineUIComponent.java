@@ -63,7 +63,7 @@ public class FancyMachineUIComponent extends StackLayout {
     public FancyMachineUIComponent(IFancyUIProvider mainPage,
                                    Sizing horizontalSizing, Sizing verticalSizing) {
         super(horizontalSizing.andThen(Sizing.fixed(20)), verticalSizing.andThen(Sizing.fixed(16)));
-        //this.margins(Insets.of(-border));
+        // this.margins(Insets.of(-border));
         this.mainPage = mainPage;
 
         child(this.background = UIComponents.texture(GuiTextures.BACKGROUND)
@@ -133,8 +133,7 @@ public class FancyMachineUIComponent extends StackLayout {
                 // In case the user manually navigates back one step, just remove it from the navigation stack
                 this.previousPages.pop();
             } else if (this.currentPage != null) {
-                this.previousPages.push(new NavigationEntry(this.currentPage, this.currentHomePage, () -> {
-                }));
+                this.previousPages.push(new NavigationEntry(this.currentPage, this.currentHomePage, () -> {}));
             }
         } else {
             this.previousPages.clear();
@@ -301,5 +300,4 @@ public class FancyMachineUIComponent extends StackLayout {
         this.sideTabsComponent.clearSubTabs();
         currentHomePage.attachSideTabs(sideTabsComponent);
     }
-
 }

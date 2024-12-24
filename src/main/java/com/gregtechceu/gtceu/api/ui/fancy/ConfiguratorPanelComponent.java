@@ -132,8 +132,7 @@ public class ConfiguratorPanelComponent extends FlowLayout {
             padding(Insets.of(getTabSize()));
             positioning(Positioning.absolute(0, tabs.size() * (getTabSize() + 2)));
             this.configurator = configurator;
-            this.button = new ButtonComponent(Component.empty(), b -> {
-            }) {
+            this.button = new ButtonComponent(Component.empty(), b -> {}) {
 
                 @Override
                 public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -210,8 +209,8 @@ public class ConfiguratorPanelComponent extends FlowLayout {
             if (this.view != null && this.view == child) {
                 if (expanded == this) {
                     positioning().animate(getAnimationTime(), Easing.QUADRATIC,
-                                    Positioning.absolute(dragOffsetX + (-width() + (tabs.size() > 1 ? -2 : getTabSize())),
-                                            dragOffsetY))
+                            Positioning.absolute(dragOffsetX + (-width() + (tabs.size() > 1 ? -2 : getTabSize())),
+                                    dragOffsetY))
                             .finished().subscribe((dir, looping) -> {
                                 child(view);
                             });
@@ -248,8 +247,8 @@ public class ConfiguratorPanelComponent extends FlowLayout {
             }
 
             positioning().animate(getAnimationTime(), Easing.QUADRATIC, Positioning.absolute(
-                            dragOffsetX - width + (tabs.size() > 1 ? -2 : getTabSize()),
-                            dragOffsetY))
+                    dragOffsetX - width + (tabs.size() > 1 ? -2 : getTabSize()),
+                    dragOffsetY))
                     .finished().subscribe((dir, looping) -> {
                         child(view);
                     });
@@ -340,13 +339,11 @@ public class ConfiguratorPanelComponent extends FlowLayout {
         public boolean onMouseMoved(double mouseX, double mouseY) {
             return super.onMouseMoved(mouseX, mouseY) || isMouseOverElement(mouseX, mouseY);
         }
-
     }
 
     public class FloatingTab extends Tab {
 
-        protected Runnable closeCallback = () -> {
-        };
+        protected Runnable closeCallback = () -> {};
 
         public FloatingTab(IFancyConfigurator configurator) {
             super(configurator);
@@ -365,11 +362,9 @@ public class ConfiguratorPanelComponent extends FlowLayout {
         public void onClose(Runnable closeCallback) {
             this.closeCallback = closeCallback;
         }
-
     }
 
     private static int getAnimationTime() {
         return ConfigHolder.INSTANCE.client.animationTime;
     }
-
 }

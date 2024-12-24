@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.ui.core.ParentUIComponent;
 import com.gregtechceu.gtceu.api.ui.core.Size;
 import com.gregtechceu.gtceu.api.ui.core.UIComponent;
 import com.gregtechceu.gtceu.api.ui.ingredient.ClickableIngredientSlot;
-
 import com.gregtechceu.gtceu.integration.emi.handler.widget.NoRenderEMISlotWidget;
 
 import dev.emi.emi.api.recipe.EmiRecipe;

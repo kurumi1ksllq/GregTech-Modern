@@ -26,8 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class
-GTCEuAPI {
+public class GTCEuAPI {
 
     /** Will always be available */
     public static GTCEu instance;

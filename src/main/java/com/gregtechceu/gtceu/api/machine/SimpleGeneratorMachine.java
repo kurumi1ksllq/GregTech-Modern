@@ -18,13 +18,10 @@ import com.gregtechceu.gtceu.api.ui.UIContainerMenu;
 import com.gregtechceu.gtceu.api.ui.container.FlowLayout;
 import com.gregtechceu.gtceu.api.ui.container.StackLayout;
 import com.gregtechceu.gtceu.api.ui.container.UIContainers;
-import com.gregtechceu.gtceu.api.ui.core.Positioning;
 import com.gregtechceu.gtceu.api.ui.core.Sizing;
 import com.gregtechceu.gtceu.api.ui.editable.EditableMachineUI;
 import com.gregtechceu.gtceu.api.ui.serialization.SyncedProperty;
 import com.gregtechceu.gtceu.api.ui.util.SlotGenerator;
-import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
-import com.gregtechceu.gtceu.utils.GTMath;
 
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
@@ -210,7 +207,7 @@ public class SimpleGeneratorMachine extends WorkableTieredMachine
                 FlowLayout template = recipeType.getRecipeUI().createEditableUITemplate(false, false)
                         .createDefault();
                 StackLayout group = UIContainers.stack(Sizing.content(), Sizing.content().copy().min(78));
-                //template.positioning(Positioning.relative(50, 50));
+                // template.positioning(Positioning.relative(50, 50));
                 group.child(template);
                 return group;
             }, (template, adapter, machine) -> {

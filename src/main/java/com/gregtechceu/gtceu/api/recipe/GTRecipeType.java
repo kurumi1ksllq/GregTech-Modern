@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.api.recipe.lookup.GTRecipeLookup;
 import com.gregtechceu.gtceu.api.recipe.ui.GTRecipeTypeUI;
 import com.gregtechceu.gtceu.api.sound.SoundEntry;
 import com.gregtechceu.gtceu.api.ui.container.FlowLayout;
-import com.gregtechceu.gtceu.api.ui.container.StackLayout;
 import com.gregtechceu.gtceu.api.ui.texture.ProgressTexture;
 import com.gregtechceu.gtceu.api.ui.texture.ResourceTexture;
 import com.gregtechceu.gtceu.api.ui.texture.SteamTexture;

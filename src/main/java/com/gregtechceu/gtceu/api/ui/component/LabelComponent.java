@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.api.ui.util.Observable;
 
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -187,7 +187,7 @@ public class LabelComponent extends BaseUIComponent {
 
         pose.pushPose();
         pose.translate(0, 0, 400);
-        //pose.translate(0, 1 / Minecraft.getInstance().getWindow().getGuiScale(), 0);
+        // pose.translate(0, 1 / Minecraft.getInstance().getWindow().getGuiScale(), 0);
 
         int x = this.x;
         int y = this.y;

@@ -116,16 +116,16 @@ public class GTRecipeComponent extends FlowLayout {
         child(group.positioning(Positioning.relative(50, 0)));
 
         /*
-        var EUt = RecipeHelper.getInputEUt(recipe);
-        if (EUt == 0) {
-            EUt = RecipeHelper.getOutputEUt(recipe);
-        }
-        int yOffset = 5 + size.height();
-        yOffset += EUt > 0 ? 20 : 0;
-        if (recipe.data.getBoolean("duration_is_total_cwu")) {
-            yOffset -= LINE_HEIGHT;
-        }
-        */
+         * var EUt = RecipeHelper.getInputEUt(recipe);
+         * if (EUt == 0) {
+         * EUt = RecipeHelper.getOutputEUt(recipe);
+         * }
+         * int yOffset = 5 + size.height();
+         * yOffset += EUt > 0 ? 20 : 0;
+         * if (recipe.data.getBoolean("duration_is_total_cwu")) {
+         * yOffset -= LINE_HEIGHT;
+         * }
+         */
 
         /// add text based on i/o's
         for (var capability : recipe.inputs.entrySet()) {
@@ -167,7 +167,7 @@ public class GTRecipeComponent extends FlowLayout {
         }
         if (inputEUt > 0) {
             ButtonComponent voltageTextComponent = UIComponents.button(Component.literal(tierText),
-                            cd -> setRecipeOC(cd.button, cd.isShiftClick))
+                    cd -> setRecipeOC(cd.button, cd.isShiftClick))
                     .configure(c -> c
                             .sizing(Sizing.fixed(16), Sizing.fixed(10))
                             .positioning(Positioning.relative(100, 100))
@@ -295,7 +295,7 @@ public class GTRecipeComponent extends FlowLayout {
                 float boostedChanceFloat = 100f * boostedChance / content.maxChance;
                 if (logic != ChanceLogic.NONE && logic != ChanceLogic.OR) {
                     tooltips.add(Component.translatable("gtceu.gui.content.chance_base_logic",
-                                    FormattingUtil.formatNumber2Places(baseChanceFloat), logic.getTranslation())
+                            FormattingUtil.formatNumber2Places(baseChanceFloat), logic.getTranslation())
                             .withStyle(ChatFormatting.YELLOW));
                 } else {
                     tooltips.add(
@@ -309,7 +309,7 @@ public class GTRecipeComponent extends FlowLayout {
                 }
                 if (logic != ChanceLogic.NONE && logic != ChanceLogic.OR) {
                     tooltips.add(Component.translatable("gtceu.gui.content.chance_boosted_logic",
-                                    FormattingUtil.formatNumber2Places(boostedChanceFloat), logic.getTranslation())
+                            FormattingUtil.formatNumber2Places(boostedChanceFloat), logic.getTranslation())
                             .withStyle(ChatFormatting.YELLOW));
                 } else {
                     tooltips.add(
@@ -408,5 +408,4 @@ public class GTRecipeComponent extends FlowLayout {
             }
         }
     }
-
 }

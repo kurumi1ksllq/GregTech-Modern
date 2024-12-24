@@ -28,8 +28,6 @@ import net.minecraft.world.level.Level;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.Arrays;
-
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -227,10 +225,10 @@ public class CreativeEnergyContainerMachine extends MetaMachine implements ILase
                         .positioning(Positioning.absolute(24, 53))
                         .verticalSizing(Sizing.fixed(16)))
                 .child(UIComponents.button(Component.literal("-"), cd -> {
-                            if (amps < Integer.MAX_VALUE) {
-                                amps++;
-                            }
-                        }).renderer(ButtonComponent.Renderer.texture(GuiTextures.VANILLA_BUTTON))
+                    if (amps < Integer.MAX_VALUE) {
+                        amps++;
+                    }
+                }).renderer(ButtonComponent.Renderer.texture(GuiTextures.VANILLA_BUTTON))
                         .positioning(Positioning.absolute(142, 55))
                         .sizing(Sizing.fixed(20)))
                 // FIXME MAKE TRANSLATABLE
@@ -238,27 +236,27 @@ public class CreativeEnergyContainerMachine extends MetaMachine implements ILase
                         .translatable("Average Energy I/O per tick: " + this.lastAverageEnergyIOPerTick)))
                 .child(UIComponents.switchComponent((clickData, value) -> active = value)
                         .texture(UITextures.group(GuiTextures.VANILLA_BUTTON, UITextures.text(Component.translatable(
-                                        "gtceu.creative.activity.off"))),
+                                "gtceu.creative.activity.off"))),
                                 UITextures.group(GuiTextures.VANILLA_BUTTON, UITextures.text(Component.translatable(
                                         "gtceu.creative.activity.on"))))
                         .pressed(active)
                         .positioning(Positioning.absolute(0, 107))
                         .sizing(Sizing.fixed(77), Sizing.fixed(20)))
                 .child(UIComponents.switchComponent((clickData, value) -> {
-                            // TODO send message to server :)
-                            source = value;
-                            if (source) {
-                                voltage = 0;
-                                amps = 0;
-                                setTier = 0;
-                            } else {
-                                voltage = GTValues.V[14];
-                                amps = Integer.MAX_VALUE;
-                                setTier = 14;
-                            }
-                        })
+                    // TODO send message to server :)
+                    source = value;
+                    if (source) {
+                        voltage = 0;
+                        amps = 0;
+                        setTier = 0;
+                    } else {
+                        voltage = GTValues.V[14];
+                        amps = Integer.MAX_VALUE;
+                        setTier = 14;
+                    }
+                })
                         .texture(UITextures.group(GuiTextures.VANILLA_BUTTON, UITextures.text(Component.translatable(
-                                        "gtceu.creative.energy.sink"))),
+                                "gtceu.creative.energy.sink"))),
                                 UITextures.group(GuiTextures.VANILLA_BUTTON, UITextures.text(Component.translatable(
                                         "gtceu.creative.energy.source"))))
                         .pressed(source)
@@ -278,5 +276,4 @@ public class CreativeEnergyContainerMachine extends MetaMachine implements ILase
                         .surface(Surface.flat(Color.BLACK.argb()))
                         .positioning(Positioning.absolute(0, -25))));
     }
-
 }

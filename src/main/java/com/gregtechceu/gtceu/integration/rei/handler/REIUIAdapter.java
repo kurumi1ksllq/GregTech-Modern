@@ -34,7 +34,7 @@ public class REIUIAdapter extends Widget {
 
         if (Minecraft.getInstance().screen != null) {
             this.closeListener = (ScreenEvent.Closing event) -> {
-                //this.adapter.dispose();
+                // this.adapter.dispose();
                 MinecraftForge.EVENT_BUS.unregister(this.closeListener);
             };
             MinecraftForge.EVENT_BUS.register(this.closeListener);

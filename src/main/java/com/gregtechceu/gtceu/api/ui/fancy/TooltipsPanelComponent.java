@@ -58,8 +58,8 @@ public class TooltipsPanelComponent extends BaseUIComponent {
                 offsetY += width() + 2;
             }
         }
-        //sizing(horizontalSizing.get(), Sizing.fixed(Math.max(0, offsetY)));
-        //applySizing();
+        // sizing(horizontalSizing.get(), Sizing.fixed(Math.max(0, offsetY)));
+        // applySizing();
     }
 
     protected void loadTooltip(IFancyTooltip tab) {

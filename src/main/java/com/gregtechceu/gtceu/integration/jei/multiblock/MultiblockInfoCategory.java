@@ -4,8 +4,8 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.ui.component.PatternPreviewComponent;
-import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.integration.jei.handler.UIRecipeCategory;
+import com.gregtechceu.gtceu.common.data.machines.GTMultiMachines;
 
 import net.minecraft.network.chat.Component;
 
@@ -26,7 +26,7 @@ public class MultiblockInfoCategory extends UIRecipeCategory<PatternPreviewCompo
     public MultiblockInfoCategory(IJeiHelpers helpers) {
         IGuiHelper guiHelper = helpers.getGuiHelper();
         this.background = guiHelper.createBlankDrawable(160, 160);
-        this.icon = helpers.getGuiHelper().createDrawableItemStack(GTMachines.ELECTRIC_BLAST_FURNACE.asStack());
+        this.icon = helpers.getGuiHelper().createDrawableItemStack(GTMultiMachines.ELECTRIC_BLAST_FURNACE.asStack());
     }
 
     public static void registerRecipes(IRecipeRegistration registry) {

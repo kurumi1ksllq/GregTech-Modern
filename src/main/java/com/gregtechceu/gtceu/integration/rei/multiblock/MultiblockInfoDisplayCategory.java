@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.integration.rei.multiblock;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
-import com.gregtechceu.gtceu.common.data.GTMachines;
+import com.gregtechceu.gtceu.common.data.machines.GTMultiMachines;
 import com.gregtechceu.gtceu.integration.rei.handler.UIDisplayCategory;
 
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
@@ -22,7 +22,7 @@ public class MultiblockInfoDisplayCategory extends UIDisplayCategory<MultiblockI
     private final Renderer icon;
 
     public MultiblockInfoDisplayCategory() {
-        this.icon = IGui2Renderer.toDrawable(new ItemStackTexture(GTMachines.ELECTRIC_BLAST_FURNACE.getItem()));
+        this.icon = IGui2Renderer.toDrawable(new ItemStackTexture(GTMultiMachines.ELECTRIC_BLAST_FURNACE.getItem()));
     }
 
     public static void registerDisplays(DisplayRegistry registry) {

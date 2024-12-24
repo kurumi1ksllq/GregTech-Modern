@@ -32,7 +32,7 @@ public class GTProgrammedCircuitCategory extends UIRecipeCategory<GTProgrammedCi
 
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.jei.programmed_circuit_page");
+        return Component.translatable("gtceu.jei.programmed_circuit");
     }
 
     @Override

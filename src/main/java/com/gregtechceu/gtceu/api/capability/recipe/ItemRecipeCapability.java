@@ -82,17 +82,17 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
     public Ingredient copyWithModifier(Ingredient content, ContentModifier modifier) {
         if (content instanceof SizedIngredient sizedIngredient) {
             return SizedIngredient.create(sizedIngredient.getInner(),
-                    modifier.apply(sizedIngredient.getAmount()).intValue());
+                    modifier.apply(sizedIngredient.getAmount()));
         } else if (content instanceof IntProviderIngredient intProviderIngredient) {
             return new IntProviderIngredient(intProviderIngredient.getInner(),
                     new FlooredInt(
                             new AddedFloat(
                                     new MultipliedFloat(
                                             new CastedFloat(intProviderIngredient.getCountProvider()),
-                                            ConstantFloat.of((float) modifier.getMultiplier())),
-                                    ConstantFloat.of((float) modifier.getAddition()))));
+                                            ConstantFloat.of((float) modifier.multiplier())),
+                                    ConstantFloat.of((float) modifier.addition()))));
         }
-        return SizedIngredient.create(content, modifier.apply(1).intValue());
+        return SizedIngredient.create(content, modifier.apply(1));
     }
 
     @Override

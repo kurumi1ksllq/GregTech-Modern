@@ -11,8 +11,6 @@ import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.chance.boost.ChanceBoostFunction;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
-import com.gregtechceu.gtceu.api.recipe.logic.OCParams;
-import com.gregtechceu.gtceu.api.recipe.logic.OCResult;
 import com.gregtechceu.gtceu.api.ui.GuiTextures;
 import com.gregtechceu.gtceu.api.ui.component.*;
 import com.gregtechceu.gtceu.api.ui.container.FlowLayout;
@@ -269,11 +267,12 @@ public class GTRecipeComponent extends FlowLayout {
         int duration = recipe.duration;
         String tierText = GTValues.VNF[tier];
         if (tier > minTier && inputEUt != 0) {
-            OCParams p = new OCParams();
-            OCResult r = new OCResult();
-            RecipeHelper.performOverclocking(logic, recipe, inputEUt, GTValues.V[tier], p, r);
-            duration = r.getDuration();
-            inputEUt = r.getEut();
+            int ocs = tier - minTier;
+            if (minTier == ULV) ocs--;
+            var params = new OverclockingLogic.OCParams(inputEUt, recipe.duration, ocs, 1);
+            var result = logic.runOverclockingLogic(params, V[tier]);
+            duration = (int) (duration * result.durationMultiplier());
+            inputEUt = (long) (inputEUt * result.eutMultiplier());
             tierText = tierText.formatted(ChatFormatting.ITALIC);
         }
         List<Component> texts = getRecipeParaText(recipe, duration, inputEUt, 0);

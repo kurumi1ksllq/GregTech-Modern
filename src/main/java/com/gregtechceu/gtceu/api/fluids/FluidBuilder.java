@@ -280,12 +280,8 @@ public class FluidBuilder {
 
         builder.onFluidRegister(fluid -> {
             if (fluid instanceof FlowingFluid flowingFluid) {
-                if (flowingFluid.getSource() instanceof GTFluid gtFluid) {
-                    attributes.forEach(gtFluid::addAttribute);
-                }
-                if (flowingFluid.getFlowing() instanceof GTFluid gtFluid) {
-                    attributes.forEach(gtFluid::addAttribute);
-                }
+                if (flowingFluid.getSource() instanceof GTFluid gtSource) attributes.forEach(gtSource::addAttribute);
+                if (flowingFluid.getFlowing() instanceof GTFluid gtFlowing) attributes.forEach(gtFlowing::addAttribute);
             }
         });
 

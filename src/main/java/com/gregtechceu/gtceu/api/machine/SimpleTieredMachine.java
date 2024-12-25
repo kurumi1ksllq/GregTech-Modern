@@ -342,12 +342,22 @@ public class SimpleTieredMachine extends WorkableTieredMachine
                     this.importFluids.getFluidInTank(i));
             CustomFluidTank tank = this.importFluids.getStorages()[i];
             tank.addOnContentsChanged(() -> prop.set(tank.getFluid()));
+            prop.observe(tank::setFluid);
+
+            if (!player.level().isClientSide()) {
+                prop.setAndForceUpdate(tank.getFluid());
+            }
         }
         for (int i = 0; i < this.exportFluids.getTanks(); i++) {
             SyncedProperty<FluidStack> prop = menu.createProperty(FluidStack.class, "fluid-out." + i,
                     this.exportFluids.getFluidInTank(i));
             CustomFluidTank tank = this.exportFluids.getStorages()[i];
             tank.addOnContentsChanged(() -> prop.set(tank.getFluid()));
+            prop.observe(tank::setFluid);
+
+            if (!player.level().isClientSide()) {
+                prop.setAndForceUpdate(tank.getFluid());
+            }
         }
         // Position all slots at 0,0 as they'll be moved to the correct position on the client.
         SlotGenerator generator = SlotGenerator.begin(menu::addSlot, 0, 0);

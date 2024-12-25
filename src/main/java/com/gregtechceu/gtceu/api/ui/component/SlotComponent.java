@@ -406,7 +406,7 @@ public class SlotComponent extends BaseUIComponent implements ClickableIngredien
 
         @Override
         public boolean mayPlace(@NotNull ItemStack stack) {
-            return Objects.requireNonNullElseGet(canInsertOverride, () -> inner.isActive());
+            return Objects.requireNonNullElseGet(canInsertOverride, () -> inner.mayPlace(stack));
         }
 
         @Override

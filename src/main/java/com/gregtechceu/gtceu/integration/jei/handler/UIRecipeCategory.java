@@ -54,19 +54,13 @@ public abstract class UIRecipeCategory<T extends UIComponent> implements IRecipe
             for (T ingredient : slot.getIngredients().getStacks()) {
                 Optional<ITypedIngredient<T>> maybeIngredient = GTJEIPlugin.JEI_RUNTIME
                         .getIngredientManager()
-                        .createTypedIngredient(ingredient);
+                        .createTypedIngredient(slot.renderMappingFunction().apply(ingredient));
                 maybeIngredient.ifPresent(i -> {
                     ingredientMap.computeIfAbsent(i.getType(), t -> new ArrayList<>()).add(i.getIngredient());
                 });
             }
         }
         for (var entry : ingredientMap.entrySet()) {
-            if (slot instanceof SlotComponent slotComponent) {
-                slotComponent.drawContents(false);
-            } else if (slot instanceof TankComponent tankComponent) {
-                tankComponent.drawContents(false);
-            }
-
             var type = entry.getKey();
             var ingredients = entry.getValue();
             slotBuilder.addIngredients(type, ingredients);
@@ -74,8 +68,8 @@ public abstract class UIRecipeCategory<T extends UIComponent> implements IRecipe
 
                 @Override
                 public void render(GuiGraphics guiGraphics, T ingredient) {
-                    GTJEIPlugin.JEI_RUNTIME.getIngredientManager().getIngredientRenderer(type)
-                            .render(guiGraphics, ingredient);
+                    //GTJEIPlugin.JEI_RUNTIME.getIngredientManager().getIngredientRenderer(type)
+                    //        .render(guiGraphics, ingredient);
                     // slot.setCurrentJEIRenderedIngredient(ingredient);
                 }
 

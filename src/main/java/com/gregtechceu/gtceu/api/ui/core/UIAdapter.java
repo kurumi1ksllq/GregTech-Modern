@@ -184,7 +184,7 @@ public class UIAdapter<R extends ParentUIComponent>
     }
 
     public <R> SyncedProperty<R> getMenuProperty(String name) {
-        return screen().getMenu().getProperty(name);
+        return menu().getProperty(name);
     }
 
     @Override

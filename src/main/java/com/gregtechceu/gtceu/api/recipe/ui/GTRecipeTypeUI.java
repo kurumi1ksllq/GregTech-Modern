@@ -33,6 +33,7 @@ import com.lowdragmc.lowdraglib.jei.JEIPlugin;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -177,7 +178,7 @@ public class GTRecipeTypeUI {
             group.gap(36)
                     // .horizontalAlignment(HorizontalAlignment.LEFT)
                     // .verticalAlignment(VerticalAlignment.TOP)
-                    .positioning(Positioning.relative(50, 50));
+                    .positioning(Positioning.across(50, 50));
 
             var inputs = addInventorySlotGroup(false, isSteam, isHighPressure);
             group.child(inputs);
@@ -236,13 +237,13 @@ public class GTRecipeTypeUI {
                     RecipeCapability<?> cap = storagesEntry.getKey();
                     Object storage = storagesEntry.getValue();
                     // bind overlays
-                    Class<? extends UIComponent> widgetClass = cap.getWidgetClass();
-                    if (widgetClass != null) {
+                    Class<? extends UIComponent> componentClass = cap.getWidgetClass();
+                    if (componentClass != null) {
                         UIComponentUtils.componentByIdForEach(template, "^%s.[0-9]+$".formatted(cap.slotName(io)),
-                                widgetClass,
-                                widget -> {
-                                    var index = UIComponentUtils.componentIdIndex(widget);
-                                    cap.applyUIComponentInfo(widget, adapter, index, isJEI, io, recipeHolder,
+                                componentClass,
+                                component -> {
+                                    var index = UIComponentUtils.componentIdIndex(component);
+                                    cap.applyUIComponentInfo(component, adapter, index, isJEI, io, recipeHolder,
                                             recipeType, null, null,
                                             storage, 0, 0);
                                 });
@@ -371,7 +372,7 @@ public class GTRecipeTypeUI {
 
         StackLayout layout = UIContainers.stack(Sizing.fixed(18), Sizing.fixed(18));
         layout.positioning(Positioning.absolute(x, y));
-        layout.children(List.of(component, texture));
+        layout.children(List.of(texture, component));
         group.child(layout);
     }
 

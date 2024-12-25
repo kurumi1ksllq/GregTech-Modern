@@ -145,6 +145,7 @@ public class SimpleFluidFilter implements FluidFilter {
                 tank.changeListener(() -> {
                     matches[index] = fluidStorageSlots[index].getFluidInTank(0);
                     onUpdated.accept(this);
+                    menu.getProperty("tank." + index).set(matches[index]);
                 }).backgroundTexture(GuiTextures.SLOT);
 
                 grid.child(tank, j, i);

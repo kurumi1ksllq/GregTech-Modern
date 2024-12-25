@@ -84,24 +84,17 @@ public class Observable<T> {
         }
     }
 
+    public void setAndForceUpdate(T newValue) {
+        this.value = newValue;
+        this.notifyObservers(newValue);
+    }
+
     /**
      * Add an observer function to be run every time
      * the value stored in this container changes
-     *
-     * @return the index of the newly added observer
      */
-    public int observe(Consumer<T> observer) {
-        int index = this.observers.size();
+    public void observe(Consumer<T> observer) {
         this.observers.add(observer);
-        return index;
-    }
-
-    public void removeObserver(int index) {
-        this.observers.remove(index);
-    }
-
-    public void removeObserver(Consumer<T> observer) {
-        this.observers.remove(observer);
     }
 
     protected void notifyObservers(T value) {

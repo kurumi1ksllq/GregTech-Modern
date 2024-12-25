@@ -309,9 +309,7 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
 
     @Override
     public @Nullable UIComponent createUIComponent() {
-        TankComponent tank = UIComponents.tank(EmptyFluidHandler.INSTANCE);
-        tank.backgroundTexture(null);
-        return tank;
+        return UIComponents.tank(EmptyFluidHandler.INSTANCE).backgroundTexture(null);
     }
 
     @NotNull

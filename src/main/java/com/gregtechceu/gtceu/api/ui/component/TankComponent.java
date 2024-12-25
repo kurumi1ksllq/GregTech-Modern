@@ -67,9 +67,6 @@ public class TankComponent extends BaseUIComponent implements ClickableIngredien
     @Setter
     protected boolean canExtract = true;
 
-    @Nullable
-    protected Integer fluidObserverIndex;
-
     @Setter
     protected Runnable changeListener;
     @Getter
@@ -100,47 +97,17 @@ public class TankComponent extends BaseUIComponent implements ClickableIngredien
         Observable.observeAll(this::updateListener, this.lastFluidInTank);
     }
 
-    @Override
-    public void mount(ParentUIComponent parent, int x, int y) {
-        super.mount(parent, x, y);
-        if (handler == null && this.id() != null) {
-            SyncedProperty<FluidStack> foundProp = containerAccess().screen().getMenu().getProperty(this.id());
-            if (foundProp != null) {
-                lastFluidInTank.set(foundProp.get());
-                fluidObserverIndex = foundProp.observe(lastFluidInTank::set);
-            }
-        }
-    }
-
-    @Override
-    public void dismount(DismountReason reason) {
-        if (reason == DismountReason.REMOVED && fluidObserverIndex != null) {
-            if (handler == null && this.id() != null) {
-                containerAccess().screen().getMenu().removeProperty(this.id());
-            }
-        }
-        super.dismount(reason);
-    }
-
-    @Override
-    public void dispose() {
-        if (fluidObserverIndex != null) {
-            if (handler == null && this.id() != null) {
-                containerAccess().screen().getMenu().removeProperty(this.id());
-            }
-        }
-        super.dispose();
-    }
-
     public TankComponent setFluidTank(IFluidHandler handler) {
         this.handler = handler;
         this.tank = 0;
+        lastFluidInTank(this.handler.getFluidInTank(this.tank));
         return this;
     }
 
     public TankComponent setFluidTank(IFluidHandler handler, int tank) {
         this.handler = handler;
         this.tank = tank;
+        lastFluidInTank(this.handler.getFluidInTank(this.tank));
         return this;
     }
 
@@ -167,10 +134,10 @@ public class TankComponent extends BaseUIComponent implements ClickableIngredien
                 lastTankCapacity = capacity;
             }
             if (lastFluidInTank().isEmpty()) {
-                lastFluidInTank.set(stack);
+                lastFluidInTank(stack);
             }
             if (!stack.isFluidEqual(lastFluidInTank())) {
-                lastFluidInTank.set(stack);
+                lastFluidInTank(stack);
             } else if (stack.getAmount() != lastFluidInTank().getAmount()) {
                 lastFluidInTank().setAmount(stack.getAmount());
             }
@@ -215,7 +182,7 @@ public class TankComponent extends BaseUIComponent implements ClickableIngredien
 
         if (hovered) {
             RenderSystem.colorMask(true, true, true, false);
-            graphics.drawSolidRect(x, y, width, height, Color.HOVER_GRAY.argb());
+            graphics.drawSolidRect(x + 1, y + 1, width - 2, height - 2, Color.HOVER_GRAY.argb());
             RenderSystem.colorMask(true, true, true, true);
         }
     }
@@ -260,25 +227,18 @@ public class TankComponent extends BaseUIComponent implements ClickableIngredien
                     if (filledResult.getCount() < filledResult.getMaxStackSize())
                         filledResult.grow(1);
                     else
-                        player.getInventory().placeItemBackInInventory(remaining);
+                        sendMenuUpdate(new UIContainerMenu.ServerboundPlaceItemBackUpdate(remaining));
                 } else {
-                    player.getInventory().placeItemBackInInventory(filledResult);
+                    sendMenuUpdate(new UIContainerMenu.ServerboundPlaceItemBackUpdate(filledResult));
                     filledResult = remaining.copy();
                 }
             }
             if (performedFill) {
-                SoundEvent sound = initialFluid.getFluid().getFluidType().getSound(initialFluid,
-                        SoundActions.BUCKET_FILL);
-                if (sound == null)
-                    sound = SoundEvents.BUCKET_FILL;
-                player.level().playSound(null, player.position().x, player.getEyeY(), player.position().z,
-                        sound, SoundSource.BLOCKS, 1.0f, 1.0f);
-
                 if (currentStack.isEmpty()) {
                     setCarried(filledResult);
                 } else {
                     setCarried(currentStack);
-                    player.getInventory().placeItemBackInInventory(filledResult);
+                    sendMenuUpdate(new UIContainerMenu.ServerboundPlaceItemBackUpdate(filledResult));
                 }
 
                 // TODO do some checking on server to not just accept any stack
@@ -292,11 +252,11 @@ public class TankComponent extends BaseUIComponent implements ClickableIngredien
             ItemStack drainedResult = ItemStack.EMPTY;
             for (int i = 0; i < maxAttempts; i++) {
                 FluidActionResult result = FluidUtil.tryEmptyContainer(currentStack, this.handler, Integer.MAX_VALUE,
-                        null,
+                        player,
                         false);
                 if (!result.isSuccess()) break;
                 ItemStack remainingStack = FluidUtil
-                        .tryEmptyContainer(currentStack, this.handler, Integer.MAX_VALUE, null, true).getResult();
+                        .tryEmptyContainer(currentStack, this.handler, Integer.MAX_VALUE, player, true).getResult();
                 performedEmptying = true;
 
                 currentStack.shrink(1);
@@ -307,27 +267,20 @@ public class TankComponent extends BaseUIComponent implements ClickableIngredien
                     if (drainedResult.getCount() < drainedResult.getMaxStackSize())
                         drainedResult.grow(1);
                     else
-                        player.getInventory().placeItemBackInInventory(remainingStack);
+                        sendMenuUpdate(new UIContainerMenu.ServerboundPlaceItemBackUpdate(remainingStack));
                 } else {
-                    player.getInventory().placeItemBackInInventory(drainedResult);
+                    sendMenuUpdate(new UIContainerMenu.ServerboundPlaceItemBackUpdate(drainedResult));
                     drainedResult = remainingStack.copy();
                 }
             }
-            var filledFluid = this.handler.getFluidInTank(tank);
             if (performedEmptying) {
-                SoundEvent soundevent = filledFluid.getFluid().getFluidType().getSound(filledFluid,
-                        SoundActions.BUCKET_EMPTY);
-                if (soundevent == null)
-                    soundevent = SoundEvents.BUCKET_EMPTY;
-                player.level().playSound(null, player.position().x, player.position().y + 0.5, player.position().z,
-                        soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
-
                 if (currentStack.isEmpty()) {
                     setCarried(drainedResult);
                 } else {
                     setCarried(currentStack);
-                    player.getInventory().placeItemBackInInventory(drainedResult);
+                    sendMenuUpdate(new UIContainerMenu.ServerboundPlaceItemBackUpdate(drainedResult));
                 }
+
                 // TODO do some checking on server to not just accept any stack
                 sendMenuUpdate(new UIContainerMenu.ServerboundSetCarriedUpdate(getCarried()));
                 return true;
@@ -362,6 +315,9 @@ public class TankComponent extends BaseUIComponent implements ClickableIngredien
     }
 
     protected void updateListener() {
+        if (changeListener != null) {
+            changeListener.run();
+        }
         if (!this.lastFluidInTank().isEmpty()) {
             this.tooltip(FluidComponent.tooltipFromFluid(this.lastFluidInTank(), Minecraft.getInstance().player, null));
         } else {

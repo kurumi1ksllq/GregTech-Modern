@@ -175,7 +175,7 @@ public class GTEMIPlugin implements EmiPlugin {
                 }
                 @SuppressWarnings({ "rawtypes", "unchecked" })
                 var converted = ((EmiStackConverter.Converter) converter).convertTo(slot);
-                return new EmiStackInteraction(converted);
+                return new EmiStackInteraction(converted, null, false);
             }
             return EmiStackInteraction.EMPTY;
         });

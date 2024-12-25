@@ -7,7 +7,6 @@ import com.gregtechceu.gtceu.core.mixins.ui.accessor.AbstractContainerMenuAccess
 import com.gregtechceu.gtceu.core.mixins.ui.accessor.SlotAccessor;
 
 import com.lowdragmc.lowdraglib.LDLib;
-import com.lowdragmc.lowdraglib.Platform;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
@@ -22,7 +21,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 
-import io.netty.buffer.Unpooled;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
@@ -80,6 +78,8 @@ public class UIContainerMenu<T> extends AbstractContainerMenu {
         init();
 
         this.addServerboundMessage(ServerboundSetCarriedUpdate.class, msg -> this.setCarried(msg.newCarried()));
+        this.addServerboundMessage(ServerboundPlaceItemBackUpdate.class, msg -> playerInventory.placeItemBackInInventory(msg.putBack()));
+
         this.addServerboundMessage(ServerboundRemoveSyncPropertyMessage.class, msg -> super.removeProperty(msg.name()));
         this.addServerboundMessage(ClientboundRemoveSyncPropertyMessage.class, msg -> super.removeProperty(msg.name()));
     }
@@ -307,6 +307,7 @@ public class UIContainerMenu<T> extends AbstractContainerMenu {
     public static void initType() {}
 
     public record ServerboundSetCarriedUpdate(ItemStack newCarried) {}
+    public record ServerboundPlaceItemBackUpdate(ItemStack putBack) {}
 
     public record ServerboundRemoveSyncPropertyMessage(String name) {}
     public record ClientboundRemoveSyncPropertyMessage(String name) {}

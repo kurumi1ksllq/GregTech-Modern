@@ -82,7 +82,7 @@ public class PhantomFluidComponent extends TankComponent implements GhostIngredi
     @Override
     public void setGhostIngredient(@NotNull FluidStack ingredient) {
         if (!ingredient.isEmpty()) {
-            sendMessage(2, ingredient::writeToPacket);
+            //sendMessage(2, ingredient::writeToPacket);
         }
 
         if (phantomFluidSetter != null) {
@@ -117,11 +117,11 @@ public class PhantomFluidComponent extends TankComponent implements GhostIngredi
         if (stack == null || stack.isEmpty()) {
             if (lastPhantomStack != null) {
                 lastPhantomStack(null);
-                sendMessage(4, buf -> {});
+                //sendMessage(4, buf -> {});
             }
         } else if (lastPhantomStack == null || !stack.isFluidEqual(lastPhantomStack)) {
             lastPhantomStack(stack);
-            sendMessage(5, stack::writeToPacket);
+            //sendMessage(5, stack::writeToPacket);
         }
     }
 

@@ -11,8 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 
 @Slf4j
@@ -22,7 +21,7 @@ public class CustomFluidTank extends FluidTank
     @Getter
     @Setter
     protected Runnable onContentsChanged = () -> {};
-    protected List<Runnable> onContentsChangedList = new ArrayList<>();
+    protected Set<Runnable> onContentsChangedList = Collections.newSetFromMap(new WeakHashMap<>());
 
     public CustomFluidTank(int capacity) {
         this(capacity, e -> true);
@@ -71,19 +70,7 @@ public class CustomFluidTank extends FluidTank
         readFromNBT(nbt);
     }
 
-    public int addOnContentsChanged(Runnable onContentsChanged) {
-        int size = this.onContentsChangedList.size();
+    public void addOnContentsChanged(Runnable onContentsChanged) {
         this.onContentsChangedList.add(onContentsChanged);
-        return size;
-    }
-
-    public void removeOnContersChanged(int index) {
-        if (this.onContentsChangedList.size() > index) {
-            this.onContentsChangedList.remove(index);
-        }
-    }
-
-    public void removeOnContersChanged(Runnable onContentsChanged) {
-        this.onContentsChangedList.remove(onContentsChanged);
     }
 }

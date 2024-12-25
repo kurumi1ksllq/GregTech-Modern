@@ -69,7 +69,7 @@ public class CycleButtonComponent extends BaseUIComponent {
             var newIndex = indexSupplier.getAsInt();
             if (newIndex != index) {
                 index = newIndex;
-                sendMessage(1, buf -> buf.writeVarInt(index));
+                //sendMessage(1, buf -> buf.writeVarInt(index));
             }
         }
     }
@@ -85,13 +85,15 @@ public class CycleButtonComponent extends BaseUIComponent {
             if (onChanged != null) {
                 onChanged.accept(index);
             }
-            sendMessage(1, buf -> buf.writeVarInt(index));
+            // sendMessage(1, buf -> buf.writeVarInt(index));
             UIComponent.playButtonClickSound();
             return true;
         }
         return false;
     }
 
+    // FIXME
+    /*
     @Override
     public void receiveMessage(int id, FriendlyByteBuf buf) {
         if (id == 1) {
@@ -103,4 +105,5 @@ public class CycleButtonComponent extends BaseUIComponent {
             super.receiveMessage(id, buf);
         }
     }
+    */
 }

@@ -64,10 +64,11 @@ public class PredicatedButtonComponent extends ButtonComponent {
         super.update(delta, mouseX, mouseY);
         if (visible() != predicate.getAsBoolean()) {
             visible(!visible());
-            sendMessage(1, buf -> buf.writeBoolean(visible()));
+            //sendMessage(1, buf -> buf.writeBoolean(visible()));
         }
     }
 
+    /*
     @Override
     public void receiveMessage(int id, FriendlyByteBuf buf) {
         if (id == 1) {
@@ -76,4 +77,5 @@ public class PredicatedButtonComponent extends ButtonComponent {
             super.receiveMessage(id, buf);
         }
     }
+    */
 }

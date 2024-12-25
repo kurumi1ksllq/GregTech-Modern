@@ -98,7 +98,7 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
     @Getter
     @Persisted
     protected int fuelMaxTime;
-    protected final List<DoubleConsumer> progressPercentListener = new ArrayList<>();
+    protected final Set<DoubleConsumer> progressPercentListener = Collections.newSetFromMap(new WeakHashMap<>());
     @Getter(onMethod_ = @VisibleForTesting)
     protected boolean recipeDirty;
     @Persisted
@@ -277,20 +277,8 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
         }
     }
 
-    public int addProgressPercentListener(DoubleConsumer consumer) {
-        int index = this.progressPercentListener.size();
+    public void addProgressPercentListener(DoubleConsumer consumer) {
         this.progressPercentListener.add(consumer);
-        return index;
-    }
-
-    public void removeProgressPercentListener(int index) {
-        if (this.progressPercentListener.size() > index) {
-            this.progressPercentListener.remove(index);
-        }
-    }
-
-    public void removeProgressPercentListener(DoubleConsumer listener) {
-        this.progressPercentListener.remove(listener);
     }
 
     protected void doDamping() {

@@ -81,6 +81,7 @@ public class TabsComponent extends BaseUIComponent {
         return (subTabs.size() + 1) * 24 + 16 > width;
     }
 
+    /*
     @Override
     public void receiveMessage(int id, FriendlyByteBuf buf) {
         super.receiveMessage(id, buf);
@@ -100,6 +101,7 @@ public class TabsComponent extends BaseUIComponent {
             onTabClick.accept(selectedTab);
         }
     }
+    */
 
     public int getSubTabsWidth() {
         return width - 8 - 24 - 4 - 16 - 8 - 16;
@@ -115,7 +117,7 @@ public class TabsComponent extends BaseUIComponent {
                     onTabSwitch.accept(selectedTab, hoveredTab);
                 }
                 selectedTab = hoveredTab;
-                sendMessage(0, buf -> buf.writeVarInt(selectedTab == mainTab ? -1 : subTabs.indexOf(selectedTab)));
+                //sendMessage(0, buf -> buf.writeVarInt(selectedTab == mainTab ? -1 : subTabs.indexOf(selectedTab)));
                 onTabClick.accept(selectedTab);
                 UIComponent.playButtonClickSound();
             }

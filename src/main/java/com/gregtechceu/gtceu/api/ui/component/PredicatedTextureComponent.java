@@ -53,6 +53,7 @@ public class PredicatedTextureComponent extends TextureComponent {
         isVisible = predicate.getAsBoolean();
     }
 
+    /*
     @Override
     public void receiveMessage(int id, FriendlyByteBuf buf) {
         if (id == 1) {
@@ -61,6 +62,7 @@ public class PredicatedTextureComponent extends TextureComponent {
             super.receiveMessage(id, buf);
         }
     }
+    */
 
     @Override
     public void draw(UIGuiGraphics graphics, int mouseX, int mouseY, float partialTicks, float delta) {

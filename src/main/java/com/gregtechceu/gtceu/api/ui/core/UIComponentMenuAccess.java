@@ -7,8 +7,6 @@ import java.util.function.Consumer;
 
 public interface UIComponentMenuAccess {
 
-    void sendMessage(UIComponent component, int id, Consumer<FriendlyByteBuf> writer);
-
     AbstractContainerScreen<?> screen();
 
     UIAdapter<?> adapter();

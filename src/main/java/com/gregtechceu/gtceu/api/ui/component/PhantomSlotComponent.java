@@ -67,7 +67,7 @@ public class PhantomSlotComponent extends SlotComponent implements GhostIngredie
                 slot.set(getCarried());
             } else if (button == 1 && clearSlotOnRightClick && !slot.getItem().isEmpty()) {
                 slot.set(ItemStack.EMPTY);
-                sendMessage(2, buf -> {});
+                //sendMessage(2, buf -> {});
             }
             return true;
         }
@@ -90,11 +90,13 @@ public class PhantomSlotComponent extends SlotComponent implements GhostIngredie
         boolean shiftDown = InputConstants.isKeyDown(id, GLFW.GLFW_KEY_LEFT_SHIFT);
         ClickType clickType = shiftDown ? ClickType.QUICK_MOVE : ClickType.PICKUP;
         slotClickPhantom(slot, 0, clickType, ingredient);
+        /*
         sendMessage(1, buffer -> {
             buffer.writeItem(ingredient);
             buffer.writeVarInt(0);
             buffer.writeBoolean(shiftDown);
         });
+        */
     }
 
     @Override
@@ -102,6 +104,7 @@ public class PhantomSlotComponent extends SlotComponent implements GhostIngredie
         return ItemStack.class;
     }
 
+    /*
     @Override
     public void receiveMessage(int id, FriendlyByteBuf buffer) {
         if (slot != null && id == 1) {
@@ -114,6 +117,7 @@ public class PhantomSlotComponent extends SlotComponent implements GhostIngredie
             slot.set(ItemStack.EMPTY);
         }
     }
+    */
 
     public ItemStack slotClickPhantom(Slot slot, int mouseButton, ClickType clickTypeIn, ItemStack stackHeld) {
         ItemStack stack = ItemStack.EMPTY;

@@ -86,24 +86,10 @@ public interface UIComponent extends PositionedRectangle {
     @Nullable
     ParentUIComponent parent();
 
-    default void sendMessage(int id, Consumer<FriendlyByteBuf> writer) {
-        if (this.containerAccess() == null) return;
-        this.containerAccess().sendMessage(this, id, writer);
-    }
-
     default <R extends Record> void sendMenuUpdate(R message) {
         if (this.containerAccess() == null) return;
         this.containerAccess().screen().getMenu().sendMessage(message);
     }
-
-    /**
-     * Receive network messages
-     *
-     * @param id  the message id (for you to define)
-     * @param buf the message data
-     */
-    // FIXME remove, replace all uses with sending sync messages through the menu.
-    default void receiveMessage(int id, FriendlyByteBuf buf) {}
 
     /**
      * @return The focus handler of this component hierarchy

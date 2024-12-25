@@ -164,15 +164,18 @@ public class CombinedDirectionalConfigurator extends FlowLayout {
 
             if (hover != null && hover.pos.equals(machine.getPos()) && hover.facing == this.selectedSide) {
                 var cd = new ClickData();
+                /*
                 sendMessage(MOUSE_CLICK_CLIENT_ACTION_ID, buf -> {
                     cd.writeToBuf(buf);
                     buf.writeByte(this.selectedSide.ordinal());
                 });
+                */
             }
         }
         return result;
     }
 
+    /*
     @Override
     public void receiveMessage(int id, FriendlyByteBuf buf) {
         if (id != MOUSE_CLICK_CLIENT_ACTION_ID) {
@@ -186,4 +189,5 @@ public class CombinedDirectionalConfigurator extends FlowLayout {
             configHandler.handleClick(null, side);
         }
     }
+    */
 }

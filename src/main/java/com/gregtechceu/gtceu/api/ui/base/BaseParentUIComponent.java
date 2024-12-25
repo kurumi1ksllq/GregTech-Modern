@@ -263,6 +263,7 @@ public abstract class BaseParentUIComponent extends BaseUIComponent implements P
         return super.onCharTyped(chr, modifiers);
     }
 
+    /*
     @Override
     public void receiveMessage(int id, FriendlyByteBuf buf) {
         if (id == UPDATE_CHILD) {
@@ -271,17 +272,9 @@ public abstract class BaseParentUIComponent extends BaseUIComponent implements P
             children().get(index).receiveMessage(updateId, buf);
         }
     }
+    */
 
     protected class ParentComponentMenuAccess implements UIComponentMenuAccess {
-
-        @Override
-        public void sendMessage(UIComponent component, int id, Consumer<FriendlyByteBuf> writer) {
-            BaseParentUIComponent.this.sendMessage(UPDATE_CHILD, buf -> {
-                buf.writeVarInt(children().indexOf(component));
-                buf.writeVarInt(id);
-                writer.accept(buf);
-            });
-        }
 
         @Override
         public AbstractContainerScreen<?> screen() {

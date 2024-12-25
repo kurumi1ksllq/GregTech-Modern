@@ -150,27 +150,22 @@ public class SimpleGeneratorMachine extends WorkableTieredMachine
     @Override
     public void loadServerUI(Player player, UIContainerMenu<MetaMachine> menu, MetaMachine holder) {
         var recipeTypeProperty = menu.createProperty(int.class, "current_recipe_type", this.getActiveRecipeType());
-        final int changeListener = this.addRecipeTypeChangeListener(recipeTypeProperty::set);
+        this.addRecipeTypeChangeListener(recipeTypeProperty::set);
 
         var progressProperty = menu.createProperty(double.class, "progress", recipeLogic.getProgressPercent());
-        final int progressListener = recipeLogic.addProgressPercentListener(progressProperty::set);
-
-        final IntList[] inputFluidsToClose = new IntList[this.importFluids.getTanks()];
-        final IntList[] outputFluidsToClose = new IntList[this.exportFluids.getTanks()];
+        recipeLogic.addProgressPercentListener(progressProperty::set);
 
         for (int i = 0; i < this.importFluids.getTanks(); i++) {
             SyncedProperty<FluidStack> prop = menu.createProperty(FluidStack.class, "fluid-in." + i,
                     this.importFluids.getFluidInTank(i));
             CustomFluidTank tank = this.importFluids.getStorages()[i];
-            inputFluidsToClose[i] = new IntArrayList();
-            inputFluidsToClose[i].add(tank.addOnContentsChanged(() -> prop.set(tank.getFluid())));
+            tank.addOnContentsChanged(() -> prop.set(tank.getFluid()));
         }
         for (int i = 0; i < this.exportFluids.getTanks(); i++) {
             SyncedProperty<FluidStack> prop = menu.createProperty(FluidStack.class, "fluid-out." + i,
                     this.exportFluids.getFluidInTank(i));
             CustomFluidTank tank = this.exportFluids.getStorages()[i];
-            outputFluidsToClose[i] = new IntArrayList();
-            outputFluidsToClose[i].add(tank.addOnContentsChanged(() -> prop.set(tank.getFluid())));
+            tank.addOnContentsChanged(() -> prop.set(tank.getFluid()));
         }
         // Position all slots at 0,0 as they'll be moved to the correct position on the client.
         SlotGenerator generator = SlotGenerator.begin(menu::addSlot, 0, 0);
@@ -181,24 +176,6 @@ public class SimpleGeneratorMachine extends WorkableTieredMachine
             generator.slot(this.exportItems.storage, i, 0, 0);
         }
         generator.playerInventory(menu.getPlayerInventory());
-
-        // clear up all listener references
-        menu.setCloseCallback(p -> {
-            this.removeRecipeTypeChangeListener(changeListener);
-            recipeLogic.removeProgressPercentListener(progressListener);
-            var importStorages = this.importFluids.getStorages();
-            for (int i = 0; i < inputFluidsToClose.length; i++) {
-                for (int j : inputFluidsToClose[i]) {
-                    importStorages[i].removeOnContersChanged(j);
-                }
-            }
-            var exportStorages = this.exportFluids.getStorages();
-            for (int i = 0; i < outputFluidsToClose.length; i++) {
-                for (int j : outputFluidsToClose[i]) {
-                    exportStorages[i].removeOnContersChanged(j);
-                }
-            }
-        });
     }
 
     @SuppressWarnings("UnstableApiUsage")

@@ -48,7 +48,7 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
     @Getter
     @Persisted
     public int activeRecipeType;
-    public final List<IntConsumer> recipeTypeChangeListener = new ArrayList<>();
+    public final Set<IntConsumer> recipeTypeChangeListener = Collections.newSetFromMap(new WeakHashMap<>());
     @Getter
     public final Int2IntFunction tankScalingFunction;
     @Nullable
@@ -256,19 +256,7 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
         this.recipeTypeChangeListener.forEach(consumer -> consumer.accept(this.activeRecipeType));
     }
 
-    public int addRecipeTypeChangeListener(IntConsumer listener) {
-        int index = this.recipeTypeChangeListener.size();
+    public void addRecipeTypeChangeListener(IntConsumer listener) {
         this.recipeTypeChangeListener.add(listener);
-        return index;
-    }
-
-    public void removeRecipeTypeChangeListener(int index) {
-        if (this.recipeTypeChangeListener.size() > index) {
-            this.recipeTypeChangeListener.remove(index);
-        }
-    }
-
-    public void removeRecipeTypeChangeListener(IntConsumer listener) {
-        this.recipeTypeChangeListener.remove(listener);
     }
 }

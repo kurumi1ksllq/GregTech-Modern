@@ -418,7 +418,6 @@ public class SceneComponent extends StackLayout {
      * }
      * return result;
      * }
-     */
 
     @Override
     public void receiveMessage(int id, FriendlyByteBuf buf) {
@@ -431,6 +430,7 @@ public class SceneComponent extends StackLayout {
             super.receiveMessage(id, buf);
         }
     }
+    */
 
     @Override
     public boolean onMouseDown(double mouseX, double mouseY, int button) {
@@ -489,10 +489,10 @@ public class SceneComponent extends StackLayout {
         dragging = false;
         if (hoverPosFace != null && hoverPosFace.equals(clickPosFace)) {
             selectedPosFace = hoverPosFace;
-            sendMessage(-1, buffer -> {
-                buffer.writeBlockPos(selectedPosFace.pos);
-                buffer.writeEnum(selectedPosFace.facing);
-            });
+            // sendMessage(-1, buffer -> {
+            //     buffer.writeBlockPos(selectedPosFace.pos);
+            //     buffer.writeEnum(selectedPosFace.facing);
+            // });
             if (onSelected != null) {
                 onSelected.accept(selectedPosFace.pos, selectedPosFace.facing);
             }

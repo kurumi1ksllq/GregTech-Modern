@@ -139,7 +139,6 @@ public class ProgressComponent extends BaseUIComponent {
      * sendMessage(0, buffer -> buffer.writeDouble(actualValue));
      * }
      * }
-     */
 
     @Override
     public void receiveMessage(int id, FriendlyByteBuf buf) {
@@ -147,6 +146,7 @@ public class ProgressComponent extends BaseUIComponent {
             this.lastProgressValue = buf.readDouble();
         }
     }
+    */
 
     @Override
     public void parseProperties(UIModel model, Element element, Map<String, Element> children) {

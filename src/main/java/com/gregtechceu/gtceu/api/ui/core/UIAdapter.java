@@ -174,13 +174,6 @@ public class UIAdapter<R extends ParentUIComponent>
     }
 
     @Override
-    public void sendMessage(UIComponent component, int id, Consumer<FriendlyByteBuf> writer) {
-        if (menu() instanceof UIContainerMenu<?> menu) {
-            menu.sendMessage(id, writer);
-        }
-    }
-
-    @Override
     public UIAdapter<?> adapter() {
         return this;
     }

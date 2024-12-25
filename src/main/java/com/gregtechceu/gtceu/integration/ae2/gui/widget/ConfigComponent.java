@@ -93,6 +93,8 @@ public abstract class ConfigComponent extends FlowLayout {
                 this.containerAccess().screen().getMenu().broadcastChanges();
             }
         }
+        // FIXME
+        /*
         if (!this.changeMap.isEmpty()) {
             this.sendMessage(UPDATE_ID, buf -> {
                 buf.writeVarInt(this.changeMap.size());
@@ -115,8 +117,11 @@ public abstract class ConfigComponent extends FlowLayout {
                 }
             });
         }
+         */
     }
 
+    // FIXME
+    /*
     @OnlyIn(Dist.CLIENT)
     @Override
     public void receiveMessage(int id, FriendlyByteBuf buffer) {
@@ -139,6 +144,7 @@ public abstract class ConfigComponent extends FlowLayout {
             }
         }
     }
+    */
 
     public final IConfigurableSlot getConfig(int index) {
         return this.config[index];

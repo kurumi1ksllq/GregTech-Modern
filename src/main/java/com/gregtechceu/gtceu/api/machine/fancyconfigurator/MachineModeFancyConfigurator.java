@@ -105,19 +105,19 @@ public class MachineModeFancyConfigurator implements IFancyUIProvider {
          * public void detectAndSendChanges() {
          * this.sendMessage(0, buf -> buf.writeVarInt(machine.getActiveRecipeType()));
          * }
-         */
-
-        @Override
-        protected void parentUpdate(float delta, int mouseX, int mouseY) {
-            super.parentUpdate(delta, mouseX, mouseY);
-            this.sendMessage(0, buf -> buf.writeVarInt(machine.getActiveRecipeType()));
-        }
 
         @Override
         public void receiveMessage(int id, FriendlyByteBuf buf) {
             if (id == 0) {
                 machine.setActiveRecipeType(buf.readVarInt());
             }
+        }
+         */
+
+        @Override
+        protected void parentUpdate(float delta, int mouseX, int mouseY) {
+            super.parentUpdate(delta, mouseX, mouseY);
+            //this.sendMessage(0, buf -> buf.writeVarInt(machine.getActiveRecipeType()));
         }
     }
 }

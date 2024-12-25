@@ -101,7 +101,7 @@ public class ButtonComponent extends Button {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.enabled() && this.visible() && isMouseOverElement(mouseX, mouseY)) {
             ClickData clickData = new ClickData(button);
-            sendMessage(1, clickData::writeToBuf);
+            //sendMessage(1, clickData::writeToBuf);
             if (onPress != null) {
                 onPress.accept(clickData);
             }

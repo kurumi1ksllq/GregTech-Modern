@@ -89,7 +89,7 @@ public class AEItemConfigSlotComponent extends AEConfigSlotComponent implements 
 
             if (button == 1) {
                 // Right click to clear
-                sendMessage(REMOVE_ID, buf -> {});
+                //sendMessage(REMOVE_ID, buf -> {});
 
                 if (!parentWidget.isStocking()) {
                     this.parentWidget.disableAmount();
@@ -99,7 +99,7 @@ public class AEItemConfigSlotComponent extends AEConfigSlotComponent implements 
                 ItemStack item = getCarried();
 
                 if (!item.isEmpty()) {
-                    sendMessage(UPDATE_ID, buf -> buf.writeItem(item));
+                    ///sendMessage(UPDATE_ID, buf -> buf.writeItem(item));
                 }
 
                 if (!parentWidget.isStocking()) {
@@ -116,7 +116,7 @@ public class AEItemConfigSlotComponent extends AEConfigSlotComponent implements 
                 }
                 GenericStack stack = this.parentWidget.getDisplay(this.index).getStock();
                 if (stack != null) {
-                    sendMessage(PICK_UP_ID, buf -> {});
+                    //sendMessage(PICK_UP_ID, buf -> {});
                 }
                 return true;
             }
@@ -124,6 +124,7 @@ public class AEItemConfigSlotComponent extends AEConfigSlotComponent implements 
         return false;
     }
 
+    /*
     @Override
     public void receiveMessage(int id, FriendlyByteBuf buffer) {
         super.receiveMessage(id, buffer);
@@ -166,6 +167,7 @@ public class AEItemConfigSlotComponent extends AEConfigSlotComponent implements 
             }
         }
     }
+    */
 
     @Override
     public Rect2i area() {
@@ -176,7 +178,7 @@ public class AEItemConfigSlotComponent extends AEConfigSlotComponent implements 
 
     @Override
     public void setGhostIngredient(@NotNull ItemStack ingredient) {
-        sendMessage(UPDATE_ID, buf -> buf.writeItem(ingredient));
+        //sendMessage(UPDATE_ID, buf -> buf.writeItem(ingredient));
     }
 
     @Override
@@ -202,7 +204,7 @@ public class AEItemConfigSlotComponent extends AEConfigSlotComponent implements 
             amt = wheelDelta > 0 ? stack.amount() + 1L : stack.amount() - 1L;
         }
         if (amt > 0 && amt < Integer.MAX_VALUE + 1L) {
-            sendMessage(AMOUNT_CHANGE_ID, buf -> buf.writeVarLong(amt));
+            //sendMessage(AMOUNT_CHANGE_ID, buf -> buf.writeVarLong(amt));
             return true;
         }
         return false;

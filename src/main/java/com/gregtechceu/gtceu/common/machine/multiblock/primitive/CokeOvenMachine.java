@@ -63,11 +63,11 @@ public class CokeOvenMachine extends PrimitiveWorkableMachine implements IUIMach
         }
         // Position all slots at 0,0 as they'll be moved to the correct position on the client.
         SlotGenerator generator = SlotGenerator.begin(menu::addSlot, 0, 0);
-        for (int i = 0; i < this.importItems.getSlots(); i++) {
-            generator.slot(this.importItems, i, 0, 0);
+        for (int i = 0; i < this.importItems.storage.getSlots(); i++) {
+            generator.slot(this.importItems.storage, i, 0, 0);
         }
-        for (int i = 0; i < this.exportItems.getSlots(); i++) {
-            generator.slot(this.exportItems, i, 0, 0);
+        for (int i = 0; i < this.exportItems.storage.getSlots(); i++) {
+            generator.slot(this.exportItems.storage, i, 0, 0);
         }
         generator.playerInventory(menu.getPlayerInventory());
     }

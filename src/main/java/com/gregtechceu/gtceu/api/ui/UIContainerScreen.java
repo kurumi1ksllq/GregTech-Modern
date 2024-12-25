@@ -27,19 +27,4 @@ public class UIContainerScreen extends BaseContainerScreen<StackLayout, UIContai
     protected void build(StackLayout rootComponent) {
         ((UIContainerMenu) menu).getFactory().loadClientUI(menu.player(), this.uiAdapter, menu.getHolder());
     }
-
-    @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        if (!invalid) {
-            var updates = this.getMenu().getReceivedComponentUpdates();
-            while (!updates.isEmpty()) {
-                UIContainerMenu.IComponentUpdate update = updates.poll();
-                if (update == null) {
-                    continue;
-                }
-                this.uiAdapter.rootComponent.receiveMessage(update.updateId(), update.updateData());
-            }
-        }
-        super.render(guiGraphics, mouseX, mouseY, delta);
-    }
 }

@@ -114,7 +114,7 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
 
             if (button == 1) {
                 // Right click to clear
-                sendMessage(REMOVE_ID, buf -> {});
+                //sendMessage(REMOVE_ID, buf -> {});
 
                 if (!parentWidget.isStocking()) {
                     this.parentWidget.disableAmount();
@@ -122,7 +122,7 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
             } else if (button == 0) {
                 // Left click to set/select
                 ItemStack hold = getCarried();
-                FluidUtil.getFluidContained(hold).ifPresent(f -> sendMessage(UPDATE_ID, f::writeToPacket));
+                //FluidUtil.getFluidContained(hold).ifPresent(f -> sendMessage(UPDATE_ID, f::writeToPacket));
 
                 if (!parentWidget.isStocking()) {
                     this.parentWidget.enableAmount(this.index);
@@ -138,7 +138,7 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
                 }
                 GenericStack stack = this.parentWidget.getDisplay(this.index).getStock();
                 if (stack != null) {
-                    sendMessage(PICK_UP_ID, buf -> buf.writeBoolean(GTUtil.isShiftDown()));
+                    //sendMessage(PICK_UP_ID, buf -> buf.writeBoolean(GTUtil.isShiftDown()));
                 }
                 return true;
             }
@@ -183,7 +183,6 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
      * }
      * }
      * }
-     */
 
     @OnlyIn(Dist.CLIENT)
     @Override
@@ -221,6 +220,7 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
             }
         }
     }
+    */
 
     @OnlyIn(Dist.CLIENT)
     @Override
@@ -237,7 +237,7 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
         }
 
         if (!ingredient.isEmpty()) {
-            sendMessage(UPDATE_ID, ingredient::writeToPacket);
+            //sendMessage(UPDATE_ID, ingredient::writeToPacket);
         }
     }
 
@@ -270,7 +270,7 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
 
         if (amt > 0 && amt < Integer.MAX_VALUE + 1L) {
             int finalAmt = (int) amt;
-            sendMessage(AMOUNT_CHANGE_ID, buf -> buf.writeInt(finalAmt));
+            //sendMessage(AMOUNT_CHANGE_ID, buf -> buf.writeInt(finalAmt));
             return true;
         }
         return false;

@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.ui.factory.UIFactory;
 import com.gregtechceu.gtceu.core.mixins.ui.accessor.AbstractContainerMenuAccessor;
 import com.gregtechceu.gtceu.core.mixins.ui.accessor.SlotAccessor;
 
+import com.lowdragmc.lowdraglib.LDLib;
 import com.lowdragmc.lowdraglib.Platform;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -38,9 +39,6 @@ public class UIContainerMenu<T> extends AbstractContainerMenu {
 
     @Getter
     private final Set<Slot> slotSet = new LinkedHashSet<>();
-
-    @Getter
-    private final Queue<IComponentUpdate> receivedComponentUpdates = new LinkedList<>();
 
     @Getter
     private final Inventory playerInventory;
@@ -81,25 +79,18 @@ public class UIContainerMenu<T> extends AbstractContainerMenu {
         factory.loadServerUI(playerInventory.player, this, holder);
         init();
 
-        // register the generic sync message to go both ways
-        this.addServerboundMessage(ServerboundComponentUpdate.class, this.receivedComponentUpdates::offer);
-        this.addClientboundMessage(ClientboundComponentUpdate.class, this.receivedComponentUpdates::offer);
-
         this.addServerboundMessage(ServerboundSetCarriedUpdate.class, msg -> this.setCarried(msg.newCarried()));
         this.addServerboundMessage(ServerboundRemoveSyncPropertyMessage.class, msg -> super.removeProperty(msg.name()));
-    }
-
-    public void sendMessage(int id, Consumer<FriendlyByteBuf> payloadWriter) {
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        payloadWriter.accept(buf);
-        super.sendMessage(isClient ? new ServerboundComponentUpdate(id, buf) : new ClientboundComponentUpdate(id, buf));
+        this.addServerboundMessage(ClientboundRemoveSyncPropertyMessage.class, msg -> super.removeProperty(msg.name()));
     }
 
     @Override
     public void removeProperty(String name) {
         super.removeProperty(name);
-        if (Platform.isClient()) {
+        if (LDLib.isRemote()) {
             this.sendMessage(new ServerboundRemoveSyncPropertyMessage(name));
+        } else {
+            this.sendMessage(new ClientboundRemoveSyncPropertyMessage(name));
         }
     }
 
@@ -315,18 +306,8 @@ public class UIContainerMenu<T> extends AbstractContainerMenu {
 
     public static void initType() {}
 
-    public interface IComponentUpdate {
-
-        int updateId();
-
-        FriendlyByteBuf updateData();
-    }
-
-    public record ClientboundComponentUpdate(int updateId, FriendlyByteBuf updateData) implements IComponentUpdate {}
-
-    public record ServerboundComponentUpdate(int updateId, FriendlyByteBuf updateData) implements IComponentUpdate {}
-
     public record ServerboundSetCarriedUpdate(ItemStack newCarried) {}
 
     public record ServerboundRemoveSyncPropertyMessage(String name) {}
+    public record ClientboundRemoveSyncPropertyMessage(String name) {}
 }

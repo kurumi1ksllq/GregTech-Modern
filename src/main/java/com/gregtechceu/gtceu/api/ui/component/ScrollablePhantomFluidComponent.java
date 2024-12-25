@@ -27,7 +27,7 @@ public class ScrollablePhantomFluidComponent extends PhantomFluidComponent {
             return false;
 
         var delta = getModifiedChangeAmount((amount > 0) ? 1 : -1);
-        sendMessage(SCROLL_ACTION_ID, buf -> buf.writeInt(delta));
+        //sendMessage(SCROLL_ACTION_ID, buf -> buf.writeInt(delta));
 
         return true;
     }

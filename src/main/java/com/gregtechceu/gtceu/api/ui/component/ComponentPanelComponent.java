@@ -148,16 +148,19 @@ public class ComponentPanelComponent extends BaseUIComponent {
             textSupplier.accept(textBuffer);
             if (!lastText.equals(textBuffer)) {
                 this.lastText = textBuffer;
+                /*
                 sendMessage(1, buffer -> {
                     buffer.writeVarInt(lastText.size());
                     for (Component textComponent : lastText) {
                         buffer.writeComponent(textComponent);
                     }
                 });
+                */
             }
         }
     }
 
+    /*
     @Override
     public void receiveMessage(int id, FriendlyByteBuf buf) {
         if (id == 1) {
@@ -178,6 +181,7 @@ public class ComponentPanelComponent extends BaseUIComponent {
             super.receiveMessage(id, buf);
         }
     }
+    */
 
     public void updateComponentTextSize() {
         var font = Minecraft.getInstance().font;
@@ -245,9 +249,9 @@ public class ComponentPanelComponent extends BaseUIComponent {
                             ClickData clickData = new ClickData(button);
                             clickHandler.accept(rawText, clickData);
                         }
-                        sendMessage(2, buf -> {
-                            buf.writeUtf(rawText);
-                        });
+                        //sendMessage(2, buf -> {
+                        //    buf.writeUtf(rawText);
+                        //});
                     } else if (componentText.startsWith("@#")) {
                         String rawText = componentText.substring(2);
                         Util.getPlatform().openUri(rawText);

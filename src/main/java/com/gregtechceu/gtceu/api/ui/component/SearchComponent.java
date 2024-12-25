@@ -83,7 +83,7 @@ public class SearchComponent<T> extends FlowLayout {
                     .positioning(Positioning.absolute(0, size * 15))
                     .sizing(Sizing.fill(), Sizing.fixed(15)));
             if (isServer) {
-                sendMessage(-2, buf -> search.serialize(r, buf));
+                //sendMessage(-2, buf -> search.serialize(r, buf));
             }
         });
 
@@ -98,11 +98,12 @@ public class SearchComponent<T> extends FlowLayout {
             setShow(true);
             this.engine.searchWord(value);
             if (isServer) {
-                sendMessage(-1, buffer -> {});
+                //sendMessage(-1, buffer -> {});
             }
         });
     }
 
+    /*
     @Override
     public void receiveMessage(int id, FriendlyByteBuf buffer) {
         if (id == -1) {
@@ -138,6 +139,7 @@ public class SearchComponent<T> extends FlowLayout {
             super.receiveMessage(id, buffer);
         }
     }
+    */
 
     public SearchComponent<T> setCapacity(int capacity) {
         this.capacity = capacity;

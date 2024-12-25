@@ -582,15 +582,11 @@ public class PumpMachine extends TieredEnergyMachine implements IAutoOutputFluid
     public void loadServerUI(Player player, UIContainerMenu<MetaMachine> menu, MetaMachine holder) {
         SyncedProperty<FluidStack> prop = menu.createProperty(FluidStack.class, "cache", this.cache.getFluidInTank(0));
         CustomFluidTank tank = this.cache.getStorages()[0];
-        final int listenerIndex = tank.addOnContentsChanged(() -> prop.set(tank.getFluid()));
+        tank.addOnContentsChanged(() -> prop.set(tank.getFluid()));
 
         // Position all slots at 0,0 as they'll be moved to the correct position on the client.
         SlotGenerator generator = SlotGenerator.begin(menu::addSlot, 0, 0);
         generator.playerInventory(menu.getPlayerInventory());
-
-        menu.setCloseCallback(p -> {
-            tank.removeOnContersChanged(listenerIndex);
-        });
     }
 
     @Override

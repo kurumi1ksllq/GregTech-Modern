@@ -106,22 +106,14 @@ public class SimpleFluidFilter implements FluidFilter {
 
     @Override
     public void loadServerUI(Player player, UIContainerMenu<HeldItemUIHolder> menu, HeldItemUIHolder holder) {
-        @SuppressWarnings("unchecked")
-        SyncedProperty<FluidStack>[] syncedProperties = new SyncedProperty[9];
         for (int i = 0; i < 9; i++) {
-            syncedProperties[i] = menu.createProperty(FluidStack.class, "tank." + i, FluidStack.EMPTY);
             final int finalI = i;
-            syncedProperties[i].observe(stack -> {
-                matches[finalI] = stack;
-                onUpdated.accept(this);
-            });
+            menu.createProperty(FluidStack.class, "tank." + i, FluidStack.EMPTY)
+                    .observe(stack -> {
+                        matches[finalI] = stack;
+                        onUpdated.accept(this);
+                    });
         }
-
-        menu.setCloseCallback(p -> {
-            for (int i = 0; i < 9; i++) {
-                menu.removeProperty("tank." + i);
-            }
-        });
     }
 
     public UIComponent openConfigurator(int x, int y, UIAdapter<StackLayout> adapter) {

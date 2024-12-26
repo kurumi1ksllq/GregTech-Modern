@@ -7,6 +7,8 @@ import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 
+import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
+import com.gregtechceu.gtceu.api.pattern.predicates.PredicateAbilities;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.EnergyHatchPartMachine;
 import com.mojang.datafixers.util.Pair;
@@ -24,6 +26,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -33,10 +36,11 @@ public class TerminalBehavior implements IInteractionItem {
     public InteractionResult useOn(UseOnContext context) {
         if (context.getPlayer() != null && context.getPlayer().isShiftKeyDown()) {
             Level level = context.getLevel();
-            BlockPos blockPos = context.getClickedPos();
-            if (context.getPlayer() != null && MetaMachine.getMachine(level, blockPos) instanceof IMultiController controller) {
+            BlockPos controllerPos = context.getClickedPos();
+            if (context.getPlayer() != null && MetaMachine.getMachine(level, controllerPos) instanceof IMultiController controller) {
                 Map<Block, Integer> blockPlacedMap = controller.getPattern().autoBuildPlaceBlockMap;
-                Map<Block, Integer> blockFailedMap = controller.getPattern().autoBuildFailedBlockMap;
+                Map<Pair<Block, BlockPos>, Integer> blockFailedMap = controller.getPattern().autoBuildFailedBlockMap;
+                Map<BlockPos, PredicateAbilities> predicateInfoMap = controller.getPattern().infoPredicate;
                 if (!controller.isFormed()) {
                     if (!level.isClientSide) {
                         controller.getPattern().autoBuild(context.getPlayer(), controller.getMultiblockState());
@@ -44,7 +48,20 @@ public class TerminalBehavior implements IInteractionItem {
                             if (!blockFailedMap.isEmpty()){
                                 context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer.error_no_blocks_placed").withStyle(ChatFormatting.RED), false);
                                 for (var block : blockFailedMap.entrySet()) {
-                                    context.getPlayer().displayClientMessage(Component.literal(ChatFormatting.WHITE.toString() + block.getKey().getName().getString() + ChatFormatting.WHITE.toString() + ", " + ChatFormatting.AQUA.toString() + block.getValue()), false);
+                                    var blockPos = block.getKey().getSecond();
+                                    if(predicateInfoMap.containsKey(blockPos)){
+                                        for( var ability : predicateInfoMap.get(blockPos).abilities){
+                                            if (!ability.getLangKey().isEmpty()) {
+                                                if (block.getValue() > 1) {
+                                                    context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer_part_notice", "s, " + ChatFormatting.AQUA.toString() + block.getValue()),false);
+                                                } else {
+                                                    context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer_part_notice", Component.translatable(ability.getLangKey()),", "+ block.getValue()),false);
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        context.getPlayer().displayClientMessage(Component.literal(ChatFormatting.WHITE.toString() + block.getKey().getFirst().getName().getString() + ChatFormatting.WHITE.toString() + ", " + ChatFormatting.AQUA.toString() + block.getValue()), false);
+                                    }
                                 }
                             } else {
                                 context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer.no_blocks_placed").withStyle(ChatFormatting.RED), false);

@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 import com.gregtechceu.gtceu.api.pattern.error.PatternStringError;
 import com.gregtechceu.gtceu.api.pattern.error.SinglePredicateError;
+import com.gregtechceu.gtceu.api.pattern.predicates.PredicateAbilities;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.api.pattern.util.PatternMatchContext;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
@@ -212,8 +213,8 @@ public class BlockPattern {
         return true;
     }
     public Map<Block, Integer> autoBuildPlaceBlockMap = new HashMap<>();
-    public Map<Block, Integer> autoBuildFailedBlockMap = new HashMap<>();
-    public List<SimplePredicate> infosPredicate = new ArrayList<>();
+    public Map<Pair<Block, BlockPos>, Integer> autoBuildFailedBlockMap = new HashMap<>();
+    public Map<BlockPos, PredicateAbilities> infoPredicate = new HashMap<>();
     public void autoBuild(Player player, MultiblockState worldState) {
         Level world = player.level();
         int minZ = -centerOffset[4];
@@ -229,6 +230,7 @@ public class BlockPattern {
         Set<BlockPos> placeBlockPos = new HashSet<>();
         autoBuildPlaceBlockMap.clear();
         autoBuildFailedBlockMap.clear();
+        infoPredicate.clear();
         blocks.put(centerPos, controller);
         for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
             for (r = 0; r < aisleRepetitions[c][0]; r++) {
@@ -262,6 +264,9 @@ public class BlockPattern {
                                     continue;
                                 }
                                 infos = limit.candidates == null ? null : limit.candidates.get();
+                                if (limit instanceof PredicateAbilities predicateAbilities){
+                                    infoPredicate.put(pos,predicateAbilities);
+                                }
                                 find = true;
                                 break;
                             }
@@ -280,6 +285,9 @@ public class BlockPattern {
                                         continue;
                                     }
                                     infos = limit.candidates == null ? null : limit.candidates.get();
+                                    if (limit instanceof PredicateAbilities predicateAbilities){
+                                        infoPredicate.put(pos,predicateAbilities);
+                                    }
                                     find = true;
                                     break;
                                 }
@@ -304,10 +312,16 @@ public class BlockPattern {
                                     }
                                     infos = ArrayUtils.addAll(infos,
                                             limit.candidates == null ? null : limit.candidates.get());
+                                    if (limit instanceof PredicateAbilities predicateAbilities){
+                                        infoPredicate.put(pos,predicateAbilities);
+                                    }
                                 }
                                 for (SimplePredicate common : predicate.common) {
                                     infos = ArrayUtils.addAll(infos,
                                             common.candidates == null ? null : common.candidates.get());
+                                    if (common instanceof PredicateAbilities predicateAbilities){
+                                        infoPredicate.put(pos,predicateAbilities);
+                                    }
                                 }
                             }
 
@@ -333,7 +347,7 @@ public class BlockPattern {
                                     found = handler.getStackInSlot(foundSlot).copy();
                                 } else {
                                     Block block = ((BlockItem) candidates.get(0).getItem()).getBlock();
-                                    autoBuildFailedBlockMap.merge(block,1,Integer::sum);
+                                    autoBuildFailedBlockMap.merge(Pair.of(block,pos),1,Integer::sum);
                                 }
                             } else {
                                 for (ItemStack candidate : candidates) {

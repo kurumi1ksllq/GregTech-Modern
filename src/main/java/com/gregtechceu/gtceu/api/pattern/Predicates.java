@@ -90,8 +90,7 @@ public class Predicates {
     }
 
     public static TraceabilityPredicate abilities(PartAbility... abilities) {
-        return blocks(Arrays.stream(abilities).map(PartAbility::getAllBlocks).flatMap(Collection::stream)
-                .toArray(Block[]::new));
+        return new TraceabilityPredicate(new PredicateAbilities(abilities));
     }
 
     public static TraceabilityPredicate ability(PartAbility ability, int... tiers) {

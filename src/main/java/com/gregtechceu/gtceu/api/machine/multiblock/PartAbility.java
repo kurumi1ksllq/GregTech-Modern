@@ -19,11 +19,11 @@ import java.util.function.Supplier;
  *           Only registered blocks can be used as part of gtceu's multiblock.
  */
 public class PartAbility {
-
+    public  static final PartAbility NONE = new PartAbility("none");
     public static final PartAbility EXPORT_ITEMS = new PartAbility("export_items");
-    public static final PartAbility IMPORT_ITEMS = new PartAbility("import_items");
+    public static final PartAbility IMPORT_ITEMS = new PartAbility("import_items","gtceu.part_ability.import_items");
     public static final PartAbility EXPORT_FLUIDS = new PartAbility("export_fluids");
-    public static final PartAbility IMPORT_FLUIDS = new PartAbility("import_fluids");
+    public static final PartAbility IMPORT_FLUIDS = new PartAbility("import_fluids","gtceu.part_ability.import_fluids");
 
     public static final PartAbility EXPORT_FLUIDS_1X = new PartAbility("export_fluids_1x");
     public static final PartAbility IMPORT_FLUIDS_1X = new PartAbility("import_fluids_1x");
@@ -32,7 +32,7 @@ public class PartAbility {
     public static final PartAbility EXPORT_FLUIDS_9X = new PartAbility("export_fluids_9x");
     public static final PartAbility IMPORT_FLUIDS_9X = new PartAbility("import_fluids_9x");
 
-    public static final PartAbility INPUT_ENERGY = new PartAbility("input_energy");
+    public static final PartAbility INPUT_ENERGY = new PartAbility("input_energy","gtceu.part_ability.input_energy");
     public static final PartAbility OUTPUT_ENERGY = new PartAbility("output_energy");
     public static final PartAbility SUBSTATION_INPUT_ENERGY = new PartAbility("substation_input_energy");
     public static final PartAbility SUBSTATION_OUTPUT_ENERGY = new PartAbility("substation_output_energy");
@@ -69,9 +69,15 @@ public class PartAbility {
 
     @Getter
     private final String name;
-
+    @Getter
+    private final String langKey;
     public PartAbility(String name) {
         this.name = name;
+        this.langKey = null;
+    }
+    public PartAbility(String name, String langKey) {
+        this.name = name;
+        this.langKey = langKey;
     }
 
     public void register(int tier, Block block) {

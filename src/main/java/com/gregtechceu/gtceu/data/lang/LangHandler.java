@@ -128,6 +128,12 @@ public class LangHandler {
         provider.add("command.gtceu.place_vein.failure", "Failed to place vein %s at position %s");
         provider.add("command.gtceu.place_vein.success", "Placed vein %s at position %s");
         provider.add("command.gtceu.share_prospection_data.notification", "%s is sharing prospecting data with you!");
+        provider.add("gtceu.tools.printer.no_blocks_placed", "No New Blocks Placed");
+        provider.add("gtceu.tools.printer.blocks_placed", "Blocks Placed:");
+        provider.add("gtceu.tools.printer.building_structure", "Structure Blocks Placed");
+
+        replace(provider, "gtceu.tools.printer.no_blocks_placed", "No New Blocks Placed");
+        replace(provider, "gtceu.tools.printer.blocks_placed", "Blocks Placed:");
 
         provider.add("gtceu.medical_condition.description", "§l§cHAZARDOUS §7Hold Shift to show details");
         provider.add("gtceu.medical_condition.description_shift", "§l§cHAZARDOUS:");

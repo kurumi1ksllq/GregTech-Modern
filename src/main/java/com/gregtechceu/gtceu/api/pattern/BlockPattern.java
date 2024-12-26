@@ -24,6 +24,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -210,6 +211,7 @@ public class BlockPattern {
         worldState.setNeededFlip(isFlipped);
         return true;
     }
+    public Map<Block, Integer> autoBuildBlockMap = new HashMap<>();
 
     public void autoBuild(Player player, MultiblockState worldState) {
         Level world = player.level();
@@ -224,6 +226,7 @@ public class BlockPattern {
         Map<SimplePredicate, Integer> cacheLayer = worldState.getLayerCount();
         Map<BlockPos, Object> blocks = new HashMap<>();
         Set<BlockPos> placeBlockPos = new HashSet<>();
+        autoBuildBlockMap.clear();
         blocks.put(centerPos, controller);
         for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
             for (r = 0; r < aisleRepetitions[c][0]; r++) {
@@ -341,6 +344,11 @@ public class BlockPattern {
                             BlockPlaceContext context = new BlockPlaceContext(world, player, InteractionHand.MAIN_HAND,
                                     found, BlockHitResult.miss(player.getEyePosition(0), Direction.UP, pos));
                             InteractionResult interactionResult = itemBlock.place(context);
+                            if(autoBuildBlockMap.containsKey(itemBlock.getBlock())){
+                                autoBuildBlockMap.put(itemBlock.getBlock(), autoBuildBlockMap.get(itemBlock.getBlock()) + 1);
+                            } else {
+                                autoBuildBlockMap.put(itemBlock.getBlock(), 1);
+                            }
                             if (interactionResult != InteractionResult.FAIL) {
                                 placeBlockPos.add(pos);
                                 if (handler != null) {

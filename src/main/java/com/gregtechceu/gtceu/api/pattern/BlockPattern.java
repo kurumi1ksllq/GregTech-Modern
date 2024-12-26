@@ -211,8 +211,9 @@ public class BlockPattern {
         worldState.setNeededFlip(isFlipped);
         return true;
     }
-    public Map<Block, Integer> autoBuildBlockMap = new HashMap<>();
-
+    public Map<Block, Integer> autoBuildPlaceBlockMap = new HashMap<>();
+    public Map<Block, Integer> autoBuildFailedBlockMap = new HashMap<>();
+    public List<SimplePredicate> infosPredicate = new ArrayList<>();
     public void autoBuild(Player player, MultiblockState worldState) {
         Level world = player.level();
         int minZ = -centerOffset[4];
@@ -226,7 +227,8 @@ public class BlockPattern {
         Map<SimplePredicate, Integer> cacheLayer = worldState.getLayerCount();
         Map<BlockPos, Object> blocks = new HashMap<>();
         Set<BlockPos> placeBlockPos = new HashSet<>();
-        autoBuildBlockMap.clear();
+        autoBuildPlaceBlockMap.clear();
+        autoBuildFailedBlockMap.clear();
         blocks.put(centerPos, controller);
         for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
             for (r = 0; r < aisleRepetitions[c][0]; r++) {
@@ -329,6 +331,9 @@ public class BlockPattern {
                                     foundSlot = foundHandler.getFirst();
                                     handler = foundHandler.getSecond();
                                     found = handler.getStackInSlot(foundSlot).copy();
+                                } else {
+                                    Block block = ((BlockItem) candidates.get(0).getItem()).getBlock();
+                                    autoBuildFailedBlockMap.merge(block,1,Integer::sum);
                                 }
                             } else {
                                 for (ItemStack candidate : candidates) {
@@ -344,11 +349,7 @@ public class BlockPattern {
                             BlockPlaceContext context = new BlockPlaceContext(world, player, InteractionHand.MAIN_HAND,
                                     found, BlockHitResult.miss(player.getEyePosition(0), Direction.UP, pos));
                             InteractionResult interactionResult = itemBlock.place(context);
-                            if(autoBuildBlockMap.containsKey(itemBlock.getBlock())){
-                                autoBuildBlockMap.put(itemBlock.getBlock(), autoBuildBlockMap.get(itemBlock.getBlock()) + 1);
-                            } else {
-                                autoBuildBlockMap.put(itemBlock.getBlock(), 1);
-                            }
+                            autoBuildPlaceBlockMap.merge(itemBlock.getBlock(),1,Integer::sum);
                             if (interactionResult != InteractionResult.FAIL) {
                                 placeBlockPos.add(pos);
                                 if (handler != null) {

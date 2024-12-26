@@ -131,6 +131,10 @@ public class LangHandler {
         provider.add("gtceu.tools.printer.no_blocks_placed", "No New Blocks Placed");
         provider.add("gtceu.tools.printer.blocks_placed", "Blocks Placed:");
         provider.add("gtceu.tools.printer.building_structure", "Structure Blocks Placed");
+        provider.add("gtceu.tools.printer.error_no_blocks_placed", "Missing Blocks for Placement!");
+        provider.add("gtceu.tools.printer.energy_hatch_notice", "Any Energy Input");
+        provider.add("gtceu.tools.printer.fluid_input_part_notice", "Any Fluid Input");
+        provider.add("gtceu.tools.printer.item_input_part_notice", "Any Item Input");
 
         replace(provider, "gtceu.tools.printer.no_blocks_placed", "No New Blocks Placed");
         replace(provider, "gtceu.tools.printer.blocks_placed", "Blocks Placed:");

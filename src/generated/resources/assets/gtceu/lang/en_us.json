@@ -3496,6 +3496,8 @@
   "gtceu.tool_action.wrench.set_facing": "§8Use Wrench to set Facing",
   "gtceu.tools.printer.blocks_placed": "Blocks Placed:",
   "gtceu.tools.printer.building_structure": "Structure Blocks Placed",
+  "gtceu.tools.printer.energy_hatch_notice": "Any Energy Input",
+  "gtceu.tools.printer.error_no_blocks_placed": "Missing Blocks for Placement!",
   "gtceu.tools.printer.no_blocks_placed": "No New Blocks Placed",
   "gtceu.tooltip.fluid_pipe_hold_shift": "§7Hold SHIFT to show Fluid Containment Info",
   "gtceu.tooltip.hold_ctrl": "§7Hold CTRL for more info",

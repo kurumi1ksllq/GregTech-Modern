@@ -25,10 +25,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TerminalBehavior implements IInteractionItem {
 
@@ -41,28 +39,38 @@ public class TerminalBehavior implements IInteractionItem {
                 Map<Block, Integer> blockPlacedMap = controller.getPattern().autoBuildPlaceBlockMap;
                 Map<Pair<Block, BlockPos>, Integer> blockFailedMap = controller.getPattern().autoBuildFailedBlockMap;
                 Map<BlockPos, PredicateAbilities> predicateInfoMap = controller.getPattern().infoPredicate;
+                Map<PartAbility, Integer> predicatePartAbilityCount = new HashMap<>();
+                Map<Block, Integer> predicateBlockCount = new HashMap<>();
+                for (var entry : predicateInfoMap.entrySet()) {
+                    for (var ability : entry.getValue().abilities) {
+                        predicatePartAbilityCount.merge(ability, 1, Integer::sum);
+                    }
+                }
+                for (var block : blockFailedMap.entrySet()) {
+                    if (!predicateInfoMap.containsKey(block.getKey().getSecond())) {
+                        predicateBlockCount.merge(block.getKey().getFirst(), 1, Integer::sum);
+                    }
+                }
                 if (!controller.isFormed()) {
                     if (!level.isClientSide) {
                         controller.getPattern().autoBuild(context.getPlayer(), controller.getMultiblockState());
-                        if (blockPlacedMap.isEmpty()){
-                            if (!blockFailedMap.isEmpty()){
+                        if (blockPlacedMap.isEmpty()) {
+                            if (!blockFailedMap.isEmpty()) {
                                 context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer.error_no_blocks_placed").withStyle(ChatFormatting.RED), false);
-                                for (var block : blockFailedMap.entrySet()) {
-                                    var blockPos = block.getKey().getSecond();
-                                    if(predicateInfoMap.containsKey(blockPos)){
-                                        for( var ability : predicateInfoMap.get(blockPos).abilities){
-                                            if (!ability.getLangKey().isEmpty()) {
-                                                if (block.getValue() > 1) {
-                                                    context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer_part_notice", "s, " + ChatFormatting.AQUA.toString() + block.getValue()),false);
-                                                } else {
-                                                    context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer_part_notice", Component.translatable(ability.getLangKey()),", "+ block.getValue()),false);
-                                                }
-                                            }
+                                for (var ability : predicatePartAbilityCount.entrySet()) {
+                                    if (ability.getKey().getLangKey() != null && !ability.getKey().getLangKey().isEmpty()) {
+                                        if (ability.getValue() > 1) {
+                                            context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer_part_notice", Component.translatable(ability.getKey().getLangKey()).append("s, "), Component.literal(ability.getValue().toString()).withStyle(ChatFormatting.AQUA)), false);
+                                        } else {
+                                            context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer_part_notice", Component.translatable(ability.getKey().getLangKey()), ", " + ability.getValue()), false);
                                         }
-                                    } else {
-                                        context.getPlayer().displayClientMessage(Component.literal(ChatFormatting.WHITE.toString() + block.getKey().getFirst().getName().getString() + ChatFormatting.WHITE.toString() + ", " + ChatFormatting.AQUA.toString() + block.getValue()), false);
                                     }
                                 }
+                                for (var value : predicateBlockCount.entrySet()) {
+                                    context.getPlayer().displayClientMessage(Component.literal(ChatFormatting.WHITE.toString() + value.getKey().getName().getString() + ChatFormatting.WHITE.toString() + ", " + ChatFormatting.AQUA.toString() + value.getValue()), false);
+                                }
+
+
                             } else {
                                 context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer.no_blocks_placed").withStyle(ChatFormatting.RED), false);
                             }
@@ -77,12 +85,12 @@ public class TerminalBehavior implements IInteractionItem {
                 }
             }
         }
-        if (context.getPlayer() != null && !context.getPlayer().isShiftKeyDown()){
+        if (context.getPlayer() != null && !context.getPlayer().isShiftKeyDown()) {
             Level level = context.getLevel();
             BlockPos blockPos = context.getClickedPos();
             if (context.getPlayer() != null && MetaMachine.getMachine(level, blockPos) instanceof IMultiController controller) {
                 if (!level.isClientSide) {
-                    if (controller.isFormed()){
+                    if (controller.isFormed()) {
                         context.getPlayer().displayClientMessage(Component.literal("Structure is formed with no issues.").withStyle(ChatFormatting.GREEN), false);
                     } else {
                         context.getPlayer().displayClientMessage(Component.literal("Structure is incomplete!").withStyle(ChatFormatting.RED), false);

@@ -265,7 +265,7 @@ public class BlockPattern {
                                 }
                                 infos = limit.candidates == null ? null : limit.candidates.get();
                                 if (limit instanceof PredicateAbilities predicateAbilities){
-                                    infoPredicate.put(pos,predicateAbilities);
+                                    infoPredicate.putIfAbsent(pos,predicateAbilities);
                                 }
                                 find = true;
                                 break;
@@ -286,7 +286,7 @@ public class BlockPattern {
                                     }
                                     infos = limit.candidates == null ? null : limit.candidates.get();
                                     if (limit instanceof PredicateAbilities predicateAbilities){
-                                        infoPredicate.put(pos,predicateAbilities);
+                                        infoPredicate.putIfAbsent(pos,predicateAbilities);
                                     }
                                     find = true;
                                     break;
@@ -313,14 +313,14 @@ public class BlockPattern {
                                     infos = ArrayUtils.addAll(infos,
                                             limit.candidates == null ? null : limit.candidates.get());
                                     if (limit instanceof PredicateAbilities predicateAbilities){
-                                        infoPredicate.put(pos,predicateAbilities);
+                                        infoPredicate.putIfAbsent(pos,predicateAbilities);
                                     }
                                 }
                                 for (SimplePredicate common : predicate.common) {
                                     infos = ArrayUtils.addAll(infos,
                                             common.candidates == null ? null : common.candidates.get());
                                     if (common instanceof PredicateAbilities predicateAbilities){
-                                        infoPredicate.put(pos,predicateAbilities);
+                                        infoPredicate.putIfAbsent(pos,predicateAbilities);
                                     }
                                 }
                             }

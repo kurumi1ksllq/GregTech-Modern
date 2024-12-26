@@ -51,6 +51,7 @@ public class TerminalBehavior implements IInteractionItem {
                         predicateBlockCount.merge(block.getKey().getFirst(), 1, Integer::sum);
                     }
                 }
+                //TODO; FIX THE AWFUL LANG! ! ! ! ! !
                 if (!controller.isFormed()) {
                     if (!level.isClientSide) {
                         controller.getPattern().autoBuild(context.getPlayer(), controller.getMultiblockState());

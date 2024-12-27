@@ -48,6 +48,8 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -751,6 +753,18 @@ public interface GTRecipeSchema {
         /*
          * KubeJS overrides
          */
+
+        @Override
+        public ResourceLocation getOrCreateId() {
+            if (id == null) {
+                String prefix = type.id.getNamespace() + ":";
+                String path = "%s/%s".formatted(type.id.getPath(), "kjs_custom");
+                id = type.event.takeId(this, prefix, path);
+                String pathWithoutType = StringUtils.substringAfter(id.getPath(), '/');
+                idWithoutType = new ResourceLocation(id.getNamespace(), pathWithoutType);
+            }
+            return id;
+        }
 
         @Override
         public KubeRecipe serializeChanges() {

@@ -9,6 +9,9 @@ import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+
+import java.util.Set;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;

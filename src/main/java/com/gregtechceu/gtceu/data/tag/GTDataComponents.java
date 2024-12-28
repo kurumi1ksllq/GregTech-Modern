@@ -104,6 +104,6 @@ public class GTDataComponents {
             .registerComponentType("lamp",
                     builder -> builder.persistent(LampBlockItem.LampData.CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> LIGHTER_OPEN = DATA_COMPONENTS
-            .registerComponentType("lighter_openn",
+            .registerComponentType("lighter_open",
                     builder -> builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
 }

@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.capability.GTCapability;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.fluid.FluidConstants;
 import com.gregtechceu.gtceu.api.fluid.FluidState;
@@ -430,11 +431,14 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
         return pipeTankList;
     }
 
-    public PipeTankList getTankList(Direction facing) {
+    public IFluidHandlerModifiable getTankList(Direction facing) {
         if (tankLists.isEmpty() || fluidTanks == null) {
             createTanksList();
         }
-        return tankLists.getOrDefault(facing, pipeTankList);
+
+        var tankList = tankLists.getOrDefault(facing, pipeTankList);
+        return new IOFluidTransferList(List.of(tankList), IO.BOTH,
+                getFluidCapFilter(facing, IO.IN), getFluidCapFilter(facing, IO.OUT));
     }
 
     public CustomFluidTank[] getFluidTanks() {

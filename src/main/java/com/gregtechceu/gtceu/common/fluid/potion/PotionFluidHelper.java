@@ -1,12 +1,12 @@
 package com.gregtechceu.gtceu.common.fluid.potion;
 
-import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
-import com.gregtechceu.gtceu.common.data.GTFluids;
-import com.gregtechceu.gtceu.core.mixins.StrictNBTIngredientAccessor;
+import com.gregtechceu.gtceu.data.fluid.GTFluids;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -19,17 +19,22 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidType;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -51,16 +56,19 @@ public class PotionFluidHelper {
         return Pair.of(fluid, new ItemStack(Items.GLASS_BOTTLE));
     }
 
-    public static FluidIngredient potionIngredient(Potion potion, int amount) {
+    public static FluidIngredient potionIngredient(Holder<Potion> potion, int amount) {
         FluidStack stack = PotionFluidHelper
-                .getFluidFromPotionItem(PotionUtils.setPotion(new ItemStack(Items.POTION), potion), amount);
+                .getFluidFromPotionItem(PotionContents.createItemStack(Items.POTION, potion), amount);
         stack.setAmount(amount);
         return FluidIngredient.of(stack);
     }
 
-    public static FluidIngredient getPotionFluidIngredientFrom(Ingredient potion, int amount) {
-        if (potion instanceof StrictNBTIngredientAccessor strict) {
-            return FluidIngredient.of(Stream.of(GTFluids.POTION.get()), amount, strict.getStack().getTag());
+    public static SizedFluidIngredient getPotionFluidIngredientFrom(Ingredient potion, int amount) {
+        if (potion.getCustomIngredient() instanceof DataComponentIngredient strict) {
+            return new SizedFluidIngredient(DataComponentFluidIngredient.of(false,
+                    DataComponents.POTION_CONTENTS,
+                    strict.getItems().findFirst().orElse(ItemStack.EMPTY).<PotionContents>get(DataComponents.POTION_CONTENTS),
+                    (Fluid) GTFluids.POTION.get()), amount);
         }
 
         List<FluidStack> fluids = new ArrayList<>();
@@ -70,21 +78,21 @@ public class PotionFluidHelper {
                 fluids.add(fluidStack);
             }
         }
-        return FluidIngredient.of(fluids.toArray(FluidStack[]::new));
+        return new SizedFluidIngredient(FluidIngredient.of(fluids.toArray(FluidStack[]::new)), amount);
     }
 
     public static FluidStack getFluidFromPotionItem(ItemStack stack, int amount) {
-        Potion potion = PotionUtils.getPotion(stack);
-        if (potion == Potions.EMPTY) {
+        PotionContents potion = stack.get(DataComponents.POTION_CONTENTS);
+        if (potion == PotionContents.EMPTY) {
             return FluidStack.EMPTY;
         }
-        List<MobEffectInstance> list = PotionUtils.getCustomEffects(stack);
-        if (potion == Potions.WATER && list.isEmpty())
+        List<MobEffectInstance> list = potion.customEffects();
+        if (potion.is(Potions.WATER) && list.isEmpty())
             return new FluidStack(Fluids.WATER, amount);
-        return PotionFluid.withEffects(amount, potion, list);
+        return PotionFluid.withEffects(amount, potion.potion().get(), list);
     }
 
-    public static FluidStack getFluidFromPotion(Potion potion, int amount) {
+    public static FluidStack getFluidFromPotion(Holder<Potion> potion, int amount) {
         if (potion == Potions.WATER)
             return new FluidStack(Fluids.WATER, amount);
         return PotionFluid.of(amount, potion);

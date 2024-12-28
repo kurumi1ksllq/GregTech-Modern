@@ -42,8 +42,8 @@ public class GTFluids {
         // Register fluids for non-materials
         handleNonMaterialFluids(GTMaterials.Water, Fluids.WATER);
         handleNonMaterialFluids(GTMaterials.Lava, Fluids.LAVA);
-        handleNonMaterialFluids(GTMaterials.Milk, ForgeMod.MILK);
-        ForgeMod.enableMilkFluid();
+        NeoForgeMod.enableMilkFluid();
+        handleNonMaterialFluids(GTMaterials.Milk, NeoForgeMod.MILK);
 
         // register fluids for materials
         REGISTRATE.creativeModeTab(() -> GTCreativeModeTabs.MATERIAL_FLUID);

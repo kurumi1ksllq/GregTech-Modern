@@ -19,6 +19,7 @@ import com.gregtechceu.gtceu.api.material.material.event.MaterialRegistryEvent;
 import com.gregtechceu.gtceu.api.material.material.event.PostMaterialEvent;
 import com.gregtechceu.gtceu.api.material.material.info.MaterialIconSet;
 import com.gregtechceu.gtceu.api.material.material.info.MaterialIconType;
+import com.gregtechceu.gtceu.api.misc.forge.FilteredFluidHandlerItemStack;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.tag.TagPrefix;
@@ -26,6 +27,7 @@ import com.gregtechceu.gtceu.api.worldgen.WorldGenLayers;
 import com.gregtechceu.gtceu.api.worldgen.generator.IndicatorGenerators;
 import com.gregtechceu.gtceu.api.worldgen.generator.VeinGenerators;
 import com.gregtechceu.gtceu.common.block.*;
+import com.gregtechceu.gtceu.common.fluid.potion.PotionFluidHelper;
 import com.gregtechceu.gtceu.common.item.DrumMachineItem;
 import com.gregtechceu.gtceu.common.item.armor.GTArmorMaterials;
 import com.gregtechceu.gtceu.common.item.tool.rotation.CustomBlockRotations;
@@ -61,10 +63,7 @@ import com.gregtechceu.gtceu.data.pack.GTDynamicDataPack;
 import com.gregtechceu.gtceu.data.pack.GTDynamicResourcePack;
 import com.gregtechceu.gtceu.data.pack.GTPackSource;
 import com.gregtechceu.gtceu.data.particle.GTParticleTypes;
-import com.gregtechceu.gtceu.data.recipe.GTRecipeCapabilities;
-import com.gregtechceu.gtceu.data.recipe.GTRecipeCategories;
-import com.gregtechceu.gtceu.data.recipe.GTRecipeConditions;
-import com.gregtechceu.gtceu.data.recipe.GTRecipeTypes;
+import com.gregtechceu.gtceu.data.recipe.*;
 import com.gregtechceu.gtceu.data.sound.GTSoundEntries;
 import com.gregtechceu.gtceu.data.tag.GTDataComponents;
 import com.gregtechceu.gtceu.data.tag.GTIngredientTypes;
@@ -85,10 +84,15 @@ import com.lowdragmc.lowdraglib.LDLib;
 import com.lowdragmc.lowdraglib.Platform;
 import com.lowdragmc.lowdraglib.gui.factory.UIFactory;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -104,6 +108,9 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -173,7 +180,7 @@ public class CommonProxy {
         GTBlockEntities.init();
         GTRecipeTypes.init();
         GTRecipeCategories.init();
-        GTMachineUtils.init();
+        com.gregtechceu.gtceu.common.data.machines.GTMachineUtils.init();
         GTMachines.init();
 
         GTFoods.init();
@@ -327,6 +334,28 @@ public class CommonProxy {
                         bucket);
             }
         }
+        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> {
+            var fluidHandler = new FluidHandlerItemStack.SwapEmpty(GTDataComponents.FLUID_CONTENT, stack,
+                    new ItemStack(Items.GLASS_BOTTLE), PotionFluidHelper.BOTTLE_AMOUNT);
+            fluidHandler.fill(PotionFluidHelper.getFluidFromPotionItem(stack, PotionFluidHelper.BOTTLE_AMOUNT),
+                    IFluidHandler.FluidAction.EXECUTE);
+            return fluidHandler;
+        }, Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION);
+        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> {
+            return new FilteredFluidHandlerItemStack(stack,
+                    250, s -> s.getFluid().is(CustomTags.POTION_FLUIDS)) {
+
+                @Override
+                protected void setFluid(FluidStack fluid) {
+                    super.setFluid(fluid);
+                    if (!fluid.isEmpty()) {
+                        container = PotionContents.createItemStack(Items.POTION,
+                                fluid.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY)
+                                        .potion().orElse(Potions.WATER));
+                    }
+                }
+            };
+        }, Items.GLASS_BOTTLE);
     }
 
     @SubscribeEvent

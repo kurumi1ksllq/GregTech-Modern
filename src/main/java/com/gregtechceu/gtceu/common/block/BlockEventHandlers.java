@@ -37,13 +37,17 @@ public class BlockEventHandlers {
 
             if (movementSpeedAttribute != null) {
                 UUID modifierID = UUID.randomUUID();
-                AttributeModifier speedModifier;
+                AttributeModifier speedModifier = null;
                 if (state.is((GTBlocks.LIGHT_CONCRETE.get()))) {
 
                     speedModifier = new AttributeModifier(modifierID, "Movement Speed Modifier",
                             0.3, AttributeModifier.Operation.ADDITION);
 
                 }
+                movementSpeedAttribute.removeModifier(modifierID);
+
+                movementSpeedAttribute.addPermanentModifier(speedModifier);
+
 
             }
 

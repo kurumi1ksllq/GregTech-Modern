@@ -4,6 +4,8 @@ import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.tterrag.registrate.Registrate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,27 +28,25 @@ public class BlockEventHandlers {
         var player = event.player;
         Level world = player.level();
 
-        if(player.onGround())
-        {
+        if (player.onGround()) {
 
             BlockPos pos = player.blockPosition().below();
             BlockState state = world.getBlockState(pos);
+            AttributeInstance movementSpeedAttribute = player.getAttribute(Attributes.MOVEMENT_SPEED);
+            if (movementSpeedAttribute != null) {
+                if (state.is((GTBlocks.LIGHT_CONCRETE.get()))) {
 
-            if(state.is((GTBlocks.LIGHT_CONCRETE.get())))
-            {
+                    movementSpeedAttribute.setBaseValue(0.3);
 
-                player.getAbilities().setWalkingSpeed(0.8f);
+                } else {
 
-            }
-            else
-            {
+                    movementSpeedAttribute.setBaseValue(0.1);
 
-                player.getAbilities().setWalkingSpeed(0.1f);
+                }
 
             }
 
         }
-
     }
 
 }

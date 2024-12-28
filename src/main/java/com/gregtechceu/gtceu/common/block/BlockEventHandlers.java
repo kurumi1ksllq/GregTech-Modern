@@ -20,7 +20,9 @@ public class BlockEventHandlers {
 
     @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-
+        if (event.phase == TickEvent.Phase.START) {
+            return;
+        }
         var player = event.player;
         Level world = player.level();
 
@@ -30,10 +32,16 @@ public class BlockEventHandlers {
             BlockPos pos = player.blockPosition().below();
             BlockState state = world.getBlockState(pos);
 
-            if(state.is((HolderSet<Block>) GTBlocks.LIGHT_CONCRETE))
+            if(state.is((GTBlocks.LIGHT_CONCRETE.get())))
             {
 
-                player.getAbilities().setWalkingSpeed(0.6f);
+                player.getAbilities().setWalkingSpeed(0.8f);
+
+            }
+            else
+            {
+
+                player.getAbilities().setWalkingSpeed(0.1f);
 
             }
 

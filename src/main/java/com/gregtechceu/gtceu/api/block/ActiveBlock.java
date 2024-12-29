@@ -12,8 +12,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * @implNote This class is a simple extension of AppearanceBlock that adds a property
- * to track whether the block is active or not.
+ * @implNote ActiveBlock extends AppearanceBlock with the property ACTIVE.
  * This is useful for blocks that have different appearances when active.
  */
 @ParametersAreNonnullByDefault

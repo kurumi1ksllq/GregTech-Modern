@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @implNote AppearanceBlock is an abstract class that implements IAppearance.
+ * AppearanceBlock is an abstract class that implements IAppearance.
  * This is useful for blocks that have different appearances based on context.
  * For example, a block that changes appearance based on the block it is facing.
  * @see IAppearance

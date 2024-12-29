@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * @implNote ActiveBlock extends AppearanceBlock with the property ACTIVE.
+ * ActiveBlock extends AppearanceBlock with the property ACTIVE.
  * This is useful for blocks that have different appearances when active.
  * For example, a block that changes appearance when powered by redstone.
  * @see AppearanceBlock

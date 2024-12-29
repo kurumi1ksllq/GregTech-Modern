@@ -51,7 +51,7 @@ public class TerminalBehavior implements IInteractionItem {
                         predicateBlockCount.merge(block.getKey().getFirst(), 1, Integer::sum);
                     }
                 }
-                //TODO; FIX THE AWFUL LANG! ! ! ! ! !
+                //TODO; Fix the lang to do plurals with special lang-keys
                 if (!controller.isFormed()) {
                     if (!level.isClientSide) {
                         controller.getPattern().autoBuild(context.getPlayer(), controller.getMultiblockState());
@@ -76,7 +76,7 @@ public class TerminalBehavior implements IInteractionItem {
                                 context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer.no_blocks_placed").withStyle(ChatFormatting.RED), false);
                             }
                         } else {
-                            context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer.building_structure").withStyle(ChatFormatting.GOLD), false);
+                                context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer.building_structure").withStyle(ChatFormatting.GOLD), false);
                             for (var block : blockPlacedMap.entrySet()) {
                                 context.getPlayer().displayClientMessage(Component.literal(ChatFormatting.WHITE.toString() + block.getKey().getName().getString() + ChatFormatting.WHITE.toString() + ", " + ChatFormatting.AQUA.toString() + block.getValue()), false);
                             }

@@ -50,7 +50,7 @@ public class ActiveBlock extends AppearanceBlock {
      * @return the new block state
      */
     public BlockState changeActive(BlockState state, boolean active) {
-        if (state.is(this)) { return state.setValue(ACTIVE, active); }
+        if (state.is(this)) return state.setValue(ACTIVE, active);
         return state;
     }
 

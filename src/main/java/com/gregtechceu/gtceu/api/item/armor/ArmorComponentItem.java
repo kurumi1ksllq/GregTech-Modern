@@ -38,6 +38,8 @@ import java.util.function.Consumer;
 public class ArmorComponentItem extends ArmorItem implements IComponentItem {
 
     @Getter
+    private int maxModifiers = 1;
+    @Getter
     private IArmorLogic armorLogic = new DummyArmorLogic();
     @Getter
     protected List<IItemComponent> components;

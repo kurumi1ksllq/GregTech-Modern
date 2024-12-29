@@ -2,7 +2,9 @@ package com.gregtechceu.gtceu.common.block;
 
 import com.gregtechceu.gtceu.common.blockentity.EquipmentFoundryBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
+
 import com.lowdragmc.lowdraglib.gui.factory.BlockEntityUIFactory;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -13,6 +15,7 @@ import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,5 +43,4 @@ public class EquipmentFoundryBlock extends BaseEntityBlock {
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
-
 }

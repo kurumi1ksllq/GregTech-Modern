@@ -6,10 +6,10 @@ import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.gui.widget.EquipmentFoundryBaseWidget;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
+
 import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.gui.widget.custom.PlayerInventoryWidget;
 import com.lowdragmc.lowdraglib.syncdata.IManaged;
 import com.lowdragmc.lowdraglib.syncdata.IManagedStorage;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
@@ -20,32 +20,38 @@ import com.lowdragmc.lowdraglib.syncdata.blockentity.IManagedBlockEntity;
 import com.lowdragmc.lowdraglib.syncdata.blockentity.IRPCBlockEntity;
 import com.lowdragmc.lowdraglib.syncdata.field.FieldManagedStorage;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
-import lombok.Getter;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
+import lombok.Getter;
+
 public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAutoSyncBlockEntity, IRPCBlockEntity,
-        IAutoPersistBlockEntity, IManaged, IManagedBlockEntity, IUIHolder {
+                                         IAutoPersistBlockEntity, IManaged, IManagedBlockEntity, IUIHolder {
 
     public static final int MAX_MODIFIER_SLOTS = 10;
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(EquipmentFoundryBlockEntity.class);
+    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
+            EquipmentFoundryBlockEntity.class);
     @Getter
     private final FieldManagedStorage syncStorage = new FieldManagedStorage(this);
 
-    @Persisted @DescSynced
+    @Persisted
+    @DescSynced
     private final CustomItemStackHandler equipmentSlot;
-    @Persisted @DescSynced
+    @Persisted
+    @DescSynced
     private final CustomItemStackHandler modifierSlots;
 
     public EquipmentFoundryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
         this.equipmentSlot = new CustomItemStackHandler(1);
         // TODO remove instanceof once datagen can run
-        this.equipmentSlot.setFilter(stack -> stack.is(CustomTags.MODIFIABLE_EQUIPMENT) || stack.getItem() instanceof ArmorComponentItem);
+        this.equipmentSlot.setFilter(
+                stack -> stack.is(CustomTags.MODIFIABLE_EQUIPMENT) || stack.getItem() instanceof ArmorComponentItem);
         this.modifierSlots = new CustomItemStackHandler(MAX_MODIFIER_SLOTS);
     }
 
@@ -89,5 +95,4 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
     public void onChanged() {
         this.setChanged();
     }
-
 }

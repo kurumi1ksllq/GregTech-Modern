@@ -1,0 +1,122 @@
+package com.gregtechceu.gtceu.common.recipe.type;
+
+import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
+import com.gregtechceu.gtceu.common.data.GTItems;
+import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
+import com.gregtechceu.gtceu.data.recipe.CustomTags;
+
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.items.wrapper.RecipeWrapper;
+
+import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@RequiredArgsConstructor
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
+public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
+
+    @Getter
+    private final ResourceLocation id;
+    private final Ingredient ingredient;
+    private final ArmorModifier modifier;
+
+    /**
+     * Used to check if a recipe matches current crafting inventory
+     */
+    public boolean matches(RecipeWrapper inv, Level level) {
+        boolean foundItem = false, foundIngredient = false;
+
+        for (int i = 0; i < inv.getContainerSize(); ++i) {
+            ItemStack stack = inv.getItem(i);
+            if (!stack.isEmpty()) {
+                if (stack.is(CustomTags.MODIFIABLE_EQUIPMENT)) {
+                    if (foundItem) {
+                        return false;
+                    }
+
+                    foundItem = true;
+                } else if (ingredient.test(stack)) {
+                    foundIngredient = true;
+                }
+            }
+        }
+
+        return foundItem && foundIngredient;
+    }
+
+    public ItemStack assemble(RecipeWrapper container, RegistryAccess registryAccess) {
+        ItemStack result = ItemStack.EMPTY;
+
+        for (int i = 0; i < container.getContainerSize(); ++i) {
+            ItemStack stack = container.getItem(i);
+            if (stack.is(CustomTags.MODIFIABLE_EQUIPMENT)) {
+                if (!result.isEmpty()) {
+                    return ItemStack.EMPTY;
+                }
+
+                result = stack.copy();
+            } else if (!ingredient.test(stack)) {
+                return ItemStack.EMPTY;
+            }
+        }
+
+        if (!result.isEmpty()) {
+            this.modifier.onAddToItem.apply(result);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return true;
+    }
+
+    @Override
+    public ItemStack getResultItem(RegistryAccess registryAccess) {
+        return GTItems.QUANTUM_CHESTPLATE_ADVANCED.asStack();
+    }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return GTRecipeTypes.EQUIPMENT_FOUNDRY_SERIALIZER.get();
+    }
+
+    @Override
+    public RecipeType<?> getType() {
+        return GTRecipeTypes.EQUIPMENT_FOUNDRY_RECIPES.get();
+    }
+
+    public static class Serializer implements RecipeSerializer<EquipmentFoundryRecipe> {
+
+        public EquipmentFoundryRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+            Ingredient ingredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(json, "ingredient"), false);
+            ArmorModifier modifier = ArmorModifier.MODIFIERS.get(
+                    new ResourceLocation(GsonHelper.getAsString(json, "modifier")));
+
+            return new EquipmentFoundryRecipe(recipeId, ingredient, modifier);
+        }
+
+        public EquipmentFoundryRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+            Ingredient ingredient = Ingredient.fromNetwork(buffer);
+            ArmorModifier modifier = ArmorModifier.MODIFIERS.get(buffer.readResourceLocation());
+
+            return new EquipmentFoundryRecipe(recipeId, ingredient, modifier);
+        }
+
+        public void toNetwork(FriendlyByteBuf buffer, EquipmentFoundryRecipe recipe) {
+            recipe.ingredient.toNetwork(buffer);
+            buffer.writeResourceLocation(recipe.modifier.id);
+        }
+    }
+}

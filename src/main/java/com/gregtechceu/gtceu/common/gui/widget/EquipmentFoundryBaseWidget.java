@@ -4,7 +4,9 @@ import com.gregtechceu.gtceu.api.gui.widget.BlockableSlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import net.minecraft.world.item.ItemStack;
 
 public class EquipmentFoundryBaseWidget extends WidgetGroup {
@@ -25,7 +27,6 @@ public class EquipmentFoundryBaseWidget extends WidgetGroup {
                 .setIsBlocked(() -> !equipmentSlot.getStackInSlot(0).isEmpty())
                 .setChangeListener(this::onEquipmentItemChanged));
     }
-
 
     public void onEquipmentItemChanged() {
         ItemStack stack = equipmentSlot.getStackInSlot(0);

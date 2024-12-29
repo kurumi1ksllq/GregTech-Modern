@@ -18,26 +18,23 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class ActiveBlock extends AppearanceBlock {
-    /**
-     * This class is a simple extension of AppearanceBlock that adds a
-     * property to track whether the block is active or not.
-     * This is useful for blocks that have different appearances when active.
-     */
+
+    // Properties
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
     /**
-     * Constructor for ActiveBlock
+     * Constructor for ActiveBlock that adds the ACTIVE property to the block state
+     * Also registers the default block state and properties
      * @param properties the properties of the block
      */
     public ActiveBlock(Properties properties) {
         super(properties);
-        registerDefaultState(
-                defaultBlockState().setValue(ACTIVE, false)
-        );
+        registerDefaultState(defaultBlockState().setValue(ACTIVE, false));
     }
 
     /**
      * Adds the ACTIVE property to the block state
+     * Overrides the createBlockStateDefinition method in AppearanceBlock
      * @param builder the block state builder
      */
     @Override
@@ -53,12 +50,8 @@ public class ActiveBlock extends AppearanceBlock {
      * @return the new block state
      */
     public BlockState changeActive(BlockState state, boolean active) {
-        if (state.is(this)) {
-            return state.setValue(ACTIVE, active);
-        }
-        else {
-            return state;
-        }
+        if (state.is(this)) { return state.setValue(ACTIVE, active); }
+        return state;
     }
 
     /**
@@ -72,6 +65,7 @@ public class ActiveBlock extends AppearanceBlock {
 
     /**
      * Gets the block appearance based on the active state
+     * Overrides the getBlockAppearance method in AppearanceBlock
      * @param state the block state
      * @param level the block and tint getter
      * @param pos the block position

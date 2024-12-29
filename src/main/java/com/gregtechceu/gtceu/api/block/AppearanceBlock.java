@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
  * For example, a block that changes appearance based on the block it is facing.
  * @see IAppearance
  * @see Block
- * @see BlockState
  */
 public class AppearanceBlock extends Block implements IAppearance {
     /**

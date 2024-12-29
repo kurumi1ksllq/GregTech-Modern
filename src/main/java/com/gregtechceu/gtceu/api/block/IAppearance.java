@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @implNote IAppearance is an interface that provides a method to get the appearance of a block.
+ * IAppearance is an interface that provides a method to get the appearance of a block.
  * This is useful for blocks that have different appearances based on context.
  * For example, a block that changes appearance based on the block it is facing.
  * @see BlockState
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 public interface IAppearance {
     /**
      * Gets the appearance of the block based on the context
-     * @see net.minecraftforge.common.extensions.IForgeBlock#getAppearance(BlockState, BlockAndTintGetter, BlockPos, Direction, BlockState, BlockPos)
+     * @inheritDoc IForgeBlock#getAppearance(BlockState, BlockAndTintGetter, BlockPos, Direction, BlockState, BlockPos)
      * @param state the block state
      * @param level the block and tint getter
      * @param pos the block position

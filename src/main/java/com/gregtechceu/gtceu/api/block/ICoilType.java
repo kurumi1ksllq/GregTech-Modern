@@ -14,7 +14,7 @@ import java.util.Comparator;
 
 
 /**
- * @implNote ICoilType is an interface that provides methods to get the properties of Heating Coils.
+ * ICoilType is an interface that provides methods to get the properties of Heating Coils.
  * This is useful for Heating Coils that have different properties based on the type of coil.
  * For example, a Heating Coil that provides different temperatures based on the level of the coil.
  * @see Material

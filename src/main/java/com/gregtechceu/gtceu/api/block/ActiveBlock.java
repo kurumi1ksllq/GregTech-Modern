@@ -16,8 +16,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * This is useful for blocks that have different appearances when active.
  * For example, a block that changes appearance when powered by redstone.
  * @see AppearanceBlock
- * @see Block
- * @see BlockState
  */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

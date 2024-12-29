@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
  * @see BlockState
  */
 public class AppearanceBlock extends Block implements IAppearance {
-
     /**
      * Constructor for AppearanceBlock that sets the properties of the block
      * @param properties the properties of the block

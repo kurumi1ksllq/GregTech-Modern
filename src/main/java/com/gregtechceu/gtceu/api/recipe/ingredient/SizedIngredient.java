@@ -42,7 +42,7 @@ public class SizedIngredient extends Ingredient {
     }
 
     protected SizedIngredient(ItemStack itemStack) {
-        this((itemStack.hasTag() || itemStack.getDamageValue() > 0) ? NBTIngredient.createNBTIngredient(itemStack) :
+        this((itemStack.hasTag()) ? NBTIngredient.createNBTIngredient(itemStack) :
                 Ingredient.of(itemStack), itemStack.getCount());
     }
 

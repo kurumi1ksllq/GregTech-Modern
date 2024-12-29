@@ -55,7 +55,7 @@ public class ShapelessRecipeBuilder {
     }
 
     public ShapelessRecipeBuilder requires(ItemStack itemStack) {
-        if (itemStack.hasTag() || itemStack.getDamageValue() > 0) {
+        if (itemStack.hasTag()) {
             requires(NBTIngredient.createNBTIngredient(itemStack));
         } else {
             requires(Ingredient.of(itemStack));

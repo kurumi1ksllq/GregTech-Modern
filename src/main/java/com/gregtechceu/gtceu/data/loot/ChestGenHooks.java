@@ -161,9 +161,6 @@ public final class ChestGenHooks {
 
         @Override
         protected ItemStack run(ItemStack itemStack, LootContext context) {
-            if (stack.getDamageValue() != 0) {
-                itemStack.setDamageValue(stack.getDamageValue());
-            }
             CompoundTag tagCompound = stack.getTag();
             if (tagCompound != null) {
                 itemStack.setTag(tagCompound.copy());

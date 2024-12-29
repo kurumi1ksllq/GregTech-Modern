@@ -52,7 +52,7 @@ public class SmokingRecipeBuilder {
     }
 
     public SmokingRecipeBuilder input(ItemStack itemStack) {
-        if (itemStack.hasTag() || itemStack.getDamageValue() > 0) {
+        if (itemStack.hasTag()) {
             input = NBTIngredient.createNBTIngredient(itemStack);
         } else {
             input = Ingredient.of(itemStack);

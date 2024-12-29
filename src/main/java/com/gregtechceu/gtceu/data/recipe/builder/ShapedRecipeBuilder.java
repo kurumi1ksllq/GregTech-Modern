@@ -53,7 +53,7 @@ public class ShapedRecipeBuilder extends Builder<Ingredient, ShapedRecipeBuilder
     }
 
     public ShapedRecipeBuilder define(char cha, ItemStack itemStack) {
-        if (itemStack.hasTag() || itemStack.getDamageValue() > 0) {
+        if (itemStack.hasTag()) {
             return where(cha, NBTIngredient.createNBTIngredient(itemStack));
         } else {
             return where(cha, Ingredient.of(itemStack));

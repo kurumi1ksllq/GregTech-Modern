@@ -101,9 +101,8 @@ public class MaterialBlock extends AppearanceBlock {
     @OnlyIn(Dist.CLIENT)
     public static BlockColor tintedColor() {
         return (state, reader, pos, tintIndex) -> {
-            if (state.getBlock() instanceof MaterialBlock block)
-                return block.material.getLayerARGB(tintIndex);
-            return -1;
+            if (!(state.getBlock() instanceof MaterialBlock block)) return -1;
+            return block.material.getLayerARGB(tintIndex);
         };
     }
 

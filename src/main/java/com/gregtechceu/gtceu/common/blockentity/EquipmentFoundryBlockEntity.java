@@ -101,7 +101,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         ModularUI modularUI = new ModularUI(176, 166, this, entityPlayer);
         modularUI.background(GuiTextures.BACKGROUND.copy().setColor(0xff69645f));
 
-        IGuiTexture slotTexture = null;//GuiTextures.SLOT.copy().setColor(0xff69645f);
+        IGuiTexture slotTexture = GuiTextures.SLOT.copy().setColor(0xff69645f);
 
         TextTexture titleText = new TextTexture(getBlockState().getBlock().getDescriptionId())
                 .setColor(0xffffff)
@@ -117,7 +117,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
 
         modularUI.widget(new SlotWidget(equipmentSlot, 0, 14, 32)
                 .setChangeListener(() -> this.onEquipmentSlotChanged(entityPlayer))
-                .setBackgroundTexture(slotTexture));
+                .setBackgroundTexture(null));
 
         int x = 42;
         int y = 13;
@@ -126,7 +126,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
             modularUI.widget(new BlockableSlotWidget(modifierSlots, i, x, y)
                     .setIsBlocked(() -> isModifierSlotBlocked(finalI))
                     .setChangeListener(this::onModifierSlotChanged)
-                    .setBackgroundTexture(slotTexture));
+                    .setBackgroundTexture(null));
             x += 26;
             if (i == 4) {
                 x = 42;

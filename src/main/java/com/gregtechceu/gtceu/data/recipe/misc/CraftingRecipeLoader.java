@@ -26,9 +26,6 @@ import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 public class CraftingRecipeLoader {
 
     public static void init(Consumer<FinishedRecipe> provider) {
-        // todo facades
-        // registerFacadeRecipe(provider, Iron, 4);
-
         VanillaRecipeHelper.addShapedRecipe(provider, "small_wooden_pipe", ChemicalHelper.get(pipeSmallFluid, Wood),
                 "sWr", 'W', ItemTags.PLANKS);
         VanillaRecipeHelper.addShapedRecipe(provider, "normal_wooden_pipe", ChemicalHelper.get(pipeNormalFluid, Wood),
@@ -331,11 +328,4 @@ public class CraftingRecipeLoader {
         ///////////////////////////////////////////////////
         SpecialRecipeBuilder.special(FacadeCoverRecipe.SERIALIZER).save(provider, "gtceu:crafting/facade_cover");
     }
-
-    // private static void registerFacadeRecipe(Consumer<FinishedRecipe> provider, Material material, int facadeAmount)
-    // {
-    // OreIngredient ingredient = new OreIngredient(new UnificationEntry(plate, material).toString());
-    // ForgeRegistries.RECIPES.register(new FacadeRecipe(null, ingredient, facadeAmount).setRegistryName("facade_" +
-    // material));
-    // }
 }

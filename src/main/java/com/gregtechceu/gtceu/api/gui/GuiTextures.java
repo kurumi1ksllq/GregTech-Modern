@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.api.gui;
 
+import com.gregtechceu.gtceu.GTCEu;
+
 import com.lowdragmc.lowdraglib.gui.texture.ResourceBorderTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 
@@ -193,6 +195,8 @@ public class GuiTextures {
             "gtceu:textures/block/overlay/machine/overlay_maintenance.png");
     public static final ResourceTexture BUTTON_MINER_MODES = new ResourceTexture(
             "gtceu:textures/gui/widget/button_miner_modes.png");
+    public static final ResourceTexture EQUIPMENT_FOUNDRY_BACKGROUND = new ResourceTexture(
+            GTCEu.id("textures/gui/widget/equipment_foundry_background.png"));
 
     // ORE PROCESSING
     public static final ResourceTexture OREBY_BASE = new ResourceTexture("gtceu:textures/gui/arrows/oreby-base.png");

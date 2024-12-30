@@ -4,9 +4,10 @@ import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
 import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
-
+import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -17,8 +18,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
@@ -26,38 +25,32 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.*;
-import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 @Accessors(chain = true)
-public class ArmorComponentItem extends ArmorItem implements IComponentItem {
+public class ModifiableArmorItem extends ArmorItem implements IComponentItem {
 
     @Getter
-    private IArmorLogic armorLogic = new DummyArmorLogic();
+    @Setter
+    private int defaultMaxModifiers;
     @Getter
-    protected List<IItemComponent> components;
+    protected List<IItemComponent> components = new ArrayList<>();
 
-    public ArmorComponentItem(ArmorMaterial material, ArmorItem.Type type, Properties properties) {
-        super(material, type, properties.durability(0));
-        components = new ArrayList<>();
+
+    public ModifiableArmorItem(ArmorMaterial material, Type type, Properties properties) {
+        super(material, type, properties);
     }
 
-    public ArmorComponentItem setArmorLogic(IArmorLogic armorLogic) {
-        Preconditions.checkNotNull(armorLogic, "Cannot set ArmorLogic to null");
-        this.armorLogic = armorLogic;
-        this.armorLogic.addToolComponents(this);
-        return this;
-    }
-
+    @Override
     public void attachComponents(IItemComponent... components) {
         this.components.addAll(Arrays.asList(components));
         for (IItemComponent component : components) {
@@ -65,33 +58,6 @@ public class ArmorComponentItem extends ArmorItem implements IComponentItem {
         }
     }
 
-    @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> multimap = ArrayListMultimap.create();
-        IArmorLogic armorLogic = getArmorLogic();
-        multimap.putAll(super.getAttributeModifiers(slot, stack));
-        multimap.putAll(armorLogic.getAttributeModifiers(slot, stack));
-        return multimap;
-    }
-
-    @Override
-    public ArmorItem.Type getType() {
-        return armorLogic.getArmorType();
-    }
-
-    @Override
-    public EquipmentSlot getEquipmentSlot() {
-        return armorLogic.getArmorType().getSlot();
-    }
-
-    @Override
-    public void onInventoryTick(ItemStack stack, Level level, Player player, int slotIndex, int selectedIndex) {
-        super.onInventoryTick(stack, level, player, slotIndex, selectedIndex);
-        // if index >= 36, the item is in an armor slot
-        if (slotIndex >= 36) {
-            //this.armorLogic.onArmorTick(level, player, stack);
-        }
-    }
 
     @Override
     public int getMaxDamage(ItemStack stack) {
@@ -113,15 +79,6 @@ public class ArmorComponentItem extends ArmorItem implements IComponentItem {
         return 50;
     }
 
-    public int getArmorDisplay(Player player, @NotNull ItemStack armor, EquipmentSlot slot) {
-        return armorLogic.getArmorDisplay(player, armor, slot);
-    }
-
-    public void damageArmor(LivingEntity entity, @NotNull ItemStack stack, DamageSource source, int damage,
-                            EquipmentSlot slot) {
-        armorLogic.damageArmor(entity, stack, source, damage, slot);
-    }
-
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
@@ -130,7 +87,9 @@ public class ArmorComponentItem extends ArmorItem implements IComponentItem {
             public @NotNull HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack,
                                                                    EquipmentSlot equipmentSlot,
                                                                    HumanoidModel<?> original) {
-                return armorLogic.getArmorModel(livingEntity, itemStack, equipmentSlot, original);
+                // TODO modifiable armor model
+                //return armorLogic.getArmorModel(livingEntity, itemStack, equipmentSlot, original);
+                return original;
             }
         });
     }
@@ -138,7 +97,9 @@ public class ArmorComponentItem extends ArmorItem implements IComponentItem {
     @Nullable
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        return armorLogic.getArmorTexture(stack, entity, slot, type).toString();
+        // TODO add custom texture logic (or not? do we need it?)
+        //return armorLogic.getArmorTexture(stack, entity, slot, type).toString();
+        return null;
     }
 
     ///////////////////////////////////////////
@@ -330,4 +291,5 @@ public class ArmorComponentItem extends ArmorItem implements IComponentItem {
         }
         return LazyOptional.empty();
     }
+
 }

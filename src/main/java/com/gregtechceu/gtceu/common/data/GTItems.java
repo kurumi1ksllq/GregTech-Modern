@@ -19,6 +19,7 @@ import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.TagPrefixItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
+import com.gregtechceu.gtceu.api.item.armor.ModifiableArmorItem;
 import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.api.item.tool.MaterialToolTier;
 import com.gregtechceu.gtceu.common.data.materials.GTFoods;
@@ -91,10 +92,12 @@ public class GTItems {
 
     //////////////////////////////////////
     // ******* Misc Items ********//
+
     //////////////////////////////////////
     static {
         REGISTRATE.creativeModeTab(() -> ITEM);
     }
+
     public static ItemEntry<Item> CREDIT_COPPER = REGISTRATE.item("copper_credit", Item::new).lang("Copper Credit")
             .register();
     public static ItemEntry<Item> CREDIT_CUPRONICKEL = REGISTRATE.item("cupronickel_credit", Item::new)
@@ -339,6 +342,7 @@ public class GTItems {
                 .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
                 .register();
     }
+
     public static ItemEntry<Item> SPRAY_EMPTY = REGISTRATE.item("empty_spray_can", Item::new)
             .lang("Spray Can (Empty)").register();
     public static ItemEntry<ComponentItem> SPRAY_SOLVENT = REGISTRATE.item("solvent_spray_can", ComponentItem::create)
@@ -493,7 +497,7 @@ public class GTItems {
             .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
             .onRegister(attach(new LighterBehavior(true, true, true)))
             .onRegister(attach(FilteredFluidContainer.create(100, true,
-                    x -> x.getFluid().is(CustomTags.LIGHTER_FLUIDS)),
+                            x -> x.getFluid().is(CustomTags.LIGHTER_FLUIDS)),
                     new ItemFluidContainer()))
             .onRegister(modelPredicate(GTCEu.id("lighter_open"),
                     (itemStack) -> itemStack.getOrCreateTag().getBoolean(LighterBehavior.LIGHTER_OPEN) ? 1.0f : 0.0f))
@@ -505,7 +509,7 @@ public class GTItems {
             .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
             .onRegister(attach(new LighterBehavior(true, true, true)))
             .onRegister(attach(FilteredFluidContainer.create(1000, true,
-                    x -> x.getFluid().is(CustomTags.LIGHTER_FLUIDS)),
+                            x -> x.getFluid().is(CustomTags.LIGHTER_FLUIDS)),
                     new ItemFluidContainer()))
             .onRegister(modelPredicate(GTCEu.id("lighter_open"),
                     (itemStack) -> itemStack.getOrCreateTag().getBoolean(LighterBehavior.LIGHTER_OPEN) ? 1.0f : 0.0f))
@@ -1846,7 +1850,7 @@ public class GTItems {
 
     /////////////////////////////////////////
     // *********** COVERS ***********//
-    /////////////////////////////////////////
+    /// //////////////////////////////////////
 
     public static ItemEntry<ComponentItem> ITEM_FILTER = REGISTRATE.item("item_filter", ComponentItem::create)
             .onRegister(attach(new ItemFilterBehaviour(SimpleItemFilter::loadFilter),
@@ -2226,6 +2230,7 @@ public class GTItems {
             .register();
 
     public static final ItemEntry<Item>[] DYE_ONLY_ITEMS = new ItemEntry[DyeColor.values().length];
+
     static {
         DyeColor[] colors = DyeColor.values();
         for (int i = 0; i < colors.length; i++) {
@@ -2238,6 +2243,7 @@ public class GTItems {
     }
 
     public static final ItemEntry<ComponentItem>[] SPRAY_CAN_DYES = new ItemEntry[DyeColor.values().length];
+
     static {
         for (int i = 0; i < DyeColor.values().length; i++) {
             var dyeColor = DyeColor.values()[i];
@@ -2321,48 +2327,34 @@ public class GTItems {
             .tag(Tags.Items.ARMORS_HELMETS)
             .register();
 
-    public static ItemEntry<ArmorComponentItem> NANO_CHESTPLATE = REGISTRATE
+    public static ItemEntry<ModifiableArmorItem> NANO_CHESTPLATE = REGISTRATE
             .item("nanomuscle_chestplate",
-                    (p) -> new ArmorComponentItem(GTArmorMaterials.ARMOR, ArmorItem.Type.CHESTPLATE, p)
-                            .setArmorLogic(new NanoMuscleSuite(ArmorItem.Type.CHESTPLATE,
-                                    512,
-                                    6_400_000L * (long) Math.max(1,
-                                            Math.pow(4, ConfigHolder.INSTANCE.tools.voltageTierNanoSuit - 3)),
-                                    ConfigHolder.INSTANCE.tools.voltageTierNanoSuit)))
+                    (p) -> new ModifiableArmorItem(GTArmorMaterials.NANO_MUSCLE, ArmorItem.Type.CHESTPLATE, p)
+                            .setDefaultMaxModifiers(6))
             .lang("NanoMuscle™ Suite Chestplate")
             .properties(p -> p.rarity(Rarity.UNCOMMON))
             .tag(Tags.Items.ARMORS_CHESTPLATES, CustomTags.MODIFIABLE_EQUIPMENT)
             .register();
-    public static ItemEntry<ArmorComponentItem> NANO_LEGGINGS = REGISTRATE
+    public static ItemEntry<ModifiableArmorItem> NANO_LEGGINGS = REGISTRATE
             .item("nanomuscle_leggings",
-                    (p) -> new ArmorComponentItem(GTArmorMaterials.ARMOR, ArmorItem.Type.LEGGINGS, p)
-                            .setArmorLogic(new NanoMuscleSuite(ArmorItem.Type.LEGGINGS,
-                                    512,
-                                    6_400_000L * (long) Math.max(1,
-                                            Math.pow(4, ConfigHolder.INSTANCE.tools.voltageTierNanoSuit - 3)),
-                                    ConfigHolder.INSTANCE.tools.voltageTierNanoSuit)))
+                    (p) -> new ModifiableArmorItem(GTArmorMaterials.NANO_MUSCLE, ArmorItem.Type.LEGGINGS, p)
+                            .setDefaultMaxModifiers(6))
             .lang("NanoMuscle™ Suite Leggings")
             .properties(p -> p.rarity(Rarity.UNCOMMON))
             .tag(Tags.Items.ARMORS_LEGGINGS, CustomTags.MODIFIABLE_EQUIPMENT)
             .register();
-    public static ItemEntry<ArmorComponentItem> NANO_BOOTS = REGISTRATE
-            .item("nanomuscle_boots", (p) -> new ArmorComponentItem(GTArmorMaterials.ARMOR, ArmorItem.Type.BOOTS, p)
-                    .setArmorLogic(new NanoMuscleSuite(ArmorItem.Type.BOOTS,
-                            512,
-                            6_400_000L * (long) Math.max(1,
-                                    Math.pow(4, ConfigHolder.INSTANCE.tools.voltageTierNanoSuit - 3)),
-                            ConfigHolder.INSTANCE.tools.voltageTierNanoSuit)))
+    public static ItemEntry<ModifiableArmorItem> NANO_BOOTS = REGISTRATE
+            .item("nanomuscle_boots",
+                    (p) -> new ModifiableArmorItem(GTArmorMaterials.NANO_MUSCLE, ArmorItem.Type.BOOTS, p)
+                            .setDefaultMaxModifiers(6))
             .lang("NanoMuscle™ Suite Boots")
             .properties(p -> p.rarity(Rarity.UNCOMMON))
             .tag(Tags.Items.ARMORS_BOOTS, CustomTags.STEP_BOOTS, CustomTags.MODIFIABLE_EQUIPMENT)
             .register();
-    public static ItemEntry<ArmorComponentItem> NANO_HELMET = REGISTRATE
-            .item("nanomuscle_helmet", (p) -> new ArmorComponentItem(GTArmorMaterials.ARMOR, ArmorItem.Type.HELMET, p)
-                    .setArmorLogic(new NanoMuscleSuite(ArmorItem.Type.HELMET,
-                            512,
-                            6_400_000L * (long) Math.max(1,
-                                    Math.pow(4, ConfigHolder.INSTANCE.tools.voltageTierNanoSuit - 3)),
-                            ConfigHolder.INSTANCE.tools.voltageTierNanoSuit)))
+    public static ItemEntry<ModifiableArmorItem> NANO_HELMET = REGISTRATE
+            .item("nanomuscle_helmet",
+                    (p) -> new ModifiableArmorItem(GTArmorMaterials.NANO_MUSCLE, ArmorItem.Type.HELMET, p)
+                            .setDefaultMaxModifiers(6))
             .lang("NanoMuscle™ Suite Helmet")
             .tag(Tags.Items.ARMORS_HELMETS, CustomTags.MODIFIABLE_EQUIPMENT)
             .properties(p -> p.rarity(Rarity.UNCOMMON))
@@ -2424,49 +2416,34 @@ public class GTItems {
             .tag(CustomTags.PPE_ARMOR)
             .register();
 
-    public static ItemEntry<ArmorComponentItem> QUANTUM_CHESTPLATE = REGISTRATE
+    public static ItemEntry<ModifiableArmorItem> QUANTUM_CHESTPLATE = REGISTRATE
             .item("quarktech_chestplate",
-                    (p) -> new ArmorComponentItem(GTArmorMaterials.ARMOR, ArmorItem.Type.CHESTPLATE, p)
-                            .setArmorLogic(new QuarkTechSuite(ArmorItem.Type.CHESTPLATE,
-                                    8192,
-                                    100_000_000L * (long) Math.max(1,
-                                            Math.pow(4, ConfigHolder.INSTANCE.tools.voltageTierQuarkTech - 5)),
-                                    ConfigHolder.INSTANCE.tools.voltageTierQuarkTech)))
+                    (p) -> new ModifiableArmorItem(GTArmorMaterials.QUARK_TECH, ArmorItem.Type.CHESTPLATE, p)
+                            .setDefaultMaxModifiers(8))
             .lang("QuarkTech™ Suite Chestplate")
             .properties(p -> p.rarity(Rarity.RARE))
             .tag(Tags.Items.ARMORS_CHESTPLATES, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT)
             .register();
-    public static ItemEntry<ArmorComponentItem> QUANTUM_LEGGINGS = REGISTRATE
+    public static ItemEntry<ModifiableArmorItem> QUANTUM_LEGGINGS = REGISTRATE
             .item("quarktech_leggings",
-                    (p) -> new ArmorComponentItem(GTArmorMaterials.ARMOR, ArmorItem.Type.LEGGINGS, p)
-                            .setArmorLogic(new QuarkTechSuite(ArmorItem.Type.LEGGINGS,
-                                    8192,
-                                    100_000_000L * (long) Math.max(1,
-                                            Math.pow(4, ConfigHolder.INSTANCE.tools.voltageTierQuarkTech - 5)),
-                                    ConfigHolder.INSTANCE.tools.voltageTierQuarkTech)))
+                    (p) -> new ModifiableArmorItem(GTArmorMaterials.QUARK_TECH, ArmorItem.Type.LEGGINGS, p)
+                            .setDefaultMaxModifiers(8))
             .lang("QuarkTech™ Suite Leggings")
             .properties(p -> p.rarity(Rarity.RARE))
             .tag(Tags.Items.ARMORS_LEGGINGS, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT)
             .register();
-    public static ItemEntry<ArmorComponentItem> QUANTUM_BOOTS = REGISTRATE
-            .item("quarktech_boots", (p) -> new ArmorComponentItem(GTArmorMaterials.ARMOR, ArmorItem.Type.BOOTS, p)
-                    .setArmorLogic(new QuarkTechSuite(ArmorItem.Type.BOOTS,
-                            8192,
-                            100_000_000L * (long) Math.max(1,
-                                    Math.pow(4, ConfigHolder.INSTANCE.tools.voltageTierQuarkTech - 5)),
-                            ConfigHolder.INSTANCE.tools.voltageTierQuarkTech)))
+    public static ItemEntry<ModifiableArmorItem> QUANTUM_BOOTS = REGISTRATE
+            .item("quarktech_boots",
+                    (p) -> new ModifiableArmorItem(GTArmorMaterials.QUARK_TECH, ArmorItem.Type.BOOTS, p)
+                            .setDefaultMaxModifiers(8))
             .lang("QuarkTech™ Suite Boots")
             .properties(p -> p.rarity(Rarity.RARE))
-            .tag(Tags.Items.ARMORS_BOOTS, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT)
-            .tag(CustomTags.STEP_BOOTS)
+            .tag(Tags.Items.ARMORS_BOOTS, CustomTags.PPE_ARMOR, CustomTags.STEP_BOOTS, CustomTags.MODIFIABLE_EQUIPMENT)
             .register();
-    public static ItemEntry<ArmorComponentItem> QUANTUM_HELMET = REGISTRATE
-            .item("quarktech_helmet", (p) -> new ArmorComponentItem(GTArmorMaterials.ARMOR, ArmorItem.Type.HELMET, p)
-                    .setArmorLogic(new QuarkTechSuite(ArmorItem.Type.HELMET,
-                            8192,
-                            100_000_000L * (long) Math.max(1,
-                                    Math.pow(4, ConfigHolder.INSTANCE.tools.voltageTierQuarkTech - 5)),
-                            ConfigHolder.INSTANCE.tools.voltageTierQuarkTech)))
+    public static ItemEntry<ModifiableArmorItem> QUANTUM_HELMET = REGISTRATE
+            .item("quarktech_helmet",
+                    (p) -> new ModifiableArmorItem(GTArmorMaterials.QUARK_TECH, ArmorItem.Type.HELMET, p)
+                            .setDefaultMaxModifiers(8))
             .lang("QuarkTech™ Suite Helmet")
             .properties(p -> p.rarity(Rarity.RARE))
             .tag(Tags.Items.ARMORS_HELMETS, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT)
@@ -2496,7 +2473,7 @@ public class GTItems {
 
     public static ItemEntry<ArmorComponentItem> ELECTRIC_JETPACK_ADVANCED = REGISTRATE
             .item("advanced_electric_jetpack",
-                    (p) -> new ArmorComponentItem(GTArmorMaterials.JETPACK, ArmorItem.Type.CHESTPLATE, p)
+                    (p) ->new ArmorComponentItem(GTArmorMaterials.JETPACK, ArmorItem.Type.CHESTPLATE, p)
                             .setArmorLogic(new AdvancedJetpack(512,
                                     6_400_000L * (long) Math.max(1,
                                             Math.pow(4, ConfigHolder.INSTANCE.tools.voltageTierAdvImpeller - 4)),
@@ -2505,25 +2482,18 @@ public class GTItems {
             .properties(p -> p.rarity(Rarity.RARE))
             .tag(Tags.Items.ARMORS_CHESTPLATES)
             .register();
-    public static ItemEntry<ArmorComponentItem> NANO_CHESTPLATE_ADVANCED = REGISTRATE
+    public static ItemEntry<ModifiableArmorItem> NANO_CHESTPLATE_ADVANCED = REGISTRATE
             .item("avanced_nanomuscle_chestplate",
-                    (p) -> new ArmorComponentItem(GTArmorMaterials.ARMOR, ArmorItem.Type.CHESTPLATE, p)
-                            .setArmorLogic(new AdvancedNanoMuscleSuite(512,
-                                    12_800_000L * (long) Math.max(1,
-                                            Math.pow(4, ConfigHolder.INSTANCE.tools.voltageTierAdvNanoSuit - 3)),
-                                    ConfigHolder.INSTANCE.tools.voltageTierAdvNanoSuit)))
+                    (p) -> new ModifiableArmorItem(GTArmorMaterials.ADVANCED_NANO_MUSCLE, ArmorItem.Type.CHESTPLATE, p)
+                            .setDefaultMaxModifiers(6))
             .lang("Advanced NanoMuscle™ Suite Chestplate")
             .properties(p -> p.rarity(Rarity.RARE))
             .tag(Tags.Items.ARMORS_CHESTPLATES, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT)
             .register();
-    public static ItemEntry<ArmorComponentItem> QUANTUM_CHESTPLATE_ADVANCED = REGISTRATE
-            .item("advanced_quarktech_chestplate", (p) -> new ArmorComponentItem(GTArmorMaterials.ARMOR,
-                    ArmorItem.Type.CHESTPLATE, p)
-                    .setArmorLogic(new AdvancedQuarkTechSuite(8192,
-                            1_000_000_000L *
-                                    (long) Math.max(1,
-                                            Math.pow(4, ConfigHolder.INSTANCE.tools.voltageTierAdvQuarkTech - 6)),
-                            ConfigHolder.INSTANCE.tools.voltageTierAdvQuarkTech)))
+    public static ItemEntry<ModifiableArmorItem> QUANTUM_CHESTPLATE_ADVANCED = REGISTRATE
+            .item("advanced_quarktech_chestplate",
+                    (p) -> new ModifiableArmorItem(GTArmorMaterials.ADVANCED_QUARK_TECH, ArmorItem.Type.CHESTPLATE, p)
+                            .setDefaultMaxModifiers(8))
             .lang("Advanced QuarkTech™ Suite Chestplate")
             .properties(p -> p.rarity(Rarity.EPIC))
             .tag(Tags.Items.ARMORS_CHESTPLATES, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT)
@@ -2678,4 +2648,5 @@ public class GTItems {
             prov.add(ctx.get(), names.stream().map(StringUtils::capitalize).collect(Collectors.joining(" ")));
         };
     }
+
 }

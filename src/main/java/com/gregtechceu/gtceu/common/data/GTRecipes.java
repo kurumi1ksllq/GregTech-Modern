@@ -42,6 +42,7 @@ public class GTRecipes {
         // Decomposition info loading
         MaterialInfoLoader.init();
 
+
         // com.gregtechceu.gtceu.data.recipe.generated.*
         DecompositionRecipeHandler.init(consumer);
         MaterialRecipeHandler.init(consumer);
@@ -77,7 +78,8 @@ public class GTRecipes {
         // GCYM
         GCYMRecipes.init(consumer);
 
-        // Config-dependent recipes
+        // non-GTRecipe things
+        EquipmentFoundryRecipes.init(consumer);
         RecipeAddition.init(consumer);
         // Must run recycling recipes very last
         RecyclingRecipes.init(consumer);

@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.stack.ItemMaterialInfo;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialStack;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.UnificationEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.data.recipe.builder.*;
 
@@ -284,8 +285,6 @@ public class VanillaRecipeHelper {
                     if (tag != null) {
                         builder.define(sign, tag);
                     } else builder.define(sign, ChemicalHelper.get(entry.tagPrefix, entry.material));
-                } else if (content instanceof ItemProviderEntry<?> entry) {
-                    builder.define(sign, entry.asStack());
                 }
             }
         }
@@ -365,8 +364,6 @@ public class VanillaRecipeHelper {
                     if (tag != null) {
                         builder.define(sign, tag);
                     } else builder.define(sign, ChemicalHelper.get(entry.tagPrefix, entry.material));
-                } else if (content instanceof ItemProviderEntry<?> entry) {
-                    builder.define(sign, entry.asStack());
                 }
             }
         }
@@ -435,8 +432,6 @@ public class VanillaRecipeHelper {
                     if (tag != null) {
                         builder.define(sign, tag);
                     } else builder.define(sign, ChemicalHelper.get(entry.tagPrefix, entry.material));
-                } else if (content instanceof ItemProviderEntry<?> entry) {
-                    builder.define(sign, entry.asStack());
                 }
             }
         }
@@ -505,11 +500,44 @@ public class VanillaRecipeHelper {
                 if (tag != null) {
                     builder.requires(tag);
                 } else builder.requires(ChemicalHelper.get(entry.tagPrefix, entry.material));
-            } else if (content instanceof ItemProviderEntry<?> entry) {
-                builder.requires(entry.asStack());
             } else if (content instanceof Character c) {
                 builder.requires(ToolHelper.getToolFromSymbol(c).itemTags.get(0));
             }
+        }
+        builder.save(provider);
+    }
+
+    public static void addEquipmentFoundryRecipe(Consumer<FinishedRecipe> provider, @NotNull String regName,
+                                                 @NotNull Object ingredient, @NotNull ArmorModifier modifier) {
+        addEquipmentFoundryRecipe(provider, GTCEu.id(regName),
+                Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT), ingredient, modifier);
+    }
+
+    public static void addEquipmentFoundryRecipe(Consumer<FinishedRecipe> provider, @NotNull String regName,
+                                                 @NotNull Ingredient equipment,
+                                                 @NotNull Object ingredient, @NotNull ArmorModifier modifier) {
+        addEquipmentFoundryRecipe(provider, GTCEu.id(regName), equipment, ingredient, modifier);
+    }
+
+    public static void addEquipmentFoundryRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
+                                                 @NotNull Ingredient equipment,
+                                                 @NotNull Object ingredient, @NotNull ArmorModifier modifier) {
+        var builder = new EquipmentFoundryRecipeBuilder(regName).equipment(equipment).modifier(modifier);
+        if (ingredient instanceof Ingredient ing) {
+            builder.ingredient(ing);
+        } else if (ingredient instanceof ItemStack itemStack) {
+            builder.ingredient(itemStack);
+        } else if (ingredient instanceof TagKey<?> key) {
+            builder.ingredient((TagKey<Item>) key);
+        } else if (ingredient instanceof ItemLike itemLike) {
+            builder.ingredient(itemLike);
+        } else if (ingredient instanceof UnificationEntry entry) {
+            TagKey<Item> tag = ChemicalHelper.getTag(entry.tagPrefix, entry.material);
+            if (tag != null) {
+                builder.ingredient(tag);
+            } else builder.ingredient(ChemicalHelper.get(entry.tagPrefix, entry.material));
+        } else if (ingredient instanceof Character c) {
+            builder.ingredient(ToolHelper.getToolFromSymbol(c).itemTags.get(0));
         }
         builder.save(provider);
     }

@@ -17,10 +17,10 @@
         "MultiPlayerGameModeMixin",
         "journeymap.FullscreenMixin",
         "rei.FluidEntryRendererMixin",
-        "xaeroworldmap.GuiMapMixin",
-        "xaeroworldmap.MapElementRenderHandlerBuilderMixin",
         "xaerominimap.HighlighterRegistryMixin",
         "xaerominimap.MinimapFBORendererMixin",
+        "xaeroworldmap.GuiMapMixin",
+        "xaeroworldmap.MapElementRenderHandlerBuilderMixin",
         "xaeroworldmap.WorldMapSessionMixin"
     ],
     "mixins": [
@@ -48,6 +48,7 @@
         "PartialNBTIngredientAccessor",
         "PotionBrewingAccessor",
         "PrimedTntAccessor",
+        "RangedAttributeAccessor",
         "RecipeManagerAccessor",
         "RecipeManagerInvoker",
         "RecipeManagerMixin",

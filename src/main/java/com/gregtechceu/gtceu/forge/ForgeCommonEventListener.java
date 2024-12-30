@@ -18,6 +18,8 @@ import com.gregtechceu.gtceu.api.item.DrumMachineItem;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.TagPrefixItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
+import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
+import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.misc.forge.FilteredFluidHandlerItemStack;
@@ -58,6 +60,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -76,10 +79,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.*;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
-import net.minecraftforge.event.entity.living.MobSpawnEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
@@ -104,6 +104,7 @@ import com.tterrag.registrate.util.entry.ItemEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -400,6 +401,14 @@ public class ForgeCommonEventListener {
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         LivingEntity entity = event.getEntity();
 
+        for (ItemStack stack : entity.getArmorSlots()) {
+            List<ArmorModifier> modifiers = ArmorUtils.getModifiers(stack);
+            if (modifiers.isEmpty()) continue;
+            for (ArmorModifier modifier : modifiers) {
+                modifier.onTick().apply(entity, stack);
+            }
+        }
+
         float MAGIC_STEP_HEIGHT = 1.0023f;
         if (!entity.isCrouching() && entity.getItemBySlot(EquipmentSlot.FEET).is(CustomTags.STEP_BOOTS)) {
             if (entity.getStepHeight() < MAGIC_STEP_HEIGHT) {
@@ -411,7 +420,42 @@ public class ForgeCommonEventListener {
     }
 
     @SubscribeEvent
-    public static void onEntityDie(LivingDeathEvent event) {
+    public static void onLivingEquipmentChange(LivingEquipmentChangeEvent event) {
+        final LivingEntity entity = event.getEntity();
+        final ItemStack old = event.getFrom();
+        final ItemStack current = event.getTo();
+
+        if (ItemStack.matches(old, current)) {
+            return;
+        }
+
+        if (!old.isEmpty() && ArmorUtils.hasArmorTag(old)) {
+            ArmorUtils.getModifiers(old).forEach(modifier -> modifier.onUnequip().apply(entity, old));
+        }
+
+        if (!current.isEmpty() && ArmorUtils.hasArmorTag(current)) {
+            ArmorUtils.getModifiers(current).forEach(modifier -> modifier.onEquip().apply(entity, current));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingHurt(LivingHurtEvent event) {
+        final LivingEntity entity = event.getEntity();
+        final DamageSource source = event.getSource();
+
+        for (final ItemStack stack : entity.getArmorSlots()) {
+            if (!ArmorUtils.isModifiable(stack)) continue;
+
+            float amount = event.getAmount();
+            for (ArmorModifier modifier : ArmorUtils.getModifiers(stack)) {
+                amount = modifier.onDamage().apply(entity, stack, source, amount).newAmount();
+            }
+            event.setAmount(amount);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingDie(LivingDeathEvent event) {
         if (event.getEntity() instanceof Player player) {
             IMedicalConditionTracker tracker = GTCapabilityHelper.getMedicalConditionTracker(player);
             if (tracker == null) {

@@ -315,8 +315,8 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
         String armorTexture = "quark_tech_suite";
         if (currentChest.is(GTItems.QUANTUM_CHESTPLATE_ADVANCED.get())) armorTexture = "advanced_quark_tech_suite";
         return slot != EquipmentSlot.LEGS ?
-                GTCEu.id(String.format("textures/armor/%s_1.png", armorTexture)) :
-                GTCEu.id(String.format("textures/armor/%s_2.png", armorTexture));
+                GTCEu.id(String.format("textures/models/armor/%s_1.png", armorTexture)) :
+                GTCEu.id(String.format("textures/models/armor/%s_2.png", armorTexture));
     }
 
     @Override

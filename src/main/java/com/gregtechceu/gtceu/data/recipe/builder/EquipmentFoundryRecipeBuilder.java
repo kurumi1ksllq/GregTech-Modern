@@ -3,6 +3,8 @@ package com.gregtechceu.gtceu.data.recipe.builder;
 import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
 import com.gregtechceu.gtceu.api.recipe.ingredient.NBTIngredient;
 
+import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
+import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -15,6 +17,7 @@ import net.minecraft.world.level.ItemLike;
 import com.google.gson.JsonObject;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.experimental.Tolerate;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -25,6 +28,8 @@ public class EquipmentFoundryRecipeBuilder {
     @Setter
     private ResourceLocation id;
     @Setter
+    private Ingredient equipment = Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT);
+    @Setter
     private Ingredient ingredient;
     @Setter
     private ArmorModifier modifier;
@@ -33,11 +38,13 @@ public class EquipmentFoundryRecipeBuilder {
         this.id = id;
     }
 
-    public EquipmentFoundryRecipeBuilder input(TagKey<Item> itemStack) {
-        return input(Ingredient.of(itemStack));
+    @Tolerate
+    public EquipmentFoundryRecipeBuilder ingredient(TagKey<Item> itemStack) {
+        return ingredient(Ingredient.of(itemStack));
     }
 
-    public EquipmentFoundryRecipeBuilder input(ItemStack itemStack) {
+    @Tolerate
+    public EquipmentFoundryRecipeBuilder ingredient(ItemStack itemStack) {
         if (itemStack.hasTag()) {
             ingredient = NBTIngredient.createNBTIngredient(itemStack);
         } else {
@@ -46,27 +53,20 @@ public class EquipmentFoundryRecipeBuilder {
         return this;
     }
 
-    public EquipmentFoundryRecipeBuilder input(ItemLike itemLike) {
-        return input(Ingredient.of(itemLike));
-    }
-
-    public EquipmentFoundryRecipeBuilder input(Ingredient ingredient) {
-        this.ingredient = ingredient;
-        return this;
+    @Tolerate
+    public EquipmentFoundryRecipeBuilder ingredient(ItemLike itemLike) {
+        return ingredient(Ingredient.of(itemLike));
     }
 
     protected ResourceLocation defaultId() {
-        return modifier.id;
+        return modifier.id();
     }
 
     public void toJson(JsonObject json) {
-        if (!ingredient.isEmpty()) {
-            json.add("ingredient", ingredient.toJson());
-        }
+        json.add("equipment", equipment.toJson());
+        json.add("ingredient", ingredient.toJson());
 
-        if (modifier != null) {
-            json.addProperty("modifier", modifier.id.toString());
-        }
+        json.addProperty("modifier", modifier.id().toString());
     }
 
     public void save(Consumer<FinishedRecipe> consumer) {
@@ -79,13 +79,13 @@ public class EquipmentFoundryRecipeBuilder {
 
             @Override
             public ResourceLocation getId() {
-                var ID = id == null ? defaultId() : id;
-                return new ResourceLocation(ID.getNamespace(), "equipment_foundry" + "/" + ID.getPath());
+                var _id = id == null ? defaultId() : id;
+                return _id.withPrefix("equipment_foundry/");
             }
 
             @Override
             public RecipeSerializer<?> getType() {
-                return RecipeSerializer.SMOKING_RECIPE;
+                return GTRecipeTypes.EQUIPMENT_FOUNDRY_SERIALIZER.get();
             }
 
             @Nullable

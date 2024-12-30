@@ -88,9 +88,9 @@ public class GTRecipePayload extends ObjectTypedPayload<GTRecipe> {
         }
     }
 
-    static class Client {
+    private static class Client {
 
-        static RecipeManager getRecipeManager() {
+        private static RecipeManager getRecipeManager() {
             return Minecraft.getInstance().getConnection().getRecipeManager();
         }
     }

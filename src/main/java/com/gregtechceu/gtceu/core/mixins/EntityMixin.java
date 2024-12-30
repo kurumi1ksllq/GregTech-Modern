@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin implements IFireImmuneEntity {
@@ -29,9 +28,9 @@ public abstract class EntityMixin implements IFireImmuneEntity {
     @Unique
     private boolean gtceu$isEntityInit = false;
 
-    @Inject(method = "fireImmune", at = @At("RETURN"), cancellable = true)
-    private void gtceu$changeFireImmune(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(gtceu$fireImmune || cir.getReturnValueZ());
+    @ModifyReturnValue(method = "fireImmune", at = @At("RETURN"))
+    private boolean gtceu$changeFireImmune(boolean original) {
+        return gtceu$fireImmune || original;
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
@@ -50,8 +49,9 @@ public abstract class EntityMixin implements IFireImmuneEntity {
             return original;
         }
 
-        if (!ConfigHolder.INSTANCE.gameplay.hazardsEnabled)
+        if (!ConfigHolder.INSTANCE.gameplay.hazardsEnabled) {
             return original;
+        }
 
         IMedicalConditionTracker tracker = GTCapabilityHelper.getMedicalConditionTracker((Entity) (Object) this);
         if (tracker != null && tracker.getMaxAirSupply() != -1) {

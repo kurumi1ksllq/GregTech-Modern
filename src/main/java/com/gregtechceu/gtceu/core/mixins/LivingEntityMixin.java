@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.core.mixins;
 
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 
+import com.gregtechceu.gtceu.api.item.armor.ModifiableArmorItem;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,7 +25,7 @@ public abstract class LivingEntityMixin {
 
     @Inject(method = "getDamageAfterArmorAbsorb",
             at = @At(value = "INVOKE",
-                     target = "Lnet/minecraft/world/damagesource/CombatRules;getDamageAfterAbsorb(FFF)F"))
+                     target = "Lnet/minecraft/world/entity/LivingEntity;hurtArmor(Lnet/minecraft/world/damagesource/DamageSource;F)V"))
     private void gtceu$adjustArmorAbsorption(DamageSource damageSource, float damageAmount,
                                              CallbackInfoReturnable<Float> cir) {
         float armorDamage = Math.max(1.0F, damageAmount / 4.0F);

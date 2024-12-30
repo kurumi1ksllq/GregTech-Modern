@@ -1,17 +1,25 @@
 package com.gregtechceu.gtceu.api.item.armor;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
+import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
 import com.gregtechceu.gtceu.common.data.GTSoundEntries;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.ServerGamePacketListenerImplAccessor;
+import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResultHolder;
@@ -27,6 +35,8 @@ import net.minecraftforge.event.ForgeEventFactory;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -34,12 +44,101 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class ArmorUtils {
 
     public static final int MIN_NIGHTVISION_CHARGE = 4;
     public static final int NIGHTVISION_DURATION = 20 * 20; // 20 seconds
     public static final int NIGHT_VISION_RESET = 11 * 20; // 11 seconds is before the flashing
+
+    public static final String ARMOR_KEY = "GT.Armor";
+    public static final String MODIFIERS_KEY = "Modifiers";
+    public static final String MAX_MODIFIERS_KEY = "MaxModifiers";
+
+    public static boolean isModifiable(ItemStack stack) {
+        return stack.is(CustomTags.MODIFIABLE_EQUIPMENT);
+    }
+
+    public static boolean hasArmorTag(ItemStack stack) {
+        return isModifiable(stack) && stack.getTagElement(ARMOR_KEY) != null;
+    }
+
+    @Nullable
+    public static CompoundTag getArmorTag(ItemStack stack) {
+        if (!isModifiable(stack)) return null;
+        return stack.getOrCreateTagElement(ARMOR_KEY);
+    }
+
+    /**
+     * @param stack the stack to get maximum modifier amount for
+     * @return the maximum amount of modifiers for the given stack
+     */
+    public static int getMaxModifiers(ItemStack stack) {
+        if (!(hasArmorTag(stack)
+                && getArmorTag(stack).contains(MAX_MODIFIERS_KEY, Tag.TAG_INT))
+                && stack.getItem() instanceof ModifiableArmorItem armorComponentItem) {
+            setMaxModifiers(stack, armorComponentItem.getDefaultMaxModifiers());
+            return armorComponentItem.getDefaultMaxModifiers();
+        } else if (!hasArmorTag(stack)) {
+            return 0;
+        }
+        return getArmorTag(stack).getInt(MAX_MODIFIERS_KEY);
+    }
+
+    public static void setMaxModifiers(ItemStack stack, int maxModifiers) {
+        if (!isModifiable(stack)) return;
+        getArmorTag(stack).putInt(MAX_MODIFIERS_KEY, maxModifiers);
+    }
+
+    /**
+     * Clear all modifiers from the given piece of armor
+     * @param stack the armor to remove all modifiers from
+     */
+    public static void clearModifiers(ItemStack stack) {
+        if (!hasArmorTag(stack)) return;
+        CompoundTag tag = getArmorTag(stack);
+        tag.remove(MODIFIERS_KEY);
+    }
+
+    /**
+     * Add an armor modifier to the given stack
+     * @param stack the stack to add the modifier to, if both are valid
+     * @param modifier the modifier to add to the stack
+     */
+    public static void addModifier(ItemStack stack, ArmorModifier modifier) {
+        CompoundTag tag = getArmorTag(stack);
+        ListTag modifierList = tag.getList(MODIFIERS_KEY, Tag.TAG_STRING);
+        if (modifierList.size() >= getMaxModifiers(stack)) return;
+
+        modifierList.add(StringTag.valueOf(modifier.id().toString()));
+        modifier.onAddToItem().apply(stack);
+        tag.put(MODIFIERS_KEY, modifierList);
+    }
+
+    /**
+     * An unmodifiable list of all modifiers on the given stack
+     * @param stack the stack to get the modifiers from
+     * @return the modifiers on the stack
+     */
+    @Unmodifiable
+    public static @NotNull List<ArmorModifier> getModifiers(ItemStack stack) {
+        if (!hasArmorTag(stack)) return Collections.emptyList();
+        CompoundTag tag = getArmorTag(stack);
+        ListTag modifierList = tag.getList(MODIFIERS_KEY, Tag.TAG_STRING);
+
+        List<ArmorModifier> modifiers = new ArrayList<>();
+        for (int i = 0; i < modifierList.size(); i++) {
+            String idString = modifierList.getString(i);
+            ResourceLocation id = ResourceLocation.tryParse(idString);
+            if (id == null) {
+                GTCEu.LOGGER.error("invalid armor modifier with id {}", idString);
+                continue;
+            }
+            modifiers.add(ArmorModifier.MODIFIERS.get(id));
+        }
+        return modifiers;
+    }
 
     /**
      * Check is possible to charge item

@@ -35,6 +35,7 @@ import com.gregtechceu.gtceu.common.registry.GTRegistration;
 import com.gregtechceu.gtceu.common.unification.material.MaterialRegistryManager;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.AbstractRegistrateAccessor;
+import com.gregtechceu.gtceu.core.mixins.RangedAttributeAccessor;
 import com.gregtechceu.gtceu.data.GregTechDatagen;
 import com.gregtechceu.gtceu.data.lang.MaterialLangGenerator;
 import com.gregtechceu.gtceu.data.loot.ChestGenHooks;
@@ -57,6 +58,7 @@ import com.lowdragmc.lowdraglib.gui.factory.UIFactory;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.AddPackFindersEvent;
@@ -133,6 +135,7 @@ public class CommonProxy {
         GTMachines.init();
 
         GTFoods.init();
+        GTArmorModifiers.init();
         GTItems.init();
         GTDimensionMarkers.init();
         ChanceLogic.init();
@@ -246,6 +249,13 @@ public class CommonProxy {
             if (LDLib.isModLoaded(GTValues.MODID_TOP)) {
                 GTCEu.LOGGER.info("TheOneProbe found. Enabling integration...");
                 TheOneProbePluginImpl.init();
+            }
+
+            // don't modify attribute maximums if AttributeFix is loaded to not conflict with its changes.
+            if (!LDLib.isModLoaded(GTValues.MODID_ATTRIBUTEFIX)) {
+                ((RangedAttributeAccessor) Attributes.ARMOR).gtceu$setMaxValue(1024.0D);
+                ((RangedAttributeAccessor) Attributes.ARMOR_TOUGHNESS).gtceu$setMaxValue(1024.0D);
+                ((RangedAttributeAccessor) Attributes.ATTACK_KNOCKBACK).gtceu$setMaxValue(1024.0D);
             }
         });
     }

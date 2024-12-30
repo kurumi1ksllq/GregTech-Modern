@@ -1,10 +1,10 @@
 package com.gregtechceu.gtceu.api.machine.trait;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.capability.IElectricItem;
-import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
-import com.gregtechceu.gtceu.api.capability.compat.FeCompat;
+import com.gregtechceu.gtceu.api.capability.gregtech.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.capability.gregtech.IElectricItem;
+import com.gregtechceu.gtceu.api.capability.gregtech.IEnergyContainer;
+import com.gregtechceu.gtceu.integration2.forge.energy.FeCompat;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;

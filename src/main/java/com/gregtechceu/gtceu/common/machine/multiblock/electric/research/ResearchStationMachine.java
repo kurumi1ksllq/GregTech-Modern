@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.electric.research;
 
-import com.gregtechceu.gtceu.api.capability.IObjectHolder;
-import com.gregtechceu.gtceu.api.capability.IOpticalComputationProvider;
-import com.gregtechceu.gtceu.api.capability.IOpticalComputationReceiver;
+import com.gregtechceu.gtceu.api.capability.gregtech.IObjectHolder;
+import com.gregtechceu.gtceu.api.capability.gregtech.IOpticalComputationProvider;
+import com.gregtechceu.gtceu.api.capability.gregtech.IOpticalComputationReceiver;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.CWURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;

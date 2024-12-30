@@ -2,8 +2,8 @@ package com.gregtechceu.gtceu.integration.jade.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api2.blockentity.MachineBlockEntity;
+import com.gregtechceu.gtceu.api.capability.gregtech.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.machine.steam.SimpleSteamMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
@@ -26,8 +26,6 @@ import org.jetbrains.annotations.Nullable;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
-
-import static net.minecraft.ChatFormatting.*;
 
 public class RecipeLogicProvider extends CapabilityBlockProvider<RecipeLogic> {
 
@@ -73,7 +71,7 @@ public class RecipeLogicProvider extends CapabilityBlockProvider<RecipeLogic> {
                 var isInput = recipeInfo.getBoolean("isInput");
                 boolean isSteam = false;
 
-                if (blockEntity instanceof MetaMachineBlockEntity mbe) {
+                if (blockEntity instanceof MachineBlockEntity mbe) {
                     var machine = mbe.getMetaMachine();
                     if (machine instanceof SimpleSteamMachine ssm) {
                         EUt = (long) (EUt * ssm.getConversionRate());

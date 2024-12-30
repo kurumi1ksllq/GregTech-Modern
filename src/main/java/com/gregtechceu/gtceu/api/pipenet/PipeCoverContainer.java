@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.pipenet;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
@@ -37,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
  * @implNote PipeCoverContainer
  */
 
-public class PipeCoverContainer implements ICoverable, IEnhancedManaged {
+public class PipeCoverContainer implements ICoverableBlock, IEnhancedManaged {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(PipeCoverContainer.class);
     @Getter

@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.pattern;
 
-import com.gregtechceu.gtceu.api.block.IMachineBlock;
+import com.gregtechceu.gtceu.api2.block.IMachineBlock;
 import com.gregtechceu.gtceu.api.data.RotationState;
 
 import com.lowdragmc.lowdraglib.utils.BlockInfo;

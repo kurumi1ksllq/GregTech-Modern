@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.machine.feature;
 
-import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
+import com.gregtechceu.gtceu.api2.block.MachineBlock;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public interface IMachineLife extends IMachineFeature {
 
     /**
-     * Called when machine removed. {@link MetaMachineBlock#onRemove(BlockState, Level, BlockPos, BlockState, boolean)}
+     * Called when machine removed. {@link MachineBlock#onRemove(BlockState, Level, BlockPos, BlockState, boolean)}
      * Only if block has changed will it be called. Ignore State changes.
      */
     default void onMachineRemoved() {}

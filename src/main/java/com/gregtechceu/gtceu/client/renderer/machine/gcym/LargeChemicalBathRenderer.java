@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.client.renderer.machine.gcym;
 
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api2.blockentity.MachineBlockEntity;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.client.renderer.block.FluidBlockRenderer;
 import com.gregtechceu.gtceu.client.renderer.machine.WorkableCasingMachineRenderer;
@@ -55,7 +55,7 @@ public class LargeChemicalBathRenderer extends WorkableCasingMachineRenderer {
         super.render(blockEntity, partialTicks, stack, buffer, combinedLight, combinedOverlay);
 
         if (!ConfigHolder.INSTANCE.client.renderer.renderFluids) return;
-        if (blockEntity instanceof MetaMachineBlockEntity mm) {
+        if (blockEntity instanceof MachineBlockEntity mm) {
             if (mm.metaMachine instanceof LargeChemicalBathMachine lcb) {
                 var lastRecipe = lcb.recipeLogic.getLastRecipe();
                 if (lastRecipe == null) {

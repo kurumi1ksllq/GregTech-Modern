@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.cover.voiding;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.filter.ItemFilter;
 import com.gregtechceu.gtceu.api.cover.filter.SimpleItemFilter;
@@ -40,7 +40,7 @@ public class AdvancedItemVoidingCover extends ItemVoidingCover {
 
     private IntInputWidget stackSizeInput;
 
-    public AdvancedItemVoidingCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
+    public AdvancedItemVoidingCover(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
     }
 

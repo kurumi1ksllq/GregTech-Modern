@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.cover.detector;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.cover.filter.FilterHandler;
@@ -61,7 +61,7 @@ public class AdvancedItemDetectorCover extends ItemDetectorCover implements IUIC
     @Getter
     protected final FilterHandler<ItemStack, ItemFilter> filterHandler;
 
-    public AdvancedItemDetectorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
+    public AdvancedItemDetectorCover(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
 
         this.minValue = DEFAULT_MIN;

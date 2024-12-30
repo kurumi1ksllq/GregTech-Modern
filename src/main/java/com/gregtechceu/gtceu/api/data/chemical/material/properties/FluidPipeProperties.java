@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.data.chemical.material.properties;
 
-import com.gregtechceu.gtceu.api.capability.IPropertyFluidFilter;
+import com.gregtechceu.gtceu.api.capability.gregtech.IPropertyFluidFilter;
 import com.gregtechceu.gtceu.api.fluids.FluidState;
 import com.gregtechceu.gtceu.api.fluids.attribute.FluidAttribute;
 import com.gregtechceu.gtceu.api.fluids.attribute.FluidAttributes;

@@ -2,9 +2,9 @@ package com.gregtechceu.gtceu.common.item;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.blockentity.IPaintable;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
-import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
+import com.gregtechceu.gtceu.api2.blockentity.IPaintable;
+import com.gregtechceu.gtceu.api2.blockentity.MachineBlockEntity;
+import com.gregtechceu.gtceu.api2.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IDurabilityBar;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
@@ -259,8 +259,8 @@ public class ColorSprayBehaviour implements IDurabilityBar, IInteractionItem, IA
                     break;
                 }
             }
-        } else if (first instanceof MetaMachineBlockEntity mmbe) {
-            var collected = BreadthFirstBlockSearch.conditionalBlockEntitySearch(MetaMachineBlockEntity.class, mmbe,
+        } else if (first instanceof MachineBlockEntity mmbe) {
+            var collected = BreadthFirstBlockSearch.conditionalBlockEntitySearch(MachineBlockEntity.class, mmbe,
                     gtMetaMachinePredicate, limit, limit * 6);
             for (var c : collected) {
                 if (!paintPaintable(c.getMetaMachine(), color)) {
@@ -520,9 +520,9 @@ public class ColorSprayBehaviour implements IDurabilityBar, IInteractionItem, IA
         return parent.isConnected(direction) && child.isConnected(direction.getOpposite());
     };
 
-    private static final TriPredicate<MetaMachineBlockEntity, MetaMachineBlockEntity, Direction> gtMetaMachinePredicate = (parent,
-                                                                                                                           child,
-                                                                                                                           direction) -> {
+    private static final TriPredicate<MachineBlockEntity, MachineBlockEntity, Direction> gtMetaMachinePredicate = (parent,
+                                                                                                                   child,
+                                                                                                                   direction) -> {
         if (parent == null) return true;
         return paintablePredicate.test(parent.getMetaMachine(), child.getMetaMachine()) &&
                 parent.getMetaMachine().getDefinition().equals(child.getMetaMachine().getDefinition());

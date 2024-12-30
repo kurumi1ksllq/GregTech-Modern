@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.client.renderer.machine;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
+import com.gregtechceu.gtceu.api2.block.MachineBlock;
 import com.gregtechceu.gtceu.client.renderer.block.CTMModelRenderer;
 import com.gregtechceu.gtceu.client.util.StaticFaceBakery;
 
@@ -41,7 +41,7 @@ public class PumpHatchPartRenderer extends CTMModelRenderer {
     @OnlyIn(Dist.CLIENT)
     public List<BakedQuad> renderModel(BlockAndTintGetter level, BlockPos pos, BlockState state, Direction side,
                                        RandomSource rand) {
-        if (state.getBlock() instanceof MetaMachineBlock machineBlock && side == machineBlock.getFrontFacing(state)) {
+        if (state.getBlock() instanceof MachineBlock machineBlock && side == machineBlock.getFrontFacing(state)) {
             var quads = new ArrayList<>(super.renderModel(level, pos, state, side, rand));
             quads.add(StaticFaceBakery.bakeFace(side, ModelFactory.getBlockSprite(PIPE_OUT)));
             quads.add(StaticFaceBakery.bakeFace(

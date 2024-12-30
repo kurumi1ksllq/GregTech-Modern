@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.gui.widget.directional.handlers;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
@@ -39,7 +39,7 @@ public class CoverableConfigHandler implements IDirectionalConfigHandler {
 
     private static final IGuiTexture CONFIG_BTN_TEXTURE = new GuiTextureGroup(GuiTextures.IO_CONFIG_COVER_SETTINGS);
 
-    private final ICoverable machine;
+    private final ICoverableBlock machine;
     private CustomItemStackHandler handler;
     private Direction side;
 
@@ -49,7 +49,7 @@ public class CoverableConfigHandler implements IDirectionalConfigHandler {
     private SlotWidget slotWidget;
     private CoverBehavior coverBehavior;
 
-    public CoverableConfigHandler(ICoverable machine) {
+    public CoverableConfigHandler(ICoverableBlock machine) {
         this.machine = machine;
         this.handler = createItemStackHandler();
     }
@@ -67,7 +67,7 @@ public class CoverableConfigHandler implements IDirectionalConfigHandler {
             if (itemStack.isEmpty()) return true;
             if (this.side == null) return false;
             return CoverPlaceBehavior.isCoverBehaviorItem(itemStack, () -> false,
-                    coverDef -> ICoverable.canPlaceCover(coverDef, this.machine));
+                    coverDef -> ICoverableBlock.canPlaceCover(coverDef, this.machine));
         });
 
         return handler;

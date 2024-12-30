@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.item;
 
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api2.blockentity.MachineBlockEntity;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IDataItem;
@@ -81,7 +81,7 @@ public class DataItemBehavior implements IInteractionItem, IAddInformation, IDat
 
     @Override
     public InteractionResult onItemUseFirst(ItemStack itemStack, UseOnContext context) {
-        if (context.getLevel().getBlockEntity(context.getClickedPos()) instanceof MetaMachineBlockEntity blockEntity) {
+        if (context.getLevel().getBlockEntity(context.getClickedPos()) instanceof MachineBlockEntity blockEntity) {
             if (!IMachineOwner.canOpenOwnerMachine(context.getPlayer(), blockEntity)) {
                 return InteractionResult.FAIL;
             }

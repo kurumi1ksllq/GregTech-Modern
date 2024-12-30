@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.client.renderer.machine;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
+import com.gregtechceu.gtceu.api2.block.MachineBlock;
 import com.gregtechceu.gtceu.api.item.MetaMachineItem;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -100,7 +100,7 @@ public class MachineRenderer extends TextureOverrideRenderer
     @OnlyIn(Dist.CLIENT)
     public final List<BakedQuad> renderModel(@Nullable BlockAndTintGetter level, @Nullable BlockPos pos,
                                              @Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
-        if (state != null && state.getBlock() instanceof MetaMachineBlock machineBlock) {
+        if (state != null && state.getBlock() instanceof MachineBlock machineBlock) {
             var frontFacing = machineBlock.getFrontFacing(state);
             var machine = (level == null || pos == null) ? null : machineBlock.getMachine(level, pos);
             if (machine != null) {

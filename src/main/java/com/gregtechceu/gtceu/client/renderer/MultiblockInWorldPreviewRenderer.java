@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.client.renderer;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.block.IMachineBlock;
-import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
+import com.gregtechceu.gtceu.api2.block.IMachineBlock;
+import com.gregtechceu.gtceu.api2.block.MachineBlock;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -176,7 +176,7 @@ public class MultiblockInWorldPreviewRenderer {
 
                     offset = rotateByFrontAxis(offset, front, r);
 
-                    if (blockState.getBlock() instanceof MetaMachineBlock machineBlock) {
+                    if (blockState.getBlock() instanceof MachineBlock machineBlock) {
                         var rotationState = machineBlock.getRotationState();
                         if (rotationState != RotationState.NONE) {
                             var face = blockState.getValue(rotationState.property);

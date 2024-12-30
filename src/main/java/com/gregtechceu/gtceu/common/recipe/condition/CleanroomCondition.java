@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.recipe.condition;
 
-import com.gregtechceu.gtceu.api.capability.ICleanroomReceiver;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICleanroomReceiver;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.ICleanroomProvider;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;

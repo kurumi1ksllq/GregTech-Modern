@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.cover;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.filter.ItemFilter;
@@ -47,13 +47,13 @@ public class RobotArmCover extends ConveyorCover {
 
     private IntInputWidget stackSizeInput;
 
-    public RobotArmCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier,
+    public RobotArmCover(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide, int tier,
                          int maxTransferRate) {
         super(definition, coverHolder, attachedSide, tier, maxTransferRate);
         setTransferMode(TransferMode.TRANSFER_ANY);
     }
 
-    public RobotArmCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier) {
+    public RobotArmCover(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide, int tier) {
         this(definition, coverHolder, attachedSide, tier, CONVEYOR_SCALING.applyAsInt(tier));
     }
 

@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.pattern;
 
-import com.gregtechceu.gtceu.api.block.ActiveBlock;
-import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
+import com.gregtechceu.gtceu.api2.block.ActiveBlock;
+import com.gregtechceu.gtceu.api2.block.MachineBlock;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
@@ -527,7 +527,7 @@ public class BlockPattern {
             resetFacing(pos, info.getBlockState(), null, (p, f) -> {
                 BlockInfo blockInfo = blocks.get(p.relative(f));
                 if (blockInfo == null || blockInfo.getBlockState().getBlock() == Blocks.AIR) {
-                    if (blocks.get(pos).getBlockState().getBlock() instanceof MetaMachineBlock machineBlock) {
+                    if (blocks.get(pos).getBlockState().getBlock() instanceof MachineBlock machineBlock) {
                         if (machineBlock.newBlockEntity(BlockPos.ZERO,
                                 machineBlock.defaultBlockState()) instanceof IMachineBlockEntity machineBlockEntity) {
                             var machine = machineBlockEntity.getMetaMachine();

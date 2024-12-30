@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.cover.voiding;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.filter.FluidFilter;
 import com.gregtechceu.gtceu.api.cover.filter.SimpleFluidFilter;
@@ -49,7 +49,7 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
     private NumberInputWidget<Integer> stackSizeInput;
     private EnumSelectorWidget<BucketMode> stackSizeBucketModeInput;
 
-    public AdvancedFluidVoidingCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
+    public AdvancedFluidVoidingCover(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
     }
 

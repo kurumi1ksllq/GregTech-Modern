@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.integration.jade.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api2.blockentity.MachineBlockEntity;
 import com.gregtechceu.gtceu.common.machine.storage.CreativeTankMachine;
 import com.gregtechceu.gtceu.common.machine.storage.QuantumTankMachine;
 
@@ -32,7 +32,7 @@ import java.util.List;
  * Currently: Quantum Tanks
  * Defaults to Jade's normal FluidView provider
  */
-public enum GTFluidStorageProvider implements IServerExtensionProvider<MetaMachineBlockEntity, CompoundTag>,
+public enum GTFluidStorageProvider implements IServerExtensionProvider<MachineBlockEntity, CompoundTag>,
         IClientExtensionProvider<CompoundTag, FluidView> {
 
     INSTANCE;
@@ -49,7 +49,7 @@ public enum GTFluidStorageProvider implements IServerExtensionProvider<MetaMachi
 
     @Override
     public @Nullable List<ViewGroup<CompoundTag>> getGroups(ServerPlayer serverPlayer, ServerLevel serverLevel,
-                                                            MetaMachineBlockEntity mmbe, boolean b) {
+                                                            MachineBlockEntity mmbe, boolean b) {
         if (mmbe.getMetaMachine() instanceof QuantumTankMachine qtm) {
             CompoundTag tag = new CompoundTag();
             tag.putBoolean("special", true);

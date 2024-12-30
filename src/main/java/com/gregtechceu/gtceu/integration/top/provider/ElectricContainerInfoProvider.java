@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.integration.top.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
+import com.gregtechceu.gtceu.api.capability.gregtech.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.capability.gregtech.IEnergyContainer;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

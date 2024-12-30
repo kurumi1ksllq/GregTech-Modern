@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.item;
 
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api2.blockentity.MachineBlockEntity;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
@@ -146,7 +146,7 @@ public class IntCircuitBehaviour implements IItemUIFactory, IAddInformation {
         var stack = context.getItemInHand();
         int circuitSetting = getCircuitConfiguration(stack);
         BlockEntity entity = context.getLevel().getBlockEntity(context.getClickedPos());
-        if (entity instanceof MetaMachineBlockEntity machineEntity && context.isSecondaryUseActive()) {
+        if (entity instanceof MachineBlockEntity machineEntity && context.isSecondaryUseActive()) {
             if (machineEntity.metaMachine instanceof IHasCircuitSlot circuitMachine &&
                     circuitMachine.getCircuitInventory().getSlots() > 0) {
                 setCircuitConfig(circuitMachine.getCircuitInventory(), circuitSetting);

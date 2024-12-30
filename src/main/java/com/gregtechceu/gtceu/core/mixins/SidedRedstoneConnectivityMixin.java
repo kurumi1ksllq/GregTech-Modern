@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.core.mixins;
 
-import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
+import com.gregtechceu.gtceu.api2.block.MachineBlock;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,7 +26,7 @@ public class SidedRedstoneConnectivityMixin {
         BlockPos blockPos = ownPos.relative(direction);
         BlockState blockState = level.getBlockState(blockPos);
 
-        if (blockState.getBlock() instanceof MetaMachineBlock metaMachine) {
+        if (blockState.getBlock() instanceof MachineBlock metaMachine) {
             if (cir.getReturnValue() != RedstoneSide.NONE) {
                 return;
             }

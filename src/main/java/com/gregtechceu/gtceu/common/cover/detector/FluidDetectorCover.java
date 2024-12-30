@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.cover.detector;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.utils.RedstoneUtil;
 
@@ -11,7 +11,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 
 public class FluidDetectorCover extends DetectorCover {
 
-    public FluidDetectorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
+    public FluidDetectorCover(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
     }
 

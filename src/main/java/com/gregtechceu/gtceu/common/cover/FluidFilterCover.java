@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.cover;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.IUICover;
@@ -49,7 +49,7 @@ public class FluidFilterCover extends CoverBehavior implements IUICover {
     @Getter
     protected ManualIOMode allowFlow = ManualIOMode.DISABLED;
 
-    public FluidFilterCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
+    public FluidFilterCover(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
     }
 

@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.client.renderer.machine;
 
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api2.blockentity.MachineBlockEntity;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.client.renderer.block.FluidBlockRenderer;
 import com.gregtechceu.gtceu.client.util.RenderUtil;
@@ -45,7 +45,7 @@ public class PrimitiveBlastFurnaceRenderer extends WorkableCasingMachineRenderer
         super.render(blockEntity, partialTicks, stack, buffer, combinedLight, combinedOverlay);
 
         if (!ConfigHolder.INSTANCE.client.renderer.renderFluids) return;
-        if (blockEntity instanceof MetaMachineBlockEntity mm) {
+        if (blockEntity instanceof MachineBlockEntity mm) {
             if (mm.metaMachine instanceof PrimitiveBlastFurnaceMachine pbf && pbf.isFormed()) {
                 Direction opposite = pbf.getFrontFacing().getOpposite();
                 RenderType lavaRenderType = ItemBlockRenderTypes.getRenderLayer(Fluids.LAVA.defaultFluidState());

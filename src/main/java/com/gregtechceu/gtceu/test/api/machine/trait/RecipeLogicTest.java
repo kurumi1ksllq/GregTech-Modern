@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.test.api.machine.trait;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api2.blockentity.MachineBlockEntity;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -43,7 +43,7 @@ public class RecipeLogicTest {
         RecipeLogicTest.replaceRecipeManagerEntries(helper.getLevel());
 
         BlockEntity holder = helper.getBlockEntity(new BlockPos(0, 2, 0));
-        if (!(holder instanceof MetaMachineBlockEntity atte)) {
+        if (!(holder instanceof MachineBlockEntity atte)) {
             helper.fail("wrong block at relative pos [0,1,0]!");
             return;
         }

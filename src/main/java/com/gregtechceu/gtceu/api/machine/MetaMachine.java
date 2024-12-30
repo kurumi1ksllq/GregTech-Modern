@@ -1,14 +1,14 @@
 package com.gregtechceu.gtceu.api.machine;
 
-import com.gregtechceu.gtceu.api.block.BlockProperties;
-import com.gregtechceu.gtceu.api.block.IAppearance;
-import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
-import com.gregtechceu.gtceu.api.blockentity.IPaintable;
-import com.gregtechceu.gtceu.api.blockentity.ITickSubscription;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.capability.IControllable;
-import com.gregtechceu.gtceu.api.capability.ICoverable;
-import com.gregtechceu.gtceu.api.capability.IToolable;
+import com.gregtechceu.gtceu.api2.block.BlockProperties;
+import com.gregtechceu.gtceu.api2.block.IAppearanceBlock;
+import com.gregtechceu.gtceu.api2.block.MachineBlock;
+import com.gregtechceu.gtceu.api2.blockentity.IPaintable;
+import com.gregtechceu.gtceu.api2.blockentity.ITickSubscription;
+import com.gregtechceu.gtceu.api.capability.gregtech.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.capability.gregtech.IControllable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
+import com.gregtechceu.gtceu.api.capability.gregtech.IToolable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.data.RotationState;
@@ -90,7 +90,7 @@ import static com.gregtechceu.gtceu.api.item.tool.ToolHelper.getBehaviorsTag;
  */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscription, IAppearance, IToolGridHighlight,
+public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscription, IAppearanceBlock, IToolGridHighlight,
                          IFancyTooltip, IPaintable, IRedstoneSignalMachine {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MetaMachine.class);
@@ -318,7 +318,7 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
         var hand = context.getHand();
         var hitResult = new BlockHitResult(context.getClickLocation(), context.getClickedFace(),
                 context.getClickedPos(), false);
-        Direction gridSide = ICoverable.determineGridSideHit(hitResult);
+        Direction gridSide = ICoverableBlock.determineGridSideHit(hitResult);
         CoverBehavior coverBehavior = gridSide == null ? null : coverContainer.getCoverAtSide(gridSide);
         if (gridSide == null) gridSide = hitResult.getDirection();
 
@@ -571,7 +571,7 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
 
     public Direction getFrontFacing() {
         var blockState = getBlockState();
-        if (blockState.getBlock() instanceof MetaMachineBlock machineBlock) {
+        if (blockState.getBlock() instanceof MachineBlock machineBlock) {
             return machineBlock.getFrontFacing(blockState);
         }
         return Direction.NORTH;
@@ -579,7 +579,7 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
 
     public final boolean hasFrontFacing() {
         var blockState = getBlockState();
-        if (blockState.getBlock() instanceof MetaMachineBlock machineBlock) {
+        if (blockState.getBlock() instanceof MachineBlock machineBlock) {
             return machineBlock.getRotationState() != RotationState.NONE;
         }
         return false;
@@ -588,17 +588,17 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
     public boolean isFacingValid(Direction facing) {
         if (hasFrontFacing() && facing == getFrontFacing()) return false;
         var blockState = getBlockState();
-        if (blockState.getBlock() instanceof MetaMachineBlock metaMachineBlock) {
-            return metaMachineBlock.rotationState.test(facing);
+        if (blockState.getBlock() instanceof MachineBlock machineBlock) {
+            return machineBlock.rotationState.test(facing);
         }
         return false;
     }
 
     public void setFrontFacing(Direction facing) {
         var blockState = getBlockState();
-        if (blockState.getBlock() instanceof MetaMachineBlock metaMachineBlock && isFacingValid(facing)) {
+        if (blockState.getBlock() instanceof MachineBlock machineBlock && isFacingValid(facing)) {
             getLevel().setBlockAndUpdate(getPos(),
-                    blockState.setValue(metaMachineBlock.rotationState.property, facing));
+                    blockState.setValue(machineBlock.rotationState.property, facing));
         }
     }
 

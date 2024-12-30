@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.item;
 
-import com.gregtechceu.gtceu.api.block.IMachineBlock;
-import com.gregtechceu.gtceu.api.block.PipeBlock;
+import com.gregtechceu.gtceu.api2.block.IMachineBlock;
+import com.gregtechceu.gtceu.api2.block.PipeBlock;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
 

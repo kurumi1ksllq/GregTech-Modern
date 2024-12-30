@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.integration.top.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
-import com.gregtechceu.gtceu.api.capability.IParallelHatch;
+import com.gregtechceu.gtceu.api2.blockentity.MachineBlockEntity;
+import com.gregtechceu.gtceu.api.capability.gregtech.IParallelHatch;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 
 import net.minecraft.ChatFormatting;
@@ -31,7 +31,7 @@ public class ParallelProvider implements IProbeInfoProvider {
     public void addProbeInfo(ProbeMode probeMode, IProbeInfo iProbeInfo, Player player, Level level,
                              BlockState blockState, IProbeHitData iProbeHitData) {
         BlockEntity blockEntity = level.getBlockEntity(iProbeHitData.getPos());
-        if (blockEntity instanceof MetaMachineBlockEntity machineBlockEntity) {
+        if (blockEntity instanceof MachineBlockEntity machineBlockEntity) {
             int parallel = 0;
             if (machineBlockEntity.getMetaMachine() instanceof IParallelHatch parallelHatch) {
                 parallel = parallelHatch.getCurrentParallel();

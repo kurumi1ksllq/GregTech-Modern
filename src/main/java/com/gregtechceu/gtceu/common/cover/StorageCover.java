@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.cover;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.IUICover;
@@ -38,7 +38,7 @@ public class StorageCover extends CoverBehavior implements IUICover {
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(StorageCover.class,
             CoverBehavior.MANAGED_FIELD_HOLDER);
 
-    public StorageCover(@NotNull CoverDefinition definition, @NotNull ICoverable coverableView,
+    public StorageCover(@NotNull CoverDefinition definition, @NotNull ICoverableBlock coverableView,
                         @NotNull Direction attachedSide) {
         super(definition, coverableView, attachedSide);
         inventory = new CustomItemStackHandler(SIZE) {

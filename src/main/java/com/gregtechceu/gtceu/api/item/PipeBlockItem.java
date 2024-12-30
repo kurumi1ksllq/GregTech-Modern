@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.item;
 
-import com.gregtechceu.gtceu.api.block.PipeBlock;
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api2.block.PipeBlock;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -64,7 +64,7 @@ public class PipeBlockItem extends BlockItem {
         var realPos = pos.relative(side.getOpposite());
         var baseNode = getBlock().getPipeTile(level, realPos);
         if (baseNode != null) {
-            var sideAttach = ICoverable
+            var sideAttach = ICoverableBlock
                     .traceCoverSide(new BlockHitResult(context.getClickLocation(), side, realPos, false));
             if (sideAttach != null && context.getLevel().isEmptyBlock(realPos.relative(sideAttach))) {
                 pos = realPos.relative(sideAttach);

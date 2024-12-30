@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.misc;
 
-import com.gregtechceu.gtceu.api.capability.ILaserContainer;
+import com.gregtechceu.gtceu.api.capability.gregtech.ILaserContainer;
 
 import net.minecraft.core.Direction;
 

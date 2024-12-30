@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.pipelike.laser;
 
-import com.gregtechceu.gtceu.api.capability.ILaserContainer;
+import com.gregtechceu.gtceu.api.capability.gregtech.ILaserContainer;
 import com.gregtechceu.gtceu.common.blockentity.LaserPipeBlockEntity;
 
 import net.minecraft.core.BlockPos;

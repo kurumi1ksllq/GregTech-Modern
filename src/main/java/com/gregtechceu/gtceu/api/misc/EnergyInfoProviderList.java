@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.misc;
 
-import com.gregtechceu.gtceu.api.capability.IEnergyInfoProvider;
+import com.gregtechceu.gtceu.api.capability.gregtech.IEnergyInfoProvider;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

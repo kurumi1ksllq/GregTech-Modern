@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.integration.jade.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
-import com.gregtechceu.gtceu.api.capability.IParallelHatch;
+import com.gregtechceu.gtceu.api2.blockentity.MachineBlockEntity;
+import com.gregtechceu.gtceu.api.capability.gregtech.IParallelHatch;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 
 import net.minecraft.ChatFormatting;
@@ -34,7 +34,7 @@ public class ParallelProvider implements IBlockComponentProvider, IServerDataPro
 
     @Override
     public void appendServerData(CompoundTag compoundTag, BlockAccessor blockAccessor) {
-        if (blockAccessor.getBlockEntity() instanceof MetaMachineBlockEntity blockEntity) {
+        if (blockAccessor.getBlockEntity() instanceof MachineBlockEntity blockEntity) {
             if (blockEntity.getMetaMachine() instanceof IParallelHatch parallelHatch) {
                 compoundTag.putInt("parallel", parallelHatch.getCurrentParallel());
             } else if (blockEntity.getMetaMachine() instanceof IMultiController controller) {

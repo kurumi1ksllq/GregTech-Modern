@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.common.cover;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.capability.ICoverable;
-import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
+import com.gregtechceu.gtceu.api.capability.gregtech.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
+import com.gregtechceu.gtceu.api.capability.gregtech.IEnergyContainer;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
@@ -20,7 +20,7 @@ public class CoverSolarPanel extends CoverBehavior {
     private final long EUt;
     protected TickableSubscription subscription;
 
-    public CoverSolarPanel(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier) {
+    public CoverSolarPanel(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide, int tier) {
         super(definition, coverHolder, attachedSide);
         this.EUt = GTValues.V[tier];
     }

@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.gui.widget;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 @AllArgsConstructor
 public class CoverConfigurator implements IFancyConfigurator {
 
-    protected final ICoverable coverable;
+    protected final ICoverableBlock coverable;
     // runtime
     @Nullable
     protected final Direction side;

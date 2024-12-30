@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.api.machine.multiblock;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.block.IMachineBlock;
-import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
+import com.gregtechceu.gtceu.api2.block.IMachineBlock;
+import com.gregtechceu.gtceu.api2.block.MachineBlock;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -245,7 +245,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             return;
         }
         BlockState blockState = getBlockState();
-        if (blockState.getBlock() instanceof MetaMachineBlock metaMachineBlock &&
+        if (blockState.getBlock() instanceof MachineBlock machineBlock &&
                 blockState.getValue(IMachineBlock.UPWARDS_FACING_PROPERTY) != upwardsFacing) {
             getLevel().setBlockAndUpdate(getPos(),
                     blockState.setValue(IMachineBlock.UPWARDS_FACING_PROPERTY, upwardsFacing));

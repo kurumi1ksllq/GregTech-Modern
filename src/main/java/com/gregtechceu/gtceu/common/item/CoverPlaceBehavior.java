@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.common.item;
 
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
@@ -32,9 +32,9 @@ public record CoverPlaceBehavior(CoverDefinition coverDefinition) implements IIn
         var pos = context.getClickedPos();
         var face = context.getClickedFace();
         var player = context.getPlayer();
-        ICoverable coverable = GTCapabilityHelper.getCoverable(level, pos, face);
+        ICoverableBlock coverable = GTCapabilityHelper.getCoverable(level, pos, face);
         if (coverable != null) {
-            var coverSide = ICoverable.rayTraceCoverableSide(coverable, player);
+            var coverSide = ICoverableBlock.rayTraceCoverableSide(coverable, player);
             if (coverSide != null && coverable.getCoverAtSide(coverSide) == null &&
                     coverable.canPlaceCoverOnSide(coverDefinition, coverSide)) {
                 if (player instanceof ServerPlayer serverPlayer) {

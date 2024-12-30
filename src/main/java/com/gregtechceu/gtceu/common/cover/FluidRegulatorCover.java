@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.cover;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.filter.FluidFilter;
 import com.gregtechceu.gtceu.api.cover.filter.SimpleFluidFilter;
@@ -56,12 +56,12 @@ public class FluidRegulatorCover extends PumpCover {
     private NumberInputWidget<Integer> transferSizeInput;
     private EnumSelectorWidget<BucketMode> transferBucketModeInput;
 
-    public FluidRegulatorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier,
+    public FluidRegulatorCover(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide, int tier,
                                int maxTransferRate) {
         super(definition, coverHolder, attachedSide, tier, maxTransferRate);
     }
 
-    public FluidRegulatorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier) {
+    public FluidRegulatorCover(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide, int tier) {
         this(definition, coverHolder, attachedSide, tier, PUMP_SCALING.applyAsInt(tier));
     }
 

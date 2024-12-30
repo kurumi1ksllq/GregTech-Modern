@@ -2,10 +2,10 @@ package com.gregtechceu.gtceu.api.registry.registrate;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
-import com.gregtechceu.gtceu.api.sound.ConfiguredSoundEvent;
-import com.gregtechceu.gtceu.api.sound.CustomSoundEntry;
-import com.gregtechceu.gtceu.api.sound.SoundEntry;
-import com.gregtechceu.gtceu.api.sound.WrappedSoundEntry;
+import com.gregtechceu.gtceu.api2.sound.ConfiguredSoundEvent;
+import com.gregtechceu.gtceu.api2.sound.CustomSoundEntry;
+import com.gregtechceu.gtceu.api2.sound.SoundEntry;
+import com.gregtechceu.gtceu.api2.sound.WrappedSoundEntry;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.data.CachedOutput;

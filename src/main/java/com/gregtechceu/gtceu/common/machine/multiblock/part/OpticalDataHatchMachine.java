@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.part;
 
-import com.gregtechceu.gtceu.api.capability.IDataAccessHatch;
-import com.gregtechceu.gtceu.api.capability.IOpticalDataAccessHatch;
-import com.gregtechceu.gtceu.api.capability.IWorkable;
+import com.gregtechceu.gtceu.api.capability.gregtech.IDataAccessHatch;
+import com.gregtechceu.gtceu.api.capability.gregtech.IOpticalDataAccessHatch;
+import com.gregtechceu.gtceu.api.capability.gregtech.IWorkable;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;

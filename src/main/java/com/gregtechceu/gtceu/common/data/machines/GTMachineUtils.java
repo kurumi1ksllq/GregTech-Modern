@@ -3,9 +3,9 @@ package com.gregtechceu.gtceu.common.data.machines;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
-import com.gregtechceu.gtceu.api.capability.compat.FeCompat;
+import com.gregtechceu.gtceu.api2.block.MachineBlock;
+import com.gregtechceu.gtceu.api2.blockentity.MachineBlockEntity;
+import com.gregtechceu.gtceu.integration2.forge.energy.FeCompat;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
@@ -387,9 +387,9 @@ public class GTMachineUtils {
         boolean wooden = material.hasProperty(PropertyKey.WOOD);
         var definition = REGISTRATE
                 .machine(material.getName() + "_drum", MachineDefinition::createDefinition,
-                        holder -> new DrumMachine(holder, material, capacity), MetaMachineBlock::new,
+                        holder -> new DrumMachine(holder, material, capacity), MachineBlock::new,
                         (holder, prop) -> DrumMachineItem.create(holder, prop, material),
-                        MetaMachineBlockEntity::createBlockEntity)
+                        MachineBlockEntity::createBlockEntity)
                 .langValue(lang)
                 .rotationState(RotationState.NONE)
                 .renderer(

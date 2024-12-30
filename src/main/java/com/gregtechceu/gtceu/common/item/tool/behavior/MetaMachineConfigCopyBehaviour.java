@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.item.tool.behavior;
 
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api2.blockentity.MachineBlockEntity;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -97,7 +97,7 @@ public class MetaMachineConfigCopyBehaviour implements IInteractionItem, IAddInf
 
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
-        if (context.getLevel().getBlockEntity(context.getClickedPos()) instanceof MetaMachineBlockEntity blockEntity) {
+        if (context.getLevel().getBlockEntity(context.getClickedPos()) instanceof MachineBlockEntity blockEntity) {
             if (!IMachineOwner.canOpenOwnerMachine(context.getPlayer(), blockEntity))
                 return InteractionResult.FAIL;
             MetaMachine machine = blockEntity.getMetaMachine();

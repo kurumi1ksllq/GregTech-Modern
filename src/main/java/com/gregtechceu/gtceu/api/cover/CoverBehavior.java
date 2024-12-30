@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.cover;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.factory.CoverUIFactory;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfigurator;
@@ -51,7 +51,7 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
     @Getter
     private final FieldManagedStorage syncStorage = new FieldManagedStorage(this);
     public final CoverDefinition coverDefinition;
-    public final ICoverable coverHolder;
+    public final ICoverableBlock coverHolder;
     public final Direction attachedSide;
     @Getter
     @Persisted
@@ -61,7 +61,7 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
     @Persisted
     protected int redstoneSignalOutput = 0;
 
-    public CoverBehavior(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
+    public CoverBehavior(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide) {
         this.coverDefinition = definition;
         this.coverHolder = coverHolder;
         this.attachedSide = attachedSide;

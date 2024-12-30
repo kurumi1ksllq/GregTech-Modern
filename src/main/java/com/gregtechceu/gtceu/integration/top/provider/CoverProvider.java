@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.integration.top.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 
 import net.minecraft.core.BlockPos;
@@ -16,7 +16,7 @@ import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import org.jetbrains.annotations.Nullable;
 
-public class CoverProvider extends CapabilityInfoProvider<ICoverable> {
+public class CoverProvider extends CapabilityInfoProvider<ICoverableBlock> {
 
     @Override
     public ResourceLocation getID() {
@@ -239,12 +239,12 @@ public class CoverProvider extends CapabilityInfoProvider<ICoverable> {
 
     @Nullable
     @Override
-    protected ICoverable getCapability(Level level, BlockPos pos, @org.jetbrains.annotations.Nullable Direction side) {
+    protected ICoverableBlock getCapability(Level level, BlockPos pos, @org.jetbrains.annotations.Nullable Direction side) {
         return GTCapabilityHelper.getCoverable(level, pos, side);
     }
 
     @Override
-    protected void addProbeInfo(ICoverable capability, IProbeInfo probeInfo, Player player, BlockEntity blockEntity,
+    protected void addProbeInfo(ICoverableBlock capability, IProbeInfo probeInfo, Player player, BlockEntity blockEntity,
                                 IProbeHitData data) {
         CoverBehavior coverBehavior = capability.getCoverAtSide(data.getSideHit());
         // if (coverBehavior instanceof CoverConveyor) {

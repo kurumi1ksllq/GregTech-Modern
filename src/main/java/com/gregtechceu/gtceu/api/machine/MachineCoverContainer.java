@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.machine;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
@@ -35,7 +35,7 @@ import java.util.ArrayList;
  * @date 2023/2/18
  * @implNote MachineCoverContainer
  */
-public class MachineCoverContainer implements ICoverable, IEnhancedManaged {
+public class MachineCoverContainer implements ICoverableBlock, IEnhancedManaged {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MachineCoverContainer.class);
     @Getter
@@ -118,7 +118,7 @@ public class MachineCoverContainer implements ICoverable, IEnhancedManaged {
         ArrayList<VoxelShape> collisionList = new ArrayList<>();
         machine.addCollisionBoundingBox(collisionList);
         // noinspection RedundantIfStatement
-        if (ICoverable.doesCoverCollide(side, collisionList, getCoverPlateThickness())) {
+        if (ICoverableBlock.doesCoverCollide(side, collisionList, getCoverPlateThickness())) {
             // cover collision box overlaps with meta tile entity collision box
             return false;
         }

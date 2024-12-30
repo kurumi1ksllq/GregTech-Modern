@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.common.machine.steam;
 
-import com.gregtechceu.gtceu.api.capability.IControllable;
-import com.gregtechceu.gtceu.api.capability.IMiner;
+import com.gregtechceu.gtceu.api.capability.gregtech.IControllable;
+import com.gregtechceu.gtceu.api.capability.gregtech.IMiner;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.UITemplate;

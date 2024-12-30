@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.client.renderer;
 
-import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api2.blockentity.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.capability.gregtech.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.item.PipeBlockItem;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
@@ -128,9 +128,9 @@ public class BlockHighlightRenderer {
             }
 
             // draw cover grid highlight
-            ICoverable coverable = GTCapabilityHelper.getCoverable(level, blockPos, target.getDirection());
+            ICoverableBlock coverable = GTCapabilityHelper.getCoverable(level, blockPos, target.getDirection());
             if (coverable != null && CoverPlaceBehavior.isCoverBehaviorItem(held, coverable::hasAnyCover,
-                    coverDef -> ICoverable.canPlaceCover(coverDef, coverable))) {
+                    coverDef -> ICoverableBlock.canPlaceCover(coverDef, coverable))) {
                 Vec3 pos = camera.getPosition();
                 poseStack.pushPose();
                 poseStack.translate(-pos.x, -pos.y, -pos.z);
@@ -173,7 +173,7 @@ public class BlockHighlightRenderer {
         var blockPos = blockHitResult.getBlockPos();
         var facing = blockHitResult.getDirection();
         var box = new AABB(blockPos);
-        var attachSide = ICoverable.traceCoverSide(blockHitResult);
+        var attachSide = ICoverableBlock.traceCoverSide(blockHitResult);
         var topRight = new Vector3f((float) box.maxX, (float) box.maxY, (float) box.maxZ);
         var bottomRight = new Vector3f((float) box.maxX, (float) box.minY, (float) box.maxZ);
         var bottomLeft = new Vector3f((float) box.minX, (float) box.minY, (float) box.maxZ);

@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.client.model;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
+import com.gregtechceu.gtceu.api2.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.SupplierMemoizer;
 

@@ -1,10 +1,10 @@
 package com.gregtechceu.gtceu.common.data;
 
 import com.gregtechceu.gtceu.api.GTCEuAPI;
-import com.gregtechceu.gtceu.api.addon.AddonFinder;
-import com.gregtechceu.gtceu.api.addon.IGTAddon;
+import com.gregtechceu.gtceu.api2.addon.AddonFinder;
+import com.gregtechceu.gtceu.api2.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
-import com.gregtechceu.gtceu.api.sound.SoundEntry;
+import com.gregtechceu.gtceu.api2.sound.SoundEntry;
 
 import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.registries.ForgeRegistries;

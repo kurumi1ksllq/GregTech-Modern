@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.common.cover.detector;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
-import com.gregtechceu.gtceu.api.capability.IEnergyInfoProvider;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
+import com.gregtechceu.gtceu.api.capability.gregtech.IEnergyInfoProvider;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
@@ -57,7 +57,7 @@ public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements 
     private LongInputWidget minValueInput;
     private LongInputWidget maxValueInput;
 
-    public AdvancedEnergyDetectorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
+    public AdvancedEnergyDetectorCover(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
 
         final int DEFAULT_MIN_PERCENT = 33, DEFAULT_MAX_PERCENT = 66;

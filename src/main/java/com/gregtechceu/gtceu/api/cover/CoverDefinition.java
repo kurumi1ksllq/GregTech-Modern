@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.cover;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.client.renderer.cover.ICoverRenderer;
 
 import net.minecraft.core.Direction;
@@ -12,12 +12,12 @@ public final class CoverDefinition {
 
     public interface CoverBehaviourProvider {
 
-        CoverBehavior create(CoverDefinition definition, ICoverable coverable, Direction side);
+        CoverBehavior create(CoverDefinition definition, ICoverableBlock coverable, Direction side);
     }
 
     public interface TieredCoverBehaviourProvider {
 
-        CoverBehavior create(CoverDefinition definition, ICoverable coverable, Direction side, int tier);
+        CoverBehavior create(CoverDefinition definition, ICoverableBlock coverable, Direction side, int tier);
     }
 
     @Getter
@@ -32,7 +32,7 @@ public final class CoverDefinition {
         this.coverRenderer = coverRenderer;
     }
 
-    public CoverBehavior createCoverBehavior(ICoverable metaTileEntity, Direction side) {
+    public CoverBehavior createCoverBehavior(ICoverableBlock metaTileEntity, Direction side) {
         return behaviorCreator.create(this, metaTileEntity, side);
     }
 }

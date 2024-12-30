@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.gui.widget;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
+import com.gregtechceu.gtceu.api2.block.MachineBlock;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -368,7 +368,7 @@ public class PatternPreviewWidget extends WidgetGroup {
             this.blockId = Block.getId(blockInfo.getBlockState());
             this.isTile = blockInfo.hasBlockEntity();
 
-            if (blockInfo.getBlockState().getBlock() instanceof MetaMachineBlock block) {
+            if (blockInfo.getBlockState().getBlock() instanceof MachineBlock block) {
                 if (block.definition instanceof MultiblockMachineDefinition)
                     this.isController = true;
             }

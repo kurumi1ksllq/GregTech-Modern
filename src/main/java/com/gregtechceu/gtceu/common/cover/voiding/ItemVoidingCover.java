@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.common.cover.voiding;
 
-import com.gregtechceu.gtceu.api.capability.IControllable;
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.IControllable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.cover.filter.ItemFilter;
@@ -33,7 +33,7 @@ public class ItemVoidingCover extends ConveyorCover implements IUICover, IContro
     @Getter
     protected boolean isEnabled = false;
 
-    public ItemVoidingCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
+    public ItemVoidingCover(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide, 0);
     }
 

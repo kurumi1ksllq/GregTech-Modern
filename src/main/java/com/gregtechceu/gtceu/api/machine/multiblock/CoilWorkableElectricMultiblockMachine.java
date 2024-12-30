@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.machine.multiblock;
 
-import com.gregtechceu.gtceu.api.block.ICoilType;
+import com.gregtechceu.gtceu.common2.block.ICoilType;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.common.block.CoilBlock;
 

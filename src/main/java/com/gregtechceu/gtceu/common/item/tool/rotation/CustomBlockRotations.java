@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.item.tool.rotation;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -36,7 +36,7 @@ public class CustomBlockRotations {
 
         @Override
         public boolean customRotate(BlockState state, Level world, BlockPos pos, BlockHitResult hitResult) {
-            Direction gridSide = ICoverable.determineGridSideHit(hitResult);
+            Direction gridSide = ICoverableBlock.determineGridSideHit(hitResult);
             if (gridSide == null) return false;
             if (gridSide.getAxis() == Direction.Axis.Y) return false;
 
@@ -58,7 +58,7 @@ public class CustomBlockRotations {
 
         @Override
         public boolean customRotate(BlockState state, Level world, BlockPos pos, BlockHitResult hitResult) {
-            Direction gridSide = ICoverable.determineGridSideHit(hitResult);
+            Direction gridSide = ICoverableBlock.determineGridSideHit(hitResult);
             if (gridSide == null) return false;
 
             if (gridSide != state.getValue(DirectionalBlock.FACING)) {
@@ -99,7 +99,7 @@ public class CustomBlockRotations {
 
             @Override
             public boolean customRotate(BlockState state, Level world, BlockPos pos, BlockHitResult hitResult) {
-                Direction gridSide = ICoverable.determineGridSideHit(hitResult);
+                Direction gridSide = ICoverableBlock.determineGridSideHit(hitResult);
                 if (gridSide == null || gridSide == Direction.UP) return false;
 
                 if (gridSide != state.getValue(HopperBlock.FACING)) {

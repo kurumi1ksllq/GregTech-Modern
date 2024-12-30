@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.common.blockentity;
 
-import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
-import com.gregtechceu.gtceu.api.capability.IDataAccessHatch;
-import com.gregtechceu.gtceu.api.capability.IOpticalComputationProvider;
+import com.gregtechceu.gtceu.api2.blockentity.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.capability.gregtech.IDataAccessHatch;
+import com.gregtechceu.gtceu.api.capability.gregtech.IOpticalComputationProvider;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.pipenet.IPipeNode;

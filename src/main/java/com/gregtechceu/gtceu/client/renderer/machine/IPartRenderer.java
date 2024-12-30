@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.client.renderer.machine;
 
-import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
+import com.gregtechceu.gtceu.api2.block.MachineBlock;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 
@@ -34,7 +34,7 @@ public interface IPartRenderer {
         var controllers = part.getControllers();
         for (IMultiController controller : controllers) {
             var state = controller.self().getBlockState();
-            if (state.getBlock() instanceof MetaMachineBlock block) {
+            if (state.getBlock() instanceof MachineBlock block) {
                 var renderer = block.definition.getRenderer();
                 if (renderer instanceof IControllerRenderer controllerRenderer) {
                     controllerRenderer.renderPartModel(quads, controller, part, frontFacing, side, rand, modelFacing,

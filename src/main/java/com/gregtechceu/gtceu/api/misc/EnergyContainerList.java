@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.misc;
 
-import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
+import com.gregtechceu.gtceu.api.capability.gregtech.IEnergyContainer;
 
 import net.minecraft.core.Direction;
 

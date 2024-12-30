@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.common.pipelike.item;
 
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.common.blockentity.ItemPipeBlockEntity;
@@ -354,7 +354,7 @@ public class ItemNetHandler implements IItemHandlerModifiable {
     public CoverBehavior getCoverOnNeighbour(BlockPos pos, Direction handlerFacing) {
         BlockEntity tile = pipe.getLevel().getBlockEntity(pos.relative(handlerFacing));
         if (tile != null) {
-            ICoverable coverable = GTCapabilityHelper.getCoverable(pipe.getLevel(), pos.relative(handlerFacing),
+            ICoverableBlock coverable = GTCapabilityHelper.getCoverable(pipe.getLevel(), pos.relative(handlerFacing),
                     handlerFacing.getOpposite());
             if (coverable == null) return null;
             return coverable.getCoverAtSide(handlerFacing.getOpposite());

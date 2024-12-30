@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.block;
 
-import com.gregtechceu.gtceu.api.block.IFilterType;
+import com.gregtechceu.gtceu.common2.block.IFilterType;
 import com.gregtechceu.gtceu.api.machine.multiblock.CleanroomType;
 
 import lombok.Getter;

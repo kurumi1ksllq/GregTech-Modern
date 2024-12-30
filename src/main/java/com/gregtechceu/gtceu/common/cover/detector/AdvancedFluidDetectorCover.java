@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.cover.detector;
 
-import com.gregtechceu.gtceu.api.capability.ICoverable;
+import com.gregtechceu.gtceu.api.capability.gregtech.ICoverableBlock;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.cover.filter.FilterHandler;
@@ -62,7 +62,7 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IU
     @Getter
     protected final FilterHandler<FluidStack, FluidFilter> filterHandler;
 
-    public AdvancedFluidDetectorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
+    public AdvancedFluidDetectorCover(CoverDefinition definition, ICoverableBlock coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
 
         this.minValue = DEFAULT_MIN;

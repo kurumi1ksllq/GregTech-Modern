@@ -2,9 +2,9 @@ package com.gregtechceu.gtceu.api.registry.registrate;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.block.IMachineBlock;
-import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api2.block.IMachineBlock;
+import com.gregtechceu.gtceu.api2.block.MachineBlock;
+import com.gregtechceu.gtceu.api2.blockentity.MachineBlockEntity;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.item.MetaMachineItem;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -129,7 +129,7 @@ public class GTRegistrate extends Registrate {
     public MachineBuilder<MachineDefinition> machine(String name,
                                                      Function<IMachineBlockEntity, MetaMachine> metaMachine) {
         return MachineBuilder.create(this, name, MachineDefinition::createDefinition, metaMachine,
-                MetaMachineBlock::new, MetaMachineItem::new, MetaMachineBlockEntity::createBlockEntity);
+                MachineBlock::new, MetaMachineItem::new, MachineBlockEntity::createBlockEntity);
     }
 
     public Stream<MachineBuilder<MachineDefinition>> machine(String name,
@@ -138,7 +138,7 @@ public class GTRegistrate extends Registrate {
         return Arrays.stream(tiers)
                 .mapToObj(tier -> MachineBuilder.create(this, name + "." + GTValues.VN[tier].toLowerCase(Locale.ROOT),
                         MachineDefinition::createDefinition, holder -> metaMachine.apply(holder, tier),
-                        MetaMachineBlock::new, MetaMachineItem::new, MetaMachineBlockEntity::createBlockEntity));
+                        MachineBlock::new, MetaMachineItem::new, MachineBlockEntity::createBlockEntity));
     }
 
     public MultiblockMachineBuilder multiblock(String name,
@@ -152,8 +152,8 @@ public class GTRegistrate extends Registrate {
 
     public MultiblockMachineBuilder multiblock(String name,
                                                Function<IMachineBlockEntity, ? extends MultiblockControllerMachine> metaMachine) {
-        return MultiblockMachineBuilder.createMulti(this, name, metaMachine, MetaMachineBlock::new,
-                MetaMachineItem::new, MetaMachineBlockEntity::createBlockEntity);
+        return MultiblockMachineBuilder.createMulti(this, name, metaMachine, MachineBlock::new,
+                MetaMachineItem::new, MachineBlockEntity::createBlockEntity);
     }
 
     public SoundEntryBuilder sound(String name) {

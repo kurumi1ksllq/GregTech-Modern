@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public interface IFilterType extends StringRepresentable {
 
     /**
+     * Get the cleanroom type of this filter.
      * @return The cleanroom type of this filter.
      */
     @NotNull

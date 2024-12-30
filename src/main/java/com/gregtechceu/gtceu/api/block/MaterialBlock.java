@@ -100,11 +100,9 @@ public class MaterialBlock extends AppearanceBlock {
      */
     @OnlyIn(Dist.CLIENT)
     public static BlockColor tintedColor() {
-        // TODO: Avoid using arrow notation
         return (state, reader, pos, tintIndex) -> {
-            if (state.getBlock() instanceof MaterialBlock block) {
+            if (state.getBlock() instanceof MaterialBlock block)
                 return block.material.getLayerARGB(tintIndex);
-            }
             return -1;
         };
     }

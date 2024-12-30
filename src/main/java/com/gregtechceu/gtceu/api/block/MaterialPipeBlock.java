@@ -59,7 +59,6 @@ public abstract class MaterialPipeBlock<
      */
     @OnlyIn(Dist.CLIENT)
     public static BlockColor tintedColor() {
-        // TODO: Avoid Arrow Notation and use Early Returns
         return (blockState, level, blockPos, index) -> {
             if (blockState.getBlock() instanceof MaterialPipeBlock<?, ?, ?> block) {
                 if (blockPos != null && level != null &&
@@ -71,7 +70,7 @@ public abstract class MaterialPipeBlock<
                             return pipe.getFrameMaterial().getMaterialSecondaryRGB();
                         }
                     }
-                    if (pipe.isPainted()) {
+                    else if (pipe.isPainted()) {
                         return pipe.getRealColor();
                     }
                 }

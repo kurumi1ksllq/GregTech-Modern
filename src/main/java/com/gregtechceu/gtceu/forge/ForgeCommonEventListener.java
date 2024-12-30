@@ -60,6 +60,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
@@ -371,7 +372,7 @@ public class ForgeCommonEventListener {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public static void onEntityLivingFallEvent(LivingFallEvent event) {
+    public static void onLivingFall(LivingFallEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             if (player.fallDistance < 3.2f)
                 return;
@@ -396,15 +397,16 @@ public class ForgeCommonEventListener {
     }
 
     @SubscribeEvent
-    public static void stepAssistHandler(LivingEvent.LivingTickEvent event) {
+    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
+        LivingEntity entity = event.getEntity();
+
         float MAGIC_STEP_HEIGHT = 1.0023f;
-        if (event.getEntity() == null || !(event.getEntity() instanceof Player player)) return;
-        if (!player.isCrouching() && player.getItemBySlot(EquipmentSlot.FEET).is(CustomTags.STEP_BOOTS)) {
-            if (player.getStepHeight() < MAGIC_STEP_HEIGHT) {
-                player.setMaxUpStep(MAGIC_STEP_HEIGHT);
+        if (!entity.isCrouching() && entity.getItemBySlot(EquipmentSlot.FEET).is(CustomTags.STEP_BOOTS)) {
+            if (entity.getStepHeight() < MAGIC_STEP_HEIGHT) {
+                entity.setMaxUpStep(MAGIC_STEP_HEIGHT);
             }
-        } else if (player.getStepHeight() == MAGIC_STEP_HEIGHT) {
-            player.setMaxUpStep(0.6f);
+        } else if (entity.getStepHeight() == MAGIC_STEP_HEIGHT) {
+            entity.setMaxUpStep(0.6f);
         }
     }
 

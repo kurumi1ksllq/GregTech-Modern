@@ -56,9 +56,9 @@ import java.util.Set;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * @author KilaBash
- * @date 2023/2/17
- * @implNote GTBlock
+ * MetaMachineBlock is a class that provides methods to get the properties of Meta Machines.
+ * This is useful for Meta Machines that have different properties based on the type of machine.
+ * For example, a Meta Machine that provides different textures based on the level of the machine.
  */
 @SuppressWarnings("deprecation")
 @MethodsReturnNonnullByDefault
@@ -70,6 +70,11 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
     @Getter
     public final RotationState rotationState;
 
+    /**
+     * MetaMachineBlock is a constructor that creates a Meta Machine Block.
+     * @param properties the properties of the block
+     * @param definition the definition of the machine
+     */
     public MetaMachineBlock(Properties properties, MachineDefinition definition) {
         super(properties);
         this.definition = definition;
@@ -84,6 +89,11 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
         }
     }
 
+    /**
+     * Get the block state definition of the machine.
+     * @implNote This is used to add the block state properties of the machine
+     * @param pBuilder the {@link StateDefinition.Builder} of the block
+     */
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(BlockProperties.SERVER_TICK);
@@ -97,23 +107,49 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
         }
     }
 
+    /**
+     * Get the machine of the block.
+     * @param level the {@link BlockGetter} of the block
+     * @param pos the {@link BlockPos} of the block
+     * @return the {@link MetaMachine} of the block
+     */
     @Nullable
     public MetaMachine getMachine(BlockGetter level, BlockPos pos) {
         return MetaMachine.getMachine(level, pos);
     }
 
+    /**
+     * Get the renderer of the block.
+     * @param state the {@link BlockState} of the block
+     * @return the {@link IRenderer} of the block
+     */
     @Nullable
     @Override
     public IRenderer getRenderer(BlockState state) {
         return definition.getRenderer();
     }
 
+    /**
+     * Get the shape of the machine.
+     * @param pState the {@link BlockState} of the machine
+     * @param pLevel the {@link BlockGetter} of the machine
+     * @param pPos the {@link BlockPos} of the machine
+     * @param pContext the {@link CollisionContext} of the machine
+     * @return the {@link VoxelShape} of the machine
+     */
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return getRotationState() == RotationState.NONE ? definition.getShape(Direction.NORTH) :
                 definition.getShape(pState.getValue(getRotationState().property));
     }
 
+    /**
+     * Function that animates the machine over game ticks.
+     * @param state the {@link BlockState} of the machine
+     * @param level the {@link Level} of the machine
+     * @param pos the {@link BlockPos} of the machine
+     * @param random the {@link RandomSource} of the machine
+     */
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         super.animateTick(state, level, pos, random);
@@ -123,6 +159,14 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
         }
     }
 
+    /**
+     * This is used to set the owner of the machine when placed by a player
+     * @param pLevel the {@link Level} of the block
+     * @param pPos the {@link BlockPos} of the block
+     * @param pState the {@link BlockState} of the block
+     * @param player the {@link LivingEntity} of the machine owner
+     * @param pStack the {@link ItemStack} of the block
+     */
     @Override
     public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity player,
                             ItemStack pStack) {
@@ -145,7 +189,7 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
             }
         }
     }
-
+    
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         super.onPlace(state, level, pos, oldState, movedByPiston);

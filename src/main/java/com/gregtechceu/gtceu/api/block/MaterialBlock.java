@@ -56,17 +56,24 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * @author KilaBash
- * @date 2023/2/27
- * @implNote MaterialBlock
+ * MaterialBlock is a class that provides methods to get the properties of Material Blocks.
+ * This takes care of the appearances depending on the GTCEU Material.
+ * @see AppearanceBlock
+ * @see Material
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class MaterialBlock extends AppearanceBlock {
-
     public final TagPrefix tagPrefix;
     public final Material material;
 
+    /**
+     * This is the constructor for the MaterialBlock class.
+     * @param properties the properties of the block
+     * @param tagPrefix the tag prefix of the block
+     * @param material the material of the block
+     * @param registerModel whether to register the model of the block
+     */
     public MaterialBlock(Properties properties, TagPrefix tagPrefix, Material material, boolean registerModel) {
         super(properties);
         this.material = material;
@@ -76,12 +83,24 @@ public class MaterialBlock extends AppearanceBlock {
         }
     }
 
+    /**
+     * This is the constructor for the MaterialBlock class when registerModel is ignored.
+     * @param properties the properties of the block
+     * @param tagPrefix the tag prefix of the block
+     * @param material the material of the block
+     */
     public MaterialBlock(Properties properties, TagPrefix tagPrefix, Material material) {
         this(properties, tagPrefix, material, true);
     }
 
+    /**
+     * This is the function that changes the color of the block.
+     * @implNote This is only used on the client side.
+     * @return the tinted color of the block
+     */
     @OnlyIn(Dist.CLIENT)
     public static BlockColor tintedColor() {
+        // TODO: Avoid using arrow notation
         return (state, reader, pos, tintIndex) -> {
             if (state.getBlock() instanceof MaterialBlock block) {
                 return block.material.getLayerARGB(tintIndex);
@@ -90,8 +109,17 @@ public class MaterialBlock extends AppearanceBlock {
         };
     }
 
+    // TODO: Rename to DEFAULT_FRAME_COLLISION_BOX
     public static VoxelShape FRAME_COLLISION_BOX = Shapes.box(0.05, 0.0, 0.05, 0.95, 1.0, 0.95);
 
+    /**
+     * This is the function that gets the collision shape of the block.
+     * @param state the {@link BlockState} of the block
+     * @param level the {@link BlockGetter} of the block
+     * @param pos the {@link BlockPos} of the block
+     * @param context the {@link CollisionContext} of the block
+     * @return the {@link VoxelShape} of the block
+     */
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         if (this.tagPrefix == TagPrefix.frameGt) {
@@ -100,7 +128,15 @@ public class MaterialBlock extends AppearanceBlock {
         return super.getCollisionShape(state, level, pos, context);
     }
 
-    /** Start falling ore stuff */
+    /**
+     * This is the function that handles the block when placed.
+     * @implNote This is suppressed because the method is deprecated.
+     * @param state the {@link BlockState} of the block
+     * @param level the {@link Level} of the block
+     * @param pos the {@link BlockPos} of the block
+     * @param oldState the {@link BlockState} of the old block
+     * @param isMoving whether the block is moving
+     */
     @SuppressWarnings("deprecation")
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
@@ -110,10 +146,21 @@ public class MaterialBlock extends AppearanceBlock {
         }
     }
 
+    /**
+     * This is the function that updates the shape of the block.
+     * @param state the {@link BlockState} of the block
+     * @param direction the {@link Direction} of the block
+     * @param neighborState the {@link BlockState} of the neighbor block
+     * @param level the {@link LevelAccessor} of the block
+     * @param currentPos the {@link BlockPos} of the current block
+     * @param neighborPos the {@link BlockPos} of the neighbor block
+     * @return the {@link BlockState} of the block
+     */
     @SuppressWarnings("deprecation")
     @Override
     public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level,
                                   BlockPos currentPos, BlockPos neighborPos) {
+        // TODO: Simplify conditions and return early
         if (TagPrefix.ORES.containsKey(this.tagPrefix) && TagPrefix.ORES.get(tagPrefix).isSand() &&
                 ConfigHolder.INSTANCE.worldgen.sandOresFall) {
             level.scheduleTick(currentPos, this, this.getDelayAfterPlace());
@@ -121,17 +168,33 @@ public class MaterialBlock extends AppearanceBlock {
         return super.updateShape(state, direction, neighborState, level, currentPos, neighborPos);
     }
 
+    /**
+     * This is the function that updates the block with game ticks.
+     * @param state the {@link BlockState} of the block
+     * @param level the {@link ServerLevel} of the block
+     * @param pos the {@link BlockPos} of the block
+     * @param random the {@link RandomSource} of the block
+     */
     @SuppressWarnings("deprecation")
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        // TODO: Simplify condition
         if (!FallingBlock.isFree(level.getBlockState(pos.below())) || pos.getY() < level.getMinBuildHeight()) {
             return;
         }
         FallingBlockEntity.fall(level, pos, state);
     }
 
+    /**
+     * This is the function that animates the block with game ticks.
+     * @param state the {@link BlockState} of the block
+     * @param level the {@link Level} of the block
+     * @param pos the {@link BlockPos} of the block
+     * @param random the {@link RandomSource} of the block
+     */
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        // TODO: Simplify condition
         if (!TagPrefix.ORES.containsKey(this.tagPrefix) || !TagPrefix.ORES.get(tagPrefix).isSand() ||
                 !ConfigHolder.INSTANCE.worldgen.sandOresFall)
             return;
@@ -145,23 +208,34 @@ public class MaterialBlock extends AppearanceBlock {
 
     /**
      * Gets the amount of time in ticks this block will wait before attempting to start falling.
+     * @return the delay after the block is placed
      */
     protected int getDelayAfterPlace() {
         return 2;
     }
 
-    /** End falling ore stuff */
-
+    /**
+     * This is the function that gets the description ID of the block.
+     * @return the unlocalized name of the block
+     */
     @Override
     public String getDescriptionId() {
         return tagPrefix.getUnlocalizedName(material);
     }
 
+    /**
+     * This is the function that gets the name of the block.
+     * @return the localized name of the block
+     */
     @Override
     public MutableComponent getName() {
         return tagPrefix.getLocalizedName(material);
     }
 
+    /**
+     * This is the function determines how the block is used.
+     * @return the result of the interaction
+     */
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                  BlockHitResult hit) {
@@ -216,6 +290,11 @@ public class MaterialBlock extends AppearanceBlock {
         return InteractionResult.PASS;
     }
 
+    /**
+     * TODO: Tbh I actually don't know what this does enough to describe it
+     * @param stack the {@link ItemStack} of the block
+     * @return the {@link MaterialBlock} of the item if it is a frame box, otherwise {@code null}
+     */
     @Nullable
     public static MaterialBlock getFrameboxFromItem(ItemStack stack) {
         Item item = stack.getItem();
@@ -227,6 +306,14 @@ public class MaterialBlock extends AppearanceBlock {
         return null;
     }
 
+    /**
+     * This is the function that determines if a frame block is removed from the world.
+     * @param level the {@link Level} of the block
+     * @param pos the {@link BlockPos} of the block
+     * @param player the {@link Player} of the block
+     * @param stack the {@link ItemStack} of the block
+     * @return whether the frame block was removed
+     */
     public boolean removeFrame(Level level, BlockPos pos, Player player, ItemStack stack) {
         BlockEntity te = level.getBlockEntity(pos);
         if (te instanceof PipeBlockEntity<?, ?> pipeTile) {
@@ -242,6 +329,12 @@ public class MaterialBlock extends AppearanceBlock {
         return false;
     }
 
+    /**
+     * This is the function that determines if a block can be replaced in-place.
+     * @param state the {@link BlockState} of the block
+     * @param useContext the {@link BlockPlaceContext} of the block
+     * @return whether the block can be replaced
+     */
     @Override
     public boolean canBeReplaced(BlockState state, BlockPlaceContext useContext) {
         if (this.tagPrefix == TagPrefix.frameGt && useContext.getItemInHand().getItem() instanceof PipeBlockItem &&
@@ -250,6 +343,16 @@ public class MaterialBlock extends AppearanceBlock {
         return super.canBeReplaced(state, useContext);
     }
 
+    /**
+     * This is the function that determines if a block can be replaced with a framed pipe?
+     * @param level the {@link Level} of the block
+     * @param pos the {@link BlockPos} of the block
+     * @param state the {@link BlockState} of the block
+     * @param player the {@link Player} of the block
+     * @param stackInHand the {@link ItemStack} of the block
+     * @param hit the {@link BlockHitResult} of the block
+     * @return whether the block can be replaced with a framed pipe
+     */
     public boolean replaceWithFramedPipe(Level level, BlockPos pos, BlockState state, Player player,
                                          ItemStack stackInHand, BlockHitResult hit) {
         PipeBlock<?, ?, ?> pipeBlock = (PipeBlock<?, ?, ?>) ((PipeBlockItem) stackInHand.getItem()).getBlock();
@@ -281,6 +384,13 @@ public class MaterialBlock extends AppearanceBlock {
         return false;
     }
 
+    /**
+     * TODO: Tbh I actually don't know what this does enough to describe it
+     * @param state the {@link BlockState} of the block
+     * @param level the {@link Level} of the block
+     * @param pos the {@link BlockPos} of the block
+     * @param entity the {@link Entity} of the block
+     */
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (this.tagPrefix == TagPrefix.frameGt && entity instanceof LivingEntity livingEntity) {

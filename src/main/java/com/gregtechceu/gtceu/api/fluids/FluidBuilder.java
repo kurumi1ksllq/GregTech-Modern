@@ -11,9 +11,8 @@ import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.gregtechceu.gtceu.api.registry.registrate.IGTFluidBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.Platform;
-
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 
 import com.google.common.base.Preconditions;
@@ -79,7 +78,7 @@ public class FluidBuilder {
      * @return this;
      */
     public @NotNull FluidBuilder temperature(int temperature) {
-        Preconditions.checkArgument(temperature > 0, "temperature must be > 0");
+        Preconditions.checkArgument(temperature >= 0, "temperature must be >= 0");
         this.temperature = temperature;
         return this;
     }
@@ -280,8 +279,9 @@ public class FluidBuilder {
         }
 
         builder.onFluidRegister(fluid -> {
-            if (fluid instanceof GTFluid gtFluid) {
-                attributes.forEach(gtFluid::addAttribute);
+            if (fluid instanceof FlowingFluid flowingFluid) {
+                if (flowingFluid.getSource() instanceof GTFluid gtSource) attributes.forEach(gtSource::addAttribute);
+                if (flowingFluid.getFlowing() instanceof GTFluid gtFlowing) attributes.forEach(gtFlowing::addAttribute);
             }
         });
 
@@ -348,7 +348,7 @@ public class FluidBuilder {
     private void determineColor(@Nullable Material material) {
         if (color != INFER_COLOR) return;
         if (isColorEnabled && material != null) {
-            color = Platform.isForge() ? GTUtil.convertRGBtoARGB(material.getMaterialRGB()) : material.getMaterialRGB();
+            color = GTUtil.convertRGBtoARGB(material.getMaterialRGB());
         }
     }
 

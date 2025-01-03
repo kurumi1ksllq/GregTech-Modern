@@ -13,15 +13,14 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDisplayUIMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
-import com.gregtechceu.gtceu.api.recipe.logic.OCParams;
-import com.gregtechceu.gtceu.api.recipe.logic.OCResult;
+import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
+import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ComponentPanelWidget;
-import com.lowdragmc.lowdraglib.side.fluid.FluidHelper;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
@@ -68,7 +67,7 @@ public class LargeBoilerMachine extends WorkableMultiblockMachine implements IEx
     private boolean hasNoWater;
     @Nullable
     protected TickableSubscription temperatureSubs;
-    private long steamGenerated;
+    private int steamGenerated;
 
     public LargeBoilerMachine(IMachineBlockEntity holder, int maxTemperature, int heatSpeed, Object... args) {
         super(holder, args);
@@ -117,8 +116,8 @@ public class LargeBoilerMachine extends WorkableMultiblockMachine implements IEx
 
         if (currentTemperature >= 100 && getOffsetTimer() % TICKS_PER_STEAM_GENERATION == 0) {
             // drain water
-            var maxDrain = currentTemperature * throttle * TICKS_PER_STEAM_GENERATION * FluidHelper.getBucket() /
-                    (ConfigHolder.INSTANCE.machines.largeBoilers.steamPerWater * 100000L);
+            var maxDrain = currentTemperature * throttle * TICKS_PER_STEAM_GENERATION /
+                    (ConfigHolder.INSTANCE.machines.largeBoilers.steamPerWater * 100);
             var drainWater = List.of(FluidIngredient.of(maxDrain, Fluids.WATER));
             List<IRecipeHandler<?>> inputTanks = new ArrayList<>();
             if (getCapabilitiesProxy().contains(IO.IN, FluidRecipeCapability.CAP)) {
@@ -196,25 +195,31 @@ public class LargeBoilerMachine extends WorkableMultiblockMachine implements IEx
         return value;
     }
 
-    @Nullable
-    public static GTRecipe recipeModifier(MetaMachine machine, @NotNull GTRecipe recipe, @NotNull OCParams params,
-                                          @NotNull OCResult result) {
-        if (machine instanceof LargeBoilerMachine largeBoilerMachine) {
-            if (largeBoilerMachine.throttle < 100) {
-                var copied = recipe.copy();
-                result.setDuration(recipe.duration * 100 / largeBoilerMachine.throttle);
-                return copied;
-            }
-            return recipe;
+    /**
+     * Recipe Modifier for <b>Large Boiler Machines</b> - can be used as a valid {@link RecipeModifier}
+     * <p>
+     * Duration is multiplied by {@code 100 / throttle} if throttle is less than 100
+     * </p>
+     * 
+     * @param machine a {@link LargeBoilerMachine}
+     * @param recipe  recipe
+     * @return A {@link ModifierFunction} for the given Large Boiler and recipe
+     */
+    public static ModifierFunction recipeModifier(@NotNull MetaMachine machine, @NotNull GTRecipe recipe) {
+        if (!(machine instanceof LargeBoilerMachine largeBoilerMachine)) {
+            return RecipeModifier.nullWrongType(LargeBoilerMachine.class, machine);
         }
-        return null;
+        if (largeBoilerMachine.throttle == 100) return ModifierFunction.IDENTITY;
+        return ModifierFunction.builder()
+                .durationMultiplier(100.0 / largeBoilerMachine.throttle)
+                .build();
     }
 
     public void addDisplayText(List<Component> textList) {
         IDisplayUIMachine.super.addDisplayText(textList);
         if (isFormed()) {
             textList.add(Component.translatable("gtceu.multiblock.large_boiler.temperature",
-                    (int) (currentTemperature + 274.15), (int) (maxTemperature + 274.15)));
+                    currentTemperature + 274, maxTemperature + 274));
             textList.add(Component.translatable("gtceu.multiblock.large_boiler.steam_output",
                     steamGenerated / TICKS_PER_STEAM_GENERATION));
 

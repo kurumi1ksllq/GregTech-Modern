@@ -57,10 +57,6 @@ public class GTCEu {
         return LDLib.isModLoaded(GTValues.MODID_KUBEJS);
     }
 
-    public static boolean isCreateLoaded() {
-        return LDLib.isModLoaded(GTValues.MODID_CREATE);
-    }
-
     public static boolean isIrisOculusLoaded() {
         return LDLib.isModLoaded(GTValues.MODID_IRIS) || LDLib.isModLoaded(GTValues.MODID_OCULUS);
     }
@@ -84,6 +80,14 @@ public class GTCEu {
 
     public static boolean isJAVDLoaded() {
         return LDLib.isModLoaded(GTValues.MODID_JAVD);
+    }
+
+    public static boolean isFTBTeamsLoaded() {
+        return LDLib.isModLoaded(GTValues.MODID_FTB_TEAMS);
+    }
+
+    public static boolean isArgonautsLoaded() {
+        return LDLib.isModLoaded(GTValues.MODID_ARGONAUTS);
     }
 
     @Deprecated(forRemoval = true, since = "1.0.21")

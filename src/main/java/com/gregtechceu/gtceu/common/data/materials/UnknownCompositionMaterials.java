@@ -80,8 +80,6 @@ public class UnknownCompositionMaterials {
         ConstructionFoam = new Material.Builder(GTCEu.id("construction_foam"))
                 .fluid().color(0x808080).buildAndRegister();
 
-        // Free IDs 1517-1521
-
         SulfuricHeavyFuel = new Material.Builder(GTCEu.id("sulfuric_heavy_fuel"))
                 .liquid(new FluidBuilder().customStill()).flags(FLAMMABLE).buildAndRegister();
 
@@ -310,8 +308,6 @@ public class UnknownCompositionMaterials {
         EnrichedBacterialSludge = new Material.Builder(GTCEu.id("enriched_bacterial_sludge"))
                 .fluid().color(0x7FFF00).buildAndRegister();
 
-        // free id: 1587
-
         Mutagen = new Material.Builder(GTCEu.id("mutagen"))
                 .fluid().color(0x00FF7F).buildAndRegister();
 
@@ -326,8 +322,6 @@ public class UnknownCompositionMaterials {
 
         HighOctaneGasoline = new Material.Builder(GTCEu.id("high_octane_gasoline"))
                 .fluid().color(0xFFA500).flags(FLAMMABLE, EXPLOSIVE).buildAndRegister();
-
-        // free id: 1593
 
         CoalGas = new Material.Builder(GTCEu.id("coal_gas"))
                 .gas().color(0x333333).buildAndRegister();
@@ -361,6 +355,12 @@ public class UnknownCompositionMaterials {
 
         Lava = new Material.Builder(GTCEu.id("lava"))
                 .fluid().color(0xFF4000).buildAndRegister();
+
+        Netherite = new Material.Builder(GTCEu.id("netherite"))
+                .ingot().color(0x4b4042).secondaryColor(0x474447)
+                .toolStats(ToolProperty.Builder.of(10.0F, 14.0F, 900, 4)
+                        .enchantability(21).build())
+                .buildAndRegister();
 
         Glowstone = new Material.Builder(GTCEu.id("glowstone"))
                 .dust(1)

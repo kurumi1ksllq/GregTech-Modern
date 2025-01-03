@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.*;
 import com.gregtechceu.gtceu.common.data.GTItems;
+import com.gregtechceu.gtceu.common.machine.owner.IMachineOwner;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.client.renderer.IRenderer;
@@ -127,6 +128,12 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
                             ItemStack pStack) {
         if (!pLevel.isClientSide) {
             var machine = getMachine(pLevel, pPos);
+            if (machine != null) {
+                if (player instanceof ServerPlayer sPlayer) {
+                    setMachineOwner(machine, sPlayer);
+                    machine.markDirty();
+                }
+            }
             if (machine instanceof IDropSaveMachine dropSaveMachine) {
                 CompoundTag tag = pStack.getTag();
                 if (tag != null) {
@@ -282,8 +289,14 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
         ItemStack itemStack = player.getItemInHand(hand);
         boolean shouldOpenUi = true;
 
+        if (machine != null && machine.holder.getOwner() == null && player instanceof ServerPlayer) {
+            setMachineOwner(machine, (ServerPlayer) player);
+            machine.markDirty();
+        }
+
         Set<GTToolType> types = ToolHelper.getToolTypes(itemStack);
-        if (machine != null && !types.isEmpty() && ToolHelper.canUse(itemStack)) {
+        if (machine != null && (!types.isEmpty() && ToolHelper.canUse(itemStack)) ||
+                (types.isEmpty() && player.isShiftKeyDown())) {
             var result = machine.onToolClick(types, itemStack, new UseOnContext(player, hand, hit));
             if (result.getSecond() == InteractionResult.CONSUME && player instanceof ServerPlayer serverPlayer) {
                 ToolHelper.playToolSound(result.getFirst(), serverPlayer);
@@ -307,7 +320,8 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
             var result = interactedMachine.onUse(state, world, pos, player, hand, hit);
             if (result != InteractionResult.PASS) return result;
         }
-        if (shouldOpenUi && machine instanceof IUIMachine uiMachine) {
+        if (shouldOpenUi && machine instanceof IUIMachine uiMachine &&
+                IMachineOwner.canOpenOwnerMachine(player, machine.getHolder())) {
             return uiMachine.tryToOpenUI(player, hand, hit);
         }
         return shouldOpenUi ? InteractionResult.PASS : InteractionResult.CONSUME;

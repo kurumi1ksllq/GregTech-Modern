@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.block;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.MaterialPipeBlock;
 import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
@@ -12,8 +13,8 @@ import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
 import com.gregtechceu.gtceu.client.model.PipeModel;
 import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
-import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTDamageTypes;
+import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.pipelike.cable.Insulation;
 import com.gregtechceu.gtceu.common.pipelike.cable.LevelEnergyNet;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -118,8 +119,12 @@ public class CableBlock extends MaterialPipeBlock<Insulation, WireProperties, Le
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         // dont apply damage if there is a frame box
         var pipeNode = getPipeTile(level, pos);
+        if (pipeNode == null) {
+            GTCEu.LOGGER.error("Pipe was null");
+            return;
+        }
         if (pipeNode.getFrameMaterial() != null) {
-            BlockState frameState = GTBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, pipeNode.getFrameMaterial())
+            BlockState frameState = GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, pipeNode.getFrameMaterial())
                     .getDefaultState();
             frameState.getBlock().entityInside(frameState, level, pos, entity);
             return;
@@ -137,7 +142,7 @@ public class CableBlock extends MaterialPipeBlock<Insulation, WireProperties, Le
                     entityLiving.hurt(GTDamageTypes.ELECTRIC.source(level), damageAmount);
                     if (entityLiving instanceof ServerPlayer) {
                         // TODO advancments
-                        // AdvancementTriggers.ELECTROCUTION_DEATH.trigger((EntityPlayerMP) entityLiving);
+                        // AdvancementTriggers.ELECTROCUTION_DEATH.trigger((ServerPlayer) entityLiving);
                     }
                 }
             }

@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.recipe;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
+import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
@@ -61,7 +62,8 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
     public CompoundTag data;
     public int duration;
     public int parallels = 1;
-    public int ocTier = 0;
+    public int ocLevel = 0;
+    public final GTRecipeCategory recipeCategory;
     @Getter
     public boolean isFuel;
 
@@ -78,10 +80,11 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
                     List<?> ingredientActions,
                     @NotNull CompoundTag data,
                     int duration,
-                    boolean isFuel) {
+                    boolean isFuel,
+                    @NotNull GTRecipeCategory recipeCategory) {
         this(recipeType, null, inputs, outputs, tickInputs, tickOutputs,
                 inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                conditions, ingredientActions, data, duration, isFuel);
+                conditions, ingredientActions, data, duration, isFuel, recipeCategory);
     }
 
     public GTRecipe(GTRecipeType recipeType,
@@ -98,7 +101,8 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
                     List<?> ingredientActions,
                     @NotNull CompoundTag data,
                     int duration,
-                    boolean isFuel) {
+                    boolean isFuel,
+                    @NotNull GTRecipeCategory recipeCategory) {
         this.recipeType = recipeType;
         this.id = id;
 
@@ -117,32 +121,11 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
         this.data = data;
         this.duration = duration;
         this.isFuel = isFuel;
-    }
-
-    public Map<RecipeCapability<?>, List<Content>> copyContents(Map<RecipeCapability<?>, List<Content>> contents,
-                                                                @Nullable ContentModifier modifier) {
-        Map<RecipeCapability<?>, List<Content>> copyContents = new HashMap<>();
-        for (var entry : contents.entrySet()) {
-            var contentList = entry.getValue();
-            var cap = entry.getKey();
-            if (contentList != null && !contentList.isEmpty()) {
-                List<Content> contentsCopy = new ArrayList<>();
-                for (Content content : contentList) {
-                    contentsCopy.add(content.copy(cap, modifier));
-                }
-                copyContents.put(entry.getKey(), contentsCopy);
-            }
-        }
-        return copyContents;
+        this.recipeCategory = (recipeCategory != GTRecipeCategory.DEFAULT) ? recipeCategory : recipeType.getCategory();
     }
 
     public GTRecipe copy() {
-        return new GTRecipe(recipeType, id,
-                copyContents(inputs, null), copyContents(outputs, null),
-                copyContents(tickInputs, null), copyContents(tickOutputs, null),
-                new HashMap<>(inputChanceLogics), new HashMap<>(outputChanceLogics),
-                new HashMap<>(tickInputChanceLogics), new HashMap<>(tickOutputChanceLogics),
-                new ArrayList<>(conditions), new ArrayList<>(ingredientActions), data, duration, isFuel);
+        return copy(ContentModifier.IDENTITY, false);
     }
 
     public GTRecipe copy(ContentModifier modifier) {
@@ -151,15 +134,17 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
 
     public GTRecipe copy(ContentModifier modifier, boolean modifyDuration) {
         var copied = new GTRecipe(recipeType, id,
-                copyContents(inputs, modifier), copyContents(outputs, modifier),
-                copyContents(tickInputs, modifier), copyContents(tickOutputs, modifier),
+                modifier.applyContents(inputs), modifier.applyContents(outputs),
+                modifier.applyContents(tickInputs), modifier.applyContents(tickOutputs),
                 new HashMap<>(inputChanceLogics), new HashMap<>(outputChanceLogics),
                 new HashMap<>(tickInputChanceLogics), new HashMap<>(tickOutputChanceLogics),
                 new ArrayList<>(conditions),
-                new ArrayList<>(ingredientActions), data, duration, isFuel);
+                new ArrayList<>(ingredientActions), data, duration, isFuel, recipeCategory);
         if (modifyDuration) {
-            copied.duration = modifier.apply(this.duration).intValue();
+            copied.duration = modifier.apply(this.duration);
         }
+        copied.ocLevel = ocLevel;
+        copied.parallels = parallels;
         return copied;
     }
 
@@ -404,7 +389,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
             else if (nonChanced.size() >= outputLimit) {
                 outputs.computeIfAbsent(key, $ -> new ArrayList<>())
                         .addAll(nonChanced.stream()
-                                .map(cont -> cont.copy(key, null))
+                                .map(cont -> cont.copy(key))
                                 .toList()
                                 .subList(0, outputLimit));
 
@@ -413,7 +398,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
             // If the regular outputs and chanced outputs are required to satisfy the outputLimit
             else if (!nonChanced.isEmpty() && (nonChanced.size() + chanced.size()) >= outputLimit) {
                 outputs.computeIfAbsent(key, $ -> new ArrayList<>())
-                        .addAll(nonChanced.stream().map(cont -> cont.copy(key, null)).toList());
+                        .addAll(nonChanced.stream().map(cont -> cont.copy(key)).toList());
 
                 // Calculate the number of chanced outputs after adding all the regular outputs
                 int numChanced = outputLimit - nonChanced.size();
@@ -427,13 +412,13 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
             // The number of outputs + chanced outputs is lower than the trim number, so just add everything
             else {
                 outputs.computeIfAbsent(key, $ -> new ArrayList<>())
-                        .addAll(nonChanced.stream().map(cont -> cont.copy(key, null)).toList());
+                        .addAll(nonChanced.stream().map(cont -> cont.copy(key)).toList());
                 // Chanced outputs are taken care of in the original copy
             }
 
             if (!chanced.isEmpty())
                 outputs.computeIfAbsent(key, $ -> new ArrayList<>())
-                        .addAll(chanced.stream().map(cont -> cont.copy(key, null)).toList());
+                        .addAll(chanced.stream().map(cont -> cont.copy(key)).toList());
 
             trimmed.add(key);
         }

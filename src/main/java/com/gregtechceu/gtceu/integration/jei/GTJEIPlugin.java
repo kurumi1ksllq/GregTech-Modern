@@ -18,9 +18,8 @@ import com.gregtechceu.gtceu.integration.jei.orevein.GTBedrockOreInfoCategory;
 import com.gregtechceu.gtceu.integration.jei.orevein.GTOreVeinInfoCategory;
 import com.gregtechceu.gtceu.integration.jei.recipe.GTRecipeJEICategory;
 import com.gregtechceu.gtceu.integration.jei.subtype.PotionFluidSubtypeInterpreter;
+import com.gregtechceu.gtceu.integration.jei.tool.GTToolInfoCategory;
 
-import com.gregtechceu.gtceu.integration.jei.tool.GTToolInfoCategory;
-import com.gregtechceu.gtceu.integration.jei.tool.GTToolInfoCategory;
 import com.lowdragmc.lowdraglib.LDLib;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -75,6 +74,7 @@ public class GTJEIPlugin implements IModPlugin {
                 registry.addRecipeCategories(new GTRecipeJEICategory(jeiHelpers, category));
             }
         }
+        registry.addRecipeCategories(new GTToolInfoCategory(jeiHelpers));
         registry.addRecipeCategories(new GTProgrammedCircuitCategory(jeiHelpers));
     }
 

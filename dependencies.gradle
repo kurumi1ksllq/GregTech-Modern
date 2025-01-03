@@ -79,9 +79,9 @@ dependencies {
     modRuntimeOnly(forge.kotlinforforge)
 
     // Runtime Recipe Viewers - uncomment whichever group you want to use //
-    modRuntimeOnly(forge.emi)
+//    modRuntimeOnly(forge.emi)
 
-//    modRuntimeOnly(forge.jei.forge.impl)
+    modRuntimeOnly(forge.jei.forge.impl)
 
 //    modRuntimeOnly(forge.rei.forge)
 //    modRuntimeOnly(forge.architectury)

@@ -1,65 +1,53 @@
 package com.gregtechceu.gtceu.integration;
 
-import com.google.common.collect.ImmutableList;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
+import com.gregtechceu.gtceu.integration.xei.entry.item.ItemEntryList;
+import com.gregtechceu.gtceu.integration.xei.handlers.item.CycleItemEntryHandler;
+
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.jei.IngredientIO;
-import com.lowdragmc.lowdraglib.misc.ItemStackTransfer;
-import it.unimi.dsi.fastutil.Pair;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
+import it.unimi.dsi.fastutil.Pair;
+import lombok.Getter;
+
+import java.util.*;
 
 public class GTToolWidget extends WidgetGroup {
 
-    protected static Map<Integer, Pair<Integer, Integer>> SLOT_LOCS = new HashMap<>();
+    protected static LinkedHashMap<Integer, Pair<Integer, Integer>> SLOT_LOCS = new LinkedHashMap<>();
 
     static {
-        SLOT_LOCS.put( 1, guiPairs(0,0)); // pickaxe
-        SLOT_LOCS.put( 2, guiPairs(1,0)); // shovel
-        SLOT_LOCS.put( 3, guiPairs(2,0)); // axe
-        SLOT_LOCS.put( 4, guiPairs(3,0)); // sword
-        SLOT_LOCS.put( 5, guiPairs(4,0)); // hoe
-        SLOT_LOCS.put( 6, guiPairs(3,2)); // butchery knife
-        SLOT_LOCS.put( 7, guiPairs(2,3)); // buzz saw
-        SLOT_LOCS.put( 8, guiPairs(8,1)); // chainsaw
-        SLOT_LOCS.put( 9, guiPairs(7,5)); // crowbar
-        SLOT_LOCS.put(10, guiPairs(0,3)); // drill lv
-        //SLOT_LOCS.put(11, guiPairs(3,2)); // drill mv
-        //SLOT_LOCS.put(12, guiPairs(4,2)); // drill hv
-        //SLOT_LOCS.put(13, guiPairs(5,2)); // drill ev
-        //SLOT_LOCS.put(14, guiPairs(6,2)); // drill iv
-        SLOT_LOCS.put(15, guiPairs(7,2)); // file
-        SLOT_LOCS.put(16, guiPairs(7,0)); // hard hammer
-        SLOT_LOCS.put(17, guiPairs(3,1)); // knife
-        SLOT_LOCS.put(18, guiPairs(0,1)); // mining hammer
-        SLOT_LOCS.put(19, guiPairs(2,2)); // mortar
-        SLOT_LOCS.put(20, guiPairs(3,2)); // plunger
-        SLOT_LOCS.put(21, guiPairs(7,1)); // saw
-        SLOT_LOCS.put(22, guiPairs(7,3)); // screwdriver
-        SLOT_LOCS.put(23, guiPairs(8,3)); // screwdriver lv
-        SLOT_LOCS.put(24, guiPairs(4,1)); // scythe
-        SLOT_LOCS.put(25, guiPairs(0,3)); // shears
-        SLOT_LOCS.put(26, guiPairs(1,3)); // soft mallet
-        SLOT_LOCS.put(27, guiPairs(1,1)); // spade
-        SLOT_LOCS.put(28, guiPairs(7,4)); // wire cutter
-        SLOT_LOCS.put(29, guiPairs(8,4)); // wire cutter lv
-        //SLOT_LOCS.put(30, guiPairs(6,4)); // wire cutter hv
-        //SLOT_LOCS.put(31, guiPairs(7,4)); // wire cutter iv
-        SLOT_LOCS.put(32, guiPairs(7,6)); // wrench
-        SLOT_LOCS.put(33, guiPairs(8,6)); // wrench lv
-        //SLOT_LOCS.put(34, guiPairs(2,5)); // wrench hv
-        //SLOT_LOCS.put(35, guiPairs(3,5)); // wrench iv
-    }
-
-    private static Pair<Integer, Integer> guiPairs(int x, int y) {
-        return Pair.of(x * 18 + 2, y * 18 + 2);
+        SLOT_LOCS.put(0, Pair.of(29, 2)); // pickaxe
+        SLOT_LOCS.put(1, Pair.of(29, 20)); // shovel
+        SLOT_LOCS.put(2, Pair.of(29, 38)); // axe
+        SLOT_LOCS.put(3, Pair.of(29, 56)); // sword
+        SLOT_LOCS.put(4, Pair.of(29, 74)); // hoe
+        SLOT_LOCS.put(5, Pair.of(47, 56)); // butchery knife
+        SLOT_LOCS.put(6, Pair.of(128, 56)); // buzz saw
+        SLOT_LOCS.put(7, Pair.of(47, 38)); // chainsaw
+        SLOT_LOCS.put(8, Pair.of(110, 92)); // crowbar
+        SLOT_LOCS.put(9, Pair.of(65, 2)); // electric drills
+        SLOT_LOCS.put(10, Pair.of(110, 74)); // file
+        SLOT_LOCS.put(11, Pair.of(110, 110)); // hard hammer
+        SLOT_LOCS.put(12, Pair.of(47, 56)); // knife
+        SLOT_LOCS.put(13, Pair.of(47, 2)); // mining hammer
+        SLOT_LOCS.put(14, Pair.of(92, 2)); // mortar
+        SLOT_LOCS.put(15, Pair.of(92, 20)); // plunger
+        SLOT_LOCS.put(16, Pair.of(110, 56)); // saw
+        SLOT_LOCS.put(17, Pair.of(110, 20)); // screwdriver
+        SLOT_LOCS.put(18, Pair.of(128, 20)); // screwdriver lv
+        SLOT_LOCS.put(19, Pair.of(47, 74)); // scythe
+        SLOT_LOCS.put(20, Pair.of(29, 92)); // shears
+        SLOT_LOCS.put(21, Pair.of(92, 38)); // soft mallet
+        SLOT_LOCS.put(22, Pair.of(47, 20)); // spade
+        SLOT_LOCS.put(23, Pair.of(110, 38)); // wire cutter
+        SLOT_LOCS.put(24, Pair.of(128, 38)); // electric wire cutters
+        SLOT_LOCS.put(25, Pair.of(110, 2)); // wrench
+        SLOT_LOCS.put(26, Pair.of(128, 2)); // electric wrenches
+        SLOT_LOCS.put(40, Pair.of(2, 2)); // main material
     }
 
     public GTToolWidget(Material material) {
@@ -71,20 +59,99 @@ public class GTToolWidget extends WidgetGroup {
     public void setRecipe(GTTool recipeWrapper) {
         WidgetGroup itemGroup = new WidgetGroup();
 
-        NonNullList<ItemStack> items = recipeWrapper.items;
-        ItemStackTransfer itemHandler = new ItemStackTransfer(items);
-        for(int i = 1; i < 81; i++) {
-            if(!SLOT_LOCS.containsKey(i)) continue;
-            if(items.get(i) == ItemStack.EMPTY) continue;
-            int finalI = i;
-            itemGroup.addWidget(new SlotWidget(itemHandler, i, SLOT_LOCS.get(i).left(), SLOT_LOCS.get(i).right()).setCanTakeItems(false).setCanPutItems(false)
-                    .setIngredientIO(IngredientIO.INPUT)
-                    .setOnAddedTooltips((slot, tooltip) -> recipeWrapper.getTooltip(finalI, tooltip))
-                    .setBackground(GuiTextures.SLOT));
+
+        //if(recipeWrapper.items.isEmpty()) return;
+
+        List<ItemEntryList> items = new ArrayList<>();
+        recipeWrapper.items2.forEach((key, value) -> items.add(value));
+
+        CycleItemEntryHandler itemHandler = new CycleItemEntryHandler(items);
+
+        boolean hasVanilla = false, hasCraftingManual = false;
+        int lowestPriority = Integer.MAX_VALUE;
+        List<Integer> groupSize = new ArrayList<>() {};
+        for(int i = 0; i < GTTool.ToolGroup.values().length; i++) {
+            groupSize.add(0);
         }
 
+        for(var entry : recipeWrapper.items2.entrySet()) {
+            if(entry.getKey().getGroup() == GTTool.ToolGroup.VANILLA_INWORLD) {
+                hasVanilla = true;
+                if(entry.getKey().getType() == GTTool.ToolType.MANUAL_SPECIAL) {
+                    groupSize.set(1, 36);
+                } else if(entry.getKey().getType() == GTTool.ToolType.ELECTRIC) {
+                    groupSize.set(1, 54);
+                }
+            }
+
+            if(entry.getKey().getGroup() == GTTool.ToolGroup.CRAFTING) {
+                if(entry.getKey().getType() == GTTool.ToolType.MANUAL_SPECIAL) {
+                    hasCraftingManual = true;
+                    groupSize.set(2, 36);
+                } else if(entry.getKey().getType() == GTTool.ToolType.ELECTRIC) {
+                    groupSize.set(2, 54);
+                }
+            }
+            if(entry.getKey().getGroup() != GTTool.ToolGroup.MATERIAL) {
+                lowestPriority = Math.min(lowestPriority, entry.getKey().getPriority());
+            }
+        }
+
+        int slotIndex = 0;
+        for(var entry : recipeWrapper.items2.entrySet()) {
+            var x = 0;
+            var y = 0;
+            var info = entry.getKey();
+            if(info.getGroup() == GTTool.ToolGroup.VANILLA_INWORLD) {
+                x += 27;
+                if (info.getType() == GTTool.ToolType.MANUAL_SPECIAL) {
+                    x += 18;
+                } else if (info.getType() == GTTool.ToolType.ELECTRIC) {
+                    x += 36;
+                }
+            } else if(info.getGroup() == GTTool.ToolGroup.CRAFTING) {
+                x += 9  + (hasCraftingManual ? 18 : 0);
+                x += hasVanilla ? groupSize.get(1) : 0;
+                if (info.getType() == GTTool.ToolType.MANUAL_SPECIAL) {
+                    x -= 18;
+                } else if (info.getType() == GTTool.ToolType.ELECTRIC) {
+                    x += 18;
+                }
+            }
+
+            y += 18 * Math.min(0, (info.getPriority() - lowestPriority));
+
+            int finalSlotIndex = slotIndex;
+            itemGroup = itemGroup
+                    .addWidget(new SlotWidget(itemHandler, slotIndex, x, y)
+                            .setCanTakeItems(false).setCanPutItems(false)
+                            .setIngredientIO(IngredientIO.INPUT)
+                            .setOnAddedTooltips((slot, tooltip) -> recipeWrapper.getTooltip(finalSlotIndex, tooltip))
+                            .setBackground(GuiTextures.SLOT));
+            slotIndex++;
+        }
+
+
+
+        //List<ItemEntryList> items = recipeWrapper.items.int2ObjectEntrySet().stream().map(Map.Entry::getValue).toList();
+
+        /*for (var entry : SLOT_LOCS.entrySet()) {
+            int x = entry.getValue().left(), y = entry.getValue().right();
+            if(recipeWrapper.items.containsKey(entry.getKey())) {
+                int finalSlotIndex = slotIndex;
+                itemGroup = itemGroup
+                        .addWidget(new SlotWidget(itemHandler, slotIndex, x, y)
+                                .setCanTakeItems(false).setCanPutItems(false)
+                                .setIngredientIO(IngredientIO.INPUT)
+                                .setOnAddedTooltips((slot, tooltip) -> recipeWrapper.getTooltip(finalSlotIndex, tooltip))
+                                .setBackground(GuiTextures.SLOT));
+
+            } else  {
+                //itemGroup.addWidget(new ImageWidget(x, y, 18, 18, GuiTextures.SLOT));
+            }
+
+        }*/
+
         this.addWidget(itemGroup);
-
-
     }
 }

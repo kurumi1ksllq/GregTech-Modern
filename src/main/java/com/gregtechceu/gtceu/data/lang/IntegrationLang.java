@@ -13,6 +13,7 @@ public class IntegrationLang {
     public static void init(RegistrateLangProvider provider) {
         initRecipeViewerLang(provider);
         initWailaLikeLang(provider);
+        initMinimapLang(provider);
     }
 
     /**
@@ -22,6 +23,7 @@ public class IntegrationLang {
         provider.add("gtceu.jei.multiblock_info", "Multiblock Info");
         provider.add("gtceu.jei.ore_processing_diagram", "Ore Processing Diagram");
         provider.add("gtceu.jei.ore_vein_diagram", "Ore Vein Diagram");
+        provider.add("gtceu.jei.programmed_circuit", "Programmed Circuit Page");
         provider.add("gtceu.jei.bedrock_fluid_diagram", "Bedrock Fluid Diagram");
         provider.add("gtceu.jei.bedrock_ore_diagram", "Bedrock Ore Diagram");
         provider.add("gtceu.jei.ore_vein_diagram.chance", "§eChance: %s§r");
@@ -40,6 +42,8 @@ public class IntegrationLang {
             String name = GTRegistries.BEDROCK_FLUID_DEFINITIONS.getKey(fluid).getPath();
             provider.add("gtceu.jei.bedrock_fluid." + name, RegistrateLangProvider.toEnglishName(name));
         }
+
+        provider.add("gtceu.rei.group.potion_fluids", "Potion Fluids");
     }
 
     /**
@@ -105,5 +109,18 @@ public class IntegrationLang {
         provider.add("gregtech.top.pipe.amperage", "Average Amperage / s:");
         provider.add("gregtech.top.pipe.fluid_last", "Last Fluid:");
         provider.add("gregtech.top.pipe.item_last", "Last Item:");
+    }
+
+    private static void initMinimapLang(RegistrateLangProvider provider) {
+        provider.add("gtceu.minimap.ore_vein.depleted", "Depleted");
+
+        provider.add("message.gtceu.new_veins", "Prospected %d new veins!");
+        provider.add("button.gtceu.mark_as_depleted.name", "Mark as Depleted");
+        provider.add("button.gtceu.toggle_waypoint.name", "Toggle Waypoint");
+
+        provider.add("gtceu.journeymap.options.layers", "Prospection layers");
+        provider.add("gtceu.journeymap.options.layers.ore_veins", "Show Ore Veins");
+        provider.add("gtceu.journeymap.options.layers.bedrock_fluids", "Show Bedrock Fluid Veins");
+        provider.add("gtceu.journeymap.options.layers.hide_depleted", "Hide Depleted Veins");
     }
 }

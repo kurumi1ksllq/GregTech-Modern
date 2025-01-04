@@ -57,6 +57,7 @@ afterEvaluate {
     tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
         exclude ".cache/*"
 
+        destinationDirectory = file('build/libs/')
         manifest.attributes([
                 'MixinConfigs': 'gtceu.mixins.json',
                 'Specification-Title': project.name,

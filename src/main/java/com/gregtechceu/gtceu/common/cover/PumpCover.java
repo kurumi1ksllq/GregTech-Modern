@@ -17,10 +17,12 @@ import com.gregtechceu.gtceu.api.graphnet.pipenet.traverse.SimpleTileRoundRobinD
 import com.gregtechceu.gtceu.api.graphnet.predicate.test.FluidTestObject;
 import com.gregtechceu.gtceu.api.graphnet.traverse.TraverseHelpers;
 import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
-import com.gregtechceu.gtceu.api.gui.widget.LongInputWidget;
+import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.NumberInputWidget;
 import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
-import com.gregtechceu.gtceu.api.transfer.fluid.FluidTransferDelegate;
+import com.gregtechceu.gtceu.api.transfer.fluid.FluidHandlerDelegate;
+import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
+import com.gregtechceu.gtceu.api.transfer.fluid.ModifiableFluidHandlerWrapper;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.common.cover.data.BucketMode;
@@ -31,6 +33,8 @@ import com.gregtechceu.gtceu.common.pipelike.net.fluid.FluidEQTraverseData;
 import com.gregtechceu.gtceu.common.pipelike.net.fluid.FluidRRTraverseData;
 import com.gregtechceu.gtceu.common.pipelike.net.fluid.FluidTraverseData;
 import com.gregtechceu.gtceu.common.pipelike.net.fluid.IFluidTraverseGuideProvider;
+import com.gregtechceu.gtceu.utils.FluidStackHashStrategy;
+import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -44,7 +48,6 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
-import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -54,10 +57,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Contract;
@@ -83,15 +89,15 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(PumpCover.class,
             CoverBehavior.MANAGED_FIELD_HOLDER);
 
-    protected static final long MILLIBUCKET_SIZE = FluidHelper.getBucket() / 1000;
+    // .5b 2b 8b
+    public static final Int2IntFunction PUMP_SCALING = tier -> 64 * (int) Math.pow(4, Math.min(tier - 1, GTValues.IV));
 
     public final int tier;
-    public final long maxMilliBucketsPerTick;
-
+    public final int maxFluidTransferRate;
     @Persisted
     @DescSynced
     @Getter
-    protected long currentMilliBucketsPerTick;
+    protected int transferRate;
     @Persisted
     @DescSynced
     @Getter
@@ -114,32 +120,27 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
     @Persisted
     @Getter
     protected boolean isWorkingEnabled = true;
-    protected long milliBucketsLeftToTransferLastSecond;
+    protected int mBLeftToTransferLastSecond;
 
     @Persisted
     @DescSynced
     @Getter
     protected final FilterHandler<FluidStack, FluidFilter> filterHandler;
     protected final ConditionalSubscriptionHandler subscriptionHandler;
-    private NumberInputWidget<Long> transferRateWidget;
+    private NumberInputWidget<Integer> transferRateWidget;
 
     protected final Object2ObjectLinkedOpenHashMap<Object, SimpleTileRoundRobinData<IFluidHandler>> roundRobinCache = new Object2ObjectLinkedOpenHashMap<>();
 
     protected @Nullable CoverRenderer rendererInverted;
 
-    /*
-     * Transfer rate variables are treated as liters/millibuckets per tick.
-     * The actual conversion to the platform's values happens inside tick handling.
-     */
-
-    public PumpCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier) {
+    public PumpCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier,
+                     int maxTransferRate) {
         super(definition, coverHolder, attachedSide);
         this.tier = tier;
 
-        this.maxMilliBucketsPerTick = 64 * (long) Math.pow(4, Math.min(tier - 1, GTValues.IV)); // .5b 2b 8b
-
-        this.currentMilliBucketsPerTick = maxMilliBucketsPerTick;
-        this.milliBucketsLeftToTransferLastSecond = currentMilliBucketsPerTick * 20;
+        this.maxFluidTransferRate = maxTransferRate;
+        this.transferRate = maxFluidTransferRate;
+        this.mBLeftToTransferLastSecond = transferRate * 20;
 
         subscriptionHandler = new ConditionalSubscriptionHandler(coverHolder, this::update, this::isSubscriptionActive);
         filterHandler = FilterHandlers.fluid(this)
@@ -148,17 +149,22 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
                 .onFilterRemoved(f -> configureFilter());
     }
 
+    public PumpCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier) {
+        this(definition, coverHolder, attachedSide, tier, PUMP_SCALING.applyAsInt(tier));
+    }
+
     protected boolean isSubscriptionActive() {
-        return isWorkingEnabled() && getAdjacentFluidTransfer() != null;
+        return isWorkingEnabled() && getAdjacentFluidHandler() != null;
     }
 
-    protected @Nullable IFluidTransfer getOwnFluidTransfer() {
-        return coverHolder.getFluidTransferCap(attachedSide, false);
+    protected @Nullable IFluidHandlerModifiable getOwnFluidHandler() {
+        return coverHolder.getFluidHandlerCap(attachedSide, false);
     }
 
-    protected @Nullable IFluidTransfer getAdjacentFluidTransfer() {
-        return FluidTransferHelper.getFluidTransfer(coverHolder.getLevel(), coverHolder.getPos().relative(attachedSide),
-                attachedSide.getOpposite());
+    protected @Nullable IFluidHandler getAdjacentFluidHandler() {
+        return GTTransferUtils.getAdjacentFluidHandler(coverHolder.getLevel(), coverHolder.getPos(), attachedSide)
+                .resolve()
+                .orElse(null);
     }
 
     //////////////////////////////////////
@@ -240,8 +246,8 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
     // ***** Transfer Logic *****//
     //////////////////////////////////////
 
-    public void setTransferRate(long milliBucketsPerTick) {
-        this.currentMilliBucketsPerTick = Math.min(Math.max(milliBucketsPerTick, 0), maxMilliBucketsPerTick);
+    public void setTransferRate(int milliBucketsPerTick) {
+        this.transferRate = Math.min(Math.max(milliBucketsPerTick, 0), maxFluidTransferRate);
     }
 
     public void setBucketMode(BucketMode bucketMode) {
@@ -256,7 +262,7 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
             transferRateWidget.setValue(getCurrentBucketModeTransferRate());
         }
 
-        transferRateWidget.setMax(maxMilliBucketsPerTick / bucketMode.multiplier);
+        transferRateWidget.setMax(maxFluidTransferRate / bucketMode.multiplier);
 
         if (newMultiplier > oldMultiplier) {
             transferRateWidget.setValue(getCurrentBucketModeTransferRate());
@@ -446,16 +452,16 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
     @Override
     public Widget createUIWidget() {
         final var group = new WidgetGroup(0, 0, 176, 137);
-        group.addWidget(new LabelWidget(10, 5, LocalizationUtils.format(getUITitle(), GTValues.VN[tier])));
+        group.addWidget(new LabelWidget(10, 5, Component.translatable(getUITitle(), GTValues.VN[tier]).getString()));
 
-        transferRateWidget = new LongInputWidget(10, 20, 134, 20,
-                this::getCurrentBucketModeTransferRate, this::setCurrentBucketModeTransferRate).setMin(0L);
+        transferRateWidget = new IntInputWidget(10, 20, 134, 20,
+                this::getCurrentBucketModeTransferRate, this::setCurrentBucketModeTransferRate).setMin(0);
         setBucketMode(this.bucketMode); // initial input widget config happens here
         group.addWidget(transferRateWidget);
 
         group.addWidget(new EnumSelectorWidget<>(
                 146, 20, 20, 20,
-                Arrays.stream(BucketMode.values()).filter(m -> m.multiplier <= maxMilliBucketsPerTick).toList(),
+                Arrays.stream(BucketMode.values()).filter(m -> m.multiplier <= maxFluidTransferRate).toList(),
                 bucketMode, this::setBucketMode).setTooltipSupplier(this::getBucketModeTooltip));
 
         group.addWidget(new EnumSelectorWidget<>(10, 45, 20, 20, List.of(IO.IN, IO.OUT), io, this::setIo));
@@ -477,11 +483,11 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
                 Component.translatable(langKey).append(Component.translatable("gtceu.gui.content.units.per_tick")));
     }
 
-    private long getCurrentBucketModeTransferRate() {
-        return this.currentMilliBucketsPerTick / this.bucketMode.multiplier;
+    private int getCurrentBucketModeTransferRate() {
+        return this.transferRate / this.bucketMode.multiplier;
     }
 
-    private void setCurrentBucketModeTransferRate(long transferRate) {
+    private void setCurrentBucketModeTransferRate(int transferRate) {
         this.setTransferRate(transferRate * this.bucketMode.multiplier);
     }
 
@@ -502,46 +508,46 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
     // *** CAPABILITY OVERRIDE ***//
     /////////////////////////////////////
 
-    private CoverableFluidTransferWrapper fluidTransferWrapper;
+    private CoverableFluidHandlerWrapper fluidHandlerWrapper;
 
     @Nullable
     @Override
-    public IFluidTransfer getFluidTransferCap(@Nullable IFluidTransfer defaultValue) {
+    public IFluidHandlerModifiable getFluidHandlerCap(@Nullable IFluidHandlerModifiable defaultValue) {
         if (defaultValue == null) {
             return null;
         }
-        if (fluidTransferWrapper == null || fluidTransferWrapper.delegate != defaultValue) {
-            this.fluidTransferWrapper = new CoverableFluidTransferWrapper(defaultValue);
+        if (fluidHandlerWrapper == null || fluidHandlerWrapper.delegate != defaultValue) {
+            this.fluidHandlerWrapper = new CoverableFluidHandlerWrapper(defaultValue);
         }
-        return fluidTransferWrapper;
+        return fluidHandlerWrapper;
     }
 
-    private class CoverableFluidTransferWrapper extends FluidTransferDelegate {
+    private class CoverableFluidHandlerWrapper extends FluidHandlerDelegate {
 
-        public CoverableFluidTransferWrapper(IFluidTransfer delegate) {
+        public CoverableFluidHandlerWrapper(IFluidHandlerModifiable delegate) {
             super(delegate);
         }
 
         @Override
-        public long fill(int tank, FluidStack resource, boolean simulate, boolean notifyChanges) {
+        public int fill(FluidStack resource, FluidAction action) {
             if (io == IO.OUT && manualIOMode == ManualIOMode.DISABLED) {
                 return 0;
             }
             if (!filterHandler.test(resource) && manualIOMode == ManualIOMode.FILTERED) {
                 return 0;
             }
-            return super.fill(tank, resource, simulate, notifyChanges);
+            return super.fill(resource, action);
         }
 
         @Override
-        public FluidStack drain(int tank, FluidStack resource, boolean simulate, boolean notifyChanges) {
+        public FluidStack drain(FluidStack resource, FluidAction action) {
             if (io == IO.IN && manualIOMode == ManualIOMode.DISABLED) {
-                return FluidStack.empty();
+                return FluidStack.EMPTY;
             }
             if (manualIOMode == ManualIOMode.FILTERED && !filterHandler.test(resource)) {
-                return FluidStack.empty();
+                return FluidStack.EMPTY;
             }
-            return super.drain(tank, resource, simulate, notifyChanges);
+            return super.drain(resource, action);
         }
     }
 }

@@ -6,13 +6,13 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
+import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.list.AEListGridWidget;
 import com.gregtechceu.gtceu.integration.ae2.utils.KeyStorage;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.misc.ItemStackTransfer;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
@@ -22,6 +22,9 @@ import net.minecraft.world.item.ItemStack;
 import appeng.api.config.Actionable;
 import appeng.api.stacks.AEItemKey;
 import lombok.NoArgsConstructor;
+
+import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -112,16 +115,31 @@ public class MEOutputBusPartMachine extends MEBusPartMachine implements IMachine
     private class InaccessibleInfiniteHandler extends NotifiableItemStackHandler {
 
         public InaccessibleInfiniteHandler(MetaMachine holder) {
-            super(holder, 1, IO.OUT, IO.NONE, ItemStackTransferDelegate::new);
+            super(holder, 1, IO.OUT, IO.NONE, ItemStackHandlerDelegate::new);
             internalBuffer.setOnContentsChanged(this::onContentsChanged);
+        }
+
+        @Override
+        public List<Object> getContents() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public double getTotalContentAmount() {
+            return 0;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
         }
     }
 
     @NoArgsConstructor
-    private class ItemStackTransferDelegate extends ItemStackTransfer {
+    private class ItemStackHandlerDelegate extends CustomItemStackHandler {
 
         // Necessary for InaccessibleInfiniteHandler
-        public ItemStackTransferDelegate(Integer integer) {
+        public ItemStackHandlerDelegate(Integer integer) {
             super();
         }
 
@@ -146,7 +164,7 @@ public class MEOutputBusPartMachine extends MEBusPartMachine implements IMachine
         }
 
         @Override
-        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate, boolean notifyChanges) {
+        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             var key = AEItemKey.of(stack);
             int count = stack.getCount();
             long oldValue = internalBuffer.storage.getOrDefault(key, 0);
@@ -163,20 +181,8 @@ public class MEOutputBusPartMachine extends MEBusPartMachine implements IMachine
         }
 
         @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate, boolean notifyChanges) {
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
             return ItemStack.EMPTY;
-        }
-
-        @Override
-        public ItemStackTransfer copy() {
-            // because recipe testing uses copy transfer instead of simulated operations
-            return new ItemStackTransferDelegate() {
-
-                @Override
-                public ItemStack insertItem(int slot, ItemStack stack, boolean simulate, boolean notifyChanges) {
-                    return super.insertItem(slot, stack, true, notifyChanges);
-                }
-            };
         }
     }
 }

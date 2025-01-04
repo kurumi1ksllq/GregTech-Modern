@@ -5,15 +5,18 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.client.EnvironmentalHazardClientHandler;
 import com.gregtechceu.gtceu.client.TooltipsHandler;
-import com.gregtechceu.gtceu.client.renderer.BlockHighLightRenderer;
+import com.gregtechceu.gtceu.client.renderer.BlockHighlightRenderer;
 import com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer;
 import com.gregtechceu.gtceu.client.util.TooltipHelper;
+import com.gregtechceu.gtceu.common.commands.GTClientCommands;
+import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -38,7 +41,7 @@ public class ForgeClientEventListener {
 
     @SubscribeEvent
     public static void onBlockHighlightEvent(RenderHighlightEvent.Block event) {
-        BlockHighLightRenderer.renderBlockHighLight(event.getPoseStack(), event.getCamera(), event.getTarget(),
+        BlockHighlightRenderer.renderBlockHighlight(event.getPoseStack(), event.getCamera(), event.getTarget(),
                 event.getMultiBufferSource(), event.getPartialTick());
     }
 
@@ -57,5 +60,20 @@ public class ForgeClientEventListener {
         } else {
             ClientProxy.setServerTickCount(ClientProxy.getServerTickCount() + 1);
         }
+    }
+
+    @SubscribeEvent
+    public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
+        ClientCacheManager.allowReinit();
+    }
+
+    @SubscribeEvent
+    public static void registerClientCommand(RegisterClientCommandsEvent event) {
+        GTClientCommands.register(event.getDispatcher(), event.getBuildContext());
+    }
+
+    @SubscribeEvent
+    public static void serverStopped(ServerStoppedEvent event) {
+        ClientCacheManager.clearCaches();
     }
 }

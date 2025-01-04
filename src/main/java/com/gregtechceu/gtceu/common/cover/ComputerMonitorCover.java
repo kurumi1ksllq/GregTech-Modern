@@ -13,6 +13,11 @@ public class ComputerMonitorCover extends CoverBehavior {
         super(definition, coverHolder, attachedSide);
     }
 
+    @Override
+    public boolean canPipePassThrough() {
+        return false;
+    }
+
     // No implementation here, this cover is just for decorative purposes
 
     @Override

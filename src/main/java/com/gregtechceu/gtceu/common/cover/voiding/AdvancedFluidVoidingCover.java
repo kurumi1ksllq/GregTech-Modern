@@ -6,8 +6,9 @@ import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.filter.FluidFilter;
 import com.gregtechceu.gtceu.api.cover.filter.SimpleFluidFilter;
 import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
-import com.gregtechceu.gtceu.api.gui.widget.LongInputWidget;
+import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.NumberInputWidget;
+import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.common.cover.data.BucketMode;
@@ -25,6 +26,7 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import lombok.Getter;
@@ -46,13 +48,13 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
     @Persisted
     @DescSynced
     @Getter
-    protected long globalTransferSizeMillibuckets = 1L;
+    protected int globalTransferSizeMillibuckets = 1;
     @Persisted
     @DescSynced
     @Getter
     private BucketMode transferBucketMode = BucketMode.MILLI_BUCKET;
 
-    private NumberInputWidget<Long> stackSizeInput;
+    private NumberInputWidget<Integer> stackSizeInput;
     private EnumSelectorWidget<BucketMode> stackSizeBucketModeInput;
 
     public AdvancedFluidVoidingCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
@@ -114,7 +116,7 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
         }
     }
 
-    private long getFilteredFluidAmount(FluidStack fluidStack) {
+    private int getFilteredFluidAmount(FluidStack fluidStack) {
         if (!filterHandler.isFilterPresent())
             return globalTransferSizeMillibuckets;
 
@@ -156,9 +158,9 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
         group.addWidget(
                 new EnumSelectorWidget<>(146, 20, 20, 20, VoidingMode.values(), voidingMode, this::setVoidingMode));
 
-        this.stackSizeInput = new LongInputWidget(35, 20, 84, 20,
-                this::getCurrentBucketModeTransferSize, this::setCurrentBucketModeTransferSize).setMin(1L)
-                .setMax(Long.MAX_VALUE);
+        this.stackSizeInput = new IntInputWidget(35, 20, 84, 20,
+                this::getCurrentBucketModeTransferSize, this::setCurrentBucketModeTransferSize).setMin(1)
+                .setMax(Integer.MAX_VALUE);
         configureStackSizeInput();
         group.addWidget(this.stackSizeInput);
 
@@ -167,18 +169,18 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
         group.addWidget(this.stackSizeBucketModeInput);
     }
 
-    private long getCurrentBucketModeTransferSize() {
+    private int getCurrentBucketModeTransferSize() {
         return this.globalTransferSizeMillibuckets / this.transferBucketMode.multiplier;
     }
 
-    private void setCurrentBucketModeTransferSize(long transferSize) {
+    private void setCurrentBucketModeTransferSize(int transferSize) {
         this.globalTransferSizeMillibuckets = Math.max(transferSize * this.transferBucketMode.multiplier, 0);
     }
 
     @Override
     protected void configureFilter() {
         if (filterHandler.getFilter() instanceof SimpleFluidFilter filter) {
-            filter.setMaxStackSize(voidingMode == VoidingMode.VOID_ANY ? 1L : Long.MAX_VALUE);
+            filter.setMaxStackSize(voidingMode == VoidingMode.VOID_ANY ? 1 : Integer.MAX_VALUE);
         }
 
         configureStackSizeInput();

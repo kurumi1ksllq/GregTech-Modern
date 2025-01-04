@@ -8,14 +8,14 @@ import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 
-import com.lowdragmc.lowdraglib.side.fluid.FluidHelper;
-import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
-import com.lowdragmc.lowdraglib.side.fluid.FluidTransferHelper;
-
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -63,10 +63,9 @@ public class InfiniteWaterCover extends CoverBehavior {
 
     public void update() {
         if (coverHolder.getOffsetTimer() % 20 == 0) {
-            var fluidHandler = FluidTransferHelper.getFluidTransfer(coverHolder.getLevel(), coverHolder.getPos(),
-                    attachedSide);
-            if (fluidHandler != null)
-                fluidHandler.fill(FluidStack.create(Fluids.WATER, 16 * FluidHelper.getBucket()), false);
+            FluidUtil.getFluidHandler(coverHolder.getLevel(), coverHolder.getPos(), attachedSide)
+                    .ifPresent(h -> h.fill(new FluidStack(Fluids.WATER, 16 * FluidType.BUCKET_VOLUME),
+                            IFluidHandler.FluidAction.EXECUTE));
         }
     }
 }

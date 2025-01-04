@@ -16,14 +16,12 @@ import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.common.cover.data.TransferMode;
-import com.gregtechceu.gtceu.common.pipelike.net.item.IItemTransferController;
+import com.gregtechceu.gtceu.common.pipelike.net.item.IItemHandlerController;
 import com.gregtechceu.gtceu.common.pipelike.net.item.ItemEQTraverseData;
 import com.gregtechceu.gtceu.common.pipelike.net.item.ItemRRTraverseData;
 import com.gregtechceu.gtceu.common.pipelike.net.item.ItemTraverseData;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.side.item.IItemTransfer;
-import com.lowdragmc.lowdraglib.side.item.forge.ItemTransferHelperImpl;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
@@ -43,8 +41,8 @@ import java.util.function.IntUnaryOperator;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class RobotArmCover extends ConveyorCover {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(RobotArmCover.class,
@@ -63,10 +61,14 @@ public class RobotArmCover extends ConveyorCover {
 
     private IntInputWidget stackSizeInput;
 
-    public RobotArmCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier) {
-        super(definition, coverHolder, attachedSide, tier);
-
+    public RobotArmCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier,
+                         int maxTransferRate) {
+        super(definition, coverHolder, attachedSide, tier, maxTransferRate);
         setTransferMode(TransferMode.TRANSFER_ANY);
+    }
+
+    public RobotArmCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier) {
+        this(definition, coverHolder, attachedSide, tier, CONVEYOR_SCALING.applyAsInt(tier));
     }
 
     @Override
@@ -103,7 +105,7 @@ public class RobotArmCover extends ConveyorCover {
     }
 
     @Override
-    protected void performTransferOnUpdate(@NotNull IItemTransfer sourceHandler, @NotNull IItemTransfer destHandler) {
+    protected void performTransferOnUpdate(@NotNull IItemHandler sourceHandler, @NotNull IItemHandler destHandler) {
         if (transferMode == TransferMode.TRANSFER_ANY) {
             super.performTransferOnUpdate(sourceHandler, destHandler);
             return;
@@ -155,7 +157,7 @@ public class RobotArmCover extends ConveyorCover {
     }
 
     @Override
-    protected int simpleInsert(@NotNull IItemTransfer destHandler, ItemTestObject testObject, int count,
+    protected int simpleInsert(@NotNull IItemHandler destHandler, ItemTestObject testObject, int count,
                                boolean simulate) {
         if (transferMode == TransferMode.KEEP_EXACT) {
             assert getFilterHandler().isFilterPresent();
@@ -175,7 +177,7 @@ public class RobotArmCover extends ConveyorCover {
     }
 
     @Override
-    public int insertToHandler(@NotNull ItemTestObject testObject, int amount, @NotNull IItemTransfer destHandler,
+    public int insertToHandler(@NotNull ItemTestObject testObject, int amount, @NotNull IItemHandler destHandler,
                                boolean simulate) {
         if (io == IO.OUT) {
             if (transferMode == TransferMode.KEEP_EXACT) {
@@ -196,7 +198,7 @@ public class RobotArmCover extends ConveyorCover {
     }
 
     @Override
-    public int extractFromHandler(@NotNull ItemTestObject testObject, int amount, @NotNull IItemTransfer sourceHandler,
+    public int extractFromHandler(@NotNull ItemTestObject testObject, int amount, @NotNull IItemHandler sourceHandler,
                                   boolean simulate) {
         if (io == IO.IN) {
             // TODO should extraction instead be ignored for transfer exact?
@@ -280,7 +282,7 @@ public class RobotArmCover extends ConveyorCover {
         return !this.filterHandler.getFilter().supportsAmounts();
     }
 
-    protected int computeContained(@NotNull IItemTransfer handler, @NotNull ItemTestObject testObject) {
+    protected int computeContained(@NotNull IItemHandler handler, @NotNull ItemTestObject testObject) {
         int found = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack contained = handler.getStackInSlot(i);
@@ -306,17 +308,16 @@ public class RobotArmCover extends ConveyorCover {
                         capability.getKey() == inputFacing)
                     continue; // anti insert-to-our-source logic
 
-                IItemHandler containerCap = capability.getValue()
+                IItemHandler container = capability.getValue()
                         .getCapability(ForgeCapabilities.ITEM_HANDLER,
                                 capability.getKey().getOpposite())
                         .resolve().orElse(null);
-                if (containerCap != null) {
-                    IItemTransfer container = ItemTransferHelperImpl.toItemTransfer(containerCap);
+                if (container != null) {
                     int contained = computeContained(container, getTestObject());
                     assert getFilterHandler().isFilterPresent();
                     int kept = getFilterHandler().getFilter().getTransferLimit(getTestObject().recombine());
                     if (contained >= kept) continue;
-                    availableFlow = IItemTransferController.CONTROL.get(destination.getBlockEntity().getCoverHolder()
+                    availableFlow = IItemHandlerController.CONTROL.get(destination.getBlockEntity().getCoverHolder()
                             .getCoverAtSide(capability.getKey())).insertToHandler(getTestObject(),
                                     (int) Math.min(kept - contained, availableFlow), container,
                                     getSimulatorKey() != null);
@@ -344,17 +345,16 @@ public class RobotArmCover extends ConveyorCover {
                         capability.getKey() == inputFacing)
                     continue; // anti insert-to-our-source logic
 
-                IItemHandler containerCap = capability.getValue()
+                IItemHandler container = capability.getValue()
                         .getCapability(ForgeCapabilities.ITEM_HANDLER,
                                 capability.getKey().getOpposite())
                         .resolve().orElse(null);
-                if (containerCap != null) {
-                    IItemTransfer container = ItemTransferHelperImpl.toItemTransfer(containerCap);
+                if (container != null) {
                     int contained = computeContained(container, getTestObject());
                     assert getFilterHandler().isFilterPresent();
                     int kept = getFilterHandler().getFilter().getTransferLimit(getTestObject().recombine());
                     if (contained >= kept) continue;
-                    availableFlow = IItemTransferController.CONTROL.get(node.getBlockEntity().getCoverHolder()
+                    availableFlow = IItemHandlerController.CONTROL.get(node.getBlockEntity().getCoverHolder()
                             .getCoverAtSide(capability.getKey())).insertToHandler(getTestObject(),
                                     (int) Math.min(kept - contained, flowPerDestination), container, simulating());
                 }
@@ -370,17 +370,16 @@ public class RobotArmCover extends ConveyorCover {
                         capability.getKey() == inputFacing)
                     continue; // anti insert-to-our-source logic
 
-                IItemHandler containerCap = capability.getValue()
+                IItemHandler container = capability.getValue()
                         .getCapability(ForgeCapabilities.ITEM_HANDLER,
                                 capability.getKey().getOpposite())
                         .resolve().orElse(null);
-                if (containerCap != null) {
-                    IItemTransfer container = ItemTransferHelperImpl.toItemTransfer(containerCap);
+                if (container != null) {
                     int contained = computeContained(container, getTestObject());
                     assert getFilterHandler().isFilterPresent();
                     int kept = getFilterHandler().getFilter().getTransferLimit(getTestObject().recombine());
                     if (contained >= kept) continue;
-                    availableFlow = IItemTransferController.CONTROL.get(destination.getBlockEntity().getCoverHolder()
+                    availableFlow = IItemHandlerController.CONTROL.get(destination.getBlockEntity().getCoverHolder()
                             .getCoverAtSide(capability.getKey())).insertToHandler(getTestObject(),
                                     (int) Math.min(kept - contained, availableFlow), container,
                                     getSimulatorKey() != null);
@@ -407,14 +406,13 @@ public class RobotArmCover extends ConveyorCover {
             if (destination.getEquivalencyData().equals(sourcePos) && pointerFacing == inputFacing)
                 return 0; // anti insert-to-our-source logic
 
-            IItemHandler containerCap = data.getAtPointer(destination, getSimulatorKey());
-            if (containerCap != null) {
-                IItemTransfer container = ItemTransferHelperImpl.toItemTransfer(containerCap);
+            IItemHandler container = data.getAtPointer(destination, getSimulatorKey());
+            if (container != null) {
                 int contained = computeContained(container, getTestObject());
                 assert getFilterHandler().isFilterPresent();
                 int kept = getFilterHandler().getFilter().getTransferLimit(getTestObject().recombine());
                 if (contained >= kept) return 0;
-                availableFlow = IItemTransferController.CONTROL.get(destination.getBlockEntity().getCoverHolder()
+                availableFlow = IItemHandlerController.CONTROL.get(destination.getBlockEntity().getCoverHolder()
                         .getCoverAtSide(pointerFacing)).insertToHandler(getTestObject(),
                                 (int) Math.min(kept - contained, availableFlow), container,
                                 getSimulatorKey() != null);

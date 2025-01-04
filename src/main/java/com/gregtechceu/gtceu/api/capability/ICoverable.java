@@ -1,14 +1,12 @@
 package com.gregtechceu.gtceu.api.capability;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.IAppearance;
 import com.gregtechceu.gtceu.api.blockentity.ITickSubscription;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
+import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.utils.GTUtil;
-
-import com.lowdragmc.lowdraglib.LDLib;
-import com.lowdragmc.lowdraglib.side.fluid.IFluidTransfer;
-import com.lowdragmc.lowdraglib.side.item.IItemTransfer;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,6 +24,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -72,9 +71,9 @@ public interface ICoverable extends ITickSubscription, IAppearance, ICapabilityP
 
     boolean shouldRenderBackSide();
 
-    IItemTransfer getItemTransferCap(@Nullable Direction side, boolean useCoverCapability);
+    IItemHandlerModifiable getItemHandlerCap(@Nullable Direction side, boolean useCoverCapability);
 
-    IFluidTransfer getFluidTransferCap(@Nullable Direction side, boolean useCoverCapability);
+    IFluidHandlerModifiable getFluidHandlerCap(@Nullable Direction side, boolean useCoverCapability);
 
     /**
      * Use {@link ICoverable#removeCover(boolean, Direction, Player)} and
@@ -195,7 +194,7 @@ public interface ICoverable extends ITickSubscription, IAppearance, ICapabilityP
     }
 
     default boolean isRemote() {
-        return getLevel() == null ? LDLib.isRemote() : getLevel().isClientSide;
+        return getLevel() == null ? GTCEu.isClientThread() : getLevel().isClientSide;
     }
 
     default VoxelShape[] addCoverCollisionBoundingBox() {

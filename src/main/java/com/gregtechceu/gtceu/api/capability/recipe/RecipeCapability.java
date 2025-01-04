@@ -134,10 +134,11 @@ public abstract class RecipeCapability<T> {
      * @param recipe     the recipe from which we get the input to product ratio
      * @param holder     the {@link IRecipeCapabilityHolder} that contains all the inputs and outputs of the machine.
      * @param multiplier the maximum possible multiplied we can get from the input inventory
-     *                   see {@link ParallelLogic#getMaxRecipeMultiplier(GTRecipe, IRecipeCapabilityHolder, int)}
+     *                   see {@link ParallelLogic#limitByInput}
      * @return the amount of times a {@link GTRecipe} outputs can be merged into an inventory without voiding products.
      */
     // returns Integer.MAX_VALUE by default, to skip processing.
+    // TODO: kross - make it so caps check both regular outputs and tick outputs
     public int limitParallel(GTRecipe recipe, IRecipeCapabilityHolder holder, int multiplier) {
         return Integer.MAX_VALUE;
     }
@@ -192,12 +193,7 @@ public abstract class RecipeCapability<T> {
                                 @NotNull GTRecipeType recipeType,
                                 @Nullable("null when content == null") GTRecipe recipe,
                                 @Nullable Content content,
-                                @Nullable Object storage) {}
-
-    // TODO
-    public double calculateAmount(List<T> left) {
-        return 1;
-    }
+                                @Nullable Object storage, int recipeTier, int chanceTier) {}
 
     /**
      * Create a cache map for chanced outputs

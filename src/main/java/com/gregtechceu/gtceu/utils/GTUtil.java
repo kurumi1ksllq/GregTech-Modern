@@ -10,12 +10,7 @@ import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
-import com.lowdragmc.lowdraglib.LDLib;
-import com.lowdragmc.lowdraglib.side.fluid.FluidHelper;
-import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
-import com.lowdragmc.lowdraglib.side.fluid.FluidTransferHelper;
-import com.lowdragmc.lowdraglib.side.fluid.IFluidTransfer;
-
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,6 +20,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
@@ -40,8 +36,11 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Pair;
@@ -230,7 +229,7 @@ public class GTUtil {
      *         {@code ULV} if there's no tier below
      */
     public static byte getFloorTierByVoltage(long voltage) {
-        if (voltage < GTValues.V[GTValues.ULV]) {
+        if (voltage < GTValues.V[GTValues.LV]) {
             return GTValues.ULV;
         }
         if (voltage == GTValues.VEX[GTValues.MAX_TRUE]) {
@@ -316,7 +315,7 @@ public class GTUtil {
     }
 
     public static boolean isShiftDown() {
-        if (LDLib.isClient()) {
+        if (GTCEu.isClientSide()) {
             var id = Minecraft.getInstance().getWindow().getWindow();
             return InputConstants.isKeyDown(id, GLFW.GLFW_KEY_LEFT_SHIFT) ||
                     InputConstants.isKeyDown(id, GLFW.GLFW_KEY_LEFT_SHIFT);
@@ -325,7 +324,7 @@ public class GTUtil {
     }
 
     public static boolean isCtrlDown() {
-        if (LDLib.isClient()) {
+        if (GTCEu.isClientSide()) {
             var id = Minecraft.getInstance().getWindow().getWindow();
             return InputConstants.isKeyDown(id, GLFW.GLFW_KEY_LEFT_CONTROL) ||
                     InputConstants.isKeyDown(id, GLFW.GLFW_KEY_RIGHT_CONTROL);
@@ -334,7 +333,7 @@ public class GTUtil {
     }
 
     public static boolean isAltDown() {
-        if (LDLib.isClient()) {
+        if (GTCEu.isClientSide()) {
             var id = Minecraft.getInstance().getWindow().getWindow();
             return InputConstants.isKeyDown(id, GLFW.GLFW_KEY_LEFT_ALT) ||
                     InputConstants.isKeyDown(id, GLFW.GLFW_KEY_RIGHT_ALT);
@@ -356,28 +355,28 @@ public class GTUtil {
         return ForgeHooks.getBurnTime(item.getDefaultInstance(), RecipeType.SMELTING);
     }
 
-    public static long getPumpBiomeModifier(Holder<Biome> biome) {
+    public static int getPumpBiomeModifier(Holder<Biome> biome) {
         if (biome.is(BiomeTags.IS_NETHER)) {
             return -1;
         }
 
         if (biome.is(BiomeTags.IS_DEEP_OCEAN) || biome.is(BiomeTags.IS_OCEAN) || biome.is(BiomeTags.IS_BEACH) ||
                 biome.is(BiomeTags.IS_RIVER)) {
-            return FluidHelper.getBucket();
+            return FluidType.BUCKET_VOLUME;
         } else if (biome.is(Tags.Biomes.IS_SWAMP) || biome.is(Tags.Biomes.IS_WET)) {
-            return FluidHelper.getBucket() * 4 / 5;
+            return FluidType.BUCKET_VOLUME * 4 / 5;
         } else if (biome.is(BiomeTags.IS_JUNGLE)) {
-            return FluidHelper.getBucket() * 35 / 100;
+            return FluidType.BUCKET_VOLUME * 35 / 100;
         } else if (biome.is(Tags.Biomes.IS_SNOWY)) {
-            return FluidHelper.getBucket() * 3 / 10;
+            return FluidType.BUCKET_VOLUME * 3 / 10;
         } else if (biome.is(Tags.Biomes.IS_PLAINS) || biome.is(BiomeTags.IS_FOREST)) {
-            return FluidHelper.getBucket() / 4;
+            return FluidType.BUCKET_VOLUME / 4;
         } else if (biome.is(Tags.Biomes.IS_COLD)) {
-            return FluidHelper.getBucket() * 175 / 1000;
+            return FluidType.BUCKET_VOLUME * 175 / 1000;
         } else if (biome.is(CustomTags.IS_SANDY)) {
-            return FluidHelper.getBucket() * 170 / 1000;
+            return FluidType.BUCKET_VOLUME * 170 / 1000;
         }
-        return FluidHelper.getBucket() / 10;
+        return FluidType.BUCKET_VOLUME / 10;
     }
 
     /**
@@ -497,22 +496,8 @@ public class GTUtil {
         return null;
     }
 
-    /**
-     * Get fluidstack from a container.
-     *
-     * @param ingredient the fluidstack or fluid container item
-     * @return the fluidstack in container
-     */
-    @Nullable
-    public static FluidStack getFluidFromContainer(Object ingredient) {
-        if (ingredient instanceof FluidStack) {
-            return (FluidStack) ingredient;
-        } else if (ingredient instanceof ItemStack itemStack) {
-            IFluidTransfer fluidHandler = FluidTransferHelper.getFluidTransfer(itemStack);
-            if (fluidHandler != null)
-                return fluidHandler.drain(Integer.MAX_VALUE, false);
-        }
-        return null;
+    public static int getFluidColor(FluidStack fluid) {
+        return IClientFluidTypeExtensions.of(fluid.getFluid()).getTintColor(fluid);
     }
 
     public static boolean canSeeSunClearly(Level world, BlockPos blockPos) {
@@ -533,8 +518,8 @@ public class GTUtil {
         }
 
         ResourceLocation javdVoidBiome = new ResourceLocation(GTValues.MODID_JAVD, "void");
-        if (GTCEu.isJAVDLoaded() && javdVoidBiome
-                .equals(biomeHolder.unwrapKey().map(ResourceKey::location).orElse(null))) {
+        if (GTCEu.Mods.isJAVDLoaded() &&
+                world.registryAccess().registryOrThrow(Registries.BIOME).getKey(biome).equals(javdVoidBiome)) {
             return !world.isDay();
         } else return world.isDay();
     }
@@ -605,15 +590,21 @@ public class GTUtil {
     }
 
     public static void addPotionTooltip(List<Pair<MobEffectInstance, Float>> effects, List<Component> list) {
-        list.add(Component.translatable("gtceu.tooltip.potion.header"));
+        if (!effects.isEmpty()) {
+            list.add(Component.translatable("gtceu.tooltip.potion.header"));
+        }
         effects.forEach(pair -> {
             var effect = pair.getFirst();
             float probability = pair.getSecond();
             list.add(Component.translatable("gtceu.tooltip.potion.each",
-                    Component.translatable(effect.getDescriptionId()),
-                    Component.translatable("enchantment.level." + (effect.getAmplifier() + 1)),
-                    effect.getDuration(),
-                    100 * probability));
+                    Component.translatable(effect.getDescriptionId())
+                            .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW)),
+                    Component.translatable("enchantment.level." + (effect.getAmplifier() + 1))
+                            .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW)),
+                    Component.literal(String.valueOf(effect.getDuration()))
+                            .setStyle(Style.EMPTY.withColor(ChatFormatting.RED)),
+                    Component.literal(String.valueOf(100 * probability))
+                            .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN))));
         });
     }
 

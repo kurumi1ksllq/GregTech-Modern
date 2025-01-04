@@ -5,9 +5,10 @@ import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
+import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
+import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
+import com.gregtechceu.gtceu.common.item.armor.PowerlessJetpack;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-
-import com.lowdragmc.lowdraglib.Platform;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
@@ -159,9 +160,9 @@ public class GTRecipeLookup {
      * @return a recipe
      */
     @Nullable
-    private GTRecipe recurseIngredientTreeFindRecipe(@NotNull List<List<AbstractMapIngredient>> ingredients,
-                                                     @NotNull Branch branchRoot,
-                                                     @NotNull Predicate<GTRecipe> canHandle) {
+    public GTRecipe recurseIngredientTreeFindRecipe(@NotNull List<List<AbstractMapIngredient>> ingredients,
+                                                    @NotNull Branch branchRoot,
+                                                    @NotNull Predicate<GTRecipe> canHandle) {
         // Try each ingredient as a starting point, adding it to the skip-list.
         // The skip-list is a packed long, where each 1 bit represents an index to skip
         for (int i = 0; i < ingredients.size(); i++) {
@@ -448,6 +449,7 @@ public class GTRecipeLookup {
     public void removeAllRecipes() {
         this.lookup.getNodes().clear();
         this.lookup.getSpecialNodes().clear();
+        this.recipeType.getCategoryMap().clear();
     }
 
     /**
@@ -460,8 +462,19 @@ public class GTRecipeLookup {
         if (recipe == null) {
             return false;
         }
+
+        // Add combustion fuels to the Powerless Jetpack
+        if (recipe.getType() == GTRecipeTypes.COMBUSTION_GENERATOR_FUELS) {
+            Content content = recipe.getInputContents(FluidRecipeCapability.CAP).get(0);
+            FluidIngredient fluid = FluidRecipeCapability.CAP.of(content.content);
+            PowerlessJetpack.FUELS.putIfAbsent(fluid, recipe.duration);
+        }
         List<List<AbstractMapIngredient>> items = fromRecipe(recipe);
-        return recurseIngredientTreeAdd(recipe, items, lookup, 0, 0);
+        if (recurseIngredientTreeAdd(recipe, items, lookup, 0, 0)) {
+            recipe.recipeCategory.addRecipe(recipe);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -500,7 +513,7 @@ public class GTRecipeLookup {
                         // handle the existing branch
                         if (v.left().isEmpty() || v.left().get() != recipe) {
                             // the recipe already there was not the one being added, so there is a conflict
-                            if (ConfigHolder.INSTANCE.dev.debug || Platform.isDevEnv()) {
+                            if (ConfigHolder.INSTANCE.dev.debug || GTCEu.isDev()) {
                                 GTCEu.LOGGER.warn(
                                         "Recipe duplicate or conflict found in GTRecipeType {} and was not added. See next lines for details",
                                         BuiltInRegistries.RECIPE_TYPE.getKey(this.recipeType));

@@ -14,7 +14,6 @@ import com.gregtechceu.gtceu.data.lang.LangHandler;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.RedstoneUtil;
 
-import com.lowdragmc.lowdraglib.LDLib;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextBoxWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -165,7 +164,7 @@ public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements 
     }
 
     private void initializeMinMaxInputs(boolean wasPercent) {
-        if (LDLib.isRemote() || minValueInput == null || maxValueInput == null)
+        if (GTCEu.isClientThread() || minValueInput == null || maxValueInput == null)
             return;
 
         long energyCapacity = getEnergyInfoProvider().getEnergyInfo().capacity().longValue();
@@ -192,8 +191,8 @@ public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements 
             // This needs to be after setting the maximum, because otherwise the converted value would be
             // limited to 100.
             if (wasPercent) {
-                minValueInput.setValue(GTMath.clamp((int) ((minValue / 100.0) * energyCapacity), 0, energyCapacity));
-                maxValueInput.setValue(GTMath.clamp((int) ((maxValue / 100.0) * energyCapacity), 0, energyCapacity));
+                minValueInput.setValue(GTMath.clamp((long) ((minValue / 100.0) * energyCapacity), 0, energyCapacity));
+                maxValueInput.setValue(GTMath.clamp((long) ((maxValue / 100.0) * energyCapacity), 0, energyCapacity));
             }
         }
     }

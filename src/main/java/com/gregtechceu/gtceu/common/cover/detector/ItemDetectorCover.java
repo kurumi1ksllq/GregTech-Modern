@@ -5,13 +5,12 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
+import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.RedstoneUtil;
-
-import com.lowdragmc.lowdraglib.side.item.IItemTransfer;
-import com.lowdragmc.lowdraglib.side.item.ItemTransferHelper;
 
 import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.IItemHandler;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -22,13 +21,13 @@ public class ItemDetectorCover extends DetectorCover {
     }
 
     @Override
-    public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
-        return coverable.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent();
+    protected CoverRenderer buildRenderer() {
+        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_item_detector"), null).build();
     }
 
     @Override
-    protected CoverRenderer buildRenderer() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_item_detector"), null).build();
+    public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
+        return coverable.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent();
     }
 
     @Override
@@ -36,24 +35,25 @@ public class ItemDetectorCover extends DetectorCover {
         if (this.coverHolder.getOffsetTimer() % 20 != 0)
             return;
 
-        IItemTransfer itemTransfer = getItemTransfer();
-        if (itemTransfer == null)
+        IItemHandler handler = getItemHandler();
+        if (handler == null)
             return;
 
         int storedItems = 0;
-        int itemCapacity = itemTransfer.getSlots() * itemTransfer.getSlotLimit(0);
+        int itemCapacity = handler.getSlots() * handler.getSlotLimit(0);
 
         if (itemCapacity == 0)
             return;
 
-        for (int i = 0; i < itemTransfer.getSlots(); i++) {
-            storedItems += itemTransfer.getStackInSlot(i).getCount();
+        for (int i = 0; i < handler.getSlots(); i++) {
+            storedItems += handler.getStackInSlot(i).getCount();
         }
 
         setRedstoneSignalOutput(RedstoneUtil.computeRedstoneValue(storedItems, itemCapacity, isInverted()));
     }
 
-    protected IItemTransfer getItemTransfer() {
-        return ItemTransferHelper.getItemTransfer(coverHolder.getLevel(), coverHolder.getPos(), attachedSide);
+    protected IItemHandler getItemHandler() {
+        return GTTransferUtils.getItemHandler(coverHolder.getLevel(), coverHolder.getPos(), attachedSide).resolve()
+                .orElse(null);
     }
 }

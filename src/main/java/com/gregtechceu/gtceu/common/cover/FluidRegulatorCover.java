@@ -10,8 +10,9 @@ import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.traverse.SimpleTileRoundRobinData;
 import com.gregtechceu.gtceu.api.graphnet.predicate.test.FluidTestObject;
 import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
-import com.gregtechceu.gtceu.api.gui.widget.LongInputWidget;
+import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.NumberInputWidget;
+import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.common.cover.data.BucketMode;
 import com.gregtechceu.gtceu.common.cover.data.TransferMode;
 import com.gregtechceu.gtceu.common.pipelike.net.fluid.FluidEQTraverseData;
@@ -28,9 +29,12 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import lombok.Getter;
@@ -41,9 +45,13 @@ import java.util.function.IntToLongFunction;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class FluidRegulatorCover extends PumpCover {
 
-    private static final long MAX_STACK_SIZE = 2_048_000_000; // Capacity of quantum tank IX
+    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(FluidRegulatorCover.class,
+            PumpCover.MANAGED_FIELD_HOLDER);
+
+    private static final int MAX_STACK_SIZE = 2_048_000_000; // Capacity of quantum tank IX
 
     @Persisted
     @DescSynced
@@ -53,13 +61,23 @@ public class FluidRegulatorCover extends PumpCover {
     @Persisted
     @DescSynced
     @Getter
-    protected long globalTransferSizeMillibuckets;
+    protected int globalTransferLimit;
 
-    private NumberInputWidget<Long> transferSizeInput;
+    private NumberInputWidget<Integer> transferSizeInput;
     private EnumSelectorWidget<BucketMode> bucketModeInput;
 
+    public FluidRegulatorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier,
+                               int maxTransferRate) {
+        super(definition, coverHolder, attachedSide, tier, maxTransferRate);
+    }
+
     public FluidRegulatorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier) {
-        super(definition, coverHolder, attachedSide, tier);
+        this(definition, coverHolder, attachedSide, tier, PUMP_SCALING.applyAsInt(tier));
+    }
+
+    @Override
+    public ManagedFieldHolder getFieldHolder() {
+        return MANAGED_FIELD_HOLDER;
     }
 
     //////////////////////////////////////
@@ -157,7 +175,7 @@ public class FluidRegulatorCover extends PumpCover {
     @Override
     protected void configureFilter() {
         if (filterHandler.getFilter() instanceof SimpleFluidFilter filter) {
-            filter.setMaxStackSize(transferMode == TransferMode.TRANSFER_ANY ? 1L : MAX_STACK_SIZE);
+            filter.setMaxStackSize(transferMode == TransferMode.TRANSFER_ANY ? 1 : MAX_STACK_SIZE);
         }
 
         configureTransferSizeInput();
@@ -177,9 +195,9 @@ public class FluidRegulatorCover extends PumpCover {
         group.addWidget(
                 new EnumSelectorWidget<>(146, 45, 20, 20, TransferMode.values(), transferMode, this::setTransferMode));
 
-        this.transferSizeInput = new LongInputWidget(35, 45, 84, 20,
-                this::getCurrentBucketModeTransferSize, this::setCurrentBucketModeTransferSize).setMin(0L)
-                .setMax(Long.MAX_VALUE);
+        this.transferSizeInput = new IntInputWidget(35, 45, 84, 20,
+                this::getCurrentBucketModeTransferSize, this::setCurrentBucketModeTransferSize).setMin(0)
+                .setMax(Integer.MAX_VALUE);
         configureTransferSizeInput();
         group.addWidget(this.transferSizeInput);
 

@@ -11,7 +11,8 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.*;
 import com.gregtechceu.gtceu.common.data.GTItems;
-import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.common.machine.owner.IMachineOwner;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.client.renderer.IRenderer;
 import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
@@ -292,7 +293,8 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
         }
 
         Set<GTToolType> types = ToolHelper.getToolTypes(itemStack);
-        if (machine != null && !types.isEmpty() && ToolHelper.canUse(itemStack)) {
+        if (machine != null && (!types.isEmpty() && ToolHelper.canUse(itemStack)) ||
+                (types.isEmpty() && player.isShiftKeyDown())) {
             var result = machine.onToolClick(types, itemStack, new UseOnContext(player, hand, hit));
             if (result.getSecond() == InteractionResult.CONSUME && player instanceof ServerPlayer serverPlayer) {
                 ToolHelper.playToolSound(result.getFirst(), serverPlayer);
@@ -317,22 +319,10 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
             if (result != InteractionResult.PASS) return result;
         }
         if (shouldOpenUi && machine instanceof IUIMachine uiMachine &&
-                canOpenOwnerMachine(player, machine.getHolder())) {
+                IMachineOwner.canOpenOwnerMachine(player, machine.getHolder())) {
             return uiMachine.tryToOpenUI(player, hand, hit);
         }
         return shouldOpenUi ? InteractionResult.PASS : InteractionResult.CONSUME;
-    }
-
-    public boolean canOpenOwnerMachine(Player player, IMachineBlockEntity machine) {
-        if (!ConfigHolder.INSTANCE.machines.machineOwnerGUI) return true;
-        if (machine.getOwner() == null) return true;
-        return machine.getOwner().isPlayerInTeam(player) || machine.getOwner().isPlayerFriendly(player);
-    }
-
-    public static boolean canBreakOwnerMachine(Player player, IMachineBlockEntity machine) {
-        if (!ConfigHolder.INSTANCE.machines.machineOwnerBreak) return true;
-        if (machine.getOwner() == null) return true;
-        return machine.getOwner().isPlayerInTeam(player);
     }
 
     public boolean canConnectRedstone(BlockGetter level, BlockPos pos, Direction side) {

@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.data.chemical;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.FluidProperty;
@@ -10,7 +11,8 @@ import com.gregtechceu.gtceu.api.data.chemical.material.stack.UnificationEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.data.tag.TagUtil;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKey;
-import com.gregtechceu.gtceu.common.data.GTItems;
+import com.gregtechceu.gtceu.common.data.GTMaterialItems;
+import com.gregtechceu.gtceu.data.recipe.misc.StoneMachineRecipes;
 import com.gregtechceu.gtceu.data.recipe.misc.WoodMachineRecipes;
 import com.gregtechceu.gtceu.data.tags.TagsHandler;
 import com.gregtechceu.gtceu.utils.SupplierMemoizer;
@@ -19,6 +21,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -29,6 +32,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import com.mojang.datafixers.util.Pair;
 import com.tterrag.registrate.util.entry.BlockEntry;
+import com.tterrag.registrate.util.entry.ItemEntry;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -68,6 +72,13 @@ public class ChemicalHelper {
     }
 
     public static ItemMaterialInfo getMaterialInfo(ItemLike item) {
+        if (item instanceof Block block) {
+            return ITEM_MATERIAL_INFO.get(block);
+        } else if (item instanceof BlockItem blockItem) {
+            return ITEM_MATERIAL_INFO.get(blockItem.getBlock());
+        } else if (item instanceof ItemEntry<?> entry) {
+            return ITEM_MATERIAL_INFO.get(entry.asItem());
+        }
         return ITEM_MATERIAL_INFO.get(item);
     }
 
@@ -158,7 +169,13 @@ public class ChemicalHelper {
             }
         }
         ItemMaterialInfo info = ITEM_MATERIAL_INFO.get(itemLike);
-        return info == null ? null : info.getMaterial().copy();
+        if (info == null)
+            return null;
+        if (info.getMaterial() == null) {
+            GTCEu.LOGGER.error("ItemMaterialInfo for {} is empty!", itemLike);
+            return null;
+        }
+        return info.getMaterial().copy();
     }
 
     @Nullable
@@ -396,7 +413,8 @@ public class ChemicalHelper {
                 }
             });
         }
-        GTItems.toUnify.forEach(ChemicalHelper::registerUnificationItems);
+        GTMaterialItems.toUnify.forEach(ChemicalHelper::registerUnificationItems);
         WoodMachineRecipes.registerUnificationInfo();
+        StoneMachineRecipes.registerUnificationInfo();
     }
 }

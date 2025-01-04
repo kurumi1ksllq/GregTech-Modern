@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.cover.filter;
 
 import com.gregtechceu.gtceu.common.cover.filter.MatchResult;
-import com.gregtechceu.gtceu.utils.OreDictExprFilter;
+import com.gregtechceu.gtceu.utils.TagExprFilter;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
@@ -36,9 +36,9 @@ public class TagItemFilter extends TagFilter<ItemStack, ItemFilter> implements I
         var handler = new TagItemFilter();
         handler.itemWriter = itemWriter;
         handler.oreDictFilterExpression = tag.getString("oreDict");
-        handler.matchRules.clear();
+        handler.matchExpr = null;
         handler.cache.clear();
-        OreDictExprFilter.parseExpression(handler.matchRules, handler.oreDictFilterExpression);
+        handler.matchExpr = TagExprFilter.parseExpression(handler.oreDictFilterExpression);
         return handler;
     }
 
@@ -70,9 +70,9 @@ public class TagItemFilter extends TagFilter<ItemStack, ItemFilter> implements I
 
     @Override
     public boolean test(ItemStack itemStack) {
-        if (oreDictFilterExpression.isEmpty()) return true;
+        if (oreDictFilterExpression.isEmpty()) return false;
         if (cache.containsKey(itemStack.getItem())) return cache.getOrDefault(itemStack.getItem(), false);
-        if (OreDictExprFilter.matchesOreDict(matchRules, itemStack)) {
+        if (TagExprFilter.tagsMatch(matchExpr, itemStack)) {
             cache.put(itemStack.getItem(), true);
             return true;
         }
@@ -92,7 +92,7 @@ public class TagItemFilter extends TagFilter<ItemStack, ItemFilter> implements I
 
     @Override
     public MatchResult apply(ItemStack itemStack) {
-        var match = OreDictExprFilter.matchesOreDict(matchRules, itemStack);
+        var match = TagExprFilter.tagsMatch(matchExpr, itemStack);
         return MatchResult.create(match != isBlackList(), match ? itemStack.copy() : ItemStack.EMPTY, -1);
     }
 }

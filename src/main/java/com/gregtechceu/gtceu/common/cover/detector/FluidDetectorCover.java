@@ -7,12 +7,11 @@ import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.utils.RedstoneUtil;
 
-import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
-import com.lowdragmc.lowdraglib.side.fluid.FluidTransferHelper;
-import com.lowdragmc.lowdraglib.side.fluid.IFluidTransfer;
-
 import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,12 +36,12 @@ public class FluidDetectorCover extends DetectorCover {
         if (this.coverHolder.getOffsetTimer() % 20 != 0)
             return;
 
-        IFluidTransfer fluidHandler = getFluidTransfer();
+        IFluidHandler fluidHandler = getFluidHandler();
         if (fluidHandler == null)
             return;
 
-        long storedFluid = 0;
-        long fluidCapacity = 0;
+        int storedFluid = 0;
+        int fluidCapacity = 0;
 
         for (int tank = 0; tank < fluidHandler.getTanks(); tank++) {
             FluidStack content = fluidHandler.getFluidInTank(tank);
@@ -58,7 +57,8 @@ public class FluidDetectorCover extends DetectorCover {
         setRedstoneSignalOutput(RedstoneUtil.computeRedstoneValue(storedFluid, fluidCapacity, isInverted()));
     }
 
-    protected IFluidTransfer getFluidTransfer() {
-        return FluidTransferHelper.getFluidTransfer(coverHolder.getLevel(), coverHolder.getPos(), attachedSide);
+    protected IFluidHandler getFluidHandler() {
+        return FluidUtil.getFluidHandler(coverHolder.getLevel(), coverHolder.getPos(), attachedSide).resolve()
+                .orElse(null);
     }
 }

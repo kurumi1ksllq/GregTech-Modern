@@ -9,13 +9,16 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeCapabilityHolder;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDisplayUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
+import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockDisplayText;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import lombok.Getter;
@@ -30,7 +33,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class ResearchStationMachine extends WorkableElectricMultiblockMachine implements IComputationUser {
+public class ResearchStationMachine extends WorkableElectricMultiblockMachine
+                                    implements IComputationUser, IDisplayUIMachine {
 
     @Getter
     private IObjectHolder objectHolder;
@@ -105,6 +109,19 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine im
         return query;
     }
 
+    @Override
+    public void addDisplayText(List<Component> textList) {
+        MultiblockDisplayText.builder(textList, isFormed())
+                .setWorkingStatus(recipeLogic.isWorkingEnabled(), recipeLogic.isActive())
+                .setWorkingStatusKeys("gtceu.multiblock.idling", "gtceu.multiblock.work_paused",
+                        "gtceu.multiblock.research_station.researching")
+                .addEnergyUsageLine(energyContainer)
+                .addEnergyTierLine(tier)
+                .addWorkingStatusLine()
+                // .addComputationUsageExactLine(computationProvider.getMaxCWUt()) // TODO: (Onion)
+                .addProgressLineOnlyPercent(recipeLogic.getProgressPercent());
+    }
+
     private static class ResearchStationRecipeLogic extends RecipeLogic {
 
         public ResearchStationRecipeLogic(ResearchStationMachine metaBlockEntity) {
@@ -120,7 +137,7 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine im
         // Custom recipe matching logic to override output space test
         @Nullable
         @Override
-        protected Iterator<GTRecipe> searchRecipe() {
+        public Iterator<GTRecipe> searchRecipe() {
             IRecipeCapabilityHolder holder = this.machine;
             if (!holder.hasProxies()) return null;
             var iterator = machine.getRecipeType().getLookup().getRecipeIterator(holder, recipe -> {
@@ -155,7 +172,7 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine im
 
         @Override
         public boolean checkMatchedRecipeAvailable(GTRecipe match) {
-            var modified = machine.fullModifyRecipe(match, ocParams, ocResult);
+            var modified = machine.fullModifyRecipe(match);
             if (modified != null) {
                 if (!modified.inputs.containsKey(CWURecipeCapability.CAP) &&
                         !modified.tickInputs.containsKey(CWURecipeCapability.CAP)) {

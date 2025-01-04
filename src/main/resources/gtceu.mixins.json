@@ -9,7 +9,6 @@
         "BlockColorsMixin",
         "BlockModelMixin",
         "ClientLevelAccessor",
-        "CompassManagerMixin",
         "GuiGraphicsAccessor",
         "GuiGraphicsMixin",
         "GuiHeartTypeMixin",
@@ -17,7 +16,16 @@
         "LevelRendererMixin",
         "ModelManagerMixin",
         "MultiPlayerGameModeMixin",
-        "rei.FluidEntryRendererMixin"
+        "ftbchunks.LargeMapScreenMixin",
+        "ftbchunks.RegionMapPanelMixin",
+        "ftbchunks.FTBChunksClientMixin",
+        "journeymap.FullscreenMixin",
+        "rei.FluidEntryRendererMixin",
+        "xaerominimap.HighlighterRegistryMixin",
+        "xaerominimap.MinimapFBORendererMixin",
+        "xaeroworldmap.GuiMapMixin",
+        "xaeroworldmap.MapElementRenderHandlerBuilderMixin",
+        "xaeroworldmap.WorldMapSessionMixin"
     ],
     "mixins": [
         "AbstractRegistrateAccessor",
@@ -46,6 +54,7 @@
         "OreConfigurationMixin",
         "OreVeinifierMixin",
         "PartialNBTIngredientAccessor",
+        "PotionBrewingAccessor",
         "PrimedTntAccessor",
         "RecipeManagerAccessor",
         "RecipeManagerInvoker",
@@ -61,11 +70,11 @@
         "TagManagerMixin",
         "TagValueAccessor",
         "ae2.GenericStackInvAccessor",
-        "create.RotationPropagatorMixin",
         "embeddium.BiomeColorCacheMixin",
         "embeddium.VanillaColorAdapterMixin",
         "emi.FluidEmiStackMixin",
         "jei.FluidHelperMixin",
+        "ldlib.SyncUtilsMixin",
         "rei.InputSlotCrafterMixin",
         "rei.RecipeFinderMixin",
         "top.ConfigMixin"
@@ -73,5 +82,5 @@
     "injectors": {
         "defaultRequire": 1,
         "maxShiftBy": 5
-    }
+  }
 }

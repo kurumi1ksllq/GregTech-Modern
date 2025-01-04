@@ -18,17 +18,14 @@ import com.gregtechceu.gtceu.api.misc.EnergyInfoProviderList;
 import com.gregtechceu.gtceu.api.misc.LaserContainerList;
 import com.gregtechceu.gtceu.api.pipenet.longdistance.ILDEndpoint;
 import com.gregtechceu.gtceu.client.renderer.GTRendererProvider;
+import com.gregtechceu.gtceu.common.datafixers.TagFixer;
 import com.gregtechceu.gtceu.common.machine.owner.IMachineOwner;
 import com.gregtechceu.gtceu.common.pipelike.longdistance.fluid.LDFluidEndpointMachine;
 import com.gregtechceu.gtceu.common.pipelike.longdistance.item.LDItemEndpointMachine;
+import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
 import com.lowdragmc.lowdraglib.client.renderer.IRenderer;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.side.fluid.FluidTransferHelper;
-import com.lowdragmc.lowdraglib.side.fluid.IFluidTransfer;
-import com.lowdragmc.lowdraglib.side.fluid.forge.FluidTransferHelperImpl;
-import com.lowdragmc.lowdraglib.side.item.IItemTransfer;
-import com.lowdragmc.lowdraglib.side.item.forge.ItemTransferHelperImpl;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.managed.MultiManagedStorage;
 
@@ -55,7 +52,10 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author KilaBash
@@ -204,40 +204,38 @@ public class MetaMachineBlockEntity extends NeighborCacheBlockEntity implements 
                         LazyOptional.of(() -> maintenanceMachine));
             }
         } else if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            if (machine instanceof LDItemEndpointMachine fluidEndpointMachine) {
+            if (machine instanceof LDItemEndpointMachine itemEndpointMachine) {
                 if (machine.getLevel().isClientSide) return null;
-                ILDEndpoint endpoint = fluidEndpointMachine.getLink();
+                ILDEndpoint endpoint = itemEndpointMachine.getLink();
                 if (endpoint == null) return null;
-                Direction outputFacing = fluidEndpointMachine.getOutputFacing();
-                IItemTransfer transfer = ItemTransferHelperImpl.getItemTransfer(machine.getLevel(),
-                        endpoint.getPos().relative(outputFacing), outputFacing.getOpposite());
-                if (transfer != null) {
-                    return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, LazyOptional.of(() -> ItemTransferHelperImpl
-                            .toItemHandler(new LDItemEndpointMachine.ItemHandlerWrapper(transfer))));
+                Direction outputFacing = endpoint.getOutputFacing();
+                var h = GTTransferUtils.getAdjacentItemHandler(machine.getLevel(), endpoint.getPos(), outputFacing)
+                        .map(LDItemEndpointMachine.ItemHandlerWrapper::new);
+                if (h.isPresent()) {
+                    return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, LazyOptional.of(h::get));
                 }
             }
-            var transfer = machine.getItemTransferCap(side, true);
-            if (transfer != null) {
+            var handler = machine.getItemHandlerCap(side, true);
+            if (handler != null) {
                 return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap,
-                        LazyOptional.of(() -> ItemTransferHelperImpl.toItemHandler(transfer)));
+                        LazyOptional.of(() -> handler));
             }
         } else if (cap == ForgeCapabilities.FLUID_HANDLER) {
             if (machine instanceof LDFluidEndpointMachine fluidEndpointMachine) {
                 if (machine.getLevel().isClientSide) return null;
                 ILDEndpoint endpoint = fluidEndpointMachine.getLink();
                 if (endpoint == null) return null;
-                Direction outputFacing = fluidEndpointMachine.getOutputFacing();
-                IFluidTransfer transfer = FluidTransferHelper.getFluidTransfer(machine.getLevel(),
-                        endpoint.getPos().relative(outputFacing), outputFacing.getOpposite());
-                if (transfer != null) {
-                    return ForgeCapabilities.FLUID_HANDLER.orEmpty(cap, LazyOptional.of(() -> FluidTransferHelperImpl
-                            .toFluidHandler(new LDFluidEndpointMachine.FluidHandlerWrapper(transfer))));
+                Direction outputFacing = endpoint.getOutputFacing();
+                var h = GTTransferUtils.getAdjacentFluidHandler(machine.getLevel(), endpoint.getPos(), outputFacing)
+                        .map(LDFluidEndpointMachine.FluidHandlerWrapper::new);
+                if (h.isPresent()) {
+                    return ForgeCapabilities.FLUID_HANDLER.orEmpty(cap, LazyOptional.of(h::get));
                 }
             }
-            var transfer = machine.getFluidTransferCap(side, true);
-            if (transfer != null) {
+            var handler = machine.getFluidHandlerCap(side, true);
+            if (handler != null) {
                 return ForgeCapabilities.FLUID_HANDLER.orEmpty(cap,
-                        LazyOptional.of(() -> FluidTransferHelperImpl.toFluidHandler(transfer)));
+                        LazyOptional.of(() -> handler));
             }
         } else if (cap == ForgeCapabilities.ENERGY) {
             if (machine instanceof IEnergyStorage energyStorage) {
@@ -286,7 +284,7 @@ public class MetaMachineBlockEntity extends NeighborCacheBlockEntity implements 
                 return GTCapability.CAPABILITY_DATA_ACCESS.orEmpty(cap, LazyOptional.of(() -> list.get(0)));
             }
         }
-        if (GTCEu.isAE2Loaded()) {
+        if (GTCEu.Mods.isAE2Loaded()) {
             if (cap == Capabilities.IN_WORLD_GRID_NODE_HOST) {
                 if (machine instanceof IInWorldGridNodeHost nodeHost) {
                     return Capabilities.IN_WORLD_GRID_NODE_HOST.orEmpty(cap, LazyOptional.of(() -> nodeHost));
@@ -350,6 +348,7 @@ public class MetaMachineBlockEntity extends NeighborCacheBlockEntity implements 
 
     @Override
     public void load(CompoundTag tag) {
+        TagFixer.fixFluidTags(tag);
         super.load(tag);
         if (tag.contains("owner")) {
             this.owner = IMachineOwner.create(tag.getCompound("owner"));

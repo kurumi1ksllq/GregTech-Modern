@@ -15,6 +15,7 @@ import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.recipe.ToolHeadReplaceRecipe;
 import com.gregtechceu.gtceu.common.data.GTItems;
+import com.gregtechceu.gtceu.common.data.GTMaterialItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
@@ -95,7 +96,7 @@ public class ToolRecipeHandler {
         batteryItems.put(GTValues.EV, ImmutableList.of(GTItems.BATTERY_EV_VANADIUM, GTItems.LAPOTRON_CRYSTAL));
         batteryItems.put(GTValues.IV, ImmutableList.of(GTItems.BATTERY_IV_VANADIUM, GTItems.ENERGY_LAPOTRONIC_ORB));
         batteryItems.put(GTValues.LuV,
-                ImmutableList.of(GTItems.BATTERY_LUV_VANADIUM, GTItems.ENERGY_LAPOTRONIC_ORB_CLUSTER));
+                ImmutableList.of(GTItems.BATTERY_LuV_VANADIUM, GTItems.ENERGY_LAPOTRONIC_ORB_CLUSTER));
         batteryItems.put(GTValues.ZPM, ImmutableList.of(GTItems.BATTERY_ZPM_NAQUADRIA, GTItems.ENERGY_MODULE));
         batteryItems.put(GTValues.UV, ImmutableList.of(GTItems.BATTERY_UV_NAQUADRIA, GTItems.ENERGY_CLUSTER));
 
@@ -380,7 +381,7 @@ public class ToolRecipeHandler {
             int tier = toolType.electricTier;
             ItemStack powerUnitStack = powerUnitItems.get(tier).asStack();
             IElectricItem powerUnit = GTCapabilityHelper.getElectricItem(powerUnitStack);
-            ItemStack tool = GTItems.TOOL_ITEMS.get(material, toolType).get().get(0, powerUnit.getMaxCharge());
+            ItemStack tool = GTMaterialItems.TOOL_ITEMS.get(material, toolType).get().get(0, powerUnit.getMaxCharge());
             VanillaRecipeHelper.addShapedEnergyTransferRecipe(provider,
                     true, true, true,
                     String.format("%s_%s", material.getName(), toolType.name),
@@ -583,7 +584,7 @@ public class ToolRecipeHandler {
         for (ItemEntry<? extends Item> batteryItem : batteryItems.get(LuV)) {
             VanillaRecipeHelper.addShapedEnergyTransferRecipe(provider, true, false, true,
                     "prospector_luv_" + batteryItem.getId().getPath(),
-                    Ingredient.of(batteryItem), GTItems.PROSPECTOR_LUV.asStack(),
+                    Ingredient.of(batteryItem), GTItems.PROSPECTOR_LuV.asStack(),
                     "EPS", "CDC", "PBP",
                     'E', GTItems.EMITTER_LuV.asStack(),
                     'P', new UnificationEntry(plate, GTMaterials.RhodiumPlatedPalladium),

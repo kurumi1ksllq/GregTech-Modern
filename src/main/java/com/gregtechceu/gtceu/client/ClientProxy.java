@@ -1,12 +1,10 @@
 package com.gregtechceu.gtceu.client;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidDefinition;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockore.BedrockOreDefinition;
-import com.gregtechceu.gtceu.api.gui.compass.GTCompassUIConfig;
-import com.gregtechceu.gtceu.api.gui.compass.GTRecipeViewCreator;
-import com.gregtechceu.gtceu.api.gui.compass.MultiblockAction;
 import com.gregtechceu.gtceu.client.particle.HazardParticle;
 import com.gregtechceu.gtceu.client.renderer.entity.GTBoatRenderer;
 import com.gregtechceu.gtceu.client.renderer.entity.GTExplosiveRenderer;
@@ -16,10 +14,14 @@ import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.data.GTEntityTypes;
 import com.gregtechceu.gtceu.common.data.GTParticleTypes;
 import com.gregtechceu.gtceu.common.entity.GTBoat;
+import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
+import com.gregtechceu.gtceu.integration.map.cache.client.GTClientCache;
+import com.gregtechceu.gtceu.integration.map.ftbchunks.FTBChunksPlugin;
+import com.gregtechceu.gtceu.integration.map.layer.Layers;
+import com.gregtechceu.gtceu.integration.map.layer.builtin.FluidRenderLayer;
+import com.gregtechceu.gtceu.integration.map.layer.builtin.OreRenderLayer;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
-
-import com.lowdragmc.lowdraglib.gui.compass.CompassManager;
-import com.lowdragmc.lowdraglib.gui.compass.component.RecipeComponent;
 
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
@@ -27,11 +29,10 @@ import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -60,9 +61,11 @@ public class ClientProxy extends CommonProxy {
 
     @OnlyIn(Dist.CLIENT)
     public static void init() {
-        RecipeComponent.registerRecipeViewCreator(new GTRecipeViewCreator());
-        CompassManager.INSTANCE.registerUIConfig(GTCEu.MOD_ID, new GTCompassUIConfig());
-        CompassManager.INSTANCE.registerAction("multiblock", MultiblockAction::new);
+        if (!GTCEu.isDataGen()) {
+            ClientCacheManager.registerClientCache(GTClientCache.instance, "gtceu");
+            Layers.registerLayer(OreRenderLayer::new, "ore_veins");
+            Layers.registerLayer(FluidRenderLayer::new, "bedrock_fluids");
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -120,5 +123,13 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public void modelRegistry(final ModelEvent.RegisterGeometryLoaders e) {
         e.register("pipe", UnbakedPipeModel.Loader.INSTANCE);
+    }
+
+    @SubscribeEvent
+    public void onClientSetup(FMLClientSetupEvent event) {
+        if (ConfigHolder.INSTANCE.compat.minimap.toggle.ftbChunksIntegration &&
+                GTCEu.isModLoaded(GTValues.MODID_FTB_CHUNKS)) {
+            FTBChunksPlugin.addEventListeners();
+        }
     }
 }

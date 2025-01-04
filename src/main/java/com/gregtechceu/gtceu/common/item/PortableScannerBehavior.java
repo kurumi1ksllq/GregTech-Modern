@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidVeinSave
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicData;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.logic.TemperatureLogic;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.gui.misc.ProspectorMode;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -27,6 +28,8 @@ import com.gregtechceu.gtceu.common.data.GTSoundEntries;
 import com.gregtechceu.gtceu.common.pipelike.net.energy.EnergyFlowData;
 import com.gregtechceu.gtceu.common.pipelike.net.energy.EnergyFlowLogic;
 import com.gregtechceu.gtceu.common.pipelike.net.energy.WorldEnergyNet;
+import com.gregtechceu.gtceu.common.network.GTNetwork;
+import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectBedrockFluid;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -36,6 +39,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -443,19 +447,26 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
             if (level instanceof ServerLevel serverLevel) {
                 list.add(Component.translatable("behavior.portable_scanner.divider"));
                 var veinData = BedrockFluidVeinSavedData.getOrCreate(serverLevel);
-                Fluid fluid = veinData.getFluidInChunk(pos.getX() >> 4, pos.getZ() >> 4);
+                int chunkX = pos.getX() >> 4;
+                int chunkZ = pos.getZ() >> 4;
+                Fluid fluid = veinData.getFluidInChunk(chunkX, chunkZ);
 
                 if (fluid != null) {
                     FluidStack stack = new FluidStack(fluid,
-                            veinData.getOperationsRemaining(pos.getX() >> 4, pos.getZ() >> 4));
+                            veinData.getOperationsRemaining(chunkX, chunkZ));
                     double fluidPercent = stack.getAmount() * 100.0 / BedrockFluidVeinSavedData.MAXIMUM_VEIN_OPERATIONS;
+
+                    var fluidInfo = ProspectorMode.FluidInfo
+                            .fromVeinWorldEntry(veinData.getFluidVeinWorldEntry(chunkX, chunkZ));
+                    var packet = new SPacketProspectBedrockFluid(level.dimension(), pos, fluidInfo);
+                    GTNetwork.NETWORK.sendToPlayer(packet, (ServerPlayer) player);
 
                     if (player.isCreative()) {
                         list.add(Component.translatable("behavior.portable_scanner.bedrock_fluid.amount",
                                 Component.translatable(stack.getTranslationKey())
                                         .withStyle(ChatFormatting.GOLD),
                                 Component.translatable(String.valueOf(
-                                        veinData.getFluidYield(pos.getX() >> 4, pos.getZ() >> 4)))
+                                        veinData.getFluidYield(chunkX, chunkZ)))
                                         .withStyle(ChatFormatting.GOLD),
                                 Component.translatable(String.valueOf(fluidPercent))
                                         .withStyle(ChatFormatting.YELLOW)));

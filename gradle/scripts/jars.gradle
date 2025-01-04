@@ -1,10 +1,3 @@
-configurations {
-    includedLibrary {
-        canBeConsumed = false
-        canBeResolved = true
-    }
-}
-
 // hack to avoid a bug in Shadow: https://github.com/GradleUp/shadow/issues/111
 tasks.register('shadowBugWorkaround', Jar) {
     dependsOn jarJar
@@ -27,20 +20,17 @@ obfuscation {
         archiveClassifier = "slim"
     }
     reobfuscate(tasks.named('shadowJar'), sourceSets.main) {
-        archiveClassifier = null
-        archiveClassifier.convention(null)
+        archiveClassifier = ''
     }
 }
 
 jar {
     archiveClassifier = "dev-no-shadow"
     archiveClassifier.convention("dev-no-shadow")
-    enabled = false
 }
 
 reobfJar {
     archiveClassifier = "no-shadow"
-    enabled = false
 }
 
 tasks.register('sourcesJar', Jar) {
@@ -56,7 +46,7 @@ base {
 afterEvaluate {
     tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
         exclude ".cache/*"
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
         destinationDirectory = file('build/libs/')
         manifest.attributes([

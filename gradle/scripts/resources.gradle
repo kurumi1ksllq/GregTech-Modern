@@ -55,6 +55,6 @@ neoForge.ideSyncTask generateModMetadata
 
 afterEvaluate {
     tasks.withType(ProcessResources).configureEach {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 }

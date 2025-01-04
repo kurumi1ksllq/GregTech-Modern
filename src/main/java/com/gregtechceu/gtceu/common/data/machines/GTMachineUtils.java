@@ -11,7 +11,6 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.FluidPipeProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
@@ -46,6 +45,7 @@ import com.gregtechceu.gtceu.common.machine.multiblock.part.TankValvePartMachine
 import com.gregtechceu.gtceu.common.machine.multiblock.steam.LargeBoilerMachine;
 import com.gregtechceu.gtceu.common.machine.storage.CrateMachine;
 import com.gregtechceu.gtceu.common.machine.storage.DrumMachine;
+import com.gregtechceu.gtceu.common.pipelike.handlers.properties.MaterialFluidProperties;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
@@ -396,9 +396,12 @@ public class GTMachineUtils {
                         () -> new MachineRenderer(GTCEu.id("block/machine/" + (wooden ? "wooden" : "metal") + "_drum")))
                 .tooltipBuilder((stack, list) -> {
                     TANK_TOOLTIPS.accept(stack, list);
-                    if (material.hasProperty(PropertyKey.FLUID_PIPE)) {
-                        FluidPipeProperties pipeprops = material.getProperty(PropertyKey.FLUID_PIPE);
-                        pipeprops.appendTooltips(list, false, true);
+                    if (material.hasProperty(PropertyKey.PIPENET_PROPERTIES) &&
+                            material.getProperty(PropertyKey.PIPENET_PROPERTIES)
+                                    .hasProperty(MaterialFluidProperties.KEY)) {
+                        MaterialFluidProperties pipeprops = material.getProperty(PropertyKey.PIPENET_PROPERTIES)
+                                .getProperty(MaterialFluidProperties.KEY);
+                        pipeprops.appendTooltips(list);
                     }
                 })
                 .tooltips(Component.translatable("gtceu.machine.quantum_tank.tooltip"),

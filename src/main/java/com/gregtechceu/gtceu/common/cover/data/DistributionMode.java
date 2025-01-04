@@ -7,9 +7,9 @@ import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 
 public enum DistributionMode implements EnumSelectorWidget.SelectableEnum {
 
-    ROUND_ROBIN_GLOBAL("round_robin_global"),
-    ROUND_ROBIN_PRIO("round_robin_prio"),
-    INSERT_FIRST("insert_first");
+    EQUALIZED("equalized"),
+    ROUND_ROBIN("round_robin"),
+    FLOOD("flood");
 
     public static final DistributionMode[] VALUES = values();
     private static final float OFFSET = 1.0f / VALUES.length;
@@ -22,7 +22,7 @@ public enum DistributionMode implements EnumSelectorWidget.SelectableEnum {
 
     @Override
     public String getTooltip() {
-        return "cover.conveyor.distribution." + localeName;
+        return "cover.generic.distribution." + localeName;
     }
 
     @Override

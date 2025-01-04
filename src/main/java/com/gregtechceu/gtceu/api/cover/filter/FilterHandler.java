@@ -51,7 +51,7 @@ public abstract class FilterHandler<T, F extends Filter<T, F>> implements IEnhan
         this.container = container;
     }
 
-    protected abstract F loadFilter(ItemStack filterItem);
+    public abstract F loadFilter(ItemStack filterItem);
 
     protected abstract F getEmptyFilter();
 
@@ -146,19 +146,23 @@ public abstract class FilterHandler<T, F extends Filter<T, F>> implements IEnhan
 
     private void loadFilterFromItem() {
         if (!this.filterItem.isEmpty()) {
-            this.filter = loadFilter(this.filterItem);
-            filter.setOnUpdated(this.onFilterUpdated);
-            if (filter instanceof SmartItemFilter smart &&
-                    container instanceof CoverBehavior cover &&
-                    cover.coverHolder instanceof MachineCoverContainer mcc) {
-                var machine = MetaMachine.getMachine(mcc.getLevel(), mcc.getPos());
-                if (machine != null) {
-                    smart.setModeFromMachine(machine.getDefinition().getName());
-                }
-            }
-            this.onFilterLoaded.accept(this.filter);
+            setFilter(loadFilter(this.filterItem));
         }
         updateFilterGroupUI();
+    }
+
+    public void setFilter(@Nullable F filter) {
+        this.filter = filter;
+        this.filter.setOnUpdated(this.onFilterUpdated);
+        if (this.filter instanceof SmartItemFilter smart &&
+                container instanceof CoverBehavior cover &&
+                cover.coverHolder instanceof MachineCoverContainer mcc) {
+            var machine = MetaMachine.getMachine(mcc.getLevel(), mcc.getPos());
+            if (machine != null) {
+                smart.setModeFromMachine(machine.getDefinition().getName());
+            }
+        }
+        this.onFilterLoaded.accept(this.filter);
     }
 
     private void updateFilterGroupUI() {

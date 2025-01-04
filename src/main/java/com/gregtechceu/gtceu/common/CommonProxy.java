@@ -16,10 +16,16 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.data.worldgen.WorldGenLayers;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.IndicatorGenerators;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.VeinGenerators;
+import com.gregtechceu.gtceu.api.graphnet.GraphClassRegistrationEvent;
 import com.gregtechceu.gtceu.api.graphnet.logic.ChannelCountLogic;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicRegistrationEvent;
 import com.gregtechceu.gtceu.api.graphnet.logic.ThroughputLogic;
 import com.gregtechceu.gtceu.api.graphnet.logic.WeightFactorLogic;
+import com.gregtechceu.gtceu.api.graphnet.net.BlankNetNode;
+import com.gregtechceu.gtceu.api.graphnet.net.BlockPosNode;
+import com.gregtechceu.gtceu.api.graphnet.net.NetEdge;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeCapConnectionNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.logic.TemperatureLogic;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.PipeStructureRegistrationEvent;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.predicate.BlockedPredicate;
@@ -46,10 +52,7 @@ import com.gregtechceu.gtceu.common.pipelike.block.duct.DuctStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.laser.LaserStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.optical.OpticalStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.pipe.MaterialPipeStructure;
-import com.gregtechceu.gtceu.common.pipelike.net.energy.EnergyFlowLogic;
-import com.gregtechceu.gtceu.common.pipelike.net.energy.SuperconductorLogic;
-import com.gregtechceu.gtceu.common.pipelike.net.energy.VoltageLimitLogic;
-import com.gregtechceu.gtceu.common.pipelike.net.energy.VoltageLossLogic;
+import com.gregtechceu.gtceu.common.pipelike.net.energy.*;
 import com.gregtechceu.gtceu.common.pipelike.net.fluid.FluidContainmentLogic;
 import com.gregtechceu.gtceu.common.pipelike.net.fluid.FluidFlowLogic;
 import com.gregtechceu.gtceu.common.pipelike.net.item.ItemFlowLogic;
@@ -273,6 +276,16 @@ public class CommonProxy {
         event.accept(WeightFactorLogic.TYPE);
         event.accept(VoltageLimitLogic.TYPE);
         event.accept(VoltageLossLogic.TYPE);
+        event.accept(AmperageLimitLogic.TYPE);
+    }
+
+    @SubscribeEvent
+    public static void registerGraphClasses(GraphClassRegistrationEvent event) {
+        event.accept(NetEdge.TYPE);
+        event.accept(WorldPipeNode.TYPE);
+        event.accept(WorldPipeCapConnectionNode.TYPE);
+        event.accept(BlockPosNode.TYPE);
+        event.accept(BlankNetNode.TYPE);
     }
 
     @SubscribeEvent

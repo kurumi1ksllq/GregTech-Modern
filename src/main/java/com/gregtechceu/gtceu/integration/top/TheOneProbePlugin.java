@@ -49,13 +49,12 @@ public class TheOneProbePlugin {
         oneProbe.registerProvider(new ExhaustVentInfoProvider());
         oneProbe.registerProvider(new SteamBoilerInfoProvider());
         oneProbe.registerProvider(new AutoOutputInfoProvider());
-        oneProbe.registerProvider(new CableInfoProvider());
         oneProbe.registerProvider(new MachineModeProvider());
         oneProbe.registerProvider(new StainedColorProvider());
         oneProbe.registerProvider(new PrimitivePumpProvider());
         oneProbe.registerProvider(new CoverProvider());
         oneProbe.registerProvider(new HazardCleanerInfoProvider());
         oneProbe.registerProvider(new TransformerInfoProvider());
-        oneProbe.registerProvider(new PipeTileInfoProvider());
+        oneProbe.registerProvider(new PipeInfoProvider());
     }
 }

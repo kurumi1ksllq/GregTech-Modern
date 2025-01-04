@@ -18,7 +18,7 @@ import com.gregtechceu.gtceu.api.misc.EnergyInfoProviderList;
 import com.gregtechceu.gtceu.api.misc.LaserContainerList;
 import com.gregtechceu.gtceu.api.pipenet.longdistance.ILDEndpoint;
 import com.gregtechceu.gtceu.client.renderer.GTRendererProvider;
-import com.gregtechceu.gtceu.common.datafixers.TagFixer;
+import com.gregtechceu.gtceu.common.datafixer.TagFixer;
 import com.gregtechceu.gtceu.common.machine.owner.IMachineOwner;
 import com.gregtechceu.gtceu.common.pipelike.longdistance.fluid.LDFluidEndpointMachine;
 import com.gregtechceu.gtceu.common.pipelike.longdistance.item.LDItemEndpointMachine;

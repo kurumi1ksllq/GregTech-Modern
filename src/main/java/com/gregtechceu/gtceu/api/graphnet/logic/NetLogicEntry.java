@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.graphnet.logic;
 
 import com.gregtechceu.gtceu.api.graphnet.MultiNodeHelper;
-import com.gregtechceu.gtceu.api.graphnet.NetNode;
+import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.logic.TemperatureLogic;
 
 import com.lowdragmc.lowdraglib.networking.IPacket;

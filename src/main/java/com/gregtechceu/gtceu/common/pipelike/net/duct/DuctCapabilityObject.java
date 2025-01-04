@@ -5,17 +5,16 @@ import com.gregtechceu.gtceu.api.capability.IHazardParticleContainer;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.HazardProperty;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.BasicWorldPipeNetPath;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNet;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.group.NetGroup;
+import com.gregtechceu.gtceu.api.graphnet.group.PathCacheGroupData;
+import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeCapabilityObject;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
-import com.gregtechceu.gtceu.api.graphnet.predicate.test.IPredicateTestObject;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeCapabilityWrapper;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardCleaner;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
-
-import com.lowdragmc.lowdraglib.Platform;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,88 +23,89 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
-import lombok.Setter;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
+import java.util.List;
 
 public class DuctCapabilityObject implements IPipeCapabilityObject, IHazardParticleContainer {
 
-    private final WorldPipeNet net;
-    @Setter
-    private @Nullable PipeBlockEntity tile;
+    public static final int ACTIVE_KEY = 155;
 
-    public <N extends WorldPipeNet & BasicWorldPipeNetPath.Provider> DuctCapabilityObject(@NotNull N net) {
-        this.net = net;
-    }
+    private @Nullable PipeBlockEntity blockEntity;
 
-    private BasicWorldPipeNetPath.Provider getProvider() {
-        return (BasicWorldPipeNetPath.Provider) net;
-    }
+    private final @NotNull WorldPipeNode node;
 
-    private Iterator<BasicWorldPipeNetPath> getPaths() {
-        assert tile != null;
-        long tick = Platform.getMinecraftServer().getTickCount();
-        return getProvider().getPaths(net.getNode(tile.getBlockPos()), IPredicateTestObject.INSTANCE, null, tick);
+    private boolean transferring = false;
+
+    public DuctCapabilityObject(@NotNull WorldPipeNode node) {
+        this.node = node;
     }
 
     @Override
-    public Capability<?>[] getCapabilities() {
-        return WorldDuctNet.CAPABILITIES;
+    public void init(@NotNull PipeBlockEntity tile, @NotNull PipeCapabilityWrapper wrapper) {
+        this.blockEntity = tile;
     }
 
     @Override
-    public <T> LazyOptional<T> getCapabilityForSide(Capability<T> capability, @Nullable Direction facing) {
-        if (capability == GTCapability.CAPABILITY_HAZARD_CONTAINER) {
-            return GTCapability.CAPABILITY_HAZARD_CONTAINER.orEmpty(capability, LazyOptional.of(() -> this));
-        }
-        return null;
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        return GTCapability.CAPABILITY_HAZARD_CONTAINER.orEmpty(cap, LazyOptional.of(() -> this));
+    }
+
+    private boolean inputDisallowed(Direction side) {
+        if (side == null) return false;
+        if (blockEntity == null) return true;
+        else return blockEntity.isBlocked(side);
     }
 
     @Override
     public boolean inputsHazard(Direction side, MedicalCondition condition) {
-        for (Iterator<BasicWorldPipeNetPath> it = getPaths(); it.hasNext();) {
-            BasicWorldPipeNetPath path = it.next();
-            WorldPipeNetNode destination = path.getTargetNode();
-            for (var capability : destination.getBlockEntity().getTargetsWithCapabilities(destination).entrySet()) {
-                IHazardParticleContainer container = capability.getValue()
-                        .getCapability(GTCapability.CAPABILITY_HAZARD_CONTAINER, capability.getKey().getOpposite())
-                        .resolve()
-                        .orElse(null);
-                if (container != null && container.inputsHazard(side, condition)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return !inputDisallowed(side);
     }
 
     @Override
     public float changeHazard(MedicalCondition condition, float differenceAmount) {
-        float total = 0;
-        for (Iterator<BasicWorldPipeNetPath> it = getPaths(); it.hasNext();) {
-            BasicWorldPipeNetPath path = it.next();
-            WorldPipeNetNode destination = path.getTargetNode();
-            for (var capability : destination.getBlockEntity().getTargetsWithCapabilities(destination).entrySet()) {
+        if (blockEntity == null || this.transferring) return 0;
+        NetGroup group = node.getGroupSafe();
+        if (!(group.getData() instanceof DuctGroupData data)) return 0;
+
+        this.transferring = true;
+
+        PathCacheGroupData.SecondaryCache cache = data.getOrCreate(node);
+        List<DuctPath> paths = new ObjectArrayList<>(group.getNodesUnderKey(ACTIVE_KEY).size());
+        for (NetNode dest : group.getNodesUnderKey(ACTIVE_KEY)) {
+            DuctPath path = (DuctPath) cache.getOrCompute(dest);
+            if (path == null) continue;
+            // construct the path list in order of ascending weight
+            int i = 0;
+            while (i < paths.size()) {
+                if (paths.get(i).getWeight() >= path.getWeight()) break;
+                else i++;
+            }
+            paths.add(i, path);
+        }
+        float total = differenceAmount;
+        for (DuctPath path : paths) {
+            NetNode target = path.getTargetNode();
+            if (!(target instanceof WorldPipeNode n)) continue;
+            for (var capability : n.getBlockEntity().getTargetsWithCapabilities(n).entrySet()) {
                 IHazardParticleContainer handler = capability.getValue()
                         .getCapability(GTCapability.CAPABILITY_HAZARD_CONTAINER, capability.getKey().getOpposite())
                         .resolve()
                         .orElse(null);
                 if (handler == null) {
-                    if (net.getLevel().getBlockEntity(path.getTargetNode().getEquivalencyData()
-                            .relative(capability.getKey())) instanceof IMachineBlockEntity machineBE &&
+                    if (n.getBlockEntity() instanceof IMachineBlockEntity machineBE &&
                             machineBE.getMetaMachine() instanceof IEnvironmentalHazardCleaner cleaner) {
                         cleaner.cleanHazard(condition, differenceAmount);
                         break;
                     }
 
-                    var savedData = EnvironmentalHazardSavedData.getOrCreate((ServerLevel) net.getLevel());
-                    savedData.addZone(path.getTargetNode().getEquivalencyData().relative(capability.getKey()),
+                    var savedData = EnvironmentalHazardSavedData.getOrCreate(n.getNet().getLevel());
+                    savedData.addZone(n.getEquivalencyData().relative(capability.getKey()),
                             differenceAmount, true, HazardProperty.HazardTrigger.INHALATION, condition);
                     total += differenceAmount;
-                    emitPollutionParticles((ServerLevel) net.getLevel(), path.getTargetNode().getEquivalencyData(),
-                            capability.getKey());
+                    emitPollutionParticles(n.getNet().getLevel(), n.getEquivalencyData(), capability.getKey());
                     break;
                 }
                 float change = handler.changeHazard(condition, differenceAmount);
@@ -121,40 +121,12 @@ public class DuctCapabilityObject implements IPipeCapabilityObject, IHazardParti
 
     @Override
     public float getHazardStored(MedicalCondition condition) {
-        float total = 0;
-        for (Iterator<BasicWorldPipeNetPath> it = getPaths(); it.hasNext();) {
-            BasicWorldPipeNetPath path = it.next();
-            WorldPipeNetNode destination = path.getTargetNode();
-            for (var capability : destination.getBlockEntity().getTargetsWithCapabilities(destination).entrySet()) {
-                IHazardParticleContainer handler = capability.getValue()
-                        .getCapability(GTCapability.CAPABILITY_HAZARD_CONTAINER, capability.getKey().getOpposite())
-                        .resolve()
-                        .orElse(null);
-                if (handler != null) {
-                    total += handler.getHazardStored(condition);
-                }
-            }
-        }
-        return total;
+        return 0;
     }
 
     @Override
     public float getHazardCapacity(MedicalCondition condition) {
-        float total = 0;
-        for (Iterator<BasicWorldPipeNetPath> it = getPaths(); it.hasNext();) {
-            BasicWorldPipeNetPath path = it.next();
-            WorldPipeNetNode destination = path.getTargetNode();
-            for (var capability : destination.getBlockEntity().getTargetsWithCapabilities(destination).entrySet()) {
-                IHazardParticleContainer handler = capability.getValue()
-                        .getCapability(GTCapability.CAPABILITY_HAZARD_CONTAINER, capability.getKey().getOpposite())
-                        .resolve()
-                        .orElse(null);
-                if (handler != null) {
-                    total += handler.getHazardCapacity(condition);
-                }
-            }
-        }
-        return total;
+        return Float.MAX_VALUE;
     }
 
     public static void emitPollutionParticles(ServerLevel level, BlockPos pos, Direction frontFacing) {

@@ -2,23 +2,21 @@ package com.gregtechceu.gtceu.api.transfer.item;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public abstract class ItemHandlerDelegate implements IItemHandlerModifiable {
+public abstract class ItemHandlerDelegate implements IItemHandler {
 
-    public IItemHandlerModifiable delegate;
+    @Setter
+    public IItemHandler delegate;
 
-    public ItemHandlerDelegate(IItemHandlerModifiable delegate) {
-        this.delegate = delegate;
-    }
-
-    protected void setDelegate(IItemHandlerModifiable delegate) {
+    public ItemHandlerDelegate(IItemHandler delegate) {
         this.delegate = delegate;
     }
 
@@ -35,11 +33,6 @@ public abstract class ItemHandlerDelegate implements IItemHandlerModifiable {
     @NotNull
     public ItemStack getStackInSlot(int slot) {
         return delegate.getStackInSlot(slot);
-    }
-
-    @Override
-    public void setStackInSlot(int slot, @NotNull ItemStack stack) {
-        delegate.setStackInSlot(slot, stack);
     }
 
     @Override

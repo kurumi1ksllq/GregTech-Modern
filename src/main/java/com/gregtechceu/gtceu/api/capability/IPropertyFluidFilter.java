@@ -9,6 +9,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -67,6 +68,13 @@ public interface IPropertyFluidFilter extends Predicate<FluidStack> {
      * @param canContain whether the attribute can be contained
      */
     void setCanContain(@NotNull FluidAttribute attribute, boolean canContain);
+
+    /**
+     * Set the container as able to contain a list of attributes
+     *
+     * @param attributes valid attributes this container can contain
+     */
+    void setCanContain(@NotNull Object2BooleanMap<FluidAttribute> attributes);
 
     @NotNull
     @UnmodifiableView

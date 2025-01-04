@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.common.data;
 
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.ActivablePipeBlockEntity;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.MaterialPipeBlockEntity;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.ActivablePipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.MaterialPipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.common.blockentity.*;
 
 import net.minecraft.world.level.block.entity.SignBlockEntity;
@@ -34,8 +34,8 @@ public class GTBlockEntities {
 
     public static final BlockEntityEntry<MaterialPipeBlockEntity> MATERIAL_PIPE = REGISTRATE
             .blockEntity("material_pipe", MaterialPipeBlockEntity::new)
-            .validBlocks(Stream.concat(GTBlocks.CABLE_BLOCKS.values().stream(),
-                    GTBlocks.MATERIAL_PIPE_BLOCKS.values().stream())
+            .validBlocks(Stream.concat(GTMaterialBlocks.CABLE_BLOCKS.values().stream(),
+                    GTMaterialBlocks.MATERIAL_PIPE_BLOCKS.values().stream())
                     .toArray(NonNullSupplier[]::new))
             .register();
 

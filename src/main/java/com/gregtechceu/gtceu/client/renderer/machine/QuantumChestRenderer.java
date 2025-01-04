@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.client.renderer.machine;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.machine.storage.CreativeChestMachine;
 import com.gregtechceu.gtceu.common.machine.storage.QuantumChestMachine;

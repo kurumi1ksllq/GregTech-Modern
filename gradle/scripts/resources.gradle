@@ -52,3 +52,9 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 sourceSets.main.resources.srcDir generateModMetadata
 // To avoid having to run "generateModMetadata" manually, make it run on every project reload
 neoForge.ideSyncTask generateModMetadata
+
+afterEvaluate {
+    tasks.withType(ProcessResources).configureEach {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+}

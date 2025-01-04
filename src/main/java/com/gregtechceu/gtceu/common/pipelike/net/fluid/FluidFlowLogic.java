@@ -3,47 +3,61 @@ package com.gregtechceu.gtceu.common.pipelike.net.fluid;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.graphnet.logic.AbstractTransientLogicData;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicType;
+import com.gregtechceu.gtceu.api.graphnet.predicate.test.FluidTestObject;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.Platform;
-import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
+import net.minecraftforge.fluids.FluidStack;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.Object2LongArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongMaps;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collections;
-import java.util.List;
 
 public class FluidFlowLogic extends AbstractTransientLogicData<FluidFlowLogic> {
 
     public static final NetLogicType<FluidFlowLogic> TYPE = new NetLogicType<>(GTCEu.MOD_ID, "FluidFlow",
             FluidFlowLogic::new, new FluidFlowLogic());
 
-    public static final int MEMORY_TICKS = 10;
+    public static final int MEMORY_TICKS = WorldFluidNet.getBufferTicks();
 
-    private final Long2ObjectOpenHashMap<List<FluidStack>> memory = new Long2ObjectOpenHashMap<>();
-    private FluidStack last;
+    private final Long2ObjectOpenHashMap<Object2LongMap<FluidTestObject>> memory = new Long2ObjectOpenHashMap<>();
+    private net.minecraftforge.fluids.FluidStack last;
 
     @Override
     public @NotNull NetLogicType<FluidFlowLogic> getType() {
         return TYPE;
     }
 
-    public @NotNull Long2ObjectOpenHashMap<List<FluidStack>> getMemory() {
-        updateMemory(Platform.getMinecraftServer().getTickCount());
+    public @NotNull Long2ObjectOpenHashMap<Object2LongMap<FluidTestObject>> getMemory() {
+        updateMemory(GTUtil.getCurrentServerTick());
         return memory;
     }
 
-    public @NotNull List<FluidStack> getFlow(long tick) {
-        updateMemory(tick);
-        return memory.getOrDefault(tick, Collections.emptyList());
+    public @NotNull Object2LongMap<FluidTestObject> getSum() {
+        Object2LongMap<FluidTestObject> sum = new Object2LongArrayMap<>();
+        for (Object2LongMap<FluidTestObject> list : getMemory().values()) {
+            for (var entry : list.object2LongEntrySet()) {
+                sum.put(entry.getKey(), sum.getLong(entry.getKey()) + entry.getLongValue());
+            }
+        }
+        return sum;
     }
 
-    public void recordFlow(long tick, FluidStack flow) {
+    public @NotNull Object2LongMap<FluidTestObject> getFlow(long tick) {
         updateMemory(tick);
-        memory.computeIfAbsent(tick, k -> new ObjectArrayList<>()).add(flow);
-        last = flow;
+        return memory.getOrDefault(tick, Object2LongMaps.emptyMap());
+    }
+
+    public void recordFlow(long tick, @NotNull net.minecraftforge.fluids.FluidStack flow) {
+        recordFlow(tick, new FluidTestObject(flow), flow.getAmount());
+    }
+
+    public void recordFlow(long tick, @NotNull FluidTestObject testObject, int amount) {
+        updateMemory(tick);
+        Object2LongMap<FluidTestObject> map = memory.computeIfAbsent(tick, k -> new Object2LongArrayMap<>());
+        map.put(testObject, map.getLong(testObject) + amount);
+        last = testObject.recombine(amount);
     }
 
     public FluidStack getLast() {
@@ -53,7 +67,7 @@ public class FluidFlowLogic extends AbstractTransientLogicData<FluidFlowLogic> {
     private void updateMemory(long tick) {
         var iter = memory.long2ObjectEntrySet().fastIterator();
         while (iter.hasNext()) {
-            Long2ObjectMap.Entry<List<FluidStack>> entry = iter.next();
+            var entry = iter.next();
             if (entry.getLongKey() + MEMORY_TICKS < tick) {
                 iter.remove();
             }

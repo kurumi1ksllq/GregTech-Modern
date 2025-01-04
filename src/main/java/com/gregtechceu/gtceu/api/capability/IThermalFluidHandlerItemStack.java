@@ -28,17 +28,8 @@ public interface IThermalFluidHandlerItemStack {
         var temp = fluidType.getTemperature();
         if (temp > getMaxFluidTemperature()) return false;
         // fluids less than 120K are cryogenic
-        if (temp < 120 && !isCryoProof()) return false;
+        if (temp < getMinFluidTemperature()) return false;
         if (fluidType.isLighterThanAir() && !isGasProof()) return false;
-
-        // TODO custom fluid
-        // for (RegistryEntry<Fluid> entry : GTRegistries.REGISTRATE.getAll(Registry.FLUID_REGISTRY)) {
-        // if (entry.get() == fluid) {
-        // FluidType fluidType = ((MaterialFluid) fluid).getFluidType();
-        // if (fluidType == FluidTypes.ACID && !isAcidProof()) return false;
-        // if (fluidType == FluidTypes.PLASMA && !isPlasmaProof()) return false;
-        // }
-        // }
         return true;
     }
 
@@ -52,23 +43,16 @@ public interface IThermalFluidHandlerItemStack {
     /**
      * This is always checked, regardless of the contained fluid being a {@link IAttributedFluid} or not
      *
+     * @return the minimum allowed temperature for a fluid to be stored in this container
+     */
+    int getMinFluidTemperature();
+
+    /**
+     * This is always checked, regardless of the contained fluid being a {@link IAttributedFluid} or not
+     *
      * @return true if this fluid container allows gases, otherwise false
      */
     boolean isGasProof();
-
-    /**
-     * @see FluidAttributes
-     *
-     * @return true if this fluid container allows acids, otherwise false
-     */
-    boolean isAcidProof();
-
-    /**
-     * @see FluidAttributes
-     *
-     * @return true if this fluid container allows cryogenics, otherwise false
-     */
-    boolean isCryoProof();
 
     /**
      * @see FluidAttributes

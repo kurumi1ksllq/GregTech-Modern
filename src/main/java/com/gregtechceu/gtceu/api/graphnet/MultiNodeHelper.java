@@ -3,6 +3,9 @@ package com.gregtechceu.gtceu.api.graphnet;
 import com.gregtechceu.gtceu.api.graphnet.logic.INetLogicEntryListener;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicData;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicEntry;
+import com.gregtechceu.gtceu.api.graphnet.net.IGraphNet;
+import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -20,8 +23,7 @@ import java.util.List;
  * B) making sure that logic entries requiring it are the same object across all synced nodes. <br>
  * <br>
  * MultiNodeHelpers have no standard implementation and must be handled by a net and its nodes; see
- * {@link com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNet} and
- * {@link com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode}
+ * {@link com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNet} and {@link WorldPipeNode}
  * for an example of this in action.
  */
 public class MultiNodeHelper implements INetLogicEntryListener {

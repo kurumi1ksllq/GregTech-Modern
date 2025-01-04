@@ -1,9 +1,7 @@
 package com.gregtechceu.gtceu.integration.jade.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.blockentity.IPaintable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -36,17 +34,9 @@ public class StainedColorProvider implements IBlockComponentProvider, IServerDat
 
     @Override
     public void appendServerData(CompoundTag compoundTag, BlockAccessor blockAccessor) {
-        if (blockAccessor.getBlockEntity() instanceof IMachineBlockEntity blockEntity) {
-            MetaMachine metaMachine = blockEntity.getMetaMachine();
-            if (metaMachine != null) {
-                int paintingColor = metaMachine.getPaintingColor();
-                compoundTag.putInt("StainedColor", paintingColor);
-                compoundTag.putInt("DefaultColor", -1);
-            }
-        } else if (blockAccessor.getBlockEntity() instanceof PipeBlockEntity pipe) {
-            int paintingColor = pipe.getPaintingColor();
-            compoundTag.putInt("StainedColor", paintingColor);
-            compoundTag.putInt("DefaultColor", pipe.getDefaultPaintingColor());
+        if (blockAccessor.getBlockEntity() instanceof IPaintable paintable) {
+            compoundTag.putInt("StainedColor", paintable.getRealColor());
+            compoundTag.putInt("DefaultColor", paintable.getDefaultPaintingColor());
         }
     }
 

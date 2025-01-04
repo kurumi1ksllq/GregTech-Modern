@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
-import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.common.cover.PumpCover;
@@ -14,10 +13,6 @@ import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.misc.FluidStorage;
-import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
-import com.lowdragmc.lowdraglib.side.fluid.IFluidTransfer;
-import com.lowdragmc.lowdraglib.side.fluid.forge.FluidTransferHelperImpl;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
@@ -26,6 +21,7 @@ import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -68,13 +64,12 @@ public class FluidVoidingCover extends PumpCover {
     }
 
     protected void doTransferFluids() {
-        IFluidHandler myFluidHandlerCap = coverHolder.getCapability(ForgeCapabilities.FLUID_HANDLER,
+        IFluidHandler myFluidHandler = coverHolder.getCapability(ForgeCapabilities.FLUID_HANDLER,
                 attachedSide).resolve().orElse(null);
-        if (myFluidHandlerCap == null) {
+        if (myFluidHandler == null) {
             return;
         }
-        IFluidTransfer myFluidHandler = FluidTransferHelperImpl.toFluidTransfer(myFluidHandlerCap);
-        GTTransferUtils.transferFluids(myFluidHandler, nullFluidTank, Integer.MAX_VALUE,
+        GTTransferUtils.transferFluidsFiltered(myFluidHandler, nullFluidTank,
                 getFilterHandler()::test);
         subscriptionHandler.updateSubscription();
     }
@@ -135,14 +130,14 @@ public class FluidVoidingCover extends PumpCover {
         return MANAGED_FIELD_HOLDER;
     }
 
-    class NullFluidTank extends FluidStorage {
+    class NullFluidTank extends FluidTank {
 
         public NullFluidTank() {
             super(Integer.MAX_VALUE);
         }
 
         @Override
-        public long fill(FluidStack resource, boolean execute, boolean notifyChanges) {
+        public int fill(FluidStack resource, FluidAction action) {
             if (FluidVoidingCover.this.filterHandler.test(resource)) {
                 return resource.getAmount();
             }

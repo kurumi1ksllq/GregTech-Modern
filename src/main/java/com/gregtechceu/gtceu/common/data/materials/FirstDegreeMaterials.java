@@ -14,7 +14,7 @@ import com.gregtechceu.gtceu.common.data.GTMedicalConditions;
 
 import net.minecraft.world.item.enchantment.Enchantments;
 
-import static com.gregtechceu.gtceu.api.*;
+import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.*;
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
@@ -876,7 +876,7 @@ public class FirstDegreeMaterials {
         SiliconDioxide = new Material.Builder(GTCEu.id("silicon_dioxide"))
                 .dust(1)
                 .color(0xf2f2f2).secondaryColor(0xb2c4c7).iconSet(QUARTZ)
-                .flags(NO_SMASHING, NO_SMELTING)
+                .flags(NO_SMASHING, NO_SMELTING, GENERATE_FOIL)
                 .components(Silicon, 1, Oxygen, 2)
                 .hazard(HazardProperty.HazardTrigger.INHALATION, GTMedicalConditions.SILICOSIS, false)
                 .buildAndRegister();
@@ -1324,7 +1324,7 @@ public class FirstDegreeMaterials {
                 .color(0xE1B454).secondaryColor(0x223033).iconSet(METALLIC)
                 .flags(DECOMPOSITION_BY_ELECTROLYZING)
                 .components(Manganese, 1, Phosphorus, 1)
-                .cableProperties(V[LV], 2, V[ULV], Integer.MAX_VALUE)
+                .cableProperties(V[LV], 2, 0, true)
                 .blast(1200, GasTier.LOW)
                 .buildAndRegister();
 
@@ -1334,7 +1334,7 @@ public class FirstDegreeMaterials {
                 .color(0x603c1a).secondaryColor(0x423e39).iconSet(METALLIC)
                 .flags(DECOMPOSITION_BY_ELECTROLYZING)
                 .components(Magnesium, 1, Boron, 2)
-                .cableProperties(V[MV], 4, V[LV], Integer.MAX_VALUE)
+                .cableProperties(V[MV], 4, 0, true)
                 .blast(b -> b.temp(2500, GasTier.LOW)
                         .blastStats(VA[HV], 1000)
                         .vacuumStats(VA[MV], 200))
@@ -1346,7 +1346,7 @@ public class FirstDegreeMaterials {
                 .color(0x928547).secondaryColor(0x3f2e2e).iconSet(SHINY)
                 .flags(DECOMPOSITION_BY_ELECTROLYZING)
                 .components(Mercury, 1, Barium, 2, Calcium, 2, Copper, 3, Oxygen, 8)
-                .cableProperties(V[HV], 4, V[MV], Integer.MAX_VALUE)
+                .cableProperties(V[HV], 4, 0, true)
                 .blast(b -> b.temp(3300, GasTier.LOW)
                         .blastStats(VA[HV], 1500)
                         .vacuumStats(VA[HV]))
@@ -1358,7 +1358,7 @@ public class FirstDegreeMaterials {
                 .color(0x457045).secondaryColor(0x66ff00).iconSet(RADIOACTIVE)
                 .flags(DECOMPOSITION_BY_CENTRIFUGING)
                 .components(Uranium238, 1, Platinum, 3)
-                .cableProperties(V[EV], 6, V[HV], Integer.MAX_VALUE)
+                .cableProperties(V[EV], 6, 0, true)
                 .blast(b -> b.temp(4400, GasTier.MID)
                         .blastStats(VA[EV], 1000)
                         .vacuumStats(VA[EV], 200))
@@ -1371,7 +1371,7 @@ public class FirstDegreeMaterials {
                 .color(0x850e85).secondaryColor(0x332f33).iconSet(SHINY)
                 .flags(DECOMPOSITION_BY_CENTRIFUGING)
                 .components(Samarium, 1, Iron, 1, Arsenic, 1, Oxygen, 1)
-                .cableProperties(V[IV], 6, V[EV], Integer.MAX_VALUE)
+                .cableProperties(V[IV], 6, 0, true)
                 .blast(b -> b.temp(5200, GasTier.MID)
                         .blastStats(VA[EV], 1500)
                         .vacuumStats(VA[IV], 200))
@@ -1383,7 +1383,7 @@ public class FirstDegreeMaterials {
                 .color(0x686760).secondaryColor(0x673300).iconSet(METALLIC)
                 .flags(DECOMPOSITION_BY_ELECTROLYZING, GENERATE_FINE_WIRE)
                 .components(Indium, 4, Tin, 2, Barium, 2, Titanium, 1, Copper, 7, Oxygen, 14)
-                .cableProperties(V[LuV], 8, V[IV], Integer.MAX_VALUE)
+                .cableProperties(V[LuV], 8, 0, true)
                 .blast(b -> b.temp(6000, GasTier.HIGH)
                         .blastStats(VA[IV], 1000)
                         .vacuumStats(VA[LuV]))
@@ -1395,7 +1395,7 @@ public class FirstDegreeMaterials {
                 .color(0x232020).secondaryColor(0xff009c).iconSet(RADIOACTIVE)
                 .flags(DECOMPOSITION_BY_CENTRIFUGING, GENERATE_FINE_WIRE)
                 .components(Uranium238, 1, Rhodium, 1, Naquadah, 2)
-                .cableProperties(V[ZPM], 8, V[LuV], Integer.MAX_VALUE)
+                .cableProperties(V[ZPM], 8, 0, true)
                 .blast(b -> b.temp(9000, GasTier.HIGH)
                         .blastStats(VA[IV], 1500)
                         .vacuumStats(VA[ZPM], 200))
@@ -1409,7 +1409,7 @@ public class FirstDegreeMaterials {
                 .color(0xc6b083).secondaryColor(0x45063d).iconSet(METALLIC)
                 .flags(DECOMPOSITION_BY_CENTRIFUGING, GENERATE_FINE_WIRE)
                 .components(NaquadahEnriched, 4, Trinium, 3, Europium, 2, Duranium, 1)
-                .cableProperties(V[UV], 16, V[ZPM], Integer.MAX_VALUE)
+                .cableProperties(V[UV], 16, 0, true)
                 .blast(b -> b.temp(9900, GasTier.HIGH)
                         .blastStats(VA[LuV], 1200)
                         .vacuumStats(VA[UV], 200))
@@ -1421,7 +1421,7 @@ public class FirstDegreeMaterials {
                 .color(0x897b76).secondaryColor(0x00c0ff).iconSet(RADIOACTIVE)
                 .flags(DECOMPOSITION_BY_ELECTROLYZING)
                 .components(Ruthenium, 1, Trinium, 2, Americium, 1, Neutronium, 2, Oxygen, 8)
-                .cableProperties(V[UHV], 24, V[UV], Integer.MAX_VALUE)
+                .cableProperties(V[UHV], 24, 0, true)
                 .blast(b -> b.temp(10800, GasTier.HIGHER)
                         .blastStats(VA[ZPM], 1000)
                         .vacuumStats(VA[UHV], 200))

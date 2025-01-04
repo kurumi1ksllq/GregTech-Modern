@@ -104,10 +104,7 @@ public final class EdgePredicateHandler implements ITagSerializable<ListTag>, Pr
         for (int i = 0; i < nbt.size(); i++) {
             CompoundTag tag = nbt.getCompound(i);
             NetPredicateType<?> type = NetPredicateRegistry.getType(tag.getString("Type"));
-            EdgePredicate<?, ?> entry = this.predicateSet.get(type);
-            if (entry == null) {
-                entry = type.getNew();
-            }
+            EdgePredicate<?, ?> entry = this.predicateSet.computeIfAbsent(type, NetPredicateType::getNew);
             entry.deserializeNBTNaive(tag.get("Tag"));
         }
     }

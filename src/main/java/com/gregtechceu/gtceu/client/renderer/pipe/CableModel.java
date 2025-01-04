@@ -5,7 +5,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconType;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeBlock;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeMaterialBlock;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.client.renderer.pipe.cache.ExtraCappedSQC;
 import com.gregtechceu.gtceu.client.renderer.pipe.cache.StructureQuadCache;
 import com.gregtechceu.gtceu.client.renderer.pipe.quad.PipeQuadHelper;

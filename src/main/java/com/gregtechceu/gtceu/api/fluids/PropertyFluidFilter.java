@@ -57,6 +57,11 @@ public class PropertyFluidFilter implements IPropertyFluidFilter {
     }
 
     @Override
+    public void setCanContain(@NotNull Object2BooleanMap<FluidAttribute> attributes) {
+        containmentPredicate.putAll(attributes);
+    }
+
+    @Override
     public @NotNull @UnmodifiableView Collection<@NotNull FluidAttribute> getContainedAttributes() {
         return containmentPredicate.keySet();
     }

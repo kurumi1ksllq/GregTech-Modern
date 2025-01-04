@@ -1,18 +1,13 @@
 package com.gregtechceu.gtceu.api.graphnet.pipenet.physical;
 
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeCapabilityWrapper;
 
-import net.minecraft.core.Direction;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
-public interface IPipeCapabilityObject {
+public interface IPipeCapabilityObject extends ICapabilityProvider {
 
-    void setTile(PipeBlockEntity tile);
-
-    Capability<?>[] getCapabilities();
-
-    <T> LazyOptional<T> getCapabilityForSide(Capability<T> capability, @Nullable Direction facing);
+    void init(@NotNull PipeBlockEntity tile, @NotNull PipeCapabilityWrapper wrapper);
 }

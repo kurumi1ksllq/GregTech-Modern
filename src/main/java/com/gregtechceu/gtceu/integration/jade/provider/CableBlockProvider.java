@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.integration.jade.provider;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.common.pipelike.block.cable.CableBlock;
 import com.gregtechceu.gtceu.common.pipelike.handlers.properties.MaterialEnergyProperties;
 import com.gregtechceu.gtceu.common.pipelike.net.energy.EnergyFlowLogic;
@@ -60,7 +60,7 @@ public class CableBlockProvider implements IBlockComponentProvider, IServerDataP
                 compoundTag.put(getUid().toString(), data);
                 return;
             }
-            WorldPipeNetNode node = WorldEnergyNet.getWorldNet(serverLevel).getNode(blockAccessor.getPosition());
+            WorldPipeNode node = WorldEnergyNet.getWorldNet(serverLevel).getNode(blockAccessor.getPosition());
             EnergyFlowLogic logic = node.getData().getLogicEntryDefaultable(EnergyFlowLogic.TYPE);
 
             long currentTick = serverLevel.getServer().getTickCount();

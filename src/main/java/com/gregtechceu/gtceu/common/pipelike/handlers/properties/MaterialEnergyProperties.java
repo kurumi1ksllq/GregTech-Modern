@@ -9,21 +9,17 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.FluidBuilder;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
-import com.gregtechceu.gtceu.api.graphnet.NetNode;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicData;
-import com.gregtechceu.gtceu.api.graphnet.logic.ThroughputLogic;
 import com.gregtechceu.gtceu.api.graphnet.logic.WeightFactorLogic;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.logic.TemperatureLogic;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.logic.TemperatureLossFunction;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeMaterialStructure;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.cable.CableStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.pipe.MaterialPipeStructure;
-import com.gregtechceu.gtceu.common.pipelike.net.energy.SuperconductorLogic;
-import com.gregtechceu.gtceu.common.pipelike.net.energy.VoltageLimitLogic;
-import com.gregtechceu.gtceu.common.pipelike.net.energy.VoltageLossLogic;
-import com.gregtechceu.gtceu.common.pipelike.net.energy.WorldEnergyNet;
+import com.gregtechceu.gtceu.common.pipelike.net.energy.*;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
@@ -48,40 +44,39 @@ public final class MaterialEnergyProperties implements PipeNetProperties.IPipeNe
     public static final MaterialPropertyKey<MaterialEnergyProperties> KEY = new MaterialPropertyKey<>(
             "EnergyProperties");
 
+    private static final int MINIMUM_MELT_TEMPERATURE = 1500;
+
     @Getter
     private final long voltageLimit;
     private final long amperageLimit;
     private int materialMeltTemperature;
     private final long lossPerAmp;
-    private final int superconductorCriticalTemperature;
+    @Getter
+    private final boolean superconductor;
 
     /**
      * Generate a MaterialEnergyProperties
-     * 
-     * @param voltageLimit                      the voltage limit for the cable
-     * @param amperageLimit                     the base amperage for the cable.
-     * @param lossPerAmp                        the base loss per amp per block traveled.
-     * @param superconductorCriticalTemperature the superconductor temperature. When the temperature is at or below
-     *                                          superconductor temperature, loss will be treated as zero. A
-     *                                          superconductor
-     *                                          temperature of 0 or less will be treated as not a superconductor.
+     *
+     * @param voltageLimit   the voltage limit for the cable
+     * @param amperageLimit  the base amperage for the cable.
+     * @param lossPerAmp     the base loss per amp per block traveled.
+     * @param superconductor whether the material will be treated as a superconductor. Does not override loss.
      */
     public MaterialEnergyProperties(long voltageLimit, long amperageLimit, long lossPerAmp,
-                                    int superconductorCriticalTemperature) {
+                                    boolean superconductor) {
         this.voltageLimit = voltageLimit;
         this.amperageLimit = amperageLimit;
         this.lossPerAmp = lossPerAmp;
-        this.superconductorCriticalTemperature = superconductorCriticalTemperature;
+        this.superconductor = superconductor;
     }
 
     public static MaterialEnergyProperties create(long voltageLimit, long amperageLimit, long lossPerAmp,
-                                                  int superconductorCriticalTemperature) {
-        return new MaterialEnergyProperties(voltageLimit, amperageLimit, lossPerAmp,
-                superconductorCriticalTemperature);
+                                                  boolean superconductor) {
+        return new MaterialEnergyProperties(voltageLimit, amperageLimit, lossPerAmp, superconductor);
     }
 
     public static MaterialEnergyProperties create(long voltageLimit, long amperageLimit, long lossPerAmp) {
-        return new MaterialEnergyProperties(voltageLimit, amperageLimit, lossPerAmp, 0);
+        return new MaterialEnergyProperties(voltageLimit, amperageLimit, lossPerAmp, false);
     }
 
     public static TagPrefix.MaterialRecipeHandler registrationHandler(TagPrefix.PropertyMaterialRecipeHandler<MaterialEnergyProperties> handler) {
@@ -92,10 +87,6 @@ public final class MaterialEnergyProperties implements PipeNetProperties.IPipeNe
                         material.getProperty(PropertyKey.PIPENET_PROPERTIES).getProperty(KEY), provider);
             }
         };
-    }
-
-    public boolean isSuperconductor() {
-        return this.superconductorCriticalTemperature > 1;
     }
 
     @Override
@@ -111,12 +102,9 @@ public final class MaterialEnergyProperties implements PipeNetProperties.IPipeNe
             tooltip.add(Component.translatable("gtceu.cable.superconductor", GTValues.VN[tier]));
         tooltip.add(Component.translatable("gtceu.cable.voltage", voltageLimit, GTValues.VNF[tier]));
         tooltip.add(Component.translatable("gtceu.cable.amperage", getAmperage(structure)));
-        long loss = isSuperconductor() && superconductorCriticalTemperature == Integer.MAX_VALUE ? 0 :
-                getLoss(structure);
+
+        long loss = getLoss(structure);
         tooltip.add(Component.translatable("gtceu.cable.loss_per_block", loss));
-        if (isSuperconductor() && superconductorCriticalTemperature != Integer.MAX_VALUE) {
-            tooltip.add(Component.translatable("gtceu.cable.superconductor_loss", superconductorCriticalTemperature));
-        }
     }
 
     @Override
@@ -133,7 +121,7 @@ public final class MaterialEnergyProperties implements PipeNetProperties.IPipeNe
         this.materialMeltTemperature = computeMaterialMeltTemperature(properties);
     }
 
-    public static int computeMaterialMeltTemperature(@NotNull MaterialProperties properties) {
+    private static int computeMaterialMeltTemperature(@NotNull MaterialProperties properties) {
         if (properties.hasProperty(PropertyKey.FLUID)) {
             // autodetermine melt temperature from registered fluid
             FluidProperty prop = properties.getProperty(PropertyKey.FLUID);
@@ -141,26 +129,27 @@ public final class MaterialEnergyProperties implements PipeNetProperties.IPipeNe
             if (fluid == null) {
                 FluidBuilder builder = prop.getQueuedBuilder(FluidStorageKeys.LIQUID);
                 if (builder != null) {
-                    return builder.getDeterminedTemperature(properties.getMaterial(), FluidStorageKeys.LIQUID);
+                    return Math.max(MINIMUM_MELT_TEMPERATURE,
+                            builder.getDeterminedTemperature(properties.getMaterial(), FluidStorageKeys.LIQUID));
                 }
             } else {
-                return fluid.getFluidType().getTemperature();
+                return Math.max(MINIMUM_MELT_TEMPERATURE, fluid.getFluidType().getTemperature());
             }
         }
-        return 3000;
+        return MINIMUM_MELT_TEMPERATURE;
     }
 
     @Override
     @Nullable
-    public WorldPipeNetNode getOrCreateFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure) {
+    public WorldPipeNode getOrCreateFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure) {
         if (structure instanceof CableStructure) {
-            WorldPipeNetNode node = WorldEnergyNet.getWorldNet(world).getOrCreateNode(pos);
+            WorldPipeNode node = WorldEnergyNet.getWorldNet(world).getOrCreateNode(pos);
             mutateData(node.getData(), structure);
             return node;
         } else if (structure instanceof MaterialPipeStructure pipe) {
             long amperage = amperageLimit * pipe.material() / 2;
             if (amperage == 0) return null; // skip pipes that are too small
-            WorldPipeNetNode node = WorldEnergyNet.getWorldNet(world).getOrCreateNode(pos);
+            WorldPipeNode node = WorldEnergyNet.getWorldNet(world).getOrCreateNode(pos);
             mutateData(node.getData(), pipe);
             return node;
         }
@@ -175,30 +164,37 @@ public final class MaterialEnergyProperties implements PipeNetProperties.IPipeNe
             boolean insulated = cable.partialBurnStructure() != null;
             // insulated cables cool down half as fast
             float coolingFactor = (float) (Math.sqrt(cable.material()) / (insulated ? 8 : 4));
+            TemperatureLogic existing = data.getLogicEntryNullable(TemperatureLogic.TYPE);
+            float energy = existing == null ? 0 : existing.getThermalEnergy();
             data.setLogicEntry(VoltageLossLogic.TYPE.getWith(loss))
                     .setLogicEntry(WeightFactorLogic.TYPE.getWith(loss + 0.001 / amperage))
-                    .setLogicEntry(ThroughputLogic.TYPE.getWith(amperage))
+                    .setLogicEntry(AmperageLimitLogic.TYPE.getWith(amperage))
                     .setLogicEntry(VoltageLimitLogic.TYPE.getWith(voltageLimit))
-                    .setLogicEntry(
-                            TemperatureLogic.TYPE.getWith(TemperatureLossFunction.getOrCreateCable(coolingFactor),
-                                    materialMeltTemperature, 1, 100 * cable.material(),
-                                    cable.partialBurnThreshold()));
-            if (superconductorCriticalTemperature > 0) {
-                data.setLogicEntry(SuperconductorLogic.TYPE.getWith(superconductorCriticalTemperature));
+                    .setLogicEntry(TemperatureLogic.TYPE
+                            .getWith(TemperatureLossFunction.getOrCreateCable(coolingFactor), materialMeltTemperature,
+                                    1,
+                                    100 * cable.material(), cable.partialBurnThreshold())
+                            .setInitialThermalEnergy(energy));
+            if (superconductor) {
+                data.setLogicEntry(SuperconductorLogic.TYPE.getNew());
             }
         } else if (structure instanceof MaterialPipeStructure pipe) {
             long amperage = getAmperage(structure);
             if (amperage == 0) return; // skip pipes that are too small
             long loss = getLoss(structure);
             float coolingFactor = (float) Math.sqrt((double) pipe.material() / (4 + pipe.channelCount()));
+            TemperatureLogic existing = data.getLogicEntryNullable(TemperatureLogic.TYPE);
+            float energy = existing == null ? 0 : existing.getThermalEnergy();
             data.setLogicEntry(VoltageLossLogic.TYPE.getWith(loss))
                     .setLogicEntry(WeightFactorLogic.TYPE.getWith(loss + 0.001 / amperage))
-                    .setLogicEntry(ThroughputLogic.TYPE.getWith(amperage))
+                    .setLogicEntry(AmperageLimitLogic.TYPE.getWith(amperage))
                     .setLogicEntry(VoltageLimitLogic.TYPE.getWith(voltageLimit))
-                    .setLogicEntry(TemperatureLogic.TYPE.getWith(TemperatureLossFunction.getOrCreatePipe(coolingFactor),
-                            materialMeltTemperature, 1, 50 * pipe.material(), null));
-            if (superconductorCriticalTemperature > 0) {
-                data.setLogicEntry(SuperconductorLogic.TYPE.getWith(superconductorCriticalTemperature));
+                    .setLogicEntry(TemperatureLogic.TYPE
+                            .getWith(TemperatureLossFunction.getOrCreatePipe(coolingFactor), materialMeltTemperature, 1,
+                                    50 * pipe.material(), null)
+                            .setInitialThermalEnergy(energy));
+            if (superconductor) {
+                data.setLogicEntry(SuperconductorLogic.TYPE.getNew());
             }
         }
     }
@@ -221,7 +217,7 @@ public final class MaterialEnergyProperties implements PipeNetProperties.IPipeNe
 
     @Override
     @Nullable
-    public WorldPipeNetNode getFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure) {
+    public WorldPipeNode getFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure) {
         if (structure instanceof CableStructure || structure instanceof MaterialPipeStructure)
             return WorldEnergyNet.getWorldNet(world).getNode(pos);
         else return null;

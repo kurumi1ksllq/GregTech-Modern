@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block;
 
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeStructure;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.ActivablePipeBlockEntity;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.ActivablePipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 
 import net.minecraft.core.BlockPos;

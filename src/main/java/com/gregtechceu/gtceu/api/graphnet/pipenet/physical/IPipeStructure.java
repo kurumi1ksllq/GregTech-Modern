@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.graphnet.pipenet.physical;
 
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.client.renderer.pipe.PipeModelRedirector;
 import com.gregtechceu.gtceu.utils.GTUtil;

@@ -1,287 +1,409 @@
 package com.gregtechceu.gtceu.common.pipelike.net.fluid;
 
-import com.gregtechceu.gtceu.api.graphnet.edge.AbstractNetFlowEdge;
-import com.gregtechceu.gtceu.api.graphnet.edge.SimulatorKey;
+import com.gregtechceu.gtceu.api.fluids.FluidState;
+import com.gregtechceu.gtceu.api.fluids.attribute.FluidAttribute;
+import com.gregtechceu.gtceu.api.graphnet.GraphNetUtility;
 import com.gregtechceu.gtceu.api.graphnet.logic.ChannelCountLogic;
-import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicData;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.FlowWorldPipeNetPath;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNet;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.logic.ThroughputLogic;
+import com.gregtechceu.gtceu.api.graphnet.net.NetEdge;
+import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.NodeExposingCapabilities;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.logic.TemperatureLogic;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeCapabilityObject;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.IWorldPipeNetTile;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.NodeManagingPCW;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeCapabilityWrapper;
 import com.gregtechceu.gtceu.api.graphnet.predicate.test.FluidTestObject;
-import com.gregtechceu.gtceu.api.graphnet.traverse.ITraverseData;
-import com.gregtechceu.gtceu.api.graphnet.traverse.TraverseDataProvider;
-import com.gregtechceu.gtceu.api.graphnet.traverse.TraverseGuide;
-import com.gregtechceu.gtceu.api.graphnet.traverse.TraverseHelpers;
+import com.gregtechceu.gtceu.api.graphnet.traverse.EdgeDirection;
+import com.gregtechceu.gtceu.api.graphnet.traverse.EdgeSelector;
+import com.gregtechceu.gtceu.api.graphnet.traverse.ResilientNetClosestIterator;
+import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTUtil;
-
-import com.lowdragmc.lowdraglib.Platform;
-import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
-import com.lowdragmc.lowdraglib.side.fluid.IFluidTransfer;
-import com.lowdragmc.lowdraglib.side.fluid.forge.FluidTransferHelperImpl;
+import com.gregtechceu.gtceu.utils.MapUtil;
 
 import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayDeque;
 import java.util.EnumMap;
-import java.util.Iterator;
-import java.util.function.LongConsumer;
+import java.util.List;
 
-public class FluidCapabilityObject implements IPipeCapabilityObject, IFluidTransfer,
-                                   IFluidTraverseGuideProvider {
+public class FluidCapabilityObject implements IPipeCapabilityObject, IFluidHandler {
 
-    private final WorldPipeNet net;
-    @Getter
-    @Setter
-    private @Nullable PipeBlockEntity tile;
+    private PipeBlockEntity blockEntity;
+    private NodeManagingPCW capabilityWrapper;
+
+    private final EnumMap<Direction, Wrapper> wrappers = new EnumMap<>(Direction.class);
+    private final WorldPipeNode node;
     @Getter
     private final int tanks;
 
-    private final EnumMap<Direction, Wrapper> wrappers = new EnumMap<>(Direction.class);
-    private final WorldPipeNetNode node;
-
     private boolean transferring = false;
 
-    public <N extends WorldPipeNet & FlowWorldPipeNetPath.Provider> FluidCapabilityObject(@NotNull N net,
-                                                                                          WorldPipeNetNode node) {
-        this.net = net;
+    public FluidCapabilityObject(WorldPipeNode node) {
         this.node = node;
         this.tanks = node.getData().getLogicEntryDefaultable(ChannelCountLogic.TYPE)
                 .getValue();
         for (Direction facing : GTUtil.DIRECTIONS) {
-            AbstractNetFlowEdge edge = (AbstractNetFlowEdge) net.getNewEdge();
-            edge.setData(NetLogicData.union(node.getData(), (NetLogicData) null));
-            wrappers.put(facing, new Wrapper(facing, edge));
+            wrappers.put(facing, new Wrapper(facing));
         }
     }
 
-    private FlowWorldPipeNetPath.Provider getProvider() {
-        return (FlowWorldPipeNetPath.Provider) net;
+    public WorldPipeNode getNode() {
+        return node;
+    }
+
+    @Override
+    public void init(@NotNull PipeBlockEntity tile, @NotNull PipeCapabilityWrapper wrapper) {
+        this.blockEntity = tile;
+        if (!(wrapper instanceof NodeManagingPCW p))
+            throw new IllegalArgumentException("FluidCapabilityObjects must be initialized to NodeManagingPCWs!");
+        this.capabilityWrapper = p;
     }
 
     private boolean inputDisallowed(Direction side) {
         if (side == null) return false;
-        if (tile == null) return true;
-        else return tile.isBlocked(side);
-    }
-
-    private Iterator<FlowWorldPipeNetPath> getPaths(@NotNull ITraverseData<?, ?> data) {
-        assert tile != null;
-        return getProvider().getPaths(net.getNode(tile.getBlockPos()), data.getTestObject(), data.getSimulatorKey(),
-                data.getQueryTick());
+        else return blockEntity.isBlocked(side);
     }
 
     @Override
-    public Capability<?>[] getCapabilities() {
-        return WorldFluidNet.CAPABILITIES;
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction facing) {
+        // can't expose the sided capability if there is no node to interact with
+        if (facing != null && capabilityWrapper.getNodeForFacing(facing) == null) return LazyOptional.empty();
+        return ForgeCapabilities.FLUID_HANDLER.orEmpty(cap,
+                LazyOptional.of(() -> facing == null ? this : wrappers.get(facing)));
     }
 
-    @Override
-    public <T> LazyOptional<T> getCapabilityForSide(Capability<T> capability, @Nullable Direction facing) {
-        if (capability == ForgeCapabilities.FLUID_HANDLER) {
-            if (facing == null) return LazyOptional.empty(); // hard override to prevent TOP from displaying a tank.
-            // noinspection ConstantValue
-            return ForgeCapabilities.FLUID_HANDLER.orEmpty(capability, facing == null ?
-                    LazyOptional.of(() -> FluidTransferHelperImpl.toFluidHandler(this)) :
-                    LazyOptional.of(() -> FluidTransferHelperImpl.toFluidHandler(wrappers.get(facing))));
-        }
-        return null;
+    protected @Nullable NetNode getRelevantNode(Direction facing) {
+        return facing == null ? node : capabilityWrapper.getNodeForFacing(facing);
     }
 
-    @Override
-    public long fill(int tank, FluidStack resource, boolean simulate, boolean notifyChanges) {
-        return fill(resource, simulate, null);
-    }
-
-    public int fill(FluidStack resource, boolean simulate, Direction side) {
-        if (this.transferring) return 0;
+    protected int fill(FluidStack resource, FluidAction action, Direction side) {
+        if (this.transferring || inputDisallowed(side)) return 0;
+        NetNode node = getRelevantNode(side);
+        if (node == null) node = this.node;
         this.transferring = true;
 
-        var guide = getGuide(FluidTraverseData::new, new FluidTestObject(resource), resource.getAmount(), simulate,
-                side);
-        if (guide == null) return 0;
-        int accepted = (int) TraverseHelpers.traverseFlood(guide.getData(), guide.getPaths(), guide.getFlow());
-        guide.reportConsumedFlow(accepted);
-
-        this.transferring = false;
-        return accepted;
-    }
-
-    @NotNull
-    @Override
-    public FluidStack drain(int tank, FluidStack resource, boolean simulate, boolean notifyChanges) {
-        return FluidStack.empty();
-    }
-
-    @Override
-    public @Nullable <
-            D extends ITraverseData<WorldPipeNetNode, FlowWorldPipeNetPath>> TraverseGuide<WorldPipeNetNode, FlowWorldPipeNetPath, D> getGuide(
-                                                                                                                                               TraverseDataProvider<D, FluidTestObject> provider,
-                                                                                                                                               FluidTestObject testObject,
-                                                                                                                                               long flow,
-                                                                                                                                               boolean simulate) {
-        return getGuide(provider, testObject, flow, simulate, null);
-    }
-
-    public @Nullable <
-            D extends ITraverseData<WorldPipeNetNode, FlowWorldPipeNetPath>> TraverseGuide<WorldPipeNetNode, FlowWorldPipeNetPath, D> getGuide(
-                                                                                                                                               TraverseDataProvider<D, FluidTestObject> provider,
-                                                                                                                                               FluidTestObject testObject,
-                                                                                                                                               long flow,
-                                                                                                                                               boolean simulate,
-                                                                                                                                               Direction side) {
-        if (tile == null || inputDisallowed(side)) return null;
-        SimulatorKey simulator = simulate ? SimulatorKey.getNewSimulatorInstance() : null;
-        long tick = Platform.getMinecraftServer().getTickCount();
-        D data = provider.of(net, testObject, simulator, tick, tile.getBlockPos(), side);
-
-        LongConsumer flowReport = null;
-        Wrapper wrapper = this.wrappers.get(side);
-        if (wrapper != null) {
-            AbstractNetFlowEdge internalBuffer = wrapper.getBuffer();
-            if (internalBuffer != null) {
-                long limit = internalBuffer.getFlowLimit(testObject, net, tick, simulator);
-                if (limit <= 0) {
-                    this.transferring = false;
-                    return null;
+        int flow = resource.getAmount();
+        FluidTestObject testObject = new FluidTestObject(resource);
+        ResilientNetClosestIterator iter = new ResilientNetClosestIterator(node,
+                EdgeSelector.filtered(EdgeDirection.OUTGOING, GraphNetUtility.standardEdgeBlacklist(testObject)));
+        Object2IntOpenHashMap<NetNode> availableDemandCache = new Object2IntOpenHashMap<>();
+        Object2IntOpenHashMap<NetNode> flowLimitCache = new Object2IntOpenHashMap<>();
+        Object2BooleanOpenHashMap<NetNode> lossyCache = new Object2BooleanOpenHashMap<>();
+        List<Runnable> postActions = new ObjectArrayList<>();
+        int total = 0;
+        main:
+        while (iter.hasNext()) {
+            if (flow <= 0) break;
+            final NetNode next = iter.next();
+            int limit = Math.min(MapUtil.computeIfAbsent(flowLimitCache, next, n -> getFlowLimit(n, testObject)), flow);
+            if (limit <= 0) {
+                iter.markInvalid(next);
+                continue;
+            }
+            int supply = MapUtil.computeIfAbsent(availableDemandCache, next,
+                    n -> getSupplyOrDemand(n, testObject, false));
+            if (supply <= 0) continue;
+            supply = Math.min(supply, limit);
+            NetEdge span;
+            NetNode trace = next;
+            ArrayDeque<NetNode> seen = new ArrayDeque<>();
+            seen.add(next);
+            while ((span = iter.getSpanningTreeEdge(trace)) != null) {
+                trace = span.getOppositeNode(trace);
+                if (trace == null) continue main;
+                int l = MapUtil.computeIfAbsent(flowLimitCache, trace, n -> getFlowLimit(n, testObject));
+                if (l == 0) {
+                    iter.markInvalid(node);
+                    continue main;
                 }
-                flow = Math.min(limit, flow);
-                flowReport = l -> data.consumeFlowLimit(internalBuffer, node, l);
+                supply = Math.min(supply, l);
+                seen.addFirst(trace);
+            }
+            total += supply;
+            flow -= supply;
+            int finalSupply = supply;
+            for (NetNode n : seen) {
+                // reporting flow can cause temperature pipe destruction which causes graph modification while
+                // iterating.
+                if (action.execute()) postActions.add(() -> reportFlow(n, finalSupply, testObject));
+                int remaining = flowLimitCache.getInt(n) - supply;
+                flowLimitCache.put(n, remaining);
+                if (remaining <= 0) {
+                    iter.markInvalid(n);
+                }
+                if (MapUtil.computeIfAbsent(lossyCache, n, a -> isLossyNode(a, testObject))) {
+                    // reporting loss can cause misc pipe destruction which causes graph modification while iterating.
+                    if (action.execute()) postActions.add(() -> handleLoss(n, finalSupply, testObject));
+                    continue main;
+                }
+            }
+            if (action.execute()) reportExtractedInserted(next, supply, testObject, false);
+            availableDemandCache.put(next, availableDemandCache.getInt(next) - supply);
+        }
+        postActions.forEach(Runnable::run);
+        this.transferring = false;
+        return total;
+    }
+
+    protected FluidStack drain(int maxDrain, FluidAction action, Direction side) {
+        FluidStack stack = getNetworkView().handler().drain(maxDrain, FluidAction.SIMULATE);
+        if (stack == null) return null;
+        return drain(stack, action, side);
+    }
+
+    protected FluidStack drain(FluidStack resource, FluidAction action, Direction side) {
+        if (this.transferring) return null;
+        NetNode node = getRelevantNode(side);
+        if (node == null) node = this.node;
+        this.transferring = true;
+
+        int flow = resource.getAmount();
+        FluidTestObject testObject = new FluidTestObject(resource);
+        ResilientNetClosestIterator iter = new ResilientNetClosestIterator(node,
+                EdgeSelector.filtered(EdgeDirection.INCOMING, GraphNetUtility.standardEdgeBlacklist(testObject)));
+        Object2IntOpenHashMap<NetNode> availableSupplyCache = new Object2IntOpenHashMap<>();
+        Object2IntOpenHashMap<NetNode> flowLimitCache = new Object2IntOpenHashMap<>();
+        Object2BooleanOpenHashMap<NetNode> lossyCache = new Object2BooleanOpenHashMap<>();
+        List<Runnable> postActions = new ObjectArrayList<>();
+        int total = 0;
+        main:
+        while (iter.hasNext()) {
+            if (flow <= 0) break;
+            final NetNode next = iter.next();
+            int limit = Math.min(MapUtil.computeIfAbsent(flowLimitCache, next, n -> getFlowLimit(n, testObject)), flow);
+            if (limit <= 0) {
+                iter.markInvalid(next);
+                continue;
+            }
+            int supply = MapUtil.computeIfAbsent(availableSupplyCache, next,
+                    n -> getSupplyOrDemand(n, testObject, true));
+            if (supply <= 0) continue;
+            supply = Math.min(supply, limit);
+            NetEdge span;
+            NetNode trace = next;
+            ArrayDeque<NetNode> seen = new ArrayDeque<>();
+            seen.add(next);
+            while ((span = iter.getSpanningTreeEdge(trace)) != null) {
+                trace = span.getOppositeNode(trace);
+                if (trace == null) continue main;
+                int l = MapUtil.computeIfAbsent(flowLimitCache, trace, n -> getFlowLimit(n, testObject));
+                if (l == 0) {
+                    iter.markInvalid(node);
+                    continue main;
+                }
+                supply = Math.min(supply, l);
+                seen.addFirst(trace);
+            }
+            total += supply;
+            flow -= supply;
+            int finalSupply = supply;
+            for (NetNode n : seen) {
+                // reporting flow can cause temperature pipe destruction which causes graph modification while
+                // iterating.
+                if (action.execute()) postActions.add(() -> reportFlow(n, finalSupply, testObject));
+                int remaining = flowLimitCache.getInt(n) - supply;
+                flowLimitCache.put(n, remaining);
+                if (remaining <= 0) {
+                    iter.markInvalid(n);
+                }
+                if (MapUtil.computeIfAbsent(lossyCache, n, a -> isLossyNode(a, testObject))) {
+                    // reporting loss can cause misc pipe destruction which causes graph modification while iterating.
+                    if (action.execute()) postActions.add(() -> handleLoss(n, finalSupply, testObject));
+                    continue main;
+                }
+            }
+            if (action.execute()) reportExtractedInserted(next, supply, testObject, true);
+            availableSupplyCache.put(next, availableSupplyCache.getInt(next) - supply);
+        }
+        postActions.forEach(Runnable::run);
+        this.transferring = false;
+        return testObject.recombine(total);
+    }
+
+    public static int getFlowLimit(NetNode node, FluidTestObject testObject) {
+        ThroughputLogic throughput = node.getData().getLogicEntryNullable(ThroughputLogic.TYPE);
+        if (throughput == null) return Integer.MAX_VALUE;
+        FluidFlowLogic history = node.getData().getLogicEntryNullable(FluidFlowLogic.TYPE);
+        if (history == null) return GTMath.saturatedCast(throughput.getValue() * FluidFlowLogic.MEMORY_TICKS);
+        Object2LongMap<FluidTestObject> sum = history.getSum();
+        if (sum.isEmpty()) return GTMath.saturatedCast(throughput.getValue() * FluidFlowLogic.MEMORY_TICKS);
+        if (sum.size() < node.getData().getLogicEntryDefaultable(ChannelCountLogic.TYPE).getValue() ||
+                sum.containsKey(testObject)) {
+            return GTMath.saturatedCast(throughput.getValue() * FluidFlowLogic.MEMORY_TICKS - sum.getLong(testObject));
+        }
+        return 0;
+    }
+
+    public static boolean isLossyNode(NetNode node, FluidTestObject testObject) {
+        FluidContainmentLogic containmentLogic = node.getData().getLogicEntryNullable(FluidContainmentLogic.TYPE);
+        return containmentLogic != null && !containmentLogic.handles(testObject);
+    }
+
+    public static void reportFlow(NetNode node, int flow, FluidTestObject testObject) {
+        FluidFlowLogic logic = node.getData().getLogicEntryNullable(FluidFlowLogic.TYPE);
+        if (logic == null) {
+            logic = FluidFlowLogic.TYPE.getNew();
+            node.getData().setLogicEntry(logic);
+        }
+        logic.recordFlow(GTUtil.getCurrentServerTick(), testObject, flow);
+        TemperatureLogic temp = node.getData().getLogicEntryNullable(TemperatureLogic.TYPE);
+        if (temp != null) {
+            FluidStack stack = testObject.recombine(flow);
+            FluidContainmentLogic cont = node.getData().getLogicEntryDefaultable(FluidContainmentLogic.TYPE);
+            int t = stack.getFluid().getFluidType().getTemperature(stack);
+            temp.moveTowardsTemperature(t, GTUtil.getCurrentServerTick(), stack.getAmount(),
+                    cont.getMaximumTemperature() >= t);
+            if (node instanceof WorldPipeNode n) {
+                temp.defaultHandleTemperature(n.getNet().getLevel(), n.getEquivalencyData());
             }
         }
-        return new TraverseGuide<>(data, () -> getPaths(data), flow, flowReport);
     }
 
-    @NotNull
-    @Override
-    public FluidStack drain(long maxDrain, boolean simulate, boolean notifyChanges) {
-        return FluidStack.empty();
+    public static void reportExtractedInserted(NetNode node, int flow, FluidTestObject testObject, boolean extracted) {
+        if (flow == 0) return;
+        if (node instanceof NodeExposingCapabilities exposer) {
+            IFluidHandler handler = exposer.getProvider().getCapability(ForgeCapabilities.FLUID_HANDLER,
+                    exposer.exposedFacing())
+                    .resolve().orElse(null);
+            if (handler != null) {
+                if (extracted) {
+                    handler.drain(testObject.recombine(flow), FluidAction.EXECUTE);
+                } else {
+                    handler.fill(testObject.recombine(flow), FluidAction.EXECUTE);
+                }
+            }
+        }
     }
 
-    @NotNull
-    @Override
-    public Object createSnapshot() {
-        return null;
+    public static void handleLoss(NetNode node, int flow, FluidTestObject testObject) {
+        if (flow == 0) return;
+        FluidContainmentLogic logic = node.getData().getLogicEntryDefaultable(FluidContainmentLogic.TYPE);
+        if (node instanceof WorldPipeNode n) {
+            IWorldPipeNetTile tile = n.getBlockEntity();
+            FluidStack stack = testObject.recombine(flow);
+            // failing attributes take priority over state
+            for (FluidAttribute attribute : FluidAttribute.inferAttributes(stack)) {
+                if (!logic.contains(attribute)) {
+                    attribute.handleFailure(tile.getLevel(), tile.getBlockPos(), stack);
+                    return;
+                }
+            }
+            FluidState state = FluidState.inferState(stack);
+            if (!logic.contains(state)) state.handleFailure(tile.getLevel(), tile.getBlockPos(), stack);
+        }
+    }
+
+    public static int getSupplyOrDemand(NetNode node, FluidTestObject testObject, boolean supply) {
+        if (node instanceof NodeExposingCapabilities exposer) {
+            IFluidHandler handler = exposer.getProvider().getCapability(ForgeCapabilities.FLUID_HANDLER,
+                    exposer.exposedFacing())
+                    .resolve().orElse(null);
+            if (handler != null && instanceOf(handler) == null) {
+                if (supply) {
+                    FluidStack s = handler.drain(testObject.recombine(Integer.MAX_VALUE), FluidAction.SIMULATE);
+                    return s.isEmpty() ? 0 : s.getAmount();
+                } else {
+                    return handler.fill(testObject.recombine(Integer.MAX_VALUE), FluidAction.SIMULATE);
+                }
+            }
+        }
+        return 0;
+    }
+
+    public @NotNull FluidNetworkView getNetworkView() {
+        if (node.getGroupSafe().getData() instanceof FluidNetworkViewGroupData data) {
+            return data.getOrCreate(node);
+        }
+        return FluidNetworkView.EMPTY;
     }
 
     @Override
-    public void restoreFromSnapshot(Object snapshot) {}
-
-    @NotNull
-    @Override
-    public FluidStack drain(FluidStack resource, boolean simulate, boolean notifyChanges) {
-        return FluidStack.empty();
-    }
-
-    @NotNull
-    @Override
-    public FluidStack getFluidInTank(int tank) {
-        return FluidStack.empty();
+    public @NotNull FluidStack getFluidInTank(int tank) {
+        return FluidStack.EMPTY;
     }
 
     @Override
-    public void setFluidInTank(int tank, @NotNull FluidStack fluidStack) {}
-
-    @Override
-    public long getTankCapacity(int tank) {
-        return Long.MAX_VALUE;
+    public int getTankCapacity(int tank) {
+        return Integer.MAX_VALUE;
     }
 
     @Override
     public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-        return false;
-    }
-
-    @Override
-    public boolean supportsFill(int tank) {
         return true;
     }
 
     @Override
-    public boolean supportsDrain(int tank) {
-        return false;
+    public int fill(FluidStack resource, FluidAction action) {
+        return fill(resource, action, null);
     }
 
-    protected class Wrapper implements IFluidTransfer, IFluidTraverseGuideProvider {
+    @Override
+    public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+        return drain(maxDrain, action, null);
+    }
+
+    @Override
+    public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+        return drain(resource, action, null);
+    }
+
+    @Nullable
+    public static FluidCapabilityObject instanceOf(IFluidHandler handler) {
+        if (handler instanceof FluidCapabilityObject f) return f;
+        if (handler instanceof Wrapper w) return w.getParent();
+        return null;
+    }
+
+    protected class Wrapper implements IFluidHandler {
 
         private final Direction facing;
         @Getter
-        private final AbstractNetFlowEdge buffer;
+        private final int tanks;
 
-        public Wrapper(Direction facing, AbstractNetFlowEdge buffer) {
+        public Wrapper(Direction facing) {
             this.facing = facing;
-            this.buffer = buffer;
+            this.tanks = FluidCapabilityObject.this.tanks;
         }
 
         @Override
-        public @Nullable <
-                D extends ITraverseData<WorldPipeNetNode, FlowWorldPipeNetPath>> TraverseGuide<WorldPipeNetNode, FlowWorldPipeNetPath, D> getGuide(
-                                                                                                                                                   TraverseDataProvider<D, FluidTestObject> provider,
-                                                                                                                                                   FluidTestObject testObject,
-                                                                                                                                                   long flow,
-                                                                                                                                                   boolean simulate) {
-            return FluidCapabilityObject.this.getGuide(provider, testObject, flow, simulate, facing);
+        public int fill(FluidStack resource, FluidAction action) {
+            return FluidCapabilityObject.this.fill(resource, action, facing);
         }
 
         @Override
-        public int getTanks() {
-            return FluidCapabilityObject.this.tanks;
+        public FluidStack drain(FluidStack resource, FluidAction action) {
+            return FluidCapabilityObject.this.drain(resource, action, facing);
         }
 
         @Override
-        public long fill(int tank, FluidStack resource, boolean simulate, boolean notifyChanges) {
-            return FluidCapabilityObject.this.fill(resource, simulate, facing);
-        }
-
-        @NotNull
-        @Override
-        public FluidStack drain(long maxDrain, boolean simulate, boolean notifyChanges) {
-            return FluidStack.empty();
-        }
-
-        @NotNull
-        @Override
-        public FluidStack drain(FluidStack resource, boolean simulate, boolean notifyChanges) {
-            return FluidStack.empty();
-        }
-
-        @NotNull
-        @Override
-        public FluidStack drain(int tank, FluidStack resource, boolean simulate, boolean notifyChanges) {
-            return FluidStack.empty();
-        }
-
-        // Unused.
-        @NotNull
-        @Override
-        public Object createSnapshot() {
-            return new Object();
-        }
-
-        // Unused.
-        @Override
-        public void restoreFromSnapshot(Object snapshot) {}
-
-        @NotNull
-        @Override
-        public FluidStack getFluidInTank(int tank) {
-            return FluidStack.empty();
+        public FluidStack drain(int maxDrain, FluidAction action) {
+            return FluidCapabilityObject.this.drain(maxDrain, action, facing);
         }
 
         @Override
-        public void setFluidInTank(int tank, @NotNull FluidStack fluidStack) {}
+        public @NotNull FluidStack getFluidInTank(int tank) {
+            return FluidStack.EMPTY;
+        }
 
         @Override
-        public long getTankCapacity(int tank) {
-            return (int) Math.min(Integer.MAX_VALUE, buffer.getThroughput());
+        public int getTankCapacity(int tank) {
+            return Integer.MAX_VALUE;
         }
 
         @Override
@@ -289,14 +411,8 @@ public class FluidCapabilityObject implements IPipeCapabilityObject, IFluidTrans
             return true;
         }
 
-        @Override
-        public boolean supportsFill(int tank) {
-            return true;
-        }
-
-        @Override
-        public boolean supportsDrain(int tank) {
-            return false;
+        public FluidCapabilityObject getParent() {
+            return FluidCapabilityObject.this;
         }
     }
 }

@@ -8,7 +8,6 @@ import com.gregtechceu.gtceu.api.cover.filter.SimpleFluidFilter;
 import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
 import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.NumberInputWidget;
-import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.common.cover.data.BucketMode;
@@ -16,9 +15,6 @@ import com.gregtechceu.gtceu.common.cover.data.VoidingMode;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
-import com.lowdragmc.lowdraglib.side.fluid.IFluidTransfer;
-import com.lowdragmc.lowdraglib.side.fluid.forge.FluidTransferHelperImpl;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
@@ -73,14 +69,13 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
 
     @Override
     protected void doTransferFluids() {
-        IFluidHandler myFluidHandlerCap = coverHolder.getCapability(ForgeCapabilities.FLUID_HANDLER,
+        IFluidHandler myFluidHandler = coverHolder.getCapability(ForgeCapabilities.FLUID_HANDLER,
                 attachedSide).resolve().orElse(null);
-        if (myFluidHandlerCap == null) {
+        if (myFluidHandler == null) {
             return;
         }
-        IFluidTransfer myFluidHandler = FluidTransferHelperImpl.toFluidTransfer(myFluidHandlerCap);
         switch (voidingMode) {
-            case VOID_ANY -> GTTransferUtils.transferFluids(myFluidHandler, nullFluidTank, Integer.MAX_VALUE,
+            case VOID_ANY -> GTTransferUtils.transferFluidsFiltered(myFluidHandler, nullFluidTank,
                     getFilterHandler()::test);
             case VOID_OVERFLOW -> voidOverflow(myFluidHandler, getFilterHandler()::test,
                     this.globalTransferSizeMillibuckets);
@@ -95,9 +90,9 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
      * @param fluidFilter   a predicate which determines what fluids may be moved
      * @param keepAmount    the desired amount in milliBuckets of a particular fluid in the destination
      */
-    protected void voidOverflow(final IFluidTransfer sourceHandler,
+    protected void voidOverflow(final IFluidHandler sourceHandler,
                                 final Predicate<FluidStack> fluidFilter,
-                                long keepAmount) {
+                                int keepAmount) {
         if (sourceHandler == null || fluidFilter == null)
             return;
 
@@ -106,13 +101,13 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
             if (this.getFilterHandler().isFilterPresent() &&
                     voidingMode == VoidingMode.VOID_OVERFLOW) {
                 keepAmount = this.getFilterHandler().getFilter()
-                        .getTransferLimit(sourceFluid, (int) maxMilliBucketsPerTick);
+                        .getTransferLimit(sourceFluid, maxFluidTransferRate);
             }
             if (sourceFluid.isEmpty() || sourceFluid.getAmount() == 0 ||
                     !getFilterHandler().test(sourceFluid))
                 continue;
             sourceFluid.setAmount(sourceFluid.getAmount() - keepAmount);
-            sourceHandler.drain(sourceFluid, true);
+            sourceHandler.drain(sourceFluid, IFluidHandler.FluidAction.EXECUTE);
         }
     }
 

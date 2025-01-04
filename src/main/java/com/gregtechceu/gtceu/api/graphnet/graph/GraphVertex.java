@@ -1,22 +1,35 @@
 package com.gregtechceu.gtceu.api.graphnet.graph;
 
-import com.gregtechceu.gtceu.api.graphnet.NetNode;
+import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
 
+import lombok.Getter;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 public final class GraphVertex {
 
-    public final @NotNull NetNode wrapped;
+    @ApiStatus.Internal
+    @Getter
+    public final NetNode wrapped;
 
     public GraphVertex(@NotNull NetNode wrapped) {
         this.wrapped = wrapped;
         wrapped.wrapper = this;
     }
 
-    public @NotNull NetNode getWrapped() {
-        return wrapped;
+    @ApiStatus.Internal
+    public GraphVertex() {
+        wrapped = null;
+    }
+
+    @Nullable
+    @Contract("null->null")
+    public static GraphVertex unwrap(NetNode n) {
+        return n == null ? null : n.wrapper;
     }
 
     @Override

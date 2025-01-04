@@ -991,9 +991,9 @@ public class GTMultiMachines {
                                     .setMinGlobalLimited(PowerSubstationMachine.MIN_CASINGS)
                                     .or(autoAbilities(true, false, false))
                                     .or(abilities(PartAbility.INPUT_ENERGY, PartAbility.SUBSTATION_INPUT_ENERGY,
-                                            PartAbility.INPUT_LASER).setMinGlobalLimited(1))
+                                            PartAbility.LASER_RECEPTION).setMinGlobalLimited(1))
                                     .or(abilities(PartAbility.OUTPUT_ENERGY, PartAbility.SUBSTATION_OUTPUT_ENERGY,
-                                            PartAbility.OUTPUT_LASER).setMinGlobalLimited(1)))
+                                            PartAbility.LASER_TRANSMISSION).setMinGlobalLimited(1)))
                     .where('G', blocks(CASING_LAMINATED_GLASS.get()))
                     .where('B', Predicates.powerSubstationBatteries())
                     .build())
@@ -1098,7 +1098,7 @@ public class GTMultiMachines {
     public static final MultiblockMachineDefinition WOODEN_MULTIBLOCK_TANK = registerMultiblockTank(
             "wooden_multiblock_tank", "Wooden Multiblock Tank", 250 * 1000,
             CASING_WOOD_WALL, WOODEN_TANK_VALVE::getBlock,
-            new PropertyFluidFilter(340, false, false, false, false),
+            new PropertyFluidFilter(340, 121, false, false, false),
             (builder, overlay) -> builder.sidedWorkableCasingRenderer("block/casings/wood_wall", overlay));
 
     public static final MachineDefinition STEEL_TANK_VALVE = GTMachineUtils.registerTankValve(

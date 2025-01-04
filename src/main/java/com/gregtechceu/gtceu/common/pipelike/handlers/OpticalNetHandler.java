@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.common.pipelike.handlers;
 
 import com.gregtechceu.gtceu.api.graphnet.pipenet.IPipeNetNodeHandler;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.optical.OpticalStructure;
 import com.gregtechceu.gtceu.common.pipelike.net.optical.WorldOpticalNet;
@@ -24,8 +24,8 @@ public final class OpticalNetHandler implements IPipeNetNodeHandler {
     public static final DuctNetHandler INSTANCE = new DuctNetHandler();
 
     @Override
-    public @NotNull Collection<WorldPipeNetNode> getOrCreateFromNets(ServerLevel world, BlockPos pos,
-                                                                     IPipeStructure structure) {
+    public @NotNull Collection<WorldPipeNode> getOrCreateFromNets(ServerLevel world, BlockPos pos,
+                                                                  IPipeStructure structure) {
         if (structure instanceof OpticalStructure) {
             return Collections.singletonList(WorldOpticalNet.getWorldNet(world).getOrCreateNode(pos));
         }
@@ -33,10 +33,10 @@ public final class OpticalNetHandler implements IPipeNetNodeHandler {
     }
 
     @Override
-    public @NotNull Collection<WorldPipeNetNode> getFromNets(ServerLevel world, BlockPos pos,
-                                                             IPipeStructure structure) {
+    public @NotNull Collection<WorldPipeNode> getFromNets(ServerLevel world, BlockPos pos,
+                                                          IPipeStructure structure) {
         if (structure instanceof OpticalStructure) {
-            WorldPipeNetNode node = WorldOpticalNet.getWorldNet(world).getNode(pos);
+            WorldPipeNode node = WorldOpticalNet.getWorldNet(world).getNode(pos);
             if (node != null) return Collections.singletonList(node);
         }
         return Collections.emptyList();
@@ -46,7 +46,7 @@ public final class OpticalNetHandler implements IPipeNetNodeHandler {
     public void removeFromNets(ServerLevel world, BlockPos pos, IPipeStructure structure) {
         if (structure instanceof OpticalStructure) {
             WorldOpticalNet net = WorldOpticalNet.getWorldNet(world);
-            WorldPipeNetNode node = net.getNode(pos);
+            WorldPipeNode node = net.getNode(pos);
             if (node != null) net.removeNode(node);
         }
     }

@@ -12,19 +12,42 @@ import net.minecraft.world.level.BlockGetter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public interface IPipeNetNodeHandler {
 
     @NotNull
-    Collection<WorldPipeNetNode> getOrCreateFromNets(ServerLevel level, BlockPos pos, IPipeStructure structure);
+    Collection<WorldPipeNode> getOrCreateFromNets(ServerLevel level, BlockPos pos, IPipeStructure structure);
 
     @NotNull
-    Collection<WorldPipeNetNode> getFromNets(ServerLevel level, BlockPos pos, IPipeStructure structure);
+    Collection<WorldPipeNode> getFromNets(ServerLevel level, BlockPos pos, IPipeStructure structure);
 
     void removeFromNets(ServerLevel level, BlockPos pos, IPipeStructure structure);
 
     void addInformation(@NotNull ItemStack stack, BlockGetter worldIn, @NotNull List<Component> tooltip,
                         @NotNull TooltipFlag flagIn,
                         IPipeStructure structure);
+
+    IPipeNetNodeHandler EMPTY = new IPipeNetNodeHandler() {
+
+        @Override
+        public @NotNull Collection<WorldPipeNode> getOrCreateFromNets(ServerLevel level, BlockPos pos,
+                                                                      IPipeStructure structure) {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public @NotNull Collection<WorldPipeNode> getFromNets(ServerLevel level, BlockPos pos,
+                                                              IPipeStructure structure) {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public void removeFromNets(ServerLevel level, BlockPos pos, IPipeStructure structure) {}
+
+        @Override
+        public void addInformation(@NotNull ItemStack stack, BlockGetter worldIn, @NotNull List<Component> tooltip,
+                                   @NotNull TooltipFlag flagIn, IPipeStructure structure) {}
+    };
 }

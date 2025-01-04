@@ -389,7 +389,7 @@ public class GTItems {
             .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
             .color(() -> GTItems::cellColor)
             .onRegister(attach(
-                    ThermalFluidStats.create(FluidType.BUCKET_VOLUME, 1800, true, false, false, false, false),
+                    ThermalFluidStats.create(FluidType.BUCKET_VOLUME, 1800, 121, false, false, false, false),
                     new ItemFluidContainer(), cellName()))
             .register();
     public static ItemEntry<ComponentItem> FLUID_CELL_UNIVERSAL = REGISTRATE
@@ -398,7 +398,7 @@ public class GTItems {
             .color(() -> GTItems::cellColor)
             .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
             .onRegister(attach(cellName(),
-                    ThermalFluidStats.create(FluidType.BUCKET_VOLUME, 1800, true, false, false, false, true),
+                    ThermalFluidStats.create(FluidType.BUCKET_VOLUME, 1800, 121, false, false, false, true),
                     new ItemFluidContainer()))
             .register();
     public static ItemEntry<ComponentItem> FLUID_CELL_LARGE_STEEL = REGISTRATE
@@ -410,7 +410,9 @@ public class GTItems {
                     ThermalFluidStats.create(FluidType.BUCKET_VOLUME * 8,
                             GTMaterials.Steel.getProperty(PropertyKey.PIPENET_PROPERTIES)
                                     .getProperty(MaterialFluidProperties.KEY).getMaxFluidTemperature(),
-                            true, false, false, false, true),
+                            GTMaterials.Steel.getProperty(PropertyKey.PIPENET_PROPERTIES)
+                                    .getProperty(MaterialFluidProperties.KEY).getMinFluidTemperature(),
+                            false, false, false, true),
                     new ItemFluidContainer()))
             .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
             .register();
@@ -423,7 +425,9 @@ public class GTItems {
                     ThermalFluidStats.create(FluidType.BUCKET_VOLUME * 32,
                             GTMaterials.Aluminium.getProperty(PropertyKey.PIPENET_PROPERTIES)
                                     .getProperty(MaterialFluidProperties.KEY).getMaxFluidTemperature(),
-                            true, false, false, false, true),
+                            GTMaterials.Aluminium.getProperty(PropertyKey.PIPENET_PROPERTIES)
+                                    .getProperty(MaterialFluidProperties.KEY).getMinFluidTemperature(),
+                            false, false, false, true),
                     new ItemFluidContainer()))
             .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Aluminium, GTValues.M * 4))))
             .register();
@@ -436,7 +440,9 @@ public class GTItems {
                     ThermalFluidStats.create(FluidType.BUCKET_VOLUME * 64,
                             GTMaterials.StainlessSteel.getProperty(PropertyKey.PIPENET_PROPERTIES)
                                     .getProperty(MaterialFluidProperties.KEY).getMaxFluidTemperature(),
-                            true, false, false, false, true),
+                            GTMaterials.StainlessSteel.getProperty(PropertyKey.PIPENET_PROPERTIES)
+                                    .getProperty(MaterialFluidProperties.KEY).getMinFluidTemperature(),
+                            false, false, false, true),
                     new ItemFluidContainer()))
             .onRegister(
                     materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.StainlessSteel, GTValues.M * 6))))
@@ -450,7 +456,9 @@ public class GTItems {
                     ThermalFluidStats.create(FluidType.BUCKET_VOLUME * 128,
                             GTMaterials.Titanium.getProperty(PropertyKey.PIPENET_PROPERTIES)
                                     .getProperty(MaterialFluidProperties.KEY).getMaxFluidTemperature(),
-                            true, false, false, false, true),
+                            GTMaterials.Titanium.getProperty(PropertyKey.PIPENET_PROPERTIES)
+                                    .getProperty(MaterialFluidProperties.KEY).getMinFluidTemperature(),
+                            false, false, false, true),
                     new ItemFluidContainer()))
             .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Titanium, GTValues.M * 6))))
             .register();
@@ -464,7 +472,9 @@ public class GTItems {
                     ThermalFluidStats.create(FluidType.BUCKET_VOLUME * 512,
                             GTMaterials.TungstenSteel.getProperty(PropertyKey.PIPENET_PROPERTIES)
                                     .getProperty(MaterialFluidProperties.KEY).getMaxFluidTemperature(),
-                            true, false, false, false, true),
+                            GTMaterials.TungstenSteel.getProperty(PropertyKey.PIPENET_PROPERTIES)
+                                    .getProperty(MaterialFluidProperties.KEY).getMinFluidTemperature(),
+                            false, false, false, true),
                     new ItemFluidContainer()))
             .onRegister(
                     materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.TungstenSteel, GTValues.M * 8))))
@@ -475,7 +485,7 @@ public class GTItems {
             .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
             .onRegister(
                     attach(cellName(),
-                            ThermalFluidStats.create(FluidType.BUCKET_VOLUME, 1200, false, true, false, false,
+                            ThermalFluidStats.create(FluidType.BUCKET_VOLUME, 1200, 213, true, false, false,
                                     true),
                             new ItemFluidContainer()))
             .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Glass, GTValues.M / 4))))
@@ -1945,7 +1955,7 @@ public class GTItems {
     public static ItemEntry<ComponentItem> COVER_STORAGE = REGISTRATE
             .item("storage_cover", ComponentItem::create)
             .lang("Storage Cover")
-            .onRegister(attach(new CoverPlaceBehavior(GTCovers.COVER_STORAGE)))
+            .onRegister(attach(new CoverPlaceBehavior(GTCovers.STORAGE)))
             .register();
     public static ItemEntry<ComponentItem> COVER_SHUTTER = REGISTRATE
             .item("shutter_module_cover", ComponentItem::create)

@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.api.item.component;
 
+import com.gregtechceu.gtceu.api.fluids.attribute.FluidAttribute;
+import com.gregtechceu.gtceu.api.fluids.attribute.FluidAttributes;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
 import com.gregtechceu.gtceu.api.misc.forge.SimpleThermalFluidHandlerItemStack;
 import com.gregtechceu.gtceu.api.misc.forge.ThermalFluidHandlerItemStack;
@@ -16,6 +18,8 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidUtil;
 
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,27 +34,36 @@ public class ThermalFluidStats implements IItemComponent, IComponentCapability, 
 
     public final int capacity;
     public final int maxFluidTemperature;
+    public final int minFluidTemperature;
     public final boolean gasProof;
-    public final boolean acidProof;
-    public final boolean cryoProof;
     public final boolean plasmaProof;
     public final boolean allowPartialFill;
 
-    protected ThermalFluidStats(int capacity, int maxFluidTemperature, boolean gasProof, boolean acidProof,
-                                boolean cryoProof, boolean plasmaProof, boolean allowPartialFill) {
+    private final Object2BooleanMap<FluidAttribute> containmentPredicate = new Object2BooleanOpenHashMap<>();
+
+    protected ThermalFluidStats(int capacity, int maxFluidTemperature, int minFluidTemperature,
+                                boolean gasProof, boolean plasmaProof, boolean acidProof,
+                                boolean allowPartialFill) {
         this.capacity = capacity;
         this.maxFluidTemperature = maxFluidTemperature;
+        this.minFluidTemperature = minFluidTemperature;
         this.gasProof = gasProof;
-        this.acidProof = acidProof;
-        this.cryoProof = cryoProof;
+        if (acidProof) setCanContain(FluidAttributes.ACID, true);
         this.plasmaProof = plasmaProof;
         this.allowPartialFill = allowPartialFill;
     }
 
-    public static ThermalFluidStats create(int capacity, int maxFluidTemperature, boolean gasProof, boolean acidProof,
-                                           boolean cryoProof, boolean plasmaProof, boolean allowPartialFill) {
-        return new ThermalFluidStats(capacity, maxFluidTemperature, gasProof, acidProof, cryoProof, plasmaProof,
+    public static ThermalFluidStats create(int capacity, int maxFluidTemperature, int minFluidTemperature,
+                                           boolean gasProof, boolean acidProof, boolean plasmaProof,
+                                           boolean allowPartialFill) {
+        return new ThermalFluidStats(capacity, maxFluidTemperature, minFluidTemperature,
+                gasProof, acidProof, plasmaProof,
                 allowPartialFill);
+    }
+
+    public ThermalFluidStats setCanContain(@NotNull FluidAttribute attribute, boolean canContain) {
+        containmentPredicate.put(attribute, canContain);
+        return this;
     }
 
     @Override
@@ -58,11 +71,13 @@ public class ThermalFluidStats implements IItemComponent, IComponentCapability, 
         if (cap == ForgeCapabilities.FLUID_HANDLER_ITEM) {
             return ForgeCapabilities.FLUID_HANDLER_ITEM.orEmpty(cap, LazyOptional.of(() -> {
                 if (allowPartialFill) {
-                    return new ThermalFluidHandlerItemStack(itemStack, capacity, maxFluidTemperature, gasProof,
-                            acidProof, cryoProof, plasmaProof);
+                    return new ThermalFluidHandlerItemStack(itemStack, capacity,
+                            maxFluidTemperature, minFluidTemperature,
+                            gasProof, plasmaProof);
                 }
-                return new SimpleThermalFluidHandlerItemStack(itemStack, capacity, maxFluidTemperature, gasProof,
-                        acidProof, cryoProof, plasmaProof);
+                return new SimpleThermalFluidHandlerItemStack(itemStack, capacity,
+                        maxFluidTemperature, minFluidTemperature,
+                        gasProof, plasmaProof);
             }));
         }
         return LazyOptional.empty();
@@ -83,14 +98,13 @@ public class ThermalFluidStats implements IItemComponent, IComponentCapability, 
                     FormattingUtil.formatNumbers(capacity)));
         }
         if (GTUtil.isShiftDown()) {
-            tooltipComponents.add(Component.translatable("gtceu.fluid_pipe.max_temperature",
-                    FormattingUtil.formatNumbers(maxFluidTemperature)));
+            tooltipComponents.add(Component.translatable("gtceu.fluid_pipe.max_temperature", maxFluidTemperature));
+            tooltipComponents.add(Component.translatable("gtceu.fluid_pipe.min_temperature", minFluidTemperature));
             if (gasProof) tooltipComponents.add(Component.translatable("gtceu.fluid_pipe.gas_proof"));
             else tooltipComponents.add(Component.translatable("gtceu.fluid_pipe.not_gas_proof"));
             if (plasmaProof) tooltipComponents.add(Component.translatable("gtceu.fluid_pipe.plasma_proof"));
-            if (cryoProof) tooltipComponents.add(Component.translatable("gtceu.fluid_pipe.cryo_proof"));
-            if (acidProof) tooltipComponents.add(Component.translatable("gtceu.fluid_pipe.acid_proof"));
-        } else if (gasProof || cryoProof || plasmaProof || acidProof) {
+            containmentPredicate.keySet().forEach(a -> a.appendContainerTooltips(tooltipComponents::add));
+        } else if (gasProof || plasmaProof || !containmentPredicate.isEmpty()) {
             tooltipComponents.add(Component.translatable("gtceu.tooltip.fluid_pipe_hold_shift"));
         }
     }

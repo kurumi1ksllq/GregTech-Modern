@@ -380,7 +380,7 @@ public class ElementMaterials {
                 .appendFlags(EXT2_METAL, GENERATE_FINE_WIRE, GENERATE_GEAR, GENERATE_FRAME)
                 .element(GTElements.Ir)
                 .rotorStats(130, 115, 3.0f, 2560)
-                .fluidPipeProperties(3398, 5, 250, false, true, false)
+                .fluidPipeProperties(3398, 4, 250, false, true, false)
                 .blast(b -> b.temp(4500, GasTier.HIGH)
                         .blastStats(VA[IV], 1100)
                         .vacuumStats(VA[EV], 250))

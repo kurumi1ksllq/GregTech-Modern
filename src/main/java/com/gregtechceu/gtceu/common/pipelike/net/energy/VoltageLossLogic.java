@@ -1,18 +1,18 @@
 package com.gregtechceu.gtceu.common.pipelike.net.energy;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.graphnet.logic.AbstractLongLogicData;
+import com.gregtechceu.gtceu.api.graphnet.logic.AbstractDoubleLogicData;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicEntry;
 
 import org.jetbrains.annotations.NotNull;
 
-public final class VoltageLossLogic extends AbstractLongLogicData<VoltageLossLogic> {
+public final class VoltageLossLogic extends AbstractDoubleLogicData<VoltageLossLogic> {
 
-    public static final LongLogicType<VoltageLossLogic> TYPE = new LongLogicType<>(GTCEu.MOD_ID, "VoltageLoss",
+    public static final DoubleLogicType<VoltageLossLogic> TYPE = new DoubleLogicType<>(GTCEu.MOD_ID, "VoltageLoss",
             VoltageLossLogic::new, new VoltageLossLogic());
 
     @Override
-    public @NotNull LongLogicType<VoltageLossLogic> getType() {
+    public @NotNull DoubleLogicType<VoltageLossLogic> getType() {
         return TYPE;
     }
 

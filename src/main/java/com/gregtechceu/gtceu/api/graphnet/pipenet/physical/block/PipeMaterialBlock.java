@@ -4,14 +4,15 @@ import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.IPipeNetNodeHandler;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeMaterialStructure;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.MaterialPipeBlockEntity;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.MaterialPipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -93,6 +94,18 @@ public abstract class PipeMaterialBlock extends PipeBlock {
     @Override
     protected @NotNull IPipeNetNodeHandler getHandler(@NotNull ItemStack stack) {
         return material.getProperty(PropertyKey.PIPENET_PROPERTIES);
+    }
+
+    @Override
+    public String getDescriptionId() {
+        return material == null ? "unnamed" :
+                getStructure().getPrefix().getUnlocalizedName(material);
+    }
+
+    @Override
+    public MutableComponent getName() {
+        return material == null ? Component.literal("unnamed") :
+                getStructure().getPrefix().getLocalizedName(material);
     }
 
     @Override

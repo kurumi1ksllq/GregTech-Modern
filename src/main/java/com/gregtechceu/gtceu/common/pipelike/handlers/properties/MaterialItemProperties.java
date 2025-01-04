@@ -3,12 +3,12 @@ package com.gregtechceu.gtceu.common.pipelike.handlers.properties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.MaterialProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PipeNetProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
-import com.gregtechceu.gtceu.api.graphnet.NetNode;
 import com.gregtechceu.gtceu.api.graphnet.logic.ChannelCountLogic;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicData;
 import com.gregtechceu.gtceu.api.graphnet.logic.ThroughputLogic;
 import com.gregtechceu.gtceu.api.graphnet.logic.WeightFactorLogic;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeMaterialStructure;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.pipe.MaterialPipeStructure;
@@ -51,15 +51,21 @@ public final class MaterialItemProperties implements PipeNetProperties.IPipeNetM
     @Override
     public void addInformation(@NotNull ItemStack stack, BlockGetter worldIn, @NotNull List<Component> tooltip,
                                @NotNull TooltipFlag flagIn, IPipeMaterialStructure structure) {
-        if (baseItemsPer5Ticks % 16 != 0) {
-            tooltip.add(Component.translatable("gtceu.universal.tooltip.item_transfer_rate",
-                    baseItemsPer5Ticks * 4));
+        tooltip.add(Component.translatable("gtceu.pipe.item_pipe"));
+        long items = getThroughput(structure);
+        if (items % 16 != 0) {
+            tooltip.add(Component.translatable("gtceu.universal.tooltip.item_transfer_rate", items * 4));
         } else {
-            tooltip.add(Component.translatable("gtceu.universal.tooltip.item_transfer_rate_stacks",
-                    baseItemsPer5Ticks / 16));
+            tooltip.add(Component.translatable("gtceu.universal.tooltip.item_transfer_rate_stacks", items / 16));
         }
         tooltip.add(Component.translatable("gtceu.pipe.priority",
                 FormattingUtil.formatNumbers(getFlowPriority(structure))));
+    }
+
+    private long getThroughput(IPipeStructure structure) {
+        if (structure instanceof MaterialPipeStructure pipe) {
+            return baseItemsPer5Ticks * pipe.material();
+        } else return baseItemsPer5Ticks;
     }
 
     @Override
@@ -71,9 +77,9 @@ public final class MaterialItemProperties implements PipeNetProperties.IPipeNetM
 
     @Override
     @Nullable
-    public WorldPipeNetNode getOrCreateFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure) {
+    public WorldPipeNode getOrCreateFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure) {
         if (structure instanceof MaterialPipeStructure) {
-            WorldPipeNetNode node = WorldItemNet.getWorldNet(world).getOrCreateNode(pos);
+            WorldPipeNode node = WorldItemNet.getWorldNet(world).getOrCreateNode(pos);
             mutateData(node.getData(), structure);
             return node;
         }
@@ -99,7 +105,7 @@ public final class MaterialItemProperties implements PipeNetProperties.IPipeNetM
     }
 
     @Override
-    public @Nullable WorldPipeNetNode getFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure) {
+    public @Nullable WorldPipeNode getFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure) {
         if (structure instanceof MaterialPipeStructure)
             return WorldItemNet.getWorldNet(world).getNode(pos);
         else return null;

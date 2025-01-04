@@ -9,6 +9,8 @@ import java.util.Objects;
 
 public class FacingPos {
 
+    public static final FacingPos ZERO = new FacingPos(BlockPos.ZERO, null);
+
     @Getter
     private final BlockPos pos;
     @Getter

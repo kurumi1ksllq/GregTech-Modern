@@ -318,37 +318,37 @@ public class GTCraftingComponents {
                     .add(MAX, GTBlocks.MACHINE_CASING_MAX.asStack());
         }
 
-        PIPE_NORMAL = new CraftingComponent(new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.Bronze))
-                .add(ULV, new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.Bronze))
-                .add(LV, new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.Bronze))
-                .add(MV, new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.Steel))
-                .add(HV, new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.StainlessSteel))
-                .add(EV, new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.Titanium))
-                .add(IV, new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.TungstenSteel))
-                .add(LuV, new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.NiobiumTitanium))
-                .add(ZPM, new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.Iridium))
-                .add(UV, new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.Naquadah))
-                .add(UHV, new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.Naquadah));
+        PIPE_NORMAL = new CraftingComponent(new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.Bronze))
+                .add(ULV, new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.Bronze))
+                .add(LV, new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.Bronze))
+                .add(MV, new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.Steel))
+                .add(HV, new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.StainlessSteel))
+                .add(EV, new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.Titanium))
+                .add(IV, new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.TungstenSteel))
+                .add(LuV, new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.NiobiumTitanium))
+                .add(ZPM, new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.Iridium))
+                .add(UV, new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.Naquadah))
+                .add(UHV, new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.Naquadah));
 
-        PIPE_LARGE = new CraftingComponent(new UnificationEntry(TagPrefix.pipeLargeFluid, GTMaterials.Bronze))
-                .add(ULV, new UnificationEntry(TagPrefix.pipeLargeFluid, GTMaterials.Bronze))
-                .add(LV, new UnificationEntry(TagPrefix.pipeLargeFluid, GTMaterials.Bronze))
-                .add(MV, new UnificationEntry(TagPrefix.pipeLargeFluid, GTMaterials.Steel))
-                .add(HV, new UnificationEntry(TagPrefix.pipeLargeFluid, GTMaterials.StainlessSteel))
-                .add(EV, new UnificationEntry(TagPrefix.pipeLargeFluid, GTMaterials.Titanium))
-                .add(IV, new UnificationEntry(TagPrefix.pipeLargeFluid, GTMaterials.TungstenSteel))
-                .add(LuV, new UnificationEntry(TagPrefix.pipeLargeFluid, GTMaterials.NiobiumTitanium))
-                .add(ZPM, new UnificationEntry(TagPrefix.pipeLargeFluid, GTMaterials.Ultimet))
-                .add(UV, new UnificationEntry(TagPrefix.pipeLargeFluid, GTMaterials.Naquadah))
-                .add(UHV, new UnificationEntry(TagPrefix.pipeLargeFluid, GTMaterials.Neutronium));
+        PIPE_LARGE = new CraftingComponent(new UnificationEntry(TagPrefix.pipeLarge, GTMaterials.Bronze))
+                .add(ULV, new UnificationEntry(TagPrefix.pipeLarge, GTMaterials.Bronze))
+                .add(LV, new UnificationEntry(TagPrefix.pipeLarge, GTMaterials.Bronze))
+                .add(MV, new UnificationEntry(TagPrefix.pipeLarge, GTMaterials.Steel))
+                .add(HV, new UnificationEntry(TagPrefix.pipeLarge, GTMaterials.StainlessSteel))
+                .add(EV, new UnificationEntry(TagPrefix.pipeLarge, GTMaterials.Titanium))
+                .add(IV, new UnificationEntry(TagPrefix.pipeLarge, GTMaterials.TungstenSteel))
+                .add(LuV, new UnificationEntry(TagPrefix.pipeLarge, GTMaterials.NiobiumTitanium))
+                .add(ZPM, new UnificationEntry(TagPrefix.pipeLarge, GTMaterials.Ultimet))
+                .add(UV, new UnificationEntry(TagPrefix.pipeLarge, GTMaterials.Naquadah))
+                .add(UHV, new UnificationEntry(TagPrefix.pipeLarge, GTMaterials.Neutronium));
 
-        PIPE_NONUPLE = new CraftingComponent(new UnificationEntry(TagPrefix.pipeNonupleFluid, GTMaterials.Titanium))
-                .add(EV, new UnificationEntry(TagPrefix.pipeNonupleFluid, GTMaterials.Titanium))
-                .add(IV, new UnificationEntry(TagPrefix.pipeNonupleFluid, GTMaterials.TungstenSteel))
-                .add(LuV, new UnificationEntry(TagPrefix.pipeNonupleFluid, GTMaterials.NiobiumTitanium))
-                .add(ZPM, new UnificationEntry(TagPrefix.pipeNonupleFluid, GTMaterials.Iridium))
-                .add(UV, new UnificationEntry(TagPrefix.pipeNonupleFluid, GTMaterials.Naquadah))
-                .add(UHV, new UnificationEntry(TagPrefix.pipeNonupleFluid, GTMaterials.Neutronium));
+        PIPE_NONUPLE = new CraftingComponent(new UnificationEntry(TagPrefix.pipeNonuple, GTMaterials.Titanium))
+                .add(EV, new UnificationEntry(TagPrefix.pipeNonuple, GTMaterials.Titanium))
+                .add(IV, new UnificationEntry(TagPrefix.pipeNonuple, GTMaterials.TungstenSteel))
+                .add(LuV, new UnificationEntry(TagPrefix.pipeNonuple, GTMaterials.NiobiumTitanium))
+                .add(ZPM, new UnificationEntry(TagPrefix.pipeNonuple, GTMaterials.Iridium))
+                .add(UV, new UnificationEntry(TagPrefix.pipeNonuple, GTMaterials.Naquadah))
+                .add(UHV, new UnificationEntry(TagPrefix.pipeNonuple, GTMaterials.Neutronium));
 
         /*
          * Glass: Steam-MV
@@ -651,13 +651,13 @@ public class GTCraftingComponents {
                 .add(ULV, Tags.Items.GLASS)
                 .add(LV, Tags.Items.GLASS)
                 .add(MV, Tags.Items.GLASS)
-                .add(HV, new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.Polyethylene))
-                .add(EV, new UnificationEntry(TagPrefix.pipeLargeFluid, GTMaterials.Polyethylene))
-                .add(IV, new UnificationEntry(TagPrefix.pipeHugeFluid, GTMaterials.Polyethylene))
-                .add(LuV, new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.Polytetrafluoroethylene))
-                .add(ZPM, new UnificationEntry(TagPrefix.pipeLargeFluid, GTMaterials.Polytetrafluoroethylene))
-                .add(UV, new UnificationEntry(TagPrefix.pipeHugeFluid, GTMaterials.Polytetrafluoroethylene))
-                .add(UHV, new UnificationEntry(TagPrefix.pipeNormalFluid, GTMaterials.Polybenzimidazole));
+                .add(HV, new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.Polyethylene))
+                .add(EV, new UnificationEntry(TagPrefix.pipeLarge, GTMaterials.Polyethylene))
+                .add(IV, new UnificationEntry(TagPrefix.pipeHuge, GTMaterials.Polyethylene))
+                .add(LuV, new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.Polytetrafluoroethylene))
+                .add(ZPM, new UnificationEntry(TagPrefix.pipeLarge, GTMaterials.Polytetrafluoroethylene))
+                .add(UV, new UnificationEntry(TagPrefix.pipeHuge, GTMaterials.Polytetrafluoroethylene))
+                .add(UHV, new UnificationEntry(TagPrefix.pipeNormal, GTMaterials.Polybenzimidazole));
 
         POWER_COMPONENT = new CraftingComponent(GTItems.ULTRA_LOW_POWER_INTEGRATED_CIRCUIT.asStack())
                 .add(MV, GTItems.ULTRA_LOW_POWER_INTEGRATED_CIRCUIT.asStack())

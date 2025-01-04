@@ -1,16 +1,15 @@
 package com.gregtechceu.gtceu.api.graphnet;
 
-import com.gregtechceu.gtceu.api.graphnet.alg.AlgorithmBuilder;
-import com.gregtechceu.gtceu.api.graphnet.alg.NetAlgorithmWrapper;
-import com.gregtechceu.gtceu.api.graphnet.alg.NetPathMapper;
-import com.gregtechceu.gtceu.api.graphnet.alg.iter.IteratorFactory;
-import com.gregtechceu.gtceu.api.graphnet.edge.NetEdge;
-import com.gregtechceu.gtceu.api.graphnet.edge.SimulatorKey;
 import com.gregtechceu.gtceu.api.graphnet.graph.GraphEdge;
 import com.gregtechceu.gtceu.api.graphnet.graph.GraphVertex;
 import com.gregtechceu.gtceu.api.graphnet.graph.INetGraph;
-import com.gregtechceu.gtceu.api.graphnet.path.INetPath;
-import com.gregtechceu.gtceu.api.graphnet.predicate.test.IPredicateTestObject;
+import com.gregtechceu.gtceu.api.graphnet.group.GroupGraphView;
+import com.gregtechceu.gtceu.api.graphnet.group.MergeDirection;
+import com.gregtechceu.gtceu.api.graphnet.group.NetGroup;
+import com.gregtechceu.gtceu.api.graphnet.net.IGraphNet;
+import com.gregtechceu.gtceu.api.graphnet.net.NetEdge;
+import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
+import com.gregtechceu.gtceu.api.graphnet.traverse.EdgeDirection;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -24,30 +23,22 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * The bridge between JGraphT graphs and graphnet abstractions.
  * Doesn't do any automatic linking, weighting, predicating, etc. Simply handles storing the JGraphT graph to disk,
- * interfacing with graph algorithms, and interacting with the JGraphT graph.
+ * interacting with the JGraphT graph, and managing NetGroups.
  */
 public final class GraphNetBacker {
 
     private final IGraphNet backedNet;
     private final INetGraph pipeGraph;
     private final Object2ObjectOpenHashMap<Object, GraphVertex> vertexMap;
-    private final NetAlgorithmWrapper[] netAlgorithms;
 
-    public GraphNetBacker(IGraphNet backedNet, INetGraph graph,
-                          AlgorithmBuilder @NotNull... algorithmBuilders) {
+    public GraphNetBacker(IGraphNet backedNet, INetGraph graph) {
         this.backedNet = backedNet;
         this.pipeGraph = graph;
-        this.netAlgorithms = new NetAlgorithmWrapper[algorithmBuilders.length];
-        for (int i = 0; i < algorithmBuilders.length; i++) {
-            this.netAlgorithms[i] = new NetAlgorithmWrapper(backedNet, algorithmBuilders[i],
-                    backedNet.supportsPredication() || backedNet.usesDynamicWeights(i));
-        }
         this.vertexMap = new Object2ObjectOpenHashMap<>();
     }
 
@@ -57,9 +48,10 @@ public final class GraphNetBacker {
 
     public void addNode(NetNode node) {
         GraphVertex vertex = new GraphVertex(node);
+        GraphVertex existing = this.vertexMap.put(node.getEquivalencyData(), vertex);
+        if (existing != null) getGraph().removeVertex(existing);
         getGraph().addVertex(vertex);
-        this.vertexMap.put(node.getEquivalencyData(), vertex);
-        backedNet.setNetDirty();
+        backedNet.setDirty();
     }
 
     @Nullable
@@ -77,12 +69,11 @@ public final class GraphNetBacker {
                 NetGroup group = node.getGroupUnsafe();
                 if (group != null) group.removeNode(node);
             }
-            if (!this.getGraph().edgesOf(node.wrapper).isEmpty()) this.invalidateAlgs();
             NetGroup group = node.getGroupUnsafe();
             if (group != null) {
                 group.splitNode(node);
             } else this.removeVertex(node.wrapper);
-            backedNet.setNetDirty();
+            backedNet.setDirty();
             return true;
         } else return false;
     }
@@ -90,20 +81,23 @@ public final class GraphNetBacker {
     @ApiStatus.Internal
     public void removeVertex(GraphVertex vertex) {
         if (this.getGraph().removeVertex(vertex)) {
+            if (vertex.wrapped == null) return;
             this.vertexMap.remove(vertex.wrapped.getEquivalencyData());
             vertex.wrapped.onRemove();
-            backedNet.setNetDirty();
+            backedNet.setDirty();
         }
     }
 
     @Nullable
     public NetEdge addEdge(@NotNull NetNode source, @NotNull NetNode target, double weight) {
-        if (!NetGroup.isEdgeAllowed(source, target)) return null;
+        MergeDirection direction = NetGroup.isEdgeAllowed(source, target);
+        if (!direction.allowsEdgeCreation()) return null;
         GraphEdge graphEdge = getGraph().addEdge(source.wrapper, target.wrapper);
         if (graphEdge != null) {
             getGraph().setEdgeWeight(graphEdge, weight);
-            NetGroup.mergeEdge(source, target);
-            backedNet.setNetDirty();
+            assert graphEdge.wrapped != null;
+            NetGroup.mergeEdge(graphEdge.wrapped, direction);
+            backedNet.setDirty();
         }
         return graphEdge == null ? null : graphEdge.wrapped;
     }
@@ -112,6 +106,12 @@ public final class GraphNetBacker {
     public NetEdge getEdge(@NotNull NetNode source, @NotNull NetNode target) {
         GraphEdge graphEdge = getGraph().getEdge(source.wrapper, target.wrapper);
         return graphEdge == null ? null : graphEdge.wrapped;
+    }
+
+    @NotNull
+    public Iterable<NetEdge> getTouchingEdges(@NotNull NetNode node, @NotNull EdgeDirection direction) {
+        return direction.selectEdges(getGraph(), node.wrapper).stream()
+                .map(GraphEdge::getWrapped).filter(Objects::nonNull)::iterator;
     }
 
     public boolean removeEdge(@NotNull NetNode source, NetNode target) {
@@ -126,7 +126,7 @@ public final class GraphNetBacker {
     public GraphEdge removeEdge(GraphVertex source, GraphVertex target) {
         GraphEdge edge = this.getGraph().removeEdge(source, target);
         if (edge != null) {
-            backedNet.setNetDirty();
+            backedNet.setDirty();
         }
         return edge;
     }
@@ -134,42 +134,10 @@ public final class GraphNetBacker {
     @ApiStatus.Internal
     public boolean removeEdge(GraphEdge edge) {
         if (this.getGraph().removeEdge(edge)) {
-            backedNet.setNetDirty();
+            backedNet.setDirty();
             return true;
         }
         return false;
-    }
-
-    /**
-     * Note - if an error is thrown with a stacktrace descending from this method,
-     * most likely a bad remapper was passed in. <br>
-     * This method should never be exposed outside the net this backer is backing due to this fragility.
-     */
-    public <Path extends INetPath<?, ?>> Iterator<Path> getPaths(@Nullable NetNode node, int algorithmID,
-                                                                 @NotNull NetPathMapper<Path> remapper,
-                                                                 IPredicateTestObject testObject,
-                                                                 @Nullable SimulatorKey simulator, long queryTick) {
-        if (node == null) return Collections.emptyIterator();
-        this.getGraph().setupInternal(this, backedNet.usesDynamicWeights(algorithmID));
-
-        Iterator<? extends INetPath<?, ?>> cache = node.getPathCache(testObject, simulator, queryTick);
-        if (cache != null) return (Iterator<Path>) cache;
-
-        IteratorFactory<Path> factory = this.netAlgorithms[algorithmID]
-                .getPathsIterator(node.wrapper, remapper, testObject, simulator, queryTick);
-        if (factory.cacheable()) {
-            return (Iterator<Path>) (node.setPathCache(factory).getPathCache(testObject, simulator, queryTick));
-        } else return factory.newIterator(getGraph(), testObject, simulator, queryTick);
-    }
-
-    public void invalidateAlg(int algorithmID) {
-        this.netAlgorithms[algorithmID].invalidate();
-    }
-
-    public void invalidateAlgs() {
-        for (NetAlgorithmWrapper netAlgorithm : this.netAlgorithms) {
-            netAlgorithm.invalidate();
-        }
     }
 
     public INetGraph getGraph() {
@@ -210,7 +178,9 @@ public final class GraphNetBacker {
         Int2ObjectOpenHashMap<GraphVertex> vertexMap = new Int2ObjectOpenHashMap<>(vertexCount);
         for (int i = 0; i < vertexCount; i++) {
             CompoundTag tag = vertices.getCompound(i);
-            NetNode node = this.backedNet.getNewNode();
+            GraphClassType<?> type = GraphClassRegistry.getTypeNullable(tag.getString("ClassType"));
+            Object o = type == null ? null : type.getNew(backedNet);
+            NetNode node = o instanceof NetNode n ? n : backedNet.getDefaultNodeType().getNew(backedNet);
             node.deserializeNBT(tag);
             if (tag.contains("GroupID")) {
                 int id = tag.getInt("GroupID");
@@ -231,9 +201,14 @@ public final class GraphNetBacker {
         int edgeCount = edges.size();
         for (int i = 0; i < edgeCount; i++) {
             CompoundTag tag = edges.getCompound(i);
-            GraphEdge graphEdge = this.getGraph().addEdge(vertexMap.get(tag.getInt("SourceID")),
-                    vertexMap.get(tag.getInt("TargetID")));
+            GraphClassType<?> type = GraphClassRegistry.getTypeNullable(tag.getString("ClassType"));
+            Object o = type == null ? null : type.getNew(backedNet);
+            GraphEdge graphEdge = new GraphEdge(
+                    o instanceof NetEdge e ? e : backedNet.getDefaultEdgeType().getNew(backedNet));
+            this.getGraph().addEdge(vertexMap.get(tag.getInt("SourceID")),
+                    vertexMap.get(tag.getInt("TargetID")), graphEdge);
             this.getGraph().setEdgeWeight(graphEdge, tag.getDouble("Weight"));
+            assert graphEdge.wrapped != null;
             graphEdge.wrapped.deserializeNBT(tag);
         }
     }
@@ -249,9 +224,11 @@ public final class GraphNetBacker {
         int g = 0;
         ListTag vertices = new ListTag();
         for (GraphVertex graphVertex : this.getGraph().vertexSet()) {
+            if (graphVertex.wrapped == null) continue;
             vertexMap.put(graphVertex, i);
             NetGroup group = graphVertex.wrapped.getGroupUnsafe();
             CompoundTag tag = graphVertex.wrapped.serializeNBT();
+            tag.putString("ClassType", graphVertex.wrapped.getType().getSerializedName());
             if (group != null) {
                 int groupID;
                 if (!groupMap.containsKey(group)) {
@@ -268,10 +245,46 @@ public final class GraphNetBacker {
 
         ListTag edges = new ListTag();
         for (GraphEdge graphEdge : this.getGraph().edgeSet()) {
+            if (graphEdge.wrapped == null) continue;
             CompoundTag tag = graphEdge.wrapped.serializeNBT();
             tag.putInt("SourceID", vertexMap.getInt(graphEdge.getSource()));
             tag.putInt("TargetID", vertexMap.getInt(graphEdge.getTarget()));
             tag.putDouble("Weight", graphEdge.getWeight());
+            tag.putString("ClassType", graphEdge.wrapped.getType().getSerializedName());
+            edges.add(tag);
+        }
+        compound.put("Edges", edges);
+
+        return compound;
+    }
+
+    public static CompoundTag writeGroupToNBT(NetGroup group) {
+        CompoundTag compound = new CompoundTag();
+        GroupGraphView graph = group.getGraphView();
+        // map of net groups -> autogenerated ids;
+        // tag of autogenerated vertex ids -> node nbt & group id
+        // tag of autogenerated edge ids -> edge nbt & source/target ids
+        Object2IntOpenHashMap<GraphVertex> vertexMap = new Object2IntOpenHashMap<>();
+        int i = 0;
+        ListTag vertices = new ListTag();
+        for (GraphVertex graphVertex : graph.vertexSet()) {
+            if (graphVertex.wrapped == null) continue;
+            vertexMap.put(graphVertex, i);
+            CompoundTag tag = graphVertex.wrapped.serializeNBT();
+            tag.putString("ClassType", graphVertex.wrapped.getType().getSerializedName());
+            vertices.add(tag);
+            i++;
+        }
+        compound.put("Vertices", vertices);
+
+        ListTag edges = new ListTag();
+        for (GraphEdge graphEdge : graph.edgeSet()) {
+            if (graphEdge.wrapped == null) continue;
+            CompoundTag tag = graphEdge.wrapped.serializeNBT();
+            tag.putInt("SourceID", vertexMap.getInt(graphEdge.getSource()));
+            tag.putInt("TargetID", vertexMap.getInt(graphEdge.getTarget()));
+            tag.putDouble("Weight", graphEdge.getWeight());
+            tag.putString("ClassType", graphEdge.wrapped.getType().getSerializedName());
             edges.add(tag);
         }
         compound.put("Edges", edges);

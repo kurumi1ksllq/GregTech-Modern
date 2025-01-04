@@ -13,7 +13,6 @@ import com.gregtechceu.gtceu.api.data.chemical.material.stack.UnificationEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.data.tag.TagUtil;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.PipeStructureRegistry;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.MaterialPipeBlockItem;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeBlockItem;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeMaterialBlock;
 import com.gregtechceu.gtceu.api.item.*;
@@ -23,16 +22,12 @@ import com.gregtechceu.gtceu.api.pipenet.longdistance.LongDistancePipeBlock;
 import com.gregtechceu.gtceu.common.block.*;
 import com.gregtechceu.gtceu.common.block.explosive.IndustrialTNTBlock;
 import com.gregtechceu.gtceu.common.block.explosive.PowderbarrelBlock;
-import com.gregtechceu.gtceu.common.pipelike.block.cable.CableBlock;
-import com.gregtechceu.gtceu.common.pipelike.block.cable.CableStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.duct.DuctPipeBlock;
 import com.gregtechceu.gtceu.common.pipelike.block.duct.DuctStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.laser.LaserPipeBlock;
 import com.gregtechceu.gtceu.common.pipelike.block.laser.LaserStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.optical.OpticalPipeBlock;
 import com.gregtechceu.gtceu.common.pipelike.block.optical.OpticalStructure;
-import com.gregtechceu.gtceu.common.pipelike.block.pipe.MaterialPipeBlock;
-import com.gregtechceu.gtceu.common.pipelike.block.pipe.MaterialPipeStructure;
 import com.gregtechceu.gtceu.common.pipelike.longdistance.fluid.LDFluidPipeType;
 import com.gregtechceu.gtceu.common.pipelike.longdistance.item.LDItemPipeType;
 import com.gregtechceu.gtceu.core.mixins.BlockPropertiesAccessor;
@@ -109,7 +104,9 @@ public class GTBlocks {
     // ***** Procedural Blocks *****//
     //////////////////////////////////////
 
-    public static final BlockEntry<DuctPipeBlock>[] DUCT_PIPES = new BlockEntry[DuctPipeType.VALUES.length];
+    private static ImmutableMap.Builder<DuctStructure, BlockEntry<DuctPipeBlock>> DUCT_PIPE_BLOCKS_BUILDER = ImmutableMap
+            .builder();
+    public static Map<DuctStructure, BlockEntry<DuctPipeBlock>> DUCT_PIPE_BLOCKS;
 
     //////////////////////////////////////
     // Pipes Blocks //

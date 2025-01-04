@@ -1,18 +1,21 @@
 package com.gregtechceu.gtceu.common.pipelike.handlers.properties;
 
 import com.gregtechceu.gtceu.api.capability.IPropertyFluidFilter;
+import com.gregtechceu.gtceu.api.data.chemical.material.properties.FluidProperty;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.MaterialProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PipeNetProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
+import com.gregtechceu.gtceu.api.fluids.FluidBuilder;
 import com.gregtechceu.gtceu.api.fluids.FluidConstants;
 import com.gregtechceu.gtceu.api.fluids.FluidState;
 import com.gregtechceu.gtceu.api.fluids.attribute.FluidAttribute;
-import com.gregtechceu.gtceu.api.graphnet.NetNode;
+import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.graphnet.logic.ChannelCountLogic;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicData;
 import com.gregtechceu.gtceu.api.graphnet.logic.ThroughputLogic;
 import com.gregtechceu.gtceu.api.graphnet.logic.WeightFactorLogic;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.logic.TemperatureLogic;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.logic.TemperatureLossFunction;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeMaterialStructure;
@@ -28,7 +31,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.material.Fluid;
 
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -136,6 +141,17 @@ public final class MaterialFluidProperties implements PipeNetProperties.IPipeNet
         setContain(attribute, canContain);
     }
 
+    @Override
+    public void setCanContain(@NotNull Object2BooleanMap<FluidAttribute> attributes) {
+        for (var entry : attributes.object2BooleanEntrySet()) {
+            if (entry.getBooleanValue()) {
+                contain(entry.getKey());
+            } else {
+                notContain(entry.getKey());
+            }
+        }
+    }
+
     public int getMinFluidTemperature() {
         return minFluidTemperature;
     }
@@ -148,6 +164,7 @@ public final class MaterialFluidProperties implements PipeNetProperties.IPipeNet
     @Override
     public void addInformation(@NotNull ItemStack stack, BlockGetter worldIn, @NotNull List<Component> tooltip,
                                @NotNull TooltipFlag flagIn, IPipeMaterialStructure structure) {
+        tooltip.add(Component.translatable("gtceu.pipe.fluid_pipe"));
         tooltip.add(Component.translatable("gtceu.universal.tooltip.fluid_transfer_rate", getThroughput(structure)));
         tooltip.add(Component.translatable("gtceu.pipe.priority",
                 FormattingUtil.formatNumbers(getFlowPriority(structure))));
@@ -159,14 +176,31 @@ public final class MaterialFluidProperties implements PipeNetProperties.IPipeNet
         if (!properties.hasProperty(PropertyKey.WOOD)) {
             properties.ensureSet(PropertyKey.INGOT, true);
         }
-        this.materialMeltTemperature = MaterialEnergyProperties.computeMaterialMeltTemperature(properties);
+        this.materialMeltTemperature = computeMaterialMeltTemperature(properties, maxFluidTemperature);
+    }
+
+    public static int computeMaterialMeltTemperature(@NotNull MaterialProperties properties, int fallback) {
+        if (properties.hasProperty(PropertyKey.FLUID)) {
+            // autodetermine melt temperature from registered fluid
+            FluidProperty prop = properties.getProperty(PropertyKey.FLUID);
+            Fluid fluid = prop.get(FluidStorageKeys.LIQUID);
+            if (fluid == null) {
+                FluidBuilder builder = prop.getQueuedBuilder(FluidStorageKeys.LIQUID);
+                if (builder != null) {
+                    return builder.getDeterminedTemperature(properties.getMaterial(), FluidStorageKeys.LIQUID);
+                }
+            } else {
+                return fluid.getFluidType().getTemperature();
+            }
+        }
+        return fallback;
     }
 
     @Override
     @Nullable
-    public WorldPipeNetNode getOrCreateFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure) {
+    public WorldPipeNode getOrCreateFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure) {
         if (structure instanceof MaterialPipeStructure) {
-            WorldPipeNetNode node = WorldFluidNet.getWorldNet(world).getOrCreateNode(pos);
+            WorldPipeNode node = WorldFluidNet.getWorldNet(world).getOrCreateNode(pos);
             mutateData(node.getData(), structure);
             return node;
         }
@@ -203,7 +237,7 @@ public final class MaterialFluidProperties implements PipeNetProperties.IPipeNet
     }
 
     @Override
-    public @Nullable WorldPipeNetNode getFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure) {
+    public @Nullable WorldPipeNode getFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure) {
         if (structure instanceof MaterialPipeStructure)
             return WorldFluidNet.getWorldNet(world).getNode(pos);
         else return null;

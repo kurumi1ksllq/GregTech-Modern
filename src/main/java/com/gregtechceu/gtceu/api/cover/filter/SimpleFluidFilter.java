@@ -81,7 +81,7 @@ public class SimpleFluidFilter implements FluidFilter {
         this.ignoreNbt = tag.getBoolean("matchNbt");
         var list = tag.getList("matches", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
-            this.matches[i] = FluidStack.loadFromTag((CompoundTag) list.get(i));
+            this.matches[i] = FluidStack.loadFluidStackFromNBT((CompoundTag) list.get(i));
         }
     }
 
@@ -222,7 +222,7 @@ public class SimpleFluidFilter implements FluidFilter {
     @Override
     public MatchResult apply(FluidStack fluidStack) {
         int index = -1;
-        FluidStack returnable = FluidStack.empty();
+        FluidStack returnable = FluidStack.EMPTY;
         for (int i = 0; i < matches.length; i++) {
             var fluid = matches[i];
             if (fluid != null && fluid.isFluidEqual(fluidStack)) {

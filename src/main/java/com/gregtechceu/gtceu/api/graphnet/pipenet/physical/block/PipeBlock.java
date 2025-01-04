@@ -1,16 +1,17 @@
 package com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.MaterialBlock;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.IPipeNetNodeHandler;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNet;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.logic.TemperatureLogic;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeChanneledStructure;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeStructure;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeCoverHolder;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeCoverHolder;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.client.ClientProxy;
@@ -20,8 +21,6 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 import com.gregtechceu.gtceu.utils.EntityDamageUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
-
-import com.lowdragmc.lowdraglib.Platform;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -220,14 +219,14 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         boolean blocked1 = tile.isBlocked(facing);
         boolean blocked2 = tileAcross.isBlocked(facing.getOpposite());
 
-        Map<WorldPipeNet, WorldPipeNetNode> tile2Nodes = new Object2ObjectOpenHashMap<>();
-        for (WorldPipeNetNode node : getNodesForTile(tileAcross)) {
+        Map<WorldPipeNet, WorldPipeNode> tile2Nodes = new Object2ObjectOpenHashMap<>();
+        for (WorldPipeNode node : getNodesForTile(tileAcross)) {
             tile2Nodes.put(node.getNet(), node);
         }
 
-        for (WorldPipeNetNode node : getNodesForTile(tile)) {
+        for (WorldPipeNode node : getNodesForTile(tile)) {
             WorldPipeNet net = node.getNet();
-            WorldPipeNetNode other = tile2Nodes.get(net);
+            WorldPipeNode other = tile2Nodes.get(net);
             if (other == null) continue;
             if (!blocked1 && !blocked2) {
                 net.addEdge(node, other, true);
@@ -245,14 +244,14 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         tileAcross.setDisconnected(facing.getOpposite());
         if (tile.getLevel().isClientSide) return;
 
-        Map<WorldPipeNet, WorldPipeNetNode> tile2Nodes = new Object2ObjectOpenHashMap<>();
-        for (WorldPipeNetNode node : getNodesForTile(tileAcross)) {
+        Map<WorldPipeNet, WorldPipeNode> tile2Nodes = new Object2ObjectOpenHashMap<>();
+        for (WorldPipeNode node : getNodesForTile(tileAcross)) {
             tile2Nodes.put(node.getNet(), node);
         }
 
-        for (WorldPipeNetNode node : getNodesForTile(tile)) {
+        for (WorldPipeNode node : getNodesForTile(tile)) {
             WorldPipeNet net = node.getNet();
-            WorldPipeNetNode other = tile2Nodes.get(net);
+            WorldPipeNode other = tile2Nodes.get(net);
             if (other == null) continue;
             net.removeEdge(node, other, true);
         }
@@ -263,14 +262,14 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         tile.setBlocked(facing);
         if (tileAcross == null || tile.getLevel().isClientSide) return;
 
-        Map<WorldPipeNet, WorldPipeNetNode> tile2Nodes = new Object2ObjectOpenHashMap<>();
-        for (WorldPipeNetNode node : getNodesForTile(tileAcross)) {
+        Map<WorldPipeNet, WorldPipeNode> tile2Nodes = new Object2ObjectOpenHashMap<>();
+        for (WorldPipeNode node : getNodesForTile(tileAcross)) {
             tile2Nodes.put(node.getNet(), node);
         }
 
-        for (WorldPipeNetNode node : getNodesForTile(tile)) {
+        for (WorldPipeNode node : getNodesForTile(tile)) {
             WorldPipeNet net = node.getNet();
-            WorldPipeNetNode other = tile2Nodes.get(net);
+            WorldPipeNode other = tile2Nodes.get(net);
             if (other == null) continue;
             net.removeEdge(other, node, false);
         }
@@ -281,14 +280,14 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         tile.setUnblocked(facing);
         if (tileAcross == null || tile.getLevel().isClientSide) return;
 
-        Map<WorldPipeNet, WorldPipeNetNode> tile2Nodes = new Object2ObjectOpenHashMap<>();
-        for (WorldPipeNetNode node : getNodesForTile(tileAcross)) {
+        Map<WorldPipeNet, WorldPipeNode> tile2Nodes = new Object2ObjectOpenHashMap<>();
+        for (WorldPipeNode node : getNodesForTile(tileAcross)) {
             tile2Nodes.put(node.getNet(), node);
         }
 
-        for (WorldPipeNetNode node : getNodesForTile(tile)) {
+        for (WorldPipeNode node : getNodesForTile(tile)) {
             WorldPipeNet net = node.getNet();
-            WorldPipeNetNode other = tile2Nodes.get(net);
+            WorldPipeNode other = tile2Nodes.get(net);
             if (other == null) continue;
             net.addEdge(other, node, false);
         }
@@ -298,7 +297,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         return true;
     }
 
-    public static Collection<WorldPipeNetNode> getNodesForTile(PipeBlockEntity tile) {
+    public static Collection<WorldPipeNode> getNodesForTile(PipeBlockEntity tile) {
         assert tile.getLevel() instanceof ServerLevel;
         return tile.getBlockType().getHandler(tile)
                 .getOrCreateFromNets((ServerLevel) tile.getLevel(), tile.getBlockPos(), tile.getStructure());
@@ -356,7 +355,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         if (tile != null && tile.getFrameMaterial() == null && tile.getOffsetTimer() % 10 == 0) {
             TemperatureLogic logic = tile.getTemperatureLogic();
             if (logic != null) {
-                long tick = Platform.getMinecraftServer().getTickCount();
+                long tick = GTCEu.getMinecraftServer().getTickCount();
                 EntityDamageUtil.applyTemperatureDamage(living, logic.getTemperature(tick), 1f, 5);
             }
         }

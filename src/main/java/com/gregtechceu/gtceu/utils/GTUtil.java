@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
+import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
@@ -15,18 +16,21 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -36,6 +40,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.Tags;
@@ -53,6 +58,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.IntPredicate;
 import java.util.function.LongPredicate;
 
 import static com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.HAZARD;
@@ -406,9 +412,36 @@ public class GTUtil {
         return Math.pow(first, 1D / (1 + numbers.length));
     }
 
-    public static long binarySearch(long minValue, long maxValue, LongPredicate test, boolean ascending) {
+    /**
+     * @param minValue  the minimum possible succeeding value
+     * @param maxValue  the maximum possible succeeding value
+     * @param test      the predicate to query for success
+     * @param ascending determines the direction of search
+     * @return the smallest succeeding value if ascending, or the largest succeeding value if descending.
+     */
+    public static long binarySearchLong(long minValue, long maxValue, LongPredicate test, boolean ascending) {
         while (maxValue - minValue > 1) {
             long middle = (minValue + maxValue) / 2;
+            // XOR
+            if (test.test(middle) ^ !ascending) {
+                maxValue = middle;
+            } else {
+                minValue = middle;
+            }
+        }
+        return test.test(ascending ? minValue : maxValue) ^ ascending ? maxValue : minValue;
+    }
+
+    /**
+     * @param minValue  the minimum possible succeeding value
+     * @param maxValue  the maximum possible succeeding value
+     * @param test      the predicate to query for success
+     * @param ascending determines the direction of search
+     * @return the smallest succeeding value if ascending, or the largest succeeding value if descending.
+     */
+    public static int binarySearchInt(int minValue, int maxValue, IntPredicate test, boolean ascending) {
+        while (maxValue - minValue > 1) {
+            int middle = (minValue + maxValue) / 2;
             // XOR
             if (test.test(middle) ^ !ascending) {
                 maxValue = middle;
@@ -622,6 +655,39 @@ public class GTUtil {
             Class.forName(clazz.getName(), true, clazz.getClassLoader());
         } catch (ClassNotFoundException e) {
             throw new AssertionError(e);  // Can't happen
+        }
+    }
+
+    public static void spawnParticles(Level world, Direction direction, ParticleOptions particleType, BlockPos pos,
+                                      int particleCount) {
+        spawnParticles(world, direction, particleType, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                particleCount);
+    }
+
+    public static void spawnParticles(Level world, Direction direction, ParticleOptions particleType, Entity entity,
+                                      int particleCount) {
+        Vec3 vec = entity.getEyePosition(1.0f);
+        spawnParticles(world, direction, particleType, vec.x, vec.y, vec.y, particleCount);
+    }
+
+    public static void spawnParticles(Level world, Direction direction, ParticleOptions particleType, double x,
+                                      double y, double z,
+                                      int particleCount) {
+        if (world instanceof ServerLevel server) {
+            server.sendParticles(particleType,
+                    x, y, z, particleCount,
+                    direction.getStepX() * 0.2 + GTValues.RNG.nextDouble() * 0.1,
+                    direction.getStepY() * 0.2 + GTValues.RNG.nextDouble() * 0.1,
+                    direction.getStepZ() * 0.2 + GTValues.RNG.nextDouble() * 0.1,
+                    0.1);
+        }
+    }
+
+    public static long getCurrentServerTick() {
+        if (GTCEu.isClientThread()) {
+            return ClientProxy.getServerTickCount();
+        } else {
+            return GTCEu.getMinecraftServer().getTickCount();
         }
     }
 }

@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.api.data.chemical.material.properties;
 
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicData;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.IPipeNetNodeHandler;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeMaterialStructure;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeStructure;
 
@@ -57,12 +57,12 @@ public class PipeNetProperties implements IMaterialProperty, IPipeNetNodeHandler
     }
 
     @Override
-    public @NotNull Collection<WorldPipeNetNode> getOrCreateFromNets(ServerLevel level, BlockPos pos,
-                                                                     IPipeStructure structure) {
-        List<WorldPipeNetNode> list = new ObjectArrayList<>();
+    public @NotNull Collection<WorldPipeNode> getOrCreateFromNets(ServerLevel level, BlockPos pos,
+                                                                  IPipeStructure structure) {
+        List<WorldPipeNode> list = new ObjectArrayList<>();
         for (IPipeNetMaterialProperty p : properties.values()) {
             if (p.supportsStructure(structure)) {
-                WorldPipeNetNode node = p.getOrCreateFromNet(level, pos, structure);
+                WorldPipeNode node = p.getOrCreateFromNet(level, pos, structure);
                 if (node != null) list.add(node);
             }
         }
@@ -70,12 +70,11 @@ public class PipeNetProperties implements IMaterialProperty, IPipeNetNodeHandler
     }
 
     @Override
-    public @NotNull Collection<WorldPipeNetNode> getFromNets(ServerLevel level, BlockPos pos,
-                                                             IPipeStructure structure) {
-        List<WorldPipeNetNode> list = new ObjectArrayList<>();
+    public @NotNull Collection<WorldPipeNode> getFromNets(ServerLevel world, BlockPos pos, IPipeStructure structure) {
+        List<WorldPipeNode> list = new ObjectArrayList<>();
         for (IPipeNetMaterialProperty p : properties.values()) {
             if (p.supportsStructure(structure)) {
-                WorldPipeNetNode node = p.getFromNet(level, pos, structure);
+                WorldPipeNode node = p.getFromNet(world, pos, structure);
                 if (node != null) list.add(node);
             }
         }
@@ -116,10 +115,10 @@ public class PipeNetProperties implements IMaterialProperty, IPipeNetNodeHandler
     public interface IPipeNetMaterialProperty extends IMaterialProperty {
 
         @Nullable
-        WorldPipeNetNode getOrCreateFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure);
+        WorldPipeNode getOrCreateFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure);
 
         @Nullable
-        WorldPipeNetNode getFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure);
+        WorldPipeNode getFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure);
 
         void mutateData(NetLogicData data, IPipeStructure structure);
 

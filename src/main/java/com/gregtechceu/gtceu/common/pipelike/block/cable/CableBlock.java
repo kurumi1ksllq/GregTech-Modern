@@ -1,11 +1,12 @@
 package com.gregtechceu.gtceu.common.pipelike.block.cable;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.IPipeNetNodeHandler;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IBurnable;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeBlock;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeMaterialBlock;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.client.renderer.pipe.CableModel;
 import com.gregtechceu.gtceu.common.data.GTDamageTypes;
@@ -15,10 +16,7 @@ import com.gregtechceu.gtceu.common.pipelike.net.energy.SuperconductorLogic;
 import com.gregtechceu.gtceu.common.pipelike.net.energy.WorldEnergyNet;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.Platform;
-
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,10 +25,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.LevelChunk;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -38,6 +35,8 @@ import java.util.Map;
 public class CableBlock extends PipeMaterialBlock implements IBurnable {
 
     private static final Map<Material, Map<CableStructure, CableBlock>> CACHE = new Object2ObjectOpenHashMap<>();
+
+    private static final ThreadLocal<Boolean> RELOCATING_TILE = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
     public CableBlock(BlockBehaviour.Properties properties, CableStructure structure, Material material) {
         super(properties, structure, material);
@@ -75,25 +74,33 @@ public class CableBlock extends PipeMaterialBlock implements IBurnable {
     public void partialBurn(BlockState state, Level world, BlockPos pos) {
         CableStructure structure = getStructure();
         if (structure.partialBurnStructure() != null) {
+            RELOCATING_TILE.set(Boolean.TRUE);
+            PipeBlockEntity oldPipe = null;
+            if (world.getBlockEntity(pos) instanceof PipeBlockEntity old) {
+                oldPipe = old;
+            }
+
             BlockState newState = CACHE.get(material).get(structure.partialBurnStructure()).defaultBlockState();
             world.setBlockAndUpdate(pos, newState);
+            RELOCATING_TILE.set(Boolean.FALSE);
 
             BlockEntity newBlockEntity = world.getBlockEntity(pos);
-            if (!(newBlockEntity instanceof PipeBlockEntity pipe)) return;
-            for (Direction facing : GTUtil.DIRECTIONS) {
-                if (pipe.isConnected(facing)) {
-                    PipeBlock.connectTile(pipe, pipe.getPipeNeighbor(facing, false), facing);
-                    BlockPos relativePos = pipe.getBlockPos().relative(facing);
-                    ChunkAccess chunk = world.getChunk(relativePos);
-                    if (chunk instanceof LevelChunk levelChunk) {
-                        BlockEntity candidate = levelChunk
-                                .getBlockEntity(relativePos, LevelChunk.EntityCreationType.CHECK);
-                        if (candidate instanceof PipeBlockEntity otherPipe)
-                            PipeBlock.connectTile(pipe, otherPipe, facing);
-                    }
-                }
+            if (oldPipe != null && newBlockEntity instanceof PipeBlockEntity pipe) {
+                pipe.load(oldPipe.saveWithoutMetadata());
+                pipe.initialize();
+                pipe.syncNow(true);
+                pipe.markAsDirty();
             }
         }
+    }
+
+    @Override
+    public @NotNull IPipeNetNodeHandler getHandler(PipeBlockEntity tileContext) {
+        if (RELOCATING_TILE.get()) {
+            // prevent node removal when relocating tile
+            return IPipeNetNodeHandler.EMPTY;
+        }
+        return super.getHandler(tileContext);
     }
 
     @Override
@@ -104,12 +111,12 @@ public class CableBlock extends PipeMaterialBlock implements IBurnable {
             return;
         PipeBlockEntity tile = getBlockEntity(level, pos);
         if (tile != null && tile.getFrameMaterial() == null && tile.getOffsetTimer() % 10 == 0) {
-            WorldPipeNetNode node = WorldEnergyNet.getWorldNet(serverLevel).getNode(pos);
+            WorldPipeNode node = WorldEnergyNet.getWorldNet(serverLevel).getNode(pos);
             if (node != null) {
                 if (node.getData().getLogicEntryNullable(SuperconductorLogic.TYPE) != null) return;
                 EnergyFlowLogic logic = node.getData().getLogicEntryNullable(EnergyFlowLogic.TYPE);
                 if (logic != null) {
-                    long tick = Platform.getMinecraftServer().getTickCount();
+                    long tick = GTCEu.getMinecraftServer().getTickCount();
                     long cumulativeDamage = 0;
                     for (EnergyFlowData data : logic.getFlow(tick)) {
                         cumulativeDamage += (GTUtil.getTierByVoltage(data.voltage()) + 1) * data.amperage() * 4;

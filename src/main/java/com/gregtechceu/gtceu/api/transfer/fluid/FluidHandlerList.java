@@ -10,9 +10,10 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.function.Predicate;
 
 public class FluidHandlerList implements IFluidHandlerModifiable, INBTSerializable<CompoundTag> {
@@ -26,7 +27,7 @@ public class FluidHandlerList implements IFluidHandlerModifiable, INBTSerializab
         this.handlers = handlers;
     }
 
-    public FluidHandlerList(List<IFluidHandler> handlers) {
+    public FluidHandlerList(Collection<? extends IFluidHandler> handlers) {
         this.handlers = handlers.toArray(IFluidHandler[]::new);
     }
 
@@ -191,5 +192,11 @@ public class FluidHandlerList implements IFluidHandlerModifiable, INBTSerializab
         }
 
         return true;
+    }
+
+    @NotNull
+    @UnmodifiableView
+    public Collection<IFluidHandler> getBackingHandlers() {
+        return Arrays.asList(handlers);
     }
 }

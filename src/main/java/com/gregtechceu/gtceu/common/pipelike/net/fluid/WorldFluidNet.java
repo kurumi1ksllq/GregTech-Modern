@@ -1,20 +1,19 @@
 package com.gregtechceu.gtceu.common.pipelike.net.fluid;
 
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
-import com.gregtechceu.gtceu.api.graphnet.IGraphNet;
-import com.gregtechceu.gtceu.api.graphnet.alg.DynamicWeightsShortestPathsAlgorithm;
-import com.gregtechceu.gtceu.api.graphnet.edge.NetEdge;
-import com.gregtechceu.gtceu.api.graphnet.edge.NetFlowEdge;
-import com.gregtechceu.gtceu.api.graphnet.edge.SimulatorKey;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.FlowWorldPipeNetPath;
+import com.gregtechceu.gtceu.api.cover.filter.CoverWithFluidFilter;
+import com.gregtechceu.gtceu.api.graphnet.group.GroupData;
+import com.gregtechceu.gtceu.api.graphnet.net.IGraphNet;
+import com.gregtechceu.gtceu.api.graphnet.net.NetEdge;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNet;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeCapabilityObject;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.NodeManagingPCW;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeCapabilityWrapper;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.predicate.BlockedPredicate;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.predicate.FilterPredicate;
-import com.gregtechceu.gtceu.api.graphnet.predicate.test.IPredicateTestObject;
-import com.gregtechceu.gtceu.common.cover.PumpCover;
+import com.gregtechceu.gtceu.common.cover.data.FilterMode;
 import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
 import com.gregtechceu.gtceu.common.pipelike.net.item.WorldItemNet;
 
@@ -22,12 +21,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
-
-public class WorldFluidNet extends WorldPipeNet implements FlowWorldPipeNetPath.Provider {
+public class WorldFluidNet extends WorldPipeNet {
 
     public static final Capability<?>[] CAPABILITIES = new Capability[] { ForgeCapabilities.FLUID_HANDLER };
 
@@ -44,12 +42,7 @@ public class WorldFluidNet extends WorldPipeNet implements FlowWorldPipeNetPath.
     }
 
     public WorldFluidNet() {
-        super(true, DynamicWeightsShortestPathsAlgorithm::new);
-    }
-
-    @Override
-    public boolean supportsPredication() {
-        return true;
+        super(true);
     }
 
     @Override
@@ -57,24 +50,24 @@ public class WorldFluidNet extends WorldPipeNet implements FlowWorldPipeNetPath.
         super.coverPredication(edge, a, b);
         if (edge.getPredicateHandler().hasPredicate(BlockedPredicate.TYPE)) return;
         FilterPredicate predicate = null;
-        if (a instanceof PumpCover filter) {
+        if (a instanceof CoverWithFluidFilter filter) {
             if (filter.getManualIOMode() == ManualIOMode.DISABLED) {
                 edge.getPredicateHandler().clearPredicates();
                 edge.getPredicateHandler().setPredicate(BlockedPredicate.TYPE.getNew());
                 return;
             } else if (filter.getManualIOMode() == ManualIOMode.FILTERED &&
-                    filter.getIo() != IO.IN) {
+                    filter.getFilterMode() != FilterMode.FILTER_INSERT) {
                         predicate = FilterPredicate.TYPE.getNew();
                         predicate.setSourceFilter(filter.getFilterHandler().getFilter());
                     }
         }
-        if (b instanceof PumpCover filter) {
+        if (b instanceof CoverWithFluidFilter filter) {
             if (filter.getManualIOMode() == ManualIOMode.DISABLED) {
                 edge.getPredicateHandler().clearPredicates();
                 edge.getPredicateHandler().setPredicate(BlockedPredicate.TYPE.getNew());
                 return;
             } else if (filter.getManualIOMode() == ManualIOMode.FILTERED &&
-                    filter.getIo() != IO.OUT) {
+                    filter.getFilterMode() != FilterMode.FILTER_EXTRACT) {
                         if (predicate == null) predicate = FilterPredicate.TYPE.getNew();
                         predicate.setTargetFilter(filter.getFilterHandler().getFilter());
                     }
@@ -83,38 +76,28 @@ public class WorldFluidNet extends WorldPipeNet implements FlowWorldPipeNetPath.
     }
 
     @Override
-    public boolean usesDynamicWeights(int algorithmID) {
-        return true;
-    }
-
-    @Override
     public boolean clashesWith(IGraphNet net) {
         return net instanceof WorldItemNet;
     }
 
     @Override
-    public Capability<?>[] getTargetCapabilities() {
-        return CAPABILITIES;
+    public PipeCapabilityWrapper buildCapabilityWrapper(@NotNull PipeBlockEntity owner, @NotNull WorldPipeNode node) {
+        Object2ObjectOpenHashMap<Capability<?>, IPipeCapabilityObject> map = new Object2ObjectOpenHashMap<>();
+        map.put(ForgeCapabilities.FLUID_HANDLER, new FluidCapabilityObject(node));
+        return new NodeManagingPCW(owner, node, map, 0, 0);
     }
 
-    @Override
-    public IPipeCapabilityObject[] getNewCapabilityObjects(WorldPipeNetNode node) {
-        return new IPipeCapabilityObject[] { new FluidCapabilityObject(this, node) };
-    }
-
-    @Override
-    public Iterator<FlowWorldPipeNetPath> getPaths(WorldPipeNetNode node, IPredicateTestObject testObject,
-                                                   @Nullable SimulatorKey simulator, long queryTick) {
-        return backer.getPaths(node, 0, FlowWorldPipeNetPath.MAPPER, testObject, simulator, queryTick);
-    }
-
-    @Override
-    public @NotNull NetFlowEdge getNewEdge() {
-        return new NetFlowEdge(10);
+    public static int getBufferTicks() {
+        return 10;
     }
 
     @Override
     public int getNetworkID() {
         return 1;
+    }
+
+    @Override
+    public @Nullable GroupData getBlankGroupData() {
+        return new FluidNetworkViewGroupData();
     }
 }

@@ -12,6 +12,8 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.capability.IToolable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
+import com.gregtechceu.gtceu.api.cover.filter.CoverWithFluidFilter;
+import com.gregtechceu.gtceu.api.cover.filter.CoverWithItemFilter;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyTooltip;
@@ -22,9 +24,6 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
 import com.gregtechceu.gtceu.api.misc.IOFilteredInvWrapper;
 import com.gregtechceu.gtceu.api.misc.IOFluidHandlerList;
-import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
-import com.gregtechceu.gtceu.common.cover.FluidFilterCover;
-import com.gregtechceu.gtceu.common.cover.ItemFilterCover;
 import com.gregtechceu.gtceu.common.item.tool.behavior.ToolModeSwitchBehavior;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -64,6 +63,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import com.mojang.datafixers.util.Pair;
@@ -665,8 +665,8 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
     public Predicate<ItemStack> getItemCapFilter(@Nullable Direction side, IO io) {
         if (side != null) {
             var cover = getCoverContainer().getCoverAtSide(side);
-            if (cover instanceof ItemFilterCover filterCover && filterCover.getFilterMode().filters(io)) {
-                return filterCover.getItemFilter();
+            if (cover instanceof CoverWithItemFilter filterCover && filterCover.getFilterMode().filters(io)) {
+                return filterCover.getFilterHandler().getFilter();
             }
         }
         return item -> true;
@@ -675,15 +675,15 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
     public Predicate<FluidStack> getFluidCapFilter(@Nullable Direction side, IO io) {
         if (side != null) {
             var cover = getCoverContainer().getCoverAtSide(side);
-            if (cover instanceof FluidFilterCover filterCover && filterCover.getFilterMode().filters(io)) {
-                return filterCover.getFluidFilter();
+            if (cover instanceof CoverWithFluidFilter filterCover && filterCover.getFilterMode().filters(io)) {
+                return filterCover.getFilterHandler().getFilter();
             }
         }
         return fluid -> true;
     }
 
     @Nullable
-    public IItemHandlerModifiable getItemHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
+    public IItemHandler getItemHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
         var list = getTraits().stream()
                 .filter(IItemHandlerModifiable.class::isInstance)
                 .filter(t -> t.hasCapability(side))
@@ -707,7 +707,7 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
     }
 
     @Nullable
-    public IFluidHandlerModifiable getFluidHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
+    public IFluidHandler getFluidHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
         var list = getTraits().stream()
                 .filter(IFluidHandler.class::isInstance)
                 .filter(t -> t.hasCapability(side))

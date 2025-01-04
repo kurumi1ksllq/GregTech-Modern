@@ -36,13 +36,6 @@ public class MaterialPipeBlockItem extends PipeBlockItem {
                 getBlock().getStructure().getPrefix().getLocalizedName(material);
     }
 
-    @Override
-    public String getDescriptionId() {
-        Material material = getBlock().material;
-        return material == null ? "unnamed" :
-                getBlock().getStructure().getPrefix().getUnlocalizedName(material);
-    }
-
     @OnlyIn(Dist.CLIENT)
     public static ItemColor tintColor() {
         return (itemStack, index) -> {

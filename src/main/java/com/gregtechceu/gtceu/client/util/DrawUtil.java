@@ -67,13 +67,13 @@ public class DrawUtil {
     public static int interpolateColor(int color1, int color2, float blend) {
         int a1 = color1 >> 24 & 255;
         int r1 = color1 >> 16 & 255;
-        int g1 = color1 >> 8  & 255;
-        int b1 = color1 >> 0  & 255;
+        int g1 = color1 >> 8 & 255;
+        int b1 = color1 >> 0 & 255;
 
         int a2 = color2 >> 24 & 255;
         int r2 = color2 >> 16 & 255;
-        int g2 = color2 >> 8  & 255;
-        int b2 = color2 >> 0  & 255;
+        int g2 = color2 >> 8 & 255;
+        int b2 = color2 >> 0 & 255;
 
         int a = (int) (a1 * (1 - blend) + a2 * blend);
         int r = (int) (r1 * (1 - blend) + r2 * blend);
@@ -90,8 +90,8 @@ public class DrawUtil {
     public static float[] floats(int argb) {
         return new float[] {
                 (float) (argb >> 16 & 255) / 255.0F,
-                (float) (argb >> 8  & 255) / 255.0F,
-                (float) (argb >> 0  & 255) / 255.0F,
+                (float) (argb >> 8 & 255) / 255.0F,
+                (float) (argb >> 0 & 255) / 255.0F,
                 (float) (argb >> 24 & 255) / 255.0F
         };
     }

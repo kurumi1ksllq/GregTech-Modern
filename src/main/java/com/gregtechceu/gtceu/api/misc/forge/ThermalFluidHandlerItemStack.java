@@ -6,27 +6,31 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 public class ThermalFluidHandlerItemStack extends FluidHandlerItemStack implements IThermalFluidHandlerItemStack {
 
+    @Getter
     private final int maxFluidTemperature;
+    @Getter
+    private final int minFluidTemperature;
+    @Getter
     private final boolean gasProof;
-    private final boolean acidProof;
-    private final boolean cryoProof;
+    @Getter
     private final boolean plasmaProof;
 
     /**
      * @param container The container itemStack, data is stored on it directly as NBT.
      * @param capacity  The maximum capacity of this fluid tank.
      */
-    public ThermalFluidHandlerItemStack(@NotNull ItemStack container, int capacity, int maxFluidTemperature,
-                                        boolean gasProof, boolean acidProof, boolean cryoProof, boolean plasmaProof) {
+    public ThermalFluidHandlerItemStack(@NotNull ItemStack container, int capacity,
+                                        int maxFluidTemperature, int minFluidTemperature,
+                                        boolean gasProof, boolean plasmaProof) {
         super(container, capacity);
         this.maxFluidTemperature = maxFluidTemperature;
+        this.minFluidTemperature = minFluidTemperature;
         this.gasProof = gasProof;
-        this.acidProof = acidProof;
-        this.cryoProof = cryoProof;
         this.plasmaProof = plasmaProof;
     }
 
@@ -53,30 +57,5 @@ public class ThermalFluidHandlerItemStack extends FluidHandlerItemStack implemen
     @Override
     public boolean canFillFluidType(FluidStack fluid) {
         return IThermalFluidHandlerItemStack.super.canFillFluidType(fluid);
-    }
-
-    @Override
-    public int getMaxFluidTemperature() {
-        return maxFluidTemperature;
-    }
-
-    @Override
-    public boolean isGasProof() {
-        return gasProof;
-    }
-
-    @Override
-    public boolean isAcidProof() {
-        return acidProof;
-    }
-
-    @Override
-    public boolean isCryoProof() {
-        return cryoProof;
-    }
-
-    @Override
-    public boolean isPlasmaProof() {
-        return plasmaProof;
     }
 }

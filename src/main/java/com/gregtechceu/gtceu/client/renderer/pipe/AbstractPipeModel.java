@@ -9,7 +9,7 @@ import com.gregtechceu.gtceu.client.renderer.pipe.quad.PipeQuadHelper;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.CacheKey;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
-import com.gregtechceu.gtceu.common.data.GTBlocks;
+import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.reference.WeakHashSet;
 
@@ -129,7 +129,7 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
                 blockedMask, data, coverMask);
 
         if (frameMaterial != null) {
-            BlockState state = GTBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, frameMaterial).getDefaultState();
+            BlockState state = GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, frameMaterial).getDefaultState();
             ColorQuadCache frame = frameCache.get(state);
             if (frame == null) {
                 BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);

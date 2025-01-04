@@ -386,12 +386,13 @@ public class LangHandler {
         provider.add("cover.conveyor.mode", "Mode: %s");
         provider.add("cover.conveyor.mode.export", "Mode: Export");
         provider.add("cover.conveyor.mode.import", "Mode: Import");
-        multilineLang(provider, "cover.conveyor.distribution.round_robin_global",
-                "Distribution Mode: §bRound Robin\n§7Splits items equally across connected inventories");
-        multilineLang(provider, "cover.conveyor.distribution.round_robin_prio",
-                "Distribution Mode: §bRound Robin with Priority\n§7Tries to split items across connected inventories and considers higher priorities first.\n§7Restrictive item pipes lower the priority of a path.");
-        multilineLang(provider, "cover.conveyor.distribution.insert_first",
-                "Distribution Mode: §bPriority\n§7Will insert into the first inventory with the highest priority it can find.\n§7Restrictive item pipes lower the priority of a path.");
+        provider.add("cover.generic.distribution.name", "Distribution Mode");
+        multilineLang(provider, "cover.generic.distribution.equalized",
+                "§bEqual Distribution§r\n§7Fills all destinations by the same amount per operation.\n§cMay be computationally expensive. Use sparingly.");
+        multilineLang(provider, "cover.generic.distribution.round_robin",
+                "§bRound Robin§r\n§7Fills destinations in a fixed order, but does not equalize.");
+        multilineLang(provider, "cover.generic.distribution.flood",
+                "§bFlood Insert§r\n§7Fills destinations based on their priorities and does not equalize.");
         multilineLang(provider, "cover.conveyor.blocks_input.enabled",
                 "If enabled, items will not be inserted when cover is set to pull items from the inventory into pipe.\n§aEnabled");
         multilineLang(provider, "cover.conveyor.blocks_input.disabled",
@@ -1083,7 +1084,6 @@ public class LangHandler {
         provider.add("gtceu.cable.amperage", "Max Amperage: §e%d");
         provider.add("gtceu.cable.loss_per_block", "Loss/Meter/Ampere: §c%d§7 EU-Volt");
         provider.add("gtceu.cable.superconductor", "§d%s Superconductor");
-        provider.add("gtceu.cable.superconductor_loss", "§cLoss is §f0§c under critical temperature §f%s§f K");
         provider.add("gtceu.fluid_pipe.capacity", "§9Capacity: §f%d mB");
         provider.add("gtceu.fluid_pipe.max_temperature", "§cMax Temperature: §f%s K");
         provider.add("gtceu.fluid_pipe.min_temperature", "§cMin Temperature: §f%s K");
@@ -1094,6 +1094,8 @@ public class LangHandler {
         provider.add("gtceu.fluid_pipe.plasma_proof", "§6Can handle all Plasmas");
         provider.add("gtceu.fluid_pipe.not_gas_proof", "§4Gases may leak!");
         provider.add("gtceu.pipe.priority", "§9Priority: §f%d");
+        provider.add("gtceu.pipe.fluid_pipe", "§dFluid Pipe");
+        provider.add("gtceu.pipe.item_pipe", "§dItem Pipe");
         provider.add("gtceu.duct_pipe.transfer_rate", "§bAir transfer rate: %s");
         provider.add("gtceu.multiblock.work_paused", "Work Paused.");
         provider.add("gtceu.multiblock.running", "Running perfectly.");
@@ -1265,6 +1267,7 @@ public class LangHandler {
         provider.add("config.jade.plugin_gtceu.primitive_pump", "[GTCEu] Primitive Pump Info");
         provider.add("config.jade.plugin_gtceu.transformer", "[GTCEu] Transformer Info");
         provider.add("config.jade.plugin_gtceu.stained_color", "[GTCEu] Stained Block Info");
+        provider.add("config.jade.plugin_gtceu.pipe", "[GTCEu] Pipe Info");
         provider.add("config.jade.plugin_gtceu.me_pattern_buffer", "[GTCEu] Pattern Buffer Info");
         provider.add("config.jade.plugin_gtceu.me_pattern_buffer_proxy", "[GTCEu] Pattern Buffer Proxy Info");
 

@@ -2,92 +2,143 @@ package com.gregtechceu.gtceu.common.pipelike.net.laser;
 
 import com.gregtechceu.gtceu.api.capability.ILaserRelay;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.BasicWorldPipeNetPath;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNet;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.group.PathCacheGroupData;
+import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
+import com.gregtechceu.gtceu.api.graphnet.path.NetPath;
+import com.gregtechceu.gtceu.api.graphnet.path.SingletonNetPath;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeCapabilityObject;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
-import com.gregtechceu.gtceu.api.graphnet.predicate.test.IPredicateTestObject;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeCapabilityWrapper;
+import com.gregtechceu.gtceu.common.cover.ShutterCover;
 import com.gregtechceu.gtceu.common.pipelike.net.SlowActiveWalker;
-
-import com.lowdragmc.lowdraglib.Platform;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
+import java.util.EnumMap;
+import java.util.Set;
 
 public class LaserCapabilityObject implements IPipeCapabilityObject, ILaserRelay {
 
-    private final WorldPipeNet net;
-    @Setter
+    public static final int ACTIVE_KEY = 122;
+
+    protected final WorldPipeNode node;
     private @Nullable PipeBlockEntity tile;
+
+    private final EnumMap<Direction, Wrapper> wrappers = new EnumMap<>(Direction.class);
 
     private boolean transmitting;
 
-    public <N extends WorldPipeNet & BasicWorldPipeNetPath.Provider> LaserCapabilityObject(@NotNull N net) {
-        this.net = net;
+    public LaserCapabilityObject(@NotNull WorldPipeNode node) {
+        this.node = node;
+        for (Direction facing : GTUtil.DIRECTIONS) {
+            wrappers.put(facing, new Wrapper(facing));
+        }
     }
 
-    private BasicWorldPipeNetPath.Provider getProvider() {
-        return (BasicWorldPipeNetPath.Provider) net;
-    }
-
-    private Iterator<BasicWorldPipeNetPath> getPaths() {
-        assert tile != null;
-        long tick = Platform.getMinecraftServer().getTickCount();
-        return getProvider().getPaths(net.getNode(tile.getBlockPos()), IPredicateTestObject.INSTANCE, null, tick);
+    @Override
+    public void init(@NotNull PipeBlockEntity tile, @NotNull PipeCapabilityWrapper wrapper) {
+        this.tile = tile;
     }
 
     @Override
     public long receiveLaser(long laserVoltage, long laserAmperage) {
-        if (tile == null || this.transmitting) return 0;
-        this.transmitting = true;
+        return receiveLaser(laserVoltage, laserAmperage, null);
+    }
 
-        long available = laserAmperage;
-        for (Iterator<BasicWorldPipeNetPath> it = getPaths(); it.hasNext();) {
-            BasicWorldPipeNetPath path = it.next();
-            WorldPipeNetNode destination = path.getTargetNode();
-            for (var capability : destination.getBlockEntity().getTargetsWithCapabilities(destination).entrySet()) {
-                ILaserRelay laser = capability.getValue()
-                        .getCapability(GTCapability.CAPABILITY_LASER, capability.getKey().getOpposite()).resolve()
-                        .orElse(null);
-                if (laser != null) {
-                    long transmitted = ILaserTransferController.CONTROL
-                            .get(destination.getBlockEntity().getCoverHolder()
-                                    .getCoverAtSide(capability.getKey()))
-                            .insertToHandler(laserVoltage, laserAmperage, laser);
-                    if (transmitted > 0) {
-                        SlowActiveWalker.dispatch(tile.getLevel(), path, 1, 2, 2);
-                        available -= transmitted;
-                        if (available <= 0) {
-                            this.transmitting = false;
-                            return laserAmperage;
+    protected long receiveLaser(long laserVoltage, long laserAmperage, Direction facing) {
+        long result = 0;
+        boolean earlyReturn = false;
+        if (tile != null && !this.transmitting) {
+            this.transmitting = true;
+            NetPath path = null;
+            if (node.getGroupUnsafe() == null || node.getGroupSafe().getNodes().size() == 1)
+                path = new SingletonNetPath(node);
+            else if (node.getGroupSafe().getData() instanceof PathCacheGroupData cache) {
+                Set<NetNode> actives = node.getGroupSafe().getNodesUnderKey(ACTIVE_KEY);
+                if (actives.size() > 2) {
+                    earlyReturn = true;// single-destination contract violated
+                } else {
+                    var iter = actives.iterator();
+                    NetNode target = iter.next();
+                    if (target == node) {
+                        if (!iter.hasNext()) {
+                            earlyReturn = true;// no destinations
+                        } else {
+                            target = iter.next();
+                        }
+                    }
+                    if (!earlyReturn) {
+                        if (!(target instanceof WorldPipeNode)) {
+                            earlyReturn = true;// useless target
+                        } else {
+                            path = cache.getOrCreate(node).getOrCompute(target);
+                            if (path == null) {
+                                earlyReturn = true;// no path
+                            }
                         }
                     }
                 }
+            } else {
+                earlyReturn = true;// no cache to lookup with
             }
+            if (!earlyReturn) {
+                long available = laserAmperage;
+                WorldPipeNode destination = (WorldPipeNode) path.getTargetNode();
+                for (var capability : destination.getBlockEntity().getTargetsWithCapabilities(destination).entrySet()) {
+                    if (destination == node && capability.getKey() == facing)
+                        continue; // anti insert-to-our-source logic
+                    ILaserRelay laser = capability.getValue()
+                            .getCapability(GTCapability.CAPABILITY_LASER,
+                                    capability.getKey().getOpposite())
+                            .resolve().orElse(null);
+                    if (laser != null && !(destination.getBlockEntity().getCoverHolder()
+                            .getCoverAtSide(capability.getKey()) instanceof ShutterCover)) {
+                        long transmitted = laser.receiveLaser(laserVoltage, laserAmperage);
+                        if (transmitted > 0) {
+                            SlowActiveWalker.dispatch(tile.getLevel(), path, 1, 2, 2);
+                            available -= transmitted;
+                            if (available <= 0) {
+                                result = laserAmperage;
+                                earlyReturn = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!earlyReturn) {
+                    result = laserAmperage - available;
+                }
+            }
+            this.transmitting = false;
         }
-        this.transmitting = false;
 
-        return laserAmperage - available;
+        return result;
     }
 
     @Override
-    public Capability<?>[] getCapabilities() {
-        return WorldLaserNet.CAPABILITIES;
+    public @NotNull <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction facing) {
+        return GTCapability.CAPABILITY_LASER.orEmpty(cap,
+                LazyOptional.of(() -> facing == null ? this : wrappers.get(facing)));
     }
 
-    @Override
-    public <T> LazyOptional<T> getCapabilityForSide(Capability<T> capability, @Nullable Direction facing) {
-        if (capability == GTCapability.CAPABILITY_LASER) {
-            return GTCapability.CAPABILITY_LASER.orEmpty(capability, LazyOptional.of(() -> this));
+    protected class Wrapper implements ILaserRelay {
+
+        private final Direction facing;
+
+        public Wrapper(Direction facing) {
+            this.facing = facing;
         }
-        return null;
+
+        @Override
+        public long receiveLaser(long laserVoltage, long laserAmperage) {
+            return LaserCapabilityObject.this.receiveLaser(laserVoltage, laserAmperage, facing);
+        }
     }
 }

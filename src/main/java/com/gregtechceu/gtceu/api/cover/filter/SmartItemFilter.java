@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.lookup.GTRecipeLookup;
+import com.gregtechceu.gtceu.common.cover.filter.MatchResult;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
 
@@ -42,12 +43,25 @@ public class SmartItemFilter implements ItemFilter {
     }
 
     @Override
+    public void loadFilter(CompoundTag tag) {
+        this.filterMode = SmartFilteringMode.VALUES[tag.getInt("filterMode")];
+    }
+
+    @Override
     public void setOnUpdated(Consumer<ItemFilter> onUpdated) {
         this.onUpdated = filter -> {
             this.itemWriter.accept(filter);
             onUpdated.accept(filter);
         };
     }
+
+    @Override
+    public int getMaxTransferSize() {
+        return 0;
+    }
+
+    @Override
+    public void setMaxTransferSize(int maxTransferSize) {}
 
     @Override
     public CompoundTag saveFilter() {
@@ -101,6 +115,11 @@ public class SmartItemFilter implements ItemFilter {
                 return;
             }
         }
+    }
+
+    @Override
+    public MatchResult apply(ItemStack stack) {
+        return null;
     }
 
     @MethodsReturnNonnullByDefault

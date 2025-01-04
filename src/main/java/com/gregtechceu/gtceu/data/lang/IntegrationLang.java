@@ -87,6 +87,9 @@ public class IntegrationLang {
         provider.add("gtceu.top.allow_output_input", "Allow Input");
         provider.add("gtceu.top.cable_voltage", "Voltage: ");
         provider.add("gtceu.top.cable_amperage", "Amperage: ");
+        provider.add("gtceu.top.pipe.fluid_last", "Last Fluid: ");
+        provider.add("gtceu.top.pipe.item_last", "Last Item: ");
+
         provider.add("gtceu.top.exhaust_vent_direction", "Exhaust Vent: %s");
         provider.add("gtceu.top.exhaust_vent_blocked", "Blocked");
         provider.add("gtceu.top.machine_mode", "Machine Mode: ");

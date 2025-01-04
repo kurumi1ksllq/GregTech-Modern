@@ -5,6 +5,9 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.IUICover;
+import com.gregtechceu.gtceu.api.cover.filter.CoverWithFluidFilter;
+import com.gregtechceu.gtceu.api.cover.filter.FilterHandler;
+import com.gregtechceu.gtceu.api.cover.filter.FilterHandlers;
 import com.gregtechceu.gtceu.api.cover.filter.FluidFilter;
 import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
 import com.gregtechceu.gtceu.api.transfer.fluid.FluidHandlerDelegate;
@@ -28,8 +31,8 @@ import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -40,11 +43,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class FluidFilterCover extends CoverBehavior implements IUICover {
+public class FluidFilterCover extends CoverBehavior implements IUICover, CoverWithFluidFilter {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(FluidFilterCover.class,
             CoverBehavior.MANAGED_FIELD_HOLDER);
-    protected FluidFilter fluidFilter;
+    protected FilterHandler<FluidStack, FluidFilter> filterHandler;
     @Persisted
     @DescSynced
     @Getter
@@ -56,6 +59,7 @@ public class FluidFilterCover extends CoverBehavior implements IUICover {
 
     public FluidFilterCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
+        filterHandler = FilterHandlers.fluid(this);
     }
 
     public void setFilterMode(FilterMode filterMode) {
@@ -73,11 +77,16 @@ public class FluidFilterCover extends CoverBehavior implements IUICover {
         return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_fluid_filter"), null).build();
     }
 
-    public FluidFilter getFluidFilter() {
-        if (fluidFilter == null) {
-            fluidFilter = FluidFilter.loadFilter(attachItem);
+    public @NotNull FilterHandler<FluidStack, FluidFilter> getFilterHandler() {
+        if (!filterHandler.isFilterPresent()) {
+            filterHandler.loadFilter(attachItem);
         }
-        return fluidFilter;
+        return filterHandler;
+    }
+
+    @Override
+    public ManualIOMode getManualIOMode() {
+        return ManualIOMode.FILTERED;
     }
 
     @Override
@@ -100,7 +109,7 @@ public class FluidFilterCover extends CoverBehavior implements IUICover {
         group.addWidget(new EnumSelectorWidget<>(35, 25, 18, 18,
                 FilterMode.VALUES, filterMode, this::setFilterMode));
         group.addWidget(new EnumSelectorWidget<>(35, 45, 18, 18, ManualIOMode.VALUES, allowFlow, this::setAllowFlow));
-        group.addWidget(getFluidFilter().openConfigurator(62, 25));
+        group.addWidget(getFilterHandler().getFilter().openConfigurator(62, 25));
         return group;
     }
 
@@ -119,7 +128,7 @@ public class FluidFilterCover extends CoverBehavior implements IUICover {
         public int fill(FluidStack resource, FluidAction action) {
             if ((filterMode == FilterMode.FILTER_EXTRACT) && allowFlow == ManualIOMode.UNFILTERED)
                 return super.fill(resource, action);
-            if (filterMode != FilterMode.FILTER_EXTRACT && getFluidFilter().test(resource))
+            if (filterMode != FilterMode.FILTER_EXTRACT && getFilterHandler().test(resource))
                 return super.fill(resource, action);
             return 0;
         }
@@ -128,7 +137,7 @@ public class FluidFilterCover extends CoverBehavior implements IUICover {
         public FluidStack drain(FluidStack resource, FluidAction action) {
             if ((filterMode == FilterMode.FILTER_INSERT) && allowFlow == ManualIOMode.UNFILTERED)
                 return super.drain(resource, action);
-            if (filterMode != FilterMode.FILTER_INSERT && getFluidFilter().test(resource))
+            if (filterMode != FilterMode.FILTER_INSERT && getFilterHandler().test(resource))
                 return super.drain(resource, action);
             return FluidStack.EMPTY;
         }

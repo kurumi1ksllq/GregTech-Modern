@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.api.item;
 
 import com.gregtechceu.gtceu.api.block.IMachineBlock;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeBlock;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 
 import com.lowdragmc.lowdraglib.client.renderer.IItemRendererProvider;

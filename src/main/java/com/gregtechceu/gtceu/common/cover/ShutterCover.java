@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
-import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 
@@ -19,12 +18,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.items.IItemHandlerModifiable;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -74,16 +71,6 @@ public class ShutterCover extends CoverBehavior implements IControllable {
                     "cover.shutter.message.enabled" : "cover.shutter.message.disabled"));
         }
         return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public @Nullable IItemHandlerModifiable getItemHandlerCap(IItemHandlerModifiable defaultValue) {
-        return isWorkingEnabled() ? null : super.getItemHandlerCap(defaultValue);
-    }
-
-    @Override
-    public @Nullable IFluidHandlerModifiable getFluidHandlerCap(IFluidHandlerModifiable defaultValue) {
-        return isWorkingEnabled() ? null : super.getFluidHandlerCap(defaultValue);
     }
 
     @Override

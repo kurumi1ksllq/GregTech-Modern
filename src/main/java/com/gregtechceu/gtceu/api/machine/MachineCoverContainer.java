@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
-import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.syncdata.IEnhancedManaged;
@@ -28,7 +27,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -233,12 +233,12 @@ public class MachineCoverContainer implements ICoverable, IEnhancedManaged {
     }
 
     @Override
-    public IItemHandlerModifiable getItemHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
+    public IItemHandler getItemHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
         return machine.getItemHandlerCap(side, useCoverCapability);
     }
 
     @Override
-    public IFluidHandlerModifiable getFluidHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
+    public IFluidHandler getFluidHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
         return machine.getFluidHandlerCap(side, useCoverCapability);
     }
 

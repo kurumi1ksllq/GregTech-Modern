@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.forge;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.block.MaterialBlock;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IMedicalConditionTracker;
@@ -13,8 +14,10 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.HazardPropert
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.chemical.material.registry.MaterialRegistry;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
+import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.DrumMachineItem;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
+import com.gregtechceu.gtceu.api.item.TagPrefixItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
@@ -48,6 +51,7 @@ import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
 import com.gregtechceu.gtceu.integration.map.WaypointManager;
 import com.gregtechceu.gtceu.integration.map.cache.server.ServerCache;
+import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.TaskHandler;
 
 import net.minecraft.core.Direction;
@@ -99,6 +103,8 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.MissingMappingsEvent;
 import net.minecraftforge.registries.RegistryManager;
 
+import com.tterrag.registrate.util.entry.BlockEntry;
+import com.tterrag.registrate.util.entry.ItemEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -625,8 +631,8 @@ public class ForgeCommonEventListener {
 
         // remap old material items
         for (TagPrefix prefix : TagPrefix.values()) {
-            String first = prefix.invertedName ? toLowerCaseUnder(prefix.name) : "(.+?)";
-            String last = prefix.invertedName ? "(.+?)" : toLowerCaseUnder(prefix.name);
+            String first = prefix.invertedName ? FormattingUtil.toLowerCaseUnder(prefix.name) : "(.+?)";
+            String last = prefix.invertedName ? "(.+?)" : FormattingUtil.toLowerCaseUnder(prefix.name);
             Pattern idPattern = Pattern.compile(first + "_" + last);
             event.getMappings(Registries.BLOCK, GTCEu.MOD_ID).forEach(mapping -> {
                 Matcher matcher = idPattern.matcher(mapping.getKey().getPath());

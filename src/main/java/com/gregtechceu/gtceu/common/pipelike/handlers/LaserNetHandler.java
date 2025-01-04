@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.common.pipelike.handlers;
 
 import com.gregtechceu.gtceu.api.graphnet.pipenet.IPipeNetNodeHandler;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.laser.LaserStructure;
 import com.gregtechceu.gtceu.common.pipelike.net.laser.WorldLaserNet;
@@ -24,8 +24,8 @@ public final class LaserNetHandler implements IPipeNetNodeHandler {
     public static final LaserNetHandler INSTANCE = new LaserNetHandler();
 
     @Override
-    public @NotNull Collection<WorldPipeNetNode> getOrCreateFromNets(ServerLevel world, BlockPos pos,
-                                                                     IPipeStructure structure) {
+    public @NotNull Collection<WorldPipeNode> getOrCreateFromNets(ServerLevel world, BlockPos pos,
+                                                                  IPipeStructure structure) {
         if (structure instanceof LaserStructure) {
             return Collections.singletonList(WorldLaserNet.getWorldNet(world).getOrCreateNode(pos));
         }
@@ -33,10 +33,10 @@ public final class LaserNetHandler implements IPipeNetNodeHandler {
     }
 
     @Override
-    public @NotNull Collection<WorldPipeNetNode> getFromNets(ServerLevel world, BlockPos pos,
-                                                             IPipeStructure structure) {
+    public @NotNull Collection<WorldPipeNode> getFromNets(ServerLevel world, BlockPos pos,
+                                                          IPipeStructure structure) {
         if (structure instanceof LaserStructure) {
-            WorldPipeNetNode node = WorldLaserNet.getWorldNet(world).getNode(pos);
+            WorldPipeNode node = WorldLaserNet.getWorldNet(world).getNode(pos);
             if (node != null) return Collections.singletonList(node);
         }
         return Collections.emptyList();
@@ -46,7 +46,7 @@ public final class LaserNetHandler implements IPipeNetNodeHandler {
     public void removeFromNets(ServerLevel world, BlockPos pos, IPipeStructure structure) {
         if (structure instanceof LaserStructure) {
             WorldLaserNet net = WorldLaserNet.getWorldNet(world);
-            WorldPipeNetNode node = net.getNode(pos);
+            WorldPipeNode node = net.getNode(pos);
             if (node != null) net.removeNode(node);
         }
     }

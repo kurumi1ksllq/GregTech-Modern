@@ -96,7 +96,7 @@ public class MixinHelpers {
             GTMaterialBlocks.CABLE_BLOCKS.rowMap().forEach((prefix, map) -> {
                 MixinHelpers.addMaterialBlockTags(tagMap, prefix, map);
             });
-            GTBlocks.MATERIAL_PIPE_BLOCKS.rowMap().forEach((prefix, map) -> {
+            GTMaterialBlocks.MATERIAL_PIPE_BLOCKS.rowMap().forEach((prefix, map) -> {
                 MixinHelpers.addMaterialBlockTags(tagMap, prefix, map);
             });
             GTRegistries.MACHINES.forEach(machine -> {
@@ -244,7 +244,7 @@ public class MixinHelpers {
         GTMaterialBlocks.CABLE_BLOCKS.rowMap().forEach((prefix, map) -> {
             MixinHelpers.addMaterialBlockLootTables(lootTables, prefix, map);
         });
-        GTBlocks.MATERIAL_PIPE_BLOCKS.rowMap().forEach((prefix, map) -> {
+        GTMaterialBlocks.MATERIAL_PIPE_BLOCKS.rowMap().forEach((prefix, map) -> {
             MixinHelpers.addMaterialBlockLootTables(lootTables, prefix, map);
         });
         GTMaterialBlocks.SURFACE_ROCK_BLOCKS.forEach((material, blockEntry) -> {

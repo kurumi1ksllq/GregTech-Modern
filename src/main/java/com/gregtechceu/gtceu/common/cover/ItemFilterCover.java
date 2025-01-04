@@ -5,16 +5,15 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.IUICover;
-import com.gregtechceu.gtceu.api.cover.filter.ItemFilter;
-import com.gregtechceu.gtceu.api.cover.filter.SmartItemFilter;
+import com.gregtechceu.gtceu.api.cover.filter.*;
 import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
 import com.gregtechceu.gtceu.api.machine.MachineCoverContainer;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.transfer.item.ItemHandlerDelegate;
-import com.gregtechceu.gtceu.common.cover.data.FilterMode;
-import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
+import com.gregtechceu.gtceu.common.cover.data.FilterMode;
+import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -25,10 +24,9 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -44,12 +42,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class ItemFilterCover extends CoverBehavior implements IUICover {
+public class ItemFilterCover extends CoverBehavior implements IUICover, CoverWithItemFilter {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(ItemFilterCover.class,
             CoverBehavior.MANAGED_FIELD_HOLDER);
 
-    protected ItemFilter itemFilter;
+    protected FilterHandler<ItemStack, ItemFilter> filterHandler;
     @Persisted
     @DescSynced
     @Getter
@@ -61,6 +59,7 @@ public class ItemFilterCover extends CoverBehavior implements IUICover {
 
     public ItemFilterCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
+        filterHandler = FilterHandlers.item(this);
     }
 
     @Override
@@ -68,15 +67,17 @@ public class ItemFilterCover extends CoverBehavior implements IUICover {
         return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_item_filter"), null).build();
     }
 
-    public ItemFilter getItemFilter() {
-        if (itemFilter == null) {
-            itemFilter = ItemFilter.loadFilter(attachItem);
-            if (itemFilter instanceof SmartItemFilter smart && coverHolder instanceof MachineCoverContainer mcc) {
+    @Override
+    public @NotNull FilterHandler<ItemStack, ItemFilter> getFilterHandler() {
+        if (!filterHandler.isFilterPresent()) {
+            filterHandler.loadFilter(attachItem);
+            if (filterHandler.getFilter() instanceof SmartItemFilter smart &&
+                    coverHolder instanceof MachineCoverContainer mcc) {
                 var machine = MetaMachine.getMachine(mcc.getLevel(), mcc.getPos());
                 if (machine != null) smart.setModeFromMachine(machine.getDefinition().getName());
             }
         }
-        return itemFilter;
+        return filterHandler;
     }
 
     public void setFilterMode(FilterMode filterMode) {
@@ -85,12 +86,17 @@ public class ItemFilterCover extends CoverBehavior implements IUICover {
     }
 
     @Override
+    public ManualIOMode getManualIOMode() {
+        return ManualIOMode.FILTERED;
+    }
+
+    @Override
     public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
         return coverable.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent();
     }
 
     @Override
-    public @Nullable IItemHandlerModifiable getItemHandlerCap(IItemHandlerModifiable defaultValue) {
+    public @Nullable IItemHandler getItemHandlerCap(IItemHandler defaultValue) {
         if (defaultValue == null) {
             return null;
         }
@@ -107,7 +113,7 @@ public class ItemFilterCover extends CoverBehavior implements IUICover {
         group.addWidget(new EnumSelectorWidget<>(35, 25, 18, 18,
                 FilterMode.VALUES, filterMode, this::setFilterMode));
         group.addWidget(new EnumSelectorWidget<>(35, 45, 18, 18, ManualIOMode.VALUES, allowFlow, this::setAllowFlow));
-        group.addWidget(getItemFilter().openConfigurator(62, 25));
+        group.addWidget(getFilterHandler().getFilter().openConfigurator(62, 25));
         return group;
     }
 
@@ -118,7 +124,7 @@ public class ItemFilterCover extends CoverBehavior implements IUICover {
 
     private class FilteredItemHandlerWrapper extends ItemHandlerDelegate {
 
-        public FilteredItemHandlerWrapper(IItemHandlerModifiable delegate) {
+        public FilteredItemHandlerWrapper(IItemHandler delegate) {
             super(delegate);
         }
 
@@ -126,7 +132,7 @@ public class ItemFilterCover extends CoverBehavior implements IUICover {
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
             if ((filterMode == FilterMode.FILTER_EXTRACT) && allowFlow == ManualIOMode.UNFILTERED)
                 return super.insertItem(slot, stack, simulate);
-            if (filterMode != FilterMode.FILTER_EXTRACT && getItemFilter().test(stack)) {
+            if (filterMode != FilterMode.FILTER_EXTRACT && getFilterHandler().test(stack)) {
                 return super.insertItem(slot, stack, simulate);
             }
             return stack;
@@ -139,7 +145,7 @@ public class ItemFilterCover extends CoverBehavior implements IUICover {
                 return super.extractItem(slot, amount, false);
             }
 
-            if (filterMode != FilterMode.FILTER_INSERT && getItemFilter().test(result)) {
+            if (filterMode != FilterMode.FILTER_INSERT && getFilterHandler().test(result)) {
                 return super.extractItem(slot, amount, false);
             }
             return ItemStack.EMPTY;

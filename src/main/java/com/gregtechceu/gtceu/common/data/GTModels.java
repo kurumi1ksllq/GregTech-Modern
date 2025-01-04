@@ -382,7 +382,7 @@ public class GTModels {
             if (properties == null) continue;
             if (properties.hasProperty(MaterialEnergyProperties.KEY)) {
                 for (var structure : PipeStructureRegistry.getStructures(CableStructure.class)) {
-                    if (!GTBlocks.CABLE_BLOCKS.contains(structure.prefix(), material)) {
+                    if (!GTMaterialBlocks.CABLE_BLOCKS.contains(structure.prefix(), material)) {
                         continue;
                     }
 
@@ -391,8 +391,8 @@ public class GTModels {
                     String modelId = structure.getModel().getLoc().toString();
                     json.addProperty("model_id", modelId);
 
-                    CableBlock block = GTBlocks.CABLE_BLOCKS.get(structure.prefix(), material).get();
-                    ResourceLocation blockId = GTBlocks.CABLE_BLOCKS.get(structure.prefix(), material).getId();
+                    CableBlock block = GTMaterialBlocks.CABLE_BLOCKS.get(structure.prefix(), material).get();
+                    ResourceLocation blockId = GTMaterialBlocks.CABLE_BLOCKS.get(structure.prefix(), material).getId();
                     ResourceLocation blockModelId = blockId.withPrefix("block/");
                     GTDynamicResourcePack.addBlockModel(blockModelId, json);
                     GTDynamicResourcePack.addItemModel(blockId, json);
@@ -401,7 +401,7 @@ public class GTModels {
                 }
             }
             for (var structure : PipeStructureRegistry.getStructures(MaterialPipeStructure.class)) {
-                if (!GTBlocks.MATERIAL_PIPE_BLOCKS.contains(structure.prefix(), material)) {
+                if (!GTMaterialBlocks.MATERIAL_PIPE_BLOCKS.contains(structure.prefix(), material)) {
                     continue;
                 }
 
@@ -410,8 +410,9 @@ public class GTModels {
                 String modelId = structure.getModel().getLoc().toString();
                 json.addProperty("model_id", modelId);
 
-                MaterialPipeBlock block = GTBlocks.MATERIAL_PIPE_BLOCKS.get(structure.prefix(), material).get();
-                ResourceLocation blockId = GTBlocks.MATERIAL_PIPE_BLOCKS.get(structure.prefix(), material).getId();
+                MaterialPipeBlock block = GTMaterialBlocks.MATERIAL_PIPE_BLOCKS.get(structure.prefix(), material).get();
+                ResourceLocation blockId = GTMaterialBlocks.MATERIAL_PIPE_BLOCKS.get(structure.prefix(), material)
+                        .getId();
                 ResourceLocation blockModelId = blockId.withPrefix("block/");
                 GTDynamicResourcePack.addBlockModel(blockModelId, json);
                 GTDynamicResourcePack.addItemModel(blockId, json);

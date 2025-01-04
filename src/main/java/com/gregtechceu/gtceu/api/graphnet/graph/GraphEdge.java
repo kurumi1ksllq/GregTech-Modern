@@ -1,23 +1,36 @@
 package com.gregtechceu.gtceu.api.graphnet.graph;
 
-import com.gregtechceu.gtceu.api.graphnet.edge.NetEdge;
+import com.gregtechceu.gtceu.api.graphnet.net.NetEdge;
 
+import lombok.Getter;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.util.Objects;
 
 public final class GraphEdge extends DefaultWeightedEdge {
 
-    public final @NotNull NetEdge wrapped;
+    @ApiStatus.Internal
+    @Getter
+    public final NetEdge wrapped;
 
     public GraphEdge(@NotNull NetEdge wrapped) {
         this.wrapped = wrapped;
         wrapped.wrapper = this;
     }
 
-    public @NotNull NetEdge getWrapped() {
-        return wrapped;
+    @Nullable
+    @Contract("null->null")
+    public static GraphEdge unwrap(NetEdge e) {
+        return e == null ? null : e.wrapper;
+    }
+
+    @ApiStatus.Internal
+    public GraphEdge() {
+        this.wrapped = null;
     }
 
     @Override
@@ -28,6 +41,12 @@ public final class GraphEdge extends DefaultWeightedEdge {
     @Override
     public GraphVertex getTarget() {
         return (GraphVertex) super.getTarget();
+    }
+
+    public @Nullable GraphVertex getOppositeVertex(@NotNull GraphVertex node) {
+        if (getSource() == node) return getTarget();
+        else if (getTarget() == node) return getSource();
+        else return null;
     }
 
     /**
@@ -46,7 +65,7 @@ public final class GraphEdge extends DefaultWeightedEdge {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GraphEdge graphEdge = (GraphEdge) o;
-        return Objects.equals(wrapped, graphEdge.wrapped);
+        return Objects.equals(getSource(), graphEdge.getSource()) && Objects.equals(getTarget(), graphEdge.getTarget());
     }
 
     @Override

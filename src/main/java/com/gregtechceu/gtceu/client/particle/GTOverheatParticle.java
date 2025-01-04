@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.client.particle;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.logic.TemperatureLogic;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
 import com.gregtechceu.gtceu.client.renderer.IRenderSetup;
@@ -254,7 +254,7 @@ public class GTOverheatParticle extends GTParticle {
     @Override
     public void renderParticle(@NotNull PoseStack poseStack, @NotNull BufferBuilder buffer,
                                @NotNull EffectRenderContext context) {
-        if (GTCEu.isShimmerLoaded()) {
+        if (GTCEu.Mods.isShimmerLoaded()) {
             final PoseStack finalStack = RenderUtils.copyPoseStack(poseStack);
             BloomUtils.entityBloom(
                     source -> renderBloomEffect(finalStack, source.getBuffer(GTRenderTypes.getBloomQuad()), context));

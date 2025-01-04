@@ -4,8 +4,6 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.graphnet.logic.AbstractTransientLogicData;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicType;
 
-import com.lowdragmc.lowdraglib.Platform;
-
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -33,7 +31,7 @@ public class EnergyFlowLogic extends AbstractTransientLogicData<EnergyFlowLogic>
     }
 
     public @NotNull Long2ObjectOpenHashMap<List<EnergyFlowData>> getMemory() {
-        updateMemory(Platform.getMinecraftServer().getTickCount());
+        updateMemory(GTCEu.getMinecraftServer().getTickCount());
         return memory;
     }
 

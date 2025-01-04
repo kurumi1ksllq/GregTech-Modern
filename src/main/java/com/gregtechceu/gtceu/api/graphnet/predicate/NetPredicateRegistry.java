@@ -4,11 +4,10 @@ import com.lowdragmc.lowdraglib.LDLib;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.fml.ModLoader;
+import net.minecraftforge.common.MinecraftForge;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,28 +17,28 @@ public final class NetPredicateRegistry {
 
     private static final Int2ObjectArrayMap<NetPredicateType<?>> REGISTRY;
 
-    private static final BiMap<Integer, String> NAMES_TO_NETWORK_IDS;
+    private static final Object2IntOpenHashMap<String> NAMES_TO_NETWORK_IDS;
 
     static {
         NetPredicateRegistrationEvent event = new NetPredicateRegistrationEvent();
-        ModLoader.get().postEvent(event);
+        MinecraftForge.EVENT_BUS.post(event);
         Set<NetPredicateType<?>> gather = event.getGather();
-        NAMES_TO_NETWORK_IDS = HashBiMap.create(gather.size());
+        NAMES_TO_NETWORK_IDS = new Object2IntOpenHashMap<>(gather.size());
         REGISTRY = new Int2ObjectArrayMap<>(gather.size());
         int id = 1;
         for (NetPredicateType<?> type : gather) {
-            NAMES_TO_NETWORK_IDS.put(id, type.getSerializedName());
+            NAMES_TO_NETWORK_IDS.put(type.getSerializedName(), id);
             REGISTRY.put(id, type);
             id++;
         }
     }
 
     public static String getName(int networkID) {
-        return NAMES_TO_NETWORK_IDS.get(networkID);
+        return REGISTRY.get(networkID).getSerializedName();
     }
 
     public static int getNetworkID(@NotNull String name) {
-        return NAMES_TO_NETWORK_IDS.inverse().get(name);
+        return NAMES_TO_NETWORK_IDS.getInt(name);
     }
 
     public static int getNetworkID(@NotNull NetPredicateType<?> type) {

@@ -10,7 +10,7 @@ import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidVeinSavedData;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicData;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.logic.TemperatureLogic;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.tile.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.gui.misc.ProspectorMode;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
@@ -25,15 +25,13 @@ import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
 import com.gregtechceu.gtceu.common.capability.LocalizedHazardSavedData;
 import com.gregtechceu.gtceu.common.data.GTSoundEntries;
+import com.gregtechceu.gtceu.common.network.GTNetwork;
+import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectBedrockFluid;
 import com.gregtechceu.gtceu.common.pipelike.net.energy.EnergyFlowData;
 import com.gregtechceu.gtceu.common.pipelike.net.energy.EnergyFlowLogic;
 import com.gregtechceu.gtceu.common.pipelike.net.energy.WorldEnergyNet;
-import com.gregtechceu.gtceu.common.network.GTNetwork;
-import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectBedrockFluid;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
-
-import com.lowdragmc.lowdraglib.Platform;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -411,7 +409,7 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
                                 Component.translatable(FormattingUtil.formatNumbers(cumulativeAmperage))
                                         .withStyle(ChatFormatting.RED)));
 
-                        long tick = Platform.getMinecraftServer().getTickCount();
+                        long tick = GTUtil.getCurrentServerTick();
                         int temp = data.getLogicEntryDefaultable(TemperatureLogic.TYPE).getTemperature(tick);
                         list.add(Component.translatable("behavior.portable_scanner.temperature",
                                 Component.translatable(FormattingUtil.formatNumbers(temp))

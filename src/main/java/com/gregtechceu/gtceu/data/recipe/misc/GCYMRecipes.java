@@ -27,9 +27,9 @@ import static com.gregtechceu.gtceu.common.data.GTBlocks.CASING_TEMPERED_GLASS;
 import static com.gregtechceu.gtceu.common.data.GTItems.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
-import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
-import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.MIXER_RECIPES;
+import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.*;
 import static com.gregtechceu.gtceu.common.data.machines.GCYMMachines.*;
+import static com.gregtechceu.gtceu.common.data.machines.GTMultiMachines.*;
 import static com.gregtechceu.gtceu.data.recipe.CustomTags.*;
 
 public class GCYMRecipes {

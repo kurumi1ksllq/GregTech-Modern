@@ -2,18 +2,15 @@ package com.gregtechceu.gtceu.api.graphnet.pipenet.logic;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.graphnet.MultiNodeHelper;
-import com.gregtechceu.gtceu.api.graphnet.NetNode;
 import com.gregtechceu.gtceu.api.graphnet.logic.INetLogicEntryListener;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicData;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicEntry;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicType;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.NodeLossResult;
+import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IBurnable;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IFreezable;
-import com.gregtechceu.gtceu.api.graphnet.traverse.util.CompleteLossOperator;
-import com.gregtechceu.gtceu.api.graphnet.traverse.util.MultLossOperator;
-import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.client.particle.GTOverheatParticle;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -21,12 +18,16 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
-import java.util.Objects;
 
+@Accessors(chain = true)
 public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, CompoundTag> {
 
     public static final TemperatureLogicType TYPE = new TemperatureLogicType();
@@ -36,19 +37,40 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
     private WeakReference<INetLogicEntryListener> netListener;
     private boolean isMultiNodeHelper = false;
 
+    @Getter
+    @Setter
     private int temperatureMaximum;
+    @Getter
+    @Setter
     private @Nullable Integer partialBurnTemperature;
+    @Getter
+    @Setter
     private int temperatureMinimum;
-    private float energy;
+    @Getter
+    @Setter
+    private float thermalEnergy;
+    @Getter
+    @Setter
     private int thermalMass;
 
-    private @NotNull TemperatureLossFunction temperatureLossFunction = new TemperatureLossFunction();
+    @Getter
+    @Setter
+    private @NotNull TemperatureLossFunction restorationFunction = new TemperatureLossFunction();
+    @Getter
+    @Setter
     private int functionPriority;
+    @Getter
     private long lastRestorationTick;
 
     @Override
-    public @NotNull NetLogicType<TemperatureLogic> getType() {
+    public @NotNull TemperatureLogicType getType() {
         return TYPE;
+    }
+
+    @Contract("_ -> this")
+    public TemperatureLogic setInitialThermalEnergy(float energy) {
+        this.thermalEnergy = energy;
+        return this;
     }
 
     @Override
@@ -67,6 +89,10 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
         if (!isMultiNodeHelper) this.netListener = new WeakReference<>(null);
     }
 
+    public @NotNull TemperatureLogic getNew() {
+        return new TemperatureLogic();
+    }
+
     public boolean isOverMaximum(int temperature) {
         return temperature > getTemperatureMaximum();
     }
@@ -79,48 +105,33 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
         return temperature < getTemperatureMinimum();
     }
 
-    @Nullable
-    public NodeLossResult getLossResult(long tick) {
-        int temp = getTemperature(tick);
+    public void defaultHandleTemperature(Level world, BlockPos pos) {
+        int temp = getTemperature(GTUtil.getCurrentServerTick());
         if (isUnderMinimum(temp)) {
-            return new NodeLossResult(n -> {
-                Level world = n.getNet().getLevel();
-                BlockPos pos = n.getEquivalencyData();
-                BlockState state = world.getBlockState(pos);
-                if (state.getBlock() instanceof IFreezable freezable) {
-                    freezable.fullyFreeze(state, world, pos);
-                } else {
-                    world.removeBlock(pos, false);
-                }
-            }, CompleteLossOperator.INSTANCE);
+            BlockState state = world.getBlockState(pos);
+            if (state.getBlock() instanceof IFreezable freezable) {
+                freezable.fullyFreeze(state, world, pos);
+            } else {
+                world.removeBlock(pos, false);
+            }
         } else if (isOverMaximum(temp)) {
-            return new NodeLossResult(n -> {
-                Level world = n.getNet().getLevel();
-                BlockPos pos = n.getEquivalencyData();
-                BlockState state = world.getBlockState(pos);
-                if (state.getBlock() instanceof IBurnable burnable) {
-                    burnable.fullyBurn(state, world, pos);
-                } else {
-                    world.removeBlock(pos, false);
-                }
-            }, CompleteLossOperator.INSTANCE);
+            BlockState state = world.getBlockState(pos);
+            if (state.getBlock() instanceof IBurnable burnable) {
+                burnable.fullyBurn(state, world, pos);
+            } else {
+                world.removeBlock(pos, false);
+            }
         } else if (isOverPartialBurnThreshold(temp)) {
-            return new NodeLossResult(n -> {
-                Level world = n.getNet().getLevel();
-                BlockPos pos = n.getEquivalencyData();
-                BlockState state = world.getBlockState(pos);
-                if (state.getBlock() instanceof IBurnable burnable) {
-                    burnable.partialBurn(state, world, pos);
-                }
-            }, MultLossOperator.TENTHS[5]);
-        } else {
-            return null;
+            BlockState state = world.getBlockState(pos);
+            if (state.getBlock() instanceof IBurnable burnable) {
+                burnable.partialBurn(state, world, pos);
+            }
         }
     }
 
     public void applyThermalEnergy(float energy, long tick) {
         restoreTemperature(tick);
-        this.energy += energy;
+        this.thermalEnergy += energy;
         // since the decay logic is synced and deterministic,
         // the only time client and server will desync is on external changes.
         INetLogicEntryListener listener = this.netListener.get();
@@ -129,86 +140,32 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
 
     public void moveTowardsTemperature(int temperature, long tick, float mult, boolean noParticle) {
         int temp = getTemperature(tick);
-        float thermalEnergy = mult * (temperature - temp);
+        float thermalEnergy = (float) (this.thermalMass * (temperature - temp) *
+                (1 - Math.pow(0.5, mult / this.thermalMass)));
         if (noParticle) {
             float thermalMax = this.thermalMass * (GTOverheatParticle.TEMPERATURE_CUTOFF - DEFAULT_TEMPERATURE);
-            if (thermalMax > this.energy) return;
-            if (thermalEnergy + this.energy > thermalMax) {
-                thermalEnergy = thermalMax - this.energy;
+            if (thermalEnergy + this.thermalEnergy > thermalMax) {
+                thermalEnergy = thermalMax - this.thermalEnergy;
             }
         }
-        if (thermalEnergy > 0) applyThermalEnergy(thermalEnergy, tick);
+        applyThermalEnergy(thermalEnergy, tick);
     }
 
     public int getTemperature(long tick) {
         restoreTemperature(tick);
-        return (int) (this.energy / this.thermalMass) + DEFAULT_TEMPERATURE;
+        return (int) (this.thermalEnergy / this.thermalMass) + DEFAULT_TEMPERATURE;
     }
 
     private void restoreTemperature(long tick) {
         long timePassed = tick - lastRestorationTick;
-        this.lastRestorationTick = tick;
-        float energy = this.energy;
-        if (timePassed != 0) {
-            if (timePassed >= Integer.MAX_VALUE || timePassed < 0) {
-                this.energy = 0;
-            } else this.energy = temperatureLossFunction
-                    .restoreTemperature(energy, (int) timePassed);
+        // sometimes the tick time randomly warps backward for no explicable reason, on both server and client.
+        if (timePassed > 0) {
+            float energy = this.thermalEnergy;
+            this.lastRestorationTick = tick;
+            if (timePassed >= Integer.MAX_VALUE) {
+                this.thermalEnergy = 0;
+            } else this.thermalEnergy = restorationFunction.restoreTemperature(energy, (int) timePassed);
         }
-    }
-
-    public TemperatureLogic setRestorationFunction(TemperatureLossFunction temperatureRestorationFunction) {
-        this.temperatureLossFunction = temperatureRestorationFunction;
-        return this;
-    }
-
-    public TemperatureLossFunction getRestorationFunction() {
-        return temperatureLossFunction;
-    }
-
-    public TemperatureLogic setFunctionPriority(int functionPriority) {
-        this.functionPriority = functionPriority;
-        return this;
-    }
-
-    public int getFunctionPriority() {
-        return functionPriority;
-    }
-
-    public TemperatureLogic setTemperatureMaximum(int temperatureMaximum) {
-        this.temperatureMaximum = temperatureMaximum;
-        return this;
-    }
-
-    public int getTemperatureMaximum() {
-        return temperatureMaximum;
-    }
-
-    public TemperatureLogic setPartialBurnTemperature(@Nullable Integer partialBurnTemperature) {
-        this.partialBurnTemperature = partialBurnTemperature;
-        return this;
-    }
-
-    public @Nullable Integer getPartialBurnTemperature() {
-        return partialBurnTemperature;
-    }
-
-    public TemperatureLogic setTemperatureMinimum(int temperatureMinimum) {
-        this.temperatureMinimum = temperatureMinimum;
-        return this;
-    }
-
-    public int getTemperatureMinimum() {
-        return temperatureMinimum;
-    }
-
-    public TemperatureLogic setThermalMass(int thermalMass) {
-        this.thermalMass = thermalMass;
-        return this;
-    }
-
-    public int getThermalMass() {
-        return thermalMass;
     }
 
     @Override
@@ -237,11 +194,11 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
-        tag.putFloat("ThermalEnergy", this.energy);
+        tag.putFloat("ThermalEnergy", this.thermalEnergy);
         tag.putInt("TemperatureMax", this.temperatureMaximum);
         tag.putInt("TemperatureMin", this.temperatureMinimum);
         tag.putInt("ThermalMass", this.thermalMass);
-        tag.put("RestorationFunction", this.temperatureLossFunction.serializeNBT());
+        tag.put("RestorationFunction", this.restorationFunction.serializeNBT());
         tag.putInt("FunctionPrio", this.functionPriority);
         if (partialBurnTemperature != null) tag.putInt("PartialBurn", partialBurnTemperature);
         return tag;
@@ -249,11 +206,11 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        this.energy = nbt.getFloat("ThermalEnergy");
+        this.thermalEnergy = nbt.getFloat("ThermalEnergy");
         this.temperatureMaximum = nbt.getInt("TemperatureMax");
         this.temperatureMinimum = nbt.getInt("TemperatureMin");
         this.thermalMass = nbt.getInt("ThermalMass");
-        this.temperatureLossFunction = new TemperatureLossFunction(nbt.getCompound("RestorationFunction"));
+        this.restorationFunction = new TemperatureLossFunction(nbt.getCompound("RestorationFunction"));
         this.functionPriority = nbt.getInt("FunctionPrio");
         if (nbt.contains("PartialBurn")) {
             this.partialBurnTemperature = nbt.getInt("PartialBurn");
@@ -262,26 +219,28 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
 
     @Override
     public void encode(FriendlyByteBuf buf, boolean fullChange) {
-        buf.writeFloat(this.energy);
+        buf.writeFloat(this.thermalEnergy);
         if (fullChange) {
             buf.writeVarInt(this.temperatureMaximum);
             buf.writeVarInt(this.temperatureMinimum);
             buf.writeVarInt(this.thermalMass);
-            this.temperatureLossFunction.encode(buf);
+            this.restorationFunction.encode(buf);
             buf.writeVarInt(this.functionPriority);
-            buf.writeVarInt(Objects.requireNonNullElse(this.partialBurnTemperature, -1));
+            // laughs in java 9
+            // noinspection ReplaceNullCheck
+            if (this.partialBurnTemperature == null) buf.writeVarInt(-1);
+            else buf.writeVarInt(this.partialBurnTemperature);
         }
     }
 
     @Override
     public void decode(FriendlyByteBuf buf, boolean fullChange) {
-        this.lastRestorationTick = ClientProxy.getServerTickCount();
-        this.energy = buf.readFloat();
+        this.thermalEnergy = buf.readFloat();
         if (fullChange) {
             this.temperatureMaximum = buf.readVarInt();
             this.temperatureMinimum = buf.readVarInt();
             this.thermalMass = buf.readVarInt();
-            this.temperatureLossFunction.decode(buf);
+            this.restorationFunction.decode(buf);
             this.functionPriority = buf.readVarInt();
             int partialBurn = buf.readVarInt();
             if (partialBurn != -1) this.partialBurnTemperature = partialBurn;

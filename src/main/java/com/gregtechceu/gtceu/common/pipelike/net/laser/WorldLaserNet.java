@@ -1,28 +1,27 @@
 package com.gregtechceu.gtceu.common.pipelike.net.laser;
 
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
-import com.gregtechceu.gtceu.api.graphnet.alg.SinglePathAlgorithm;
-import com.gregtechceu.gtceu.api.graphnet.edge.SimulatorKey;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.BasicWorldPipeNetPath;
+import com.gregtechceu.gtceu.api.graphnet.group.GroupData;
+import com.gregtechceu.gtceu.api.graphnet.group.PathCacheGroupData;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNet;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeCapabilityObject;
-import com.gregtechceu.gtceu.api.graphnet.predicate.test.IPredicateTestObject;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeCapabilityWrapper;
+import com.gregtechceu.gtceu.api.graphnet.traverse.NetBreadthIterator;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.capabilities.Capability;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
-
-public class WorldLaserNet extends WorldPipeNet implements BasicWorldPipeNetPath.Provider {
-
-    public static final Capability<?>[] CAPABILITIES = new Capability[] { GTCapability.CAPABILITY_LASER };
+public class WorldLaserNet extends WorldPipeNet {
 
     private static final String DATA_ID = "gtceu_world_laser_net";
 
-    public static WorldLaserNet getWorldNet(ServerLevel serverLevel) {
+    public static @NotNull WorldLaserNet getWorldNet(ServerLevel serverLevel) {
         WorldLaserNet net = serverLevel.getDataStorage().computeIfAbsent(tag -> {
             WorldLaserNet netx = new WorldLaserNet();
             netx.load(tag);
@@ -33,23 +32,19 @@ public class WorldLaserNet extends WorldPipeNet implements BasicWorldPipeNetPath
     }
 
     public WorldLaserNet() {
-        super(false, SinglePathAlgorithm::new);
+        super(false);
     }
 
     @Override
-    public Iterator<BasicWorldPipeNetPath> getPaths(WorldPipeNetNode node, IPredicateTestObject testObject,
-                                                    @Nullable SimulatorKey simulator, long queryTick) {
-        return backer.getPaths(node, 0, BasicWorldPipeNetPath.MAPPER, testObject, simulator, queryTick);
+    public PipeCapabilityWrapper buildCapabilityWrapper(@NotNull PipeBlockEntity owner, @NotNull WorldPipeNode node) {
+        Object2ObjectOpenHashMap<Capability<?>, IPipeCapabilityObject> map = new Object2ObjectOpenHashMap<>();
+        map.put(GTCapability.CAPABILITY_LASER, new LaserCapabilityObject(node));
+        return new PipeCapabilityWrapper(owner, node, map, 0, LaserCapabilityObject.ACTIVE_KEY);
     }
 
     @Override
-    public Capability<?>[] getTargetCapabilities() {
-        return CAPABILITIES;
-    }
-
-    @Override
-    public IPipeCapabilityObject[] getNewCapabilityObjects(WorldPipeNetNode node) {
-        return new IPipeCapabilityObject[] { new LaserCapabilityObject(this) };
+    public @Nullable GroupData getBlankGroupData() {
+        return new PathCacheGroupData(NetBreadthIterator::new);
     }
 
     @Override

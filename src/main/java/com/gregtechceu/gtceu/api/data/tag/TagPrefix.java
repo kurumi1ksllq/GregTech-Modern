@@ -731,119 +731,159 @@ public class TagPrefix {
     // Pipes
     public static final TagPrefix pipeTiny = new TagPrefix("pipeTiny")
             .langValue("Tiny %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M / 2)
             .unificationEnabled(true);
     public static final TagPrefix pipeSmall = new TagPrefix("pipeSmall")
             .langValue("Small %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M)
             .unificationEnabled(true);
     public static final TagPrefix pipeNormal = new TagPrefix("pipeNormal")
             .langValue("Normal %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M * 3)
             .unificationEnabled(true);
     public static final TagPrefix pipeLarge = new TagPrefix("pipeLarge")
             .langValue("Large %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M * 6)
             .unificationEnabled(true);
     public static final TagPrefix pipeHuge = new TagPrefix("pipeHuge")
             .langValue("Huge %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M * 12)
             .unificationEnabled(true);
 
     public static final TagPrefix pipeQuadruple = new TagPrefix("pipeQuadruple")
             .langValue("Quadruple %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M * 4)
             .unificationEnabled(true);
     public static final TagPrefix pipeNonuple = new TagPrefix("pipeNonuple")
             .langValue("Nonuple %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M * 9)
             .unificationEnabled(true);
 
     public static final TagPrefix pipeTinyRestrictive = new TagPrefix("pipeTinyRestrictive")
             .langValue("Tiny Restrictive %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M)
             .unificationEnabled(true);
     public static final TagPrefix pipeSmallRestrictive = new TagPrefix("pipeSmallRestrictive")
             .langValue("Small Restrictive %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M)
             .unificationEnabled(true);
     public static final TagPrefix pipeNormalRestrictive = new TagPrefix("pipeNormalRestrictive")
             .langValue("Normal Restrictive %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M * 3)
             .unificationEnabled(true);
     public static final TagPrefix pipeLargeRestrictive = new TagPrefix("pipeLargeRestrictive")
             .langValue("Large Restrictive %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M * 6)
             .unificationEnabled(true);
     public static final TagPrefix pipeHugeRestrictive = new TagPrefix("pipeHugeRestrictive")
             .langValue("Huge Restrictive %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M * 12)
             .unificationEnabled(true);
 
     public static final TagPrefix pipeQuadrupleRestrictive = new TagPrefix("pipeQuadrupleRestrictive")
             .langValue("Quadruple Restrictive %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M * 4)
             .unificationEnabled(true);
     public static final TagPrefix pipeNonupleRestrictive = new TagPrefix("pipeNonupleRestrictive")
             .langValue("Nonuple Restrictive %s Pipe")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
             .miningToolTag(GTToolType.WRENCH.harvestTags.get(0))
             .materialAmount(GTValues.M * 9)
             .unificationEnabled(true);
 
     // Wires and cables
-    public static final TagPrefix wireGtHex = new TagPrefix("wireGtHex").itemTable(() -> GTMaterialBlocks.CABLE_BLOCKS)
-            .langValue("16x %s Wire").miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
-            .materialAmount(GTValues.M * 8).materialIconType(MaterialIconType.wire).unificationEnabled(true);
+    public static final TagPrefix wireGtHex = new TagPrefix("wireGtHex")
+            .langValue("16x %s Wire")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
+            .miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
+            .materialAmount(GTValues.M * 8)
+            .materialIconType(MaterialIconType.wire)
+            .unificationEnabled(true);
     public static final TagPrefix wireGtOctal = new TagPrefix("wireGtOctal")
-            .itemTable(() -> GTMaterialBlocks.CABLE_BLOCKS)
-            .langValue("8x %s Wire").miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
-            .materialAmount(GTValues.M * 4).materialIconType(MaterialIconType.wire).unificationEnabled(true);
+            .langValue("8x %s Wire")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
+            .miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
+            .materialAmount(GTValues.M * 4)
+            .materialIconType(MaterialIconType.wire)
+            .unificationEnabled(true);
     public static final TagPrefix wireGtQuadruple = new TagPrefix("wireGtQuadruple")
-            .itemTable(() -> GTMaterialBlocks.CABLE_BLOCKS).langValue("4x %s Wire")
-            .miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0)).materialAmount(GTValues.M * 2)
-            .materialIconType(MaterialIconType.wire).unificationEnabled(true);
+            .langValue("4x %s Wire")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
+            .miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
+            .materialAmount(GTValues.M * 2)
+            .materialIconType(MaterialIconType.wire)
+            .unificationEnabled(true);
     public static final TagPrefix wireGtDouble = new TagPrefix("wireGtDouble")
-            .itemTable(() -> GTMaterialBlocks.CABLE_BLOCKS)
-            .langValue("2x %s Wire").miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0)).materialAmount(GTValues.M)
-            .materialIconType(MaterialIconType.wire).unificationEnabled(true);
+            .langValue("2x %s Wire")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
+            .miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
+            .materialAmount(GTValues.M)
+            .materialIconType(MaterialIconType.wire)
+            .unificationEnabled(true);
     public static final TagPrefix wireGtSingle = new TagPrefix("wireGtSingle")
-            .itemTable(() -> GTMaterialBlocks.CABLE_BLOCKS)
-            .langValue("1x %s Wire").miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
-            .materialAmount(GTValues.M / 2).materialIconType(MaterialIconType.wire).unificationEnabled(true);
+            .langValue("1x %s Wire")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
+            .miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
+            .materialAmount(GTValues.M / 2)
+            .materialIconType(MaterialIconType.wire)
+            .unificationEnabled(true);
 
     public static final TagPrefix cableGtHex = new TagPrefix("cableGtHex")
-            .itemTable(() -> GTMaterialBlocks.CABLE_BLOCKS)
-            .langValue("16x %s Cable").miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
-            .materialAmount(GTValues.M * 8).unificationEnabled(true);
+            .langValue("16x %s Cable")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
+            .miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
+            .materialAmount(GTValues.M * 8)
+            .unificationEnabled(true);
     public static final TagPrefix cableGtOctal = new TagPrefix("cableGtOctal")
-            .itemTable(() -> GTMaterialBlocks.CABLE_BLOCKS)
-            .langValue("8x %s Cable").miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
-            .materialAmount(GTValues.M * 4).unificationEnabled(true);
+            .langValue("8x %s Cable")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
+            .miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
+            .materialAmount(GTValues.M * 4)
+            .unificationEnabled(true);
     public static final TagPrefix cableGtQuadruple = new TagPrefix("cableGtQuadruple")
-            .itemTable(() -> GTMaterialBlocks.CABLE_BLOCKS).langValue("4x %s Cable")
-            .miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0)).materialAmount(GTValues.M * 2)
+            .langValue("4x %s Cable")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
+            .miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
+            .materialAmount(GTValues.M * 2)
             .unificationEnabled(true);
     public static final TagPrefix cableGtDouble = new TagPrefix("cableGtDouble")
-            .itemTable(() -> GTMaterialBlocks.CABLE_BLOCKS)
-            .langValue("2x %s Cable").miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
-            .materialAmount(GTValues.M).unificationEnabled(true);
+            .langValue("2x %s Cable")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
+            .miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
+            .materialAmount(GTValues.M)
+            .unificationEnabled(true);
     public static final TagPrefix cableGtSingle = new TagPrefix("cableGtSingle")
-            .itemTable(() -> GTMaterialBlocks.CABLE_BLOCKS)
-            .langValue("1x %s Cable").miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
-            .materialAmount(GTValues.M / 2).unificationEnabled(true);
+            .langValue("1x %s Cable")
+            .itemTable(() -> GTMaterialBlocks.MATERIAL_PIPE_BLOCKS)
+            .miningToolTag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
+            .materialAmount(GTValues.M / 2)
+            .unificationEnabled(true);
 
     public static class Conditions {
 

@@ -5,7 +5,7 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.factory.CoverUIFactory;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfigurator;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
-import com.gregtechceu.gtceu.api.item.tool.IToolGridHighLight;
+import com.gregtechceu.gtceu.api.item.tool.IToolGridHighlight;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 
@@ -31,7 +31,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -246,7 +246,7 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
     //////////////////////////////////////
 
     @Nullable
-    public IItemHandlerModifiable getItemHandlerCap(IItemHandlerModifiable defaultValue) {
+    public IItemHandler getItemHandlerCap(IItemHandler defaultValue) {
         return defaultValue;
     }
 

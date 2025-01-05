@@ -38,9 +38,13 @@ public class WorldDuctNet extends WorldPipeNet {
         return new PipeCapabilityWrapper(owner, node, map, 0, DuctCapabilityObject.ACTIVE_KEY);
     }
 
+    public static int getBufferTicks() {
+        return 10;
+    }
+
     @Override
     public int getNetworkID() {
-        return 3;
+        return 5;
     }
 
     @Override

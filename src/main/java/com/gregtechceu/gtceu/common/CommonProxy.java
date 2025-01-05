@@ -52,6 +52,8 @@ import com.gregtechceu.gtceu.common.pipelike.block.duct.DuctStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.laser.LaserStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.optical.OpticalStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.pipe.MaterialPipeStructure;
+import com.gregtechceu.gtceu.common.pipelike.net.duct.DuctFlowLogic;
+import com.gregtechceu.gtceu.common.pipelike.net.duct.DuctThroughputLogic;
 import com.gregtechceu.gtceu.common.pipelike.net.energy.*;
 import com.gregtechceu.gtceu.common.pipelike.net.fluid.FluidContainmentLogic;
 import com.gregtechceu.gtceu.common.pipelike.net.fluid.FluidFlowLogic;
@@ -266,6 +268,7 @@ public class CommonProxy {
     @SubscribeEvent
     public void registerNetLogics(NetLogicRegistrationEvent event) {
         event.accept(ChannelCountLogic.TYPE);
+        event.accept(DuctFlowLogic.TYPE);
         event.accept(EnergyFlowLogic.TYPE);
         event.accept(FluidFlowLogic.TYPE);
         event.accept(ItemFlowLogic.TYPE);
@@ -273,6 +276,7 @@ public class CommonProxy {
         event.accept(SuperconductorLogic.TYPE);
         event.accept(TemperatureLogic.TYPE);
         event.accept(ThroughputLogic.TYPE);
+        event.accept(DuctThroughputLogic.TYPE);
         event.accept(WeightFactorLogic.TYPE);
         event.accept(VoltageLimitLogic.TYPE);
         event.accept(VoltageLossLogic.TYPE);

@@ -1,8 +1,10 @@
 package com.gregtechceu.gtceu.utils;
 
 import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
+import com.gregtechceu.gtceu.utils.function.ToFloatFunction;
 
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,6 +32,18 @@ public class MapUtil {
             val = map.getBoolean(key);
         } else {
             val = compute.test(key);
+            map.put(key, val);
+        }
+        return val;
+    }
+
+    public static float computeIfAbsent(@NotNull Object2FloatMap<NetNode> map, @NotNull NetNode key,
+                                        @NotNull ToFloatFunction<NetNode> compute) {
+        float val;
+        if (map.containsKey(key)) {
+            val = map.getFloat(key);
+        } else {
+            val = compute.applyAsFloat(key);
             map.put(key, val);
         }
         return val;

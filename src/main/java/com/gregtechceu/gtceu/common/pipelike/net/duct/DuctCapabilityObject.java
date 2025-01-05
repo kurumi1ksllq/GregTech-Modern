@@ -5,16 +5,24 @@ import com.gregtechceu.gtceu.api.capability.IHazardParticleContainer;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.HazardProperty;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
-import com.gregtechceu.gtceu.api.graphnet.group.NetGroup;
-import com.gregtechceu.gtceu.api.graphnet.group.PathCacheGroupData;
+import com.gregtechceu.gtceu.api.graphnet.GraphNetUtility;
+import com.gregtechceu.gtceu.api.graphnet.logic.ChannelCountLogic;
+import com.gregtechceu.gtceu.api.graphnet.logic.ThroughputLogic;
+import com.gregtechceu.gtceu.api.graphnet.net.NetEdge;
 import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.NodeExposingCapabilities;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeCapabilityObject;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.NodeManagingPCW;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeCapabilityWrapper;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardCleaner;
+import com.gregtechceu.gtceu.api.graphnet.traverse.EdgeDirection;
+import com.gregtechceu.gtceu.api.graphnet.traverse.EdgeSelector;
+import com.gregtechceu.gtceu.api.graphnet.traverse.ResilientNetClosestIterator;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
+import com.gregtechceu.gtceu.utils.GTMath;
+import com.gregtechceu.gtceu.utils.GTUtil;
+import com.gregtechceu.gtceu.utils.MapUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,10 +31,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayDeque;
+import java.util.EnumMap;
 import java.util.List;
 
 public class DuctCapabilityObject implements IPipeCapabilityObject, IHazardParticleContainer {
@@ -34,23 +44,34 @@ public class DuctCapabilityObject implements IPipeCapabilityObject, IHazardParti
     public static final int ACTIVE_KEY = 155;
 
     private @Nullable PipeBlockEntity blockEntity;
+    private NodeManagingPCW capabilityWrapper;
 
+    private final EnumMap<Direction, DuctCapabilityObject.Wrapper> wrappers = new EnumMap<>(Direction.class);
     private final @NotNull WorldPipeNode node;
 
     private boolean transferring = false;
 
     public DuctCapabilityObject(@NotNull WorldPipeNode node) {
         this.node = node;
+        for (Direction facing : GTUtil.DIRECTIONS) {
+            wrappers.put(facing, new DuctCapabilityObject.Wrapper(facing));
+        }
     }
 
     @Override
     public void init(@NotNull PipeBlockEntity tile, @NotNull PipeCapabilityWrapper wrapper) {
         this.blockEntity = tile;
+        if (!(wrapper instanceof NodeManagingPCW p))
+            throw new IllegalArgumentException("DuctCapabilityObjects must be initialized to NodeManagingPCWs!");
+        this.capabilityWrapper = p;
     }
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        return GTCapability.CAPABILITY_HAZARD_CONTAINER.orEmpty(cap, LazyOptional.of(() -> this));
+        // can't expose the sided capability if there is no node to interact with
+        if (side != null && capabilityWrapper.getNodeForFacing(side) == null) return LazyOptional.empty();
+        return GTCapability.CAPABILITY_HAZARD_CONTAINER.orEmpty(cap,
+                LazyOptional.of(() -> side == null ? this : wrappers.get(side)));
     }
 
     private boolean inputDisallowed(Direction side) {
@@ -59,64 +80,148 @@ public class DuctCapabilityObject implements IPipeCapabilityObject, IHazardParti
         else return blockEntity.isBlocked(side);
     }
 
+    protected @Nullable NetNode getRelevantNode(Direction facing) {
+        return facing == null ? node : capabilityWrapper.getNodeForFacing(facing);
+    }
+
     @Override
     public boolean inputsHazard(Direction side, MedicalCondition condition) {
         return !inputDisallowed(side);
     }
 
     @Override
-    public float changeHazard(MedicalCondition condition, float differenceAmount) {
-        if (blockEntity == null || this.transferring) return 0;
-        NetGroup group = node.getGroupSafe();
-        if (!(group.getData() instanceof DuctGroupData data)) return 0;
+    public float changeHazard(MedicalCondition condition, float amount, boolean simulate) {
+        return changeHazard(condition, amount, simulate, null);
+    }
 
+    public float changeHazard(MedicalCondition condition, float differenceAmount, boolean simulate,
+                              @Nullable Direction side) {
+        if (this.transferring || inputDisallowed(side)) return 0;
+        NetNode node = getRelevantNode(side);
+        if (node == null) node = this.node;
         this.transferring = true;
 
-        PathCacheGroupData.SecondaryCache cache = data.getOrCreate(node);
-        List<DuctPath> paths = new ObjectArrayList<>(group.getNodesUnderKey(ACTIVE_KEY).size());
-        for (NetNode dest : group.getNodesUnderKey(ACTIVE_KEY)) {
-            DuctPath path = (DuctPath) cache.getOrCompute(dest);
-            if (path == null) continue;
-            // construct the path list in order of ascending weight
-            int i = 0;
-            while (i < paths.size()) {
-                if (paths.get(i).getWeight() >= path.getWeight()) break;
-                else i++;
+        float flow = differenceAmount;
+        DuctTestObject testObject = new DuctTestObject(condition);
+        ResilientNetClosestIterator iter = new ResilientNetClosestIterator(node,
+                EdgeSelector.filtered(EdgeDirection.OUTGOING, GraphNetUtility.standardEdgeBlacklist(testObject)));
+        Object2FloatOpenHashMap<NetNode> availableDemandCache = new Object2FloatOpenHashMap<>();
+        Object2FloatOpenHashMap<NetNode> flowLimitCache = new Object2FloatOpenHashMap<>();
+        List<Runnable> postActions = new ObjectArrayList<>();
+        float total = 0;
+        main:
+        while (iter.hasNext()) {
+            if (flow <= 0) break;
+            final NetNode next = iter.next();
+            float limit = Math.min(MapUtil.computeIfAbsent(flowLimitCache, next, n -> getFlowLimit(n, testObject)),
+                    flow);
+            if (limit <= 0) {
+                iter.markInvalid(next);
+                continue;
             }
-            paths.add(i, path);
-        }
-        float total = differenceAmount;
-        for (DuctPath path : paths) {
-            NetNode target = path.getTargetNode();
-            if (!(target instanceof WorldPipeNode n)) continue;
-            for (var capability : n.getBlockEntity().getTargetsWithCapabilities(n).entrySet()) {
-                IHazardParticleContainer handler = capability.getValue()
-                        .getCapability(GTCapability.CAPABILITY_HAZARD_CONTAINER, capability.getKey().getOpposite())
-                        .resolve()
-                        .orElse(null);
-                if (handler == null) {
-                    if (n.getBlockEntity() instanceof IMachineBlockEntity machineBE &&
-                            machineBE.getMetaMachine() instanceof IEnvironmentalHazardCleaner cleaner) {
-                        cleaner.cleanHazard(condition, differenceAmount);
-                        break;
-                    }
-
-                    var savedData = EnvironmentalHazardSavedData.getOrCreate(n.getNet().getLevel());
-                    savedData.addZone(n.getEquivalencyData().relative(capability.getKey()),
-                            differenceAmount, true, HazardProperty.HazardTrigger.INHALATION, condition);
-                    total += differenceAmount;
-                    emitPollutionParticles(n.getNet().getLevel(), n.getEquivalencyData(), capability.getKey());
-                    break;
+            float supply = MapUtil.computeIfAbsent(availableDemandCache, next,
+                    n -> getSupplyOrDemand(n, testObject, false));
+            if (supply <= 0) continue;
+            supply = Math.min(supply, limit);
+            NetEdge span;
+            NetNode trace = next;
+            ArrayDeque<NetNode> seen = new ArrayDeque<>();
+            seen.add(next);
+            while ((span = iter.getSpanningTreeEdge(trace)) != null) {
+                trace = span.getOppositeNode(trace);
+                if (trace == null) continue main;
+                float l = MapUtil.computeIfAbsent(flowLimitCache, trace, n -> getFlowLimit(n, testObject));
+                if (l == 0) {
+                    iter.markInvalid(node);
+                    continue main;
                 }
-                float change = handler.changeHazard(condition, differenceAmount);
-                differenceAmount -= change;
-                total += change;
-                if (differenceAmount <= 0) {
-                    break;
+                supply = Math.min(supply, l);
+                seen.addFirst(trace);
+            }
+            total += supply;
+            flow -= supply;
+            final float finalSupply = supply;
+            for (NetNode n : seen) {
+                // reporting flow can cause temperature pipe destruction which causes graph modification while
+                // iterating.
+                if (!simulate) postActions.add(() -> reportFlow(n, finalSupply, testObject));
+                float remaining = flowLimitCache.getFloat(n) - supply;
+                flowLimitCache.put(n, remaining);
+                if (remaining <= 0) {
+                    iter.markInvalid(n);
                 }
             }
+            if (!simulate) reportExtractedInserted(next, supply, testObject, false);
+            availableDemandCache.put(next, availableDemandCache.getFloat(next) - supply);
         }
+        postActions.forEach(Runnable::run);
+        this.transferring = false;
         return total;
+    }
+
+    public static float getFlowLimit(NetNode node, DuctTestObject testObject) {
+        ThroughputLogic throughput = node.getData().getLogicEntryNullable(ThroughputLogic.TYPE);
+        if (throughput == null) return Float.MAX_VALUE;
+        DuctFlowLogic history = node.getData().getLogicEntryNullable(DuctFlowLogic.TYPE);
+        if (history == null) return throughput.getValue() * DuctFlowLogic.MEMORY_TICKS;
+        Object2FloatMap<DuctTestObject> sum = history.getSum();
+        if (sum.isEmpty()) return GTMath.saturatedCast(throughput.getValue() * DuctFlowLogic.MEMORY_TICKS);
+        if (sum.size() < node.getData().getLogicEntryDefaultable(ChannelCountLogic.TYPE).getValue() ||
+                sum.containsKey(testObject)) {
+            return throughput.getValue() * DuctFlowLogic.MEMORY_TICKS - sum.getFloat(testObject);
+        }
+        return 0;
+    }
+
+    public static void reportFlow(NetNode node, float flow, DuctTestObject testObject) {
+        DuctFlowLogic logic = node.getData().getLogicEntryNullable(DuctFlowLogic.TYPE);
+        if (logic == null) {
+            logic = DuctFlowLogic.TYPE.getNew();
+            node.getData().setLogicEntry(logic);
+        }
+        logic.recordFlow(GTUtil.getCurrentServerTick(), testObject, flow);
+    }
+
+    public static float getSupplyOrDemand(NetNode node, DuctTestObject testObject, boolean supply) {
+        if (node instanceof NodeExposingCapabilities exposer) {
+            IHazardParticleContainer handler = exposer.getProvider()
+                    .getCapability(GTCapability.CAPABILITY_HAZARD_CONTAINER, exposer.exposedFacing())
+                    .resolve().orElse(null);
+            if (handler != null && instanceOf(handler) == null) {
+                if (supply) {
+                    return handler.removeHazard(testObject.condition, Float.MAX_VALUE, true);
+                } else {
+                    return handler.addHazard(testObject.condition, Float.MAX_VALUE, true);
+                }
+            } else if (handler == null) {
+                return Float.MAX_VALUE;
+            }
+        }
+        return 0;
+    }
+
+    public void reportExtractedInserted(NetNode node, float flow, DuctTestObject testObject, boolean extracted) {
+        if (flow <= 0) return;
+        if (node instanceof NodeExposingCapabilities exposer) {
+            IHazardParticleContainer handler = exposer.getProvider()
+                    .getCapability(GTCapability.CAPABILITY_HAZARD_CONTAINER, exposer.exposedFacing())
+                    .resolve().orElse(null);
+            if (handler != null) {
+                if (extracted) {
+                    handler.removeHazard(testObject.condition, flow, false);
+                } else {
+                    handler.addHazard(testObject.condition, flow, false);
+                }
+            } else if (node instanceof WorldPipeNode pipeNode) {
+                ServerLevel level = pipeNode.getNet().getLevel();
+                BlockPos pos = pipeNode.getEquivalencyData();
+                Direction openDir = exposer.exposedFacing();
+                var savedData = EnvironmentalHazardSavedData.getOrCreate(level);
+                savedData.addZone(pos.relative(openDir), flow,
+                        true, HazardProperty.HazardTrigger.INHALATION, testObject.condition);
+                emitPollutionParticles(level, pos, openDir);
+            }
+        }
     }
 
     @Override
@@ -153,5 +258,45 @@ public class DuctCapabilityObject implements IPipeCapabilityObject, IHazardParti
                 1,
                 xSpd, ySpd, zSpd,
                 0.1);
+    }
+
+    @Nullable
+    public static DuctCapabilityObject instanceOf(IHazardParticleContainer container) {
+        if (container instanceof DuctCapabilityObject f) return f;
+        if (container instanceof DuctCapabilityObject.Wrapper w) return w.getParent();
+        return null;
+    }
+
+    protected class Wrapper implements IHazardParticleContainer {
+
+        private final Direction facing;
+
+        public Wrapper(Direction facing) {
+            this.facing = facing;
+        }
+
+        @Override
+        public boolean inputsHazard(Direction side, MedicalCondition condition) {
+            return DuctCapabilityObject.this.inputsHazard(facing, condition);
+        }
+
+        @Override
+        public float changeHazard(MedicalCondition condition, float amount, boolean simulate) {
+            return DuctCapabilityObject.this.changeHazard(condition, amount, simulate, facing);
+        }
+
+        @Override
+        public float getHazardStored(MedicalCondition condition) {
+            return 0;
+        }
+
+        @Override
+        public float getHazardCapacity(MedicalCondition condition) {
+            return Float.MAX_VALUE;
+        }
+
+        public DuctCapabilityObject getParent() {
+            return DuctCapabilityObject.this;
+        }
     }
 }

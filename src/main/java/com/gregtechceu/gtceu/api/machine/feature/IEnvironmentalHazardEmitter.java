@@ -25,7 +25,7 @@ public interface IEnvironmentalHazardEmitter extends IMachineFeature {
     }
 
     /**
-     * @return the starting strength of the hazard zone.
+     * @return the starting strength of the hazard zone. recommended values are in the range [1,5).
      */
     float getHazardStrengthPerOperation();
 
@@ -38,8 +38,9 @@ public interface IEnvironmentalHazardEmitter extends IMachineFeature {
             IHazardParticleContainer container = GTCapabilityHelper.getHazardContainer(serverLevel,
                     self().getPos().relative(self().getFrontFacing()), self().getFrontFacing().getOpposite());
             if (container != null &&
-                    container.getHazardCanBeInserted(getConditionToEmit()) > getHazardStrengthPerOperation()) {
-                container.addHazard(getConditionToEmit(), getHazardStrengthPerOperation());
+                    container.addHazard(getConditionToEmit(), getHazardStrengthPerOperation(), true) >
+                            getHazardStrengthPerOperation()) {
+                container.addHazard(getConditionToEmit(), getHazardStrengthPerOperation(), false);
                 return;
             }
 

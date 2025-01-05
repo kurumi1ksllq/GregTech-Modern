@@ -52,7 +52,7 @@ public class WorldPipeCapConnectionNode extends NetNode implements NodeWithFacin
     public CompoundTag serializeNBT() {
         CompoundTag tag = super.serializeNBT();
         tag.putLong("Pos", posAndFacing.getPos().asLong());
-        tag.putByte("Facing", (byte) posAndFacing.getFacing().get3DDataValue());
+        tag.putByte("Facing", (byte) posAndFacing.getDirection().get3DDataValue());
         return tag;
     }
 
@@ -81,7 +81,7 @@ public class WorldPipeCapConnectionNode extends NetNode implements NodeWithFacin
     @Override
     public @Nullable Direction getFacingToOther(@NotNull NetNode other) {
         if (other instanceof WorldPipeNode n && n.getEquivalencyData().equals(posAndFacing.getPos()))
-            return posAndFacing.getFacing().getOpposite();
+            return posAndFacing.getDirection().getOpposite();
         else return null;
     }
 
@@ -89,13 +89,14 @@ public class WorldPipeCapConnectionNode extends NetNode implements NodeWithFacin
     public @NotNull ICapabilityProvider getProvider() {
         WorldPipeNode parent = getParent();
         if (parent == null) return EMPTY;
-        ICapabilityProvider prov = parent.getBlockEntity().getTargetWithCapabilities(parent, posAndFacing.getFacing());
+        ICapabilityProvider prov = parent.getBlockEntity().getTargetWithCapabilities(parent,
+                posAndFacing.getDirection());
         return prov != null ? prov : EMPTY;
     }
 
     @Override
     public Direction exposedFacing() {
-        return posAndFacing.getFacing().getOpposite();
+        return posAndFacing.getDirection().getOpposite();
     }
 
     private static final ICapabilityProvider EMPTY = new ICapabilityProvider() {

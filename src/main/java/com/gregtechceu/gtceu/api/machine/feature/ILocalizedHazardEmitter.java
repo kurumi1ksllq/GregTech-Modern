@@ -25,9 +25,9 @@ public interface ILocalizedHazardEmitter extends IMachineFeature {
     }
 
     /**
-     * @return the starting strength of the hazard zone. recommended values are in the range [1,5)
+     * @return the starting strength of the hazard zone. recommended values are in the range [1,5).
      */
-    int getHazardSizePerOperation();
+    int getHazardStrengthPerOperation();
 
     default void spreadLocalizedHazard() {
         if (!ConfigHolder.INSTANCE.gameplay.environmentalHazards) {
@@ -38,13 +38,14 @@ public interface ILocalizedHazardEmitter extends IMachineFeature {
             IHazardParticleContainer container = GTCapabilityHelper.getHazardContainer(serverLevel,
                     self().getPos().relative(self().getFrontFacing()), self().getFrontFacing().getOpposite());
             if (container != null &&
-                    container.getHazardCanBeInserted(getConditionToEmit()) > getHazardSizePerOperation()) {
-                container.addHazard(getConditionToEmit(), getHazardSizePerOperation());
+                    container.addHazard(getConditionToEmit(), getHazardStrengthPerOperation(), true) >
+                            getHazardStrengthPerOperation()) {
+                container.addHazard(getConditionToEmit(), getHazardStrengthPerOperation(), false);
                 return;
             }
 
             var savedData = LocalizedHazardSavedData.getOrCreate(serverLevel);
-            savedData.addSphericalZone(self().getPos(), getHazardSizePerOperation(), false,
+            savedData.addSphericalZone(self().getPos(), getHazardStrengthPerOperation(), false,
                     HazardProperty.HazardTrigger.INHALATION, getConditionToEmit());
         }
     }

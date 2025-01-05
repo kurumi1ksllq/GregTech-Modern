@@ -1,10 +1,11 @@
 package com.gregtechceu.gtceu.common.pipelike.handlers;
 
+import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.IPipeNetNodeHandler;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.duct.DuctStructure;
-import com.gregtechceu.gtceu.common.pipelike.net.optical.WorldOpticalNet;
+import com.gregtechceu.gtceu.common.pipelike.net.duct.WorldDuctNet;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -26,8 +27,10 @@ public final class DuctNetHandler implements IPipeNetNodeHandler {
     @Override
     public @NotNull Collection<WorldPipeNode> getOrCreateFromNets(ServerLevel world, BlockPos pos,
                                                                   IPipeStructure structure) {
-        if (structure instanceof DuctStructure) {
-            return Collections.singletonList(WorldOpticalNet.getWorldNet(world).getOrCreateNode(pos));
+        if (structure instanceof DuctStructure duct) {
+            WorldPipeNode node = WorldDuctNet.getWorldNet(world).getOrCreateNode(pos);
+            duct.mutateData(node.getData());
+            return Collections.singletonList(node);
         }
         return Collections.emptyList();
     }
@@ -35,8 +38,8 @@ public final class DuctNetHandler implements IPipeNetNodeHandler {
     @Override
     public @NotNull Collection<WorldPipeNode> getFromNets(ServerLevel world, BlockPos pos,
                                                           IPipeStructure structure) {
-        if (structure instanceof DuctStructure) {
-            WorldPipeNode node = WorldOpticalNet.getWorldNet(world).getNode(pos);
+        if (structure instanceof DuctStructure duct) {
+            WorldPipeNode node = WorldDuctNet.getWorldNet(world).getNode(pos);
             if (node != null) return Collections.singletonList(node);
         }
         return Collections.emptyList();
@@ -45,8 +48,8 @@ public final class DuctNetHandler implements IPipeNetNodeHandler {
     @Override
     public void removeFromNets(ServerLevel world, BlockPos pos, IPipeStructure structure) {
         if (structure instanceof DuctStructure) {
-            WorldOpticalNet net = WorldOpticalNet.getWorldNet(world);
-            WorldPipeNode node = net.getNode(pos);
+            WorldDuctNet net = WorldDuctNet.getWorldNet(world);
+            NetNode node = net.getNode(pos);
             if (node != null) net.removeNode(node);
         }
     }

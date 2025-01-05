@@ -21,36 +21,32 @@ public interface IHazardParticleContainer {
     /**
      * This changes the amount stored.
      *
-     * @param differenceAmount amount of particles to add (>0) or remove (<0)
+     * @param amount   amount of particles to add (>0) or remove (<0)
+     * @param simulate If true, the insertion is only simulated
      * @return amount of particles added or removed
      */
-    float changeHazard(MedicalCondition condition, float differenceAmount);
+    float changeHazard(MedicalCondition condition, float amount, boolean simulate);
 
     /**
      * Adds specified amount of particles to this particles container
      *
      * @param particlesToAdd amount of particles to add
+     * @param simulate       If true, the insertion is only simulated
      * @return amount of particles added
      */
-    default float addHazard(MedicalCondition condition, float particlesToAdd) {
-        return changeHazard(condition, particlesToAdd);
+    default float addHazard(MedicalCondition condition, float particlesToAdd, boolean simulate) {
+        return changeHazard(condition, particlesToAdd, simulate);
     }
 
     /**
      * Removes specified amount of particles from this particles container
      *
      * @param particlesToRemove amount of particles to remove
+     * @param simulate          If true, the insertion is only simulated
      * @return amount of particles removed
      */
-    default float removeHazard(MedicalCondition condition, float particlesToRemove) {
-        return -changeHazard(condition, -particlesToRemove);
-    }
-
-    /**
-     * @return the maximum amount of particles that can be inserted
-     */
-    default float getHazardCanBeInserted(MedicalCondition condition) {
-        return getHazardCapacity(condition) - getHazardStored(condition);
+    default float removeHazard(MedicalCondition condition, float particlesToRemove, boolean simulate) {
+        return -changeHazard(condition, -particlesToRemove, simulate);
     }
 
     /**
@@ -71,7 +67,7 @@ public interface IHazardParticleContainer {
         }
 
         @Override
-        public float changeHazard(MedicalCondition condition, float differenceAmount) {
+        public float changeHazard(MedicalCondition condition, float amount, boolean simulate) {
             return 0;
         }
 

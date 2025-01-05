@@ -1,9 +1,12 @@
 package com.gregtechceu.gtceu.common.pipelike.block.duct;
 
+import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicData;
+import com.gregtechceu.gtceu.api.graphnet.logic.WeightFactorLogic;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeStructure;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.PipeStructureRegistrationEvent;
 import com.gregtechceu.gtceu.client.renderer.pipe.PipeModelRedirector;
 import com.gregtechceu.gtceu.client.renderer.pipe.PipeModelRegistry;
+import com.gregtechceu.gtceu.common.pipelike.net.duct.DuctThroughputLogic;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -36,6 +39,11 @@ public record DuctStructure(String name, float renderThickness, float rateMultip
     @OnlyIn(Dist.CLIENT)
     public PipeModelRedirector getModel() {
         return PipeModelRegistry.getDuctModel();
+    }
+
+    public void mutateData(NetLogicData data) {
+        data.setLogicEntry(DuctThroughputLogic.TYPE.getWith(this.rateMultiplier))
+                .setLogicEntry(WeightFactorLogic.TYPE.getWith(2048f / this.rateMultiplier));
     }
 
     public static void register(@NotNull PipeStructureRegistrationEvent event) {

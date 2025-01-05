@@ -257,7 +257,7 @@ public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
     }
 
     @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, Direction side) {
+    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, Direction side) {
         return holder.getCapabilityCoverQuery(capability, side);
     }
 

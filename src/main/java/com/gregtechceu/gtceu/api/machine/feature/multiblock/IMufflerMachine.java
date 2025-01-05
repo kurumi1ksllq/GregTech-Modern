@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.machine.feature.multiblock;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IHazardParticleContainer;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyTooltip;
 import com.gregtechceu.gtceu.api.gui.fancy.TooltipsPanel;
@@ -10,6 +11,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardEmitter;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
+import com.gregtechceu.gtceu.common.pipelike.block.duct.DuctStructure;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -27,11 +29,17 @@ public interface IMufflerMachine extends IMultiPart, IEnvironmentalHazardEmitter
     /**
      * @return true if front face is free and contains only air blocks in 1x1 area OR has a duct block on it.
      */
+    @SuppressWarnings("RedundantIfStatement")
     default boolean isFrontFaceFree() {
         var frontPos = self().getPos().relative(self().getFrontFacing());
-        return self().getLevel().getBlockState(frontPos).isAir() ||
-                GTCapabilityHelper.getHazardContainer(self().getLevel(),
-                        frontPos, self().getFrontFacing().getOpposite()) != null;
+        if (self().getLevel().getBlockState(frontPos).isAir()) {
+            return true;
+        } else if (self().getLevel().getBlockEntity(frontPos) instanceof PipeBlockEntity pipe &&
+                pipe.isConnected(self().getFrontFacing().getOpposite()) &&
+                pipe.getStructure() instanceof DuctStructure) {
+            return true;
+        }
+        return false;
     }
 
     default void emitPollutionParticles() {
@@ -74,6 +82,15 @@ public interface IMufflerMachine extends IMultiPart, IEnvironmentalHazardEmitter
             return null;
         }
         return IMultiPart.super.modifyRecipe(recipe);
+    }
+
+    @Override
+    default boolean onWorking(IWorkableMultiController controller) {
+        if (!isFrontFaceFree()) {
+            controller.getRecipeLogic()
+                    .setWaiting(Component.translatable("gtceu.multiblock.universal.muffler_obstructed"));
+        }
+        return IMultiPart.super.onWorking(controller);
     }
 
     @Override

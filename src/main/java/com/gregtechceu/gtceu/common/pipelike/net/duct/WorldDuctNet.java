@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNet;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeCapabilityObject;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.NodeManagingPCW;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeCapabilityWrapper;
 
@@ -35,7 +36,7 @@ public class WorldDuctNet extends WorldPipeNet {
     public PipeCapabilityWrapper buildCapabilityWrapper(@NotNull PipeBlockEntity owner, @NotNull WorldPipeNode node) {
         Object2ObjectOpenHashMap<Capability<?>, IPipeCapabilityObject> map = new Object2ObjectOpenHashMap<>();
         map.put(GTCapability.CAPABILITY_HAZARD_CONTAINER, new DuctCapabilityObject(node));
-        return new PipeCapabilityWrapper(owner, node, map, 0, DuctCapabilityObject.ACTIVE_KEY);
+        return new NodeManagingPCW(owner, node, map, 0, DuctCapabilityObject.ACTIVE_KEY);
     }
 
     public static int getBufferTicks() {

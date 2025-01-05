@@ -24,7 +24,7 @@ public class OpticalPipeBlock extends ActivablePipeBlock {
 
     @Override
     protected String getConnectLangKey() {
-        return "gregtech.tool_action.wire_cutter.connect";
+        return "gtceu.tool_action.wire_cutter.connect";
     }
 
     @Override

@@ -456,7 +456,10 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
         boolean oneActive = false;
         for (var netCapability : netCapabilities.entrySet()) {
             for (Capability<?> cap : netCapability.getValue().capabilities.keySet()) {
-                if (tile.getCapability(cap, facing.getOpposite()).isPresent()) {
+                // hardcode an exception for hazard containers since they can
+                // "connect" and push the pipe contents into empty space
+                if (tile.getCapability(cap, facing.getOpposite()).isPresent() ||
+                        cap == GTCapability.CAPABILITY_HAZARD_CONTAINER) {
                     oneActive = true;
                     netCapability.getValue().setActive(facing);
                     break;
@@ -477,13 +480,13 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
     public <T> LazyOptional<T> getCapabilityCoverQuery(@NotNull Capability<T> capability, @Nullable Direction facing) {
         for (PipeCapabilityWrapper wrapper : netCapabilities.values()) {
             LazyOptional<T> cap = wrapper.getCapability(capability, facing);
-            if (cap != null) return cap;
+            if (cap.isPresent()) return cap;
         }
         return null;
     }
 
     @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
+    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
         if (capability == GTCapability.CAPABILITY_COVERABLE) {
             return GTCapability.CAPABILITY_COVERABLE.orEmpty(capability, LazyOptional.of(this::getCoverHolder));
         }

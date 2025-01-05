@@ -329,7 +329,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
     }
 
     protected String getConnectLangKey() {
-        return "gregtech.tool_action.wrench.connect_and_block";
+        return "gtceu.tool_action.wrench.connect";
     }
 
     @Override

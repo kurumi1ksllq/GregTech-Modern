@@ -16,11 +16,6 @@ public class DuctPipeBlock extends PipeBlock {
     }
 
     @Override
-    protected String getConnectLangKey() {
-        return "gregtech.tool_action.wrench.connect";
-    }
-
-    @Override
     @NotNull
     public IPipeNetNodeHandler getHandler(PipeBlockEntity blockEntityContext) {
         return DuctNetHandler.INSTANCE;

@@ -459,8 +459,7 @@ public class ConveyorCover extends CoverBehavior implements IUICover, IControlla
                     NetNode node = gather.next();
                     if (node instanceof NodeExposingCapabilities exposer) {
                         IItemHandler h = exposer.getProvider().getCapability(
-                                ForgeCapabilities.ITEM_HANDLER,
-                                exposer.exposedFacing())
+                                ForgeCapabilities.ITEM_HANDLER, exposer.exposedFacing())
                                 .resolve().orElse(null);
                         if (h != null && ItemCapabilityObject.instanceOf(h) == null) {
                             candidates.put(node, h);
@@ -621,8 +620,7 @@ public class ConveyorCover extends CoverBehavior implements IUICover, IControlla
                     NetNode node = gather.next();
                     if (node instanceof NodeExposingCapabilities exposer) {
                         IItemHandler h = exposer.getProvider().getCapability(
-                                ForgeCapabilities.ITEM_HANDLER,
-                                exposer.exposedFacing())
+                                ForgeCapabilities.ITEM_HANDLER, exposer.exposedFacing())
                                 .resolve().orElse(null);
                         if (h != null && ItemCapabilityObject.instanceOf(h) == null) {
                             candidates.put(node, h);

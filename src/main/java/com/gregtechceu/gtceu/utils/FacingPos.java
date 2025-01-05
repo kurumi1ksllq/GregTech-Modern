@@ -14,13 +14,13 @@ public class FacingPos {
     @Getter
     private final BlockPos pos;
     @Getter
-    private final Direction facing;
+    private final Direction direction;
     private final int hashCode;
 
-    public FacingPos(BlockPos pos, Direction facing) {
+    public FacingPos(BlockPos pos, Direction direction) {
         this.pos = pos;
-        this.facing = facing;
-        this.hashCode = Objects.hash(pos, facing);
+        this.direction = direction;
+        this.hashCode = Objects.hash(pos, direction);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class FacingPos {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FacingPos facingPos = (FacingPos) o;
-        return pos.equals(facingPos.pos) && facing == facingPos.getFacing();
+        return pos.equals(facingPos.pos) && direction == facingPos.getDirection();
     }
 
     @Override

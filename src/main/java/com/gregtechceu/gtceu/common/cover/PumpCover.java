@@ -460,8 +460,7 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable,
                     NetNode node = gather.next();
                     if (node instanceof NodeExposingCapabilities exposer) {
                         IFluidHandler h = exposer.getProvider().getCapability(
-                                ForgeCapabilities.FLUID_HANDLER,
-                                exposer.exposedFacing())
+                                ForgeCapabilities.FLUID_HANDLER, exposer.exposedFacing())
                                 .resolve().orElse(null);
                         if (h != null && FluidCapabilityObject.instanceOf(h) == null) {
                             candidates.put(node, h);
@@ -616,8 +615,7 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable,
                     NetNode node = gather.next();
                     if (node instanceof NodeExposingCapabilities exposer) {
                         IFluidHandler h = exposer.getProvider().getCapability(
-                                ForgeCapabilities.FLUID_HANDLER,
-                                exposer.exposedFacing())
+                                ForgeCapabilities.FLUID_HANDLER, exposer.exposedFacing())
                                 .resolve().orElse(null);
                         if (h != null && FluidCapabilityObject.instanceOf(h) == null) {
                             candidates.put(node, h);

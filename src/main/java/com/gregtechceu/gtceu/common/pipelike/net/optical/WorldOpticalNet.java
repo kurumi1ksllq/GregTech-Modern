@@ -19,8 +19,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class WorldOpticalNet extends WorldPipeNet {
 
-    public static final Capability<?>[] CAPABILITIES = new Capability[] { GTCapability.CAPABILITY_DATA_ACCESS };
-
     private static final String DATA_ID = "gtceu_world_optical_net";
 
     public static WorldOpticalNet getWorldNet(ServerLevel serverLevel) {

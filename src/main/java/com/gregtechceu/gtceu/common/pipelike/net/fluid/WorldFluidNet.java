@@ -27,8 +27,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class WorldFluidNet extends WorldPipeNet {
 
-    public static final Capability<?>[] CAPABILITIES = new Capability[] { ForgeCapabilities.FLUID_HANDLER };
-
     private static final String DATA_ID = "gtceu_world_fluid_net";
 
     public static WorldFluidNet getWorldNet(ServerLevel serverLevel) {

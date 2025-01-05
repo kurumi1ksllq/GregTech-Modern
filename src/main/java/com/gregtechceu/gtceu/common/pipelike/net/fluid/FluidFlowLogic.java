@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2LongArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMaps;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 public class FluidFlowLogic extends AbstractTransientLogicData<FluidFlowLogic> {
@@ -22,7 +23,8 @@ public class FluidFlowLogic extends AbstractTransientLogicData<FluidFlowLogic> {
     public static final int MEMORY_TICKS = WorldFluidNet.getBufferTicks();
 
     private final Long2ObjectOpenHashMap<Object2LongMap<FluidTestObject>> memory = new Long2ObjectOpenHashMap<>();
-    private net.minecraftforge.fluids.FluidStack last;
+    @Getter
+    private FluidStack last;
 
     @Override
     public @NotNull NetLogicType<FluidFlowLogic> getType() {
@@ -49,7 +51,7 @@ public class FluidFlowLogic extends AbstractTransientLogicData<FluidFlowLogic> {
         return memory.getOrDefault(tick, Object2LongMaps.emptyMap());
     }
 
-    public void recordFlow(long tick, @NotNull net.minecraftforge.fluids.FluidStack flow) {
+    public void recordFlow(long tick, @NotNull FluidStack flow) {
         recordFlow(tick, new FluidTestObject(flow), flow.getAmount());
     }
 
@@ -58,10 +60,6 @@ public class FluidFlowLogic extends AbstractTransientLogicData<FluidFlowLogic> {
         Object2LongMap<FluidTestObject> map = memory.computeIfAbsent(tick, k -> new Object2LongArrayMap<>());
         map.put(testObject, map.getLong(testObject) + amount);
         last = testObject.recombine(amount);
-    }
-
-    public FluidStack getLast() {
-        return last;
     }
 
     private void updateMemory(long tick) {

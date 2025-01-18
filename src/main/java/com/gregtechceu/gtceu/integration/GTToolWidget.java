@@ -6,12 +6,10 @@ import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.integration.xei.entry.item.ItemEntryList;
 import com.gregtechceu.gtceu.integration.xei.handlers.item.CycleItemEntryHandler;
 
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.jei.IngredientIO;
 
 import it.unimi.dsi.fastutil.Pair;
-import lombok.Getter;
 
 import java.util.*;
 
@@ -63,58 +61,69 @@ public class GTToolWidget extends WidgetGroup {
         //if(recipeWrapper.items.isEmpty()) return;
 
         List<ItemEntryList> items = new ArrayList<>();
-        recipeWrapper.items2.forEach((key, value) -> items.add(value));
+        boolean hasInworld = false;
+        for(var g : recipeWrapper.items2) {
+            if(g.g == GTTool.Group.VANILLA_INWORLD) hasInworld = true;
+            for(var t : g.types) {
+                t.itemEntries.forEach((p, v) -> items.add(v));
+            }
+        }
+        //recipeWrapper.items2.forEach((key, value) -> items.add(value));
 
         CycleItemEntryHandler itemHandler = new CycleItemEntryHandler(items);
 
         boolean hasVanilla = false, hasCraftingManual = false;
         int lowestPriority = Integer.MAX_VALUE;
-        List<Integer> groupSize = new ArrayList<>() {};
-        for(int i = 0; i < GTTool.ToolGroup.values().length; i++) {
-            groupSize.add(0);
-        }
-
-        for(var entry : recipeWrapper.items2.entrySet()) {
-            if(entry.getKey().getGroup() == GTTool.ToolGroup.VANILLA_INWORLD) {
-                hasVanilla = true;
-                if(entry.getKey().getType() == GTTool.ToolType.MANUAL_SPECIAL) {
-                    groupSize.set(1, 36);
-                } else if(entry.getKey().getType() == GTTool.ToolType.ELECTRIC) {
-                    groupSize.set(1, 54);
-                }
-            }
-
-            if(entry.getKey().getGroup() == GTTool.ToolGroup.CRAFTING) {
-                if(entry.getKey().getType() == GTTool.ToolType.MANUAL_SPECIAL) {
-                    hasCraftingManual = true;
-                    groupSize.set(2, 36);
-                } else if(entry.getKey().getType() == GTTool.ToolType.ELECTRIC) {
-                    groupSize.set(2, 54);
-                }
-            }
-            if(entry.getKey().getGroup() != GTTool.ToolGroup.MATERIAL) {
-                lowestPriority = Math.min(lowestPriority, entry.getKey().getPriority());
-            }
-        }
 
         int slotIndex = 0;
-        for(var entry : recipeWrapper.items2.entrySet()) {
-            var x = 0;
+        for(var group : recipeWrapper.items2) {
+            for(var type : group.types) {
+                final int[] lowestP = {Integer.MAX_VALUE};
+                type.itemEntries.forEach((key, value) -> lowestP[0] = Math.min(key, lowestP[0]));
+                for(var entry : type.itemEntries.entrySet()) {
+                    int x = 0;
+                    switch(group.g) {
+                        case MATERIAL -> x += 0;
+                        case VANILLA_INWORLD -> x += 27 + type.t.ordinal() * 18;
+                        case CRAFTING -> {
+                            x += 27 + (hasInworld ? recipeWrapper.getToolGroup(GTTool.Group.VANILLA_INWORLD).types.size() * 18 + 27 : 0);
+                            x += switch(type.t) {
+                                case MANUAL -> 0;
+                                case MANUAL_SPECIAL -> (group.types.size() > 1 ? -18 : 0);
+                                case ELECTRIC -> (group.types.size() > 1 ? 18 : 0);
+                            };
+                        }
+                    }
+
+                    int y = Math.max(0, (entry.getKey() - lowestP[0]) * 18);
+
+                    int finalSlotIndex = slotIndex;
+                    itemGroup = itemGroup
+                            .addWidget(new SlotWidget(itemHandler, slotIndex, x, y)
+                                    .setCanTakeItems(false).setCanPutItems(false)
+                                    .setIngredientIO(IngredientIO.INPUT)
+                                    .setOnAddedTooltips((slot, tooltip) -> recipeWrapper.getTooltip(finalSlotIndex, tooltip))
+                                    .setBackground(GuiTextures.SLOT));
+                    slotIndex++;
+                }
+            }
+        }
+            /*var x = 0;
             var y = 0;
             var info = entry.getKey();
-            if(info.getGroup() == GTTool.ToolGroup.VANILLA_INWORLD) {
+            if(info.getGroup() == GTTool.Group.VANILLA_INWORLD) {
                 x += 27;
-                if (info.getType() == GTTool.ToolType.MANUAL_SPECIAL) {
+                if (info.getType() == GTTool.Type.MANUAL_SPECIAL) {
                     x += 18;
-                } else if (info.getType() == GTTool.ToolType.ELECTRIC) {
+                } else if (info.getType() == GTTool.Type.ELECTRIC) {
                     x += 36;
                 }
-            } else if(info.getGroup() == GTTool.ToolGroup.CRAFTING) {
+            } else if(info.getGroup() == GTTool.Group.CRAFTING) {
                 x += 9  + (hasCraftingManual ? 18 : 0);
                 x += hasVanilla ? groupSize.get(1) : 0;
-                if (info.getType() == GTTool.ToolType.MANUAL_SPECIAL) {
+                if (info.getType() == GTTool.Type.MANUAL_SPECIAL) {
                     x -= 18;
-                } else if (info.getType() == GTTool.ToolType.ELECTRIC) {
+                } else if (info.getType() == GTTool.Type.ELECTRIC) {
                     x += 18;
                 }
             }
@@ -129,7 +138,7 @@ public class GTToolWidget extends WidgetGroup {
                             .setOnAddedTooltips((slot, tooltip) -> recipeWrapper.getTooltip(finalSlotIndex, tooltip))
                             .setBackground(GuiTextures.SLOT));
             slotIndex++;
-        }
+        }*/
 
 
 

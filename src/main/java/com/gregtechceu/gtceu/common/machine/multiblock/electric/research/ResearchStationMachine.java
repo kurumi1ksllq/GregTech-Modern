@@ -243,6 +243,7 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
             }
             holder.setDataItem(outputItem);
             holder.setLocked(false);
+            this.machine.incrementCompletedRecipeCount();
         }
 
         @Override

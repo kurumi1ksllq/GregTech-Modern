@@ -254,6 +254,7 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
             if (lastRecipe != null) {
                 lastRecipe.postWorking(machine);
                 handleRecipeIO(lastRecipe, IO.OUT);
+                this.machine.incrementCompletedRecipeCount();
                 if (machine.alwaysTryModifyRecipe()) {
                     if (lastOriginRecipe != null) {
                         var modified = machine.fullModifyRecipe(lastOriginRecipe.copy());

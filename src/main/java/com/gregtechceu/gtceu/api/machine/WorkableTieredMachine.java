@@ -78,6 +78,8 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
     @Setter
     protected boolean isMuffled;
     protected boolean previouslyMuffled = true;
+    @Persisted
+    protected long completedRecipes;
 
     public WorkableTieredMachine(IMachineBlockEntity holder, int tier, Int2IntFunction tankScalingFunction,
                                  Object... args) {
@@ -95,6 +97,7 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
         this.exportFluids = createExportFluidHandler(args);
         this.importComputation = createImportComputationContainer(args);
         this.exportComputation = createExportComputationContainer(args);
+        this.completedRecipes = 0L;
     }
 
     //////////////////////////////////////
@@ -247,5 +250,15 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
     @NotNull
     public GTRecipeType getRecipeType() {
         return recipeTypes[activeRecipeType];
+    }
+
+    @Override
+    public long getCompletedRecipeCount() {
+        return completedRecipes;
+    }
+
+    @Override
+    public void incrementCompletedRecipeCount() {
+        completedRecipes++;
     }
 }

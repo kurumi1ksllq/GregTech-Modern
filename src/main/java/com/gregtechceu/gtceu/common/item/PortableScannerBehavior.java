@@ -17,6 +17,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.IDataInfoProvider;
 import com.gregtechceu.gtceu.api.machine.feature.IMufflableMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
@@ -217,6 +218,12 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
                     list.add(Component.translatable("behavior.portable_scanner.machine_upwards_facing",
                             machineBlockEntity.self().getBlockState().getValue(IMachineBlock.UPWARDS_FACING_PROPERTY)
                                     .getSerializedName()));
+                }
+
+                if(machine instanceof IRecipeLogicMachine recipeLogicMachine) {
+                    list.add(Component.translatable("behavior.portable_scanner.divider"));
+
+                    list.add(Component.literal("Completed recipes:" + recipeLogicMachine.getCompletedRecipeCount()));
                 }
 
                 // Fluid tanks

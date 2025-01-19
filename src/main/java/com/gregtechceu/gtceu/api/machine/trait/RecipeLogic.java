@@ -464,6 +464,7 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
         if (lastRecipe != null) {
             consecutiveRecipes++;
             lastRecipe.postWorking(this.machine);
+            this.machine.incrementCompletedRecipeCount();
             handleRecipeIO(lastRecipe, IO.OUT);
             if (machine.alwaysTryModifyRecipe()) {
                 if (lastOriginRecipe != null) {

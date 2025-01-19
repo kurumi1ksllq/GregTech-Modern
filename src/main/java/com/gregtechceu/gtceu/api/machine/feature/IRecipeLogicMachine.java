@@ -160,4 +160,8 @@ public interface IRecipeLogicMachine extends IRecipeCapabilityHolder, IMachineFe
     default boolean isActive() {
         return getRecipeLogic().isActive();
     }
+
+    default long getCompletedRecipeCount() { return -1L; }
+
+    default void incrementCompletedRecipeCount() {}
 }

@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.BlastProperty.GasTier;
+import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialStack;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.*;
@@ -17,7 +18,7 @@ public class GCYMMaterials {
                 .ingot(4).fluid()
                 .color(0x999900).iconSet(METALLIC)
                 .appendFlags(STD_METAL, GENERATE_PLATE)
-                .components(Tantalum, 1, Carbon, 1)
+                .componentStacks(new MaterialStack(Tantalum, 1), new MaterialStack(Carbon, 1))
                 .blast(b -> b.temp(4120, GasTier.MID)
                         .blastStats(VA[EV], 1200))
                 .buildAndRegister();
@@ -26,7 +27,8 @@ public class GCYMMaterials {
                 .ingot(3).fluid()
                 .color(0x686868).iconSet(METALLIC)
                 .appendFlags(STD_METAL, GENERATE_PLATE, GENERATE_ROD, GENERATE_FRAME, GENERATE_SPRING)
-                .components(Invar, 2, Vanadium, 1, Titanium, 1, Molybdenum, 1)
+                .componentStacks(new MaterialStack(Invar, 2), new MaterialStack(Vanadium, 1),
+                        new MaterialStack(Titanium, 1), new MaterialStack(Molybdenum, 1))
                 .blast(b -> b.temp(1711, GasTier.LOW)
                         .blastStats(VA[GTValues.HV], 1000))
                 .buildAndRegister();
@@ -35,7 +37,7 @@ public class GCYMMaterials {
                 .ingot(2).fluid()
                 .color(0x564A84).iconSet(METALLIC)
                 .appendFlags(STD_METAL, GENERATE_SPRING, GENERATE_RING, GENERATE_PLATE, GENERATE_LONG_ROD)
-                .components(Molybdenum, 1, Silicon, 2)
+                .componentStacks(new MaterialStack(Molybdenum, 1), new MaterialStack(Silicon, 2))
                 .blast(b -> b.temp(2300, GasTier.MID)
                         .blastStats(VA[EV], 800))
                 .buildAndRegister();
@@ -44,7 +46,8 @@ public class GCYMMaterials {
                 .ingot(5).fluid()
                 .color(0x294972).iconSet(METALLIC)
                 .appendFlags(STD_METAL, GENERATE_PLATE)
-                .components(Iron, 10, Nickel, 2, Tungsten, 2, Niobium, 1, Cobalt, 1)
+                .componentStacks(new MaterialStack(Iron, 10), new MaterialStack(Nickel, 2),
+                        new MaterialStack(Tungsten, 2), new MaterialStack(Niobium, 1), new MaterialStack(Cobalt, 1))
                 .blast(b -> b.temp(3693, GasTier.MID)
                         .blastStats(VA[EV], 1000))
                 .buildAndRegister();
@@ -53,7 +56,8 @@ public class GCYMMaterials {
                 .ingot(4).fluid()
                 .color(0x2B4B56).iconSet(METALLIC)
                 .appendFlags(STD_METAL, GENERATE_PLATE, GENERATE_ROD, GENERATE_FRAME)
-                .components(Iron, 7, Aluminium, 4, Nickel, 2, Chromium, 1, Sulfur, 1)
+                .componentStacks(new MaterialStack(Iron, 7), new MaterialStack(Aluminium, 4),
+                        new MaterialStack(Nickel, 2), new MaterialStack(Chromium, 1), new MaterialStack(Sulfur, 1))
                 .blast(b -> b.temp(3850, GasTier.MID)
                         .blastStats(VA[EV], 800))
                 .buildAndRegister();
@@ -62,7 +66,8 @@ public class GCYMMaterials {
                 .ingot(5).fluid()
                 .color(0x2D9B66).iconSet(METALLIC)
                 .appendFlags(STD_METAL, GENERATE_PLATE, GENERATE_ROD, GENERATE_FRAME)
-                .components(VanadiumSteel, 4, Manganese, 2, Aluminium, 5, Yttrium, 2)
+                .componentStacks(new MaterialStack(VanadiumSteel, 4), new MaterialStack(Manganese, 2),
+                        new MaterialStack(Aluminium, 5), new MaterialStack(Yttrium, 2))
                 .blast(b -> b.temp(3652, GasTier.MID)
                         .blastStats(VA[EV], 800))
                 .buildAndRegister();
@@ -71,7 +76,8 @@ public class GCYMMaterials {
                 .ingot(4).fluid()
                 .color(0x505B6E).iconSet(METALLIC)
                 .appendFlags(STD_METAL, GENERATE_ROD, GENERATE_FRAME)
-                .components(Iron, 16, Titanium, 1, Aluminium, 1, Nickel, 4, Cobalt, 2)
+                .componentStacks(new MaterialStack(Iron, 16), new MaterialStack(Titanium, 1),
+                        new MaterialStack(Aluminium, 1), new MaterialStack(Nickel, 4), new MaterialStack(Cobalt, 2))
                 .blast(b -> b.temp(4000, GasTier.HIGH)
                         .blastStats(VA[EV], 1000))
                 .buildAndRegister();
@@ -80,7 +86,9 @@ public class GCYMMaterials {
                 .ingot(5).fluid()
                 .color(0x5784B8).iconSet(METALLIC)
                 .appendFlags(STD_METAL, GENERATE_PLATE, GENERATE_FRAME)
-                .components(Nickel, 8, Iron, 3, Tungsten, 4, Molybdenum, 2, Chromium, 1, Niobium, 1)
+                .componentStacks(new MaterialStack(Nickel, 8), new MaterialStack(Iron, 3),
+                        new MaterialStack(Tungsten, 4), new MaterialStack(Molybdenum, 2),
+                        new MaterialStack(Chromium, 1), new MaterialStack(Niobium, 1))
                 .blast(b -> b.temp(4200, GasTier.HIGH)
                         .blastStats(VA[EV], 900))
                 .buildAndRegister();
@@ -89,7 +97,8 @@ public class GCYMMaterials {
                 .ingot(4).fluid()
                 .color(0xCFCFEE).iconSet(METALLIC)
                 .appendFlags(STD_METAL, GENERATE_PLATE)
-                .components(Iron, 4, Chromium, 3, Tungsten, 2, Molybdenum, 1)
+                .componentStacks(new MaterialStack(Iron, 4), new MaterialStack(Chromium, 3),
+                        new MaterialStack(Tungsten, 2), new MaterialStack(Molybdenum, 1))
                 .blast(b -> b.temp(3790, GasTier.HIGH)
                         .blastStats(VA[EV], 1000))
                 .buildAndRegister();
@@ -98,7 +107,7 @@ public class GCYMMaterials {
                 .ingot(3).fluid()
                 .color(0x90092F).iconSet(METALLIC)
                 .appendFlags(STD_METAL, GENERATE_PLATE)
-                .components(Titanium, 1, Carbon, 1)
+                .componentStacks(new MaterialStack(Titanium, 1), new MaterialStack(Carbon, 1))
                 .blast(b -> b.temp(3430, GasTier.MID)
                         .blastStats(VA[EV], 1000))
                 .buildAndRegister();
@@ -107,7 +116,7 @@ public class GCYMMaterials {
                 .ingot(6).fluid()
                 .color(0x680B0B).iconSet(METALLIC)
                 .appendFlags(STD_METAL, GENERATE_PLATE)
-                .components(TitaniumCarbide, 2, TungstenCarbide, 1)
+                .componentStacks(new MaterialStack(TitaniumCarbide, 2), new MaterialStack(TungstenCarbide, 1))
                 .blast(b -> b.temp(3800, GasTier.HIGH)
                         .blastStats(VA[EV], 1000))
                 .buildAndRegister();
@@ -116,7 +125,9 @@ public class GCYMMaterials {
                 .ingot(6).fluid()
                 .color(0xAB2F2F).iconSet(METALLIC)
                 .appendFlags(STD_METAL, GENERATE_PLATE, GENERATE_FRAME)
-                .components(Nickel, 12, Molybdenum, 8, Chromium, 7, Tungsten, 1, Cobalt, 1, Copper, 1)
+                .componentStacks(new MaterialStack(Nickel, 12), new MaterialStack(Molybdenum, 8),
+                        new MaterialStack(Chromium, 7), new MaterialStack(Tungsten, 1), new MaterialStack(Cobalt, 1),
+                        new MaterialStack(Copper, 1))
                 .blast(b -> b.temp(3800, GasTier.HIGH)
                         .blastStats(VA[EV], 1000))
                 .buildAndRegister();

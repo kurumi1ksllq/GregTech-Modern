@@ -15,7 +15,6 @@ import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKey;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.item.tool.MaterialToolTier;
 import com.gregtechceu.gtceu.api.registry.registrate.BuilderBase;
-import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.GTMedicalConditions;
 import com.gregtechceu.gtceu.integration.kjs.helpers.MaterialStackWrapper;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
@@ -30,7 +29,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -945,31 +943,13 @@ public class Material implements Comparable<Material> {
             return this;
         }
 
-        public Builder components(Object... components) {
-            Preconditions.checkArgument(
-                    components.length % 2 == 0,
-                    "Material Components list malformed!");
-
-            for (int i = 0; i < components.length; i += 2) {
-                if (components[i] == null) {
-                    throw new IllegalArgumentException(
-                            "Material in Components List is null for Material " + this.materialInfo.resourceLocation);
-                }
-                composition.add(new MaterialStack(
-                        components[i] instanceof CharSequence chars ? GTMaterials.get(chars.toString()) :
-                                (Material) components[i],
-                        ((Number) components[i + 1]).longValue()));
-            }
-            return this;
-        }
-
         public Builder componentStacks(MaterialStack... components) {
-            composition = Arrays.asList(components);
+            composition.addAll(Arrays.asList(components));
             return this;
         }
 
         public Builder componentStacks(ImmutableList<MaterialStack> components) {
-            composition = components;
+            composition.addAll(components);
             return this;
         }
 

@@ -299,6 +299,16 @@ public class GTMachines {
     public static final MachineDefinition[] ENERGY_CONVERTER_8A = registerConverter(8);
     public static final MachineDefinition[] ENERGY_CONVERTER_16A = registerConverter(16);
 
+    public static final MachineDefinition[] ELECTRIC_JUKEBOX = registerTieredMachines("jukebox", JukeboxMachine::new,
+            (tier, builder) -> builder
+                    .langValue("%s Electric Jukebox %s".formatted(VLVH[tier], VLVT[tier]))
+                    .tooltips(Component.translatable("gtceu.universal.tooltip.voltage_in",
+                            FormattingUtil.formatNumbers(V[tier]),
+                            VNF[tier]))
+                    .tieredHullRenderer(GTCEu.id("block/machine/jukebox"))
+                    .register(),
+            LOW_TIERS);
+
     public static final MachineDefinition LONG_DIST_ITEM_ENDPOINT = REGISTRATE
             .machine("long_distance_item_pipeline_endpoint", LDItemEndpointMachine::new)
             .langValue("Long Distance Item Pipeline Endpoint")

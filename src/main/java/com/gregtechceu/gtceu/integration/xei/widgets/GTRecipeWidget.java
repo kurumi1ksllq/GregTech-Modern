@@ -195,8 +195,9 @@ public class GTRecipeWidget extends WidgetGroup {
             EUt = outputEUt;
             isOutput = true;
         }
+        int amperage = recipe.amperage;
         if (EUt > 0) {
-            long euTotal = EUt * duration;
+            long euTotal = EUt * recipe.amperage * duration;
             // sadly we still need a custom override here, since computation uses duration and EU/t very differently
             if (recipe.data.getBoolean("duration_is_total_cwu") &&
                     recipe.tickInputs.containsKey(CWURecipeCapability.CAP)) {
@@ -209,6 +210,11 @@ public class GTRecipeWidget extends WidgetGroup {
             }
             texts.add(Component.translatable(!isOutput ? "gtceu.recipe.eu" : "gtceu.recipe.eu_inverted",
                     FormattingUtil.formatNumbers(EUt)));
+        }
+
+        if (amperage > 1) {
+            texts.add(Component.translatable("gtceu.recipe.amperage", FormattingUtil.formatNumbers(amperage)));
+            texts.add(Component.translatable("gtceu.recipe.total_eu", FormattingUtil.formatNumbers(EUt * amperage)));
         }
 
         return texts;

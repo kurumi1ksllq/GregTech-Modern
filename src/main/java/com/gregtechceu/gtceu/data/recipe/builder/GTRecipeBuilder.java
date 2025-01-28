@@ -98,6 +98,7 @@ public class GTRecipeBuilder {
     public int maxChance = ChanceLogic.getMaxChancedValue();
     @Setter
     public int tierChanceBoost = 0;
+    public int amperage = 1;
     @Setter
     public boolean isFuel = false;
     public GTRecipeCategory recipeCategory;
@@ -665,6 +666,11 @@ public class GTRecipeBuilder {
         return notConsumable(IntCircuitIngredient.circuitInput(configuration));
     }
 
+    public GTRecipeBuilder amperage(int amperage) {
+        this.amperage = amperage;
+        return this;
+    }
+
     public GTRecipeBuilder chancedInput(ItemStack stack, int chance, int tierChanceBoost) {
         if (0 >= chance || chance > ChanceLogic.getMaxChancedValue()) {
             GTCEu.LOGGER.error("Chance cannot be less or equal to 0 or more than {}. Actual: {}.",
@@ -1144,6 +1150,7 @@ public class GTRecipeBuilder {
     public void toJson(JsonObject json) {
         json.addProperty("type", recipeType.registryName.toString());
         json.addProperty("duration", Math.abs(duration));
+        json.addProperty("amperage", Math.abs(amperage));
         if (data != null && !data.isEmpty()) {
             json.add("data", NBTToJsonConverter.getObject(data));
         }
@@ -1255,7 +1262,7 @@ public class GTRecipeBuilder {
         var recipe = new GTRecipe(recipeType, id.withPrefix(recipeType.registryName.getPath() + "/"),
                 input, output, tickInput, tickOutput,
                 inputChanceLogic, outputChanceLogic, tickInputChanceLogic, tickOutputChanceLogic,
-                conditions, List.of(), data, duration, isFuel, recipeCategory);
+                conditions, List.of(), data, duration, amperage, isFuel, recipeCategory);
         return recipe;
     }
 

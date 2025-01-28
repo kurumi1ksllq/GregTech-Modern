@@ -309,15 +309,15 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Long
         if (io == IO.IN) {
             var canOutput = capability.getEnergyStored();
             if (!simulate) {
-                capability.addEnergy(-Math.min(canOutput, sum));
+                capability.addEnergy(-Math.min(canOutput, sum * recipe.amperage));
             }
-            sum = sum - canOutput;
+            sum = (sum * recipe.amperage) - canOutput;
         } else if (io == IO.OUT) {
             long canInput = capability.getEnergyCapacity() - capability.getEnergyStored();
             if (!simulate) {
-                capability.addEnergy(Math.min(canInput, sum));
+                capability.addEnergy(Math.min(canInput, sum * recipe.amperage));
             }
-            sum = sum - canInput;
+            sum = (sum * recipe.amperage) - canInput;
         }
         return sum <= 0 ? null : Collections.singletonList(sum);
     }

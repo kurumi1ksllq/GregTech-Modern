@@ -56,6 +56,7 @@ public class RecipeLogicProvider extends CapabilityBlockProvider<RecipeLogic> {
 
             recipeInfo.putLong("EUt", EUt);
             recipeInfo.putBoolean("isInput", isInput);
+            recipeInfo.putInt("amperage", recipe.amperage);
         }
 
         if (!recipeInfo.isEmpty()) {
@@ -71,6 +72,7 @@ public class RecipeLogicProvider extends CapabilityBlockProvider<RecipeLogic> {
             if (!recipeInfo.isEmpty()) {
                 var EUt = recipeInfo.getLong("EUt");
                 var isInput = recipeInfo.getBoolean("isInput");
+                var amperage = recipeInfo.getInt("amperage");
                 boolean isSteam = false;
 
                 if (blockEntity instanceof MetaMachineBlockEntity mbe) {
@@ -83,6 +85,8 @@ public class RecipeLogicProvider extends CapabilityBlockProvider<RecipeLogic> {
                         isSteam = true;
                     }
                 }
+
+                EUt *= amperage;
 
                 if (EUt > 0) {
                     MutableComponent text;

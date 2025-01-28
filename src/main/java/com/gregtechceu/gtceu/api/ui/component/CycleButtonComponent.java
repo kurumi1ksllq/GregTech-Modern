@@ -14,6 +14,9 @@ import lombok.experimental.Accessors;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
+import static com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT;
+import static com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_RIGHT;
+
 @Accessors(fluent = true, chain = true)
 public class CycleButtonComponent extends BaseUIComponent {
 
@@ -77,10 +80,14 @@ public class CycleButtonComponent extends BaseUIComponent {
     @Override
     public boolean onMouseDown(double mouseX, double mouseY, int button) {
         if (isMouseOverElement(mouseX, mouseY)) {
-            index++;
-            if (index >= range) {
-                index = 0;
+            if(button == MOUSE_BUTTON_RIGHT) {
+                index--;
             }
+            else if(button == MOUSE_BUTTON_LEFT) {
+                index++;
+            }
+            index = (index + range) % range;
+
             current = texture.get(index);
             if (onChanged != null) {
                 onChanged.accept(index);

@@ -22,6 +22,7 @@ import com.gregtechceu.gtceu.api.ui.container.FlowLayout;
 import com.gregtechceu.gtceu.api.ui.container.StackLayout;
 import com.gregtechceu.gtceu.api.ui.container.UIContainers;
 import com.gregtechceu.gtceu.api.ui.core.Positioning;
+import com.gregtechceu.gtceu.api.ui.core.Size;
 import com.gregtechceu.gtceu.api.ui.core.Sizing;
 import com.gregtechceu.gtceu.api.ui.editable.EditableMachineUI;
 import com.gregtechceu.gtceu.api.ui.editable.EditableUI;
@@ -376,13 +377,13 @@ public class SimpleTieredMachine extends WorkableTieredMachine
                 FlowLayout template = recipeType.getRecipeUI().createEditableUITemplate(false, false)
                         .createDefault();
                 SlotComponent batterySlot = createBatterySlot().createDefault();
-                StackLayout group = UIContainers.stack(Sizing.content(), Sizing.content().copy().min(78));
+                StackLayout group = UIContainers.stack(Sizing.content(), Sizing.content().copy().min(86));
                 group.positioning(Positioning.relative(50, 50));
                 template.positioning(Positioning.relative(50, 50));
                 batterySlot.positioning(Positioning.relative(50, 100));
-                group.child(batterySlot);
                 group.child(template);
-
+                group.child(batterySlot);
+                group.inflate(Size.of(0, 18));
                 // TODO fix this.
                 // if (ConfigHolder.INSTANCE.machines.ghostCircuit) {
                 // SlotComponent circuitSlot = createCircuitConfigurator().createDefault();

@@ -9,10 +9,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.ui.GuiTextures;
-import com.gregtechceu.gtceu.api.ui.component.ButtonComponent;
-import com.gregtechceu.gtceu.api.ui.component.DualProgressComponent;
-import com.gregtechceu.gtceu.api.ui.component.ProgressComponent;
-import com.gregtechceu.gtceu.api.ui.component.UIComponents;
+import com.gregtechceu.gtceu.api.ui.component.*;
 import com.gregtechceu.gtceu.api.ui.container.*;
 import com.gregtechceu.gtceu.api.ui.core.*;
 import com.gregtechceu.gtceu.api.ui.editable.IEditableUI;
@@ -175,10 +172,9 @@ public class GTRecipeTypeUI {
             }
 
             var group = UIContainers.horizontalFlow(Sizing.content(), Sizing.content());
-            group.gap(36)
-                    // .horizontalAlignment(HorizontalAlignment.LEFT)
-                    // .verticalAlignment(VerticalAlignment.TOP)
-                    .positioning(Positioning.across(50, 50));
+            group.gap(36).positioning(Positioning.relative(0, 0));
+            // .horizontalAlignment(HorizontalAlignment.LEFT)
+            // .verticalAlignment(VerticalAlignment.TOP)
 
             var inputs = addInventorySlotGroup(false, isSteam, isHighPressure);
             group.child(inputs);
@@ -297,20 +293,23 @@ public class GTRecipeTypeUI {
         }
         int slotCountTotal = map.values().stream().mapToInt(i -> i).sum();
 
-        int[] inputSlotGrid = determineSlotsGrid(map.getOrDefault(ItemRecipeCapability.CAP, 0));
-        int itemSlotsToLeft = inputSlotGrid[0];
-        int itemSlotsToDown = inputSlotGrid[1];
-        int startInputsX = isOutputs ? 106 : 70 - itemSlotsToLeft * 18 - 18;
-        int startInputsY = 33 - (int) (itemSlotsToDown / 2.0 * 18);
+        int[] itemSlotGrid = determineSlotsGrid(map.getOrDefault(ItemRecipeCapability.CAP, 0));
+        int[] fluidSlotGrid = determineSlotsGrid(map.getOrDefault(FluidRecipeCapability.CAP, 0));
+        int maxSlotCol = Math.max(itemSlotGrid[0], fluidSlotGrid[0]);
+        boolean slotColEqual = itemSlotGrid[0] == fluidSlotGrid[0];
+        int totalSlotRows = itemSlotGrid[1] + fluidSlotGrid[1];
+        int startInputsX = isOutputs ? 0 : -108 + ((3 - maxSlotCol) * 9);
+        int startInputsY = -(int) (totalSlotRows / 2.0 * 18);
 
         boolean wasGroup = slotCountTotal == 12;
         if (wasGroup) startInputsY -= 9;
-        else if (slotCountTotal >= 8 && !isOutputs) startInputsY -= 9;
+        //else if (slotCountTotal >= 8 && !isOutputs) startInputsY -= 9;
 
         StackLayout group = UIContainers.stack(Sizing.content(), Sizing.content());
-        // group.positioning(Positioning.across(isOutputs ? 60 : 10, 30));
+        //group.positioning(Positioning.across(isOutputs ? 60 : 10, 30));
         // group.positioning(Positioning.relative(isOutputs ? 75 : 35, 65));
-        // group.positioning(Positioning.absolute(startInputsX, startInputsY));
+        group.positioning(Positioning.absolute(startInputsX, startInputsY));
+
         for (var entry : map.entrySet()) {
             RecipeCapability<?> cap = entry.getKey();
             if (cap.getWidgetClass() == null) {
@@ -320,9 +319,9 @@ public class GTRecipeTypeUI {
 
             // prioritize item slots
             if (cap == ItemRecipeCapability.CAP) {
-                for (int i = 0; i < itemSlotsToDown; i++) {
-                    for (int j = 0; j < itemSlotsToLeft; j++) {
-                        int slotIndex = i * itemSlotsToLeft + j;
+                for (int i = 0; i < totalSlotRows; i++) {
+                    for (int j = 0; j < maxSlotCol; j++) {
+                        int slotIndex = i * maxSlotCol + j;
                         if (slotIndex >= capCount) break;
                         int x = 18 * j + 18;
                         int y = 18 * i;
@@ -333,19 +332,20 @@ public class GTRecipeTypeUI {
             } else { // add all other slots after
                 int offset = wasGroup ? 2 : 0;
 
-                if (itemSlotsToDown >= capCount && itemSlotsToLeft < 3) {
-                    int startSpecX = isOutputs ? itemSlotsToLeft * 18 : 0;
+                if (totalSlotRows >= capCount && maxSlotCol < 3) {
+                    int startSpecX = maxSlotCol * 18;
                     for (int i = 0; i < capCount; i++) {
-                        int y = offset + 18 * i;
+                        int x = slotColEqual ? (isOutputs ? i * -18 : 0) : (i - 1) * 18;
+                        int y = offset + 18;
 
-                        addSlot(group, cap, capCount, i, startSpecX, y, isOutputs, isSteam, isHighPressure);
+                        addSlot(group, cap, capCount, i, startSpecX + x, y, isOutputs, isSteam, isHighPressure);
                     }
                 } else {
-                    int startSpecY = itemSlotsToDown * 18;
+                    int startSpecY = (totalSlotRows - fluidSlotGrid[1]) * 18;
                     for (int i = 0; i < capCount; i++) {
-                        int x = isOutputs ? 18 * (i % 3) :
-                                itemSlotsToLeft * 18 - 18 * (i % 3);
-                        int y = startSpecY + (i / 3) * 18;
+                        int x = isOutputs ? (slotColEqual ? (i * 18) : ((i - 1) * 18)) :
+                                (maxSlotCol * 18) - ((3 - (i % 3) - 1) * 18);
+                        int y = isOutputs ? 18 : startSpecY + (i / 3) * 18;
 
                         addSlot(group, cap, capCount, i, x, y, isOutputs, isSteam, isHighPressure);
                     }
@@ -365,6 +365,9 @@ public class GTRecipeTypeUI {
         component.id(cap.slotName(isOutputs ? IO.OUT : IO.IN, index))
                 .sizing(Sizing.fill())
                 .positioning(Positioning.absolute(0, 0));
+        if(cap == ItemRecipeCapability.CAP && component instanceof SlotComponent) {
+            if (isOutputs) ((SlotComponent)component).canInsert(false);
+        }
         var texture = UIComponents.texture(
                 getOverlaysForSlot(isOutputs, cap, index == capCount - 1, isSteam, isHighPressure))
                 .sizing(Sizing.fill())

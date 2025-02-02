@@ -164,7 +164,7 @@ public interface ModifierFunction {
                 } else {
                     copied.duration = Math.max(1, durationModifier.apply(recipe.duration));
                 }
-                if (eutModifier != ContentModifier.IDENTITY) {
+                if (eutModifier != ContentModifier.IDENTITY && !(eutModifier.multiplier() == 1 && eutModifier.addition() == 0)) {
                     long preEUt = RecipeHelper.getRealEUt(recipe);
                     long eut = Math.max(1, eutModifier.apply(Math.abs(preEUt)));
                     EURecipeCapability.putEUContent(preEUt > 0 ? copied.tickInputs : copied.tickOutputs, eut);
@@ -175,6 +175,7 @@ public interface ModifierFunction {
 
         private static Map<RecipeCapability<?>, List<Content>> applyAllButEU(ContentModifier cm,
                                                                              Map<RecipeCapability<?>, List<Content>> contents) {
+            if(cm == ContentModifier.IDENTITY || (cm.multiplier() == 1 && cm.addition() == 0)) return contents;
             Map<RecipeCapability<?>, List<Content>> copyContents = new HashMap<>();
             for (var entry : contents.entrySet()) {
                 var cap = entry.getKey();

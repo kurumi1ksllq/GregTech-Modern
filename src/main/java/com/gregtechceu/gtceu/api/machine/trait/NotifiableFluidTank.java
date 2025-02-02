@@ -15,10 +15,12 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.core.Direction;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 
 import lombok.Getter;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,6 +48,8 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
     protected boolean allowSameFluids; // Can different tanks be filled with the same fluid. It should be determined
                                        // while creating tanks.
     private Boolean isEmpty;
+
+    private EnumMap<Direction, LazyOptional<IFluidHandler>> fluidHandlers = new EnumMap<>(Direction.class);
 
     @Persisted
     @DescSynced
@@ -287,8 +291,16 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
         var pos = getMachine().getPos();
         for (Direction facing : facings) {
             var filter = getMachine().getFluidCapFilter(facing, IO.OUT);
-            GTTransferUtils.getAdjacentFluidHandler(level, pos, facing)
-                    .ifPresent(adj -> GTTransferUtils.transferFluidsFiltered(this, adj, filter));
+            if(fluidHandlers.containsKey(facing)) {
+                fluidHandlers.get(facing).ifPresent(adj -> GTTransferUtils.transferFluidsFiltered(this, adj, filter));
+            } else {
+                var handler = GTTransferUtils.getAdjacentFluidHandler(level, pos, facing);
+                handler.ifPresent(adj -> {
+                    handler.addListener(o -> fluidHandlers.remove(facing));
+                    fluidHandlers.put(facing, handler);
+                    GTTransferUtils.transferFluidsFiltered(this, adj, filter);
+                });
+            }
         }
     }
 
@@ -297,8 +309,16 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
         var pos = getMachine().getPos();
         for (Direction facing : facings) {
             var filter = getMachine().getFluidCapFilter(facing, IO.IN);
-            GTTransferUtils.getAdjacentFluidHandler(level, pos, facing)
-                    .ifPresent(adj -> GTTransferUtils.transferFluidsFiltered(adj, this, filter));
+            if(fluidHandlers.containsKey(facing)) {
+                fluidHandlers.get(facing).ifPresent(adj -> GTTransferUtils.transferFluidsFiltered(adj, this, filter));
+            } else {
+                var handler = GTTransferUtils.getAdjacentFluidHandler(level, pos, facing);
+                handler.ifPresent(adj -> {
+                    handler.addListener(o -> fluidHandlers.remove(facing));
+                    fluidHandlers.put(facing, handler);
+                    GTTransferUtils.transferFluidsFiltered(adj, this, filter);
+                });
+            }
         }
     }
 

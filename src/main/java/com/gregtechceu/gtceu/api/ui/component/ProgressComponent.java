@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.ui.component;
 
 import com.gregtechceu.gtceu.api.ui.base.BaseUIComponent;
+import com.gregtechceu.gtceu.api.ui.core.Sizing;
 import com.gregtechceu.gtceu.api.ui.core.UIGuiGraphics;
 import com.gregtechceu.gtceu.api.ui.parsing.UIModel;
 import com.gregtechceu.gtceu.api.ui.texture.ProgressTexture;
@@ -116,6 +117,16 @@ public class ProgressComponent extends BaseUIComponent {
     public void init() {
         super.init();
         this.lastProgressValue = progressSupplier.getAsDouble();
+    }
+
+    @Override
+    public int determineHorizontalContentSize(Sizing sizing) {
+        return width();
+    }
+
+    @Override
+    public int determineVerticalContentSize(Sizing sizing) {
+        return height();
     }
 
     /*

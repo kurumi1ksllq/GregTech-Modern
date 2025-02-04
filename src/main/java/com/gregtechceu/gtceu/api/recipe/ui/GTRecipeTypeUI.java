@@ -298,7 +298,7 @@ public class GTRecipeTypeUI {
         int maxSlotCol = Math.max(itemSlotGrid[0], fluidSlotGrid[0]);
         boolean slotColEqual = itemSlotGrid[0] == fluidSlotGrid[0];
         int totalSlotRows = itemSlotGrid[1] + fluidSlotGrid[1];
-        int startInputsX = isOutputs ? 0 : -108 + ((3 - maxSlotCol) * 9);
+        int startInputsX = isOutputs ? -((maxSlotCol - 1) * 9) : -108 + ((3 - maxSlotCol) * 9);
         int startInputsY = -(int) (totalSlotRows / 2.0 * 18);
 
         boolean wasGroup = slotCountTotal == 12;
@@ -336,7 +336,7 @@ public class GTRecipeTypeUI {
                     int startSpecX = maxSlotCol * 18;
                     for (int i = 0; i < capCount; i++) {
                         int x = slotColEqual ? (isOutputs ? i * -18 : 0) : (i - 1) * 18;
-                        int y = offset + 18;
+                        int y = offset + ((isOutputs ? itemSlotGrid[1] : 1) * 18);
 
                         addSlot(group, cap, capCount, i, startSpecX + x, y, isOutputs, isSteam, isHighPressure);
                     }

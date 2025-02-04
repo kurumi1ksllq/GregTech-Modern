@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.ui.component;
 
 import com.gregtechceu.gtceu.api.ui.base.BaseUIComponent;
+import com.gregtechceu.gtceu.api.ui.core.Sizing;
 import com.gregtechceu.gtceu.api.ui.core.UIComponent;
 import com.gregtechceu.gtceu.api.ui.core.UIGuiGraphics;
 import com.gregtechceu.gtceu.api.ui.util.ClickData;
@@ -262,6 +263,16 @@ public class ComponentPanelComponent extends BaseUIComponent {
             }
         }
         return super.onMouseDown(mouseX, mouseY, button);
+    }
+
+    @Override
+    public int determineHorizontalContentSize(Sizing sizing) {
+        return 13;
+    }
+
+    @Override
+    public int determineVerticalContentSize(Sizing sizing) {
+        return 13;
     }
 
     @Override

@@ -247,10 +247,12 @@ public class SlotComponent extends BaseUIComponent implements ClickableIngredien
 
         var menu = containerAccess().screen().getMenu();
         UIContainerMenu.EmptySlotPlaceholder placeholder = new UIContainerMenu.EmptySlotPlaceholder();
-        menu.slots.set(this.slot.index, placeholder);
-        placeholder.index = this.slot.index;
-        ((AbstractContainerMenuAccessor) menu).gtceu$getLastSlots().set(this.slot.index, ItemStack.EMPTY);
-        ((AbstractContainerMenuAccessor) menu).gtceu$getRemoteSlots().set(this.slot.index, ItemStack.EMPTY);
+        if(!menu.slots.isEmpty()) {
+            menu.slots.set(this.slot.index, placeholder);
+            placeholder.index = this.slot.index;
+            ((AbstractContainerMenuAccessor) menu).gtceu$getLastSlots().set(this.slot.index, ItemStack.EMPTY);
+            ((AbstractContainerMenuAccessor) menu).gtceu$getRemoteSlots().set(this.slot.index, ItemStack.EMPTY);
+        }
 
         slotFinalized = false;
     }

@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.ui.component;
 
 import com.gregtechceu.gtceu.api.ui.GuiTextures;
+import com.gregtechceu.gtceu.api.ui.core.Sizing;
 import com.gregtechceu.gtceu.api.ui.texture.ResourceTexture;
 import com.gregtechceu.gtceu.api.ui.texture.UITexture;
 import com.gregtechceu.gtceu.api.ui.texture.UITextures;
@@ -52,6 +53,16 @@ public class ToggleButtonComponent extends SwitchComponent {
                     UITextures.group(GuiTextures.TOGGLE_BUTTON_BACK.getSubTexture(0, 0.5, 1, 0.5), texture));
         }
         return this;
+    }
+
+    @Override
+    public int determineHorizontalContentSize(Sizing sizing) {
+        return width();
+    }
+
+    @Override
+    public int determineVerticalContentSize(Sizing sizing) {
+        return height();
     }
 
     @Override

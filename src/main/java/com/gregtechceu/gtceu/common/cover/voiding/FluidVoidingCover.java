@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.ui.component.UIComponents;
 import com.gregtechceu.gtceu.api.ui.container.StackLayout;
 import com.gregtechceu.gtceu.api.ui.container.UIContainers;
 import com.gregtechceu.gtceu.api.ui.core.*;
+import com.gregtechceu.gtceu.api.ui.texture.ResourceTexture;
 import com.gregtechceu.gtceu.common.cover.PumpCover;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
@@ -83,6 +84,11 @@ public class FluidVoidingCover extends PumpCover {
         }
     }
 
+    public void setWorkingEnabled(boolean workingEnabled) {
+        isWorkingEnabled = workingEnabled;
+        subscriptionHandler.updateSubscription();
+    }
+
     //////////////////////////////////////
     // *********** GUI ***********//
     //////////////////////////////////////
@@ -95,7 +101,7 @@ public class FluidVoidingCover extends PumpCover {
         group.child(UIComponents.label(Component.translatable(getUITitle()))
                 .positioning(Positioning.relative(0, 0)));
 
-        group.child(UIComponents.toggleButton(GuiTextures.BUTTON_POWER, this::isEnabled, this::setEnabled)
+        group.child(UIComponents.toggleButton(GuiTextures.BUTTON_POWER, this::isWorkingEnabled, this::setWorkingEnabled)
                 .positioning(Positioning.absolute(0, 15))
                 .sizing(Sizing.fixed(20)));
 
@@ -122,7 +128,7 @@ public class FluidVoidingCover extends PumpCover {
 
     @Override
     public InteractionResult onSoftMalletClick(Player playerIn, InteractionHand hand, BlockHitResult hitResult) {
-        if (!isRemote()) {
+        if (!isClientSide()) {
             setWorkingEnabled(!isWorkingEnabled);
             playerIn.sendSystemMessage(Component.translatable(isWorkingEnabled() ?
                     "cover.voiding.message.enabled" : "cover.voiding.message.disabled"));

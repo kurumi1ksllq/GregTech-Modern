@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.network.packets.prospecting;
 
-import com.gregtechceu.gtceu.api.gui.misc.ProspectorMode;
+import com.gregtechceu.gtceu.api.ui.misc.ProspectorMode;
 
 import com.lowdragmc.lowdraglib.networking.IHandlerContext;
 

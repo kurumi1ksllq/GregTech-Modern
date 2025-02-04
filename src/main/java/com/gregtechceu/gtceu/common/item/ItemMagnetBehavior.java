@@ -5,15 +5,18 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.cover.filter.ItemFilter;
-import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.gregtechceu.gtceu.api.gui.UITemplate;
-import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.item.component.IItemLifeCycle;
-import com.gregtechceu.gtceu.api.item.component.IItemUIFactory;
+import com.gregtechceu.gtceu.api.ui.UIContainerMenu;
+import com.gregtechceu.gtceu.api.ui.component.EnumSelectorComponent;
+import com.gregtechceu.gtceu.api.ui.container.StackLayout;
+import com.gregtechceu.gtceu.api.ui.core.UIAdapter;
+import com.gregtechceu.gtceu.api.ui.holder.HeldItemUIHolder;
+import com.gregtechceu.gtceu.api.ui.texture.UITexture;
+import com.gregtechceu.gtceu.api.ui.texture.UITextures;
 import com.gregtechceu.gtceu.common.data.GTItems;
 
 import com.lowdragmc.lowdraglib.gui.factory.HeldItemUIFactory;
@@ -66,7 +69,7 @@ public class ItemMagnetBehavior implements IInteractionItem, IItemLifeCycle, IAd
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    @Override
+    /*@Override
     public ModularUI createUI(HeldItemUIFactory.HeldItemHolder holder, Player entityPlayer) {
         var held = holder.getHeld();
         var tag = held.getOrCreateTag();
@@ -74,7 +77,7 @@ public class ItemMagnetBehavior implements IInteractionItem, IItemLifeCycle, IAd
         var widgets = new HashSet<Triplet<Filter, Widget, Widget>>();
         var stacks = new HashMap<Filter, ItemStack>();
         var ui = new ModularUI(176, 157, holder, entityPlayer)
-                .background(GuiTextures.BACKGROUND)
+                .background(UITextures.BACKGROUND)
                 .widget(new EnumSelectorWidget<>(146, 5, 20, 20,
                         Filter.values(), selected, (val) -> updateSelection(tag, val, widgets)))
                 .widget(UITemplate.bindPlayerInventory(entityPlayer.getInventory(), GuiTextures.SLOT, 7, 75, true));
@@ -98,7 +101,7 @@ public class ItemMagnetBehavior implements IInteractionItem, IItemLifeCycle, IAd
             tag.put(FILTER_TAG, stacks.get(selection).getOrCreateTag());
         });
         return ui;
-    }
+    }*/
 
     private void updateSelection(CompoundTag tag, Filter filter, Collection<Triplet<Filter, Widget, Widget>> widgets) {
         tag.putInt(FILTER_ORDINAL_TAG, filter.ordinal());
@@ -119,6 +122,16 @@ public class ItemMagnetBehavior implements IInteractionItem, IItemLifeCycle, IAd
             IItemUIFactory.super.use(item, world, player, hand);
         }
         return InteractionResultHolder.pass(player.getItemInHand(hand));
+    }
+
+    @Override
+    public void loadServerUI(Player player, UIContainerMenu<HeldItemUIHolder> menu, HeldItemUIHolder holder) {
+
+    }
+
+    @Override
+    public void loadClientUI(Player entityPlayer, UIAdapter<StackLayout> adapter, HeldItemUIHolder holder) {
+
     }
 
     private static boolean isActive(ItemStack stack) {
@@ -289,7 +302,7 @@ public class ItemMagnetBehavior implements IInteractionItem, IItemLifeCycle, IAd
         }
     }
 
-    public enum Filter implements EnumSelectorWidget.SelectableEnum {
+    public enum Filter implements EnumSelectorComponent.SelectableEnum {
 
         SIMPLE(GTItems.ITEM_FILTER, "item_filter"),
         TAG(GTItems.TAG_FILTER, "item_tag_filter");
@@ -324,8 +337,8 @@ public class ItemMagnetBehavior implements IInteractionItem, IItemLifeCycle, IAd
         }
 
         @Override
-        public @NotNull IGuiTexture getIcon() {
-            return new ResourceTexture("gtceu:textures/item/" + texture + ".png");
+        public @NotNull UITexture getIcon() {
+            return UITextures.resource(GTCEu.id("gtceu:textures/item/" + texture + ".png"));
         }
     }
 }

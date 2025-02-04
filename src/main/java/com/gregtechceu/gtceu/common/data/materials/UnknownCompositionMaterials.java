@@ -262,7 +262,7 @@ public class UnknownCompositionMaterials {
                 .color(0xAD5203).flags(FLAMMABLE).buildAndRegister();
 
         LPG = new Material.Builder(GTCEu.id("lpg"))
-                .liquid(new FluidBuilder().customStill())
+                .liquid(new FluidBuilder().block().customStill())
                 .color(0xFCFCAC).flags(FLAMMABLE, EXPLOSIVE).buildAndRegister();
 
         RawGrowthMedium = new Material.Builder(GTCEu.id("raw_growth_medium"))

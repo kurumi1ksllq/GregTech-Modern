@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.ui.container.StackLayout;
 import com.gregtechceu.gtceu.api.ui.container.UIContainers;
 import com.gregtechceu.gtceu.api.ui.core.*;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
+import com.gregtechceu.gtceu.api.ui.texture.ResourceTexture;
 import com.gregtechceu.gtceu.common.cover.ConveyorCover;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
@@ -115,7 +116,7 @@ public class ItemVoidingCover extends ConveyorCover implements IUICover, IContro
 
     @Override
     public InteractionResult onSoftMalletClick(Player playerIn, InteractionHand hand, BlockHitResult hitResult) {
-        if (!isRemote()) {
+        if (!isClientSide()) {
             setWorkingEnabled(!isWorkingEnabled);
             playerIn.sendSystemMessage(Component.translatable(isWorkingEnabled() ?
                     "cover.voiding.message.enabled" : "cover.voiding.message.disabled"));

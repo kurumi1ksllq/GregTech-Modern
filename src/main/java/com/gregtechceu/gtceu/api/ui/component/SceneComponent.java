@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
@@ -418,19 +417,19 @@ public class SceneComponent extends StackLayout {
      * }
      * return result;
      * }
-
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buf) {
-        if (id == -1) {
-            selectedPosFace = new BlockPosFace(buf.readBlockPos(), buf.readEnum(Direction.class));
-            if (onSelected != null) {
-                onSelected.accept(selectedPosFace.pos, selectedPosFace.facing);
-            }
-        } else {
-            super.receiveMessage(id, buf);
-        }
-    }
-    */
+     * 
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buf) {
+     * if (id == -1) {
+     * selectedPosFace = new BlockPosFace(buf.readBlockPos(), buf.readEnum(Direction.class));
+     * if (onSelected != null) {
+     * onSelected.accept(selectedPosFace.pos, selectedPosFace.facing);
+     * }
+     * } else {
+     * super.receiveMessage(id, buf);
+     * }
+     * }
+     */
 
     @Override
     public boolean onMouseDown(double mouseX, double mouseY, int button) {
@@ -490,8 +489,8 @@ public class SceneComponent extends StackLayout {
         if (hoverPosFace != null && hoverPosFace.equals(clickPosFace)) {
             selectedPosFace = hoverPosFace;
             // sendMessage(-1, buffer -> {
-            //     buffer.writeBlockPos(selectedPosFace.pos);
-            //     buffer.writeEnum(selectedPosFace.facing);
+            // buffer.writeBlockPos(selectedPosFace.pos);
+            // buffer.writeEnum(selectedPosFace.facing);
             // });
             if (onSelected != null) {
                 onSelected.accept(selectedPosFace.pos, selectedPosFace.facing);

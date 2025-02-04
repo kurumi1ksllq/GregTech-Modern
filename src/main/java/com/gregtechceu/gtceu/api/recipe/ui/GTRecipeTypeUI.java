@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.recipe.ui;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
@@ -31,7 +30,6 @@ import com.lowdragmc.lowdraglib.jei.JEIPlugin;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -304,10 +302,10 @@ public class GTRecipeTypeUI {
 
         boolean wasGroup = slotCountTotal == 12;
         if (wasGroup) startInputsY -= 9;
-        //else if (slotCountTotal >= 8 && !isOutputs) startInputsY -= 9;
+        // else if (slotCountTotal >= 8 && !isOutputs) startInputsY -= 9;
 
         StackLayout group = UIContainers.stack(Sizing.content(), Sizing.content());
-        //group.positioning(Positioning.across(isOutputs ? 60 : 10, 30));
+        // group.positioning(Positioning.across(isOutputs ? 60 : 10, 30));
         // group.positioning(Positioning.relative(isOutputs ? 75 : 35, 65));
         group.positioning(Positioning.absolute(startInputsX, startInputsY));
 
@@ -366,8 +364,8 @@ public class GTRecipeTypeUI {
         component.id(cap.slotName(isOutputs ? IO.OUT : IO.IN, index))
                 .sizing(Sizing.fill())
                 .positioning(Positioning.absolute(0, 0));
-        if(cap == ItemRecipeCapability.CAP && component instanceof SlotComponent) {
-            if (isOutputs) ((SlotComponent)component).canInsert(false);
+        if (cap == ItemRecipeCapability.CAP && component instanceof SlotComponent) {
+            if (isOutputs) ((SlotComponent) component).canInsert(false);
         }
         var texture = UIComponents.texture(
                 getOverlaysForSlot(isOutputs, cap, index == capCount - 1, isSteam, isHighPressure))

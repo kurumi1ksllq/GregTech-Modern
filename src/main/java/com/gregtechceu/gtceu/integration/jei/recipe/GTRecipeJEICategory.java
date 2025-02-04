@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.integration.jei.recipe;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
-import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
@@ -12,9 +11,6 @@ import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.integration.jei.handler.UIRecipeCategory;
 import com.gregtechceu.gtceu.integration.xei.widgets.GTRecipeComponent;
 
-import com.lowdragmc.lowdraglib.Platform;
-
-import com.lowdragmc.lowdraglib.jei.ModularUIRecipeCategory;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -31,9 +27,10 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.Function;
+
+import javax.annotation.Nonnull;
 
 public class GTRecipeJEICategory extends UIRecipeCategory<GTRecipeComponent> {
 
@@ -61,7 +58,8 @@ public class GTRecipeJEICategory extends UIRecipeCategory<GTRecipeComponent> {
             if (!category.shouldRegisterDisplays()) continue;
             var type = category.getRecipeType();
             if (category == type.getCategory()) type.buildRepresentativeRecipes();
-            var wrapped = List.copyOf(type.getRecipesInCategory(category).stream().map(GTRecipeComponent::new).toList());
+            var wrapped = List
+                    .copyOf(type.getRecipesInCategory(category).stream().map(GTRecipeComponent::new).toList());
             registration.addRecipes(TYPES.apply(category), wrapped);
         }
     }

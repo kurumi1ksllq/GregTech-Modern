@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.api.ui.texture.UITexture;
 import com.gregtechceu.gtceu.api.ui.texture.UITextures;
 
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -82,26 +81,26 @@ public class TabsComponent extends BaseUIComponent {
     }
 
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buf) {
-        super.receiveMessage(id, buf);
-        if (id == 0) {
-            var index = buf.readVarInt();
-            var old = selectedTab;
-            if (index < 0) {
-                selectedTab = mainTab;
-            } else if (index < subTabs.size()) {
-                selectedTab = subTabs.get(index);
-            } else {
-                return;
-            }
-            if (onTabSwitch != null) {
-                onTabSwitch.accept(old, selectedTab);
-            }
-            onTabClick.accept(selectedTab);
-        }
-    }
-    */
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buf) {
+     * super.receiveMessage(id, buf);
+     * if (id == 0) {
+     * var index = buf.readVarInt();
+     * var old = selectedTab;
+     * if (index < 0) {
+     * selectedTab = mainTab;
+     * } else if (index < subTabs.size()) {
+     * selectedTab = subTabs.get(index);
+     * } else {
+     * return;
+     * }
+     * if (onTabSwitch != null) {
+     * onTabSwitch.accept(old, selectedTab);
+     * }
+     * onTabClick.accept(selectedTab);
+     * }
+     * }
+     */
 
     public int getSubTabsWidth() {
         return width - 8 - 24 - 4 - 16 - 8 - 16;
@@ -117,7 +116,7 @@ public class TabsComponent extends BaseUIComponent {
                     onTabSwitch.accept(selectedTab, hoveredTab);
                 }
                 selectedTab = hoveredTab;
-                //sendMessage(0, buf -> buf.writeVarInt(selectedTab == mainTab ? -1 : subTabs.indexOf(selectedTab)));
+                // sendMessage(0, buf -> buf.writeVarInt(selectedTab == mainTab ? -1 : subTabs.indexOf(selectedTab)));
                 onTabClick.accept(selectedTab);
                 UIComponent.playButtonClickSound();
             }

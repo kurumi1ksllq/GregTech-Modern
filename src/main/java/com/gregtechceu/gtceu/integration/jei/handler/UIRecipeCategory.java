@@ -1,8 +1,6 @@
 package com.gregtechceu.gtceu.integration.jei.handler;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
-import com.gregtechceu.gtceu.api.ui.component.SlotComponent;
-import com.gregtechceu.gtceu.api.ui.component.TankComponent;
 import com.gregtechceu.gtceu.api.ui.core.ParentUIComponent;
 import com.gregtechceu.gtceu.api.ui.core.Size;
 import com.gregtechceu.gtceu.api.ui.core.UIComponent;
@@ -68,8 +66,8 @@ public abstract class UIRecipeCategory<T extends UIComponent> implements IRecipe
 
                 @Override
                 public void render(GuiGraphics guiGraphics, T ingredient) {
-                    //GTJEIPlugin.JEI_RUNTIME.getIngredientManager().getIngredientRenderer(type)
-                    //        .render(guiGraphics, ingredient);
+                    // GTJEIPlugin.JEI_RUNTIME.getIngredientManager().getIngredientRenderer(type)
+                    // .render(guiGraphics, ingredient);
                     // slot.setCurrentJEIRenderedIngredient(ingredient);
                 }
 

@@ -11,7 +11,6 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ComponentRenderUtils;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -150,39 +149,39 @@ public class ComponentPanelComponent extends BaseUIComponent {
             if (!lastText.equals(textBuffer)) {
                 this.lastText = textBuffer;
                 /*
-                sendMessage(1, buffer -> {
-                    buffer.writeVarInt(lastText.size());
-                    for (Component textComponent : lastText) {
-                        buffer.writeComponent(textComponent);
-                    }
-                });
-                */
+                 * sendMessage(1, buffer -> {
+                 * buffer.writeVarInt(lastText.size());
+                 * for (Component textComponent : lastText) {
+                 * buffer.writeComponent(textComponent);
+                 * }
+                 * });
+                 */
             }
         }
     }
 
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buf) {
-        if (id == 1) {
-            this.lastText.clear();
-            int count = buf.readVarInt();
-            for (int i = 0; i < count; i++) {
-                this.lastText.add(buf.readComponent());
-            }
-            formatDisplayText();
-            updateComponentTextSize();
-        } else if (id == 2) {
-            ClickData clickData = ClickData.readFromBuf(buf);
-            String componentData = buf.readUtf();
-            if (clickHandler != null) {
-                clickHandler.accept(componentData, clickData);
-            }
-        } else {
-            super.receiveMessage(id, buf);
-        }
-    }
-    */
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buf) {
+     * if (id == 1) {
+     * this.lastText.clear();
+     * int count = buf.readVarInt();
+     * for (int i = 0; i < count; i++) {
+     * this.lastText.add(buf.readComponent());
+     * }
+     * formatDisplayText();
+     * updateComponentTextSize();
+     * } else if (id == 2) {
+     * ClickData clickData = ClickData.readFromBuf(buf);
+     * String componentData = buf.readUtf();
+     * if (clickHandler != null) {
+     * clickHandler.accept(componentData, clickData);
+     * }
+     * } else {
+     * super.receiveMessage(id, buf);
+     * }
+     * }
+     */
 
     public void updateComponentTextSize() {
         var font = Minecraft.getInstance().font;
@@ -250,9 +249,9 @@ public class ComponentPanelComponent extends BaseUIComponent {
                             ClickData clickData = new ClickData(button);
                             clickHandler.accept(rawText, clickData);
                         }
-                        //sendMessage(2, buf -> {
-                        //    buf.writeUtf(rawText);
-                        //});
+                        // sendMessage(2, buf -> {
+                        // buf.writeUtf(rawText);
+                        // });
                     } else if (componentText.startsWith("@#")) {
                         String rawText = componentText.substring(2);
                         Util.getPlatform().openUri(rawText);

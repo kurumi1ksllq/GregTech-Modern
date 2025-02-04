@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.ui.core.UIComponent;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.slot.AEConfigSlotComponent;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlot;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -95,56 +94,57 @@ public abstract class ConfigComponent extends FlowLayout {
         }
         // FIXME
         /*
-        if (!this.changeMap.isEmpty()) {
-            this.sendMessage(UPDATE_ID, buf -> {
-                buf.writeVarInt(this.changeMap.size());
-                for (int index : this.changeMap.keySet()) {
-                    GenericStack sConfig = this.changeMap.get(index).getConfig();
-                    GenericStack sStock = this.changeMap.get(index).getStock();
-                    buf.writeVarInt(index);
-                    if (sConfig != null) {
-                        buf.writeBoolean(true);
-                        GenericStack.writeBuffer(sConfig, buf);
-                    } else {
-                        buf.writeBoolean(false);
-                    }
-                    if (sStock != null) {
-                        buf.writeBoolean(true);
-                        GenericStack.writeBuffer(sStock, buf);
-                    } else {
-                        buf.writeBoolean(false);
-                    }
-                }
-            });
-        }
+         * if (!this.changeMap.isEmpty()) {
+         * this.sendMessage(UPDATE_ID, buf -> {
+         * buf.writeVarInt(this.changeMap.size());
+         * for (int index : this.changeMap.keySet()) {
+         * GenericStack sConfig = this.changeMap.get(index).getConfig();
+         * GenericStack sStock = this.changeMap.get(index).getStock();
+         * buf.writeVarInt(index);
+         * if (sConfig != null) {
+         * buf.writeBoolean(true);
+         * GenericStack.writeBuffer(sConfig, buf);
+         * } else {
+         * buf.writeBoolean(false);
+         * }
+         * if (sStock != null) {
+         * buf.writeBoolean(true);
+         * GenericStack.writeBuffer(sStock, buf);
+         * } else {
+         * buf.writeBoolean(false);
+         * }
+         * }
+         * });
+         * }
          */
     }
 
     // FIXME
     /*
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buffer) {
-        super.receiveMessage(id, buffer);
-        if (id == UPDATE_ID) {
-            int size = buffer.readVarInt();
-            for (int i = 0; i < size; i++) {
-                int index = buffer.readVarInt();
-                IConfigurableSlot slot = this.displayList[index];
-                if (buffer.readBoolean()) {
-                    slot.setConfig(GenericStack.readBuffer(buffer));
-                } else {
-                    slot.setConfig(null);
-                }
-                if (buffer.readBoolean()) {
-                    slot.setStock(GenericStack.readBuffer(buffer));
-                } else {
-                    slot.setStock(null);
-                }
-            }
-        }
-    }
-    */
+     * @OnlyIn(Dist.CLIENT)
+     * 
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buffer) {
+     * super.receiveMessage(id, buffer);
+     * if (id == UPDATE_ID) {
+     * int size = buffer.readVarInt();
+     * for (int i = 0; i < size; i++) {
+     * int index = buffer.readVarInt();
+     * IConfigurableSlot slot = this.displayList[index];
+     * if (buffer.readBoolean()) {
+     * slot.setConfig(GenericStack.readBuffer(buffer));
+     * } else {
+     * slot.setConfig(null);
+     * }
+     * if (buffer.readBoolean()) {
+     * slot.setStock(GenericStack.readBuffer(buffer));
+     * } else {
+     * slot.setStock(null);
+     * }
+     * }
+     * }
+     * }
+     */
 
     public final IConfigurableSlot getConfig(int index) {
         return this.config[index];

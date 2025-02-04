@@ -9,8 +9,6 @@
         "BiomeColorsMixin",
         "BlockModelMixin",
         "ClientLevelAccessor",
-        "GuiGraphicsAccessor",
-        "GuiGraphicsMixin",
         "GuiHeartTypeMixin",
         "LevelRendererMixin",
         "ModelManagerMixin",

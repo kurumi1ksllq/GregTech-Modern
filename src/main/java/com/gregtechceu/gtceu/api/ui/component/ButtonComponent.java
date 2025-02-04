@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.ui.component;
 
-import com.gregtechceu.gtceu.api.ui.base.BaseUIComponent;
 import com.gregtechceu.gtceu.api.ui.core.*;
 import com.gregtechceu.gtceu.api.ui.parsing.UIModel;
 import com.gregtechceu.gtceu.api.ui.parsing.UIModelParsingException;
@@ -102,7 +101,7 @@ public class ButtonComponent extends Button {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.enabled() && this.visible() && isMouseOverElement(mouseX, mouseY)) {
             ClickData clickData = new ClickData(button);
-            //sendMessage(1, clickData::writeToBuf);
+            // sendMessage(1, clickData::writeToBuf);
             if (onPress != null) {
                 onPress.accept(clickData);
             }

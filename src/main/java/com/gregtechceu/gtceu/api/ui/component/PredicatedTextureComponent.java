@@ -3,8 +3,6 @@ package com.gregtechceu.gtceu.api.ui.component;
 import com.gregtechceu.gtceu.api.ui.core.UIGuiGraphics;
 import com.gregtechceu.gtceu.api.ui.texture.UITexture;
 
-import net.minecraft.network.FriendlyByteBuf;
-
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -54,15 +52,15 @@ public class PredicatedTextureComponent extends TextureComponent {
     }
 
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buf) {
-        if (id == 1) {
-            isVisible = buf.readBoolean();
-        } else {
-            super.receiveMessage(id, buf);
-        }
-    }
-    */
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buf) {
+     * if (id == 1) {
+     * isVisible = buf.readBoolean();
+     * } else {
+     * super.receiveMessage(id, buf);
+     * }
+     * }
+     */
 
     @Override
     public void draw(UIGuiGraphics graphics, int mouseX, int mouseY, float partialTicks, float delta) {

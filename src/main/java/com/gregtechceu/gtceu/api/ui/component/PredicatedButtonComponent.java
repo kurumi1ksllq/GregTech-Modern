@@ -3,7 +3,6 @@ package com.gregtechceu.gtceu.api.ui.component;
 import com.gregtechceu.gtceu.api.ui.texture.UITexture;
 import com.gregtechceu.gtceu.api.ui.util.ClickData;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 
 import java.util.function.BooleanSupplier;
@@ -64,18 +63,18 @@ public class PredicatedButtonComponent extends ButtonComponent {
         super.update(delta, mouseX, mouseY);
         if (visible() != predicate.getAsBoolean()) {
             visible(!visible());
-            //sendMessage(1, buf -> buf.writeBoolean(visible()));
+            // sendMessage(1, buf -> buf.writeBoolean(visible()));
         }
     }
 
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buf) {
-        if (id == 1) {
-            visible(buf.readBoolean());
-        } else {
-            super.receiveMessage(id, buf);
-        }
-    }
-    */
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buf) {
+     * if (id == 1) {
+     * visible(buf.readBoolean());
+     * } else {
+     * super.receiveMessage(id, buf);
+     * }
+     * }
+     */
 }

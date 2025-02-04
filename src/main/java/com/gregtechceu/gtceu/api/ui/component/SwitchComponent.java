@@ -8,8 +8,6 @@ import com.gregtechceu.gtceu.api.ui.texture.UITexture;
 import com.gregtechceu.gtceu.api.ui.texture.UITextures;
 import com.gregtechceu.gtceu.api.ui.util.ClickData;
 
-import net.minecraft.network.FriendlyByteBuf;
-
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
@@ -106,7 +104,7 @@ public class SwitchComponent extends BaseUIComponent {
     public SwitchComponent pressed(boolean isPressed) {
         if (this.pressed == isPressed) return this;
         this.pressed = isPressed;
-        //sendMessage(2, buf -> buf.writeBoolean(isPressed));
+        // sendMessage(2, buf -> buf.writeBoolean(isPressed));
         return this;
     }
 
@@ -130,11 +128,11 @@ public class SwitchComponent extends BaseUIComponent {
             pressed = !pressed;
             ClickData clickData = new ClickData(button);
             /*
-            sendMessage(1, buffer -> {
-                clickData.writeToBuf(buffer);
-                buffer.writeBoolean(pressed);
-            });
-            */
+             * sendMessage(1, buffer -> {
+             * clickData.writeToBuf(buffer);
+             * buffer.writeBoolean(pressed);
+             * });
+             */
             if (onPressCallback != null) {
                 onPressCallback.accept(clickData, pressed);
             }
@@ -145,18 +143,18 @@ public class SwitchComponent extends BaseUIComponent {
     }
 
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buf) {
-        if (id == 1) {
-            if (onPressCallback != null) {
-                ClickData clickData = ClickData.readFromBuf(buf);
-                onPressCallback.accept(clickData, pressed = buf.readBoolean());
-            }
-        } else if (id == 2) {
-            pressed = buf.readBoolean();
-        } else {
-            super.receiveMessage(id, buf);
-        }
-    }
-    */
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buf) {
+     * if (id == 1) {
+     * if (onPressCallback != null) {
+     * ClickData clickData = ClickData.readFromBuf(buf);
+     * onPressCallback.accept(clickData, pressed = buf.readBoolean());
+     * }
+     * } else if (id == 2) {
+     * pressed = buf.readBoolean();
+     * } else {
+     * super.receiveMessage(id, buf);
+     * }
+     * }
+     */
 }

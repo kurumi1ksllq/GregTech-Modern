@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.ui.core.UIGuiGraphics;
 import com.gregtechceu.gtceu.api.ui.ingredient.GhostIngredientSlot;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.ConfigComponent;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidSlot;
-import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAESlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlot;
 import com.gregtechceu.gtceu.integration.ae2.utils.AEUtil;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
@@ -16,8 +15,6 @@ import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
 import com.lowdragmc.lowdraglib.side.fluid.forge.FluidHelperImpl;
 
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -116,7 +113,7 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
 
             if (button == 1) {
                 // Right click to clear
-                //sendMessage(REMOVE_ID, buf -> {});
+                // sendMessage(REMOVE_ID, buf -> {});
 
                 if (!parentWidget.isStocking()) {
                     this.parentWidget.disableAmount();
@@ -124,7 +121,7 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
             } else if (button == 0) {
                 // Left click to set/select
                 ItemStack hold = getCarried();
-                //FluidUtil.getFluidContained(hold).ifPresent(f -> sendMessage(UPDATE_ID, f::writeToPacket));
+                // FluidUtil.getFluidContained(hold).ifPresent(f -> sendMessage(UPDATE_ID, f::writeToPacket));
 
                 if (!parentWidget.isStocking()) {
                     this.parentWidget.enableAmount(this.index);
@@ -140,7 +137,7 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
                 }
                 GenericStack stack = this.parentWidget.getDisplay(this.index).getStock();
                 if (stack != null) {
-                    //sendMessage(PICK_UP_ID, buf -> buf.writeBoolean(GTUtil.isShiftDown()));
+                    // sendMessage(PICK_UP_ID, buf -> buf.writeBoolean(GTUtil.isShiftDown()));
                 }
                 return true;
             }
@@ -185,44 +182,45 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
      * }
      * }
      * }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buffer) {
-        super.receiveMessage(id, buffer);
-        IConfigurableSlot slot = this.parentWidget.getDisplay(this.index);
-        if (id == REMOVE_ID) {
-            slot.setConfig(null);
-        }
-        if (id == UPDATE_ID) {
-            FluidStack fluid = new FluidStack(BuiltInRegistries.FLUID.get(buffer.readResourceLocation()),
-                    buffer.readVarInt());
-            slot.setConfig(new GenericStack(AEFluidKey.of(fluid.getFluid()), fluid.getAmount()));
-        }
-        if (id == AMOUNT_CHANGE_ID) {
-            if (slot.getConfig() != null) {
-                int amt = buffer.readInt();
-                slot.setConfig(ExportOnlyAESlot.copy(slot.getConfig(), amt));
-            }
-        }
-        if (id == PICK_UP_ID) {
-            if (slot.getStock() != null && slot.getStock().what() instanceof AEFluidKey key) {
-                ItemStack currentStack = getCarried();
-                int newStackSize = buffer.readVarInt();
-                currentStack.setCount(newStackSize);
-                setCarried(currentStack);
-
-                FluidStack stack = new FluidStack(key.getFluid(), GTMath.saturatedCast(slot.getStock().amount()));
-                if (key.hasTag()) {
-                    stack.setTag(key.getTag().copy());
-                }
-                GenericStack stack1 = ExportOnlyAESlot.copy(slot.getStock(),
-                        Math.max(0, (slot.getStock().amount() - stack.getAmount())));
-                slot.setStock(stack1.amount() == 0 ? null : stack1);
-            }
-        }
-    }
-    */
+     * 
+     * @OnlyIn(Dist.CLIENT)
+     * 
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buffer) {
+     * super.receiveMessage(id, buffer);
+     * IConfigurableSlot slot = this.parentWidget.getDisplay(this.index);
+     * if (id == REMOVE_ID) {
+     * slot.setConfig(null);
+     * }
+     * if (id == UPDATE_ID) {
+     * FluidStack fluid = new FluidStack(BuiltInRegistries.FLUID.get(buffer.readResourceLocation()),
+     * buffer.readVarInt());
+     * slot.setConfig(new GenericStack(AEFluidKey.of(fluid.getFluid()), fluid.getAmount()));
+     * }
+     * if (id == AMOUNT_CHANGE_ID) {
+     * if (slot.getConfig() != null) {
+     * int amt = buffer.readInt();
+     * slot.setConfig(ExportOnlyAESlot.copy(slot.getConfig(), amt));
+     * }
+     * }
+     * if (id == PICK_UP_ID) {
+     * if (slot.getStock() != null && slot.getStock().what() instanceof AEFluidKey key) {
+     * ItemStack currentStack = getCarried();
+     * int newStackSize = buffer.readVarInt();
+     * currentStack.setCount(newStackSize);
+     * setCarried(currentStack);
+     * 
+     * FluidStack stack = new FluidStack(key.getFluid(), GTMath.saturatedCast(slot.getStock().amount()));
+     * if (key.hasTag()) {
+     * stack.setTag(key.getTag().copy());
+     * }
+     * GenericStack stack1 = ExportOnlyAESlot.copy(slot.getStock(),
+     * Math.max(0, (slot.getStock().amount() - stack.getAmount())));
+     * slot.setStock(stack1.amount() == 0 ? null : stack1);
+     * }
+     * }
+     * }
+     */
 
     @OnlyIn(Dist.CLIENT)
     @Override
@@ -239,7 +237,7 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
         }
 
         if (!ingredient.isEmpty()) {
-            //sendMessage(UPDATE_ID, ingredient::writeToPacket);
+            // sendMessage(UPDATE_ID, ingredient::writeToPacket);
         }
     }
 
@@ -272,7 +270,7 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
 
         if (amt > 0 && amt < Integer.MAX_VALUE + 1L) {
             int finalAmt = (int) amt;
-            //sendMessage(AMOUNT_CHANGE_ID, buf -> buf.writeInt(finalAmt));
+            // sendMessage(AMOUNT_CHANGE_ID, buf -> buf.writeInt(finalAmt));
             return true;
         }
         return false;

@@ -190,7 +190,7 @@ public class ProspectingMapComponent extends StackLayout implements SearchCompon
             }
             PacketProspecting packet = new PacketProspecting(playerChunkX + ox, playerChunkZ + oz, this.mode);
             mode.scan(packet.data, chunk);
-            //sendMessage(-1, packet::writePacketData);
+            // sendMessage(-1, packet::writePacketData);
             chunkIndex++;
         }
         var held = player.getItemInHand(InteractionHand.MAIN_HAND);

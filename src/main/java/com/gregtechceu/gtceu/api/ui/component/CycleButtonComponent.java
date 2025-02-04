@@ -5,8 +5,6 @@ import com.gregtechceu.gtceu.api.ui.core.UIComponent;
 import com.gregtechceu.gtceu.api.ui.core.UIGuiGraphics;
 import com.gregtechceu.gtceu.api.ui.texture.UITexture;
 
-import net.minecraft.network.FriendlyByteBuf;
-
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -72,7 +70,7 @@ public class CycleButtonComponent extends BaseUIComponent {
             var newIndex = indexSupplier.getAsInt();
             if (newIndex != index) {
                 index = newIndex;
-                //sendMessage(1, buf -> buf.writeVarInt(index));
+                // sendMessage(1, buf -> buf.writeVarInt(index));
             }
         }
     }
@@ -80,10 +78,9 @@ public class CycleButtonComponent extends BaseUIComponent {
     @Override
     public boolean onMouseDown(double mouseX, double mouseY, int button) {
         if (isMouseOverElement(mouseX, mouseY)) {
-            if(button == MOUSE_BUTTON_RIGHT) {
+            if (button == MOUSE_BUTTON_RIGHT) {
                 index--;
-            }
-            else if(button == MOUSE_BUTTON_LEFT) {
+            } else if (button == MOUSE_BUTTON_LEFT) {
                 index++;
             }
             index = (index + range) % range;
@@ -101,16 +98,16 @@ public class CycleButtonComponent extends BaseUIComponent {
 
     // FIXME
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buf) {
-        if (id == 1) {
-            index = buf.readVarInt();
-            if (onChanged != null) {
-                onChanged.accept(index);
-            }
-        } else {
-            super.receiveMessage(id, buf);
-        }
-    }
-    */
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buf) {
+     * if (id == 1) {
+     * index = buf.readVarInt();
+     * if (onChanged != null) {
+     * onChanged.accept(index);
+     * }
+     * } else {
+     * super.receiveMessage(id, buf);
+     * }
+     * }
+     */
 }

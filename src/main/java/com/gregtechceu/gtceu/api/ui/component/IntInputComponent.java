@@ -43,7 +43,7 @@ public class IntInputComponent extends NumberInputComponent<Integer> {
 
     @Override
     protected Integer fromText(String value) {
-        if(value.isEmpty())
+        if (value.isEmpty())
             return 0;
         return Integer.parseInt(value);
     }

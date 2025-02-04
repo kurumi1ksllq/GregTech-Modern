@@ -5,14 +5,12 @@ import com.gregtechceu.gtceu.api.ui.core.Sizing;
 import com.gregtechceu.gtceu.api.ui.core.UIGuiGraphics;
 import com.gregtechceu.gtceu.api.ui.ingredient.GhostIngredientSlot;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.ConfigComponent;
-import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAESlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlot;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.util.TextFormattingUtil;
 
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 
 import appeng.api.stacks.AEItemKey;
@@ -89,7 +87,7 @@ public class AEItemConfigSlotComponent extends AEConfigSlotComponent implements 
 
             if (button == 1) {
                 // Right click to clear
-                //sendMessage(REMOVE_ID, buf -> {});
+                // sendMessage(REMOVE_ID, buf -> {});
 
                 if (!parentWidget.isStocking()) {
                     this.parentWidget.disableAmount();
@@ -99,7 +97,7 @@ public class AEItemConfigSlotComponent extends AEConfigSlotComponent implements 
                 ItemStack item = getCarried();
 
                 if (!item.isEmpty()) {
-                    ///sendMessage(UPDATE_ID, buf -> buf.writeItem(item));
+                    /// sendMessage(UPDATE_ID, buf -> buf.writeItem(item));
                 }
 
                 if (!parentWidget.isStocking()) {
@@ -116,7 +114,7 @@ public class AEItemConfigSlotComponent extends AEConfigSlotComponent implements 
                 }
                 GenericStack stack = this.parentWidget.getDisplay(this.index).getStock();
                 if (stack != null) {
-                    //sendMessage(PICK_UP_ID, buf -> {});
+                    // sendMessage(PICK_UP_ID, buf -> {});
                 }
                 return true;
             }
@@ -125,49 +123,49 @@ public class AEItemConfigSlotComponent extends AEConfigSlotComponent implements 
     }
 
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buffer) {
-        super.receiveMessage(id, buffer);
-        IConfigurableSlot slot = this.parentWidget.getConfig(this.index);
-        if (id == REMOVE_ID) {
-            slot.setConfig(null);
-            this.parentWidget.disableAmount();
-            // sendMessage(REMOVE_ID, buf -> {});
-        }
-        if (id == UPDATE_ID) {
-            ItemStack item = buffer.readItem();
-            var stack = GenericStack.fromItemStack(item);
-            if (!isStackValidForSlot(stack)) return;
-            slot.setConfig(stack);
-            this.parentWidget.enableAmount(this.index);
-            if (!item.isEmpty()) {
-                // sendMessage(UPDATE_ID, buf -> buf.writeItem(item));
-            }
-        }
-        if (id == AMOUNT_CHANGE_ID) {
-            if (slot.getConfig() != null) {
-                long amt = buffer.readVarLong();
-                slot.setConfig(new GenericStack(slot.getConfig().what(), amt));
-                // sendMessage(AMOUNT_CHANGE_ID, buf -> buf.writeVarLong(amt));
-            }
-        }
-        if (id == PICK_UP_ID) {
-            if (slot.getStock() != null && getCarried() == ItemStack.EMPTY &&
-                    slot.getStock().what() instanceof AEItemKey key) {
-                ItemStack stack = new ItemStack(key.getItem());
-                stack.setCount(Math.min((int) slot.getStock().amount(), stack.getMaxStackSize()));
-                if (key.hasTag()) {
-                    stack.setTag(key.getTag().copy());
-                }
-                setCarried(stack);
-                GenericStack stack1 = ExportOnlyAESlot.copy(slot.getStock(),
-                        Math.max(0, (slot.getStock().amount() - stack.getCount())));
-                slot.setStock(stack1.amount() == 0 ? null : stack1);
-                // sendMessage(PICK_UP_ID, buf -> {});
-            }
-        }
-    }
-    */
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buffer) {
+     * super.receiveMessage(id, buffer);
+     * IConfigurableSlot slot = this.parentWidget.getConfig(this.index);
+     * if (id == REMOVE_ID) {
+     * slot.setConfig(null);
+     * this.parentWidget.disableAmount();
+     * // sendMessage(REMOVE_ID, buf -> {});
+     * }
+     * if (id == UPDATE_ID) {
+     * ItemStack item = buffer.readItem();
+     * var stack = GenericStack.fromItemStack(item);
+     * if (!isStackValidForSlot(stack)) return;
+     * slot.setConfig(stack);
+     * this.parentWidget.enableAmount(this.index);
+     * if (!item.isEmpty()) {
+     * // sendMessage(UPDATE_ID, buf -> buf.writeItem(item));
+     * }
+     * }
+     * if (id == AMOUNT_CHANGE_ID) {
+     * if (slot.getConfig() != null) {
+     * long amt = buffer.readVarLong();
+     * slot.setConfig(new GenericStack(slot.getConfig().what(), amt));
+     * // sendMessage(AMOUNT_CHANGE_ID, buf -> buf.writeVarLong(amt));
+     * }
+     * }
+     * if (id == PICK_UP_ID) {
+     * if (slot.getStock() != null && getCarried() == ItemStack.EMPTY &&
+     * slot.getStock().what() instanceof AEItemKey key) {
+     * ItemStack stack = new ItemStack(key.getItem());
+     * stack.setCount(Math.min((int) slot.getStock().amount(), stack.getMaxStackSize()));
+     * if (key.hasTag()) {
+     * stack.setTag(key.getTag().copy());
+     * }
+     * setCarried(stack);
+     * GenericStack stack1 = ExportOnlyAESlot.copy(slot.getStock(),
+     * Math.max(0, (slot.getStock().amount() - stack.getCount())));
+     * slot.setStock(stack1.amount() == 0 ? null : stack1);
+     * // sendMessage(PICK_UP_ID, buf -> {});
+     * }
+     * }
+     * }
+     */
 
     @Override
     public Rect2i area() {
@@ -178,7 +176,7 @@ public class AEItemConfigSlotComponent extends AEConfigSlotComponent implements 
 
     @Override
     public void setGhostIngredient(@NotNull ItemStack ingredient) {
-        //sendMessage(UPDATE_ID, buf -> buf.writeItem(ingredient));
+        // sendMessage(UPDATE_ID, buf -> buf.writeItem(ingredient));
     }
 
     @Override
@@ -204,7 +202,7 @@ public class AEItemConfigSlotComponent extends AEConfigSlotComponent implements 
             amt = wheelDelta > 0 ? stack.amount() + 1L : stack.amount() - 1L;
         }
         if (amt > 0 && amt < Integer.MAX_VALUE + 1L) {
-            //sendMessage(AMOUNT_CHANGE_ID, buf -> buf.writeVarLong(amt));
+            // sendMessage(AMOUNT_CHANGE_ID, buf -> buf.writeVarLong(amt));
             return true;
         }
         return false;

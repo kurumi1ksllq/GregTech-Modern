@@ -19,7 +19,6 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -165,29 +164,29 @@ public class CombinedDirectionalConfigurator extends FlowLayout {
             if (hover != null && hover.pos.equals(machine.getPos()) && hover.facing == this.selectedSide) {
                 var cd = new ClickData();
                 /*
-                sendMessage(MOUSE_CLICK_CLIENT_ACTION_ID, buf -> {
-                    cd.writeToBuf(buf);
-                    buf.writeByte(this.selectedSide.ordinal());
-                });
-                */
+                 * sendMessage(MOUSE_CLICK_CLIENT_ACTION_ID, buf -> {
+                 * cd.writeToBuf(buf);
+                 * buf.writeByte(this.selectedSide.ordinal());
+                 * });
+                 */
             }
         }
         return result;
     }
 
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buf) {
-        if (id != MOUSE_CLICK_CLIENT_ACTION_ID) {
-            super.receiveMessage(id, buf);
-            return;
-        }
-
-        var side = GTUtil.DIRECTIONS[buf.readByte()];
-
-        for (IDirectionalConfigHandler configHandler : configHandlers) {
-            configHandler.handleClick(null, side);
-        }
-    }
-    */
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buf) {
+     * if (id != MOUSE_CLICK_CLIENT_ACTION_ID) {
+     * super.receiveMessage(id, buf);
+     * return;
+     * }
+     * 
+     * var side = GTUtil.DIRECTIONS[buf.readByte()];
+     * 
+     * for (IDirectionalConfigHandler configHandler : configHandlers) {
+     * configHandler.handleClick(null, side);
+     * }
+     * }
+     */
 }

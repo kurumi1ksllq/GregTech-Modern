@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.ui.ingredient.GhostIngredientSlot;
 import com.lowdragmc.lowdraglib.gui.editor.annotation.ConfigSetter;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -67,7 +66,7 @@ public class PhantomSlotComponent extends SlotComponent implements GhostIngredie
                 slot.set(getCarried());
             } else if (button == 1 && clearSlotOnRightClick && !slot.getItem().isEmpty()) {
                 slot.set(ItemStack.EMPTY);
-                //sendMessage(2, buf -> {});
+                // sendMessage(2, buf -> {});
             }
             return true;
         }
@@ -91,12 +90,12 @@ public class PhantomSlotComponent extends SlotComponent implements GhostIngredie
         ClickType clickType = shiftDown ? ClickType.QUICK_MOVE : ClickType.PICKUP;
         slotClickPhantom(slot, 0, clickType, ingredient);
         /*
-        sendMessage(1, buffer -> {
-            buffer.writeItem(ingredient);
-            buffer.writeVarInt(0);
-            buffer.writeBoolean(shiftDown);
-        });
-        */
+         * sendMessage(1, buffer -> {
+         * buffer.writeItem(ingredient);
+         * buffer.writeVarInt(0);
+         * buffer.writeBoolean(shiftDown);
+         * });
+         */
     }
 
     @Override
@@ -105,19 +104,19 @@ public class PhantomSlotComponent extends SlotComponent implements GhostIngredie
     }
 
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buffer) {
-        if (slot != null && id == 1) {
-            ItemStack stackHeld = buffer.readItem();
-            int mouseButton = buffer.readVarInt();
-            boolean shiftKeyDown = buffer.readBoolean();
-            ClickType clickType = shiftKeyDown ? ClickType.QUICK_MOVE : ClickType.PICKUP;
-            slotClickPhantom(slot, mouseButton, clickType, stackHeld);
-        } else if (slot != null && id == 2) {
-            slot.set(ItemStack.EMPTY);
-        }
-    }
-    */
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buffer) {
+     * if (slot != null && id == 1) {
+     * ItemStack stackHeld = buffer.readItem();
+     * int mouseButton = buffer.readVarInt();
+     * boolean shiftKeyDown = buffer.readBoolean();
+     * ClickType clickType = shiftKeyDown ? ClickType.QUICK_MOVE : ClickType.PICKUP;
+     * slotClickPhantom(slot, mouseButton, clickType, stackHeld);
+     * } else if (slot != null && id == 2) {
+     * slot.set(ItemStack.EMPTY);
+     * }
+     * }
+     */
 
     public ItemStack slotClickPhantom(Slot slot, int mouseButton, ClickType clickTypeIn, ItemStack stackHeld) {
         ItemStack stack = ItemStack.EMPTY;

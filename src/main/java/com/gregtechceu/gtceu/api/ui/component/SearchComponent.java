@@ -83,7 +83,7 @@ public class SearchComponent<T> extends FlowLayout {
                     .positioning(Positioning.absolute(0, size * 15))
                     .sizing(Sizing.fill(), Sizing.fixed(15)));
             if (isServer) {
-                //sendMessage(-2, buf -> search.serialize(r, buf));
+                // sendMessage(-2, buf -> search.serialize(r, buf));
             }
         });
 
@@ -98,48 +98,48 @@ public class SearchComponent<T> extends FlowLayout {
             setShow(true);
             this.engine.searchWord(value);
             if (isServer) {
-                //sendMessage(-1, buffer -> {});
+                // sendMessage(-1, buffer -> {});
             }
         });
     }
 
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buffer) {
-        if (id == -1) {
-            popUp.child(null);
-            popUp.height(0);
-            if (showUp) {
-                popUp.moveTo(x(), y());
-            } else {
-                popUp.moveTo(x(), y() + height());
-            }
-        } else if (id == -2) {
-            T r = search.deserialize(buffer);
-            int size = popUp.children().size();
-            int width = width();
-            if (showUp) {
-                popUp.moveTo(this.x(), this.y() - Math.min(size + 1, capacity) * 15);
-            } else {
-                popUp.moveTo(this.x(), this.y() + height);
-            }
-
-            UITexture text = UITextures.text(search.resultDisplay(r)).width(width).textType(TextTexture.TextType.ROLL);
-            popUp.child(UIComponents.button(Component.empty(), cd -> {
-                search.selectResult(r);
-                setShow(false);
-                textBoxComponent.text(search.resultDisplay(r).getString());
-            }).renderer(ButtonComponent.Renderer.texture(
-                    text,
-                    UITextures.group(text, UITextures.colorBorder(Color.BLACK, -1)),
-                    text))
-                    .positioning(Positioning.absolute(0, size * 15))
-                    .sizing(Sizing.fill(), Sizing.fixed(15)));
-        } else {
-            super.receiveMessage(id, buffer);
-        }
-    }
-    */
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buffer) {
+     * if (id == -1) {
+     * popUp.child(null);
+     * popUp.height(0);
+     * if (showUp) {
+     * popUp.moveTo(x(), y());
+     * } else {
+     * popUp.moveTo(x(), y() + height());
+     * }
+     * } else if (id == -2) {
+     * T r = search.deserialize(buffer);
+     * int size = popUp.children().size();
+     * int width = width();
+     * if (showUp) {
+     * popUp.moveTo(this.x(), this.y() - Math.min(size + 1, capacity) * 15);
+     * } else {
+     * popUp.moveTo(this.x(), this.y() + height);
+     * }
+     * 
+     * UITexture text = UITextures.text(search.resultDisplay(r)).width(width).textType(TextTexture.TextType.ROLL);
+     * popUp.child(UIComponents.button(Component.empty(), cd -> {
+     * search.selectResult(r);
+     * setShow(false);
+     * textBoxComponent.text(search.resultDisplay(r).getString());
+     * }).renderer(ButtonComponent.Renderer.texture(
+     * text,
+     * UITextures.group(text, UITextures.colorBorder(Color.BLACK, -1)),
+     * text))
+     * .positioning(Positioning.absolute(0, size * 15))
+     * .sizing(Sizing.fill(), Sizing.fixed(15)));
+     * } else {
+     * super.receiveMessage(id, buffer);
+     * }
+     * }
+     */
 
     public SearchComponent<T> setCapacity(int capacity) {
         this.capacity = capacity;

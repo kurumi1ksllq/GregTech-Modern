@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.ui.util.Observable;
 import com.gregtechceu.gtceu.api.ui.util.ScissorStack;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 
 import lombok.Getter;
@@ -264,15 +263,15 @@ public abstract class BaseParentUIComponent extends BaseUIComponent implements P
     }
 
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buf) {
-        if (id == UPDATE_CHILD) {
-            int index = buf.readVarInt();
-            int updateId = buf.readVarInt();
-            children().get(index).receiveMessage(updateId, buf);
-        }
-    }
-    */
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buf) {
+     * if (id == UPDATE_CHILD) {
+     * int index = buf.readVarInt();
+     * int updateId = buf.readVarInt();
+     * children().get(index).receiveMessage(updateId, buf);
+     * }
+     * }
+     */
 
     protected class ParentComponentMenuAccess implements UIComponentMenuAccess {
 

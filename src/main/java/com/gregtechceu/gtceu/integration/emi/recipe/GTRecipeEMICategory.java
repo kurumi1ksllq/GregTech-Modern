@@ -9,8 +9,6 @@ import com.gregtechceu.gtceu.api.ui.core.UIGuiGraphics;
 import com.gregtechceu.gtceu.api.ui.texture.UITexture;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 
-import com.lowdragmc.lowdraglib.Platform;
-
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 

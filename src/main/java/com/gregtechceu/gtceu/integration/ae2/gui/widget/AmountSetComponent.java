@@ -9,8 +9,6 @@ import com.gregtechceu.gtceu.api.ui.core.Sizing;
 import com.gregtechceu.gtceu.api.ui.core.UIGuiGraphics;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlot;
 
-import net.minecraft.network.FriendlyByteBuf;
-
 import appeng.api.stacks.GenericStack;
 import lombok.Getter;
 
@@ -45,7 +43,7 @@ public class AmountSetComponent extends BaseUIComponent {
 
     public void setSlotIndex(int slotIndex) {
         this.index = slotIndex;
-        //sendMessage(0, buf -> buf.writeVarInt(this.index));
+        // sendMessage(0, buf -> buf.writeVarInt(this.index));
     }
 
     public String getAmountStr() {
@@ -73,14 +71,14 @@ public class AmountSetComponent extends BaseUIComponent {
     }
 
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buf) {
-        super.receiveMessage(id, buf);
-        if (id == 0) {
-            this.index = buf.readVarInt();
-        }
-    }
-    */
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buf) {
+     * super.receiveMessage(id, buf);
+     * if (id == 0) {
+     * this.index = buf.readVarInt();
+     * }
+     * }
+     */
 
     @Override
     public void draw(UIGuiGraphics graphics, int mouseX, int mouseY, float partialTicks, float delta) {

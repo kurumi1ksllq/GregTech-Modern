@@ -10,7 +10,6 @@ import com.gregtechceu.gtceu.api.ui.texture.UITexture;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.integration.rei.handler.UIDisplayCategory;
 
-import com.lowdragmc.lowdraglib.Platform;
 import com.lowdragmc.lowdraglib.utils.Size;
 
 import net.minecraft.Util;

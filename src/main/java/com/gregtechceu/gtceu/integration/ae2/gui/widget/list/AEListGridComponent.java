@@ -152,26 +152,26 @@ public abstract class AEListGridComponent extends ScrollContainer<UIComponent> {
         if (this.slotRowsAmount != slotRowsRequired) {
             int slotsToAdd = slotRowsRequired - this.slotRowsAmount;
             this.slotRowsAmount = slotRowsRequired;
-            //this.sendMessage(ROW_CHANGE_ID, buf -> buf.writeVarInt(slotsToAdd));
+            // this.sendMessage(ROW_CHANGE_ID, buf -> buf.writeVarInt(slotsToAdd));
             this.modifySlotRows(slotsToAdd);
         }
-        //this.sendMessage(CONTENT_CHANGE_ID, this::writeListChange);
+        // this.sendMessage(CONTENT_CHANGE_ID, this::writeListChange);
     }
 
     // TODO implement
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buffer) {
-        super.receiveMessage(id, buffer);
-        if (id == ROW_CHANGE_ID) {
-            int slotsToAdd = buffer.readVarInt();
-            this.modifySlotRows(slotsToAdd);
-        }
-        if (id == CONTENT_CHANGE_ID) {
-            this.readListChange(buffer);
-        }
-    }
-
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buffer) {
+     * super.receiveMessage(id, buffer);
+     * if (id == ROW_CHANGE_ID) {
+     * int slotsToAdd = buffer.readVarInt();
+     * this.modifySlotRows(slotsToAdd);
+     * }
+     * if (id == CONTENT_CHANGE_ID) {
+     * this.readListChange(buffer);
+     * }
+     * }
+     * 
      * @Override
      * public void writeInitialData(FriendlyByteBuf buffer) {
      * super.writeInitialData(buffer);

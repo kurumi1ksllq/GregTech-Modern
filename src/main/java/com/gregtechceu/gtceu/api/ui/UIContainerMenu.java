@@ -78,7 +78,8 @@ public class UIContainerMenu<T> extends AbstractContainerMenu {
         init();
 
         this.addServerboundMessage(ServerboundSetCarriedUpdate.class, msg -> this.setCarried(msg.newCarried()));
-        this.addServerboundMessage(ServerboundPlaceItemBackUpdate.class, msg -> playerInventory.placeItemBackInInventory(msg.putBack()));
+        this.addServerboundMessage(ServerboundPlaceItemBackUpdate.class,
+                msg -> playerInventory.placeItemBackInInventory(msg.putBack()));
 
         this.addServerboundMessage(ServerboundRemoveSyncPropertyMessage.class, msg -> super.removeProperty(msg.name()));
         this.addServerboundMessage(ClientboundRemoveSyncPropertyMessage.class, msg -> super.removeProperty(msg.name()));
@@ -307,8 +308,10 @@ public class UIContainerMenu<T> extends AbstractContainerMenu {
     public static void initType() {}
 
     public record ServerboundSetCarriedUpdate(ItemStack newCarried) {}
+
     public record ServerboundPlaceItemBackUpdate(ItemStack putBack) {}
 
     public record ServerboundRemoveSyncPropertyMessage(String name) {}
+
     public record ClientboundRemoveSyncPropertyMessage(String name) {}
 }

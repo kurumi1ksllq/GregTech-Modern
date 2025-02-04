@@ -19,11 +19,6 @@ import com.gregtechceu.gtceu.api.ui.texture.UITexture;
 import com.gregtechceu.gtceu.api.ui.texture.UITextures;
 import com.gregtechceu.gtceu.common.data.GTItems;
 
-import com.lowdragmc.lowdraglib.gui.factory.HeldItemUIFactory;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
 import net.minecraft.nbt.CompoundTag;
@@ -69,39 +64,41 @@ public class ItemMagnetBehavior implements IInteractionItem, IItemLifeCycle, IAd
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    /*@Override
-    public ModularUI createUI(HeldItemUIFactory.HeldItemHolder holder, Player entityPlayer) {
-        var held = holder.getHeld();
-        var tag = held.getOrCreateTag();
-        var selected = Filter.get(tag.getInt(FILTER_ORDINAL_TAG));
-        var widgets = new HashSet<Triplet<Filter, Widget, Widget>>();
-        var stacks = new HashMap<Filter, ItemStack>();
-        var ui = new ModularUI(176, 157, holder, entityPlayer)
-                .background(UITextures.BACKGROUND)
-                .widget(new EnumSelectorWidget<>(146, 5, 20, 20,
-                        Filter.values(), selected, (val) -> updateSelection(tag, val, widgets)))
-                .widget(UITemplate.bindPlayerInventory(entityPlayer.getInventory(), GuiTextures.SLOT, 7, 75, true));
-        for (var f : Filter.values()) {
-            var stack = f.getFilter(held);
-            stack.setTag(tag.getCompound(FILTER_TAG).copy());
-            stacks.put(f, stack);
-            var description = new LabelWidget(5, 5, stack.getDescriptionId());
-            var config = ItemFilter
-                    .loadFilter(stack)
-                    .openConfigurator((176 - 80) / 2, (60 - 55) / 2 + 15);
-            var visible = f == selected;
-            description.setVisible(visible);
-            config.setVisible(visible);
-            widgets.add(new Triplet<>(f, description, config));
-            ui.widget(description);
-            ui.widget(config);
-        }
-        ui.registerCloseListener(() -> {
-            var selection = Filter.get(tag.getInt(FILTER_ORDINAL_TAG));
-            tag.put(FILTER_TAG, stacks.get(selection).getOrCreateTag());
-        });
-        return ui;
-    }*/
+    /*
+     * @Override
+     * public ModularUI createUI(HeldItemUIFactory.HeldItemHolder holder, Player entityPlayer) {
+     * var held = holder.getHeld();
+     * var tag = held.getOrCreateTag();
+     * var selected = Filter.get(tag.getInt(FILTER_ORDINAL_TAG));
+     * var widgets = new HashSet<Triplet<Filter, Widget, Widget>>();
+     * var stacks = new HashMap<Filter, ItemStack>();
+     * var ui = new ModularUI(176, 157, holder, entityPlayer)
+     * .background(UITextures.BACKGROUND)
+     * .widget(new EnumSelectorWidget<>(146, 5, 20, 20,
+     * Filter.values(), selected, (val) -> updateSelection(tag, val, widgets)))
+     * .widget(UITemplate.bindPlayerInventory(entityPlayer.getInventory(), GuiTextures.SLOT, 7, 75, true));
+     * for (var f : Filter.values()) {
+     * var stack = f.getFilter(held);
+     * stack.setTag(tag.getCompound(FILTER_TAG).copy());
+     * stacks.put(f, stack);
+     * var description = new LabelWidget(5, 5, stack.getDescriptionId());
+     * var config = ItemFilter
+     * .loadFilter(stack)
+     * .openConfigurator((176 - 80) / 2, (60 - 55) / 2 + 15);
+     * var visible = f == selected;
+     * description.setVisible(visible);
+     * config.setVisible(visible);
+     * widgets.add(new Triplet<>(f, description, config));
+     * ui.widget(description);
+     * ui.widget(config);
+     * }
+     * ui.registerCloseListener(() -> {
+     * var selection = Filter.get(tag.getInt(FILTER_ORDINAL_TAG));
+     * tag.put(FILTER_TAG, stacks.get(selection).getOrCreateTag());
+     * });
+     * return ui;
+     * }
+     */
 
     private void updateSelection(CompoundTag tag, Filter filter, Collection<Triplet<Filter, Widget, Widget>> widgets) {
         tag.putInt(FILTER_ORDINAL_TAG, filter.ordinal());
@@ -125,14 +122,10 @@ public class ItemMagnetBehavior implements IInteractionItem, IItemLifeCycle, IAd
     }
 
     @Override
-    public void loadServerUI(Player player, UIContainerMenu<HeldItemUIHolder> menu, HeldItemUIHolder holder) {
-
-    }
+    public void loadServerUI(Player player, UIContainerMenu<HeldItemUIHolder> menu, HeldItemUIHolder holder) {}
 
     @Override
-    public void loadClientUI(Player entityPlayer, UIAdapter<StackLayout> adapter, HeldItemUIHolder holder) {
-
-    }
+    public void loadClientUI(Player entityPlayer, UIAdapter<StackLayout> adapter, HeldItemUIHolder holder) {}
 
     private static boolean isActive(ItemStack stack) {
         if (stack == ItemStack.EMPTY) {

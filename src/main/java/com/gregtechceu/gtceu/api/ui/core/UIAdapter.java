@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.ui.core;
 
-import com.gregtechceu.gtceu.api.ui.UIContainerMenu;
 import com.gregtechceu.gtceu.api.ui.serialization.SyncedProperty;
 import com.gregtechceu.gtceu.api.ui.util.CursorAdapter;
 import com.gregtechceu.gtceu.client.renderdoc.RenderDoc;
@@ -16,7 +15,6 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -27,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 /**
  * A UI adapter constitutes the main entrypoint to using gtceu-ui.

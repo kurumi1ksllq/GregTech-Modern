@@ -6,6 +6,7 @@ mixinExtras = "0.2.0"
 
 jei = "15.20.0.105"
 rei = "12.1.785"
+rei-math = "0.6.1"
 emi = "1.1.13+1.20.1"
 ae2 = "15.0.18"
 kubejs = "2001.6.4-build.120"
@@ -56,6 +57,7 @@ jei-forge-impl      = { module = "mezz.jei:jei-1.20.1-forge", version.ref = "jei
 rei-plugin          = { module = "me.shedaniel:RoughlyEnoughItems-default-plugin-forge", version.ref = "rei" }
 rei-api             = { module = "me.shedaniel:RoughlyEnoughItems-api-forge", version.ref = "rei" }
 rei-forge           = { module = "me.shedaniel:RoughlyEnoughItems-forge", version.ref = "rei" }
+rei-math            = { module = "me.shedaniel.cloth:basic-math", version.ref = "rei-math" }
 emi                 = { module = "dev.emi:emi-forge", version.ref = "emi" }
 
 ae2                 = { module = "appeng:appliedenergistics2-forge", version.ref = "ae2" }
@@ -93,7 +95,7 @@ ftbchunks-cm        = { module = "curse.maven:ftb-chunks-forge-314906", version.
 
 [bundles]
 jei = ["jei-common-api", "jei-forge-api", "jei-forge-impl"]
-rei = ["rei-api", "rei-plugin", "rei-forge"]
+rei = ["rei-math", "rei-plugin", "rei-forge"]
 rei-runtime = ["rei-forge", "architectury", "clothconfig"]
 kjs = ["kubejs", "rhino", "architectury"]
 

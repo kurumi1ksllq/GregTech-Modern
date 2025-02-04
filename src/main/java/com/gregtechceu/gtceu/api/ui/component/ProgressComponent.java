@@ -10,7 +10,6 @@ import com.gregtechceu.gtceu.api.ui.texture.UITexture;
 import com.gregtechceu.gtceu.api.ui.texture.UITextures;
 
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 
 import lombok.Getter;
@@ -150,14 +149,14 @@ public class ProgressComponent extends BaseUIComponent {
      * sendMessage(0, buffer -> buffer.writeDouble(actualValue));
      * }
      * }
-
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buf) {
-        if (id == 0) {
-            this.lastProgressValue = buf.readDouble();
-        }
-    }
-    */
+     * 
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buf) {
+     * if (id == 0) {
+     * this.lastProgressValue = buf.readDouble();
+     * }
+     * }
+     */
 
     @Override
     public void parseProperties(UIModel model, Element element, Map<String, Element> children) {

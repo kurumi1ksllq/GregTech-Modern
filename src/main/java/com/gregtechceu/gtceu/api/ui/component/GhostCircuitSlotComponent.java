@@ -12,7 +12,6 @@ import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -69,7 +68,7 @@ public class GhostCircuitSlotComponent extends SlotComponent {
             } else if (button == 1 && Screen.hasShiftDown()) {
                 // clear on shift-right-click
                 this.circuitInventory.setStackInSlot(0, ItemStack.EMPTY);
-                //sendMessage(SET_TO_EMPTY, buf -> {});
+                // sendMessage(SET_TO_EMPTY, buf -> {});
             } else if (button == 1) {
                 // decrement on right-click
                 int newValue = getNextValue(false);
@@ -131,23 +130,23 @@ public class GhostCircuitSlotComponent extends SlotComponent {
     public void setCircuitValue(int newValue) {
         if (newValue == NO_CONFIG) {
             this.circuitInventory.setStackInSlot(0, ItemStack.EMPTY);
-            //sendMessage(SET_TO_EMPTY, buf -> {});
+            // sendMessage(SET_TO_EMPTY, buf -> {});
         } else {
             this.circuitInventory.setStackInSlot(0, IntCircuitBehaviour.stack(newValue));
-            //sendMessage(SET_TO_N, buf -> buf.writeVarInt(newValue));
+            // sendMessage(SET_TO_N, buf -> buf.writeVarInt(newValue));
         }
     }
 
     /*
-    @Override
-    public void receiveMessage(int id, FriendlyByteBuf buf) {
-        switch (id) {
-            case SET_TO_ZERO -> this.circuitInventory.setStackInSlot(0, IntCircuitBehaviour.stack(0));
-            case SET_TO_EMPTY -> this.circuitInventory.setStackInSlot(0, ItemStack.EMPTY);
-            case SET_TO_N -> this.circuitInventory.setStackInSlot(0, IntCircuitBehaviour.stack(buf.readVarInt()));
-        }
-    }
-    */
+     * @Override
+     * public void receiveMessage(int id, FriendlyByteBuf buf) {
+     * switch (id) {
+     * case SET_TO_ZERO -> this.circuitInventory.setStackInSlot(0, IntCircuitBehaviour.stack(0));
+     * case SET_TO_EMPTY -> this.circuitInventory.setStackInSlot(0, ItemStack.EMPTY);
+     * case SET_TO_N -> this.circuitInventory.setStackInSlot(0, IntCircuitBehaviour.stack(buf.readVarInt()));
+     * }
+     * }
+     */
 
     public UIComponent createConfigurator() {
         var group = UIContainers.horizontalFlow(Sizing.fixed(174), Sizing.fixed(132));

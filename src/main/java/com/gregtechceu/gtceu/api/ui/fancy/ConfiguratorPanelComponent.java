@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.api.ui.core.*;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -148,20 +147,20 @@ public class ConfiguratorPanelComponent extends FlowLayout {
                 public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
                     if (!(configurator instanceof IFancyCustomMouseWheelAction hasActions)) return false;
                     if (isMouseOverElement(mouseX, mouseY)) {
-                        //return hasActions.mouseWheelMove(this::sendMessage, mouseX, mouseY, delta);
+                        // return hasActions.mouseWheelMove(this::sendMessage, mouseX, mouseY, delta);
                     }
                     return false;
                 }
 
                 /*
-                @Override
-                public void receiveMessage(int id, FriendlyByteBuf buf) {
-                    if (configurator instanceof IFancyCustomClientActionHandler handler && id > 1)
-                        handler.receiveMessage(id, buf);
-                    else
-                        super.receiveMessage(id, buf);
-                }
-                */
+                 * @Override
+                 * public void receiveMessage(int id, FriendlyByteBuf buf) {
+                 * if (configurator instanceof IFancyCustomClientActionHandler handler && id > 1)
+                 * handler.receiveMessage(id, buf);
+                 * else
+                 * super.receiveMessage(id, buf);
+                 * }
+                 */
             };
             button.positioning(Positioning.relative(100, 0))
                     .sizing(Sizing.fill());
@@ -198,15 +197,15 @@ public class ConfiguratorPanelComponent extends FlowLayout {
         }
 
         /*
-        @Override
-        public void receiveMessage(int id, FriendlyByteBuf buf) {
-            if (id == 0) {
-                configurator.readUpdateInfo(buf.readVarInt(), buf);
-            } else {
-                super.receiveMessage(id, buf);
-            }
-        }
-        */
+         * @Override
+         * public void receiveMessage(int id, FriendlyByteBuf buf) {
+         * if (id == 0) {
+         * configurator.readUpdateInfo(buf.readVarInt(), buf);
+         * } else {
+         * super.receiveMessage(id, buf);
+         * }
+         * }
+         */
 
         @Override
         public void onChildMutated(UIComponent child) {
@@ -227,7 +226,7 @@ public class ConfiguratorPanelComponent extends FlowLayout {
 
         private void onClick(ButtonComponent clickData, int button) {
             if (button == 2 && configurator instanceof IFancyCustomMiddleClickAction middleAction) {
-                //middleAction.onMiddleClick(this::sendMessage);
+                // middleAction.onMiddleClick(this::sendMessage);
             } else if (configurator instanceof IFancyConfiguratorButton fancyButton) {
                 fancyButton.onClick(clickData);
             } else {
@@ -279,11 +278,11 @@ public class ConfiguratorPanelComponent extends FlowLayout {
             }
 
             /*
-            configurator.detectAndSendChange((id, sender) -> sendMessage(0, buf -> {
-                buf.writeVarInt(id);
-                sender.accept(buf);
-            }));
-            */
+             * configurator.detectAndSendChange((id, sender) -> sendMessage(0, buf -> {
+             * buf.writeVarInt(id);
+             * sender.accept(buf);
+             * }));
+             */
         }
 
         @Override

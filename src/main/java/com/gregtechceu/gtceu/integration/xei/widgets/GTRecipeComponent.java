@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.xei.widgets;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.CWURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -240,7 +241,7 @@ public class GTRecipeComponent extends FlowLayout {
             case IV -> 12;
             default -> 14;
         };
-        if (!LDLib.isEmiLoaded()) {
+        if (!GTCEu.Mods.isEMILoaded()) {
             x -= 3;
         }
         return x;

@@ -20,8 +20,6 @@ import com.gregtechceu.gtceu.integration.rei.orevein.GTBedrockOreDisplayCategory
 import com.gregtechceu.gtceu.integration.rei.orevein.GTOreVeinDisplayCategory;
 import com.gregtechceu.gtceu.integration.rei.recipe.GTRecipeREICategory;
 
-import com.lowdragmc.lowdraglib.Platform;
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.alchemy.Potion;
@@ -65,7 +63,7 @@ public class GTREIPlugin implements REIClientPlugin {
         if (ConfigHolder.INSTANCE.machines.doBedrockOres)
             registry.add(new GTBedrockOreDisplayCategory());
         for (GTRecipeCategory category : GTRegistries.RECIPE_CATEGORIES) {
-            if (Platform.isDevEnv() || category.isXEIVisible()) {
+            if (category.shouldRegisterDisplays()) {
                 registry.add(new GTRecipeREICategory(category));
             }
         }
@@ -150,6 +148,7 @@ public class GTREIPlugin implements REIClientPlugin {
     @Override
     public void registerItemComparators(ItemComparatorRegistry registry) {
         registry.registerNbt(GTItems.PROGRAMMED_CIRCUIT.asItem());
+        registry.registerNbt(GTItems.TURBINE_ROTOR.asItem());
     }
 
     @Override

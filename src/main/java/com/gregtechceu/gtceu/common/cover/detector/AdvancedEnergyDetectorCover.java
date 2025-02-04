@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.cover.detector;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.capability.IEnergyInfoProvider;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
@@ -195,7 +196,7 @@ public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements 
     public record UpdateInverted(boolean value) {}
 
     private void initializeMinMaxInputs(boolean wasPercent) {
-        if (LDLib.isRemote() || minValueInput == null || maxValueInput == null)
+        if (GTCEu.isClientThread() || minValueInput == null || maxValueInput == null)
             return;
 
         long energyCapacity = getEnergyInfoProvider().getEnergyInfo().capacity().longValue();

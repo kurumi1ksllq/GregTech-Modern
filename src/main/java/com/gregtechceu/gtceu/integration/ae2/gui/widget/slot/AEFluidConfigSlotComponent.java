@@ -8,11 +8,11 @@ import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidSlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAESlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlot;
 import com.gregtechceu.gtceu.integration.ae2.utils.AEUtil;
+import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
-import com.lowdragmc.lowdraglib.gui.util.TextFormattingUtil;
 import com.lowdragmc.lowdraglib.side.fluid.forge.FluidHelperImpl;
 
 import net.minecraft.client.renderer.Rect2i;
@@ -66,7 +66,8 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
                 DrawerHelper.drawFluidForGui(graphics, FluidHelperImpl.toFluidStack(stack), config.amount(), stackX,
                         stackY, 16, 16);
                 if (!parentWidget.isStocking()) {
-                    String amountStr = TextFormattingUtil.formatLongToCompactString(config.amount(), 4) + "mB";
+                    String amountStr = FormattingUtil.formatNumberReadable(config.amount(), true,
+                            FormattingUtil.DECIMAL_FORMAT_0F, "B");
                     drawStringFixedCorner(graphics, amountStr, stackX + 17, stackY + 17, 16777215, true, 0.5f);
                 }
             }
@@ -77,7 +78,8 @@ public class AEFluidConfigSlotComponent extends AEConfigSlotComponent implements
                 DrawerHelper.drawFluidForGui(graphics, FluidHelperImpl.toFluidStack(stack), stock.amount(), stackX,
                         stackY + 18, 16,
                         16);
-                String amountStr = TextFormattingUtil.formatLongToCompactString(stock.amount(), 4) + "mB";
+                String amountStr = FormattingUtil.formatNumberReadable(stock.amount(), true,
+                        FormattingUtil.DECIMAL_FORMAT_0F, "B");
                 drawStringFixedCorner(graphics, amountStr, stackX + 17, stackY + 18 + 17, 16777215, true, 0.5f);
             }
         }

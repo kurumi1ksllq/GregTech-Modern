@@ -1,6 +1,8 @@
 package com.gregtechceu.gtceu.integration.jei.recipe;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
@@ -28,14 +30,13 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Function;
 
-import javax.annotation.Nonnull;
+public class GTRecipeJEICategory extends ModularUIRecipeCategory<GTRecipe> {
 
-public class GTRecipeJEICategory extends UIRecipeCategory<GTRecipeComponent> {
-
-    public static final Function<GTRecipeCategory, RecipeType<GTRecipeComponent>> TYPES = Util
-            .memoize(c -> new RecipeType<>(c.registryKey, GTRecipeComponent.class));
+    public static final Function<GTRecipeCategory, RecipeType<GTRecipe>> TYPES = Util
+            .memoize(c -> new RecipeType<>(c.registryKey, GTRecipe.class));
 
     private final GTRecipeCategory category;
     @Getter
@@ -45,22 +46,21 @@ public class GTRecipeJEICategory extends UIRecipeCategory<GTRecipeComponent> {
 
     public GTRecipeJEICategory(IJeiHelpers helpers,
                                @NotNull GTRecipeCategory category) {
+        super(GTRecipeWrapper::new);
         this.category = category;
         var recipeType = category.getRecipeType();
         IGuiHelper guiHelper = helpers.getGuiHelper();
         var size = recipeType.getRecipeUI().getRecipeViewerSize();
-        this.background = guiHelper.createBlankDrawable(size.width(), size.height());
+        this.background = guiHelper.createBlankDrawable(size.width, size.height);
         this.icon = toDrawable(category.getIcon(), 16, 16);
     }
 
     public static void registerRecipes(IRecipeRegistration registration) {
         for (GTRecipeCategory category : GTRegistries.RECIPE_CATEGORIES) {
-            if (!category.isXEIVisible() && !Platform.isDevEnv()) continue;
+            if (!category.shouldRegisterDisplays()) continue;
             var type = category.getRecipeType();
             if (category == type.getCategory()) type.buildRepresentativeRecipes();
-            var wrapped = type.getRecipesInCategory(category).stream()
-                    .map(GTRecipeComponent::new)
-                    .toList();
+            var wrapped = List.copyOf(type.getRecipesInCategory(category));
             registration.addRecipes(TYPES.apply(category), wrapped);
         }
     }
@@ -71,7 +71,7 @@ public class GTRecipeJEICategory extends UIRecipeCategory<GTRecipeComponent> {
             for (GTRecipeType type : machine.getRecipeTypes()) {
                 if (type == null) continue;
                 for (GTRecipeCategory category : type.getCategories()) {
-                    if (!category.isXEIVisible() && !Platform.isDevEnv()) continue;
+                    if (!category.isXEIVisible() && !GTCEu.isDev()) continue;
                     registration.addRecipeCatalyst(machine.asStack(), machineType(category));
                 }
             }
@@ -85,7 +85,7 @@ public class GTRecipeJEICategory extends UIRecipeCategory<GTRecipeComponent> {
 
     @Override
     @NotNull
-    public RecipeType<GTRecipeComponent> getRecipeType() {
+    public RecipeType<GTRecipe> getRecipeType() {
         return TYPES.apply(category);
     }
 
@@ -96,8 +96,8 @@ public class GTRecipeJEICategory extends UIRecipeCategory<GTRecipeComponent> {
     }
 
     @Override
-    public @Nullable ResourceLocation getRegistryName(@NotNull GTRecipeComponent component) {
-        return component.getRecipe().id;
+    public @Nullable ResourceLocation getRegistryName(@NotNull GTRecipe recipe) {
+        return recipe.id;
     }
 
     static IDrawable toDrawable(UITexture guiTexture, final int width, final int height) {

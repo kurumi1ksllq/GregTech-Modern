@@ -33,7 +33,6 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -73,18 +72,18 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
     @Nullable
     protected ISubscription exportItemSubs;
 
-    public SteamMinerMachine(IMachineBlockEntity holder, int speed, int maximumRadius, int fortune) {
-        super(holder, false, fortune, speed, maximumRadius);
+    public SteamMinerMachine(IMachineBlockEntity holder, boolean isHighPressure, int speed, int maximumRadius,
+                             int fortune, int energyPerTick) {
+        super(holder, isHighPressure, fortune, speed, maximumRadius);
         this.inventorySize = 4;
-        this.energyPerTick = 16;
+        this.energyPerTick = energyPerTick;
         this.importItems = createImportItemHandler();
         this.exportItems = createExportItemHandler();
     }
 
     //////////////////////////////////////
     // ***** Initialization ******//
-
-    /// ///////////////////////////////////
+    //////////////////////////////////////
     @Override
     protected @NotNull RecipeLogic createRecipeLogic(Object... args) {
         if (args.length > 2 && args[args.length - 3] instanceof Integer fortune &&
@@ -92,7 +91,7 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
             return new SteamMinerLogic(this, fortune, speed, maxRadius);
         }
         throw new IllegalArgumentException(
-                "MinerMachine need args [inventorySize, fortune, speed, maximumRadius] for initialization");
+                "MinerMachine need args [fortune, speed, maximumRadius] for initialization");
     }
 
     @Override
@@ -115,6 +114,7 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
 
     @Override
     public void onMachineRemoved() {
+        getRecipeLogic().onRemove();
         clearInventory(exportItems.storage);
     }
 
@@ -122,6 +122,7 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
     public void onNeighborChanged(Block block, BlockPos fromPos, boolean isMoving) {
         super.onNeighborChanged(block, fromPos, isMoving);
         updateAutoOutputSubscription();
+        getRecipeLogic().updateTickSubscription();
     }
 
     @Override
@@ -146,8 +147,7 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
 
     //////////////////////////////////////
     // ********** LOGIC **********//
-
-    /// ///////////////////////////////////
+    //////////////////////////////////////
     protected void updateAutoOutputSubscription() {
         var outputFacingItems = getFrontFacing();
         if (!exportItems.isEmpty() && GTTransferUtils.hasAdjacentItemHandler(getLevel(), getPos(), outputFacingItems)) {
@@ -167,9 +167,7 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
 
     //////////////////////////////////////
     // *********** GUI ***********//
-
-    /// ///////////////////////////////////
-
+    //////////////////////////////////////
     @Override
     public void loadServerUI(Player player, UIContainerMenu<MetaMachine> menu, MetaMachine holder) {
         // TODO implement
@@ -181,7 +179,7 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
 
         FlowLayout group = UIContainers.horizontalFlow(Sizing.fixed(175), Sizing.fixed(176));
         group.surface(Surface.UI_BACKGROUND_BRONZE);
-        group.child(UIComponents.playerInventory(player.getInventory(), GuiTextures.SLOT_STEAM.get(false))
+        group.child(UIComponents.playerInventory(player.getInventory(), GuiTextures.SLOT_STEAM.get(isHighPressure()))
                 .positioning(Positioning.absolute(7, 94)));
 
         GridLayout grid = UIContainers.grid(Sizing.content(), Sizing.content(), rowSize, rowSize);
@@ -192,14 +190,14 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
                 grid.child(UIComponents.slot(exportItems, index)
                         .canInsert(false)
                         .canExtract(true)
-                        .backgroundTexture(GuiTextures.SLOT_STEAM.get(false)),
+                        .backgroundTexture(GuiTextures.SLOT_STEAM.get(isHighPressure())),
                         y, x);
             }
         }
         group.child(grid)
                 .child(UIComponents.label(getBlockState().getBlock().getName())
                         .positioning(Positioning.absolute(5, 5)))
-                .child(new PredicatedTextureComponent(GuiTextures.INDICATOR_NO_STEAM.get(isHighPressure))
+                .child(new PredicatedTextureComponent(GuiTextures.INDICATOR_NO_STEAM.get(isHighPressure()))
                         .predicate(recipeLogic::isWaiting)
                         .positioning(Positioning.absolute(79, 42))
                         .sizing(Sizing.fixed(18)))
@@ -222,15 +220,21 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
         textList.add(Component.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
         if (this.getRecipeLogic().isDone())
             textList.add(Component.translatable("gtceu.multiblock.large_miner.done")
-                    .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
+                    .withStyle(ChatFormatting.GREEN));
         else if (this.getRecipeLogic().isWorking())
             textList.add(Component.translatable("gtceu.multiblock.large_miner.working")
-                    .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)));
+                    .withStyle(ChatFormatting.GOLD));
         else if (!this.isWorkingEnabled())
             textList.add(Component.translatable("gtceu.multiblock.work_paused"));
         if (getRecipeLogic().isInventoryFull())
             textList.add(Component.translatable("gtceu.multiblock.large_miner.invfull")
-                    .setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
+                    .withStyle(ChatFormatting.RED));
+        if (isVentingBlocked())
+            textList.add(Component.translatable("gtceu.multiblock.large_miner.vent")
+                    .withStyle(ChatFormatting.RED));
+        else if (!drainInput(true))
+            textList.add(Component.translatable("gtceu.multiblock.large_miner.steam")
+                    .withStyle(ChatFormatting.RED));
     }
 
     void addDisplayText2(List<Component> textList) {
@@ -261,7 +265,7 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
 
     @Override
     public float getVentingDamage() {
-        return 0;
+        return isHighPressure() ? 12F : 6F;
     }
 
     @NotNull

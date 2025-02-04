@@ -9,8 +9,8 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.fluids.FluidConstants;
 import com.gregtechceu.gtceu.api.fluids.FluidState;
 import com.gregtechceu.gtceu.api.fluids.GTFluid;
-import com.gregtechceu.gtceu.api.item.GTBucketItem;
 import com.gregtechceu.gtceu.common.data.GTFluids;
+import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.fluid.potion.PotionFluidHelper;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -18,9 +18,13 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.MilkBucketItem;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.material.EmptyFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -50,9 +54,13 @@ public class TooltipsHandler {
                 tooltips.add(1, Component.literal(unificationEntry.material.getChemicalFormula())
                         .withStyle(ChatFormatting.YELLOW));
         }
-        // limit fluid tooltips to GT buckets
-        if (stack.getItem() instanceof GTBucketItem bucket) {
-            appendFluidTooltips(new FluidStack(bucket.getFluid(), FluidType.BUCKET_VOLUME), tooltips::add, flag);
+        if (stack.getItem() instanceof BucketItem bucket) {
+            var fluid = bucket.getFluid();
+            if (!(fluid instanceof EmptyFluid)) {
+                appendFluidTooltips(new FluidStack(fluid, FluidType.BUCKET_VOLUME), tooltips::add, flag);
+            }
+        } else if (stack.getItem() instanceof MilkBucketItem) {
+            appendFluidTooltips(GTMaterials.Milk.getFluid(FluidType.BUCKET_VOLUME), tooltips::add, flag);
         }
 
         // Block/Item custom tooltips

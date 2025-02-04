@@ -122,6 +122,11 @@ public class RotorHolderPartMachine extends TieredPartMachine
         }
     }
 
+    @Override
+    public boolean canShared() {
+        return false;
+    }
+
     //////////////////////////////////////
     // ****** Rotor Holder ******//
     //////////////////////////////////////
@@ -138,7 +143,7 @@ public class RotorHolderPartMachine extends TieredPartMachine
 
     @Override
     public boolean hasRotor() {
-        return rotorColor != 0;
+        return inventory.getStackInSlot(0) != ItemStack.EMPTY;
     }
 
     protected void updateRotorSubscription() {
@@ -151,12 +156,8 @@ public class RotorHolderPartMachine extends TieredPartMachine
     }
 
     private void updateRotorSpeed() {
-        for (IMultiController controller : getControllers()) {
-            if (controller instanceof IWorkableMultiController workableMultiController) {
-                if (workableMultiController.getRecipeLogic().isWorking()) {
-                    return;
-                }
-            }
+        if (isFormed() && getControllers().first() instanceof IWorkableMultiController workable) {
+            if (workable.getRecipeLogic().isWorking()) return;
         }
         if (!hasRotor()) {
             setRotorSpeed(0);
@@ -174,11 +175,8 @@ public class RotorHolderPartMachine extends TieredPartMachine
         }
         if (self().getOffsetTimer() % 20 == 0) {
             var numMaintenanceProblems = 0;
-            for (IMultiPart part : controller.getParts()) {
-                if (part instanceof IMaintenanceMachine maintenance) {
-                    numMaintenanceProblems = maintenance.getNumMaintenanceProblems();
-                    break;
-                }
+            if (isFormed() && getControllers().first() instanceof IMaintenanceMachine maintenance) {
+                numMaintenanceProblems = maintenance.getNumMaintenanceProblems();
             }
             damageRotor(1 + numMaintenanceProblems);
         }
@@ -186,10 +184,8 @@ public class RotorHolderPartMachine extends TieredPartMachine
     }
 
     public int getTierDifference() {
-        for (IMultiController controller : getControllers()) {
-            if (controller instanceof ITieredMachine tieredMachine) {
-                return getTier() - tieredMachine.getTier();
-            }
+        if (isFormed() && getControllers().first() instanceof ITieredMachine tieredMachine) {
+            return getTier() - tieredMachine.getTier();
         }
         return -1;
     }

@@ -23,7 +23,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
-import lombok.Setter;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -33,7 +32,6 @@ public class SmartItemFilter implements ItemFilter {
     protected Consumer<ItemFilter> itemWriter = filter -> {};
     protected Consumer<ItemFilter> onUpdated = filter -> itemWriter.accept(filter);
 
-    @Setter
     private SmartFilteringMode filterMode = SmartFilteringMode.ELECTROLYZER;
 
     protected SmartItemFilter() {}
@@ -58,10 +56,23 @@ public class SmartItemFilter implements ItemFilter {
     }
 
     @Override
+    public boolean isBlank() {
+        return filterMode.ordinal() == 0;
+    }
+
+    @Override
     public CompoundTag saveFilter() {
+        if (isBlank()) {
+            return null;
+        }
         var tag = new CompoundTag();
         tag.putInt("filterMode", filterMode.ordinal());
         return tag;
+    }
+
+    private void setFilterMode(SmartFilteringMode filterMode) {
+        this.filterMode = filterMode;
+        onUpdated.accept(this);
     }
 
     @Override
@@ -107,7 +118,7 @@ public class SmartItemFilter implements ItemFilter {
     public void setModeFromMachine(String machineName) {
         for (SmartFilteringMode mode : SmartFilteringMode.VALUES) {
             if (machineName.contains(mode.localeName)) {
-                this.filterMode = mode;
+                setFilterMode(mode);
                 return;
             }
         }

@@ -46,7 +46,6 @@ import me.shedaniel.rei.impl.client.gui.screen.AbstractDisplayViewingScreen;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -265,10 +264,10 @@ public class PatternPreviewComponent extends FlowLayout {
     protected void parentUpdate(float delta, int mouseX, int mouseY) {
         super.parentUpdate(delta, mouseX, mouseY);
         // I can only think of this way
-        if (!isLoaded && LDLib.isEmiLoaded() && Minecraft.getInstance().screen instanceof RecipeScreen) {
+        if (!isLoaded && GTCEu.Mods.isEMILoaded() && Minecraft.getInstance().screen instanceof RecipeScreen) {
             setPage(0);
             isLoaded = true;
-        } else if (!isLoaded && LDLib.isReiLoaded() &&
+        } else if (!isLoaded && GTCEu.Mods.isREILoaded() &&
                 Minecraft.getInstance().screen instanceof AbstractDisplayViewingScreen) {
                     setPage(0);
                     isLoaded = true;

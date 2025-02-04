@@ -18,8 +18,11 @@ import net.minecraft.world.entity.player.Player;
 
 public class SteamItemBusPartMachine extends ItemBusPartMachine {
 
+    private final String autoTooltipKey;
+
     public SteamItemBusPartMachine(IMachineBlockEntity holder, IO io, Object... args) {
         super(holder, 1, io, args);
+        autoTooltipKey = io == IO.IN ? "gtceu.gui.item_auto_input.tooltip" : "gtceu.gui.item_auto_output.tooltip";
     }
 
     @Override

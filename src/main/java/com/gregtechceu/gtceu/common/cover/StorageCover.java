@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.IUICover;
+import com.gregtechceu.gtceu.api.machine.MachineCoverContainer;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.api.ui.GuiTextures;
 import com.gregtechceu.gtceu.api.ui.UIContainerMenu;
@@ -53,11 +54,13 @@ public class StorageCover extends CoverBehavior implements IUICover {
     }
 
     @Override
+    @NotNull
     public ManagedFieldHolder getFieldHolder() {
         return MANAGED_FIELD_HOLDER;
     }
 
     @Override
+    @NotNull
     public List<ItemStack> getAdditionalDrops() {
         var list = super.getAdditionalDrops();
         for (int slot = 0; slot < SIZE; slot++) {
@@ -68,6 +71,7 @@ public class StorageCover extends CoverBehavior implements IUICover {
 
     @Override
     public boolean canAttach() {
+        if (!(coverHolder instanceof MachineCoverContainer)) return false;
         for (var dir : Direction.values()) {
             if (coverHolder.hasCover(dir) && coverHolder.getCoverAtSide(dir) instanceof StorageCover)
                 return false;

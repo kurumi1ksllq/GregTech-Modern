@@ -98,7 +98,7 @@ public abstract class NumberInputComponent<T extends Number> extends FlowLayout 
      * super.writeInitialData(buffer);
      * buffer.writeUtf(toText(valueSupplier.get()));
      * }
-     * 
+     *
      * @Override
      * public void readInitialData(FriendlyByteBuf buffer) {
      * super.readInitialData(buffer);
@@ -131,7 +131,7 @@ public abstract class NumberInputComponent<T extends Number> extends FlowLayout 
     private UITexture getButtonTexture(String prefix, int buttonWidth) {
         var texture = UITextures.text(Component.literal(prefix + "1"));
 
-        if (!LDLib.isRemote()) {
+        if (!GTCEu.isClientThread()) {
             return texture;
         }
 

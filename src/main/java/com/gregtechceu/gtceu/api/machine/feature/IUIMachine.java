@@ -37,7 +37,7 @@ public interface IUIMachine extends IUIHolder<MetaMachine>, IMachineFeature {
     @Override
     default boolean isClientSide() {
         var level = self().getLevel();
-        return level == null ? LDLib.isRemote() : level.isClientSide;
+        return level == null ? GTCEu.isClientThread() : level.isClientSide;
     }
 
     @Override

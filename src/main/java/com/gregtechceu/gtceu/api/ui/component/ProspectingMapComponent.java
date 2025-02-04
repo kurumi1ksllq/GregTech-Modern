@@ -185,7 +185,9 @@ public class ProspectingMapComponent extends StackLayout implements SearchCompon
             int oz = row - chunkRadius + 1;
 
             var chunk = world.getChunk(playerChunkX + ox, playerChunkZ + oz);
-            ServerCache.instance.prospectAllInChunk(world.dimension(), chunk.getPos(), (ServerPlayer) player);
+            if (mode == ProspectorMode.ORE) {
+                ServerCache.instance.prospectAllInChunk(world.dimension(), chunk.getPos(), (ServerPlayer) player);
+            }
             PacketProspecting packet = new PacketProspecting(playerChunkX + ox, playerChunkZ + oz, this.mode);
             mode.scan(packet.data, chunk);
             //sendMessage(-1, packet::writePacketData);

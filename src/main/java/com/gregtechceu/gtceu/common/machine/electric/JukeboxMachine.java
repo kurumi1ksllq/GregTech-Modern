@@ -4,32 +4,27 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.gregtechceu.gtceu.api.gui.UITemplate;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
-import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
-import com.gregtechceu.gtceu.api.machine.feature.IUIMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
+
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
-import lombok.Getter;
+
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.Level;
+
+import lombok.Getter;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -39,6 +34,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class JukeboxMachine extends TieredEnergyMachine implements IFancyUIMachine, IWorkable {
+
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(FisherMachine.class,
             TieredEnergyMachine.MANAGED_FIELD_HOLDER);
 
@@ -56,7 +52,6 @@ public class JukeboxMachine extends TieredEnergyMachine implements IFancyUIMachi
     @RequireRerender
     private boolean active = false;
 
-
     private final long energyPerTick;
     private static final int INVENTORY_SIZE = 21;
     @Persisted
@@ -73,16 +68,16 @@ public class JukeboxMachine extends TieredEnergyMachine implements IFancyUIMachi
         this.discProgress = 0;
     }
 
-//    private void updateDisc() {
-//        if (discProgress >= discLength) {
-//            {
-//            } else {
-//                this.discLength = -1;
-//            }
-//        } else {
-//            discProgress++;
-//        }
-//    }
+    // private void updateDisc() {
+    // if (discProgress >= discLength) {
+    // {
+    // } else {
+    // this.discLength = -1;
+    // }
+    // } else {
+    // discProgress++;
+    // }
+    // }
 
     private void playDisc() {
         if (!this.isWorkingEnabled) {
@@ -97,7 +92,7 @@ public class JukeboxMachine extends TieredEnergyMachine implements IFancyUIMachi
             Level level = this.getLevel();
             if (level != null && !level.isClientSide) {
                 record.getSound().getLocation();
-//                level.playSound(null, getPos(), );
+                // level.playSound(null, getPos(), );
             }
         }
     }
@@ -129,7 +124,7 @@ public class JukeboxMachine extends TieredEnergyMachine implements IFancyUIMachi
 
     @Override
     public Widget createUIWidget() {
-        WidgetGroup widgetGroup = new WidgetGroup(0,0,176, 60);
+        WidgetGroup widgetGroup = new WidgetGroup(0, 0, 176, 60);
         int x = 0;
         int y = 0;
         for (int slot = 0; slot < INVENTORY_SIZE; slot++) {
@@ -159,7 +154,6 @@ public class JukeboxMachine extends TieredEnergyMachine implements IFancyUIMachi
     public int getMaxProgress() {
         return this.discLength;
     }
-
 
     @Override
     public void setWorkingEnabled(boolean workingEnabled) {

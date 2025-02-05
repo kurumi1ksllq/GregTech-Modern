@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.client.audio;
 
-import com.mojang.blaze3d.audio.OggAudioStream;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import com.mojang.blaze3d.audio.OggAudioStream;
 
 import java.io.IOException;
 import java.io.InputStream;

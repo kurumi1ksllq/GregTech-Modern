@@ -27,6 +27,7 @@ import com.gregtechceu.gtceu.common.cover.FluidFilterCover;
 import com.gregtechceu.gtceu.common.cover.ItemFilterCover;
 import com.gregtechceu.gtceu.common.item.tool.behavior.ToolModeSwitchBehavior;
 
+import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.syncdata.IEnhancedManaged;
@@ -414,7 +415,7 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
         var controllable = GTCapabilityHelper.getControllable(getLevel(), getPos(), gridSide);
         if (controllable != null) {
             if (!isRemote()) {
-                if (!playerIn.isShiftKeyDown() || !controllable.isWorkingEnabled()) {
+                if (ConfigHolder.INSTANCE.machines.suspendOnFinish ^ (!playerIn.isShiftKeyDown() || !controllable.isWorkingEnabled())) {
                     controllable.setWorkingEnabled(!controllable.isWorkingEnabled());
                     playerIn.sendSystemMessage(Component.translatable(controllable.isWorkingEnabled() ?
                             "behaviour.soft_hammer.enabled" : "behaviour.soft_hammer.disabled"));

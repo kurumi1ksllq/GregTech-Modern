@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.machine.fancyconfigurator.CombinedDirectionalFa
 import com.gregtechceu.gtceu.api.machine.fancyconfigurator.MachineModeFancyConfigurator;
 import com.gregtechceu.gtceu.api.machine.fancyconfigurator.OverclockFancyConfigurator;
 
+import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
@@ -120,7 +121,10 @@ public interface IFancyUIMachine extends IUIMachine, IFancyUIProvider {
             configuratorPanel.attachConfigurators(new IFancyConfiguratorButton.Toggle(
                     GuiTextures.BUTTON_POWER.getSubTexture(0, 0, 1, 0.5),
                     GuiTextures.BUTTON_POWER.getSubTexture(0, 0.5, 1, 0.5),
-                    controllable::isWorkingEnabled, (clickData, pressed) -> controllable.setWorkingEnabled(pressed))
+                    controllable::isWorkingEnabled, (clickData, pressed) -> {
+                controllable.setWorkingEnabled(pressed);
+                if(ConfigHolder.INSTANCE.machines.suspendOnFinish) controllable.setSuspendAfterFinish(true);
+            })
                     .setTooltipsSupplier(pressed -> List.of(
                             Component.translatable(
                                     pressed ? "behaviour.soft_hammer.enabled" : "behaviour.soft_hammer.disabled"))));

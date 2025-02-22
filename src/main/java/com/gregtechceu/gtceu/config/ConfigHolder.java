@@ -448,6 +448,9 @@ public class ConfigHolder {
         @Configurable.Comment({ "Whether to play machine sounds while machines are active.", "Default: true" })
         public boolean machineSounds = true;
         @Configurable
+        @Configurable.Comment({ "Whether to suspend a machine after it finishes.", "Default: false" })
+        public boolean suspendOnFinish = false;
+        @Configurable
         @Configurable.Comment({ "Whether Steam Multiblocks should use Steel instead of Bronze.", "Default: false" })
         public boolean steelSteamMultiblocks = false;
         @Configurable

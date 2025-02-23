@@ -25,6 +25,7 @@ import com.gregtechceu.gtceu.common.data.materials.GTFoods;
 import com.gregtechceu.gtceu.common.entity.GTBoat;
 import com.gregtechceu.gtceu.common.item.*;
 import com.gregtechceu.gtceu.common.item.armor.*;
+import com.gregtechceu.gtceu.common.item.debug.StructureWriterBehaviour;
 import com.gregtechceu.gtceu.common.item.tool.behavior.LighterBehavior;
 import com.gregtechceu.gtceu.common.item.tool.behavior.MetaMachineConfigCopyBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
@@ -1657,8 +1658,10 @@ public class GTItems {
             .item("multilayer_fiber_reinforced_circuit_board", Item::new)
             .lang("Multi-layer Fiber-Reinforced Circuit Board")
             .register();
-    public static ItemEntry<Item> WETWARE_BOARD = REGISTRATE.item("wetware_circuit_board", Item::new)
+    public static ItemEntry<ComponentItem> WETWARE_BOARD = REGISTRATE
+            .item("wetware_circuit_board", ComponentItem::create)
             .lang("Wetware Circuit Board")
+            .onRegister(attach(StructureWriterBehaviour.INSTANCE))
             .register();
 
     public static ItemEntry<Item> BASIC_CIRCUIT_BOARD = REGISTRATE.item("resin_printed_circuit_board", Item::new)

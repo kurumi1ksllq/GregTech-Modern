@@ -752,6 +752,15 @@ public class LangHandler {
         provider.add("behaviour.setting.output.direction.tooltip", "%s output direction: %s");
         provider.add("behaviour.setting.item_auto_output.tooltip", "%s auto-output is %s");
         provider.add("behaviour.setting.muffled.tooltip", "Muffling %s");
+        provider.add("behaviour.structure_writer.place_first_block", "Placed first corner at X: %s, Y: %s, Z: %s");
+        provider.add("behaviour.structure_writer.place_second_block", "Placed second corner at X: %s, Y: %s, Z: %s");
+        provider.add("behaviour.structure_writer.cleared", "Cleared Selection!");
+        provider.add("behaviour.structure_writer.gui_pos", "Structure Bounds: {%s, %s, %s} - {%s, %s, %s}");
+        provider.add("behaviour.structure_writer.gui_pos_not_set", "Structure bounds not set");
+        provider.add("behaviour.structure_writer.export_order", "Export Order: §cC:%s§l§d/§aS:%s§l§d/§bA:%s");
+        provider.add("behaviour.structure_writer.export_to_chat", "Export to Chat");
+        provider.add("behaviour.structure_writer.rotate_x", "Rotate X-Axis");
+        provider.add("behaviour.structure_writer.rotate_y", "Rotate Y-Axis");
         provider.add("item.toggle.advanced.info.tooltip", "§8<Sneak to view stored configuration>");
         provider.add("enchantment.damage.disjunction", "Disjunction");
         provider.add("enchantment.gtceu.disjunction.description",

@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.item.debug;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -40,7 +41,7 @@ public class BlockPatternPrinter {
                         Character c = CHARACTER_MAP.charAt(index);
                         map.put(state, c);
                         symbolMap.putIfAbsent(c, new HashSet<>());
-                        symbolMap.get(c).add((state.getBlock().toString()));
+                        symbolMap.get(c).add((String.valueOf(BuiltInRegistries.BLOCK.getKey(state.getBlock()))));
                         index++;
                     }
                     builder.append(map.get(state));

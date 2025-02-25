@@ -19,7 +19,7 @@ public class BlockPatternPrinter {
     public int[][] aisleRepetitions;
     public Map<Character, Set<String>> symbolMap;
 
-    public static final String CHARACTER_MAP = "abcedfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    public static final String CHARACTER_MAP = "abcedfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     public BlockPatternPrinter(Level level, BlockPos min, BlockPos max) {
         symbolMap = new HashMap<>();

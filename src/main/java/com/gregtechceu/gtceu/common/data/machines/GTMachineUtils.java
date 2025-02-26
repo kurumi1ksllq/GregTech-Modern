@@ -603,9 +603,9 @@ public class GTMachineUtils {
                         .where('R',
                                 new TraceabilityPredicate(
                                         new SimplePredicate(
-                                                state -> MetaMachine.getMachine(state.getWorld(),
+                                                state -> MetaMachine.getMachine(state.getLevel(),
                                                         state.getPos()) instanceof IRotorHolderMachine rotorHolder &&
-                                                        state.getWorld()
+                                                        state.getLevel()
                                                                 .getBlockState(state.getPos()
                                                                         .relative(rotorHolder.self().getFrontFacing()))
                                                                 .isAir(),

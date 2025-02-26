@@ -295,7 +295,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
 
     @NotNull
     @Override
-    public BlockPattern getPattern() {
+    public BlockPattern createStructurePattern() {
         // return the default structure, even if there is no valid size found
         // this means auto-build will still work, and prevents terminal crashes.
         if (getLevel() != null) updateStructureDimensions();
@@ -431,7 +431,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
                 }
             }
             if (blockEntity != null) {
-                var receiver = GTCapabilityHelper.getCleanroomReceiver(blockWorldState.getWorld(),
+                var receiver = GTCapabilityHelper.getCleanroomReceiver(blockWorldState.getLevel(),
                         blockWorldState.getPos(), null);
                 if (receiver != null) {
                     receivers.add(receiver);

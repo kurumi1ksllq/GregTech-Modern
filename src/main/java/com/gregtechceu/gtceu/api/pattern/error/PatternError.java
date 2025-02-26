@@ -21,7 +21,7 @@ public class PatternError {
     }
 
     public Level getWorld() {
-        return worldState.getWorld();
+        return worldState.getLevel();
     }
 
     public BlockPos getPos() {

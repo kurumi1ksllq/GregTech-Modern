@@ -47,7 +47,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
      * @return whether it can be formed.
      */
     default boolean checkPattern() {
-        BlockPattern pattern = getPattern();
+        BlockPattern pattern = createStructurePattern();
         return pattern != null && pattern.checkPatternAt(getMultiblockState(), false);
     }
 
@@ -86,9 +86,11 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
      * Get structure pattern.
      * You can override it to create dynamic patterns.
      */
-    default BlockPattern getPattern() {
+    default BlockPattern createStructurePattern() {
         return self().getDefinition().getPatternFactory().get();
     }
+
+    default void createStructurePatterns() {}
 
     /**
      * Whether Multiblock Formed.

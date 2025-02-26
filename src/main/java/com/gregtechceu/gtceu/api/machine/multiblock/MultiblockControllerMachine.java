@@ -260,7 +260,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     public void setUpwardsFacing(@NotNull Direction upwardsFacing) {
         if (!getDefinition().isAllowExtendedFacing()) return;
-        if (upwardsFacing == null || upwardsFacing == Direction.UP || upwardsFacing == Direction.DOWN) {
+        if (upwardsFacing == Direction.UP || upwardsFacing == Direction.DOWN) {
             GTCEu.LOGGER.error("Tried to set upwards facing to invalid facing {}! Skipping", upwardsFacing);
             return;
         }

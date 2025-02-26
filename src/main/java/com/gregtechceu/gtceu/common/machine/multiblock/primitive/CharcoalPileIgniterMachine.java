@@ -142,7 +142,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     }
 
     @Override
-    public BlockPattern getPattern() {
+    public BlockPattern createStructurePattern() {
         updateDimensions();
 
         if (lDist < MIN_RADIUS) lDist = MIN_RADIUS;

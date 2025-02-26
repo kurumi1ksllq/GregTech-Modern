@@ -7,11 +7,10 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 import com.gregtechceu.gtceu.api.pattern.error.PatternStringError;
-import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
-import com.gregtechceu.gtceu.api.pattern.util.PatternMatchContext;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -20,100 +19,65 @@ import net.minecraft.world.level.block.state.BlockState;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
-import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Class allowing access to a block at a certain pos for structure checks and contains structure information.
+ */
 public class MultiblockState {
 
     public final static PatternError UNLOAD_ERROR = new PatternStringError("multiblocked.pattern.error.chunk");
     public final static PatternError UNINIT_ERROR = new PatternStringError("multiblocked.pattern.error.init");
 
+    @Setter
+    @Getter
+    protected Level level;
     private BlockPos pos;
     private BlockState blockState;
     private BlockEntity tileEntity;
     private boolean tileEntityInitialized;
-    @Getter
-    private final PatternMatchContext matchContext;
-    @Getter
-    private Map<SimplePredicate, Integer> globalCount;
-    @Getter
-    private Map<SimplePredicate, Integer> layerCount;
-    public TraceabilityPredicate predicate;
     public IO io;
-    public PatternError error;
-    @Getter
-    @Setter
-    private boolean neededFlip = false;
-    public final Level world;
-    public final BlockPos controllerPos;
+    //public final BlockPos controllerPos;
     public IMultiController lastController;
 
     // persist
     public LongOpenHashSet cache;
 
-    public MultiblockState(Level world, BlockPos controllerPos) {
-        this.world = world;
+    /*public MultiblockState(Level level, BlockPos controllerPos) {
+        this.level = level;
         this.controllerPos = controllerPos;
-        this.error = UNINIT_ERROR;
-        this.matchContext = new PatternMatchContext();
-    }
+    }*/
 
     protected void clean() {
-        this.matchContext.reset();
-        this.globalCount = new HashMap<>();
-        this.layerCount = new HashMap<>();
         cache = new LongOpenHashSet();
     }
 
-    protected boolean update(BlockPos posIn, TraceabilityPredicate predicate) {
-        this.pos = posIn;
+    protected void update(Level level, BlockPos pos) {
+        this.level = level;
+        this.pos = pos.immutable();
         this.blockState = null;
         this.tileEntity = null;
         this.tileEntityInitialized = false;
-        this.predicate = predicate;
-        this.error = null;
-        if (!world.isLoaded(posIn)) {
-            error = UNLOAD_ERROR;
-            return false;
-        }
-        return true;
     }
 
-    public IMultiController getController() {
-        if (world.isLoaded(controllerPos)) {
-            if (world.getBlockEntity(controllerPos) instanceof IMachineBlockEntity machineBlockEntity &&
+    /*public IMultiController getController() {
+        if (level.isLoaded(controllerPos)) {
+            if (level.getBlockEntity(controllerPos) instanceof IMachineBlockEntity machineBlockEntity &&
                     machineBlockEntity.getMetaMachine() instanceof IMultiController controller) {
                 return lastController = controller;
             }
         } else {
-            error = UNLOAD_ERROR;
+            GTCEu.LOGGER.error("Level is not loaded when trying to get controller pos");
         }
         return null;
-    }
-
-    public boolean hasError() {
-        return error != null;
-    }
-
-    public void setError(PatternError error) {
-        this.error = error;
-        if (error != null) {
-            error.setWorldState(this);
-        }
-    }
+    }*/
 
     public BlockState getBlockState() {
         if (this.blockState == null) {
-            this.blockState = this.world.getBlockState(this.pos);
-        }
-        if (this.blockState == null) {
-            GTCEu.LOGGER.error("could not get BlockState at " + this.pos + " in MultiblockState");
+            this.blockState = this.level.getBlockState(this.pos);
         }
         return this.blockState;
     }
@@ -124,7 +88,7 @@ public class MultiblockState {
             return null;
         }
         if (this.tileEntity == null && !this.tileEntityInitialized) {
-            this.tileEntity = this.world.getBlockEntity(this.pos);
+            this.tileEntity = this.level.getBlockEntity(this.pos);
             this.tileEntityInitialized = true;
         }
 
@@ -135,18 +99,18 @@ public class MultiblockState {
         return this.pos.immutable();
     }
 
-    public BlockState getOffsetState(Direction face) {
-        if (pos instanceof BlockPos.MutableBlockPos) {
-            ((BlockPos.MutableBlockPos) pos).move(face);
-            BlockState blockState = world.getBlockState(pos);
-            ((BlockPos.MutableBlockPos) pos).move(face.getOpposite());
-            return blockState;
-        }
-        return world.getBlockState(this.pos.relative(face));
+    public void setPos(BlockPos pos) {
+        this.pos = pos.immutable();
+        this.blockState = null;
+        this.tileEntity = null;
+        this.tileEntityInitialized = false;
     }
 
-    public Level getWorld() {
-        return world;
+    public void setPos(BetterBlockPos pos) {
+        this.pos = pos.immutable();
+        this.blockState = null;
+        this.tileEntity = null;
+        this.tileEntityInitialized = false;
     }
 
     public void addPosCache(BlockPos pos) {
@@ -161,8 +125,8 @@ public class MultiblockState {
         return cache.stream().map(BlockPos::of).collect(Collectors.toList());
     }
 
-    public void onBlockStateChanged(BlockPos pos, BlockState state) {
-        if (world instanceof ServerLevel serverLevel) {
+    /*public void onBlockStateChanged(BlockPos pos, BlockState state) {
+        if (level instanceof ServerLevel serverLevel) {
             if (pos.equals(controllerPos)) {
                 if (lastController != null) {
                     if (!state.is(lastController.self().getBlockState().getBlock())) {
@@ -197,5 +161,5 @@ public class MultiblockState {
                 }
             }
         }
-    }
+    }*/
 }

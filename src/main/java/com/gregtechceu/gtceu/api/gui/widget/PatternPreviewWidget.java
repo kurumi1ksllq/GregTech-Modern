@@ -212,7 +212,7 @@ public class PatternPreviewWidget extends WidgetGroup {
         TraceabilityPredicate predicate = patterns[index].predicateMap.get(pos);
         if (predicate != null) {
             predicates.clear();
-            predicates.addAll(predicate.common);
+            predicates.addAll(predicate.simple);
             predicates.addAll(predicate.limited);
             predicates.removeIf(p -> p == null || p.candidates == null); // why it happens?
             if (candidates != null) {

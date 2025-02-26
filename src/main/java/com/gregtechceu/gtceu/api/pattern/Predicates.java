@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.machine.multiblock.IBatteryData;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
+import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 import com.gregtechceu.gtceu.api.pattern.error.PatternStringError;
 import com.gregtechceu.gtceu.api.pattern.predicates.*;
 import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
@@ -182,14 +183,14 @@ public class Predicates {
     }
 
     public static TraceabilityPredicate heatingCoils() {
-        return new TraceabilityPredicate(blockWorldState -> {
-            var blockState = blockWorldState.getBlockState();
+        return new TraceabilityPredicate(worldState -> {
+            var blockState = worldState.getBlockState();
             for (Map.Entry<ICoilType, Supplier<CoilBlock>> entry : GTCEuAPI.HEATING_COILS.entrySet()) {
                 if (blockState.is(entry.getValue().get())) {
                     var stats = entry.getKey();
-                    Object currentCoil = blockWorldState.getMatchContext().getOrPut("CoilType", stats);
+                    Object currentCoil = worldState.getMatchContext().getOrPut("CoilType", stats);
                     if (!currentCoil.equals(stats)) {
-                        blockWorldState.setError(new PatternStringError("gtceu.multiblock.pattern.error.coils"));
+                        worldState.setError(new PatternStringError("gtceu.multiblock.pattern.error.coils"));
                         return false;
                     }
                     return true;
@@ -270,10 +271,10 @@ public class Predicates {
                 .or(new TraceabilityPredicate(blockWorldState -> {
                     BlockEntity tileEntity = blockWorldState.getTileEntity();
                     if (!(tileEntity instanceof IPipeNode<?, ?> pipeNode)) {
-                        return false;
+                        return PatternError.PLACEHOLDER;
                     }
-                    return ArrayUtils.contains(frameMaterials, pipeNode.getFrameMaterial());
-                }, () -> Arrays.stream(frameMaterials)
+                    return ArrayUtils.contains(frameMaterials, pipeNode.getFrameMaterial()) ? null : PatternError.PLACEHOLDER;
+                }, (map) -> Arrays.stream(frameMaterials)
                         .map(m -> GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, m))
                         .filter(Objects::nonNull).filter(RegistryEntry::isPresent).map(RegistryEntry::get)
                         .map(BlockInfo::fromBlock).toArray(BlockInfo[]::new)));

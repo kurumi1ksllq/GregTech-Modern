@@ -518,4 +518,13 @@ public class GTUtil {
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN))));
         });
     }
+
+    public static Direction cross(Direction a, Direction b) {
+        if(a.getAxis() == b.getAxis()) return null;
+
+        return Direction.getNearest(
+                a.getStepY() * b.getStepZ() - a.getStepZ() * b.getStepY(),
+                a.getStepZ() * b.getStepX() - a.getStepX() * b.getStepZ(),
+                a.getStepX() * b.getStepY() - a.getStepY() * b.getStepX());
+    }
 }

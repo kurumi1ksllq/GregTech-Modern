@@ -300,7 +300,7 @@ public class BlockPattern {
                                     infos = ArrayUtils.addAll(infos,
                                             limit.candidates == null ? null : limit.candidates.get());
                                 }
-                                for (SimplePredicate common : predicate.common) {
+                                for (SimplePredicate common : predicate.simple) {
                                     infos = ArrayUtils.addAll(infos,
                                             common.candidates == null ? null : common.candidates.get());
                                 }
@@ -451,7 +451,7 @@ public class BlockPattern {
                             }
                         }
                         if (!find) { // check common with previewCount
-                            for (SimplePredicate common : predicate.common) {
+                            for (SimplePredicate common : predicate.simple) {
                                 if (common.previewCount > 0) {
                                     if (!cacheGlobal.containsKey(common)) {
                                         cacheGlobal.put(common, 1);
@@ -469,7 +469,7 @@ public class BlockPattern {
                             }
                         }
                         if (!find) { // check without previewCount
-                            for (SimplePredicate common : predicate.common) {
+                            for (SimplePredicate common : predicate.simple) {
                                 if (common.previewCount == -1) {
                                     infos = common.candidates == null ? null : common.candidates.get();
                                     find = true;

@@ -1,43 +1,56 @@
 package com.gregtechceu.gtceu.api.pattern;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
+import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
 
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import lombok.Getter;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class TraceabilityPredicate {
 
-    public List<SimplePredicate> common = new ArrayList<>();
-    public List<SimplePredicate> limited = new ArrayList<>();
-    public boolean isController;
+    public static TraceabilityPredicate ANY = new TraceabilityPredicate(worldState -> null);
+    public static TraceabilityPredicate AIR = new TraceabilityPredicate(worldState ->
+            worldState.getBlockState().isAir() ? null :
+                    new PatternError(worldState.getPos(), Collections.emptyList()));
+
+
+    public List<SimplePredicate> simple = new ArrayList<>();
+    @Getter
+    protected boolean isController;
+    protected boolean hasAir = false;
+    @Getter
+    protected boolean isSingle = true;
 
     public TraceabilityPredicate() {}
 
     public TraceabilityPredicate(TraceabilityPredicate predicate) {
-        common.addAll(predicate.common);
-        limited.addAll(predicate.limited);
+        simple.addAll(predicate.simple);
         isController = predicate.isController;
+        hasAir = predicate.hasAir;
+        isSingle = predicate.isSingle;
     }
 
-    public TraceabilityPredicate(Predicate<MultiblockState> predicate, Supplier<BlockInfo[]> candidates) {
-        common.add(new SimplePredicate(predicate, candidates));
+    public TraceabilityPredicate(Function<MultiblockState, PatternError> predicate, Function<Map<String, String>, BlockInfo[]> candidates) {
+        simple.add(new SimplePredicate(predicate, candidates));
+    }
+
+    public TraceabilityPredicate(Function<MultiblockState, PatternError> predicate) {
+        this(predicate, null);
     }
 
     public TraceabilityPredicate(SimplePredicate simplePredicate) {
-        if (simplePredicate.minCount != -1 || simplePredicate.maxCount != -1) {
-            limited.add(simplePredicate);
-        } else {
-            common.add(simplePredicate);
-        }
+        simple.add(simplePredicate);
     }
 
     /**
@@ -48,9 +61,8 @@ public class TraceabilityPredicate {
         return this;
     }
 
-    public TraceabilityPredicate sort() {
-        limited.sort(Comparator.comparingInt(a -> a.minCount));
-        return this;
+    public boolean hasAir() {
+        return hasAir;
     }
 
     /**
@@ -59,14 +71,7 @@ public class TraceabilityPredicate {
     public TraceabilityPredicate addTooltips(Component... tips) {
         if (tips.length > 0) {
             List<Component> tooltips = Arrays.stream(tips).toList();
-            common.forEach(predicate -> {
-                if (predicate.candidates == null) return;
-                if (predicate.toolTips == null) {
-                    predicate.toolTips = new ArrayList<>();
-                }
-                predicate.toolTips.addAll(tooltips);
-            });
-            limited.forEach(predicate -> {
+            simple.forEach(predicate -> {
                 if (predicate.candidates == null) return;
                 if (predicate.toolTips == null) {
                     predicate.toolTips = new ArrayList<>();
@@ -77,15 +82,17 @@ public class TraceabilityPredicate {
         return this;
     }
 
+    public List<List<ItemStack>> getCandidates() {
+        return simple.stream()
+                .map(SimplePredicate::getCandidates)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Set the minimum number of candidate blocks.
      */
     public TraceabilityPredicate setMinGlobalLimited(int min) {
-        limited.addAll(common);
-        common.clear();
-        for (SimplePredicate predicate : limited) {
-            predicate.minCount = min;
-        }
+        simple.forEach(p -> p.minCount = min);
         return this;
     }
 
@@ -97,11 +104,7 @@ public class TraceabilityPredicate {
      * Set the maximum number of candidate blocks.
      */
     public TraceabilityPredicate setMaxGlobalLimited(int max) {
-        limited.addAll(common);
-        common.clear();
-        for (SimplePredicate predicate : limited) {
-            predicate.maxCount = max;
-        }
+        simple.forEach(p -> p.maxCount = max);
         return this;
     }
 
@@ -113,11 +116,7 @@ public class TraceabilityPredicate {
      * Set the minimum number of candidate blocks for each aisle layer.
      */
     public TraceabilityPredicate setMinLayerLimited(int min) {
-        limited.addAll(common);
-        common.clear();
-        for (SimplePredicate predicate : limited) {
-            predicate.minLayerCount = min;
-        }
+        simple.forEach(p -> p.minLayerCount = min);
         return this;
     }
 
@@ -129,11 +128,7 @@ public class TraceabilityPredicate {
      * Set the maximum number of candidate blocks for each aisle layer.
      */
     public TraceabilityPredicate setMaxLayerLimited(int max) {
-        limited.addAll(common);
-        common.clear();
-        for (SimplePredicate predicate : limited) {
-            predicate.maxLayerCount = max;
-        }
+        simple.forEach(p -> p.maxLayerCount = max);
         return this;
     }
 
@@ -154,8 +149,7 @@ public class TraceabilityPredicate {
      * Set the number of it appears in JEI pages. It only affects JEI preview. (The specific number)
      */
     public TraceabilityPredicate setPreviewCount(int count) {
-        common.forEach(predicate -> predicate.previewCount = count);
-        limited.forEach(predicate -> predicate.previewCount = count);
+        simple.forEach(p -> p.previewCount = count);
         return this;
     }
 
@@ -163,8 +157,7 @@ public class TraceabilityPredicate {
      * Set renderMask.
      */
     public TraceabilityPredicate disableRenderFormed() {
-        common.forEach(predicate -> predicate.disableRenderFormed = true);
-        limited.forEach(predicate -> predicate.disableRenderFormed = true);
+        simple.forEach(p -> p.disableRenderFormed = true);
         return this;
     }
 
@@ -172,65 +165,32 @@ public class TraceabilityPredicate {
      * Set io.
      */
     public TraceabilityPredicate setIO(IO io) {
-        common.forEach(predicate -> predicate.io = io);
-        limited.forEach(predicate -> predicate.io = io);
+        simple.forEach(predicate -> predicate.io = io);
         return this;
     }
 
     public TraceabilityPredicate setNBTParser(String nbtParser) {
-        common.forEach(predicate -> predicate.nbtParser = nbtParser);
-        limited.forEach(predicate -> predicate.nbtParser = nbtParser);
+        simple.forEach(predicate -> predicate.nbtParser = nbtParser);
         return this;
     }
 
-    public TraceabilityPredicate setSlotName(String slotName) {
-        common.forEach(predicate -> predicate.slotName = slotName);
-        limited.forEach(predicate -> predicate.slotName = slotName);
-        return this;
-    }
-
-    public boolean test(MultiblockState blockWorldState) {
-        blockWorldState.io = IO.BOTH;
-        boolean flag = false;
-        for (SimplePredicate predicate : limited) {
-            if (predicate.testLimited(blockWorldState)) {
-                flag = true;
-            }
+    public PatternError test(MultiblockState worldState, Object2IntMap<SimplePredicate> globalCache, Object2IntMap<SimplePredicate> layerCache) {
+        PatternError lastError = null;
+        for(SimplePredicate p : simple) {
+            PatternError error = p.testLimited(worldState, globalCache, layerCache);
+            if(error == null) return null;
+            lastError = error;
         }
-        flag = flag || common.stream().anyMatch(predicate -> predicate.test(blockWorldState));
-        if (flag) {
-            blockWorldState.setError(null);
-        }
-        return flag;
+        return lastError == PatternError.PLACEHOLDER ? new PatternError(worldState.getPos(), getCandidates()) : lastError;
     }
 
     public TraceabilityPredicate or(TraceabilityPredicate other) {
         if (other != null) {
             TraceabilityPredicate newPredicate = new TraceabilityPredicate(this);
-            newPredicate.common.addAll(other.common);
-            newPredicate.limited.addAll(other.limited);
+            newPredicate.hasAir = newPredicate.hasAir || this == AIR || other == AIR;
+            newPredicate.simple.addAll(other.simple);
             return newPredicate;
         }
         return this;
-    }
-
-    public boolean isAny() {
-        return this.common.size() == 1 && this.limited.isEmpty() && this.common.get(0) == SimplePredicate.ANY;
-    }
-
-    public boolean addCache() {
-        return !isAny();
-    }
-
-    public boolean isAir() {
-        return this.common.size() == 1 && this.limited.isEmpty() && this.common.get(0) == SimplePredicate.AIR;
-    }
-
-    public boolean isSingle() {
-        return !isAny() && !isAir() && this.common.size() + this.limited.size() == 1;
-    }
-
-    public boolean hasAir() {
-        return this.common.contains(SimplePredicate.AIR);
     }
 }

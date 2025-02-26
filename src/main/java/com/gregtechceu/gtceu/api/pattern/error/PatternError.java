@@ -4,20 +4,38 @@ import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
 
 public class PatternError {
 
+    /**
+     * Return this for your pattern errors if you want them to be a default error with the pos of the BlockWorldState
+     * and candidates of the simple predicate's error.
+     */
+    public static final PatternError PLACEHOLDER = new PatternError(BlockPos.ZERO, Collections.emptyList());
+    protected BlockPos pos;
+    @Getter
+    protected List<List<ItemStack>> candidates;
+    @Setter
     protected MultiblockState worldState;
 
-    public void setWorldState(MultiblockState worldState) {
-        this.worldState = worldState;
+    public PatternError(BlockPos pos, List<List<ItemStack>> candidates) {
+        this.pos = pos;
+        this.candidates = candidates;
+    }
+
+    public PatternError(BlockPos pos, TraceabilityPredicate predicate) {
+        this(pos, predicate.getCandidates());
     }
 
     public Level getWorld() {
@@ -28,20 +46,7 @@ public class PatternError {
         return worldState.getPos();
     }
 
-    public List<List<ItemStack>> getCandidates() {
-        TraceabilityPredicate predicate = worldState.predicate;
-        List<List<ItemStack>> candidates = new ArrayList<>();
-        for (SimplePredicate common : predicate.common) {
-            candidates.add(common.getCandidates());
-        }
-        for (SimplePredicate limited : predicate.limited) {
-            candidates.add(limited.getCandidates());
-        }
-        return candidates;
-    }
-
     public Component getErrorInfo() {
-        List<List<ItemStack>> candidates = getCandidates();
         StringBuilder builder = new StringBuilder();
         for (List<ItemStack> candidate : candidates) {
             if (!candidate.isEmpty()) {
@@ -50,6 +55,6 @@ public class PatternError {
             }
         }
         builder.append("...");
-        return Component.translatable("gtceu.multiblock.pattern.error", builder.toString(), worldState.getPos());
+        return Component.translatable("gtceu.multiblock.pattern.error", builder.toString(), getPos());
     }
 }

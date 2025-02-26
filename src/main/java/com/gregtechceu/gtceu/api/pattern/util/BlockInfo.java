@@ -23,7 +23,7 @@ public class BlockInfo {
     private boolean hasBlockEntity;
     private CompoundTag tag;
     private ItemStack itemStack;
-    private Consumer<BlockEntity> postCreate;
+    private BlockEntity blockEntity;
     private BlockEntity lastEntity;
 
     public BlockInfo(Block block) {
@@ -38,15 +38,15 @@ public class BlockInfo {
         this(blockState, hasBlockEntity, null, null);
     }
 
-    public BlockInfo(BlockState blockState, Consumer<BlockEntity> postCreate) {
-        this(blockState, true, null, postCreate);
+    public BlockInfo(BlockState blockState, BlockEntity blockEntity) {
+        this(blockState, true, null, blockEntity);
     }
 
-    public BlockInfo(BlockState blockState, boolean hasBlockEntity, ItemStack itemStack, Consumer<BlockEntity> postCreate) {
+    public BlockInfo(BlockState blockState, boolean hasBlockEntity, ItemStack itemStack, BlockEntity blockEntity) {
         this.blockState = blockState;
         this.hasBlockEntity = hasBlockEntity;
         this.itemStack = itemStack;
-        this.postCreate = postCreate;
+        this.blockEntity = blockEntity;
     }
 
     public static BlockInfo fromBlockState(BlockState state) {
@@ -80,9 +80,6 @@ public class BlockInfo {
                 if(!tag2.equals(tag3)) {
                     lastEntity.load(tag2);
                 }
-            }
-            if(postCreate != null) {
-                postCreate.accept(lastEntity);
             }
             return lastEntity;
         }

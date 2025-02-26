@@ -13,8 +13,9 @@ public class SinglePredicateError extends PatternError {
     public final SimplePredicate predicate;
     public final int type;
 
-    public SinglePredicateError(SimplePredicate predicate, int type) {
-        this.predicate = predicate;
+    public SinglePredicateError(SimplePredicate failingPredicate, int type) {
+        super(null, failingPredicate);
+        this.predicate = failingPredicate;
         this.type = type;
     }
 

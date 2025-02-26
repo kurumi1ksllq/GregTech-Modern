@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.pattern.predicates;
 
+import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
 import net.minecraft.world.level.block.Blocks;
@@ -12,24 +13,13 @@ import java.util.Objects;
 
 public class PredicateStates extends SimplePredicate {
 
-    public BlockState[] states = new BlockState[0];
-
-    public PredicateStates() {
-        super("states");
-    }
+    public final BlockState[] states;
 
     public PredicateStates(BlockState... states) {
-        this();
-        this.states = states;
-        buildPredicate();
-    }
-
-    @Override
-    public SimplePredicate buildPredicate() {
-        states = Arrays.stream(states).filter(Objects::nonNull).toArray(BlockState[]::new);
-        if (states.length == 0) states = new BlockState[] { Blocks.BARRIER.defaultBlockState() };
-        predicate = state -> ArrayUtils.contains(states, state.getBlockState());
-        candidates = () -> Arrays.stream(states).map(BlockInfo::fromBlockState).toArray(BlockInfo[]::new);
-        return this;
+        if (states.length == 0) this.states = new BlockState[] { Blocks.BARRIER.defaultBlockState() };
+        else this.states = Arrays.stream(states).filter(Objects::nonNull).toArray(BlockState[]::new);
+        predicate = state -> ArrayUtils.contains(this.states, state.getBlockState()) ?
+                null : PatternError.PLACEHOLDER;
+        candidates = (map) -> Arrays.stream(this.states).map(BlockInfo::fromBlockState).toArray(BlockInfo[]::new);
     }
 }

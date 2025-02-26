@@ -4,12 +4,14 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 import com.gregtechceu.gtceu.api.pattern.error.PatternStringError;
 import com.gregtechceu.gtceu.api.pattern.error.SinglePredicateError;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -25,6 +27,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -32,12 +35,10 @@ import java.util.stream.Collectors;
 
 public class SimplePredicate {
 
-    public static SimplePredicate ANY = new SimplePredicate("any", x -> true, null);
-    public static SimplePredicate AIR = new SimplePredicate("air",
-            blockWorldState -> blockWorldState.getLevel().isEmptyBlock(blockWorldState.getPos()), null);
+
     @Nullable
-    public Supplier<BlockInfo[]> candidates;
-    public Predicate<MultiblockState> predicate;
+    public Function<Map<String, String>, BlockInfo[]> candidates;
+    public Function<MultiblockState, PatternError> predicate;
     public List<Component> toolTips;
     public int minCount = -1;
     public int maxCount = -1;
@@ -49,27 +50,22 @@ public class SimplePredicate {
     public String slotName;
     public String nbtParser;
 
-    public final String type;
+    public String type;
 
     public SimplePredicate() {
-        this("unknown");
+        this.type = "Unknown";
     }
 
-    public SimplePredicate(String type) {
+    public SimplePredicate(Function<MultiblockState, PatternError> predicate, @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
+        this.predicate = predicate;
+        this.candidates = candidates;
+        this.type = "Unknown";
+    }
+
+    public SimplePredicate(String type, Function<MultiblockState, PatternError> predicate, @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
+        this.predicate = predicate;
+        this.candidates = candidates;
         this.type = type;
-    }
-
-    public SimplePredicate(Predicate<MultiblockState> predicate, @Nullable Supplier<BlockInfo[]> candidates) {
-        this();
-        this.predicate = predicate;
-        this.candidates = candidates;
-    }
-
-    public SimplePredicate(String type, Predicate<MultiblockState> predicate,
-                           @Nullable Supplier<BlockInfo[]> candidates) {
-        this(type);
-        this.predicate = predicate;
-        this.candidates = candidates;
     }
 
     public SimplePredicate buildPredicate() {
@@ -104,21 +100,18 @@ public class SimplePredicate {
         return result;
     }
 
-    public boolean test(MultiblockState blockWorldState) {
-        if (predicate.test(blockWorldState)) {
-            return checkInnerConditions(blockWorldState);
-        }
-        return false;
+    public PatternError testRaw(MultiblockState worldState) {
+        return predicate.apply(worldState);
     }
 
-    public boolean testLimited(MultiblockState blockWorldState) {
-        if (testGlobal(blockWorldState) && testLayer(blockWorldState)) {
-            return checkInnerConditions(blockWorldState);
-        }
-        return false;
+    public PatternError testLimited(MultiblockState worldState,
+                               Object2IntMap<SimplePredicate> globalCache, Object2IntMap<SimplePredicate> layerCache) {
+        PatternError error = testGlobal(worldState, globalCache, layerCache);
+        if(error != null) return error;
+        return testLayer(worldState, layerCache);
     }
 
-    private boolean checkInnerConditions(MultiblockState blockWorldState) {
+    /*private boolean checkInnerConditions(MultiblockState blockWorldState) {
         if (disableRenderFormed) {
             blockWorldState.getMatchContext().getOrCreate("renderMask", LongOpenHashSet::new)
                     .add(blockWorldState.getPos().asLong());
@@ -148,39 +141,37 @@ public class SimplePredicate {
             return true;
         }
         return true;
+    }*/
+
+    public PatternError testGlobal(MultiblockState worldState,
+                              Object2IntMap<SimplePredicate> globalCache, Object2IntMap<SimplePredicate> layerCache) {
+        PatternError res = predicate.apply(worldState);
+        if(!globalCache.containsKey(this)) globalCache.put(this, 0);
+        if((minCount == -1 && maxCount == -1) || res != null || layerCache == null) return res;
+        int count = layerCache.put(this, layerCache.getInt(this) + 1) + 1 + globalCache.getInt(this);
+        if(maxCount == -1 || count <= maxCount) return null;
+        return new SinglePredicateError(this, 0);
     }
 
-    public boolean testGlobal(MultiblockState blockWorldState) {
-        if (minCount == -1 && maxCount == -1) return true;
-        Integer count = blockWorldState.getGlobalCount().get(this);
-        boolean base = predicate.test(blockWorldState);
-        count = (count == null ? 0 : count) + (base ? 1 : 0);
-        blockWorldState.getGlobalCount().put(this, count);
-        if (maxCount == -1 || count <= maxCount) return base;
-        blockWorldState.setError(new SinglePredicateError(this, 0));
-        return false;
-    }
-
-    public boolean testLayer(MultiblockState blockWorldState) {
-        if (minLayerCount == -1 && maxLayerCount == -1) return true;
-        Integer count = blockWorldState.getLayerCount().get(this);
-        boolean base = predicate.test(blockWorldState);
-        count = (count == null ? 0 : count) + (base ? 1 : 0);
-        blockWorldState.getLayerCount().put(this, count);
-        if (maxLayerCount == -1 || count <= maxLayerCount) return base;
-        blockWorldState.setError(new SinglePredicateError(this, 2));
-        return false;
+    public PatternError testLayer(MultiblockState worldState, Object2IntMap<SimplePredicate> layerCache) {
+        PatternError res = predicate.apply(worldState);
+        if((minLayerCount == -1 && maxLayerCount == -1) || res != null) return res;
+        if(maxLayerCount == -1 || layerCache.getInt(this) <= maxLayerCount) return null;
+        return new SinglePredicateError(this, 2);
     }
 
     public List<ItemStack> getCandidates() {
         if (GTCEu.isClientSide()) {
             return candidates == null ? Collections.emptyList() :
-                    Arrays.stream(this.candidates.get()).filter(info -> info.getBlockState().getBlock() != Blocks.AIR)
+                    Arrays.stream(this.candidates.apply(Collections.emptyMap()))
+                            .filter(info -> info.getBlockState().getBlock() != Blocks.AIR)
                             .map(blockInfo -> blockInfo.getItemStackForm(Minecraft.getInstance().level, BlockPos.ZERO))
                             .collect(Collectors.toList());
         }
         return candidates == null ? Collections.emptyList() :
-                Arrays.stream(this.candidates.get()).filter(info -> info.getBlockState().getBlock() != Blocks.AIR)
-                        .map(BlockInfo::getItemStackForm).collect(Collectors.toList());
+                Arrays.stream(this.candidates.apply(Collections.emptyMap()))
+                        .filter(info -> info.getBlockState().getBlock() != Blocks.AIR)
+                        .map(BlockInfo::getItemStackForm)
+                        .collect(Collectors.toList());
     }
 }

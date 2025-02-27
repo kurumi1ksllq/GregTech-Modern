@@ -20,4 +20,16 @@ public class GTStringUtils {
         ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
         return stack.getCount() + "x_" + itemId.getNamespace() + "_" + itemId.getPath();
     }
+
+    public static int parseInt(String s, int defaultValue) {
+        try {
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    public static int parseInt(String s) {
+        return parseInt(s, -1);
+    }
 }

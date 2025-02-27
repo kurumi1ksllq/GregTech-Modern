@@ -7,9 +7,8 @@ import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 import com.gregtechceu.gtceu.api.pattern.error.PatternStringError;
 import com.gregtechceu.gtceu.api.pattern.error.SinglePredicateError;
+import com.gregtechceu.gtceu.api.pattern.util.BlockInfo;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
-
-import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.client.Minecraft;

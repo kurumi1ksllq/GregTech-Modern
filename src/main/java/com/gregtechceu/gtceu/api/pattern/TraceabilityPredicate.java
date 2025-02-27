@@ -4,8 +4,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
 
-import com.lowdragmc.lowdraglib.utils.BlockInfo;
-
+import com.gregtechceu.gtceu.api.pattern.util.BlockInfo;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import lombok.Getter;
 import net.minecraft.network.chat.Component;
@@ -41,6 +40,11 @@ public class TraceabilityPredicate {
         isSingle = predicate.isSingle;
     }
 
+    /**
+     *
+     * @param predicate
+     * @param candidates the valid list of BlockInfos that this traceability predicate allows
+     */
     public TraceabilityPredicate(Function<MultiblockState, PatternError> predicate, Function<Map<String, String>, BlockInfo[]> candidates) {
         simple.add(new SimplePredicate(predicate, candidates));
     }

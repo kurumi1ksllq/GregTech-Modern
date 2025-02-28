@@ -29,7 +29,7 @@ public interface IMultiPart extends IMachineFeature, IFancyUIMachine {
     /**
      * Can it be shared among multi multiblock.
      */
-    default boolean canShared() {
+    default boolean canShared(IMultiController controller, String substructureName) {
         return true;
     }
 
@@ -51,6 +51,8 @@ public interface IMultiPart extends IMachineFeature, IFancyUIMachine {
     @UnmodifiableView
     SortedSet<IMultiController> getControllers();
 
+    String getSubstructureName();
+
     /**
      * Called when it was removed from a multiblock.
      */
@@ -59,7 +61,7 @@ public interface IMultiPart extends IMachineFeature, IFancyUIMachine {
     /**
      * Called when it was added to a multiblock.
      */
-    void addedToController(IMultiController controller);
+    void addedToController(IMultiController controller, String name);
 
     /**
      * Get all available traits for recipe logic.

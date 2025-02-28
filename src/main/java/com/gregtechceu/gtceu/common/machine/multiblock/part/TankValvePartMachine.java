@@ -41,7 +41,7 @@ public class TankValvePartMachine extends MultiblockPartMachine {
     }
 
     @Override
-    public boolean canShared() {
+    public boolean canShared(IMultiController controller, String substructureName) {
         return false;
     }
 
@@ -52,8 +52,8 @@ public class TankValvePartMachine extends MultiblockPartMachine {
     }
 
     @Override
-    public void addedToController(IMultiController controller) {
-        super.addedToController(controller);
+    public void addedToController(IMultiController controller, String name) {
+        super.addedToController(controller, name);
 
         if (controller instanceof MultiblockTankMachine multiblockTank) {
             tankProxy.setProxy(multiblockTank.getTank());

@@ -73,7 +73,7 @@ public interface IMaintenanceMachine extends IMultiPart {
     }
 
     @Override
-    default boolean canShared() {
+    default boolean canShared(IMultiController controller, String substructureName) {
         return false;
     }
 

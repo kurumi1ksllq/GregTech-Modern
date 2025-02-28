@@ -43,6 +43,7 @@ public class MultiblockPartMachine extends MetaMachine implements IMultiPart {
     @UpdateListener(methodName = "onControllersUpdated")
     protected final Set<BlockPos> controllerPositions = new ObjectOpenHashSet<>(8);
     protected final SortedSet<IMultiController> controllers = new ReferenceLinkedOpenHashSet<>(8);
+    protected String substructureName;
 
     public MultiblockPartMachine(IMachineBlockEntity holder) {
         super(holder);
@@ -111,6 +112,7 @@ public class MultiblockPartMachine extends MetaMachine implements IMultiPart {
         }
         controllerPositions.clear();
         controllers.clear();
+        substructureName = null;
     }
 
     //////////////////////////////////////
@@ -121,11 +123,18 @@ public class MultiblockPartMachine extends MetaMachine implements IMultiPart {
     public void removedFromController(IMultiController controller) {
         controllerPositions.remove(controller.self().getPos());
         controllers.remove(controller);
+        substructureName = null;
     }
 
     @Override
-    public void addedToController(IMultiController controller) {
+    public void addedToController(IMultiController controller, String name) {
         controllerPositions.add(controller.self().getPos());
         controllers.add(controller);
+        substructureName = name;
+    }
+
+    @Override
+    public String getSubstructureName() {
+        return substructureName;
     }
 }

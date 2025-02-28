@@ -35,8 +35,8 @@ public class CleaningMaintenanceHatchPartMachine extends AutoMaintenanceHatchPar
     }
 
     @Override
-    public void addedToController(IMultiController controller) {
-        super.addedToController(controller);
+    public void addedToController(IMultiController controller, String name) {
+        super.addedToController(controller, name);
         if (controller instanceof ICleanroomReceiver receiver) {
             receiver.setCleanroom(DUMMY_CLEANROOM);
         }

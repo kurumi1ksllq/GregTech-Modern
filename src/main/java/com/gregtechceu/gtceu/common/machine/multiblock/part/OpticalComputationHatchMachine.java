@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.common.machine.multiblock.part;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableComputationContainer;
 
@@ -46,7 +47,7 @@ public class OpticalComputationHatchMachine extends MultiblockPartMachine {
     }
 
     @Override
-    public boolean canShared() {
+    public boolean canShared(IMultiController controller, String substructureName) {
         return false;
     }
 }

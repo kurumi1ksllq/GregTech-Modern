@@ -63,7 +63,7 @@ public class ParallelHatchPartMachine extends TieredPartMachine implements IFanc
     }
 
     @Override
-    public boolean canShared() {
+    public boolean canShared(IMultiController controller, String substructureName) {
         return false;
     }
 }

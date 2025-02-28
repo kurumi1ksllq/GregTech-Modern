@@ -9,9 +9,12 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
-import com.gregtechceu.gtceu.api.pattern.BlockPattern;
 import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.pattern.MultiblockWorldSavedData;
+import com.gregtechceu.gtceu.api.pattern.pattern.BlockPattern;
+import com.gregtechceu.gtceu.api.pattern.pattern.IBlockPattern;
+import com.gregtechceu.gtceu.api.pattern.pattern.PatternState;
+import com.gregtechceu.gtceu.api.pattern.util.BlockInfo;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
@@ -29,6 +32,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -44,6 +48,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -170,8 +175,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
                 serverLevel.getServer().execute(() -> {
                     patternLock.lock();
                     if (checkPatternWithLock()) { // formed
-                        setFlipped(getMultiblockState().isNeededFlip());
-                        onStructureFormed();
+                        formStructures
                         var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
                         mwsd.addMapping(getMultiblockState());
                         mwsd.removeAsyncLogic(this);
@@ -182,8 +186,124 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         }
     }
 
+    public PatternState checkAndFormStructurePatterns() {
+        for(String name : structures.keySet()) {
+            var state = checkStructurePattern(name);
+            if(!state.getState().isValid()) return state;
+            formStructure(name);
+        }
+        return null;
+    }
+
+    public PatternState checkStructurePattern() {
+        return checkStructurePattern(DEFAULT_STRUCTURE);
+    }
+
+    public PatternState checkStructurePattern(String name) {
+        IBlockPattern pattern = getSubstructure(name);
+        if(!pattern.getPatternState().shouldUpdate() || getLevel() == null) return pattern.getPatternState();
+
+        long time = System.nanoTime();
+        PatternState result = pattern.checkPatternFastAt(getLevel(), getPos(), getFrontFacing(), getUpwardsFacing(), allowFlip());
+        GTCEu.LOGGER.info("Structure check for" + self().getDefinition().getName() + " took " + (System.nanoTime() - time) + " ns");
+
+        return result;
+    }
+
     @Override
-    public void onStructureFormed() {
+    public void formStructure(String name) {
+        var patternState = checkStructurePattern(name);
+        if(patternState.getState().isValid()) {
+            if(patternState.isFormed()) {
+                if(patternState.getState() == PatternState.CheckState.VALID_UNCACHED) {
+                    forEachMultiPart(name, part -> {
+                        if(parts.contains(part)) return true;
+
+                        if(part.hasController(getPos()) && !part.canShared(this, name)) {
+                            invalidateStructure(name);
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    forEachMultiPart(name, part -> {
+                        if(parts.contains(part)) return true;
+
+                        if(shouldAddPartToController(part)) {
+                            this.parts.add(part);
+                        }
+                        return true;
+                    });
+
+                    this.parts.sort(getDefinition().getPartSorter());
+                    for (var part : parts) {
+                        if (part instanceof IParallelHatch pHatch) {
+                            parallelHatch = pHatch;
+                        }
+                        part.addedToController(this, name);
+                    }
+                    updatePartPositions();
+
+                    patternState.setFormed(true);
+                    setFlipped(patternState.isFlipped(), patternState);
+                }
+                return;
+            }
+
+            boolean[] valid = new boolean[1];
+            valid[0] = true;
+
+            forEachMultiPart(name, part -> {
+                if(part.hasController(getPos()) && !part.canShared(this, name)) {
+                    valid[0] = false;
+                    return false;
+                }
+                return true;
+            });
+
+            if(!valid[0]) return;
+
+            patternState.setFormed(true);
+            setFlipped(patternState.isFlipped(), patternState);
+
+        } else {
+            if(patternState.isFormed()) {
+                invalidateStructure(name);
+            }
+        }
+    }
+
+    public void setFlipped(boolean flipped, PatternState state) {
+        boolean flip = state.isActualFlipped();
+        if(flip != flipped) {
+            state.setActualFlipped(flipped);
+            this.isFlipped = flipped;
+        }
+    }
+
+    @Override
+    public void invalidateStructure(String name) {
+        if(!getSubstructure(name).getPatternState().isFormed()) return;
+
+        parts.removeIf(part -> {
+            if(name.equals(part.getSubstructureName())) {
+                part.removedFromController(this);
+                return true;
+            }
+            return false;
+        });
+        parallelHatch = null;
+        updatePartPositions();
+    }
+
+    protected void invalidStructureCaches() {
+        for(var pattern : structures.values()) {
+            pattern.clearCache();
+        }
+    }
+
+    @Override
+    public void onStructureFormed(String name) {
         isFormed = true;
         this.parts.clear();
         Set<IMultiPart> set = getMultiblockState().getMatchContext().getOrCreate("parts", Collections::emptySet);
@@ -197,13 +317,13 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             if (part instanceof IParallelHatch pHatch) {
                 parallelHatch = pHatch;
             }
-            part.addedToController(this);
+            //part.addedToController(this);
         }
         updatePartPositions();
     }
 
     @Override
-    public void onStructureInvalid() {
+    public void onStructureInvalid(String name) {
         isFormed = false;
         for (IMultiPart part : parts) {
             part.removedFromController(this);
@@ -211,6 +331,20 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         parallelHatch = null;
         parts.clear();
         updatePartPositions();
+    }
+
+    public IBlockPattern getSubstructure(String name) {
+        return structures.get(name);
+    }
+
+    void forEachMultiPart(String name, Predicate<IMultiPart> action) {
+        var cache = getSubstructure(name).getCache();
+        for(BlockInfo info : cache.values()) {
+            BlockEntity be = info.getBlockEntity();
+            if(be instanceof IMultiPart part) {
+                if(!action.test(part)) return;
+            }
+        }
     }
 
     /**
@@ -233,7 +367,8 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     public void onRotated(Direction oldFacing, Direction newFacing) {
         if (oldFacing != newFacing && getLevel() instanceof ServerLevel serverLevel) {
             // invalid structure
-            this.onStructureInvalid();
+            //this.onStructureInvalid();
+            invalidStructureCaches();
             var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
             mwsd.removeMapping(getMultiblockState());
             mwsd.addAsyncLogic(this);
@@ -272,7 +407,9 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             if (getLevel() != null && !getLevel().isClientSide) {
                 notifyBlockUpdate();
                 markDirty();
-                checkPattern();
+
+                invalidStructureCaches();
+                checkStructurePatterns();
             }
         }
     }
@@ -310,7 +447,10 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         if (getLevel() != null && !getLevel().isClientSide) {
             notifyBlockUpdate();
             markDirty();
-            checkPattern();
+
+            invalidStructureCaches();
+            checkStructurePatterns();
+            //checkPattern();
         }
     }
 }

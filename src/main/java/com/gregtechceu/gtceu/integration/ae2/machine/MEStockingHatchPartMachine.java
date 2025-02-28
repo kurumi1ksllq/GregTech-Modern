@@ -70,9 +70,9 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine implemen
     /////////////////////////////////
 
     @Override
-    public void addedToController(IMultiController controller) {
-        super.addedToController(controller);
-        IMEStockingPart.super.addedToController(controller);
+    public void addedToController(IMultiController controller, String name) {
+        super.addedToController(controller, name);
+        IMEStockingPart.super.addedToController(controller, name);
     }
 
     @Override

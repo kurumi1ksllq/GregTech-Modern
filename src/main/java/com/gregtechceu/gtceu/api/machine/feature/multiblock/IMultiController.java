@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IMachineFeature;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.pattern.BlockPattern;
 import com.gregtechceu.gtceu.api.pattern.MultiblockState;
+import com.gregtechceu.gtceu.api.pattern.pattern.PatternState;
 import com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
@@ -24,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
+import java.util.function.Predicate;
 
 /**
  * @author KilaBash
@@ -39,17 +41,18 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
 
     /**
      * Check MultiBlock Pattern. Just checking pattern without any other logic.
-     * You can override it but it's unsafe for calling. because it will also be called in an async thread.
+     * You can override it, but it's unsafe for calling. because it will also be called in an async thread.
      * <br>
      * you should always use {@link IMultiController#checkPatternWithLock()} and
      * {@link IMultiController#checkPatternWithTryLock()} instead.
      *
      * @return whether it can be formed.
      */
-    default boolean checkPattern() {
-        BlockPattern pattern = createStructurePattern();
-        return pattern != null && pattern.checkPatternAt(getMultiblockState(), false);
-    }
+    PatternState checkAndFormStructurePatterns();
+
+    PatternState checkStructurePattern();
+
+    PatternState checkStructurePattern(String structureName);
 
     /**
      * Check pattern with a lock.
@@ -58,7 +61,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
         var lock = getPatternLock();
         lock.lock();
         try {
-            return checkPattern();
+            return checkAndFormStructurePatterns().getState().isValid();
         } finally {
             lock.unlock();
         }
@@ -73,7 +76,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
         var lock = getPatternLock();
         if (lock.tryLock()) {
             try {
-                return checkPattern();
+                return checkStructurePatterns().stream().anyMatch(e -> !e.getState().isValid());
             } finally {
                 lock.unlock();
             }
@@ -90,13 +93,41 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
         return self().getDefinition().getPatternFactory().get();
     }
 
-    default void createStructurePatterns() {}
+    /**
+     *  Call to form a multiblock
+     * @param name the structure with which to form
+     */
+    void formStructure(String name);
+
+    void invalidateStructure(String name);
 
     /**
-     * Whether Multiblock Formed.
+     * Called when structure is formed, have to be called after {@link #formStructure(String)}. (server-side / fake scene only)
      * <br>
-     * NOTE: even machine is formed, it doesn't mean to workable!
-     * Its parts maybe invalid due to chunk unload.
+     * Trigger points:
+     * <br>
+     * 1 - Blocks in structure changed but still formed.
+     * <br>
+     * 2 - Literally, structure formed.
+     */
+    void onStructureFormed(String name);
+
+    /**
+     * Called when structure is invalid. (server-side / fake scene only)
+     * <br>
+     * Trigger points:
+     * <br>
+     * 1 - Blocks in structure changed.
+     * <br>
+     * 2 - Before controller machine removed.
+     */
+    void onStructureInvalid(String name);
+
+    /**
+     * Whether multiblock is formed.
+     * <br>
+     * NOTE: even if machine is formed, it doesn't mean the machine will be workable
+     * Its parts maybe invalid due to unloaded chunks.
      */
     boolean isFormed();
 
@@ -113,28 +144,6 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
      * @param periodID period Tick
      */
     void asyncCheckPattern(long periodID);
-
-    /**
-     * Called when structure is formed, have to be called after {@link #checkPattern()}. (server-side / fake scene only)
-     * <br>
-     * Trigger points:
-     * <br>
-     * 1 - Blocks in structure changed but still formed.
-     * <br>
-     * 2 - Literally, structure formed.
-     */
-    void onStructureFormed();
-
-    /**
-     * Called when structure is invalid. (server-side / fake scene only)
-     * <br>
-     * Trigger points:
-     * <br>
-     * 1 - Blocks in structure changed.
-     * <br>
-     * 2 - Before controller machine removed.
-     */
-    void onStructureInvalid();
 
     /**
      * Whether it has front face.

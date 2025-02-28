@@ -38,6 +38,10 @@ public class PatternError {
         this(pos, predicate.getCandidates());
     }
 
+    public PatternError(BlockPos pos, SimplePredicate failingPredicate) {
+        this(pos, Collections.singletonList(failingPredicate.getCandidates()));
+    }
+
     public Level getWorld() {
         return worldState.getLevel();
     }

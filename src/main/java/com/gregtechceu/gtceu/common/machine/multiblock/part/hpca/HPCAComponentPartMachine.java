@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.machine.multiblock.part.hpca;
 import com.gregtechceu.gtceu.api.capability.IHPCAComponentHatch;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineModifyDrops;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 
@@ -55,7 +56,7 @@ public abstract class HPCAComponentPartMachine extends MultiblockPartMachine
     }
 
     @Override
-    public boolean canShared() {
+    public boolean canShared(IMultiController controller, String substructureName) {
         return false;
     }
 

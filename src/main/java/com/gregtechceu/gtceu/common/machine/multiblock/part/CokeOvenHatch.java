@@ -76,8 +76,8 @@ public class CokeOvenHatch extends MultiblockPartMachine {
     }
 
     @Override
-    public void addedToController(IMultiController controller) {
-        super.addedToController(controller);
+    public void addedToController(IMultiController controller, String name) {
+        super.addedToController(controller, name);
         if (controller instanceof CokeOvenMachine cokeOven) {
             outputInventorySubs = cokeOven.exportItems.addChangedListener(this::updateAutoIOSubscription);
             outputTankSubs = cokeOven.exportFluids.addChangedListener(this::updateAutoIOSubscription);
@@ -104,7 +104,7 @@ public class CokeOvenHatch extends MultiblockPartMachine {
     }
 
     @Override
-    public boolean canShared() {
+    public boolean canShared(IMultiController controller, String substructureName) {
         return false;
     }
 

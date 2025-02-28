@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.api.pattern.predicates;
 
 import com.gregtechceu.gtceu.api.pattern.error.PatternError;
-import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
+import com.gregtechceu.gtceu.api.pattern.util.BlockInfo;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 

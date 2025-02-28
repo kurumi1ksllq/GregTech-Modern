@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public interface IMEStockingPart extends IAutoPullPart {
 
     @Override
-    default void addedToController(IMultiController controller) {
+    default void addedToController(IMultiController controller, String name) {
         // ensure that no other stocking bus on this multiblock is configured to hold the same item.
         // that we have in our own bus.
         setAutoPullTest(stack -> !this.testConfiguredInOtherPart(stack));

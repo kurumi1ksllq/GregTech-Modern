@@ -23,6 +23,7 @@ public class BlockInfo {
     private boolean hasBlockEntity;
     private CompoundTag tag;
     private ItemStack itemStack;
+    @Getter
     private BlockEntity blockEntity;
     private BlockEntity lastEntity;
 

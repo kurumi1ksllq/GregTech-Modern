@@ -116,7 +116,7 @@ public class RotorHolderPartMachine extends TieredPartMachine
     }
 
     @Override
-    public boolean canShared() {
+    public boolean canShared(IMultiController controller, String substructureName) {
         return false;
     }
 

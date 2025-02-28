@@ -67,9 +67,9 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     /////////////////////////////////
 
     @Override
-    public void addedToController(IMultiController controller) {
-        super.addedToController(controller);
-        IMEStockingPart.super.addedToController(controller);
+    public void addedToController(IMultiController controller, String name) {
+        super.addedToController(controller, name);
+        IMEStockingPart.super.addedToController(controller, name);
     }
 
     @Override

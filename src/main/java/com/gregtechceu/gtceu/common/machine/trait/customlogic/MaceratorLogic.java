@@ -53,8 +53,8 @@ public class MaceratorLogic implements GTRecipeType.ICustomRecipeLogic {
         }
 
         if (stack.getItem() instanceof IGTTool tool && !tool.isElectric()) {
-            float durability = (float) (tool.getTotalMaxDurability(stack) - stack.getDamageValue() + 1) /
-                    (tool.getTotalMaxDurability(stack) + 1);
+            float durability = (float) (tool.getTotalMaxDurability(stack) - stack.getDamageValue()) /
+                    (tool.getTotalMaxDurability(stack));
             return applyDurabilityRecipe("tool_decomp", stack, tool.getMaterial(),
                     (float) (tool.getToolType().materialAmount / GTValues.M), durability,
                     GTValues.VH[GTValues.LV], 2);

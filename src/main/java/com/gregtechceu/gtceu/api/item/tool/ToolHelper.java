@@ -226,7 +226,7 @@ public class ToolHelper {
                     CriteriaTriggers.ITEM_DURABILITY_CHANGED.trigger(serverPlayer, stack, newDurability);
                 }
                 stack.setDamageValue(newDurability);
-                if (newDurability > stack.getMaxDamage()) {
+                if (newDurability >= stack.getMaxDamage()) {
                     if (user instanceof Player player) {
                         Stat<?> stat = Stats.ITEM_BROKEN.get(stack.getItem());
                         player.awardStat(stat);

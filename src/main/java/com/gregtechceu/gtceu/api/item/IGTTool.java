@@ -144,7 +144,7 @@ public interface IGTTool extends HeldItemUIFactory.IHeldItemUIHolder, ItemLike {
             durability += toolStats.getBaseDurability(stack) * toolStats.getDurabilityMultiplier(stack);
         }
 
-        toolTag.putInt(MAX_DURABILITY_KEY, durability - 1);
+        toolTag.putInt(MAX_DURABILITY_KEY, durability);
         toolTag.putInt(DURABILITY_KEY, 0);
         if (toolProperty.isUnbreakable()) {
             stackCompound.putBoolean(UNBREAKABLE_KEY, true);
@@ -632,27 +632,18 @@ public interface IGTTool extends HeldItemUIFactory.IHeldItemUIHolder, ItemLike {
 
         // electric info
         if (this.isElectric()) {
-
-            tooltip.add(Component.translatable("metaitem.generic.electric_item.tooltip",
-                    FormattingUtil.formatNumbers(getCharge(stack)),
-                    FormattingUtil.formatNumbers(getMaxCharge(stack)),
-                    GTValues.VNF[getElectricTier()]));
             ElectricStats.addCurrentChargeTooltip(tooltip, getCharge(stack), getMaxCharge(stack), getElectricTier());
         }
 
         // durability info
         if (!tagCompound.getBoolean(UNBREAKABLE_KEY)) {
-            // Plus 1 to match vanilla behavior where tools can still be used once at zero durability. We want to not
-            // show this
-            int damageRemaining = tool.getTotalMaxDurability(stack) - stack.getDamageValue() + 1;
+            int damageRemaining = tool.getTotalMaxDurability(stack) - stack.getDamageValue();
             if (toolStats.isSuitableForCrafting(stack)) {
                 tooltip.add(Component.translatable("item.gtceu.tool.tooltip.crafting_uses", FormattingUtil
                         .formatNumbers(damageRemaining / Math.max(1, toolStats.getToolDamagePerCraft(stack)))));
             }
-            tooltip.add(Component.translatable("item.gtceu.tool.tooltip.max_uses",
-                    FormattingUtil.formatNumbers(tool.getTotalMaxDurability(stack))));
             tooltip.add(Component.translatable("item.gtceu.tool.tooltip.general_uses",
-                    FormattingUtil.formatNumbers(damageRemaining)));
+                    FormattingUtil.formatNumbers(damageRemaining), FormattingUtil.formatNumbers(tool.getTotalMaxDurability(stack))));
 
         }
 

@@ -55,7 +55,7 @@ public class MultiblockState {
         cache = new LongOpenHashSet();
     }
 
-    protected void update(Level level, BlockPos pos) {
+    public void update(Level level, BlockPos pos) {
         this.level = level;
         this.pos = pos.immutable();
         this.blockState = null;

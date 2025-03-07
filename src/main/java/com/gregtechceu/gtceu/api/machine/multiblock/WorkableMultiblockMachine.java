@@ -20,6 +20,7 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 
@@ -30,6 +31,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -110,9 +112,17 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
     // *** Multiblock LifeCycle ***//
     //////////////////////////////////////
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
+    public void formStructure(String name) {
+        super.formStructure(name);
         // attach parts' traits
+        var cache = getSubstructure(name).getCache();
+        for(var entry : cache.long2ObjectEntrySet()) {
+            if(entry.getValue().getBlockState().getBlock() instanceof ActiveBlock) {
+                if(activeBlocks == null) activeBlocks = new LongOpenHashSet();
+                activeBlocks.add(entry.getLongKey());
+            }
+        }
+
         activeBlocks = getMultiblockState().getMatchContext().getOrDefault("vaBlocks", LongSets.emptySet());
         capabilitiesProxy.clear();
         traitSubscriptions.forEach(ISubscription::unsubscribe);
@@ -147,8 +157,8 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
     }
 
     @Override
-    public void onStructureInvalid() {
-        super.onStructureInvalid();
+    public void invalidateStructure(String name) {
+        super.invalidateStructure(name);
         updateActiveBlocks(false);
         activeBlocks = null;
         capabilitiesProxy.clear();
@@ -203,16 +213,16 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
     }
 
     public void updateActiveBlocks(boolean active) {
-        if (activeBlocks != null) {
-            for (Long pos : activeBlocks) {
-                var blockPos = BlockPos.of(pos);
-                var blockState = getLevel().getBlockState(blockPos);
-                if (blockState.getBlock() instanceof ActiveBlock block) {
-                    var newState = block.changeActive(blockState, active);
-                    if (newState != blockState) {
-                        getLevel().setBlockAndUpdate(blockPos, newState);
-                    }
-                }
+        if(getLevel() == null || activeBlocks == null) return;
+
+        var iter = activeBlocks.iterator();
+        while (iter.hasNext()) {
+            var blockPos = iter.nextLong();
+            BlockPos pos = BlockPos.of(blockPos);
+            BlockState state = getLevel().getBlockState(pos);
+            BlockState newState = ((ActiveBlock)state.getBlock()).changeActive(state, active);
+            if(newState != state) {
+                getLevel().setBlockAndUpdate(pos, newState);
             }
         }
     }
@@ -232,7 +242,7 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
 
     @Override
     public boolean isRecipeLogicAvailable() {
-        return isFormed && !getMultiblockState().hasError();
+        return isFormed && !checkStructurePattern().hasError();
     }
 
     @Override

@@ -48,7 +48,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
      *
      * @return whether it can be formed.
      */
-    PatternState checkAndFormStructurePatterns();
+    void checkAndFormStructurePatterns();
 
     PatternState checkStructurePattern();
 
@@ -61,7 +61,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
         var lock = getPatternLock();
         lock.lock();
         try {
-            return checkAndFormStructurePatterns().getState().isValid();
+            return checkStructurePattern().getState().isValid();
         } finally {
             lock.unlock();
         }
@@ -76,7 +76,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
         var lock = getPatternLock();
         if (lock.tryLock()) {
             try {
-                return checkStructurePatterns().stream().anyMatch(e -> !e.getState().isValid());
+                return checkStructurePattern().getState().isValid();
             } finally {
                 lock.unlock();
             }
@@ -101,27 +101,27 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
 
     void invalidateStructure(String name);
 
-    /**
-     * Called when structure is formed, have to be called after {@link #formStructure(String)}. (server-side / fake scene only)
-     * <br>
-     * Trigger points:
-     * <br>
-     * 1 - Blocks in structure changed but still formed.
-     * <br>
-     * 2 - Literally, structure formed.
-     */
-    void onStructureFormed(String name);
-
-    /**
-     * Called when structure is invalid. (server-side / fake scene only)
-     * <br>
-     * Trigger points:
-     * <br>
-     * 1 - Blocks in structure changed.
-     * <br>
-     * 2 - Before controller machine removed.
-     */
-    void onStructureInvalid(String name);
+//    /**
+//     * Called when structure is formed, have to be called after {@link #formStructure(String)}. (server-side / fake scene only)
+//     * <br>
+//     * Trigger points:
+//     * <br>
+//     * 1 - Blocks in structure changed but still formed.
+//     * <br>
+//     * 2 - Literally, structure formed.
+//     */
+//    void onStructureFormed(String name);
+//
+//    /**
+//     * Called when structure is invalid. (server-side / fake scene only)
+//     * <br>
+//     * Trigger points:
+//     * <br>
+//     * 1 - Blocks in structure changed.
+//     * <br>
+//     * 2 - Before controller machine removed.
+//     */
+//    void onStructureInvalid(String name);
 
     /**
      * Whether multiblock is formed.

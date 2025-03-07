@@ -46,7 +46,7 @@ public class BlockPattern implements IBlockPattern {
     protected final Object2IntMap<SimplePredicate> globalCount = new Object2IntOpenHashMap<>();
     protected final Object2IntMap<SimplePredicate> layerCount = new Object2IntOpenHashMap<>();
     protected final PatternState state = new PatternState();
-    protected  final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
 
     public BlockPattern(@NotNull PatternAisle @NotNull[] aisles, @NotNull AisleStrategy aisleStrategy,
                         int @NotNull[] dimensions, @NotNull RelativeDirection @NotNull[] directions,

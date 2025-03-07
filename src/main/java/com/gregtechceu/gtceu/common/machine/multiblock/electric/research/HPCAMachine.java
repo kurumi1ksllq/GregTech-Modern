@@ -96,8 +96,8 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
     }
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
+    public void formStructure(String name) {
+        super.formStructure(name);
         List<IEnergyContainer> energyContainers = new ArrayList<>();
         List<IFluidHandler> coolantContainers = new ArrayList<>();
         List<IHPCAComponentHatch> componentHatches = new ArrayList<>();

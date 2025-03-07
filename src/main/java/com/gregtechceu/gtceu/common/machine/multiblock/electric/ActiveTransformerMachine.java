@@ -79,8 +79,8 @@ public class ActiveTransformerMachine extends WorkableElectricMultiblockMachine
     }
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
+    public void formStructure(String name) {
+        super.formStructure(name);
         // capture all energy containers
         List<IEnergyContainer> powerInput = new ArrayList<>();
         List<IEnergyContainer> powerOutput = new ArrayList<>();
@@ -107,7 +107,7 @@ public class ActiveTransformerMachine extends WorkableElectricMultiblockMachine
 
         // Invalidate the structure if there is not at least one output and one input
         if (powerInput.isEmpty() || powerOutput.isEmpty()) {
-            this.onStructureInvalid();
+            this.invalidateStructure();
         }
 
         this.powerOutput = new EnergyContainerList(powerOutput);
@@ -137,12 +137,12 @@ public class ActiveTransformerMachine extends WorkableElectricMultiblockMachine
     }
 
     @Override
-    public void onStructureInvalid() {
+    public void invalidateStructure(String name) {
         if ((isWorkingEnabled() && recipeLogic.getStatus() == RecipeLogic.Status.WORKING) &&
                 !ConfigHolder.INSTANCE.machines.harmlessActiveTransformers) {
             doExplosion(6f + getTier());
         }
-        super.onStructureInvalid();
+        super.invalidateStructure(name);
         this.powerOutput = new EnergyContainerList(new ArrayList<>());
         this.powerInput = new EnergyContainerList(new ArrayList<>());
         getRecipeLogic().setStatus(RecipeLogic.Status.SUSPEND);

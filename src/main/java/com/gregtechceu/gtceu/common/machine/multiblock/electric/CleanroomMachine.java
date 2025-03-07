@@ -130,8 +130,8 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     //////////////////////////////////////
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
+    public void formStructure(String name) {
+        super.formStructure(name);
         initializeAbilities();
         IFilterType filterType = getMultiblockState().getMatchContext().get("FilterType");
         if (filterType != null) {
@@ -158,8 +158,8 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     }
 
     @Override
-    public void onStructureInvalid() {
-        super.onStructureInvalid();
+    public void invalidateStructure(String name) {
+        super.invalidateStructure(name);
         this.inputEnergyContainers = null;
         this.cleanAmount = MIN_CLEAN_AMOUNT;
         if (cleanroomReceivers != null) {

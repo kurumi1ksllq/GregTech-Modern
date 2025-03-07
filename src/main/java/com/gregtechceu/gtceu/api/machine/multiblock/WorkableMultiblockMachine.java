@@ -123,22 +123,24 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
             }
         }
 
-        activeBlocks = getMultiblockState().getMatchContext().getOrDefault("vaBlocks", LongSets.emptySet());
+        //activeBlocks = getMultiblockState().getMatchContext().getOrDefault("vaBlocks", LongSets.emptySet());
         capabilitiesProxy.clear();
         traitSubscriptions.forEach(ISubscription::unsubscribe);
         traitSubscriptions.clear();
-        Map<Long, IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectMaps::emptyMap);
+        //Map<Long, IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectMaps::emptyMap);
         for (IMultiPart part : getParts()) {
-            IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
-            if (io == IO.NONE) continue;
+            //IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
+            //if (io == IO.NONE) continue;
             for (var handler : part.getRecipeHandlers()) {
                 // If IO not compatible
-                if (io != IO.BOTH && handler.getHandlerIO() != IO.BOTH && io != handler.getHandlerIO()) continue;
-                var handlerIO = io == IO.BOTH ? handler.getHandlerIO() : io;
+                //if (io != IO.BOTH && handler.getHandlerIO() != IO.BOTH && io != handler.getHandlerIO()) continue;
+                var handlerIO = handler.getHandlerIO();
                 if (!capabilitiesProxy.contains(handlerIO, handler.getCapability())) {
                     capabilitiesProxy.put(handlerIO, handler.getCapability(), new ArrayList<>());
                 }
-                capabilitiesProxy.get(handlerIO, handler.getCapability()).add(handler);
+                var c = capabilitiesProxy.get(handlerIO, handler.getCapability());
+                if(c != null)
+                    c.add(handler);
                 traitSubscriptions.add(handler.addChangedListener(recipeLogic::updateTickSubscription));
             }
         }

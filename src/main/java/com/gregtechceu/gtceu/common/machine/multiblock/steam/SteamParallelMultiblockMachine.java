@@ -57,8 +57,8 @@ public class SteamParallelMultiblockMachine extends WorkableMultiblockMachine im
     }
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
+    public void formStructure(String name) {
+        super.formStructure(name);
         var handlers = capabilitiesProxy.get(IO.IN, FluidRecipeCapability.CAP);
         if (handlers == null) return;
         var itr = handlers.iterator();

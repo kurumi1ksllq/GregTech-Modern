@@ -14,6 +14,8 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockDisplayText;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
+import com.gregtechceu.gtceu.api.pattern.error.PatternError;
+import com.gregtechceu.gtceu.api.pattern.pattern.PatternState;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 
@@ -56,8 +58,8 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
     }
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
+    public void formStructure(String name) {
+        super.formStructure(name);
         for (IMultiPart part : getParts()) {
             IOpticalComputationProvider provider = part.self().holder.self()
                     .getCapability(GTCapability.CAPABILITY_COMPUTATION_PROVIDER).resolve().orElse(null);
@@ -73,21 +75,28 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
 
         // should never happen, but would rather do this than have an obscure NPE
         if (computationProvider == null || objectHolder == null) {
-            onStructureInvalid();
+            invalidateStructure();
         }
     }
 
     @Override
-    public boolean checkPattern() {
-        boolean isFormed = super.checkPattern();
-        if (isFormed && objectHolder != null && objectHolder.getFrontFacing() != getFrontFacing().getOpposite()) {
-            onStructureInvalid();
+    public PatternState checkStructurePattern(String name) {
+        var patternState = super.checkStructurePattern(name);
+        var cache = getSubstructure(name).getCache();
+        IObjectHolder objHolder = null;
+        for(var entry : cache.long2ObjectEntrySet()) {
+            if(entry.getValue().getBlockState().getBlock() instanceof IObjectHolder) {
+                objHolder = (IObjectHolder) entry.getValue();
+            }
         }
-        return isFormed;
+        if(objHolder != null && objHolder.getFrontFacing() != getFrontFacing().getOpposite()) {
+            patternState.setError(PatternError.PLACEHOLDER);
+        }
+        return patternState;
     }
 
     @Override
-    public void onStructureInvalid() {
+    public void invalidateStructure(String name) {
         computationProvider = null;
         // recheck the ability to make sure it wasn't the one broken
         for (IMultiPart part : getParts()) {
@@ -98,7 +107,7 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
             }
         }
         objectHolder = null;
-        super.onStructureInvalid();
+        super.invalidateStructure(name);
     }
 
     @Override

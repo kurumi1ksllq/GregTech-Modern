@@ -90,8 +90,8 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
     }
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
+    public void formStructure(String name) {
+        super.formStructure(name);
         List<IEnergyContainer> inputs = new ArrayList<>();
         List<IEnergyContainer> outputs = new ArrayList<>();
         Map<Long, IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectMaps::emptyMap);

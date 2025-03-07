@@ -42,14 +42,14 @@ public class LargeChemicalBathMachine extends WorkableElectricMultiblockMachine 
     }
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
+    public void formStructure(String name) {
+        super.formStructure(name);
         saveOffsets();
     }
 
     @Override
-    public void onStructureInvalid() {
-        super.onStructureInvalid();
+    public void invalidateStructure(String name) {
+        super.invalidateStructure(name);
         fluidBlockOffsets.clear();
     }
 

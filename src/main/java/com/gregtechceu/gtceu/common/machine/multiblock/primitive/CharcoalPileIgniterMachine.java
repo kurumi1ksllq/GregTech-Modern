@@ -6,11 +6,13 @@ import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
+import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.pattern.BlockPattern;
 import com.gregtechceu.gtceu.api.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.pattern.Predicates;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.item.tool.behavior.LighterBehavior;
 
@@ -90,16 +92,21 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     }
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
+    public void formStructure(String name) {
+        super.formStructure(name);
+        forEachFormed(DEFAULT_STRUCTURE, (info, pos) -> {
+            if(info.getBlockState().is(BlockTags.LOGS)) {
+                logPos.add(pos.immutable());
+            }
+        });
         updateMaxProgessTime();
         burnLogsSubscription = subscribeServerTick(this::tick);
         tick();
     }
 
     @Override
-    public void onStructureInvalid() {
-        super.onStructureInvalid();
+    public void invalidateStructure(String name) {
+        super.invalidateStructure(name);
         resetState();
         this.progressTime = 0;
         this.maxTime = 0;
@@ -234,17 +241,14 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
                     break;
                 }
             }
-            return match;
+            return match ? null : PatternError.PLACEHOLDER;
         }, null);
     }
 
     private TraceabilityPredicate logPredicate() {
         return new TraceabilityPredicate(multiblockState -> {
-            if (multiblockState.getBlockState().is(BlockTags.LOGS_THAT_BURN)) {
-                logPos.add(multiblockState.getPos());
-                return true;
-            }
-            return false;
+            boolean match = multiblockState.getBlockState().is(BlockTags.LOGS_THAT_BURN);
+            return match ? null : PatternError.PLACEHOLDER;
         }, null);
     }
 

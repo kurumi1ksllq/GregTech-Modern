@@ -66,14 +66,14 @@ public class PrimitiveBlastFurnaceMachine extends PrimitiveWorkableMachine imple
     }
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
+    public void formStructure(String name) {
+        super.formStructure(name);
         this.hurtSubscription = subscribeServerTick(this::hurtEntities);
     }
 
     @Override
-    public void onStructureInvalid() {
-        super.onStructureInvalid();
+    public void invalidateStructure(String name) {
+        super.invalidateStructure(name);
         unsubscribe(hurtSubscription);
     }
 

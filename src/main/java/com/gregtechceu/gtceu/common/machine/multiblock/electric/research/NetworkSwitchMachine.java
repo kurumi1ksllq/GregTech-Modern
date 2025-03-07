@@ -55,8 +55,8 @@ public class NetworkSwitchMachine extends DataBankMachine implements IOpticalCom
     }
 
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
+    public void formStructure(String name) {
+        super.formStructure(name);
         List<IOpticalComputationHatch> receivers = new ArrayList<>();
         List<IOpticalComputationHatch> transmitters = new ArrayList<>();
         for (var part : this.getParts()) {

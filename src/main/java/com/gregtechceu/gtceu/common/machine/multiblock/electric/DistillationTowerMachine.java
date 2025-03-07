@@ -73,10 +73,10 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
     }
 
     @Override
-    public void onStructureFormed() {
+    public void formStructure(String name) {
         getDefinition().setPartSorter(Comparator.comparingInt(p -> p.self().getPos().getY()));
         getDefinition().setAllowExtendedFacing(false);
-        super.onStructureFormed();
+        super.formStructure(name);
         final int startY = getPos().getY() + yOffset;
         List<IMultiPart> parts = getParts().stream()
                 .filter(part -> PartAbility.EXPORT_FLUIDS.isApplicable(part.self().getBlockState().getBlock()))

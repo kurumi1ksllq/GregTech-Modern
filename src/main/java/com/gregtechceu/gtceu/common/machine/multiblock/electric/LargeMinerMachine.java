@@ -15,6 +15,8 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMa
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
+import com.gregtechceu.gtceu.api.pattern.error.PatternError;
+import com.gregtechceu.gtceu.api.pattern.pattern.PatternState;
 import com.gregtechceu.gtceu.api.transfer.fluid.FluidHandlerList;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
@@ -119,17 +121,20 @@ public class LargeMinerMachine extends WorkableElectricMultiblockMachine
     // ******* Logic *********//
     //////////////////////////////////////
     @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
+    public void formStructure(String name) {
+        super.formStructure(name);
         Direction opposite = this.getUpwardsFacing().getOpposite();
         getRecipeLogic().setDir(opposite == Direction.NORTH ? Direction.UP : Direction.DOWN);
         initializeAbilities();
     }
 
     @Override
-    public boolean checkPattern() {
-        return super.checkPattern() &&
-                (this.getUpwardsFacing() == Direction.NORTH || this.getUpwardsFacing() == Direction.SOUTH);
+    public PatternState checkStructurePattern(String name) {
+        var patternState = super.checkStructurePattern(name);
+        if(this.getUpwardsFacing() != Direction.UP && this.getUpwardsFacing() != Direction.DOWN) {
+            patternState.setError(PatternError.PLACEHOLDER);
+        }
+        return patternState;
     }
 
     private void initializeAbilities() {

@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
+import com.gregtechceu.gtceu.api.pattern.BetterBlockPos;
 import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.pattern.MultiblockWorldSavedData;
 import com.gregtechceu.gtceu.api.pattern.pattern.BlockPattern;
@@ -48,6 +49,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -282,6 +284,10 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         }
     }
 
+    public void invalidateStructure() {
+        invalidateStructure(DEFAULT_STRUCTURE);
+    }
+
     @Override
     public void invalidateStructure(String name) {
         if(!getSubstructure(name).getPatternState().isFormed()) return;
@@ -345,6 +351,14 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             if(be instanceof IMultiPart part) {
                 if(!action.test(part)) return;
             }
+        }
+    }
+
+    protected void forEachFormed(String name, BiConsumer<BlockInfo, BetterBlockPos> action) {
+        var cache = getSubstructure(name).getCache();
+        BetterBlockPos pos = new BetterBlockPos();
+        for(var entry : cache.long2ObjectEntrySet()) {
+            action.accept(entry.getValue(), pos.fromLong(entry.getLongKey()));
         }
     }
 

@@ -14,6 +14,28 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A builder class for {@link BlockPattern}<br />
+ * When the multiblock is placed, its facings are concrete. Then, the {@link RelativeDirection}s passed into
+ * {@link FactoryBlockPattern#start(RelativeDirection, RelativeDirection, RelativeDirection)} are ways in which the
+ * pattern progresses. It can be thought like this, where startPos() is either defined via
+ * {@link FactoryBlockPattern#startOffset(OriginOffset)}
+ * , or automatically detected(for legacy compat only, you should use
+ * {@link FactoryBlockPattern#startOffset(OriginOffset)} always for new code):
+ *
+ * <pre>
+ * {@code
+ * for(int aisleI in 0..aisles):
+ *     for(int stringI in 0..strings):
+ *         for(int charI in 0..chars):
+ *             pos = startPos()
+ *             pos.move(aisleI in aisleDir)
+ *             pos.move(stringI in stringDir)
+ *             pos.move(charI in charDir)
+ *             predicate = aisles[aisleI].stringAt(stringI).charAt(charI)
+ * }
+ * </pre>
+ */
 public class FactoryBlockPattern {
     protected static final Joiner COMMA_JOIN = Joiner.on(",");
 
@@ -105,7 +127,11 @@ public class FactoryBlockPattern {
     public BlockPattern build() {
         checkMissingPredicates();
         this.dimensions[0] = aisles.size();
-        if(aisleStrategy == null) aisleStrategy = new
+        if(aisleStrategy == null) aisleStrategy = new BasicAisleStrategy();
+
+        aisleStrategy.finish(dimensions, directions, aisles);
+        return new BlockPattern(aisles.toArray(new PatternAisle[0]), aisleStrategy, dimensions,
+                directions, offset, symbolMap, centerChar);
     }
 
     private void checkMissingPredicates() {
@@ -118,11 +144,11 @@ public class FactoryBlockPattern {
         }
 
         if(!list.isEmpty()) {
-            throw new IllegalStateException("Predicates for character(s) " + COMMA_JOIN.join(list) + " are missing")
+            throw new IllegalStateException("Predicates for character(s) " + COMMA_JOIN.join(list) + " are missing");
         }
     }
 
-    public String[] validateAisle(String[] aisle) {
+    public void validateAisle(String[] aisle) {
         if(ArrayUtils.isEmpty(aisle) || StringUtils.isEmpty(aisle[0]))
             throw new IllegalArgumentException("Empty pattern for aisle");
 
@@ -145,7 +171,6 @@ public class FactoryBlockPattern {
                             ", found one with " + s.length() + ")");
                 }
             }
-            return aisle;
         }
     }
 }

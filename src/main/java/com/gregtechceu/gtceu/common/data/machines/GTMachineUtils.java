@@ -22,7 +22,8 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IRotorHolderMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.steam.SimpleSteamMachine;
-import com.gregtechceu.gtceu.api.pattern.FactoryBlockPattern;
+import com.gregtechceu.gtceu.api.pattern.error.PatternError;
+import com.gregtechceu.gtceu.api.pattern.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.pattern.Predicates;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
@@ -600,22 +601,8 @@ public class GTMachineUtils {
                         .where('S', controller(blocks(definition.getBlock())))
                         .where('G', blocks(gear.get()))
                         .where('C', blocks(casing.get()))
-                        .where('R',
-                                new TraceabilityPredicate(
-                                        new SimplePredicate(
-                                                state -> MetaMachine.getMachine(state.getLevel(),
-                                                        state.getPos()) instanceof IRotorHolderMachine rotorHolder &&
-                                                        state.getLevel()
-                                                                .getBlockState(state.getPos()
-                                                                        .relative(rotorHolder.self().getFrontFacing()))
-                                                                .isAir(),
-                                                () -> PartAbility.ROTOR_HOLDER.getAllBlocks().stream()
-                                                        .map(BlockInfo::fromBlock).toArray(BlockInfo[]::new)))
-                                        .addTooltips(Component.translatable("gtceu.multiblock.pattern.clear_amount_3"))
-                                        .addTooltips(Component.translatable("gtceu.multiblock.pattern.error.limited.1",
-                                                VN[tier]))
-                                        .setExactLimit(1)
-                                        .or(abilities(PartAbility.OUTPUT_ENERGY)).setExactLimit(1))
+                        .where('R', rotorHolder(tier).setExactLimit(1)
+                                .or(abilities(PartAbility.OUTPUT_ENERGY)).setExactLimit(1))
                         .where('H', blocks(casing.get())
                                 .or(autoAbilities(definition.getRecipeTypes(), false, false, true, true, true, true))
                                 .or(autoAbilities(true, needsMuffler, false)))
@@ -628,6 +615,24 @@ public class GTMachineUtils {
                         Component.translatable("gtceu.universal.tooltip.base_production_eut", V[tier] * 2),
                         Component.translatable("gtceu.multiblock.turbine.efficiency_tooltip", VNF[tier]))
                 .register();
+    }
+
+    private static TraceabilityPredicate rotorHolder(int tier) {
+        return new TraceabilityPredicate(new SimplePredicate((worldState) -> {
+            if(MetaMachine.getMachine(worldState.getLevel(),
+                    worldState.getPos()) instanceof IRotorHolderMachine rotorHolder &&
+                    worldState.getLevel()
+                            .getBlockState(worldState.getPos()
+                                    .relative(rotorHolder.self().getFrontFacing()))
+                            .isAir()) {
+                return null;
+            }
+            return PatternError.PLACEHOLDER;
+        }, (map) -> PartAbility.ROTOR_HOLDER.getAllBlocks().stream()
+                .map(com.gregtechceu.gtceu.api.pattern.util.BlockInfo::fromBlock).toArray(com.gregtechceu.gtceu.api.pattern.util.BlockInfo[]::new)))
+                .addTooltips(Component.translatable("gtceu.multiblock.pattern.clear_amount_3"))
+                .addTooltips(Component.translatable("gtceu.multiblock.pattern.error.limited.1",
+                        VN[tier]));
     }
 
     // Tooltips

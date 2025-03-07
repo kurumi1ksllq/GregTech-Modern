@@ -1,3 +1,4 @@
+/*
 package com.gregtechceu.gtceu.api.pattern;
 
 import com.gregtechceu.gtceu.api.block.ActiveBlock;
@@ -685,3 +686,4 @@ public class BlockPattern {
         return null;
     }
 }
+*/

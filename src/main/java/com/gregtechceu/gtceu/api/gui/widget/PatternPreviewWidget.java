@@ -6,7 +6,8 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
-import com.gregtechceu.gtceu.api.pattern.BlockPattern;
+import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
+import com.gregtechceu.gtceu.api.pattern.pattern.BlockPattern;
 import com.gregtechceu.gtceu.api.pattern.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
@@ -149,7 +150,7 @@ public class PatternPreviewWidget extends WidgetGroup {
         Stream<BlockPos> stream = pattern.blockMap.keySet().stream()
                 .filter(pos -> layer == -1 || layer + pattern.minY == pos.getY());
         if (pattern.controllerBase.isFormed()) {
-            LongSet set = pattern.controllerBase.getMultiblockState().getMatchContext().getOrDefault("renderMask",
+            /*LongSet set = pattern.controllerBase.getMultiblockState().getMatchContext().getOrDefault("renderMask",
                     LongSets.EMPTY_SET);
             Set<BlockPos> modelDisabled = set.stream().map(BlockPos::of).collect(Collectors.toSet());
             if (!modelDisabled.isEmpty()) {
@@ -157,7 +158,7 @@ public class PatternPreviewWidget extends WidgetGroup {
                         stream.filter(pos -> !modelDisabled.contains(pos)).collect(Collectors.toList()), null);
             } else {
                 sceneWidget.setRenderedCore(stream.toList(), null);
-            }
+            }*/
         } else {
             sceneWidget.setRenderedCore(stream.toList(), null);
         }
@@ -203,7 +204,7 @@ public class PatternPreviewWidget extends WidgetGroup {
             loadControllerFormed(pattern.blockMap.keySet(), controllerBase);
         } else {
             sceneWidget.setRenderedCore(pattern.blockMap.keySet(), null);
-            controllerBase.onStructureInvalid();
+            controllerBase.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
         }
     }
 
@@ -213,7 +214,6 @@ public class PatternPreviewWidget extends WidgetGroup {
         if (predicate != null) {
             predicates.clear();
             predicates.addAll(predicate.simple);
-            predicates.addAll(predicate.limited);
             predicates.removeIf(p -> p == null || p.candidates == null); // why it happens?
             if (candidates != null) {
                 for (SlotWidget candidate : candidates) {
@@ -304,7 +304,7 @@ public class PatternPreviewWidget extends WidgetGroup {
         Map<BlockPos, TraceabilityPredicate> predicateMap = new HashMap<>();
         if (controllerBase != null) {
             loadControllerFormed(predicateMap.keySet(), controllerBase);
-            predicateMap = controllerBase.getMultiblockState().getMatchContext().get("predicates");
+            //predicateMap = controllerBase.getMultiblockState().getMatchContext().get("predicates");
         }
         return controllerBase == null ? null : new MBPattern(blockMap, parts.values().stream().sorted((one, two) -> {
             if (one.isController) return -1;
@@ -319,11 +319,11 @@ public class PatternPreviewWidget extends WidgetGroup {
 
     private void loadControllerFormed(Collection<BlockPos> poses, IMultiController controllerBase) {
         BlockPattern pattern = controllerBase.createStructurePattern();
-        if (pattern != null && pattern.checkPatternAt(controllerBase.getMultiblockState(), true)) {
-            controllerBase.onStructureFormed();
+        if (pattern != null  /* && pattern.checkPatternAt(controllerBase.getMultiblockState(), true)*/) {
+            controllerBase.checkAndFormStructurePatterns();
         }
         if (controllerBase.isFormed()) {
-            LongSet set = controllerBase.getMultiblockState().getMatchContext().getOrDefault("renderMask",
+            /*LongSet set = controllerBase.getMultiblockState().getMatchContext().getOrDefault("renderMask",
                     LongSets.EMPTY_SET);
             Set<BlockPos> modelDisabled = set.stream().map(BlockPos::of).collect(Collectors.toSet());
             if (!modelDisabled.isEmpty()) {
@@ -331,7 +331,7 @@ public class PatternPreviewWidget extends WidgetGroup {
                         poses.stream().filter(pos -> !modelDisabled.contains(pos)).collect(Collectors.toList()), null);
             } else {
                 sceneWidget.setRenderedCore(poses, null);
-            }
+            }*/
         } else {
             GTCEu.LOGGER.warn("Pattern formed checking failed: {}", controllerBase.self().getDefinition());
         }
@@ -375,12 +375,12 @@ public class PatternPreviewWidget extends WidgetGroup {
         }
 
         public List<ItemStack> getItemStack() {
-            return Arrays.stream(itemStackKey.getItemStack())
+            return Arrays.<ItemStack>stream(itemStackKey.getItemStack())
                     .map(itemStack -> {
                         var item = itemStack.copy();
                         item.setCount(amount);
                         return item;
-                    }).filter(item -> !item.isEmpty()).toList();
+                    }).filter(item -> !((ItemStack)item).isEmpty()).toList();
         }
     }
 

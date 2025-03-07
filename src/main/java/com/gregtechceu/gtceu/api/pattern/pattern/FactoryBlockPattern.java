@@ -59,7 +59,7 @@ public class FactoryBlockPattern {
         this.symbolMap.put(' ', TraceabilityPredicate.ANY);
     }
 
-    public FactoryBlockPattern aisleRepeatable(int minRepeats, int maxRepeates, @NotNull String... aisle) {
+    public FactoryBlockPattern aisleRepeatable(int minRepeats, int maxRepeats, @NotNull String... aisle) {
         validateAisle(aisle);
         for(String s : aisle) {
             for (char c : s.toCharArray()) {
@@ -69,13 +69,13 @@ public class FactoryBlockPattern {
             }
         }
 
-        if(minRepeats > maxRepeates) {
+        if(minRepeats > maxRepeats) {
             throw new IllegalArgumentException("minRepeats must be smaller than maxRepeats");
         }
         // PA returns in gtm :lets:
         PatternAisle pa = new PatternAisle(aisle);
         pa.minRepeats = minRepeats;
-        pa.maxRepeats = maxRepeates;
+        pa.maxRepeats = maxRepeats;
         aisles.add(pa);
         return this;
     }

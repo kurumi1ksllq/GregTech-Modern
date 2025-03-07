@@ -11,7 +11,7 @@ import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.CoilWorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.pattern.FactoryBlockPattern;
+import com.gregtechceu.gtceu.api.pattern.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.pattern.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.pattern.Predicates;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
@@ -640,7 +640,7 @@ public class GCYMMachines {
                 return FactoryBlockPattern.start(RIGHT, BACK, UP)
                         .aisle("#YYY#", "YYYYY", "YYYYY", "YYYYY", "#YYY#")
                         .aisle("#YSY#", "YAAAY", "YAAAY", "YAAAY", "#YYY#")
-                        .aisle("##X##", "#XAX#", "XAPAX", "#XAX#", "##X##").setRepeatable(1, 12)
+                        .aisle("##X##", "#XAX#", "XAPAX", "#XAX#", "##X##").aisleRepeatable(1, 12)
                         .aisle("#####", "#ZZZ#", "#ZCZ#", "#ZZZ#", "#####")
                         .where('S', controller(blocks(definition.get())))
                         .where('Y', casingPredicate.or(abilities(IMPORT_ITEMS))
@@ -750,7 +750,7 @@ public class GCYMMachines {
             .appearanceBlock(CASING_STRESS_PROOF)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("##XXX", "##XXX", "##XXX")
-                    .aisle("##XXX", "##XPX", "##XGX").setRepeatable(2)
+                    .aisle("##XXX", "##XPX", "##XGX").aisleRepeatable(2, 2)
                     .aisle("XXXXX", "XXXPX", "XXXGX")
                     .aisle("XXXXX", "XAXPX", "XXXGX")
                     .aisle("XXXXX", "XSXXX", "XXXXX")

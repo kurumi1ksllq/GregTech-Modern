@@ -1,3 +1,4 @@
+/*
 package com.gregtechceu.gtceu.api.pattern;
 
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
@@ -43,9 +44,11 @@ public class FactoryBlockPattern {
         this.symbolMap.put(' ', Predicates.any());
     }
 
-    /**
+    */
+/**
      * Adds a repeatable aisle to this pattern.
-     */
+     *//*
+
     public FactoryBlockPattern aisleRepeatable(int minRepeat, int maxRepeat, String... aisle) {
         if (!ArrayUtils.isEmpty(aisle) && !StringUtils.isEmpty(aisle[0])) {
             if (this.depth.isEmpty()) {
@@ -82,16 +85,20 @@ public class FactoryBlockPattern {
         }
     }
 
-    /**
+    */
+/**
      * Adds a single aisle to this pattern. (so multiple calls to this will increase the aisleDir by 1)
-     */
+     *//*
+
     public FactoryBlockPattern aisle(String... aisle) {
         return aisleRepeatable(1, 1, aisle);
     }
 
-    /**
+    */
+/**
      * Set last aisle repeatable
-     */
+     *//*
+
     public FactoryBlockPattern setRepeatable(int minRepeat, int maxRepeat) {
         if (minRepeat > maxRepeat)
             throw new IllegalArgumentException("Lower bound of repeat counting must smaller than upper bound!");
@@ -99,9 +106,11 @@ public class FactoryBlockPattern {
         return this;
     }
 
-    /**
+    */
+/**
      * Set last aisle repeatable
-     */
+     *//*
+
     public FactoryBlockPattern setRepeatable(int repeatCount) {
         return setRepeatable(repeatCount, repeatCount);
     }
@@ -180,3 +189,4 @@ public class FactoryBlockPattern {
         }
     }
 }
+*/

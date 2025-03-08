@@ -418,10 +418,6 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     public void setUpwardsFacing(@NotNull Direction upwardsFacing) {
         if (getLevel() == null) return;
         if (!getDefinition().isAllowExtendedFacing()) return;
-        if (upwardsFacing == Direction.UP || upwardsFacing == Direction.DOWN) {
-            GTCEu.LOGGER.error("Tried to set upwards facing to invalid facing {}! Skipping", upwardsFacing);
-            return;
-        }
         BlockState blockState = getBlockState();
         if (blockState.getBlock() instanceof MetaMachineBlock metaMachineBlock &&
                 blockState.getValue(IMachineBlock.UPWARDS_FACING_PROPERTY) != upwardsFacing) {
@@ -441,8 +437,10 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     protected InteractionResult onWrenchClick(Player playerIn, InteractionHand hand, Direction gridSide,
                                               BlockHitResult hitResult) {
         if (gridSide == getFrontFacing() && allowExtendedFacing()) {
-            setUpwardsFacing(playerIn.isShiftKeyDown() ? getUpwardsFacing().getCounterClockWise() :
-                    getUpwardsFacing().getClockWise());
+            var newUp = getUpwardsFacing().getClockWise(getFrontFacing().getAxis());
+            if(playerIn.isShiftKeyDown()) newUp = newUp.getOpposite();
+            setUpwardsFacing(newUp);
+
             return InteractionResult.CONSUME;
         }
         if (playerIn.isShiftKeyDown()) {

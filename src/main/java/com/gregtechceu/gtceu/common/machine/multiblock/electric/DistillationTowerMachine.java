@@ -109,11 +109,11 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
                     GTCEu.LOGGER.error(
                             "The Distillation Tower at {} has a fluid export hatch with an unexpected Y position",
                             getPos());
-                    onStructureInvalid();
+                    invalidateStructure();
                     return;
                 }
             }
-        } else onStructureInvalid();
+        } else invalidateStructure();
     }
 
     private void addOutput(IFluidHandler handler) {
@@ -122,10 +122,10 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
     }
 
     @Override
-    public void onStructureInvalid() {
+    public void invalidateStructure(String name) {
         fluidOutputs = null;
         firstValid = null;
-        super.onStructureInvalid();
+        super.invalidateStructure(name);
     }
 
     public int limitParallel(GTRecipe recipe, int multiplier) {

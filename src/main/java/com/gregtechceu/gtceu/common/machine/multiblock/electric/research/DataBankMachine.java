@@ -60,16 +60,16 @@ public class DataBankMachine extends WorkableElectricMultiblockMachine
     public void formStructure(String name) {
         super.formStructure(name);
         List<IEnergyContainer> energyContainers = new ArrayList<>();
-        Map<Long, IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectMaps::emptyMap);
+        //Map<Long, IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectMaps::emptyMap);
         for (IMultiPart part : getParts()) {
-            IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
+            //IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
             if (part instanceof IMaintenanceMachine maintenanceMachine) {
                 this.maintenance = maintenanceMachine;
             }
-            if (io == IO.NONE || io == IO.OUT) continue;
+            //if (io == IO.NONE || io == IO.OUT) continue;
             for (var handler : part.getRecipeHandlers()) {
                 // If IO not compatible
-                if (io != IO.BOTH && handler.getHandlerIO() != IO.BOTH && io != handler.getHandlerIO()) continue;
+                //if (io != IO.BOTH && handler.getHandlerIO() != IO.BOTH && io != handler.getHandlerIO()) continue;
                 if (handler.getCapability() == EURecipeCapability.CAP &&
                         handler instanceof IEnergyContainer container) {
                     energyContainers.add(container);
@@ -80,7 +80,7 @@ public class DataBankMachine extends WorkableElectricMultiblockMachine
         this.energyUsage = calculateEnergyUsage();
 
         if (this.maintenance == null) {
-            onStructureInvalid();
+            invalidateStructure();
             return;
         }
 
@@ -112,8 +112,8 @@ public class DataBankMachine extends WorkableElectricMultiblockMachine
     }
 
     @Override
-    public void onStructureInvalid() {
-        super.onStructureInvalid();
+    public void invalidateStructure(String name) {
+        super.invalidateStructure(name);
         this.energyContainer = new EnergyContainerList(new ArrayList<>());
         this.energyUsage = 0;
     }

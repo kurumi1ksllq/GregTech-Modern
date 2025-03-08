@@ -86,8 +86,8 @@ public class NetworkSwitchMachine extends DataBankMachine implements IOpticalCom
     }
 
     @Override
-    public void onStructureInvalid() {
-        super.onStructureInvalid();
+    public void invalidateStructure(String name) {
+        super.invalidateStructure(name);
         computationHandler.reset();
     }
 

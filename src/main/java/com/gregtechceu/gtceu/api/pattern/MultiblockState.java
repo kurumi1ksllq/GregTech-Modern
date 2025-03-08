@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.block.ActiveBlock;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
+import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 import com.gregtechceu.gtceu.api.pattern.error.PatternStringError;
 
@@ -40,7 +41,7 @@ public class MultiblockState {
     private BlockEntity tileEntity;
     private boolean tileEntityInitialized;
     public IO io;
-    //public final BlockPos controllerPos;
+    public BlockPos controllerPos;
     public IMultiController lastController;
 
     // persist
@@ -63,7 +64,7 @@ public class MultiblockState {
         this.tileEntityInitialized = false;
     }
 
-    /*public IMultiController getController() {
+    public IMultiController getController() {
         if (level.isLoaded(controllerPos)) {
             if (level.getBlockEntity(controllerPos) instanceof IMachineBlockEntity machineBlockEntity &&
                     machineBlockEntity.getMetaMachine() instanceof IMultiController controller) {
@@ -73,7 +74,7 @@ public class MultiblockState {
             GTCEu.LOGGER.error("Level is not loaded when trying to get controller pos");
         }
         return null;
-    }*/
+    }
 
     public BlockState getBlockState() {
         if (this.blockState == null) {
@@ -125,12 +126,12 @@ public class MultiblockState {
         return cache.stream().map(BlockPos::of).collect(Collectors.toList());
     }
 
-    /*public void onBlockStateChanged(BlockPos pos, BlockState state) {
+    public void onBlockStateChanged(BlockPos pos, BlockState state) {
         if (level instanceof ServerLevel serverLevel) {
             if (pos.equals(controllerPos)) {
                 if (lastController != null) {
                     if (!state.is(lastController.self().getBlockState().getBlock())) {
-                        lastController.onStructureInvalid();
+                        lastController.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
                         var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
                         mwsd.removeMapping(this);
                     }
@@ -139,21 +140,21 @@ public class MultiblockState {
                 IMultiController controller = getController();
                 if (controller != null) {
                     if (controller.isFormed() && state.getBlock() instanceof ActiveBlock) {
-                        LongSet activeBlocks = getMatchContext().getOrDefault("vaBlocks", LongSets.emptySet());
+                        /*LongSet activeBlocks = getMatchContext().getOrDefault("vaBlocks", LongSets.emptySet());
                         if (activeBlocks.contains(pos.asLong())) {
                             // fine! it's caused by active blocks.
                             // speed up here!
                             return;
-                        }
+                        }*/
                     }
                     if (controller.checkPatternWithLock()) {
                         // refresh structure
-                        controller.self().setFlipped(this.neededFlip);
-                        controller.onStructureFormed();
+                        //controller.self().setFlipped(this.neededFlip);
+                        controller.formStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
                     } else {
                         // invalid structure
                         controller.self().setFlipped(false);
-                        controller.onStructureInvalid();
+                        controller.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
                         var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
                         mwsd.removeMapping(this);
                         mwsd.addAsyncLogic(controller);
@@ -161,5 +162,5 @@ public class MultiblockState {
                 }
             }
         }
-    }*/
+    }
 }

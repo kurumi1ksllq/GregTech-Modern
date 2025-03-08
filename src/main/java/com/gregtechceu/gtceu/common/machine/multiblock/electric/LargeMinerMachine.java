@@ -140,14 +140,14 @@ public class LargeMinerMachine extends WorkableElectricMultiblockMachine
     private void initializeAbilities() {
         List<IEnergyContainer> energyContainers = new ArrayList<>();
         List<IFluidHandler> fluidTanks = new ArrayList<>();
-        Map<Long, IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectMaps::emptyMap);
+        //Map<Long, IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectMaps::emptyMap);
         for (IMultiPart part : getParts()) {
-            IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
-            if (io == IO.NONE) continue;
+            //IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
+            //if (io == IO.NONE) continue;
             for (var handler : part.getRecipeHandlers()) {
                 // If IO not compatible
-                if (io != IO.BOTH && handler.getHandlerIO() != IO.BOTH && io != handler.getHandlerIO()) continue;
-                var handlerIO = io == IO.BOTH ? handler.getHandlerIO() : io;
+                //if (io != IO.BOTH && handler.getHandlerIO() != IO.BOTH && io != handler.getHandlerIO()) continue;
+                var handlerIO = handler.getHandlerIO();
                 if (handlerIO == IO.IN && handler.getCapability() == EURecipeCapability.CAP &&
                         handler instanceof IEnergyContainer container) {
                     energyContainers.add(container);

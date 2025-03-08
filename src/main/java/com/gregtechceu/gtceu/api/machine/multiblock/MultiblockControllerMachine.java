@@ -85,10 +85,11 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     public static final String DEFAULT_STRUCTURE = "main";
 
-    protected final Reference2ObjectMap<String, BlockPattern> structures = new Reference2ObjectOpenHashMap<>();
+    protected final Reference2ObjectMap<String, IBlockPattern> structures = new Reference2ObjectOpenHashMap<>();
 
     public MultiblockControllerMachine(IMachineBlockEntity holder) {
         super(holder);
+        createStructurePatterns();
     }
 
     //////////////////////////////////////
@@ -108,6 +109,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     public void onLoad() {
         super.onLoad();
         if (getLevel() instanceof ServerLevel serverLevel) {
+            createStructurePatterns();
             MultiblockWorldSavedData.getOrCreate(serverLevel).addAsyncLogic(this);
         }
     }
@@ -190,6 +192,10 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         }
     }
 
+    public void createStructurePatterns() {
+        structures.put(DEFAULT_STRUCTURE, createStructurePattern());
+    }
+
     public void checkAndFormStructurePatterns() {
         for(String name : structures.keySet()) {
             formStructure(name);
@@ -265,6 +271,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             if(!valid[0]) return;
 
             patternState.setFormed(true);
+            isFormed = true;
             setFlipped(patternState.isFlipped(), patternState);
 
         } else {

@@ -69,7 +69,7 @@ public class BlockInfo {
     }
 
     public BlockEntity getBlockEntity(BlockPos pos) {
-        if(hasBlockEntity && blockState.getBlock() instanceof EntityBlock entityBlock) {
+        /*if(hasBlockEntity && blockState.getBlock() instanceof EntityBlock entityBlock) {
             if(lastEntity != null && lastEntity.getBlockPos().equals(pos)) {
                 return lastEntity;
             }
@@ -83,8 +83,8 @@ public class BlockInfo {
                 }
             }
             return lastEntity;
-        }
-        return null;
+        }*/
+        return blockEntity;
     }
 
     public BlockEntity getBlockEntity(Level level, BlockPos pos) {

@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.pattern.pattern;
 
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.pattern.BetterBlockPos;
@@ -45,7 +44,7 @@ public class BlockPattern implements IBlockPattern {
     protected final MultiblockState multiblockState;
     protected final Object2IntMap<SimplePredicate> globalCount = new Object2IntOpenHashMap<>();
     protected final Object2IntMap<SimplePredicate> layerCount = new Object2IntOpenHashMap<>();
-    protected final PatternState state = new PatternState();
+    protected final PatternState patternState = new PatternState();
     protected final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
 
     public BlockPattern(@NotNull PatternAisle @NotNull[] aisles, @NotNull AisleStrategy aisleStrategy,
@@ -111,21 +110,21 @@ public class BlockPattern implements IBlockPattern {
             }
 
             if(pass) {
-                if(state.hasError()) {
-                    state.setState(PatternState.CheckState.INVALID_CACHED);
+                if(patternState.hasError()) {
+                    patternState.setState(PatternState.CheckState.INVALID_CACHED);
                 } else {
-                    state.setState(PatternState.CheckState.VALID_CACHED);
+                    patternState.setState(PatternState.CheckState.VALID_CACHED);
                 }
 
-                return state;
+                return patternState;
             }
         }
 
         boolean valid = checkPatternAt(level, centerPos, frontFacing, upwardsFacing, false);
         if (valid) {
-            state.setState(PatternState.CheckState.VALID_UNCACHED);
-            state.setFlipped(false);
-            return state;
+            patternState.setState(PatternState.CheckState.VALID_UNCACHED);
+            patternState.setFlipped(false);
+            return patternState;
         }
 
         if(allowsFlip) {
@@ -133,13 +132,13 @@ public class BlockPattern implements IBlockPattern {
         }
         if(!valid) {
             clearCache();
-            state.setState(PatternState.CheckState.INVALID_UNCACHED);
-            return state;
+            patternState.setState(PatternState.CheckState.INVALID_UNCACHED);
+            return patternState;
         }
 
-        state.setState(PatternState.CheckState.VALID_UNCACHED);
-        state.setFlipped(true);
-        return state;
+        patternState.setState(PatternState.CheckState.VALID_UNCACHED);
+        patternState.setFlipped(true);
+        return patternState;
     }
 
     @Override
@@ -163,12 +162,12 @@ public class BlockPattern implements IBlockPattern {
 
         for(Object2IntMap.Entry<SimplePredicate> entry : globalCount.object2IntEntrySet()) {
             if(entry.getIntValue() < entry.getKey().minCount) {
-                state.setError(new SinglePredicateError(entry.getKey(), 1));
+                patternState.setError(new SinglePredicateError(entry.getKey(), 1));
                 return false;
             }
         }
 
-        state.setError(null);
+        patternState.setError(null);
         return true;
     }
 
@@ -210,7 +209,7 @@ public class BlockPattern implements IBlockPattern {
 
                 PatternError res = pred.test(multiblockState, globalCount, layerCount);
                 if(res != null) {
-                    state.setError(res);
+                    patternState.setError(res);
                     return false;
                 }
 
@@ -223,7 +222,7 @@ public class BlockPattern implements IBlockPattern {
 
         for(Object2IntMap.Entry<SimplePredicate> entry : layerCount.object2IntEntrySet()) {
             if(entry.getIntValue() < entry.getKey().minLayerCount) {
-                state.setError(new SinglePredicateError(entry.getKey(), 3));
+                patternState.setError(new SinglePredicateError(entry.getKey(), 3));
                 return false;
             }
         }
@@ -271,7 +270,7 @@ public class BlockPattern implements IBlockPattern {
 
     @Override
     public PatternState getPatternState() {
-        return state;
+        return patternState;
     }
 
     @Override

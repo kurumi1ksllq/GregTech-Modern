@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.electric;
 
+import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.IEnergyInfoProvider;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
@@ -20,6 +21,7 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
+import com.gregtechceu.gtceu.common.block.BatteryBlock;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
@@ -94,17 +96,17 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
         super.formStructure(name);
         List<IEnergyContainer> inputs = new ArrayList<>();
         List<IEnergyContainer> outputs = new ArrayList<>();
-        Map<Long, IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectMaps::emptyMap);
+        //Map<Long, IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectMaps::emptyMap);
         for (IMultiPart part : getParts()) {
-            IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
-            if (io == IO.NONE) continue;
+            //IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
+            //if (io == IO.NONE) continue;
             if (part instanceof IMaintenanceMachine maintenanceMachine) {
                 this.maintenance = maintenanceMachine;
             }
             for (var handler : part.getRecipeHandlers()) {
                 var handlerIO = handler.getHandlerIO();
                 // If IO not compatible
-                if (io != IO.BOTH && handlerIO != IO.BOTH && io != handlerIO) continue;
+                //if (io != IO.BOTH && handlerIO != IO.BOTH && io != handlerIO) continue;
                 if (handler.getCapability() == EURecipeCapability.CAP &&
                         handler instanceof IEnergyContainer container) {
                     if (handlerIO == IO.IN) {
@@ -120,17 +122,27 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
         this.outputHatches = new EnergyContainerList(outputs);
 
         List<IBatteryData> batteries = new ArrayList<>();
-        for (Map.Entry<String, Object> battery : getMultiblockState().getMatchContext().entrySet()) {
+        var cache = getSubstructure(name).getCache();
+        for(var entry : cache.long2ObjectEntrySet()) {
+            var state = entry.getValue();
+            if (state.getBlockState().getBlock() instanceof BatteryBlock batteryBlock) {
+                if(batteryBlock.getData().getCapacity() > 0) {
+                    batteries.add(batteryBlock.getData());
+                }
+            }
+        }
+
+        /*for (Map.Entry<String, Object> battery : getMultiblockState().getMatchContext().entrySet()) {
             if (battery.getKey().startsWith(PMC_BATTERY_HEADER) &&
                     battery.getValue() instanceof BatteryMatchWrapper wrapper) {
                 for (int i = 0; i < wrapper.amount; i++) {
                     batteries.add(wrapper.partType);
                 }
             }
-        }
+        }*/
         if (batteries.isEmpty()) {
             // only empty batteries found in the structure
-            onStructureInvalid();
+            invalidateStructure();
             return;
         }
         if (this.energyBank == null) {
@@ -142,7 +154,7 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
     }
 
     @Override
-    public void onStructureInvalid() {
+    public void invalidateStructure(String name) {
         // don't null out energyBank since it holds the stored energy, which
         // we need to hold on to across rebuilds to not void all energy if a
         // multiblock part or block other than the controller is broken.
@@ -153,7 +165,7 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
         averageInLastSec = 0;
         netOutLastSec = 0;
         averageOutLastSec = 0;
-        super.onStructureInvalid();
+        super.invalidateStructure(name);
     }
 
     protected void transferEnergyTick() {

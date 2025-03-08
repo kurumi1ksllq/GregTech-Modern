@@ -36,7 +36,7 @@ public class BasicAisleStrategy extends AisleStrategy {
     protected int checkMultiAisle(int[] multiAisle, int offset, boolean flip) {
         int aisleOffset = 0;
         int temp = 0;
-        for(int i = 1; i < multiAisle[1]; i++) {
+        for(int i = 1; i <= multiAisle[1]; i++) {
             for (int j = multiAisle[2]; j < multiAisle[3]; j++) {
                 int res = checkRepeatAisle(j, offset + temp, flip);
                 if(res == -1) {
@@ -55,7 +55,7 @@ public class BasicAisleStrategy extends AisleStrategy {
 
     protected int checkRepeatAisle(int index, int offset, boolean flip) {
         PatternAisle aisle = aisles.get(index);
-        for(int i = 1; i < aisle.maxRepeats; i++) {
+        for(int i = 1; i <= aisle.maxRepeats; i++) {
             boolean res = checkAisle(index, offset + i - 1, flip);
             if(!res) {
                 if(i <= aisle.minRepeats) return -1;

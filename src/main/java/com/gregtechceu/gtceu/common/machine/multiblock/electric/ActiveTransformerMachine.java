@@ -84,15 +84,15 @@ public class ActiveTransformerMachine extends WorkableElectricMultiblockMachine
         // capture all energy containers
         List<IEnergyContainer> powerInput = new ArrayList<>();
         List<IEnergyContainer> powerOutput = new ArrayList<>();
-        Map<Long, IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectMaps::emptyMap);
+        //Map<Long, IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectMaps::emptyMap);
 
         for (IMultiPart part : getPrioritySortedParts()) {
-            IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
-            if (io == IO.NONE) continue;
+            //IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
+            //if (io == IO.NONE) continue;
             for (var handler : part.getRecipeHandlers()) {
                 var handlerIO = handler.getHandlerIO();
                 // If IO not compatible
-                if (io != IO.BOTH && handlerIO != IO.BOTH && io != handlerIO) continue;
+                //if (io != IO.BOTH && handlerIO != IO.BOTH && io != handlerIO) continue;
                 if (handler.getCapability() == EURecipeCapability.CAP &&
                         handler instanceof IEnergyContainer container) {
                     if (handlerIO == IO.IN) {

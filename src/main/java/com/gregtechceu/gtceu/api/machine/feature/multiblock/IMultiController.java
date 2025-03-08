@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IMachineFeature;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.pattern.pattern.BlockPattern;
 import com.gregtechceu.gtceu.api.pattern.MultiblockState;
+import com.gregtechceu.gtceu.api.pattern.pattern.IBlockPattern;
 import com.gregtechceu.gtceu.api.pattern.pattern.PatternState;
 import com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer;
 import com.gregtechceu.gtceu.config.ConfigHolder;
@@ -38,6 +39,8 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
     default MultiblockControllerMachine self() {
         return (MultiblockControllerMachine) this;
     }
+
+    void createStructurePatterns();
 
     /**
      * Check MultiBlock Pattern. Just checking pattern without any other logic.
@@ -89,7 +92,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
      * Get structure pattern.
      * You can override it to create dynamic patterns.
      */
-    default BlockPattern createStructurePattern() {
+    default IBlockPattern createStructurePattern() {
         return self().getDefinition().getPatternFactory().get();
     }
 

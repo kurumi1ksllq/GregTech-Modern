@@ -10,6 +10,8 @@ import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.*;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
+import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.machine.owner.IMachineOwner;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -80,7 +82,7 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
             BlockState defaultState = this.defaultBlockState().setValue(rotationState.property,
                     rotationState.defaultDirection);
             if (definition instanceof MultiblockMachineDefinition multi && multi.isAllowExtendedFacing()) {
-                defaultState = defaultState.setValue(IMachineBlock.UPWARDS_FACING_PROPERTY, Direction.NORTH);
+                defaultState = defaultState.setValue(IMachineBlock.UPWARDS_FACING_PROPERTY, Direction.UP);
             }
             registerDefaultState(defaultState);
         }
@@ -162,29 +164,42 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
         var player = context.getPlayer();
         var blockPos = context.getClickedPos();
         var state = defaultBlockState();
+        var machine = getMachine(context.getLevel(), blockPos);
         if (player != null && rotationState != RotationState.NONE) {
+            Direction newFrontDir;
+            Direction newUpFacing;
             if (rotationState == RotationState.Y_AXIS) {
-                state = state.setValue(rotationState.property, Direction.UP);
+                newFrontDir = Direction.UP;
             } else {
-                state = state.setValue(rotationState.property, player.getDirection().getOpposite());
+                newFrontDir = player.getDirection().getOpposite();
             }
+
             Vec3 pos = player.position();
             if (Math.abs(pos.x - (double) ((float) blockPos.getX() + 0.5F)) < 2.0D &&
                     Math.abs(pos.z - (double) ((float) blockPos.getZ() + 0.5F)) < 2.0D) {
                 double d0 = pos.y + (double) player.getEyeHeight();
                 if (d0 - (double) blockPos.getY() > 2.0D && rotationState.test(Direction.UP)) {
-                    state = state.setValue(rotationState.property, Direction.UP);
+                    newFrontDir = Direction.UP;
                 }
                 if ((double) blockPos.getY() - d0 > 0.0D && rotationState.test(Direction.DOWN)) {
-                    state = state.setValue(rotationState.property, Direction.DOWN);
+                    newFrontDir = Direction.DOWN;
                 }
+            }
+
+            state = state.setValue(rotationState.property, newFrontDir);
+            if (machine != null) {
+                machine.setFrontFacing(newFrontDir);
             }
             if (getDefinition() instanceof MultiblockMachineDefinition multi && multi.isAllowExtendedFacing()) {
                 Direction frontFacing = state.getValue(rotationState.property);
-                if (frontFacing == Direction.UP) {
+                if (frontFacing == Direction.UP || frontFacing == Direction.DOWN) {
+                    newUpFacing = player.getDirection();
                     state = state.setValue(IMachineBlock.UPWARDS_FACING_PROPERTY, player.getDirection());
-                } else if (frontFacing == Direction.DOWN) {
-                    state = state.setValue(IMachineBlock.UPWARDS_FACING_PROPERTY, player.getDirection().getOpposite());
+                    if(machine != null) {
+                        if(machine instanceof MultiblockControllerMachine controller) {
+                            controller.setUpwardsFacing(newUpFacing);
+                        }
+                    }
                 }
             }
         }

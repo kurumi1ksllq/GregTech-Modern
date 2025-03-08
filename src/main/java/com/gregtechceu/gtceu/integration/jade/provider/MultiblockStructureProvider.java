@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 
+import com.gregtechceu.gtceu.api.pattern.pattern.PatternState;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -33,7 +34,8 @@ public class MultiblockStructureProvider implements IBlockComponentProvider, ISe
     public void appendServerData(CompoundTag compoundTag, BlockAccessor blockAccessor) {
         if (blockAccessor.getBlockEntity() instanceof MetaMachineBlockEntity blockEntity) {
             if (blockEntity.getMetaMachine() instanceof IMultiController controller) {
-                compoundTag.putBoolean("hasError", controller.getMultiblockState().hasError());
+                PatternState state = controller.checkStructurePattern();
+                compoundTag.putBoolean("hasError", state.hasError());
             }
         }
     }

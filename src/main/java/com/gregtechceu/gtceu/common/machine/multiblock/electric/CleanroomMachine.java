@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.electric;
 
+import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.IFilterType;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
@@ -22,10 +23,16 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMa
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
+import com.gregtechceu.gtceu.api.pattern.BetterBlockPos;
+import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 import com.gregtechceu.gtceu.api.pattern.pattern.BlockPattern;
 import com.gregtechceu.gtceu.api.pattern.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.pattern.Predicates;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.pattern.pattern.FactoryExpandablePattern;
+import com.gregtechceu.gtceu.api.pattern.pattern.IBlockPattern;
+import com.gregtechceu.gtceu.api.pattern.util.BlockInfo;
+import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
@@ -43,7 +50,6 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
-import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -87,9 +93,10 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
 
     public static final int MIN_RADIUS = 2;
     public static final int MIN_DEPTH = 4;
+    public static final int MAX_RADIUS = 7;
+    public static final int MAX_DEPTH = 14;
 
-    @Persisted
-    private int lDist = 0, rDist = 0, bDist = 0, fDist = 0, hDist = 0;
+    private final int[] bounds = { 0, MIN_DEPTH, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS };
     @Nullable
     private CleanroomType cleanroomType = null;
     @Persisted
@@ -99,8 +106,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     @Nullable
     private EnergyContainerList inputEnergyContainers;
     @Getter
-    @Nullable
-    private Collection<ICleanroomReceiver> cleanroomReceivers;
+    private final Collection<ICleanroomReceiver> cleanroomReceivers = new HashSet<>();
 
     public CleanroomMachine(IMachineBlockEntity metaTileEntityId) {
         super(metaTileEntityId);
@@ -133,28 +139,47 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     public void formStructure(String name) {
         super.formStructure(name);
         initializeAbilities();
-        IFilterType filterType = getMultiblockState().getMatchContext().get("FilterType");
+
+        var cache = getSubstructure(name).getCache();
+        IFilterType filterType = null;
+        for(var entry : cache.long2ObjectEntrySet()) {
+            var state = entry.getValue().getBlockState();
+            for(var filter : GTCEuAPI.CLEANROOM_FILTERS.entrySet()) {
+                if(filter.getValue().get() == state.getBlock()) {
+                    if(filterType == null) filterType = filter.getKey();
+                    else {
+                        if(filterType != filter.getKey()) {
+                            invalidateStructure();
+                            return;
+                        }
+                    }
+                }
+            }
+        }
         if (filterType != null) {
             this.cleanroomType = filterType.getCleanroomType();
         } else {
             this.cleanroomType = CleanroomType.CLEANROOM;
         }
 
-        // bind cleanroom
-        if (cleanroomReceivers != null) {
-            this.cleanroomReceivers.forEach(receiver -> receiver.setCleanroom(null));
-            this.cleanroomReceivers = null;
-        }
-        Set<ICleanroomReceiver> receivers = getMultiblockState().getMatchContext().getOrCreate("cleanroomReceiver",
-                Sets::newHashSet);
-        this.cleanroomReceivers = ImmutableSet.copyOf(receivers);
-        this.cleanroomReceivers.forEach(receiver -> receiver.setCleanroom(this));
+        forEachFormed(name, (info, pos) -> {
+            BlockEntity be = info.getBlockEntity();
+            if(!(be instanceof IMachineBlockEntity mbe)) return;
+
+            if(!(mbe instanceof ICleanroomReceiver reciever)) return;
+
+            if(reciever.getCleanroom() != this) {
+                reciever.setCleanroom(this);
+                cleanroomReceivers.add(reciever);
+            }
+        });
 
         // max progress is based on the dimensions of the structure: (x^3)-(x^2)
         // taller cleanrooms take longer than wider ones
         // minimum of 100 is a 5x5x5 cleanroom: 125-25=100 ticks
-        this.getRecipeLogic().setDuration((Math.max(100,
-                ((lDist + rDist + 1) * (bDist + fDist + 1) * hDist) - ((lDist + rDist + 1) * (bDist + fDist + 1)))));
+        int leftRight = bounds[2] + bounds[3] + 1;
+        int frontBack = bounds[4] + bounds[5] + 1;
+        this.getRecipeLogic().setDuration(Math.max(100, (leftRight * frontBack * bounds[1]) - (leftRight * frontBack)));
     }
 
     @Override
@@ -162,10 +187,8 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
         super.invalidateStructure(name);
         this.inputEnergyContainers = null;
         this.cleanAmount = MIN_CLEAN_AMOUNT;
-        if (cleanroomReceivers != null) {
-            this.cleanroomReceivers.forEach(receiver -> receiver.setCleanroom(null));
-            this.cleanroomReceivers = null;
-        }
+        cleanroomReceivers.forEach(receiver -> receiver.setCleanroom(null));
+        cleanroomReceivers.clear();
     }
 
     @Override
@@ -181,14 +204,14 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
 
     protected void initializeAbilities() {
         List<IEnergyContainer> energyContainers = new ArrayList<>();
-        Map<Long, IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectMaps::emptyMap);
+        //Map<Long, IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectMaps::emptyMap);
         for (IMultiPart part : getParts()) {
             if (isPartIgnored(part)) continue;
-            IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
-            if (io == IO.NONE || io == IO.OUT) continue;
+            //IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
+            //if (io == IO.NONE || io == IO.OUT) continue;
             for (var handler : part.getRecipeHandlers()) {
                 // If IO not compatible
-                if (io != IO.BOTH && handler.getHandlerIO() != IO.BOTH && io != handler.getHandlerIO()) continue;
+                //if (io != IO.BOTH && handler.getHandlerIO() != IO.BOTH && io != handler.getHandlerIO()) continue;
                 if (handler.getCapability() == EURecipeCapability.CAP &&
                         handler instanceof IEnergyContainer container) {
                     energyContainers.add(container);
@@ -211,18 +234,42 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
         return false;
     }
 
+
+
     /**
      * Scans for blocks around the controller to update the dimensions
      */
     public void updateStructureDimensions() {
-        Level world = getLevel();
-        if (world == null) return;
+        if (getLevel() == null) return;
         Direction front = getFrontFacing();
         Direction back = front.getOpposite();
         Direction left = front.getCounterClockWise();
         Direction right = left.getOpposite();
 
-        BlockPos.MutableBlockPos lPos = getPos().mutable();
+        int l = findWallPos(left, new BetterBlockPos(getPos()));
+        int r = findWallPos(right, new BetterBlockPos(getPos()));
+        int b = findWallPos(back, new BetterBlockPos(getPos()));
+        int f = findWallPos(front, new BetterBlockPos(getPos()));
+        int d = findFloorPos(Direction.DOWN, new BetterBlockPos(getPos()));
+
+        if (d <= MIN_DEPTH || l < MIN_RADIUS || r < MIN_RADIUS || b < MIN_RADIUS || f < MIN_RADIUS) {
+            invalidateStructure();
+            return;
+        }
+
+
+        if (Math.abs(l - r) > 1 || Math.abs(b - f) > 1) {
+            invalidateStructure();
+            return;
+        }
+
+        bounds[1] = d;
+        bounds[2] = l;
+        bounds[3] = r;
+        bounds[4] = f;
+        bounds[5] = b;
+
+        /*BlockPos.MutableBlockPos lPos = getPos().mutable();
         BlockPos.MutableBlockPos rPos = getPos().mutable();
         BlockPos.MutableBlockPos fPos = getPos().mutable();
         BlockPos.MutableBlockPos bPos = getPos().mutable();
@@ -266,41 +313,100 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
         this.rDist = rDist;
         this.bDist = bDist;
         this.fDist = fDist;
-        this.hDist = hDist;
+        this.hDist = hDist;*/
     }
 
-    /**
-     * @param world     the world to check
-     * @param pos       the pos to check and move
-     * @param direction the direction to move
-     * @return if a block is a valid wall block at pos moved in direction
-     */
-    public boolean isBlockEdge(@NotNull Level world, @NotNull BlockPos.MutableBlockPos pos,
-                               @NotNull Direction direction) {
-        var state = world.getBlockState(pos.move(direction));
-        return state == getCasingState() || state == getGlassState();
+    public int findWallPos(Direction dir, BetterBlockPos pos) {
+        for(int i = 1; i < MAX_RADIUS; i++) {
+            var state = getLevel().getBlockState(pos.offset(dir).immutable());
+            if(state == getCasingState() || state == getGlassState()) {
+                return i;
+            }
+        }
+        return -1;
     }
 
-    /**
-     * @param world     the world to check
-     * @param pos       the pos to check and move
-     * @param direction the direction to move
-     * @return if a block is a valid floor block at pos moved in direction
-     */
-    public boolean isBlockFloor(@NotNull Level world, @NotNull BlockPos.MutableBlockPos pos,
-                                @NotNull Direction direction) {
-        var state = world.getBlockState(pos.move(direction));
-        return state == getCasingState() || state == getGlassState() || state.is(CustomTags.CLEANROOM_FLOORS);
+    public int findFloorPos(Direction dir, BetterBlockPos pos) {
+        for(int i = 1; i < MAX_DEPTH; i++) {
+            if(isAllFloorBlocks(pos.copy().offset(dir, i))) {
+                return i;
+            }
+        }
+        return -1;
     }
 
-    @NotNull
+    private boolean isAllFloorBlocks(BetterBlockPos pos) {
+        pos.offset(Direction.SOUTH, 1).offset(Direction.WEST, 1);
+        for (int j = 0; j < 3; j++) {
+            for (int k = 0; k < 3; k++) {
+                var checkPos = pos.immutable();
+                var s1 = getLevel().getBlockState(checkPos);
+                if (s1 != getCasingState() && s1 != getGlassState() && !(s1.is(CustomTags.CLEANROOM_FLOORS))) {
+                    return false;
+                }
+                pos.offset(Direction.NORTH);
+            }
+            pos.offset(Direction.SOUTH, 3);
+            pos.offset(Direction.EAST);
+        }
+        return true;
+    }
+
     @Override
-    public BlockPattern createStructurePattern() {
+    public IBlockPattern createStructurePattern() {
         // return the default structure, even if there is no valid size found
         // this means auto-build will still work, and prevents terminal crashes.
-        if (getLevel() != null) updateStructureDimensions();
+        //if (getLevel() == null)
 
-        // these can sometimes get set to 0 when loading the game, breaking JEI
+        updateStructureDimensions();
+
+        var wallPredicate = Predicates.blocks(getCasingState().getBlock(), getGlassState().getBlock());
+        var energyPredicate = autoAbilities(true, false, false).or(abilities(PartAbility.INPUT_ENERGY)
+                .setMinGlobalLimited(1).setMaxGlobalLimited(3));
+
+        var edgePredicate = wallPredicate.or(energyPredicate);
+        var facePredicate = wallPredicate.or(energyPredicate)
+                .or(doorPredicate().setMaxGlobalLimited(8))
+                .or(abilities(PartAbility.PASSTHROUGH_HATCH).setMaxGlobalLimited(30));
+        var filterPredicate = cleanroomFilters();
+        var innerPredicate = innerPredicate();
+        var verticalEdgePredicate = edgePredicate.or(blocks(getGlassState().getBlock()));
+
+
+        return FactoryExpandablePattern.start(RelativeDirection.UP, RelativeDirection.RIGHT, RelativeDirection.FRONT)
+                .boundsFunction((l, bp, f, u) -> bounds)
+                .predicateFunction((bp, b) -> {
+                    if(bp.origin()) return Predicates.controller(Predicates.blocks(getDefinition().getBlock()));
+
+                    int intersections = 0;
+
+                    boolean topAisle = bp.x() == b[0];
+                    boolean bottomAisle = bp.x() == -b[1];
+
+                    if(topAisle || bottomAisle) intersections++;
+
+                    // negative signs for the LEFT and BACK ordinals
+                    // string dir is right, so its bounds[2] and bounds[3]
+                    if (bp.y() == -b[2] || bp.y() == b[3]) intersections++;
+                    // char dir is front, so its bounds[4] and bounds[5]
+                    if (bp.z() == b[4] || bp.z() == -b[5]) intersections++;
+
+                    if(intersections >= 2) {
+                        if(topAisle || bottomAisle) return edgePredicate;
+                        return verticalEdgePredicate;
+                    }
+
+                    if(intersections == 1) {
+                        if(topAisle) return filterPredicate;
+                        return facePredicate;
+                    }
+
+                    return innerPredicate;
+
+                })
+                .build();
+
+        /*// these can sometimes get set to 0 when loading the game, breaking JEI
         if (lDist < MIN_RADIUS) lDist = MIN_RADIUS;
         if (rDist < MIN_RADIUS) rDist = MIN_RADIUS;
         if (bDist < MIN_RADIUS) bDist = MIN_RADIUS;
@@ -392,7 +498,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
                 .where('W', wallPredicate.or(basePredicate)// walls
                         .or(doorPredicate().setMaxGlobalLimited(8)))
                 .where('A', wallPredicate.or(basePredicate)) // floor edges
-                .build();
+                .build();*/
     }
 
     // protected to allow easy addition of addon "cleanrooms"
@@ -408,8 +514,9 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
 
     @NotNull
     protected static TraceabilityPredicate doorPredicate() {
-        return Predicates.custom(blockWorldState -> blockWorldState.getBlockState().getBlock() instanceof DoorBlock,
-                () -> new BlockInfo[] { new BlockInfo(Blocks.IRON_DOOR.defaultBlockState()), new BlockInfo(
+        return Predicates.custom(blockWorldState ->
+                        blockWorldState.getBlockState().getBlock() instanceof DoorBlock ? null : PatternError.PLACEHOLDER,
+                (map) -> new BlockInfo[] { new BlockInfo(Blocks.IRON_DOOR.defaultBlockState()), new BlockInfo(
                         Blocks.IRON_DOOR.defaultBlockState().setValue(DoorBlock.HALF, DoubleBlockHalf.UPPER)) });
     }
 
@@ -420,36 +527,16 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     @NotNull
     protected TraceabilityPredicate innerPredicate() {
         return new TraceabilityPredicate(blockWorldState -> {
-            Set<ICleanroomReceiver> receivers = blockWorldState.getMatchContext().getOrCreate("cleanroomReceiver",
-                    Sets::newHashSet);
             // all non-GTMachines are allowed inside by default
             BlockEntity blockEntity = blockWorldState.getTileEntity();
             if (blockEntity instanceof IMachineBlockEntity machineBlockEntity) {
                 var machine = machineBlockEntity.getMetaMachine();
                 if (isMachineBanned(machine)) {
-                    return false;
+                    return PatternError.PLACEHOLDER;
                 }
             }
-            if (blockEntity != null) {
-                var receiver = GTCapabilityHelper.getCleanroomReceiver(blockWorldState.getLevel(),
-                        blockWorldState.getPos(), null);
-                if (receiver != null) {
-                    receivers.add(receiver);
-                }
-            }
-            return true;
-        }, null) {
-
-            @Override
-            public boolean isAny() {
-                return true;
-            }
-
-            @Override
-            public boolean addCache() {
-                return true;
-            }
-        };
+            return null;
+        }, null);
     }
 
     protected boolean isMachineBanned(MetaMachine machine) {

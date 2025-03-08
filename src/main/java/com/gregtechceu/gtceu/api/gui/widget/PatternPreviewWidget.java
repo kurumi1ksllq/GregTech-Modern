@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.pattern.pattern.BlockPattern;
 import com.gregtechceu.gtceu.api.pattern.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.pattern.pattern.IBlockPattern;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.xei.handlers.item.CycleItemStackHandler;
@@ -318,7 +319,7 @@ public class PatternPreviewWidget extends WidgetGroup {
     }
 
     private void loadControllerFormed(Collection<BlockPos> poses, IMultiController controllerBase) {
-        BlockPattern pattern = controllerBase.createStructurePattern();
+        IBlockPattern pattern = controllerBase.createStructurePattern();
         if (pattern != null  /* && pattern.checkPatternAt(controllerBase.getMultiblockState(), true)*/) {
             controllerBase.checkAndFormStructurePatterns();
         }

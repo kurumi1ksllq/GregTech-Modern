@@ -39,7 +39,7 @@ import java.util.Optional;
  */
 public interface IMachineBlock extends IBlockRendererProvider, EntityBlock {
 
-    DirectionProperty UPWARDS_FACING_PROPERTY = DirectionProperty.create("upwards_facing", Direction.Plane.HORIZONTAL);
+    DirectionProperty UPWARDS_FACING_PROPERTY = DirectionProperty.create("upwards_facing", Direction.values());
 
     default Block self() {
         return (Block) this;

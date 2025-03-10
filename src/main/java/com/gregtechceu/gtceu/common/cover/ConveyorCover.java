@@ -36,6 +36,8 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.TickTask;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.items.IItemHandler;
@@ -200,7 +202,10 @@ public class ConveyorCover extends CoverBehavior implements IUICover, IControlla
 
     @Override
     public void onNeighborChanged(Block block, BlockPos fromPos, boolean isMoving) {
-        subscriptionHandler.updateSubscription();
+        if (isRemote()) return;
+        if (coverHolder.getLevel() instanceof ServerLevel serverLevel) {
+            serverLevel.getServer().tell(new TickTask(10, subscriptionHandler::updateSubscription));
+        }
     }
 
     @Override

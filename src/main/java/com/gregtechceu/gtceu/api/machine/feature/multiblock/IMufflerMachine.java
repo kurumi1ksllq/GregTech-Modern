@@ -10,6 +10,11 @@ import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardEmitter;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
+import com.gregtechceu.gtceu.client.particle.HazardParticle;
+import com.gregtechceu.gtceu.client.particle.MufflerParticle;
+import com.gregtechceu.gtceu.common.data.GTParticleTypes;
+import com.gregtechceu.gtceu.common.particle.HazardParticleOptions;
+import com.gregtechceu.gtceu.common.particle.MufflerParticleOptions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -48,18 +53,22 @@ public interface IMufflerMachine extends IMultiPart, IEnvironmentalHazardEmitter
         float zPos = facing.getStepZ() + pos.getZ() + 0.25F;
 
         float ySpd = facing.getStepY() * 0.1F + 0.2F + 0.1F * GTValues.RNG.nextFloat();
-        float xSpd;
-        float zSpd;
+        float xSpd = 0;
+        float zSpd  = 0;
 
         if (facing.getStepY() == -1) {
             float temp = GTValues.RNG.nextFloat() * 2 * (float) Math.PI;
-            xSpd = (float) Math.sin(temp) * 0.08F;
-            zSpd = (float) Math.cos(temp) * 0.08F;
-        } else {
-            xSpd = facing.getStepX() * (0.1F + 0.2F * GTValues.RNG.nextFloat());
-            zSpd = facing.getStepZ() * (0.1F + 0.2F * GTValues.RNG.nextFloat());
+            xSpd = (float) Math.sin(temp) * 0.88F;
+            zSpd = (float) Math.cos(temp) * 0.88F;
         }
-        self().getLevel().addParticle(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE,
+        if (facing.getStepY() == 1){
+            xSpd = 0;
+            zSpd = 0;
+        }
+        xSpd = facing.getStepX() * (5F + 0.2F * GTValues.RNG.nextFloat());
+        zSpd = facing.getStepZ() * (5F + 0.2F * GTValues.RNG.nextFloat());
+
+        self().getLevel().addParticle(new MufflerParticleOptions(0x1E1C1D, 1F),
                 xPos + GTValues.RNG.nextFloat() * 0.5F,
                 yPos + GTValues.RNG.nextFloat() * 0.5F,
                 zPos + GTValues.RNG.nextFloat() * 0.5F,

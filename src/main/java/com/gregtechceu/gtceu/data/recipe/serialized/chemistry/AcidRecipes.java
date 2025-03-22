@@ -60,6 +60,7 @@ public class AcidRecipes {
                 .outputFluids(SulfuricAcid.getFluid(1000))
                 .EUt(VA[HV])
                 .duration(320)
+                .amperage(12)
                 .save(provider);
     }
 

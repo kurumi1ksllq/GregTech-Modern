@@ -124,6 +124,10 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
                         return 2;
                     }
 
+                    var lastRecipe = recipeLogic.getLastRecipe();
+                    if (lastRecipe != null && lastRecipe.amperage > 1) {
+                        return (long) (lastRecipe.amperage);
+                    }
                     return 1;
                 }
             };

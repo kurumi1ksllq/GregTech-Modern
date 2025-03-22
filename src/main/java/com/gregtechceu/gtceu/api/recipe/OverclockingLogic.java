@@ -68,6 +68,7 @@ public interface OverclockingLogic {
         long EUt = Math.abs(RecipeHelper.getRealEUt(recipe));
         if (EUt == 0) return ModifierFunction.IDENTITY;
 
+        if(recipe.amperage > 1) EUt *= recipe.amperage;
         int recipeTier = GTUtil.getTierByVoltage(EUt);
         int maximumTier = GTUtil.getOCTierByVoltage(maxVoltage);
         int OCs = maximumTier - recipeTier;

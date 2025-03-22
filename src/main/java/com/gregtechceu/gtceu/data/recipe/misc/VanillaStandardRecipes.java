@@ -207,9 +207,11 @@ public class VanillaStandardRecipes {
                 .outputItems(dust, Glass, 16)
                 .save(provider);
 
-        ARC_FURNACE_RECIPES.recipeBuilder("glass_from_sand").duration(200).EUt(VA[LV])
+        ARC_FURNACE_RECIPES.recipeBuilder("glass_from_sand")
                 .inputItems(ItemTags.SMELTS_TO_GLASS)
                 .outputItems(new ItemStack(Blocks.GLASS, 2))
+                .duration(200)
+                .EUt(VA[LV])
                 .amperage(3)
                 .save(provider);
 

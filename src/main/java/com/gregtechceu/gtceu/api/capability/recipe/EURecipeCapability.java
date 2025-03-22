@@ -20,7 +20,7 @@ import java.util.Map;
  * @implNote ItemRecipeCapability
  */
 public class EURecipeCapability extends RecipeCapability<Long> {
-
+    // TODO(Onion): move to eu deltas when 2544 gets merged
     public final static EURecipeCapability CAP = new EURecipeCapability();
 
     protected EURecipeCapability() {

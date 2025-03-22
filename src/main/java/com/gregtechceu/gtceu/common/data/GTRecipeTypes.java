@@ -547,6 +547,7 @@ public class GTRecipeTypes {
                     ItemStack outputItem = outputs == null || outputs.length == 0 ? ItemStack.EMPTY : outputs[0];
                     if (input.isEmpty()) return;
                     List<Content> contents = recipeBuilder.output.get(FluidRecipeCapability.CAP);
+                    var conditions = recipeBuilder.conditions;
                     for (int i = 0; i < contents.size(); ++i) {
                         Content outputContent = contents.get(i);
                         FluidIngredient output = FluidRecipeCapability.CAP.of(outputContent.getContent());
@@ -601,6 +602,9 @@ public class GTRecipeTypes {
 
                                 builder.outputItems(stack);
                             }
+                        }
+                        for (var condition : conditions) {
+                            builder.addCondition(condition);
                         }
                         builder.save(provider);
                     }

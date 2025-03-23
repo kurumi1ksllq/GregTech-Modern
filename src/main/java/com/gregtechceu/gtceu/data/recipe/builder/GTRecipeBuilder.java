@@ -273,6 +273,10 @@ public class GTRecipeBuilder {
     }
 
     public GTRecipeBuilder EUt(long eu) {
+        return EUt(eu, 1);
+    }
+
+    public GTRecipeBuilder EUt(long eu, int amperage) {
         if (eu == 0) {
             GTCEu.LOGGER.error("EUt can't be explicitly set to 0, id: {}", id);
         }
@@ -280,12 +284,13 @@ public class GTRecipeBuilder {
         perTick = true;
         if (eu > 0) {
             tickInput.remove(EURecipeCapability.CAP);
-            inputEU(eu);
+            inputEU(eu * amperage);
         } else if (eu < 0) {
             tickOutput.remove(EURecipeCapability.CAP);
-            outputEU(-eu);
+            outputEU(-eu * amperage);
         }
         perTick = lastPerTick;
+        this.amperage = amperage;
         return this;
     }
 
@@ -664,11 +669,6 @@ public class GTRecipeBuilder {
             GTCEu.LOGGER.error("Circuit configuration must be in the bounds 0 - 32");
         }
         return notConsumable(IntCircuitIngredient.circuitInput(configuration));
-    }
-
-    public GTRecipeBuilder amperage(int amperage) {
-        this.amperage = amperage;
-        return this;
     }
 
     public GTRecipeBuilder chancedInput(ItemStack stack, int chance, int tierChanceBoost) {

@@ -42,6 +42,10 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Long
     @DescSynced
     protected long energyStored;
     @Getter
+    @Persisted
+    @DescSynced
+    protected long lastEnergyStored;
+    @Getter
     private long energyCapacity, inputVoltage, inputAmperage, outputVoltage, outputAmperage;
     @Setter
     private Predicate<Direction> sideInputCondition, sideOutputCondition;
@@ -261,6 +265,7 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Long
             lastTimeStamp = latestTimeStamp;
         }
         if (amps >= getInputAmperage()) return 0;
+        lastEnergyStored = energyStored;
         long canAccept = getEnergyCapacity() - getEnergyStored();
         if (voltage > 0L && (side == null || inputsEnergy(side))) {
             if (voltage > getInputVoltage() && machine instanceof IExplosionMachine explosionMachine) {
@@ -306,12 +311,45 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Long
                                         boolean simulate) {
         IEnergyContainer capability = this;
         long sum = left.stream().reduce(0L, Long::sum);
+        long change = 0;
         if (io == IO.IN) {
             var canOutput = capability.getEnergyStored();
             if (!simulate) {
-                capability.addEnergy(-Math.min(canOutput, sum * recipe.amperage));
+                capability.addEnergy(-Math.min(canOutput, sum));
             }
-            sum = (sum * recipe.amperage) - canOutput;
+            change = capability.getEnergyStored() - lastEnergyStored;
+            long recipeRequirement = sum;
+            int changeDirection = (int)Math.signum(change);
+
+            boolean goodDelta = false;
+
+            switch(changeDirection) {
+                case 1 -> {
+                    goodDelta = change >= recipeRequirement;
+                }
+                case 0 -> goodDelta = true;
+                case -1 -> goodDelta = change >= 0;
+            }
+
+            if(goodDelta) {
+                sum -= recipeRequirement;
+            }
+            else {
+                sum -= change;
+            }
+
+            /*boolean gainingEU = change >= 0;
+            boolean goodEUD = change >= recipeRequirement;
+
+            if(gainingEU) {
+                if(goodEUD) {
+                    sum -= recipeRequirement;
+                } else {
+                    sum -= change;
+                }
+            }*/
+            //sum = (sum * recipe.amperage) - change;
+
         } else if (io == IO.OUT) {
             long canInput = capability.getEnergyCapacity() - capability.getEnergyStored();
             if (!simulate) {

@@ -211,8 +211,7 @@ public class VanillaStandardRecipes {
                 .inputItems(ItemTags.SMELTS_TO_GLASS)
                 .outputItems(new ItemStack(Blocks.GLASS, 2))
                 .duration(200)
-                .EUt(VA[LV])
-                .amperage(3)
+                .EUt(VA[LV], 3)
                 .save(provider);
 
         FORMING_PRESS_RECIPES.recipeBuilder("form_glass").duration(80).EUt(VA[LV])

@@ -58,9 +58,8 @@ public class AcidRecipes {
                 .inputItems(dust, Sulfur)
                 .inputFluids(Water.getFluid(4000))
                 .outputFluids(SulfuricAcid.getFluid(1000))
-                .EUt(VA[HV])
+                .EUt(VA[HV], 12)
                 .duration(320)
-                .amperage(12)
                 .save(provider);
     }
 

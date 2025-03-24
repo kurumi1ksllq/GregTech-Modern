@@ -158,6 +158,7 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Long
             lastEnergyInputPerSec = energyInputPerSec;
             energyOutputPerSec = 0;
             energyInputPerSec = 0;
+            lastEnergyStored = energyStored;
         }
     }
 
@@ -265,7 +266,7 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Long
             lastTimeStamp = latestTimeStamp;
         }
         if (amps >= getInputAmperage()) return 0;
-        lastEnergyStored = energyStored;
+        //lastEnergyStored = energyStored;
         long canAccept = getEnergyCapacity() - getEnergyStored();
         if (voltage > 0L && (side == null || inputsEnergy(side))) {
             if (voltage > getInputVoltage() && machine instanceof IExplosionMachine explosionMachine) {
@@ -315,11 +316,27 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Long
         if (io == IO.IN) {
             var canOutput = capability.getEnergyStored();
             if (!simulate) {
-                capability.addEnergy(-Math.min(canOutput, sum));
+
+                if(capability.getEnergyStored() - lastEnergyStored >= sum) {
+                    change = capability.addEnergy(-Math.min(canOutput, sum));
+                }
+            } else {
+                change = capability.getEnergyStored() - lastEnergyStored;
             }
-            change = capability.getEnergyStored() - lastEnergyStored;
             long recipeRequirement = sum;
-            int changeDirection = (int)Math.signum(change);
+
+            boolean positiveCharge = simulate ? change >= 0 && canOutput > capability.getEnergyCapacity() / 2: change != 0; /*change == -recipeRequirement*/;
+            //boolean recipeCharge = change == -recipeRequirement;
+
+            if(positiveCharge) {
+                sum -= recipeRequirement;
+                //lastEnergyStored -= recipeRequirement;
+            }/*
+            else if(recipeCharge) {
+                sum -= change;
+            }*/
+
+            /*int changeDirection = (int)Math.signum(change);
 
             boolean goodDelta = false;
 
@@ -336,7 +353,7 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Long
             }
             else {
                 sum -= change;
-            }
+            }*/
 
             /*boolean gainingEU = change >= 0;
             boolean goodEUD = change >= recipeRequirement;

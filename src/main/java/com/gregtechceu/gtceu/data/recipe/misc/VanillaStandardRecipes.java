@@ -209,8 +209,9 @@ public class VanillaStandardRecipes {
 
         ARC_FURNACE_RECIPES.recipeBuilder("glass_from_sand")
                 .inputItems(ItemTags.SMELTS_TO_GLASS)
+                .inputFluids(GTMaterials.Oxygen.getFluid(10))
                 .outputItems(new ItemStack(Blocks.GLASS, 2))
-                .duration(200)
+                .duration(20000000)
                 .EUt(VA[LV], 3)
                 .save(provider);
 

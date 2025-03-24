@@ -350,8 +350,8 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
         if (recipe.hasTick()) {
             var result = recipe.matchTickRecipe(this.machine);
             if (result.isSuccess()) {
-                handleTickRecipeIO(recipe, IO.IN);
-
+                var res = handleTickRecipeIO(recipe, IO.IN);
+                if(!res) return GTRecipe.ActionResult.FAIL_NO_REASON;
                 handleTickRecipeIO(recipe, IO.OUT);
             } else {
                 return result;

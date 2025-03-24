@@ -476,7 +476,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
     public static record ActionResult(boolean isSuccess, @Nullable Supplier<Component> reason, float expectingRate) {
 
         public final static ActionResult SUCCESS = new ActionResult(true, null, 0);
-        public final static ActionResult FAIL_NO_REASON = new ActionResult(true, null, 0);
+        public final static ActionResult FAIL_NO_REASON = new ActionResult(false, null, 0);
 
         public static ActionResult fail(@Nullable Supplier<Component> component) {
             return new ActionResult(false, component, 0);

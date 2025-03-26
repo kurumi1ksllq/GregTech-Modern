@@ -100,6 +100,20 @@ public class GTBlocks {
     public static final BlockEntry<LaserPipeBlock>[] LASER_PIPES = new BlockEntry[LaserPipeType.values().length];
     public static final BlockEntry<OpticalPipeBlock>[] OPTICAL_PIPES = new BlockEntry[OpticalPipeType.values().length];
     public static final BlockEntry<DuctPipeBlock>[] DUCT_PIPES = new BlockEntry[DuctPipeType.VALUES.length];
+    public static final BlockEntry<LaserMirrorPipeBlock> LASER_MIRROR_PIPE = REGISTRATE
+            .block("laser_mirror_pipe", p -> new LaserMirrorPipeBlock(p, LaserPipeType.NORMAL))
+            .initialProperties(() -> Blocks.IRON_BLOCK)
+            .properties(p -> p.dynamicShape().noOcclusion().forceSolidOn())
+            .blockstate(NonNullBiConsumer.noop())
+            .defaultLoot()
+            .tag(GTToolType.WIRE_CUTTER.harvestTags.get(0))
+            .addLayer(() -> RenderType::cutoutMipped)
+            .color(() -> LaserMirrorPipeBlock::tintedColor)
+            .item(LaserMirrorPipeBlockItem::new)
+            .model(NonNullBiConsumer.noop())
+            .color(() -> LaserMirrorPipeBlockItem::tintColor)
+            .build()
+            .register();
 
     //////////////////////////////////////
     // Pipes Blocks //

@@ -43,6 +43,12 @@ public class GTBlockEntities {
             .validBlocks(GTBlocks.LASER_PIPES)
             .register();
 
+    public static final BlockEntityEntry<LaserMirrorPipeBlockEntity> LASER_MIRROR = REGISTRATE
+            .blockEntity("laser_mirror_pipe", LaserMirrorPipeBlockEntity::create)
+            //.onRegister(LaserPipeBlockEntity::onBlockEntityRegister)
+            .validBlocks(GTBlocks.LASER_MIRROR_PIPE)
+            .register();
+
     public static final BlockEntityEntry<OpticalPipeBlockEntity> OPTICAL_PIPE = REGISTRATE
             .blockEntity("optical_pipe", OpticalPipeBlockEntity::new)
             .validBlocks(GTBlocks.OPTICAL_PIPES)

@@ -3,14 +3,19 @@ package com.gregtechceu.gtceu.common.pipelike.laser;
 import com.gregtechceu.gtceu.api.capability.ILaserContainer;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.pipenet.PipeNetWalker;
+import com.gregtechceu.gtceu.common.blockentity.LaserMirrorPipeBlockEntity;
 import com.gregtechceu.gtceu.common.blockentity.LaserPipeBlockEntity;
 
+import com.gregtechceu.gtceu.utils.GTUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LaserNetWalker extends PipeNetWalker<LaserPipeBlockEntity, LaserPipeProperties, LaserPipeNet> {
 
@@ -38,6 +43,7 @@ public class LaserNetWalker extends PipeNetWalker<LaserPipeBlockEntity, LaserPip
     private BlockPos sourcePipe;
     private Direction facingToHandler;
     private Direction.Axis axis;
+    private List<LaserMirrorPipeBlockEntity> mirrors = new ArrayList<>();
 
     protected LaserNetWalker(LaserPipeNet world, BlockPos sourcePipe, int distance) {
         super(world, sourcePipe, distance);
@@ -64,8 +70,16 @@ public class LaserNetWalker extends PipeNetWalker<LaserPipeBlockEntity, LaserPip
     @Override
     protected void checkPipe(LaserPipeBlockEntity pipeTile, BlockPos pos) {}
 
+    private void findMirrors() {
+
+    }
+
     @Override
     protected Direction[] getSurroundingPipeSides() {
+        if(mirrors.isEmpty()) {
+            return GTUtil.DIRECTIONS;
+        }
+
         return switch (axis) {
             case X -> X_AXIS_FACINGS;
             case Y -> Y_AXIS_FACINGS;

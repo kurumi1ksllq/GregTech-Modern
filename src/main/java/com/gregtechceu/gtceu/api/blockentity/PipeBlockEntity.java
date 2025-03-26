@@ -287,7 +287,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
         }
     }
 
-    private void syncPipeConnections(Direction side, IPipeNode<?, ?> pipe) {
+    protected void syncPipeConnections(Direction side, IPipeNode<?, ?> pipe) {
         Direction oppositeSide = side.getOpposite();
         boolean neighbourOpen = pipe.isConnected(oppositeSide);
         if (isConnected(side) == neighbourOpen) {
@@ -298,7 +298,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
         }
     }
 
-    private void updateNetworkConnection(Direction side, boolean connected) {
+    protected void updateNetworkConnection(Direction side, boolean connected) {
         LevelPipeNet<?, ?> worldPipeNet = getPipeBlock().getWorldPipeNet((ServerLevel) getLevel());
         worldPipeNet.updateBlockedConnections(getPipePos(), side, !connected);
     }

@@ -178,7 +178,8 @@ public class LaserPipeBlockEntity extends PipeBlockEntity<LaserPipeType, LaserPi
                 connections = pipeTile.getConnections();
                 connections &= ~(1 << side.ordinal());
                 connections &= ~(1 << side.getOpposite().ordinal());
-                if (connections != 0) return;
+                if (connections != 0 && !(tile instanceof LaserMirrorPipeBlockEntity))
+                    return;
             }
         }
         super.setConnection(side, connected, fromNeighbor);
@@ -194,7 +195,7 @@ public class LaserPipeBlockEntity extends PipeBlockEntity<LaserPipeType, LaserPi
         return MANAGED_FIELD_HOLDER;
     }
 
-    private static class DefaultLaserContainer implements ILaserContainer {
+    public static class DefaultLaserContainer implements ILaserContainer {
 
         @Override
         public long acceptEnergyFromNetwork(Direction side, long voltage, long amperage) {

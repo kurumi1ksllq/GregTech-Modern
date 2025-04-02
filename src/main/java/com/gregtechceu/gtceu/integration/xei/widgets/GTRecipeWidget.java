@@ -198,8 +198,9 @@ public class GTRecipeWidget extends WidgetGroup {
             isOutput = true;
         }
         int amperage = recipe.amperage;
+        EUt /= amperage;
         if (EUt > 0) {
-            long euTotal = EUt * recipe.amperage * duration;
+            long euTotal = EUt * amperage * duration;
             // sadly we still need a custom override here, since computation uses duration and EU/t very differently
             if (recipe.data.getBoolean("duration_is_total_cwu") &&
                     recipe.tickInputs.containsKey(CWURecipeCapability.CAP)) {

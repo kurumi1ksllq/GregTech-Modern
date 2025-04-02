@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.machine.trait;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
@@ -46,6 +47,10 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Long
     @Persisted
     @DescSynced
     protected long lastEnergyStored;
+    @Getter
+    @Persisted
+    @DescSynced
+    protected long lastEnergyChange;
     @Getter
     private long energyCapacity, inputVoltage, inputAmperage, outputVoltage, outputAmperage;
     @Setter
@@ -159,8 +164,9 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Long
             lastEnergyInputPerSec = energyInputPerSec;
             energyOutputPerSec = 0;
             energyInputPerSec = 0;
-            lastEnergyStored = energyStored;
         }
+        lastEnergyChange = energyStored - lastEnergyStored;
+        lastEnergyStored = energyStored;
     }
 
     public void serverTick() {
@@ -314,59 +320,36 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Long
         long sum = left.stream().reduce(0L, Long::sum);
         long change = 0;
         if (io == IO.IN) {
-            var canOutput = capability.getEnergyStored();
-            if (!simulate) {
-
-                if(capability.getEnergyStored() - lastEnergyStored >= sum) {
-                    change = capability.addEnergy(-Math.min(canOutput, sum));
-                }
+            var energyStored = capability.getEnergyStored();
+            boolean halfPower = energyStored > capability.getEnergyCapacity() / 2;
+            if (!simulate && halfPower) {
+                change = capability.addEnergy(-Math.min(energyStored, sum));
             } else {
-                change = capability.getEnergyStored() - lastEnergyStored;
+                change = lastEnergyChange - (capability.getEnergyStored() - lastEnergyStored);
             }
-            long recipeRequirement = sum;
+            boolean newHalfPower = capability.getEnergyStored() > capability.getEnergyCapacity() / 2;
+            boolean crossedHalfPowerThres = halfPower && !newHalfPower;
+            GTCEu.LOGGER.info("Simulate: {}, EUt Req: {}, Previous Delta Change: {}, Change: {}, ", simulate, sum, lastEnergyChange, change);
 
-            boolean positiveCharge = simulate ? change >= 0 && canOutput > capability.getEnergyCapacity() / 2: change != 0; /*change == -recipeRequirement*/;
-            //boolean recipeCharge = change == -recipeRequirement;
+            boolean positiveCharge = simulate ? change >= 0 : change != 0;
 
-            if(positiveCharge) {
-                sum -= recipeRequirement;
-                //lastEnergyStored -= recipeRequirement;
-            }/*
-            else if(recipeCharge) {
-                sum -= change;
-            }*/
-
-            /*int changeDirection = (int)Math.signum(change);
-
-            boolean goodDelta = false;
-
-            switch(changeDirection) {
-                case 1 -> {
-                    goodDelta = change >= recipeRequirement;
-                }
-                case 0 -> goodDelta = true;
-                case -1 -> goodDelta = change >= 0;
-            }
-
-            if(goodDelta) {
-                sum -= recipeRequirement;
-            }
-            else {
-                sum -= change;
-            }*/
-
-            /*boolean gainingEU = change >= 0;
-            boolean goodEUD = change >= recipeRequirement;
-
-            if(gainingEU) {
-                if(goodEUD) {
-                    sum -= recipeRequirement;
-                } else {
+            int flag = (halfPower ? 4 : 0) | (positiveCharge ? 2 : 0) | (simulate ? 0 : 1);
+            switch(flag) {
+                case 0 -> {break;} // simulate
+                case 1 -> {break;} // handle
+                case 2 -> {break;} // simulate, positive charge
+                case 3 -> {break;} // handle, positive charge
+                case 4 -> {break;} // simulate, > half power
+                case 5 -> { // handle, > half power
                     sum -= change;
                 }
-            }*/
-            //sum = (sum * recipe.amperage) - change;
-
+                case 6 -> { // simulate, positive charge, > half power
+                    sum -= sum;
+                }
+                case 7 -> { // handle, positive charge, > half power
+                    sum += change;
+                }
+            }
         } else if (io == IO.OUT) {
             long canInput = capability.getEnergyCapacity() - capability.getEnergyStored();
             if (!simulate) {

@@ -113,7 +113,7 @@ class RecipeRunner {
 
     private RecipeHandlingResult handleContents() {
         var result = handleContentsInternal(io);
-        if (result.isSuccess()) return result;
+        if (!result.isSuccess()) return result;
         return handleContentsInternal(IO.BOTH);
     }
 

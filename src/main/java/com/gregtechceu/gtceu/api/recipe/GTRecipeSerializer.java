@@ -219,7 +219,7 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
                     .apply(instance, (type,
                                       inputs, outputs, tickInputs, tickOutputs,
                                       inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                                      conditions, data, duration, isFuel, recipeCategory) ->
+                                      conditions, data, duration, amperage, recipeCategory) ->
                             new GTRecipe(type, inputs, outputs, tickInputs, tickOutputs,
                                     inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
                                     conditions, List.of(), data, duration, amperage, recipeCategory)));

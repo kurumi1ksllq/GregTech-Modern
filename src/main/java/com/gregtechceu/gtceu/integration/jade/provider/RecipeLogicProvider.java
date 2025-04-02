@@ -86,7 +86,7 @@ public class RecipeLogicProvider extends CapabilityBlockProvider<RecipeLogic> {
                     }
                 }
 
-                EUt *= amperage;
+                //EUt *= amperage;
 
                 if (EUt > 0) {
                     MutableComponent text;

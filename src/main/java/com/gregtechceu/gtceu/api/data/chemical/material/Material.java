@@ -436,6 +436,7 @@ public class Material implements Comparable<Material> {
             totalAmount += material.amount();
             totalProtons += material.amount() * material.material().getProtons();
         }
+        if (totalAmount == 0) return 0;
         return totalProtons / totalAmount;
     }
 
@@ -449,19 +450,21 @@ public class Material implements Comparable<Material> {
             totalAmount += material.amount();
             totalNeutrons += material.amount() * material.material().getNeutrons();
         }
+        if (totalAmount == 0) return 0;
         return totalNeutrons / totalAmount;
     }
 
     public long getMass() {
         if (materialInfo.element != null)
             return materialInfo.element.mass();
-        if (materialInfo.componentList.size() == 0)
+        if (materialInfo.componentList.isEmpty())
             return 98;
         long totalMass = 0, totalAmount = 0;
         for (MaterialStack material : materialInfo.componentList) {
             totalAmount += material.amount();
             totalMass += material.amount() * material.material().getMass();
         }
+        if (totalAmount == 0) return 0;
         return totalMass / totalAmount;
     }
 
@@ -1335,7 +1338,7 @@ public class Material implements Comparable<Material> {
          */
         @Getter
         @Setter
-        private ImmutableList<MaterialStack> componentList;
+        private ImmutableList<MaterialStack> componentList = ImmutableList.of();
 
         /**
          * The Element of this Material, if it is a direct Element.

@@ -9,14 +9,9 @@ import com.gregtechceu.gtceu.api.gui.fancy.TooltipsPanel;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardEmitter;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-
-import com.gregtechceu.gtceu.client.particle.HazardParticle;
-import com.gregtechceu.gtceu.client.particle.MufflerParticle;
-import com.gregtechceu.gtceu.common.data.GTParticleTypes;
-import com.gregtechceu.gtceu.common.particle.HazardParticleOptions;
 import com.gregtechceu.gtceu.common.particle.MufflerParticleOptions;
+
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
@@ -48,43 +43,18 @@ public interface IMufflerMachine extends IMultiPart, IEnvironmentalHazardEmitter
             return;
         }
 
-        float xPos = facing.getStepX() + pos.getX() + 0.25F;
-        float yPos = facing.getStepY() + pos.getY() + 0.25F;
-        float zPos = facing.getStepZ() + pos.getZ() + 0.25F;
+        var center = pos.getCenter();
+        var offset = .75f;
+        var xPos = (float) (center.x + facing.getStepX() * offset + (GTValues.RNG.nextFloat() - .5f) * .35f);
+        var yPos = (float) (center.y + facing.getStepY() * offset + (GTValues.RNG.nextFloat() - .5f) * .35f);
+        var zPos = (float) (center.z + facing.getStepZ() * offset + (GTValues.RNG.nextFloat() - .5f) * .35f);
 
-        float ySpd = facing.getStepY() * 0.1F + 0.2F + 0.1F * GTValues.RNG.nextFloat();
-        float xSpd = 1;
-        float zSpd = 1;
-        xSpd = facing.getStepX() * (5F + 0.2F * GTValues.RNG.nextFloat());
-        zSpd = facing.getStepZ() * (5F + 0.2F * GTValues.RNG.nextFloat());
+        var ySpd = facing.getStepY() + (GTValues.RNG.nextFloat() - .15f) * .5f;
+        var xSpd = facing.getStepX() + (GTValues.RNG.nextFloat() - .5f) * .5f;
+        var zSpd = facing.getStepZ() + (GTValues.RNG.nextFloat() - .5f) * .5f;
 
-        if (facing.getStepY() == 1) {
-            float temp = GTValues.RNG.nextFloat() * 2 * (float) Math.PI;
-            xSpd *= 0;
-            zSpd *= 0;
-            ySpd *= 2;
-            self().getLevel().addParticle(new MufflerParticleOptions(0x1E1C1D, 1F),
-                    xPos + GTValues.RNG.nextFloat() * 0.5F,
-                    yPos + GTValues.RNG.nextFloat() * 0.5F,
-                    zPos + GTValues.RNG.nextFloat() * 0.5F,
-                    xSpd, ySpd, zSpd);
-        }
-        if (facing.getStepY() == -1){
-            xSpd = 1;
-            zSpd = 1;
-            xSpd = 2000000000;
-            zSpd = 2000000;
-            self().getLevel().addParticle(new MufflerParticleOptions(0x1E1C1D, 1F),
-                    xPos + GTValues.RNG.nextFloat() * 0.5F,
-                    yPos + 0.5F,
-                    zPos + GTValues.RNG.nextFloat() * 0.5F,
-                    xSpd, ySpd, zSpd);
-        }
-//        self().getLevel().addParticle(new MufflerParticleOptions(0x1E1C1D, 1F),
-//                xPos + GTValues.RNG.nextFloat() * 0.5F,
-//                yPos + GTValues.RNG.nextFloat() * 0.5F,
-//                zPos + GTValues.RNG.nextFloat() * 0.5F,
-//                xSpd, ySpd, zSpd);
+        self().getLevel().addParticle(new MufflerParticleOptions(0x1E1C1D, 1f),
+                xPos, yPos, zPos, xSpd, ySpd, zSpd);
     }
 
     @Override

@@ -25,9 +25,9 @@ public class MufflerParticle extends TextureSheetParticle {
         super(level, x, y, z, xSpeed, ySpeed, zSpeed);
         this.speedUpWhenYMotionIsBlocked = true;
         this.sprites = sprites;
-        this.xd *= 0.3F;
+        this.xd *= 0.1F;
         this.yd *= 0.5F;
-        this.zd *= 0.3F;
+        this.zd *= 0.1F;
         float colorMultiplier = this.random.nextFloat() * 4.4F + 1.3F;
         this.rCol = this.randomizeColor(FastColor.ARGB32.red(options.color()) / 255f, colorMultiplier);
         this.gCol = this.randomizeColor(FastColor.ARGB32.green(options.color()) / 255f, colorMultiplier);

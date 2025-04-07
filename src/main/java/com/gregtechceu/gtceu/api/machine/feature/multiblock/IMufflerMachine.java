@@ -53,26 +53,38 @@ public interface IMufflerMachine extends IMultiPart, IEnvironmentalHazardEmitter
         float zPos = facing.getStepZ() + pos.getZ() + 0.25F;
 
         float ySpd = facing.getStepY() * 0.1F + 0.2F + 0.1F * GTValues.RNG.nextFloat();
-        float xSpd = 0;
-        float zSpd  = 0;
-
-        if (facing.getStepY() == -1) {
-            float temp = GTValues.RNG.nextFloat() * 2 * (float) Math.PI;
-            xSpd = (float) Math.sin(temp) * 0.88F;
-            zSpd = (float) Math.cos(temp) * 0.88F;
-        }
-        if (facing.getStepY() == 1){
-            xSpd = 0;
-            zSpd = 0;
-        }
+        float xSpd = 1;
+        float zSpd = 1;
         xSpd = facing.getStepX() * (5F + 0.2F * GTValues.RNG.nextFloat());
         zSpd = facing.getStepZ() * (5F + 0.2F * GTValues.RNG.nextFloat());
 
-        self().getLevel().addParticle(new MufflerParticleOptions(0x1E1C1D, 1F),
-                xPos + GTValues.RNG.nextFloat() * 0.5F,
-                yPos + GTValues.RNG.nextFloat() * 0.5F,
-                zPos + GTValues.RNG.nextFloat() * 0.5F,
-                xSpd, ySpd, zSpd);
+        if (facing.getStepY() == 1) {
+            float temp = GTValues.RNG.nextFloat() * 2 * (float) Math.PI;
+            xSpd *= 0;
+            zSpd *= 0;
+            ySpd *= 2;
+            self().getLevel().addParticle(new MufflerParticleOptions(0x1E1C1D, 1F),
+                    xPos + GTValues.RNG.nextFloat() * 0.5F,
+                    yPos + GTValues.RNG.nextFloat() * 0.5F,
+                    zPos + GTValues.RNG.nextFloat() * 0.5F,
+                    xSpd, ySpd, zSpd);
+        }
+        if (facing.getStepY() == -1){
+            xSpd = 1;
+            zSpd = 1;
+            xSpd = 2000000000;
+            zSpd = 2000000;
+            self().getLevel().addParticle(new MufflerParticleOptions(0x1E1C1D, 1F),
+                    xPos + GTValues.RNG.nextFloat() * 0.5F,
+                    yPos + 0.5F,
+                    zPos + GTValues.RNG.nextFloat() * 0.5F,
+                    xSpd, ySpd, zSpd);
+        }
+//        self().getLevel().addParticle(new MufflerParticleOptions(0x1E1C1D, 1F),
+//                xPos + GTValues.RNG.nextFloat() * 0.5F,
+//                yPos + GTValues.RNG.nextFloat() * 0.5F,
+//                zPos + GTValues.RNG.nextFloat() * 0.5F,
+//                xSpd, ySpd, zSpd);
     }
 
     @Override

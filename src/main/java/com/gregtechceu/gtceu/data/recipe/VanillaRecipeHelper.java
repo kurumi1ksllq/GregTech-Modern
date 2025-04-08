@@ -558,11 +558,11 @@ public class VanillaRecipeHelper {
             builder.ingredient((TagKey<Item>) key);
         } else if (ingredient instanceof ItemLike itemLike) {
             builder.ingredient(itemLike);
-        } else if (ingredient instanceof UnificationEntry entry) {
-            TagKey<Item> tag = ChemicalHelper.getTag(entry.tagPrefix, entry.material);
+        } else if (ingredient instanceof MaterialEntry entry) {
+            TagKey<Item> tag = ChemicalHelper.getTag(entry.tagPrefix(), entry.material());
             if (tag != null) {
                 builder.ingredient(tag);
-            } else builder.ingredient(ChemicalHelper.get(entry.tagPrefix, entry.material));
+            } else builder.ingredient(ChemicalHelper.get(entry.tagPrefix(), entry.material()));
         } else if (ingredient instanceof Character c) {
             builder.ingredient(ToolHelper.getToolFromSymbol(c).itemTags.get(0));
         }

@@ -87,6 +87,7 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
     protected ManualIOMode manualIOMode = ManualIOMode.DISABLED;
 
     @Persisted
+    @DescSynced
     @Getter
     protected boolean isWorkingEnabled = true;
     protected int mBLeftToTransferLastSecond;
@@ -141,7 +142,7 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable 
 
     @Override
     public boolean canAttach() {
-        return getOwnFluidHandler() != null;
+        return super.canAttach() && getOwnFluidHandler() != null;
     }
 
     public void setIo(IO io) {

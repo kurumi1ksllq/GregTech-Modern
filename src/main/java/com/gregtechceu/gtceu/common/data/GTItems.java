@@ -5,13 +5,14 @@ import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.cover.filter.*;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.data.chemical.material.ItemMaterialData;
 import com.gregtechceu.gtceu.api.data.chemical.material.MarkerMaterial;
 import com.gregtechceu.gtceu.api.data.chemical.material.MarkerMaterials;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.ItemMaterialInfo;
+import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialStack;
-import com.gregtechceu.gtceu.api.data.chemical.material.stack.UnificationEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.data.tag.TagUtil;
 import com.gregtechceu.gtceu.api.gui.misc.ProspectorMode;
@@ -33,9 +34,7 @@ import com.gregtechceu.gtceu.data.lang.LangHandler;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
-import com.gregtechceu.gtceu.utils.SupplierMemoizer;
-
-import com.lowdragmc.lowdraglib.LDLib;
+import com.gregtechceu.gtceu.utils.memoization.GTMemoizer;
 
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -44,6 +43,7 @@ import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -61,6 +61,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.FluidUtil;
 
+import com.google.common.base.Preconditions;
 import com.tterrag.registrate.builders.ItemBuilder;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.ProviderType;
@@ -77,7 +78,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.gregtechceu.gtceu.common.data.GTCreativeModeTabs.*;
+import static com.gregtechceu.gtceu.common.data.GTCreativeModeTabs.ITEM;
+import static com.gregtechceu.gtceu.common.data.GTCreativeModeTabs.TOOL;
 import static com.gregtechceu.gtceu.common.data.GTModels.createTextureModel;
 import static com.gregtechceu.gtceu.common.data.GTModels.overrideModel;
 import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
@@ -92,50 +94,10 @@ public class GTItems {
 
     //////////////////////////////////////
     // ******* Misc Items ********//
-
     //////////////////////////////////////
     static {
         REGISTRATE.creativeModeTab(() -> ITEM);
     }
-
-    public static ItemEntry<Item> CREDIT_COPPER = REGISTRATE.item("copper_credit", Item::new).lang("Copper Credit")
-            .register();
-    public static ItemEntry<Item> CREDIT_CUPRONICKEL = REGISTRATE.item("cupronickel_credit", Item::new)
-            .lang("Cupronickel Credit").defaultModel()
-            .register();
-    public static ItemEntry<Item> CREDIT_SILVER = REGISTRATE.item("silver_credit", Item::new).lang("Silver Credit")
-            .properties(p -> p.rarity(Rarity.UNCOMMON))
-            .register();
-    public static ItemEntry<Item> CREDIT_GOLD = REGISTRATE.item("gold_credit", Item::new).lang("Gold Credit")
-            .properties(p -> p.rarity(Rarity.UNCOMMON))
-            .register();
-    public static ItemEntry<Item> CREDIT_PLATINUM = REGISTRATE.item("platinum_credit", Item::new)
-            .lang("Platinum Credit").properties(p -> p.rarity(Rarity.RARE))
-            .register();
-    public static ItemEntry<Item> CREDIT_OSMIUM = REGISTRATE.item("osmium_credit", Item::new).lang("Osmium Credit")
-            .properties(p -> p.rarity(Rarity.RARE))
-            .register();
-    public static ItemEntry<Item> CREDIT_NAQUADAH = REGISTRATE.item("naquadah_credit", Item::new)
-            .lang("Naquadah Credit").properties(p -> p.rarity(Rarity.EPIC))
-            .register();
-    public static ItemEntry<Item> CREDIT_NEUTRONIUM = REGISTRATE.item("neutronium_credit", Item::new)
-            .lang("Neutronium Credit").properties(p -> p.rarity(Rarity.EPIC))
-            .register();
-    public static ItemEntry<Item> COIN_GOLD_ANCIENT = REGISTRATE.item("ancient_gold_coin", Item::new)
-            .lang("Ancient Gold Coin").properties(p -> p.rarity(Rarity.RARE))
-            .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Gold, GTValues.M / 4))))
-            .register();
-    public static ItemEntry<Item> COIN_DOGE = REGISTRATE.item("doge_coin", Item::new).lang("Doge Coin")
-            .properties(p -> p.rarity(Rarity.EPIC))
-            .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Brass, GTValues.M / 4))))
-            .register();
-    public static ItemEntry<ComponentItem> COIN_CHOCOLATE = REGISTRATE.item("chocolate_coin", ComponentItem::create)
-            .lang("Chocolate Coin")
-            .properties(p -> p.rarity(Rarity.EPIC))
-            .onRegister(attach(new FoodStats(GTFoods.CHOCOLATE, false,
-                    () -> ChemicalHelper.get(TagPrefix.foil, GTMaterials.Gold))))
-            .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Gold, GTValues.M / 4))))
-            .register();
     public static ItemEntry<Item> COMPRESSED_CLAY = REGISTRATE.item("compressed_clay", Item::new)
             .lang("Compressed Clay")
             .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Clay, GTValues.M)))).register();
@@ -167,10 +129,9 @@ public class GTItems {
             .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
             .register();
 
-    public static final ItemEntry<Item>[] SHAPE_MOLDS = new ItemEntry[14];
+    public static final ItemEntry<Item>[] SHAPE_MOLDS = new ItemEntry[13];
     public static final ItemEntry<Item> SHAPE_MOLD_PLATE;
     public static final ItemEntry<Item> SHAPE_MOLD_GEAR;
-    public static final ItemEntry<Item> SHAPE_MOLD_CREDIT;
     public static final ItemEntry<Item> SHAPE_MOLD_BOTTLE;
     public static final ItemEntry<Item> SHAPE_MOLD_INGOT;
     public static final ItemEntry<Item> SHAPE_MOLD_BALL;
@@ -192,51 +153,47 @@ public class GTItems {
                 .lang("Casting Mold (Gear)")
                 .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
                 .register();
-        SHAPE_MOLDS[2] = SHAPE_MOLD_CREDIT = REGISTRATE.item("credit_casting_mold", Item::new)
-                .lang("Casting Mold (Coinage)")
-                .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
-                .register();
-        SHAPE_MOLDS[3] = SHAPE_MOLD_BOTTLE = REGISTRATE.item("bottle_casting_mold", Item::new)
+        SHAPE_MOLDS[2] = SHAPE_MOLD_BOTTLE = REGISTRATE.item("bottle_casting_mold", Item::new)
                 .lang("Casting Mold (Bottle)")
                 .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
                 .register();
-        SHAPE_MOLDS[4] = SHAPE_MOLD_INGOT = REGISTRATE.item("ingot_casting_mold", Item::new)
+        SHAPE_MOLDS[3] = SHAPE_MOLD_INGOT = REGISTRATE.item("ingot_casting_mold", Item::new)
                 .lang("Casting Mold (Ingot)")
                 .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
                 .register();
-        SHAPE_MOLDS[5] = SHAPE_MOLD_BALL = REGISTRATE.item("ball_casting_mold", Item::new)
+        SHAPE_MOLDS[4] = SHAPE_MOLD_BALL = REGISTRATE.item("ball_casting_mold", Item::new)
                 .lang("Casting Mold (Ball)")
                 .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
                 .register();
-        SHAPE_MOLDS[6] = SHAPE_MOLD_BLOCK = REGISTRATE.item("block_casting_mold", Item::new)
+        SHAPE_MOLDS[5] = SHAPE_MOLD_BLOCK = REGISTRATE.item("block_casting_mold", Item::new)
                 .lang("Casting Mold (Block)")
                 .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
                 .register();
-        SHAPE_MOLDS[7] = SHAPE_MOLD_NUGGET = REGISTRATE.item("nugget_casting_mold", Item::new)
+        SHAPE_MOLDS[6] = SHAPE_MOLD_NUGGET = REGISTRATE.item("nugget_casting_mold", Item::new)
                 .lang("Casting Mold (Nugget)")
                 .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
                 .register();
-        SHAPE_MOLDS[8] = SHAPE_MOLD_CYLINDER = REGISTRATE.item("cylinder_casting_mold", Item::new)
+        SHAPE_MOLDS[7] = SHAPE_MOLD_CYLINDER = REGISTRATE.item("cylinder_casting_mold", Item::new)
                 .lang("Casting Mold (Cylinder)")
                 .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
                 .register();
-        SHAPE_MOLDS[9] = SHAPE_MOLD_ANVIL = REGISTRATE.item("anvil_casting_mold", Item::new)
+        SHAPE_MOLDS[8] = SHAPE_MOLD_ANVIL = REGISTRATE.item("anvil_casting_mold", Item::new)
                 .lang("Casting Mold (Anvil)")
                 .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
                 .register();
-        SHAPE_MOLDS[10] = SHAPE_MOLD_NAME = REGISTRATE.item("name_casting_mold", Item::new)
+        SHAPE_MOLDS[9] = SHAPE_MOLD_NAME = REGISTRATE.item("name_casting_mold", Item::new)
                 .lang("Casting Mold (Name)")
                 .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
                 .register();
-        SHAPE_MOLDS[11] = SHAPE_MOLD_GEAR_SMALL = REGISTRATE.item("small_gear_casting_mold", Item::new)
+        SHAPE_MOLDS[10] = SHAPE_MOLD_GEAR_SMALL = REGISTRATE.item("small_gear_casting_mold", Item::new)
                 .lang("Casting Mold (Small Gear)")
                 .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
                 .register();
-        SHAPE_MOLDS[12] = SHAPE_MOLD_ROTOR = REGISTRATE.item("rotor_casting_mold", Item::new)
+        SHAPE_MOLDS[11] = SHAPE_MOLD_ROTOR = REGISTRATE.item("rotor_casting_mold", Item::new)
                 .lang("Casting Mold (Rotor)")
                 .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
                 .register();
-        SHAPE_MOLDS[13] = SHAPE_MOLD_PILL = REGISTRATE.item("pill_casting_mold", Item::new)
+        SHAPE_MOLDS[12] = SHAPE_MOLD_PILL = REGISTRATE.item("pill_casting_mold", Item::new)
                 .lang("Casting Mold (Pill)")
                 .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
                 .register();
@@ -405,69 +362,16 @@ public class GTItems {
                     ThermalFluidStats.create(FluidType.BUCKET_VOLUME, 1800, true, false, false, false, true),
                     new ItemFluidContainer()))
             .register();
-    public static ItemEntry<ComponentItem> FLUID_CELL_LARGE_STEEL = REGISTRATE
-            .item("steel_fluid_cell", ComponentItem::create)
-            .lang("%s Steel Cell")
-            .color(() -> GTItems::cellColor)
-            .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
-            .onRegister(attach(cellName(),
-                    ThermalFluidStats.create(FluidType.BUCKET_VOLUME * 8,
-                            GTMaterials.Steel.getProperty(PropertyKey.FLUID_PIPE).getMaxFluidTemperature(), true, false,
-                            false, false, true),
-                    new ItemFluidContainer()))
-            .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Steel, GTValues.M * 4))))
-            .register();
-    public static ItemEntry<ComponentItem> FLUID_CELL_LARGE_ALUMINIUM = REGISTRATE
-            .item("aluminium_fluid_cell", ComponentItem::create)
-            .lang("%s Aluminium Cell")
-            .color(() -> GTItems::cellColor)
-            .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
-            .onRegister(attach(cellName(),
-                    ThermalFluidStats.create(FluidType.BUCKET_VOLUME * 32,
-                            GTMaterials.Aluminium.getProperty(PropertyKey.FLUID_PIPE).getMaxFluidTemperature(), true,
-                            false, false, false, true),
-                    new ItemFluidContainer()))
-            .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Aluminium, GTValues.M * 4))))
-            .register();
-    public static ItemEntry<ComponentItem> FLUID_CELL_LARGE_STAINLESS_STEEL = REGISTRATE
-            .item("stainless_steel_fluid_cell", ComponentItem::create)
-            .lang("%s Stainless Steel Cell")
-            .color(() -> GTItems::cellColor)
-            .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
-            .onRegister(attach(cellName(),
-                    ThermalFluidStats.create(FluidType.BUCKET_VOLUME * 64,
-                            GTMaterials.StainlessSteel.getProperty(PropertyKey.FLUID_PIPE).getMaxFluidTemperature(),
-                            true, false, false, false, true),
-                    new ItemFluidContainer()))
-            .onRegister(
-                    materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.StainlessSteel, GTValues.M * 6))))
-            .register();
-    public static ItemEntry<ComponentItem> FLUID_CELL_LARGE_TITANIUM = REGISTRATE
-            .item("titanium_fluid_cell", ComponentItem::create)
-            .lang("%s Titanium Cell")
-            .color(() -> GTItems::cellColor)
-            .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
-            .onRegister(attach(cellName(),
-                    ThermalFluidStats.create(FluidType.BUCKET_VOLUME * 128,
-                            GTMaterials.Titanium.getProperty(PropertyKey.FLUID_PIPE).getMaxFluidTemperature(), true,
-                            false, false, false, true),
-                    new ItemFluidContainer()))
-            .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Titanium, GTValues.M * 6))))
-            .register();
-    public static ItemEntry<ComponentItem> FLUID_CELL_LARGE_TUNGSTEN_STEEL = REGISTRATE
-            .item("tungstensteel_fluid_cell", ComponentItem::create)
-            .lang("%s Tungstensteel Cell")
-            .color(() -> GTItems::cellColor)
-            .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
-            .properties(p -> p.stacksTo(32))
-            .onRegister(attach(cellName(),
-                    ThermalFluidStats.create(FluidType.BUCKET_VOLUME * 512,
-                            GTMaterials.TungstenSteel.getProperty(PropertyKey.FLUID_PIPE).getMaxFluidTemperature(),
-                            true, false, false, false, true),
-                    new ItemFluidContainer()))
-            .onRegister(
-                    materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.TungstenSteel, GTValues.M * 8))))
-            .register();
+    public static ItemEntry<ComponentItem> FLUID_CELL_LARGE_STEEL = createFluidCell(GTMaterials.Steel, 8, 4, 64);
+    public static ItemEntry<ComponentItem> FLUID_CELL_LARGE_ALUMINIUM = createFluidCell(GTMaterials.Aluminium, 32, 4,
+            64);
+    public static ItemEntry<ComponentItem> FLUID_CELL_LARGE_STAINLESS_STEEL = createFluidCell(
+            GTMaterials.StainlessSteel, 64, 6, 64);
+    public static ItemEntry<ComponentItem> FLUID_CELL_LARGE_TITANIUM = createFluidCell(GTMaterials.Titanium, 128, 6,
+            64);
+    public static ItemEntry<ComponentItem> FLUID_CELL_LARGE_TUNGSTEN_STEEL = createFluidCell(GTMaterials.TungstenSteel,
+            512, 8, 32);
+
     public static ItemEntry<ComponentItem> FLUID_CELL_GLASS_VIAL = REGISTRATE.item("glass_vial", ComponentItem::create)
             .lang("%s Glass Vial")
             .color(() -> GTItems::cellColor)
@@ -477,8 +381,27 @@ public class GTItems {
                             ThermalFluidStats.create(FluidType.BUCKET_VOLUME, 1200, false, true, false, false,
                                     true),
                             new ItemFluidContainer()))
-            .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Glass, GTValues.M / 4))))
             .register();
+
+    public static ItemEntry<ComponentItem> createFluidCell(Material mat, int capacity, int matSize, int stackSize) {
+        var prop = mat.getProperty(PropertyKey.FLUID_PIPE);
+        Preconditions.checkArgument(prop != null,
+                "Material { %s } does not have Fluid Pipe properties, but is being used to create a Fluid Cell",
+                mat.getName());
+        return REGISTRATE
+                .item("%s_fluid_cell".formatted(mat.getName()), ComponentItem::create)
+                .lang("%s " + toEnglishName(mat.getName()) + " Cell")
+                .color(() -> GTItems::cellColor)
+                .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
+                .properties(p -> p.stacksTo(stackSize))
+                .onRegister(attach(cellName(),
+                        ThermalFluidStats.create(FluidType.BUCKET_VOLUME * capacity,
+                                prop, true),
+                        new ItemFluidContainer()))
+                .onRegister(
+                        materialInfo(new ItemMaterialInfo(new MaterialStack(mat, GTValues.M * matSize))))
+                .register();
+    }
 
     public static ItemEntry<ComponentItem> TOOL_MATCHES = REGISTRATE.item("matches", ComponentItem::create)
             .lang("Matches")
@@ -497,7 +420,7 @@ public class GTItems {
             .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
             .onRegister(attach(new LighterBehavior(true, true, true)))
             .onRegister(attach(FilteredFluidContainer.create(100, true,
-                            x -> x.getFluid().is(CustomTags.LIGHTER_FLUIDS)),
+                    x -> x.getFluid().is(CustomTags.LIGHTER_FLUIDS)),
                     new ItemFluidContainer()))
             .onRegister(modelPredicate(GTCEu.id("lighter_open"),
                     (itemStack) -> itemStack.getOrCreateTag().getBoolean(LighterBehavior.LIGHTER_OPEN) ? 1.0f : 0.0f))
@@ -509,7 +432,7 @@ public class GTItems {
             .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
             .onRegister(attach(new LighterBehavior(true, true, true)))
             .onRegister(attach(FilteredFluidContainer.create(1000, true,
-                            x -> x.getFluid().is(CustomTags.LIGHTER_FLUIDS)),
+                    x -> x.getFluid().is(CustomTags.LIGHTER_FLUIDS)),
                     new ItemFluidContainer()))
             .onRegister(modelPredicate(GTCEu.id("lighter_open"),
                     (itemStack) -> itemStack.getOrCreateTag().getBoolean(LighterBehavior.LIGHTER_OPEN) ? 1.0f : 0.0f))
@@ -1850,7 +1773,7 @@ public class GTItems {
 
     /////////////////////////////////////////
     // *********** COVERS ***********//
-    /// //////////////////////////////////////
+    /////////////////////////////////////////
 
     public static ItemEntry<ComponentItem> ITEM_FILTER = REGISTRATE.item("item_filter", ComponentItem::create)
             .onRegister(attach(new ItemFilterBehaviour(SimpleItemFilter::loadFilter),
@@ -1993,13 +1916,13 @@ public class GTItems {
     // Solar Panels: ID 331-346
     public static ItemEntry<ComponentItem> COVER_SOLAR_PANEL = REGISTRATE.item("solar_panel", ComponentItem::create)
             .lang("Solar Panel").onRegister(attach(new TooltipBehavior(lines -> {
-                lines.addAll(LangHandler.getMultiLang("metaitem.cover.solar.panel.tooltip"));
                 lines.add(Component.translatable("gtceu.universal.tooltip.voltage_out", 1, GTValues.VNF[GTValues.ULV]));
-            }))).register();
+            }))).onRegister(attach(new CoverPlaceBehavior(GTCovers.SOLAR_PANEL_BASIC)))
+            .register();
     public static ItemEntry<ComponentItem> COVER_SOLAR_PANEL_ULV = REGISTRATE
             .item("ulv_solar_panel", ComponentItem::create).lang("Ultra Low Voltage Solar Panel")
             .onRegister(attach(new TooltipBehavior(lines -> {
-                lines.addAll(LangHandler.getMultiLang("metaitem.cover.solar.panel.tooltip"));
+                lines.addAll(LangHandler.getMultiLang("item.gtceu.solar_panel.tooltip"));
                 lines.add(Component.translatable("gtceu.universal.tooltip.voltage_out", GTValues.V[GTValues.ULV],
                         GTValues.VNF[GTValues.ULV]));
             }))).onRegister(attach(new CoverPlaceBehavior(GTCovers.SOLAR_PANEL[0])))
@@ -2007,7 +1930,7 @@ public class GTItems {
     public static ItemEntry<ComponentItem> COVER_SOLAR_PANEL_LV = REGISTRATE
             .item("lv_solar_panel", ComponentItem::create).lang("Low Voltage Solar Panel")
             .onRegister(attach(new TooltipBehavior(lines -> {
-                lines.addAll(LangHandler.getMultiLang("metaitem.cover.solar.panel.tooltip"));
+                lines.addAll(LangHandler.getMultiLang("item.gtceu.solar_panel.tooltip"));
                 lines.add(Component.translatable("gtceu.universal.tooltip.voltage_out", GTValues.V[GTValues.LV],
                         GTValues.VNF[GTValues.LV]));
             }))).onRegister(attach(new CoverPlaceBehavior(GTCovers.SOLAR_PANEL[1])))
@@ -2015,7 +1938,7 @@ public class GTItems {
     public static ItemEntry<ComponentItem> COVER_SOLAR_PANEL_MV = REGISTRATE
             .item("mv_solar_panel", ComponentItem::create).lang("Medium Voltage Solar Panel")
             .onRegister(attach(new TooltipBehavior(lines -> {
-                lines.addAll(LangHandler.getMultiLang("metaitem.cover.solar.panel.tooltip"));
+                lines.addAll(LangHandler.getMultiLang("item.gtceu.solar_panel.tooltip"));
                 lines.add(Component.translatable("gtceu.universal.tooltip.voltage_out", GTValues.V[GTValues.MV],
                         GTValues.VNF[GTValues.MV]));
             }))).onRegister(attach(new CoverPlaceBehavior(GTCovers.SOLAR_PANEL[2])))
@@ -2023,7 +1946,7 @@ public class GTItems {
     public static ItemEntry<ComponentItem> COVER_SOLAR_PANEL_HV = REGISTRATE
             .item("hv_solar_panel", ComponentItem::create).lang("High Voltage Solar Panel")
             .onRegister(attach(new TooltipBehavior(lines -> {
-                lines.addAll(LangHandler.getMultiLang("metaitem.cover.solar.panel.tooltip"));
+                lines.addAll(LangHandler.getMultiLang("item.gtceu.solar_panel.tooltip"));
                 lines.add(Component.translatable("gtceu.universal.tooltip.voltage_out", GTValues.V[GTValues.HV],
                         GTValues.VNF[GTValues.HV]));
             }))).onRegister(attach(new CoverPlaceBehavior(GTCovers.SOLAR_PANEL[3])))
@@ -2031,7 +1954,7 @@ public class GTItems {
     public static ItemEntry<ComponentItem> COVER_SOLAR_PANEL_EV = REGISTRATE
             .item("ev_solar_panel", ComponentItem::create).lang("Extreme Voltage Solar Panel")
             .onRegister(attach(new TooltipBehavior(lines -> {
-                lines.addAll(LangHandler.getMultiLang("metaitem.cover.solar.panel.tooltip"));
+                lines.addAll(LangHandler.getMultiLang("item.gtceu.solar_panel.tooltip"));
                 lines.add(Component.translatable("gtceu.universal.tooltip.voltage_out", GTValues.V[GTValues.EV],
                         GTValues.VNF[GTValues.EV]));
             }))).onRegister(attach(new CoverPlaceBehavior(GTCovers.SOLAR_PANEL[4])))
@@ -2039,7 +1962,7 @@ public class GTItems {
     public static ItemEntry<ComponentItem> COVER_SOLAR_PANEL_IV = REGISTRATE
             .item("iv_solar_panel", ComponentItem::create).lang("Insane Voltage Solar Panel")
             .onRegister(attach(new TooltipBehavior(lines -> {
-                lines.addAll(LangHandler.getMultiLang("metaitem.cover.solar.panel.tooltip"));
+                lines.addAll(LangHandler.getMultiLang("item.gtceu.solar_panel.tooltip"));
                 lines.add(Component.translatable("gtceu.universal.tooltip.voltage_out", GTValues.V[GTValues.IV],
                         GTValues.VNF[GTValues.IV]));
             }))).onRegister(attach(new CoverPlaceBehavior(GTCovers.SOLAR_PANEL[5])))
@@ -2047,7 +1970,7 @@ public class GTItems {
     public static ItemEntry<ComponentItem> COVER_SOLAR_PANEL_LuV = REGISTRATE
             .item("luv_solar_panel", ComponentItem::create).lang("Ludicrous Voltage Solar Panel")
             .onRegister(attach(new TooltipBehavior(lines -> {
-                lines.addAll(LangHandler.getMultiLang("metaitem.cover.solar.panel.tooltip"));
+                lines.addAll(LangHandler.getMultiLang("item.gtceu.solar_panel.tooltip"));
                 lines.add(Component.translatable("gtceu.universal.tooltip.voltage_out", GTValues.V[GTValues.LuV],
                         GTValues.VNF[GTValues.LuV]));
             }))).onRegister(attach(new CoverPlaceBehavior(GTCovers.SOLAR_PANEL[6])))
@@ -2055,7 +1978,7 @@ public class GTItems {
     public static ItemEntry<ComponentItem> COVER_SOLAR_PANEL_ZPM = REGISTRATE
             .item("zpm_solar_panel", ComponentItem::create).lang("Zero Point Module Solar Panel")
             .onRegister(attach(new TooltipBehavior(lines -> {
-                lines.addAll(LangHandler.getMultiLang("metaitem.cover.solar.panel.tooltip"));
+                lines.addAll(LangHandler.getMultiLang("item.gtceu.solar_panel.tooltip"));
                 lines.add(Component.translatable("gtceu.universal.tooltip.voltage_out", GTValues.V[GTValues.ZPM],
                         GTValues.VNF[GTValues.ZPM]));
             }))).onRegister(attach(new CoverPlaceBehavior(GTCovers.SOLAR_PANEL[7])))
@@ -2063,7 +1986,7 @@ public class GTItems {
     public static ItemEntry<ComponentItem> COVER_SOLAR_PANEL_UV = REGISTRATE
             .item("uv_solar_panel", ComponentItem::create).lang("Ultimate Voltage Solar Panel")
             .onRegister(attach(new TooltipBehavior(lines -> {
-                lines.addAll(LangHandler.getMultiLang("metaitem.cover.solar.panel.tooltip"));
+                lines.addAll(LangHandler.getMultiLang("item.gtceu.solar_panel.tooltip"));
                 lines.add(Component.translatable("gtceu.universal.tooltip.voltage_out", GTValues.V[GTValues.UV],
                         GTValues.VNF[GTValues.UV]));
             }))).onRegister(attach(new CoverPlaceBehavior(GTCovers.SOLAR_PANEL[8])))
@@ -2171,7 +2094,7 @@ public class GTItems {
             .model((ctx, prov) -> {
                 var rootModel = prov.generated(ctx::getEntry, prov.modLoc("item/nano_saber/normal"));
                 prov.getBuilder("item/nano_saber/active")
-                        .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                        .parent(new ModelFile.UncheckedModelFile("item/handheld"))
                         .texture("layer0", prov.modLoc("item/nano_saber/active"));
 
                 rootModel.override().predicate(NanoSaberBehavior.OVERRIDE_KEY_LOCATION, 1.0f)
@@ -2229,13 +2152,13 @@ public class GTItems {
             .onRegister(attach(new MetaMachineConfigCopyBehaviour()))
             .register();
 
-    public static final ItemEntry<Item>[] DYE_ONLY_ITEMS = new ItemEntry[DyeColor.values().length];
-
+    public static final ItemEntry<DyeItem>[] DYE_ONLY_ITEMS = new ItemEntry[DyeColor.values().length];
     static {
         DyeColor[] colors = DyeColor.values();
         for (int i = 0; i < colors.length; i++) {
             var dyeColor = colors[i];
-            DYE_ONLY_ITEMS[i] = REGISTRATE.item("chemical_%s_dye".formatted(dyeColor.getName()), Item::new)
+            DYE_ONLY_ITEMS[i] = REGISTRATE
+                    .item("chemical_%s_dye".formatted(dyeColor.getName()), (props) -> new DyeItem(dyeColor, props))
                     .lang("Chemical %s Dye".formatted(toEnglishName(dyeColor.getName())))
                     .tag(TagUtil.createItemTag("dyes/" + dyeColor.getName()))
                     .register();
@@ -2422,7 +2345,8 @@ public class GTItems {
                             .setDefaultMaxModifiers(8))
             .lang("QuarkTech™ Suite Chestplate")
             .properties(p -> p.rarity(Rarity.RARE))
-            .tag(Tags.Items.ARMORS_CHESTPLATES, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT)
+            .tag(Tags.Items.ARMORS_CHESTPLATES, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT, ItemTags.FREEZE_IMMUNE_WEARABLES)
+            .tag(CustomTags.PPE_ARMOR)
             .register();
     public static ItemEntry<ModifiableArmorItem> QUANTUM_LEGGINGS = REGISTRATE
             .item("quarktech_leggings",
@@ -2497,6 +2421,9 @@ public class GTItems {
             .lang("Advanced QuarkTech™ Suite Chestplate")
             .properties(p -> p.rarity(Rarity.EPIC))
             .tag(Tags.Items.ARMORS_CHESTPLATES, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT)
+            .tag(Tags.Items.ARMORS_CHESTPLATES)
+            .tag(ItemTags.FREEZE_IMMUNE_WEARABLES)
+            .tag(CustomTags.PPE_ARMOR)
             .register();
 
     public static ItemEntry<Item> POWER_THRUSTER = REGISTRATE.item("power_thruster", Item::new)
@@ -2548,7 +2475,7 @@ public class GTItems {
     }
 
     public static <T extends ItemLike> NonNullConsumer<T> materialInfo(ItemMaterialInfo materialInfo) {
-        return item -> ChemicalHelper.registerMaterialInfo(item, materialInfo);
+        return item -> ItemMaterialData.registerMaterialInfo(item, materialInfo);
     }
 
     public static <P, T extends Item,
@@ -2556,10 +2483,10 @@ public class GTItems {
                                                                                   @NotNull Material mat) {
         return builder -> {
             builder.onRegister(item -> {
-                Supplier<ItemLike> supplier = SupplierMemoizer.memoize(() -> item);
-                UnificationEntry entry = new UnificationEntry(tagPrefix, mat);
+                Supplier<ItemLike> supplier = GTMemoizer.memoize(() -> item);
+                MaterialEntry entry = new MaterialEntry(tagPrefix, mat);
                 GTMaterialItems.toUnify.put(entry, supplier);
-                ChemicalHelper.registerUnificationItems(entry, supplier);
+                ItemMaterialData.registerMaterialInfoItems(entry, supplier);
             });
             return builder;
         };
@@ -2613,7 +2540,7 @@ public class GTItems {
     public static <T extends Item> NonNullConsumer<T> modelPredicate(ResourceLocation predicate,
                                                                      Function<ItemStack, Float> property) {
         return item -> {
-            if (LDLib.isClient()) {
+            if (GTCEu.isClientSide()) {
                 ItemProperties.register(item, predicate, (itemStack, c, l, i) -> property.apply(itemStack));
             }
         };
@@ -2623,7 +2550,7 @@ public class GTItems {
     public static <T extends Item> NonNullConsumer<T> modelPredicate(ResourceLocation predicate,
                                                                      Supplier<Supplier<ItemPropertyFunction>> property) {
         return item -> {
-            if (LDLib.isClient()) {
+            if (GTCEu.isClientSide()) {
                 ItemProperties.register(item, predicate, property.get().get());
             }
         };
@@ -2648,5 +2575,4 @@ public class GTItems {
             prov.add(ctx.get(), names.stream().map(StringUtils::capitalize).collect(Collectors.joining(" ")));
         };
     }
-
 }

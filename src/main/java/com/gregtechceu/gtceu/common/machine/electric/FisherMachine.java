@@ -134,6 +134,8 @@ public class FisherMachine extends TieredEnergyMachine
 
     @Getter
     @Setter
+    @Persisted
+    @DescSynced
     protected boolean junkEnabled = true;
 
     public FisherMachine(IMachineBlockEntity holder, int tier, Object... ignoredArgs) {
@@ -534,7 +536,7 @@ public class FisherMachine extends TieredEnergyMachine
                 // remove the output facing when wrenching the current one to disable it
                 setOutputFacingItems(null);
             }
-
+            playerIn.swing(hand);
             return InteractionResult.CONSUME;
         }
 

@@ -8,7 +8,6 @@ import com.gregtechceu.gtceu.api.data.worldgen.ores.GeneratedVeinMetadata;
 import com.gregtechceu.gtceu.api.data.worldgen.ores.OreGenerator;
 import com.gregtechceu.gtceu.api.data.worldgen.ores.OrePlacer;
 import com.gregtechceu.gtceu.api.gui.factory.GTUIEditorFactory;
-import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.registry.GTRegistry;
 import com.gregtechceu.gtceu.common.commands.arguments.GTRegistryArgument;
@@ -16,8 +15,6 @@ import com.gregtechceu.gtceu.data.loader.BedrockFluidLoader;
 import com.gregtechceu.gtceu.data.loader.BedrockOreLoader;
 import com.gregtechceu.gtceu.data.loader.GTOreLoader;
 import com.gregtechceu.gtceu.data.pack.GTDynamicDataPack;
-
-import com.lowdragmc.lowdraglib.Platform;
 
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandRuntimeException;
@@ -29,7 +26,6 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.BulkSectionAccess;
 import net.minecraft.world.level.levelgen.structure.templatesystem.AlwaysTrueTest;
@@ -61,19 +57,6 @@ public class GTCommands {
                                             context.getSource().getPlayerOrException());
                                     return 1;
                                 }))
-                        .then(literal("check_recipes_valid")
-                                .executes(context -> {
-                                    for (Recipe<?> recipe : context.getSource().getServer().getRecipeManager()
-                                            .getRecipes()) {
-                                        if (recipe instanceof GTRecipe gtRecipe && !gtRecipe.checkRecipeValid()) {
-                                            context.getSource().sendSuccess(
-                                                    () -> Component
-                                                            .literal("recipe %s is invalid".formatted(gtRecipe.id)),
-                                                    false);
-                                        }
-                                    }
-                                    return 1;
-                                }))
                         .then(literal("dump_data")
                                 .then(literal("bedrock_fluid_veins")
                                         .executes(context -> dumpDataRegistry(context,
@@ -102,7 +85,7 @@ public class GTCommands {
 
     private static <T> int dumpDataRegistry(CommandContext<CommandSourceStack> context,
                                             GTRegistry<ResourceLocation, T> registry, Codec<T> codec, String folder) {
-        Path parent = Platform.getGamePath().resolve("gtceu/dumped/data");
+        Path parent = GTCEu.getGameDir().resolve("gtceu/dumped/data");
         var ops = RegistryOps.create(JsonOps.INSTANCE, context.getSource().registryAccess());
         int dumpedCount = 0;
         for (ResourceLocation id : registry.keys()) {

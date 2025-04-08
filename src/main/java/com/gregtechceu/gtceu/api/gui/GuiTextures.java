@@ -5,8 +5,6 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceBorderTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 
-import lombok.val;
-
 /**
  * @author KilaBash
  * @date 2023/2/22
@@ -193,6 +191,8 @@ public class GuiTextures {
             "gtceu:textures/gui/widget/button_maintenance.png");
     public static final ResourceTexture MAINTENANCE_ICON = new ResourceTexture(
             "gtceu:textures/block/overlay/machine/overlay_maintenance.png");
+    public static final ResourceTexture STORAGE_ICON = new ResourceTexture(
+            "gtceu:textures/item/storage_cover.png");
     public static final ResourceTexture BUTTON_MINER_MODES = new ResourceTexture(
             "gtceu:textures/gui/widget/button_miner_modes.png");
     public static final ResourceTexture EQUIPMENT_FOUNDRY_BACKGROUND = new ResourceTexture(
@@ -560,7 +560,7 @@ public class GuiTextures {
     public static final ResourceTexture UP = new ResourceTexture("gtceu:textures/gui/base/up.png");
     public static final ResourceTexture[] TIER = new ResourceTexture[9];
     static {
-        val offset = 1f / TIER.length;
+        var offset = 1f / TIER.length;
         for (int i = 0; i < TIER.length; i++) {
             TIER[i] = new ResourceTexture("gtceu:textures/gui/overlay/tier.png").getSubTexture(0, i * offset, 1,
                     offset);

@@ -22,6 +22,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -154,7 +155,9 @@ public class ProspectingMapWidget extends WidgetGroup implements SearchComponent
             int oz = row - chunkRadius + 1;
 
             var chunk = world.getChunk(playerChunkX + ox, playerChunkZ + oz);
-            ServerCache.instance.prospectAllInChunk(world.dimension(), chunk.getPos(), (ServerPlayer) player);
+            if (mode == ProspectorMode.ORE) {
+                ServerCache.instance.prospectAllInChunk(world.dimension(), chunk.getPos(), (ServerPlayer) player);
+            }
             PacketProspecting packet = new PacketProspecting(playerChunkX + ox, playerChunkZ + oz, this.mode);
             mode.scan(packet.data, chunk);
             writeUpdateInfo(-1, packet::writePacketData);
@@ -260,13 +263,16 @@ public class ProspectingMapWidget extends WidgetGroup implements SearchComponent
         if (clickedItem == null) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
+        if (!WaypointManager.isActive()) return true;
+        MutableComponent veinName = Component.literal(clickedItem.name());
+        veinName.setStyle(veinName.getStyle().withColor(clickedItem.color));
         WaypointManager.setWaypoint(new ChunkPos(clickedItem.position).toString(),
                 clickedItem.name,
                 clickedItem.color,
                 gui.entityPlayer.level().dimension(),
                 clickedItem.position.getX(), clickedItem.position.getY(), clickedItem.position.getZ());
         gui.entityPlayer.displayClientMessage(
-                Component.translatable("behavior.prospector.added_waypoint", clickedItem.name), true);
+                Component.translatable("behavior.prospector.added_waypoint", veinName), false);
         playButtonClickSound();
         return true;
     }

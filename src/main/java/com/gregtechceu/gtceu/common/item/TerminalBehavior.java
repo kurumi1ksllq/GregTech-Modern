@@ -3,7 +3,10 @@ package com.gregtechceu.gtceu.common.item;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.IEnergyInfoProvider;
+import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
+import com.gregtechceu.gtceu.api.item.component.IItemUIFactory;
+import com.gregtechceu.gtceu.api.item.tool.aoe.AoESymmetrical;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 
@@ -11,6 +14,11 @@ import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.pattern.predicates.PredicateAbilities;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.EnergyHatchPartMachine;
+import com.lowdragmc.lowdraglib.gui.factory.HeldItemUIFactory;
+import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
+import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -28,7 +36,7 @@ import net.minecraft.world.level.block.Block;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class TerminalBehavior implements IInteractionItem {
+public class TerminalBehavior implements IInteractionItem, IItemUIFactory {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
@@ -51,7 +59,6 @@ public class TerminalBehavior implements IInteractionItem {
                         predicateBlockCount.merge(block.getKey().getFirst(), 1, Integer::sum);
                     }
                 }
-                //TODO; Fix the lang to do plurals with special lang-keys
                 if (!controller.isFormed()) {
                     if (!level.isClientSide) {
                         controller.getPattern().autoBuild(context.getPlayer(), controller.getMultiblockState());
@@ -61,7 +68,7 @@ public class TerminalBehavior implements IInteractionItem {
                                 for (var ability : predicatePartAbilityCount.entrySet()) {
                                     if (ability.getKey().getLangKey() != null && !ability.getKey().getLangKey().isEmpty()) {
                                         if (ability.getValue() > 1) {
-                                            context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer_part_notice", Component.translatable(ability.getKey().getLangKey()).append("s, "), Component.literal(ability.getValue().toString()).withStyle(ChatFormatting.AQUA)), false);
+                                            context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer_part_notice", Component.translatable(ability.getKey().getLangKey()+"_plural"), ", " +Component.literal(ability.getValue().toString()).withStyle(ChatFormatting.AQUA)), false);
                                         } else {
                                             context.getPlayer().displayClientMessage(Component.translatable("gtceu.tools.printer_part_notice", Component.translatable(ability.getKey().getLangKey()), ", " + ability.getValue()), false);
                                         }
@@ -105,8 +112,24 @@ public class TerminalBehavior implements IInteractionItem {
     }
 
     @Override
+    public ModularUI createUI(HeldItemUIFactory.HeldItemHolder holder, Player entityPlayer) {
+        var container = new WidgetGroup(8, 8, 160, 54);
+        container.setBackground(GuiTextures.BACKGROUND_INVERSE);
+        return new ModularUI(176, 120, holder, entityPlayer)
+                .background(GuiTextures.BACKGROUND)
+                .widget(new ButtonWidget(15, 24, 20, 20, new TextTexture("+"), (data) -> {
+                    holder.markAsDirty();
+                }))
+                ;
+
+    }
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Item item, Level level, Player player, InteractionHand usedHand) {
         ItemStack heldItem = player.getItemInHand(usedHand);
+        if (player.isShiftKeyDown()){
+            return IItemUIFactory.super.use(item, level, player, usedHand);
+        }
         return InteractionResultHolder.pass(heldItem);
     }
 
@@ -121,4 +144,7 @@ public class TerminalBehavior implements IInteractionItem {
         String result = ChatFormatting.WHITE.toString() + Component.translatable("gtceu.tools.printer.no_blocks_placed");
         return result;
     }
+
+
+
 }

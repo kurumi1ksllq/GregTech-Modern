@@ -2345,7 +2345,8 @@ public class GTItems {
                             .setDefaultMaxModifiers(8))
             .lang("QuarkTech™ Suite Chestplate")
             .properties(p -> p.rarity(Rarity.RARE))
-            .tag(Tags.Items.ARMORS_CHESTPLATES, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT, ItemTags.FREEZE_IMMUNE_WEARABLES)
+            .tag(Tags.Items.ARMORS_CHESTPLATES, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT,
+                    ItemTags.FREEZE_IMMUNE_WEARABLES)
             .tag(CustomTags.PPE_ARMOR)
             .register();
     public static ItemEntry<ModifiableArmorItem> QUANTUM_LEGGINGS = REGISTRATE
@@ -2397,7 +2398,7 @@ public class GTItems {
 
     public static ItemEntry<ArmorComponentItem> ELECTRIC_JETPACK_ADVANCED = REGISTRATE
             .item("advanced_electric_jetpack",
-                    (p) ->new ArmorComponentItem(GTArmorMaterials.JETPACK, ArmorItem.Type.CHESTPLATE, p)
+                    (p) -> new ArmorComponentItem(GTArmorMaterials.JETPACK, ArmorItem.Type.CHESTPLATE, p)
                             .setArmorLogic(new AdvancedJetpack(512,
                                     6_400_000L * (long) Math.max(1,
                                             Math.pow(4, ConfigHolder.INSTANCE.tools.voltageTierAdvImpeller - 4)),
@@ -2407,7 +2408,7 @@ public class GTItems {
             .tag(Tags.Items.ARMORS_CHESTPLATES)
             .register();
     public static ItemEntry<ModifiableArmorItem> NANO_CHESTPLATE_ADVANCED = REGISTRATE
-            .item("avanced_nanomuscle_chestplate",
+            .item("advanced_nanomuscle_chestplate",
                     (p) -> new ModifiableArmorItem(GTArmorMaterials.ADVANCED_NANO_MUSCLE, ArmorItem.Type.CHESTPLATE, p)
                             .setDefaultMaxModifiers(6))
             .lang("Advanced NanoMuscle™ Suite Chestplate")
@@ -2420,8 +2421,8 @@ public class GTItems {
                             .setDefaultMaxModifiers(8))
             .lang("Advanced QuarkTech™ Suite Chestplate")
             .properties(p -> p.rarity(Rarity.EPIC))
-            .tag(Tags.Items.ARMORS_CHESTPLATES, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT)
             .tag(Tags.Items.ARMORS_CHESTPLATES)
+            .tag(CustomTags.MODIFIABLE_EQUIPMENT)
             .tag(ItemTags.FREEZE_IMMUNE_WEARABLES)
             .tag(CustomTags.PPE_ARMOR)
             .register();

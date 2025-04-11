@@ -75,9 +75,8 @@ public class ArmorUtils {
      * @return the maximum amount of modifiers for the given stack
      */
     public static int getMaxModifiers(ItemStack stack) {
-        if (!(hasArmorTag(stack)
-                && getArmorTag(stack).contains(MAX_MODIFIERS_KEY, Tag.TAG_INT))
-                && stack.getItem() instanceof ModifiableArmorItem armorComponentItem) {
+        if (!(hasArmorTag(stack) && getArmorTag(stack).contains(MAX_MODIFIERS_KEY, Tag.TAG_INT)) &&
+                stack.getItem() instanceof ModifiableArmorItem armorComponentItem) {
             setMaxModifiers(stack, armorComponentItem.getDefaultMaxModifiers());
             return armorComponentItem.getDefaultMaxModifiers();
         } else if (!hasArmorTag(stack)) {
@@ -93,6 +92,7 @@ public class ArmorUtils {
 
     /**
      * Clear all modifiers from the given piece of armor
+     * 
      * @param stack the armor to remove all modifiers from
      */
     public static void clearModifiers(ItemStack stack) {
@@ -103,7 +103,8 @@ public class ArmorUtils {
 
     /**
      * Add an armor modifier to the given stack
-     * @param stack the stack to add the modifier to, if both are valid
+     * 
+     * @param stack    the stack to add the modifier to, if both are valid
      * @param modifier the modifier to add to the stack
      */
     public static void addModifier(ItemStack stack, ArmorModifier modifier) {
@@ -118,6 +119,7 @@ public class ArmorUtils {
 
     /**
      * An unmodifiable list of all modifiers on the given stack
+     * 
      * @param stack the stack to get the modifiers from
      * @return the modifiers on the stack
      */

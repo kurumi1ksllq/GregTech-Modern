@@ -4,9 +4,7 @@ import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
 import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.NonNullList;
@@ -24,14 +22,19 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -44,7 +47,6 @@ public class ModifiableArmorItem extends ArmorItem implements IComponentItem {
     @Getter
     protected List<IItemComponent> components = new ArrayList<>();
 
-
     public ModifiableArmorItem(ArmorMaterial material, Type type, Properties properties) {
         super(material, type, properties);
     }
@@ -56,7 +58,6 @@ public class ModifiableArmorItem extends ArmorItem implements IComponentItem {
             component.onAttached(this);
         }
     }
-
 
     @Override
     public int getMaxDamage(ItemStack stack) {
@@ -87,7 +88,7 @@ public class ModifiableArmorItem extends ArmorItem implements IComponentItem {
                                                                    EquipmentSlot equipmentSlot,
                                                                    HumanoidModel<?> original) {
                 // TODO modifiable armor model
-                //return armorLogic.getArmorModel(livingEntity, itemStack, equipmentSlot, original);
+                // return armorLogic.getArmorModel(livingEntity, itemStack, equipmentSlot, original);
                 return original;
             }
         });
@@ -97,7 +98,7 @@ public class ModifiableArmorItem extends ArmorItem implements IComponentItem {
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
         // TODO add custom texture logic (or not? do we need it?)
-        //return armorLogic.getArmorTexture(stack, entity, slot, type).toString();
+        // return armorLogic.getArmorTexture(stack, entity, slot, type).toString();
         return null;
     }
 
@@ -290,5 +291,4 @@ public class ModifiableArmorItem extends ArmorItem implements IComponentItem {
         }
         return LazyOptional.empty();
     }
-
 }

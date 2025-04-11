@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.UITemplate;
 import com.gregtechceu.gtceu.api.gui.widget.BlockableSlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
-import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
@@ -64,6 +63,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         this.equipmentSlot.setFilter(stack -> stack.is(CustomTags.MODIFIABLE_EQUIPMENT));
 
         this.modifierSlots = new CustomItemStackHandler(MAX_MODIFIER_SLOTS) {
+
             @Override
             public int getSlotLimit(int slot) {
                 return 1;
@@ -168,7 +168,6 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         if (stack.isEmpty()) {
             return;
         }
-
 
         ArmorUtils.clearModifiers(stack);
         for (int i = 0; i < modifierSlots.getSlots(); i++) {

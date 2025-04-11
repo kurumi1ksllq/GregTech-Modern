@@ -6,8 +6,6 @@ import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
 import com.gregtechceu.gtceu.common.data.GTItems;
 
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -31,6 +29,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.*;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -90,7 +89,7 @@ public class ArmorComponentItem extends ArmorItem implements IComponentItem {
         super.onInventoryTick(stack, level, player, slotIndex, selectedIndex);
         // if index >= 36, the item is in an armor slot
         if (slotIndex >= 36) {
-            //this.armorLogic.onArmorTick(level, player, stack);
+            // this.armorLogic.onArmorTick(level, player, stack);
         }
     }
 

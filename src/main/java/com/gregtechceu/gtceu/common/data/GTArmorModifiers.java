@@ -5,9 +5,8 @@ import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
 import com.gregtechceu.gtceu.core.IFireImmuneEntity;
-
 import com.gregtechceu.gtceu.utils.input.KeyBind;
-import lombok.extern.slf4j.Slf4j;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -16,13 +15,14 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.UUID;
 
 @Slf4j
 public class GTArmorModifiers {
 
     private static final double SPEED_ACCEL = 0.085D;
-
 
     private static final UUID ADD_ARMOR_UUID = UUID.fromString("95bd81ea-b3af-4cca-8866-f3e62f5f68f1");
 
@@ -36,9 +36,9 @@ public class GTArmorModifiers {
             new AttributeModifier(ADD_ARMOR_UUID, "Armor Modifier", 2.0D, AttributeModifier.Operation.ADDITION),
             null)
             .energyUsageOnHit(2048);
-    public static final ArmorModifier ADD_ARMOR_5 = ArmorModifier.createItemAttribute(GTCEu.id("add_armor_5"),
+    public static final ArmorModifier ARMOR_PLATE_TUNGSTENSTEEL = ArmorModifier.createItemAttribute(GTCEu.id("add_armor_5"),
             Attributes.ARMOR,
-            new AttributeModifier(ADD_ARMOR_UUID, "Armor Modifier", 5.0D, AttributeModifier.Operation.ADDITION),
+            new AttributeModifier(ADD_ARMOR_UUID, "Armor Modifier", 10.0D, AttributeModifier.Operation.ADDITION),
             null)
             .energyUsageOnHit(5120);
     public static final ArmorModifier SPEED = ArmorModifier.createEntityTick(GTCEu.id("speed"),
@@ -92,10 +92,8 @@ public class GTArmorModifiers {
             });
     public static final ArmorModifier DAMAGE_BLOCK = ArmorModifier.createSpecial(GTCEu.id("damage_block"))
             .onDamage((entity, stack, source, amount) -> {
-                if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)
-                        || source.is(DamageTypeTags.IS_FALL)
-                        || source.is(DamageTypeTags.IS_DROWNING)
-                        || source.is(DamageTypes.STARVE)) {
+                if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) || source.is(DamageTypeTags.IS_FALL) ||
+                        source.is(DamageTypeTags.IS_DROWNING) || source.is(DamageTypes.STARVE)) {
                     return new ArmorModifier.DamageModifier.Result(amount);
                 }
 

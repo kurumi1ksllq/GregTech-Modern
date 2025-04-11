@@ -47,7 +47,6 @@ public class GTRecipes {
         // Decomposition info loading
         MaterialInfoLoader.init();
 
-
         // com.gregtechceu.gtceu.data.recipe.generated.*
         for (Material material : GTCEuAPI.materialManager.getRegisteredMaterials()) {
             if (material.hasFlag(MaterialFlags.NO_UNIFICATION)) {

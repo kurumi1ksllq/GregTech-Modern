@@ -3,10 +3,11 @@ package com.gregtechceu.gtceu.api.gui.misc;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.data.chemical.material.stack.UnificationEntry;
+import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.data.tag.TagUtil;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidVeinSavedData;
+import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.FluidVeinWorldEntry;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockore.BedrockOreVeinSavedData;
 import com.gregtechceu.gtceu.api.gui.texture.ProspectingTexture;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
@@ -70,9 +71,9 @@ public abstract class ProspectorMode<T> {
                         if (state.is(oreTag)) {
                             var itemName = BLOCK_CACHE.computeIfAbsent(state, blockState -> {
                                 var name = BuiltInRegistries.BLOCK.getKey(blockState.getBlock()).toString();
-                                var entry = ChemicalHelper.getUnificationEntry(blockState.getBlock());
-                                if (entry != null && entry.material != null) {
-                                    name = "material_" + entry.material.toString();
+                                var entry = ChemicalHelper.getMaterialEntry(blockState.getBlock());
+                                if (!entry.isEmpty()) {
+                                    name = "material_" + entry.material();
                                 }
                                 return name;
                             });
@@ -87,7 +88,7 @@ public abstract class ProspectorMode<T> {
         public int getItemColor(String item) {
             if (item.startsWith("material_")) {
                 var mat = GTMaterials.get(item.substring(9));
-                if (mat != null) {
+                if (!mat.isNull()) {
                     return mat.getMaterialRGB();
                 }
             }
@@ -99,10 +100,10 @@ public abstract class ProspectorMode<T> {
             return ICON_CACHE.computeIfAbsent(item, name -> {
                 if (name.startsWith("material_")) {
                     var mat = GTMaterials.get(name.substring(9));
-                    if (mat != null) {
+                    if (!mat.isNull()) {
                         var list = new ArrayList<ItemStack>();
                         for (TagPrefix oreTag : TagPrefix.ORES.keySet()) {
-                            for (var block : ChemicalHelper.getBlocks(new UnificationEntry(oreTag, mat))) {
+                            for (var block : ChemicalHelper.getBlocks(new MaterialEntry(oreTag, mat))) {
                                 list.add(new ItemStack(block));
                             }
                         }
@@ -118,7 +119,7 @@ public abstract class ProspectorMode<T> {
         public String getDescriptionId(String item) {
             if (item.startsWith("material_")) {
                 var mat = GTMaterials.get(item.substring(9));
-                if (mat != null) {
+                if (!mat.isNull()) {
                     return mat.getUnlocalizedName();
                 }
             }
@@ -176,7 +177,7 @@ public abstract class ProspectorMode<T> {
             Fluid fluid = BuiltInRegistries.FLUID.get(new ResourceLocation(tag.getString("fluid")));
             int left = tag.getInt("left");
             int yield = tag.getInt("yield");
-            return new FluidInfo(fluid, left, yield);
+            return new FluidInfo(fluid, yield, left);
         }
 
         public CompoundTag toNbt() {
@@ -185,6 +186,15 @@ public abstract class ProspectorMode<T> {
             tag.putInt("left", left);
             tag.putInt("yield", yield);
             return tag;
+        }
+
+        public static FluidInfo fromVeinWorldEntry(@NotNull FluidVeinWorldEntry savedData) {
+            if (savedData.getDefinition() == null) {
+                return null;
+            }
+            return new FluidInfo(savedData.getDefinition().getStoredFluid().get(),
+                    savedData.getFluidYield(),
+                    100 * savedData.getOperationsRemaining() / BedrockFluidVeinSavedData.MAXIMUM_VEIN_OPERATIONS);
         }
     }
 
@@ -196,11 +206,8 @@ public abstract class ProspectorMode<T> {
                 var fluidVein = BedrockFluidVeinSavedData.getOrCreate(serverLevel)
                         .getFluidVeinWorldEntry(chunk.getPos().x, chunk.getPos().z);
                 if (fluidVein.getDefinition() != null) {
-                    var left = 100 * fluidVein.getOperationsRemaining() /
-                            BedrockFluidVeinSavedData.MAXIMUM_VEIN_OPERATIONS;
                     storage[0][0] = new FluidInfo[] {
-                            new FluidInfo(fluidVein.getDefinition().getStoredFluid().get(), left,
-                                    fluidVein.getFluidYield()),
+                            FluidInfo.fromVeinWorldEntry(fluidVein)
                     };
                 }
             }
@@ -233,8 +240,8 @@ public abstract class ProspectorMode<T> {
         @Override
         public void serialize(FluidInfo item, FriendlyByteBuf buf) {
             buf.writeUtf(BuiltInRegistries.FLUID.getKey(item.fluid).toString());
-            buf.writeVarInt(item.left);
             buf.writeVarInt(item.yield);
+            buf.writeVarInt(item.left);
         }
 
         @Override

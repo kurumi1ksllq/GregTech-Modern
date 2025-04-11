@@ -13,17 +13,11 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.misc.EnergyInfoProviderList;
 import com.gregtechceu.gtceu.api.misc.LaserContainerList;
-import com.gregtechceu.gtceu.api.pipenet.longdistance.ILDEndpoint;
 import com.gregtechceu.gtceu.client.renderer.GTRendererProvider;
 import com.gregtechceu.gtceu.common.datafixers.TagFixer;
-import com.gregtechceu.gtceu.common.machine.owner.IMachineOwner;
-import com.gregtechceu.gtceu.common.pipelike.fluidpipe.longdistance.LDFluidEndpointMachine;
-import com.gregtechceu.gtceu.common.pipelike.item.longdistance.LDItemEndpointMachine;
-import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
 import com.lowdragmc.lowdraglib.client.renderer.IRenderer;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.managed.MultiManagedStorage;
 
 import net.minecraft.core.BlockPos;
@@ -45,7 +39,6 @@ import net.minecraftforge.energy.IEnergyStorage;
 import appeng.api.networking.IInWorldGridNodeHost;
 import appeng.capabilities.Capabilities;
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,10 +54,6 @@ public class MetaMachineBlockEntity extends BlockEntity implements IMachineBlock
     public final MultiManagedStorage managedStorage = new MultiManagedStorage();
     @Getter
     public final MetaMachine metaMachine;
-    @Setter
-    @Getter
-    @Persisted
-    private IMachineOwner owner;
     private final long offset = GTValues.RNG.nextInt(20);
 
     protected MetaMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
@@ -198,34 +187,12 @@ public class MetaMachineBlockEntity extends BlockEntity implements IMachineBlock
                         LazyOptional.of(() -> maintenanceMachine));
             }
         } else if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            if (machine instanceof LDItemEndpointMachine itemEndpointMachine) {
-                if (machine.getLevel().isClientSide) return null;
-                ILDEndpoint endpoint = itemEndpointMachine.getLink();
-                if (endpoint == null) return null;
-                Direction outputFacing = endpoint.getOutputFacing();
-                var h = GTTransferUtils.getAdjacentItemHandler(machine.getLevel(), endpoint.getPos(), outputFacing)
-                        .map(LDItemEndpointMachine.ItemHandlerWrapper::new);
-                if (h.isPresent()) {
-                    return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, LazyOptional.of(h::get));
-                }
-            }
             var handler = machine.getItemHandlerCap(side, true);
             if (handler != null) {
                 return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap,
                         LazyOptional.of(() -> handler));
             }
         } else if (cap == ForgeCapabilities.FLUID_HANDLER) {
-            if (machine instanceof LDFluidEndpointMachine fluidEndpointMachine) {
-                if (machine.getLevel().isClientSide) return null;
-                ILDEndpoint endpoint = fluidEndpointMachine.getLink();
-                if (endpoint == null) return null;
-                Direction outputFacing = endpoint.getOutputFacing();
-                var h = GTTransferUtils.getAdjacentFluidHandler(machine.getLevel(), endpoint.getPos(), outputFacing)
-                        .map(LDFluidEndpointMachine.FluidHandlerWrapper::new);
-                if (h.isPresent()) {
-                    return ForgeCapabilities.FLUID_HANDLER.orEmpty(cap, LazyOptional.of(h::get));
-                }
-            }
             var handler = machine.getFluidHandlerCap(side, true);
             if (handler != null) {
                 return ForgeCapabilities.FLUID_HANDLER.orEmpty(cap,
@@ -269,7 +236,7 @@ public class MetaMachineBlockEntity extends BlockEntity implements IMachineBlock
                 return GTCapability.CAPABILITY_DATA_ACCESS.orEmpty(cap, LazyOptional.of(() -> list.get(0)));
             }
         }
-        if (GTCEu.isAE2Loaded()) {
+        if (GTCEu.Mods.isAE2Loaded()) {
             if (cap == Capabilities.IN_WORLD_GRID_NODE_HOST) {
                 if (machine instanceof IInWorldGridNodeHost nodeHost) {
                     return Capabilities.IN_WORLD_GRID_NODE_HOST.orEmpty(cap, LazyOptional.of(() -> nodeHost));
@@ -319,19 +286,8 @@ public class MetaMachineBlockEntity extends BlockEntity implements IMachineBlock
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        if (owner != null) {
-            tag.put("owner", owner.write());
-        }
-    }
-
-    @Override
     public void load(CompoundTag tag) {
         TagFixer.fixFluidTags(tag);
         super.load(tag);
-        if (tag.contains("owner")) {
-            this.owner = IMachineOwner.create(tag.getCompound("owner"));
-        }
     }
 }

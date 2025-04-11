@@ -49,14 +49,12 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
-import static com.gregtechceu.gtceu.api.GTValues.IV;
 import static com.gregtechceu.gtceu.api.pattern.Predicates.*;
-import static com.gregtechceu.gtceu.api.pattern.Predicates.abilities;
 import static com.gregtechceu.gtceu.api.pattern.util.RelativeDirection.*;
 import static com.gregtechceu.gtceu.common.data.GTBlocks.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
-import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
-import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.*;
+import static com.gregtechceu.gtceu.common.data.GTMaterials.DrillingFluid;
+import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.DUMMY_RECIPES;
 import static com.gregtechceu.gtceu.common.data.machines.GTMachineUtils.*;
 import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 import static com.gregtechceu.gtceu.utils.FormattingUtil.toRomanNumeral;
@@ -317,8 +315,7 @@ public class GTMultiMachines {
             })
             .workableCasingRenderer(GTCEu.id("block/casings/voltage/ulv/side"),
                     GTCEu.id("block/multiblock/pyrolyse_oven"))
-            .tooltips(Component.translatable("gtceu.machine.pyrolyse_oven.tooltip"),
-                    Component.translatable("gtceu.machine.pyrolyse_oven.tooltip.1"))
+            .tooltips(Component.translatable("gtceu.machine.pyrolyse_oven.tooltip.1"))
             .additionalDisplay((controller, components) -> {
                 if (controller instanceof CoilWorkableElectricMultiblockMachine coilMachine && controller.isFormed()) {
                     components.add(Component.translatable("gtceu.multiblock.pyrolyse_oven.speed",
@@ -439,12 +436,16 @@ public class GTMultiMachines {
             .appearanceBlock(CASING_STAINLESS_CLEAN)
             .pattern(definition -> {
                 TraceabilityPredicate exportPredicate = abilities(PartAbility.EXPORT_FLUIDS_1X);
-                if (GTCEu.isAE2Loaded())
+                if (GTCEu.Mods.isAE2Loaded()) {
                     exportPredicate = exportPredicate.or(blocks(GTAEMachines.FLUID_EXPORT_HATCH_ME.get()));
+                }
                 exportPredicate.setMaxLayerLimited(1);
+                TraceabilityPredicate maint = autoAbilities(true, false, false)
+                        .setMaxGlobalLimited(1);
                 return FactoryBlockPattern.start(RIGHT, BACK, UP)
                         .aisle("YSY", "YYY", "YYY")
-                        .aisle("XXX", "X#X", "XXX").setRepeatable(1, 11)
+                        .aisle("ZZZ", "Z#Z", "ZZZ")
+                        .aisle("XXX", "X#X", "XXX").setRepeatable(0, 10)
                         .aisle("XXX", "XXX", "XXX")
                         .where('S', Predicates.controller(blocks(definition.getBlock())))
                         .where('Y', blocks(CASING_STAINLESS_CLEAN.get())
@@ -452,7 +453,10 @@ public class GTMultiMachines {
                                 .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setMinGlobalLimited(1)
                                         .setMaxGlobalLimited(2))
                                 .or(Predicates.abilities(PartAbility.IMPORT_FLUIDS).setExactLimit(1))
-                                .or(autoAbilities(true, false, false)))
+                                .or(maint))
+                        .where('Z', blocks(CASING_STAINLESS_CLEAN.get())
+                                .or(exportPredicate)
+                                .or(maint))
                         .where('X', blocks(CASING_STAINLESS_CLEAN.get()).or(exportPredicate))
                         .where('#', Predicates.air())
                         .build();
@@ -493,38 +497,6 @@ public class GTMultiMachines {
             .partSorter(Comparator.comparingInt(a -> a.self().getPos().getY()))
             .workableCasingRenderer(GTCEu.id("block/casings/solid/machine_casing_clean_stainless_steel"),
                     GTCEu.id("block/multiblock/distillation_tower"))
-            .register();
-
-    public static final MultiblockMachineDefinition EVAPORATION_PLANT = REGISTRATE
-            .multiblock("evaporation_plant", WorkableElectricMultiblockMachine::new)
-            .langValue("Evaporation Tower")
-            .rotationState(RotationState.NON_Y_AXIS)
-            .recipeType(GTRecipeTypes.EVAPORATION_RECIPES)
-            .recipeModifiers(GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
-            .appearanceBlock(CASING_STAINLESS_EVAPORATION)
-            .pattern(definition -> FactoryBlockPattern.start(RIGHT, BACK, UP)
-                    .aisle("FYF", "YYY", "FYF")
-                    .aisle("YSY", "Y#Y", "YYY")
-                    .aisle("XXX", "X#X", "XXX").setRepeatable(2, 5)
-                    .aisle(" Z ", "ZZZ", " Z ")
-                    .where('S', Predicates.controller(blocks(definition.getBlock())))
-                    .where('Y', blocks(CASING_STAINLESS_EVAPORATION.get())
-                            .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setMinGlobalLimited(1)
-                                    .setMaxGlobalLimited(2))
-                            .or(Predicates.abilities(PartAbility.IMPORT_FLUIDS).setExactLimit(1))
-                            .or(Predicates.abilities(PartAbility.EXPORT_ITEMS).setMaxGlobalLimited(1)))
-                    .where('X', blocks(CASING_STAINLESS_EVAPORATION.get())
-                            .or(Predicates.abilities(PartAbility.EXPORT_FLUIDS_1X).setMinLayerLimited(1)
-                                    .setMaxLayerLimited(1)))
-                    .where('Z', blocks(CASING_STAINLESS_EVAPORATION.get()))
-                    .where('F', Predicates.frames(Aluminium))
-                    .where('#', Predicates.air())
-                    .where(' ', Predicates.any())
-                    .build())
-            .allowExtendedFacing(false)
-            .partSorter(Comparator.comparingInt(a -> a.self().getPos().getY()))
-            .workableCasingRenderer(GTCEu.id("block/casings/solid/machine_casing_stainless_evaporation"),
-                    GTCEu.id("block/multiblock/evaporation_plant"))
             .register();
 
     public static final MultiblockMachineDefinition VACUUM_FREEZER = REGISTRATE
@@ -835,7 +807,7 @@ public class GTMultiMachines {
                     tooltip.add(Component.translatable("gtceu.machine.cleanroom.tooltip.6"));
                     tooltip.add(Component.translatable("gtceu.machine.cleanroom.tooltip.7"));
                     // tooltip.add(Component.translatable("gtceu.machine.cleanroom.tooltip.8"));
-                    if (GTCEu.isAE2Loaded()) {
+                    if (GTCEu.Mods.isAE2Loaded()) {
                         tooltip.add(
                                 Component.translatable(AEConfig.instance().getChannelMode() == ChannelMode.INFINITE ?
                                         "gtceu.machine.cleanroom.tooltip.ae2.no_channels" :

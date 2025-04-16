@@ -140,7 +140,7 @@ public class LangHandler {
         provider.add("gtceu.tools.printer.error_no_blocks_placed", "Missing Blocks for Placement!");
         provider.add("gtceu.tools.printer_part_notice", "Any %s%s");
 
-        //Part Abilities
+        // Part Abilities
         provider.add("gtceu.part_ability.input_energy", "Energy Input");
         provider.add("gtceu.part_ability.import_items", "Item Input");
         provider.add("gtceu.part_ability.import_fluids", "Fluid Input");

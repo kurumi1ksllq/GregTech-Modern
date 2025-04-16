@@ -63,6 +63,10 @@ public class BlockPattern {
     @Getter
     protected int[] formedRepetitionCount;
 
+    public Map<Block, Integer> autoBuildPlaceBlockMap = new HashMap<>();
+    public Map<Pair<Block, BlockPos>, Integer> autoBuildFailedBlockMap = new HashMap<>();
+    public Map<BlockPos, PredicateAbilities> infoPredicate = new HashMap<>();
+
     public BlockPattern(TraceabilityPredicate[][][] predicatesIn, RelativeDirection[] structureDir,
                         int[][] aisleRepetitions, int[] centerOffset) {
         this.blockMatches = predicatesIn;
@@ -212,25 +216,27 @@ public class BlockPattern {
         worldState.setNeededFlip(isFlipped);
         return true;
     }
-    public Map<Block, Integer> autoBuildPlaceBlockMap = new HashMap<>();
-    public Map<Pair<Block, BlockPos>, Integer> autoBuildFailedBlockMap = new HashMap<>();
-    public Map<BlockPos, PredicateAbilities> infoPredicate = new HashMap<>();
+
     public void autoBuild(Player player, MultiblockState worldState) {
         Level world = player.level();
         int minZ = -centerOffset[4];
         worldState.clean();
+
         IMultiController controller = worldState.getController();
         BlockPos centerPos = controller.self().getPos();
         Direction facing = controller.self().getFrontFacing();
         Direction upwardsFacing = controller.self().getUpwardsFacing();
         boolean isFlipped = controller.self().isFlipped();
+
         Map<SimplePredicate, Integer> cacheGlobal = worldState.getGlobalCount();
         Map<SimplePredicate, Integer> cacheLayer = worldState.getLayerCount();
         Map<BlockPos, Object> blocks = new HashMap<>();
         Set<BlockPos> placeBlockPos = new HashSet<>();
+
         autoBuildPlaceBlockMap.clear();
         autoBuildFailedBlockMap.clear();
         infoPredicate.clear();
+
         blocks.put(centerPos, controller);
         for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
             for (r = 0; r < aisleRepetitions[c][0]; r++) {
@@ -264,9 +270,11 @@ public class BlockPattern {
                                     continue;
                                 }
                                 infos = limit.candidates == null ? null : limit.candidates.get();
-                                if (limit instanceof PredicateAbilities predicateAbilities){
-                                    infoPredicate.putIfAbsent(pos,predicateAbilities);
+
+                                if (limit instanceof PredicateAbilities predicateAbilities) {
+                                    infoPredicate.putIfAbsent(pos, predicateAbilities);
                                 }
+
                                 find = true;
                                 break;
                             }
@@ -285,9 +293,11 @@ public class BlockPattern {
                                         continue;
                                     }
                                     infos = limit.candidates == null ? null : limit.candidates.get();
-                                    if (limit instanceof PredicateAbilities predicateAbilities){
-                                        infoPredicate.putIfAbsent(pos,predicateAbilities);
+
+                                    if (limit instanceof PredicateAbilities predicateAbilities) {
+                                        infoPredicate.putIfAbsent(pos, predicateAbilities);
                                     }
+
                                     find = true;
                                     break;
                                 }
@@ -312,15 +322,17 @@ public class BlockPattern {
                                     }
                                     infos = ArrayUtils.addAll(infos,
                                             limit.candidates == null ? null : limit.candidates.get());
-                                    if (limit instanceof PredicateAbilities predicateAbilities){
-                                        infoPredicate.putIfAbsent(pos,predicateAbilities);
+
+                                    if (limit instanceof PredicateAbilities predicateAbilities) {
+                                        infoPredicate.putIfAbsent(pos, predicateAbilities);
                                     }
                                 }
                                 for (SimplePredicate common : predicate.common) {
                                     infos = ArrayUtils.addAll(infos,
                                             common.candidates == null ? null : common.candidates.get());
-                                    if (common instanceof PredicateAbilities predicateAbilities){
-                                        infoPredicate.putIfAbsent(pos,predicateAbilities);
+
+                                    if (common instanceof PredicateAbilities predicateAbilities) {
+                                        infoPredicate.putIfAbsent(pos, predicateAbilities);
                                     }
                                 }
                             }
@@ -345,9 +357,9 @@ public class BlockPattern {
                                     foundSlot = foundHandler.getFirst();
                                     handler = foundHandler.getSecond();
                                     found = handler.getStackInSlot(foundSlot).copy();
-                                } else {
+                                } else if (!candidates.isEmpty()) {
                                     Block block = ((BlockItem) candidates.get(0).getItem()).getBlock();
-                                    autoBuildFailedBlockMap.merge(Pair.of(block,pos),1,Integer::sum);
+                                    autoBuildFailedBlockMap.merge(Pair.of(block, pos), 1, Integer::sum);
                                 }
                             } else {
                                 for (ItemStack candidate : candidates) {
@@ -363,7 +375,9 @@ public class BlockPattern {
                             BlockPlaceContext context = new BlockPlaceContext(world, player, InteractionHand.MAIN_HAND,
                                     found, BlockHitResult.miss(player.getEyePosition(0), Direction.UP, pos));
                             InteractionResult interactionResult = itemBlock.place(context);
-                            autoBuildPlaceBlockMap.merge(itemBlock.getBlock(),1,Integer::sum);
+
+                            autoBuildPlaceBlockMap.merge(itemBlock.getBlock(), 1, Integer::sum);
+
                             if (interactionResult != InteractionResult.FAIL) {
                                 placeBlockPos.add(pos);
                                 if (handler != null) {

@@ -6,6 +6,7 @@ public class ToolLang {
 
     public static void init(RegistrateLangProvider provider) {
         initDeathMessages(provider);
+        initPartAbilityLang(provider);
         initToolInfo(provider);
     }
 
@@ -64,6 +65,57 @@ public class ToolLang {
         provider.add("death.attack.gtceu.medical_condition/none", "%s died of... nothing?");
         provider.add("death.attack.gtceu.medical_condition/weak_poison", "%s ate lead (or mercury!)");
         provider.add("death.attack.gtceu.medical_condition/carbon_monoxide_poisoning", "%s left the stove on");
+    }
+
+    private static void initPartAbilityLang(RegistrateLangProvider provider) {
+        provider.add("gtceu.part_ability.none", "None");
+        provider.add("gtceu.part_ability.export_items", "Item Output");
+        provider.add("gtceu.part_ability.import_items", "Item Input");
+        provider.add("gtceu.part_ability.export_fluids", "Fluid Output");
+        provider.add("gtceu.part_ability.import_fluids", "Fluid Input");
+
+        provider.add("gtceu.part_ability.export_items_plural", "Item Outputs");
+        provider.add("gtceu.part_ability.import_items_plural", "Item Inputs");
+        provider.add("gtceu.part_ability.export_fluids_plural", "Fluid Outputs");
+        provider.add("gtceu.part_ability.import_fluids_plural", "Fluid Inputs");
+
+        provider.add("gtceu.part_ability.export_fluids_1x", "Fluid Output");
+        provider.add("gtceu.part_ability.export_fluids_4x", "Quad Fluid");
+        provider.add("gtceu.part_ability.export_fluids_9x", "Nonuple Fluid");
+        provider.add("gtceu.part_ability.import_fluids_1x", "Fluid Input");
+        provider.add("gtceu.part_ability.import_fluids_4x", "Import Quad Fluid");
+        provider.add("gtceu.part_ability.import_fluids_9x", "Import Nonuple Fluid");
+
+        provider.add("gtceu.part_ability.input_energy", "Energy Input");
+        provider.add("gtceu.part_ability.output_energy", "Energy Output");
+        provider.add("gtceu.part_ability.substation_input_energy", "Substation Energy Input");
+        provider.add("gtceu.part_ability.substation_output_energy", "Substation Energy Output");
+
+        provider.add("gtceu.part_ability.rotor_holder", "Rotor Holder");
+        provider.add("gtceu.part_ability.pump_input_hatch", "Pump Input Hatch");
+
+        provider.add("gtceu.part_ability.steam", "Steam Hatch");
+        provider.add("gtceu.part_ability.steam.import_items", "Steam Input Bus");
+        provider.add("gtceu.part_ability.steam.export_items", "Steam Output Bus");
+
+        provider.add("gtceu.part_ability.maintenance", "Maintenance Hatch");
+        provider.add("gtceu.part_ability.muffler", "Muffler Hatch");
+        provider.add("gtceu.part_ability.tank_valve", "Tank Valve");
+        provider.add("gtceu.part_ability.passthrough_hatch", "Passthrough Hatch");
+        provider.add("gtceu.part_ability.parallel_hatch", "Parallel Hatch");
+
+        provider.add("gtceu.part_ability.input_laser", "Laser Target");
+        provider.add("gtceu.part_ability.output_laser", "Laser Source");
+
+        provider.add("gtceu.part_ability.computation_data_reception", "Computation Data Reception");
+        provider.add("gtceu.part_ability.computation_data_transmission", "Computation Data Transmission");
+        provider.add("gtceu.part_ability.optical_data_reception", "Optical Data Reception");
+        provider.add("gtceu.part_ability.optical_data_transmission", "Optical Data Transmission");
+
+        provider.add("gtceu.part_ability.data_access", "Data Access Hatch");
+
+        provider.add("gtceu.part_ability.hpca_component", "HPCA Component");
+        provider.add("gtceu.part_ability.object_holder", "Object Holder");
     }
 
     private static void initToolInfo(RegistrateLangProvider provider) {}

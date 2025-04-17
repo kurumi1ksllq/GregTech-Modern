@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.core.mixins.early_tag_load;
 
-import com.gregtechceu.gtceu.core.IGTTagLoader;
+import com.gregtechceu.gtceu.core.ITagLoaderExtension;
 import com.gregtechceu.gtceu.core.MixinHelpers;
 
 import net.minecraft.core.Registry;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Mixin(value = TagLoader.class, priority = 500)
-public class TagLoaderMixin implements IGTTagLoader {
+public class TagLoaderMixin implements ITagLoaderExtension {
 
     @Nullable
     @Unique

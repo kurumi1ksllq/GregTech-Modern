@@ -71,7 +71,7 @@
         "early_tag_load.MinecraftServerMixin",
         "early_tag_load.ReloadableServerResourcesMixin",
         "early_tag_load.TagLoaderMixin",
-        "TagManagerMixin",
+        "early_tag_load.TagManagerMixin",
         "early_tag_load.WorldLoaderMixin"
     ],
     "injectors": {

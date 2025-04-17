@@ -1,6 +1,6 @@
-package com.gregtechceu.gtceu.core.mixins;
+package com.gregtechceu.gtceu.core.mixins.early_tag_load;
 
-import com.gregtechceu.gtceu.core.IGTTagLoader;
+import com.gregtechceu.gtceu.core.ITagLoaderExtension;
 import com.gregtechceu.gtceu.core.ITagManagerExtension;
 
 import net.minecraft.core.Holder;
@@ -45,7 +45,7 @@ public class TagManagerMixin implements ITagManagerExtension {
                                                    CallbackInfoReturnable<CompletableFuture<TagManager.LoadResult<T>>> cir,
                                                    @Local Registry<T> registry,
                                                    @Local TagLoader<Holder<T>> loader) {
-        ((IGTTagLoader) loader).gtceu$setRegistry(registry);
+        ((ITagLoaderExtension) loader).gtceu$setRegistry(registry);
     }
 
     @Inject(method = "lambda$reload$2", at = @At("RETURN"))

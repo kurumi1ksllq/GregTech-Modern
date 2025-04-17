@@ -59,8 +59,6 @@
         "ShapedRecipeAccessor",
         "SidedRedstoneConnectivityMixin",
         "StrictNBTIngredientAccessor",
-        "TagLoaderMixin",
-        "TagManagerMixin",
         "TagValueAccessor",
         "ae2.GenericStackInvAccessor",
         "emi.FillRecipePacketMixin",
@@ -69,10 +67,15 @@
         "ldlib.SyncUtilsMixin",
         "rei.InputSlotCrafterMixin",
         "rei.RecipeFinderMixin",
-        "top.ConfigMixin"
+        "top.ConfigMixin",
+        "early_tag_load.MinecraftServerMixin",
+        "early_tag_load.ReloadableServerResourcesMixin",
+        "early_tag_load.TagLoaderMixin",
+        "TagManagerMixin",
+        "early_tag_load.WorldLoaderMixin"
     ],
     "injectors": {
         "defaultRequire": 1,
         "maxShiftBy": 5
-  }
+    }
 }

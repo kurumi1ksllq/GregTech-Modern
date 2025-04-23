@@ -50,9 +50,9 @@ public class MultiblockWorldSavedData extends SavedData {
 
     public void addMapping(MultiblockState state) {
         this.mapping.put(state.getPos(), state);
-        /*for (BlockPos blockPos : state.getCache()) {
+        for (BlockPos blockPos : state.getCache()) {
             chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c -> new HashSet<>()).add(state);
-        }*/
+        }
         setDirty(true);
     }
 

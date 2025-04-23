@@ -202,6 +202,10 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         }
     }
 
+    public PatternState getDefaultPatternState() {
+        return structures.get(DEFAULT_STRUCTURE).getPatternState();
+    }
+
     public PatternState checkStructurePattern() {
         return checkStructurePattern(DEFAULT_STRUCTURE);
     }

@@ -94,7 +94,7 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
                     .orElse(0);
         }
 
-        MultiblockDisplayText.builder(textList, isFormed())
+        MultiblockDisplayText.builder(textList, getDefaultPatternState().isFormed())
                 .setWorkingStatus(recipeLogic.isWorkingEnabled(), recipeLogic.isActive())
                 .addEnergyUsageLine(energyContainer)
                 .addEnergyTierLine(tier)

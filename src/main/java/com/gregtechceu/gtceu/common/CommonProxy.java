@@ -53,6 +53,7 @@ import com.gregtechceu.gtceu.utils.input.KeyBind;
 
 import com.lowdragmc.lowdraglib.gui.factory.UIFactory;
 
+import guideme.Guide;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
@@ -101,6 +102,9 @@ public class CommonProxy {
         GTCommandArguments.init(eventBus);
         GTMobEffects.init(eventBus);
         GTParticleTypes.init(eventBus);
+        if (GTCEu.Mods.isGuideMELoaded()) {
+            Guide.builder(GTCEu.id("guide")).build();
+        }
     }
 
     public static void init() {

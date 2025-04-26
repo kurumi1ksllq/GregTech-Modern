@@ -55,6 +55,14 @@ legacyForge {
             systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
         }
 
+        guide {
+            client()
+            sourceSet = sourceSets.main
+            ideName = "Guide"
+
+            systemProperty('guideme.showOnStartup', 'gtceu:guide')
+        }
+
         server {
             server()
             sourceSet = sourceSets.main
@@ -98,6 +106,7 @@ legacyForge {
             // "REGISTRIES": For firing of registry events.
             // "REGISTRYDUMP": For getting the contents of all registries.
             systemProperty 'forge.logging.markers', 'REGISTRIES'
+            systemProperty 'guideme.gtceu.guide.sources', file('docs/content/Gameplay').getAbsolutePath()
             // Enable assertions for our classes in dev environment
             jvmArgument('-ea:com.gregtechceu.gtceu...')
 

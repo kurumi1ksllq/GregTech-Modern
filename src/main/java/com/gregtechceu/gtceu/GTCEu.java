@@ -180,6 +180,8 @@ public class GTCEu {
             return isModLoaded(GTValues.MODID_APPENG);
         }
 
+        public static boolean isGuideMELoaded() { return isModLoaded(GTValues.MODID_GUIDEME); }
+
         public static boolean isCuriosLoaded() {
             return isModLoaded(GTValues.MODID_CURIOS);
         }

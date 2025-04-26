@@ -127,7 +127,8 @@ public class GTValues {
             MODID_ARGONAUTS = "argonauts",
             MODID_HERACLES = "heracles",
             MODID_GAMESTAGES = "gamestages",
-            MODID_FTB_QUEST = "ftbquests";
+            MODID_FTB_QUEST = "ftbquests",
+            MODID_GUIDEME = "guideme";
     /**
      * Spray painting compat modids
      */

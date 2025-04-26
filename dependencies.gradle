@@ -32,6 +32,9 @@ dependencies {
     modCompileOnly(forge.ae2)
     modCompileOnly(forge.ae2wtlib)
 
+    // GuideME
+    modCompileOnly(variantOf(forge.guideme) { classifier("api") })
+
     // KJS
     modCompileOnly(forge.kubejs)
     modCompileOnly(forge.architectury)
@@ -66,6 +69,7 @@ dependencies {
     // Standard runtime mods //
     modRuntimeOnly(forge.jade)
     modRuntimeOnly(forge.ae2)
+    modRuntimeOnly(forge.guideme)
     modRuntimeOnly(forge.spark)
 
     // Runtime Recipe Viewers - uncomment whichever one you want to use //

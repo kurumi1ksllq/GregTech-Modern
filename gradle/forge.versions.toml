@@ -21,6 +21,7 @@ ftblibrary = "2001.2.4"
 ftbteams = "2001.3.0"
 ftbquests= "2001.4.11"
 ftbchunks = "2001.3.4"
+guideme = "20.1.3"
 
 ## modrinth maven ##
 jade = "11.6.3"
@@ -77,6 +78,7 @@ ftblibrary          = { module = "dev.ftb.mods:ftb-library-forge", version.ref =
 ftbteams            = { module = "dev.ftb.mods:ftb-teams-forge", version.ref = "ftbteams" }
 ftbquests           = { module = "dev.ftb.mods:ftb-quests-forge", version.ref = "ftbquests" }
 ftbchunks           = { module = "dev.ftb.mods:ftb-chunks-forge", version.ref = "ftbchunks" }
+guideme             = { module = "org.appliedenergistics:guideme", version.ref = "guideme" }
 jade                = { module = "maven.modrinth:jade", version.ref = "jade" }
 embeddium           = { module = "maven.modrinth:embeddium", version.ref = "embeddium" }
 oculus              = { module = "maven.modrinth:oculus", version.ref = "oculus" }

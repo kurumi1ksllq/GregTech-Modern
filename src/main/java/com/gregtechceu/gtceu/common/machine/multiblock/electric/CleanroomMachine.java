@@ -89,6 +89,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     public static final int MIN_DEPTH = 4;
 
     @Persisted
+    @Getter
     private int lDist = 0, rDist = 0, bDist = 0, fDist = 0, hDist = 0;
     @Nullable
     private CleanroomType cleanroomType = null;
@@ -201,7 +202,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
         }
         this.inputEnergyContainers = new EnergyContainerList(energyContainers);
         getRecipeLogic().setEnergyContainer(this.inputEnergyContainers);
-        this.tier = GTUtil.getFloorTierByVoltage(getMaxVoltage());
+        this.tier = Math.max(GTValues.MAX, GTUtil.getFloorTierByVoltage(getMaxVoltage()));
     }
 
     @SuppressWarnings("RedundantIfStatement") // `return false` being a separate statement is better for readability

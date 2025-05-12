@@ -13,12 +13,21 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.Half;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 public class CleanroomLogic extends RecipeLogic implements IWorkable {
 
@@ -39,8 +48,19 @@ public class CleanroomLogic extends RecipeLogic implements IWorkable {
     @Persisted
     private boolean isActiveAndNeedsUpdate;
 
+    private Map<BlockPos, BlockState> doors;
+
     public CleanroomLogic(CleanroomMachine machine) {
         super(machine);
+
+        var context = getMachine().getMultiblockState().getMatchContext().getOrCreate("ioMap", Long2ObjectOpenHashMap::new);
+        for(var block : context.long2ObjectEntrySet()) {
+            BlockPos pos = BlockPos.of(block.getLongKey());
+            BlockState blockState = machine.getLevel().getBlockState(pos);
+            if(blockState.getBlock() instanceof DoorBlock && blockState.getValue(DoorBlock.HALF) == DoubleBlockHalf.LOWER) {
+                doors.put(pos, blockState);
+            }
+        }
     }
 
     @Override
@@ -58,7 +78,8 @@ public class CleanroomLogic extends RecipeLogic implements IWorkable {
      * Call this method every tick in update
      */
     public void serverTick() {
-        if (!isSuspend() && duration > 0) {
+        // always run
+        if (duration > 0) {
             EnvironmentalHazardSavedData environmentalHazards = EnvironmentalHazardSavedData
                     .getOrCreate((ServerLevel) this.getMachine().getLevel());
             var zone = environmentalHazards.getZoneByContainedPos(getMachine().getPos());
@@ -109,14 +130,6 @@ public class CleanroomLogic extends RecipeLogic implements IWorkable {
                 machine.afterWorking();
             }
         }
-
-        if (isSuspend()) {
-            // machine isn't working enabled
-            if (subscription != null) {
-                subscription.unsubscribe();
-                subscription = null;
-            }
-        }
     }
 
     protected void adjustCleanAmount(boolean declined) {
@@ -130,10 +143,22 @@ public class CleanroomLogic extends RecipeLogic implements IWorkable {
         getMachine().adjustCleanAmount(amountToClean);
     }
 
+    protected boolean doorsAjar() {
+        var cr = getMachine();
+        boolean doorOnCorner = false;
+
+        for(var door : doors.entrySet()) {
+            // check if the doors are on a corner
+            boolean onLeftFace = door.getKey() - cr.getPos();
+        }
+
+        return true;
+    }
+
     protected boolean consumeEnergy() {
         var cleanroom = getMachine();
         long energyToDrain = cleanroom.isClean() ? (long) Math.min(4, Math.pow(4, cleanroom.getTier())) :
-                GTValues.VA[cleanroom.getTier()];
+                GTValues.VA[Math.min(GTValues.MAX, cleanroom.getTier())];
         if (energyContainer != null) {
             long resultEnergy = energyContainer.getEnergyStored() - energyToDrain;
             if (resultEnergy >= 0L && resultEnergy <= energyContainer.getEnergyCapacity()) {

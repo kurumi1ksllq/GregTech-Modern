@@ -1305,6 +1305,24 @@ public class GTBlocks {
             .simpleItem()
             .register();
 
+    public static final BlockEntry<DoorBlock> CLEANROOM_DOOR = REGISTRATE
+            .block("cleanroom_door", (p) -> new DoorBlock(p.requiresCorrectToolForDrops()
+                            .strength(5.0f)
+                            .noOcclusion()
+                            .pushReaction(PushReaction.DESTROY), BlockSetType.STONE))
+            .initialProperties(() -> Blocks.IRON_DOOR)
+            .lang("Cleanroom Door")
+            .loot((table, block) -> table.add(block, table.createDoorTable(block)))
+            .addLayer(() -> RenderType::cutout)
+            .blockstate((ctx, prov) -> prov.doorBlock(ctx.getEntry(), GTCEu.id("block/cleanroom_door_bottom"),
+            GTCEu.id("block/cleanroom_door_top")))
+            .tag(BlockTags.DOORS, BlockTags.MINEABLE_WITH_PICKAXE)
+            .item()
+            .model((ctx, prov) -> prov.generated(ctx))
+            .tag(ItemTags.DOORS)
+            .build()
+            .register();
+
     // Lamps
     public static final Map<DyeColor, BlockEntry<LampBlock>> LAMPS;
     public static final Map<DyeColor, BlockEntry<LampBlock>> BORDERLESS_LAMPS;

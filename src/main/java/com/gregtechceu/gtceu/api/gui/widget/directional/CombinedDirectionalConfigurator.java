@@ -25,7 +25,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.RenderSystem;
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.jetbrains.annotations.Nullable;
 
@@ -93,7 +93,7 @@ public class CombinedDirectionalConfigurator extends WidgetGroup {
                         @OnlyIn(Dist.CLIENT)
                         public void apply(boolean isTESR, RenderType layer) {
                             RenderSystem.enableBlend();
-                            RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+                            RenderSystem.blendFunc(RenderSystem.SourceFactor.ONE, RenderSystem.DestFactor.ONE);
                         }
                     });
 

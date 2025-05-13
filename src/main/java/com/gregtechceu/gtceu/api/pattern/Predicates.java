@@ -272,7 +272,7 @@ public class Predicates {
                 .toArray(Block[]::new);
         return blocks(frameBlocks)
                 .or(new TraceabilityPredicate(blockWorldState -> {
-                    BlockEntity tileEntity = blockWorldState.getTileEntity();
+                    BlockEntity tileEntity = blockWorldState.getBlockEntity();
                     if (!(tileEntity instanceof IPipeNode<?, ?> pipeNode)) {
                         return false;
                     }

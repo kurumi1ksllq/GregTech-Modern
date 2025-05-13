@@ -1,0 +1,68 @@
+package com.gregtechceu.gtceu.api.mui.factory;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.Player;
+import net.minecraft.tileentity.BlockEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+/**
+ * See {@link GuiData} for an explanation for what this is for.
+ */
+public class PosGuiData extends GuiData {
+
+    private static final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+
+    private final int x, y, z;
+
+    public PosGuiData(Player player, int x, int y, int z) {
+        super(player);
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    public World getWorld() {
+        return getPlayer().world;
+    }
+
+    public int getX() {
+        return this.x;
+    }
+
+    public int getY() {
+        return this.y;
+    }
+
+    public int getZ() {
+        return this.z;
+    }
+
+    public double getSquaredDistance(double x, double y, double z) {
+        double dx = this.x + 0.5 - x;
+        double dy = this.y + 0.5 - y;
+        double dz = this.z + 0.5 - z;
+        return dx * dx + dy * dy + dz * dz;
+    }
+
+    public double getDistance(double x, double y, double z) {
+        return Math.sqrt(getSquaredDistance(x, y, z));
+    }
+
+    public double getSquaredDistance(Entity entity) {
+        return getSquaredDistance(entity.posX, entity.posY, entity.posZ);
+    }
+
+    public double getDistance(Entity entity) {
+        return Math.sqrt(getSquaredDistance(entity));
+    }
+
+    public BlockPos getBlockPos() {
+        return new BlockPos(this.x, this.y, this.z);
+    }
+
+    public BlockEntity getBlockEntity() {
+        pos.setPos(this.x, this.y, this.z);
+        return getWorld().getBlockEntity(pos);
+    }
+}

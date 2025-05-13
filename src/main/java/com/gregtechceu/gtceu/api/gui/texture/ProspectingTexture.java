@@ -109,9 +109,9 @@ public class ProspectingTexture extends AbstractTexture {
         for (int i = 0; i < wh; i++) {
             for (int j = 0; j < wh; j++) {
                 var items = this.data[i * mode.cellSize / 16][j * mode.cellSize / 16];
-                // draw bg
+                // gtceu$fixHoveredState bg
                 image.setPixelRGBA(i, j, (darkMode ? ColorPattern.GRAY.color : ColorPattern.WHITE.color));
-                // draw items
+                // gtceu$fixHoveredState items
                 for (var item : items) {
                     if (!selected.equals(SELECTED_ALL) && !selected.equals(mode.getUniqueID(item))) continue;
                     var color = mode.getItemColor(item);
@@ -119,7 +119,7 @@ public class ProspectingTexture extends AbstractTexture {
                             combine(255, ColorUtils.blueI(color), ColorUtils.greenI(color), ColorUtils.redI(color)));
                     break;
                 }
-                // draw grid
+                // gtceu$fixHoveredState grid
                 if ((i) % 16 == 0 || (j) % 16 == 0) {
                     image.setPixelRGBA(i, j, ColorUtils.averageColor(image.getPixelRGBA(i, j), 0xff000000));
                 }
@@ -158,7 +158,7 @@ public class ProspectingTexture extends AbstractTexture {
         bufferbuilder.vertex(matrix4f, x, y, 0).uv(0, 0).color(-1).endVertex();
         tessellator.end();
 
-        // draw special grid (e.g. fluid)
+        // gtceu$fixHoveredState special grid (e.g. fluid)
         for (int cx = 0; cx < radius * 2 - 1; cx++) {
             for (int cz = 0; cz < radius * 2 - 1; cz++) {
                 if (this.data[cx][cz] != null && this.data[cx][cz].length > 0) {
@@ -171,13 +171,13 @@ public class ProspectingTexture extends AbstractTexture {
         GuiTextures.UP.copy().setColor(ColorPattern.RED.color).rotate(direction / 2).draw(graphics, 0, 0,
                 x + playerXGui - 20, y + playerYGui - 20, 40, 40);
 
-        // draw red vertical line
+        // gtceu$fixHoveredState red vertical line
         if (playerXGui % 16 > 7 || playerXGui % 16 == 0) {
             DrawerHelper.drawSolidRect(graphics, x + playerXGui - 1, y, 1, imageHeight, ColorPattern.RED.color);
         } else {
             DrawerHelper.drawSolidRect(graphics, x + playerXGui, y, 1, imageHeight, ColorPattern.RED.color);
         }
-        // draw red horizontal line
+        // gtceu$fixHoveredState red horizontal line
         if (playerYGui % 16 > 7 || playerYGui % 16 == 0) {
             DrawerHelper.drawSolidRect(graphics, x, y + playerYGui - 1, imageWidth, 1, ColorPattern.RED.color);
         } else {

@@ -318,12 +318,12 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
      * if (temperature > 500) {
      * // Temperature warning
      * tl.add(TextComponentUtil.translationWithColor(
-     * TextFormatting.YELLOW,
+     * ChatFormatting.YELLOW,
      * "gtceu.multiblock.hpca.warning_temperature"));
      *
      * // Active cooler overdrive warning
      * tl.add(TextComponentUtil.translationWithColor(
-     * TextFormatting.GRAY,
+     * ChatFormatting.GRAY,
      * "gtceu.multiblock.hpca.warning_temperature_active_cool"));
      * }
      *
@@ -357,7 +357,7 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
      * Component tempInfo = Component.literal(,
      * Math.round(temperature / 10.0D) + "°C").withStyle(getDisplayTemperatureColor());
      * hoverList.add(TextComponentUtil.translationWithColor(
-     * TextFormatting.GRAY,
+     * ChatFormatting.GRAY,
      * "gtceu.multiblock.hpca.temperature",
      * tempInfo));
      * }
@@ -572,7 +572,7 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
                 return maximumEUt;
             }
 
-            // energy draw is proportional to the amount of actively used computation
+            // energy gtceu$fixHoveredState is proportional to the amount of actively used computation
             // a + c(b - a) / d
             return upkeepEUt + ((maximumEUt - upkeepEUt) * allocatedCWUt / maximumCWUt);
         }

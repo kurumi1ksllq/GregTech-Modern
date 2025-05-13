@@ -8,7 +8,7 @@ import com.lowdragmc.lowdraglib.gui.editor.configurator.IConfigurableWidget;
 import com.lowdragmc.lowdraglib.gui.ingredient.IGhostIngredientTarget;
 import com.lowdragmc.lowdraglib.gui.ingredient.Target;
 import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
-import com.lowdragmc.lowdraglib.gui.util.TextFormattingUtil;
+import com.lowdragmc.lowdraglib.gui.util.ChatFormattingUtil;
 import com.lowdragmc.lowdraglib.side.fluid.forge.FluidHelperImpl;
 import com.lowdragmc.lowdraglib.utils.Position;
 import com.lowdragmc.lowdraglib.utils.Size;
@@ -253,7 +253,7 @@ public class PhantomFluidWidget extends TankWidget implements IGhostIngredientTa
             if (showAmount) {
                 graphics.pose().pushPose();
                 graphics.pose().scale(0.5F, 0.5F, 1);
-                String s = TextFormattingUtil.formatLongToCompactStringBuckets(stack.getAmount(), 3) + "B";
+                String s = ChatFormattingUtil.formatLongToCompactStringBuckets(stack.getAmount(), 3) + "B";
                 Font fontRenderer = Minecraft.getInstance().font;
                 graphics.drawString(fontRenderer, s,
                         (int) ((pos.x + (size.width / 3f)) * 2 - fontRenderer.width(s) + 21),

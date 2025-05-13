@@ -33,7 +33,7 @@ public class TooltipHelper {
 
     private static final List<GTFormattingCode> CODES = new ArrayList<>();
 
-    /** Array of TextFormatting codes that are used to create a rainbow effect */
+    /** Array of ChatFormatting codes that are used to create a rainbow effect */
     private static final ChatFormatting[] ALL_COLORS = new ChatFormatting[] {
             RED, GOLD, YELLOW, GREEN, AQUA, DARK_AQUA, DARK_BLUE, BLUE, DARK_PURPLE, LIGHT_PURPLE
     };

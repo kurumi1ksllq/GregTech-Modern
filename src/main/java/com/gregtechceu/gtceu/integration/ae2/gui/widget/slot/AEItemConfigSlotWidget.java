@@ -6,7 +6,7 @@ import com.gregtechceu.gtceu.integration.ae2.gui.widget.ConfigWidget;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAESlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlot;
 
-import com.lowdragmc.lowdraglib.gui.util.TextFormattingUtil;
+import com.lowdragmc.lowdraglib.gui.util.ChatFormattingUtil;
 import com.lowdragmc.lowdraglib.utils.Position;
 import com.lowdragmc.lowdraglib.utils.Size;
 
@@ -54,14 +54,14 @@ public class AEItemConfigSlotWidget extends AEConfigSlotWidget implements IGhost
             drawItemStack(graphics, stack, stackX, stackY, 0xFFFFFFFF, null);
 
             if (!parentWidget.isStocking()) {
-                String amountStr = TextFormattingUtil.formatLongToCompactString(config.amount(), 4);
+                String amountStr = ChatFormattingUtil.formatLongToCompactString(config.amount(), 4);
                 drawStringFixedCorner(graphics, amountStr, stackX + 17, stackY + 17, 16777215, true, 0.5f);
             }
         }
         if (stock != null) {
             ItemStack stack = stock.what() instanceof AEItemKey key ? new ItemStack(key.getItem()) : ItemStack.EMPTY;
             drawItemStack(graphics, stack, stackX, stackY + 18, 0xFFFFFFFF, null);
-            String amountStr = TextFormattingUtil.formatLongToCompactString(stock.amount(), 4);
+            String amountStr = ChatFormattingUtil.formatLongToCompactString(stock.amount(), 4);
             drawStringFixedCorner(graphics, amountStr, stackX + 17, stackY + 18 + 17, 16777215, true, 0.5f);
         }
         if (mouseOverConfig(mouseX, mouseY)) {

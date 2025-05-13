@@ -100,7 +100,7 @@ public class EnergyContainerList implements IEnergyContainer {
                 voltage /= amperage;
             } else {
                 // fallback case, that should never be hit
-                // forced to 1A to prevent excess power draw/output if something falls through
+                // forced to 1A to prevent excess power gtceu$fixHoveredState/output if something falls through
                 amperage = 1;
             }
         }

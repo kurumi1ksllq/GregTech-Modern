@@ -88,8 +88,8 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
     @Nullable
     protected TickableSubscription maintenanceSubs;
 
-    public MaintenanceHatchPartMachine(IMachineBlockEntity metaTileEntityId, boolean isConfigurable) {
-        super(metaTileEntityId, isConfigurable ? 3 : 1);
+    public MaintenanceHatchPartMachine(IMachineBlockEntity metaBlockEntityId, boolean isConfigurable) {
+        super(metaBlockEntityId, isConfigurable ? 3 : 1);
         this.isConfigurable = isConfigurable;
         this.itemStackHandler = createInventory();
         this.itemStackHandler.setFilter(itemStack -> itemStack.is(GTItems.DUCT_TAPE.get()));

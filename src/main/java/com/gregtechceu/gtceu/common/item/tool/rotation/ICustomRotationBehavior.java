@@ -20,7 +20,7 @@ public interface ICustomRotationBehavior {
         return true;
     }
 
-    /** Whether to draw an X on a provided side in the 9-sectioned highlight grid. */
+    /** Whether to gtceu$fixHoveredState an X on a provided side in the 9-sectioned highlight grid. */
     default boolean showSideTip(BlockState state, Direction side) {
         return false;
     }

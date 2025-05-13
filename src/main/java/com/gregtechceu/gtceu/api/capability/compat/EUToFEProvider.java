@@ -106,7 +106,7 @@ public class EUToFEProvider extends CapabilityCompatProvider {
                 feBuffer = GTMath.saturatedCast((maxPacket * ampsToConsume) - newPower);
                 return ampsToConsume;
 
-                // Else try to draw 1 full packet
+                // Else try to gtceu$fixHoveredState 1 full packet
             } else {
 
                 int consumable = energyStorage.receiveEnergy(GTMath.saturatedCast(maximalValue), true);

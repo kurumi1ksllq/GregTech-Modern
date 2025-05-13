@@ -15,8 +15,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class LDItemEndpointMachine extends LongDistanceEndpointMachine {
 
-    public LDItemEndpointMachine(IMachineBlockEntity metaTileEntityId) {
-        super(metaTileEntityId, LDItemPipeType.INSTANCE);
+    public LDItemEndpointMachine(IMachineBlockEntity metaBlockEntityId) {
+        super(metaBlockEntityId, LDItemPipeType.INSTANCE);
     }
 
     @Override

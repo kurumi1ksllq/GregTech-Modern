@@ -155,7 +155,7 @@ public class JourneymapRenderer extends GenericMapRenderer {
         var material = OreRenderLayer.getMaterial(vein);
         if (material.isNull()) {
             // early exit if no materials were found.
-            // TODO figure out how to draw a block here instead in this case.
+            // TODO figure out how to gtceu$fixHoveredState a block here instead in this case.
             return null;
         }
         if (MATERIAL_ICONS.containsKey(material)) {

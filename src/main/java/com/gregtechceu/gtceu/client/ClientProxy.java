@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.data.worldgen.bedrockore.BedrockOreDefinition;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.IGTTool;
 import com.gregtechceu.gtceu.api.item.LampBlockItem;
+import com.gregtechceu.gtceu.client.renderer.entity.ScreenEntityRenderer;
 import com.gregtechceu.gtceu.client.particle.HazardParticle;
 import com.gregtechceu.gtceu.client.particle.MufflerParticle;
 import com.gregtechceu.gtceu.client.renderer.entity.GTBoatRenderer;
@@ -30,6 +31,8 @@ import com.gregtechceu.gtceu.integration.map.layer.builtin.FluidRenderLayer;
 import com.gregtechceu.gtceu.integration.map.layer.builtin.OreRenderLayer;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
 
+import lombok.Getter;
+import net.minecraft.client.Timer;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
@@ -53,6 +56,9 @@ import com.google.common.collect.HashBiMap;
  */
 public class ClientProxy extends CommonProxy {
 
+    @Getter
+    private static final Timer timer60Fps = new Timer(60f, 0);
+
     public static final BiMap<ResourceLocation, GTOreDefinition> CLIENT_ORE_VEINS = HashBiMap.create();
     public static final BiMap<ResourceLocation, BedrockFluidDefinition> CLIENT_FLUID_VEINS = HashBiMap.create();
     public static final BiMap<ResourceLocation, BedrockOreDefinition> CLIENT_BEDROCK_ORE_VEINS = HashBiMap.create();
@@ -75,6 +81,8 @@ public class ClientProxy extends CommonProxy {
         event.registerEntityRenderer(GTEntityTypes.DYNAMITE.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(GTEntityTypes.POWDERBARREL.get(), GTExplosiveRenderer::new);
         event.registerEntityRenderer(GTEntityTypes.INDUSTRIAL_TNT.get(), GTExplosiveRenderer::new);
+
+        event.registerEntityRenderer(GTEntityTypes.MODULAR_SCREEN.get(), ScreenEntityRenderer::new);
 
         event.registerBlockEntityRenderer(GTBlockEntities.GT_SIGN.get(), SignRenderer::new);
         event.registerBlockEntityRenderer(GTBlockEntities.GT_HANGING_SIGN.get(), HangingSignRenderer::new);

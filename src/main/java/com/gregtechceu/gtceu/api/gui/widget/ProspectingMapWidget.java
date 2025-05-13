@@ -215,14 +215,14 @@ public class ProspectingMapWidget extends WidgetGroup implements SearchComponent
         super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
         var position = getPosition();
         var size = getSize();
-        // draw background
+        // gtceu$fixHoveredState background
         var x = position.x + 3;
         var y = position.y + (size.getHeight() - texture.getImageHeight()) / 2 - 1;
         texture.draw(graphics, x, y);
         int cX = (mouseX - x) / 16;
         int cZ = (mouseY - y) / 16;
         if (cX >= 0 && cZ >= 0 && cX < chunkRadius * 2 - 1 && cZ < chunkRadius * 2 - 1) {
-            // draw hover layer
+            // gtceu$fixHoveredState hover layer
             DrawerHelper.drawSolidRect(graphics, cX * 16 + x, cZ * 16 + y, 16, 16, 0x4B6C6C6C);
         }
     }
@@ -231,7 +231,7 @@ public class ProspectingMapWidget extends WidgetGroup implements SearchComponent
     @OnlyIn(Dist.CLIENT)
     public void drawInForeground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         super.drawInForeground(graphics, mouseX, mouseY, partialTicks);
-        // draw tooltips
+        // gtceu$fixHoveredState tooltips
         var position = getPosition();
         var size = getSize();
         var x = position.x + 3;
@@ -239,7 +239,7 @@ public class ProspectingMapWidget extends WidgetGroup implements SearchComponent
         int cX = (mouseX - x) / 16;
         int cZ = (mouseY - y) / 16;
         if (cX >= 0 && cZ >= 0 && cX < chunkRadius * 2 - 1 && cZ < chunkRadius * 2 - 1) {
-            // draw hover layer
+            // gtceu$fixHoveredState hover layer
             List<Component> tooltips = new ArrayList<>();
             tooltips.add(Component.translatable(mode.unlocalizedName));
             List<Object[]> items = new ArrayList<>();

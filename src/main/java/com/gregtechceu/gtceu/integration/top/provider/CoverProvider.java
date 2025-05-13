@@ -195,7 +195,7 @@ public class CoverProvider extends CapabilityInfoProvider<ICoverable> {
     // */
     // private static void voidingText(@NotNull IProbeInfo probeInfo, @NotNull VoidingMode mode, @NotNull String unit,
     // int amount, boolean hasFilter) {
-    // String text = TextFormatting.RED + IProbeInfo.STARTLOC + mode.getName() + IProbeInfo.ENDLOC;
+    // String text = ChatFormatting.RED + IProbeInfo.STARTLOC + mode.getName() + IProbeInfo.ENDLOC;
     // if (mode != VoidingMode.VOID_ANY && !hasFilter) text += " " + amount + unit;
     // probeInfo.text(text);
     // }

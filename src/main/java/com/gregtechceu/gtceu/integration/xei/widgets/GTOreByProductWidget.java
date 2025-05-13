@@ -103,7 +103,7 @@ public class GTOreByProductWidget extends WidgetGroup {
     public void setRecipe(GTOreByProduct recipeWrapper) {
         List<Boolean> itemOutputExists = new ArrayList<>();
 
-        // only draw slot on inputs if it is the ore
+        // only gtceu$fixHoveredState slot on inputs if it is the ore
         addWidget(new ImageWidget(ITEM_INPUT_LOCATIONS.get(0), ITEM_INPUT_LOCATIONS.get(1), 18, 18, GuiTextures.SLOT));
         boolean hasSifter = recipeWrapper.hasSifter();
 

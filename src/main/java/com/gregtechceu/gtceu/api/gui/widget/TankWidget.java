@@ -20,7 +20,7 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceBorderTexture;
 import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
-import com.lowdragmc.lowdraglib.gui.util.TextFormattingUtil;
+import com.lowdragmc.lowdraglib.gui.util.ChatFormattingUtil;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.jei.ClickableIngredient;
 import com.lowdragmc.lowdraglib.jei.IngredientIO;
@@ -391,7 +391,7 @@ public class TankWidget extends Widget implements IRecipeIngredientSlot, IConfig
             if (showAmount && !renderedFluid.isEmpty()) {
                 graphics.pose().pushPose();
                 graphics.pose().scale(0.5F, 0.5F, 1);
-                String s = TextFormattingUtil.formatLongToCompactStringBuckets(renderedFluid.getAmount(), 3) + "B";
+                String s = ChatFormattingUtil.formatLongToCompactStringBuckets(renderedFluid.getAmount(), 3) + "B";
                 Font fontRenderer = Minecraft.getInstance().font;
                 graphics.drawString(fontRenderer, s,
                         (int) ((pos.x + (size.width / 3f)) * 2 - fontRenderer.width(s) + 21),

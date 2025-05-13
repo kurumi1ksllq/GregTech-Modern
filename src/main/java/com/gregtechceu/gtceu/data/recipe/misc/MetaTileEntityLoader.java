@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.data.recipe.GTCraftingComponents.*;
 
-public class MetaTileEntityLoader {
+public class MetaBlockEntityLoader {
 
     public static void init(Consumer<FinishedRecipe> provider) {
         VanillaRecipeHelper.addShapedRecipe(provider, true, "casing_ulv", GTBlocks.MACHINE_CASING_ULV.asStack(), "PPP",

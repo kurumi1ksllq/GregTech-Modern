@@ -31,7 +31,7 @@ import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLY_LINE_RECIPES;
 
-public class MetaTileEntityMachineRecipeLoader {
+public class MetaBlockEntityMachineRecipeLoader {
 
     public static void init(Consumer<FinishedRecipe> provider) {
         // Reservoir Hatch

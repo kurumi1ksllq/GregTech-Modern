@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.data;
 
+import com.gregtechceu.gtceu.api.mui.holoui.HoloScreenEntity;
 import com.gregtechceu.gtceu.common.entity.*;
 
 import net.minecraft.tags.EntityTypeTags;
@@ -40,6 +41,13 @@ public class GTEntityTypes {
             .<GTChestBoat>entity("chest_boat", GTChestBoat::new, MobCategory.MISC)
             .lang("Chest Boat")
             .properties(builder -> builder.sized(1.375f, 0.5625f).clientTrackingRange(10))
+            .register();
+
+
+    public static final EntityEntry<HoloScreenEntity> MODULAR_SCREEN = REGISTRATE
+            .<HoloScreenEntity>entity("modular_screen", HoloScreenEntity::new, MobCategory.MISC)
+            .lang("Modular Screen")
+            .properties(builder -> builder.sized(1.0f, 1.0f).fireImmune())
             .register();
 
     public static void init() {}

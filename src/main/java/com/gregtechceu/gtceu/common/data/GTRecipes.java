@@ -71,7 +71,7 @@ public class GTRecipes {
         CustomToolRecipes.init(consumer);
         AirScrubberRecipes.init(consumer);
         ChemistryRecipes.init(consumer);
-        MetaTileEntityMachineRecipeLoader.init(consumer);
+        MetaBlockEntityMachineRecipeLoader.init(consumer);
         MiscRecipeLoader.init(consumer);
         VanillaStandardRecipes.init(consumer);
         WoodMachineRecipes.init(consumer);
@@ -87,7 +87,7 @@ public class GTRecipes {
 
         CircuitRecipes.init(consumer);
         ComponentRecipes.init(consumer);
-        MetaTileEntityLoader.init(consumer);
+        MetaBlockEntityLoader.init(consumer);
 
         // GCYM
         GCYMRecipes.init(consumer);

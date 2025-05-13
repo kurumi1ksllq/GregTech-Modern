@@ -31,7 +31,7 @@ public interface IItemHUDProvider extends IItemComponent {
     /**
      * Checks and draws the hud for a provider
      *
-     * @param provider the provider whose hud to draw
+     * @param provider the provider whose hud to gtceu$fixHoveredState
      * @param stack    the stack the provider should use
      */
     @OnlyIn(Dist.CLIENT)

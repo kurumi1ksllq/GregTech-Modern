@@ -102,8 +102,8 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     @Nullable
     private Collection<ICleanroomReceiver> cleanroomReceivers;
 
-    public CleanroomMachine(IMachineBlockEntity metaTileEntityId) {
-        super(metaTileEntityId);
+    public CleanroomMachine(IMachineBlockEntity metaBlockEntityId) {
+        super(metaBlockEntityId);
     }
 
     //////////////////////////////////////
@@ -424,7 +424,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
             Set<ICleanroomReceiver> receivers = blockWorldState.getMatchContext().getOrCreate("cleanroomReceiver",
                     Sets::newHashSet);
             // all non-GTMachines are allowed inside by default
-            BlockEntity blockEntity = blockWorldState.getTileEntity();
+            BlockEntity blockEntity = blockWorldState.getBlockEntity();
             if (blockEntity instanceof IMachineBlockEntity machineBlockEntity) {
                 var machine = machineBlockEntity.getMetaMachine();
                 if (isMachineBanned(machine)) {

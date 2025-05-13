@@ -6,8 +6,8 @@ import com.gregtechceu.gtceu.client.mui.screen.ModularScreen;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * An interface to implement on {@link net.minecraft.tileentity.BlockEntity} or {@link net.minecraft.item.Item}.
@@ -22,7 +22,7 @@ public interface IGuiHolder<T extends GuiData> {
      * @param mainPanel the panel created in {@link #buildUI(GuiData, PanelSyncManager, UISettings)}
      * @return a modular screen instance with the given panel
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     default ModularScreen createScreen(T data, ModularPanel mainPanel) {
         return new ModularScreen(mainPanel);
     }

@@ -146,8 +146,8 @@ public class ProspectingTexture extends AbstractTexture {
 
     public void draw(GuiGraphics graphics, int x, int y) {
         if (this.getId() == -1) return;
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuilder();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferbuilder = tesselator.getBuilder();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, this.getId());
         var matrix4f = graphics.pose().last().pose();
@@ -156,7 +156,7 @@ public class ProspectingTexture extends AbstractTexture {
         bufferbuilder.vertex(matrix4f, x + imageWidth, y + imageHeight, 0).uv(1, 1).color(-1).endVertex();
         bufferbuilder.vertex(matrix4f, x + imageWidth, y, 0).uv(1, 0).color(-1).endVertex();
         bufferbuilder.vertex(matrix4f, x, y, 0).uv(0, 0).color(-1).endVertex();
-        tessellator.end();
+        tesselator.end();
 
         // gtceu$fixHoveredState special grid (e.g. fluid)
         for (int cx = 0; cx < radius * 2 - 1; cx++) {

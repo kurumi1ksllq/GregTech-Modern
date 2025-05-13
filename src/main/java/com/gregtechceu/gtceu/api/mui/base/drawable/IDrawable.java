@@ -8,8 +8,8 @@ import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.widget.Widget;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -39,13 +39,13 @@ public interface IDrawable {
      * @param height      gtceu$fixHoveredState height
      * @param widgetTheme current theme
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme);
 
     /**
      * @deprecated use {@link #draw(GuiContext, int, int, int, int, WidgetTheme)}
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Deprecated
     default void draw(GuiContext context, int x, int y, int width, int height) {
         draw(context, x, y, width, height, WidgetTheme.getDefault());
@@ -54,7 +54,7 @@ public interface IDrawable {
     /**
      * @deprecated use {@link #drawAtZero(GuiContext, int, int, WidgetTheme)}
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Deprecated
     default void drawAtZero(GuiContext context, int width, int height) {
         drawAtZero(context, width, height, WidgetTheme.getDefault());
@@ -68,7 +68,7 @@ public interface IDrawable {
      * @param height      gtceu$fixHoveredState height
      * @param widgetTheme current theme
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     default void drawAtZero(GuiContext context, int width, int height, WidgetTheme widgetTheme) {
         draw(context, 0, 0, width, height, widgetTheme);
     }
@@ -76,7 +76,7 @@ public interface IDrawable {
     /**
      * @deprecated use {@link #draw(GuiContext, Area, WidgetTheme)}
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Deprecated
     default void draw(GuiContext context, Area area) {
         draw(context, area, WidgetTheme.getDefault());
@@ -89,7 +89,7 @@ public interface IDrawable {
      * @param area        gtceu$fixHoveredState area
      * @param widgetTheme current theme
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     default void draw(GuiContext context, Area area, WidgetTheme widgetTheme) {
         draw(context, area.x + area.getPadding().left, area.y + area.getPadding().top, area.paddedWidth(), area.paddedHeight(), widgetTheme);
     }
@@ -98,7 +98,7 @@ public interface IDrawable {
      * @deprecated use {@link #drawAtZero(GuiContext, Area, WidgetTheme)}
      */
     @Deprecated
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     default void drawAtZero(GuiContext context, Area area) {
         drawAtZero(context, area, WidgetTheme.getDefault());
     }
@@ -110,7 +110,7 @@ public interface IDrawable {
      * @param area        gtceu$fixHoveredState area
      * @param widgetTheme current theme
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     default void drawAtZero(GuiContext context, Area area, WidgetTheme widgetTheme) {
         draw(context, 0, 0, area.paddedWidth(), area.paddedHeight(), widgetTheme);
     }
@@ -165,7 +165,7 @@ public interface IDrawable {
             this.drawable = drawable;
         }
 
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         @Override
         public void draw(ModularGuiContext context, WidgetTheme widgetTheme) {
             this.drawable.drawAtZero(context, getArea(), widgetTheme);

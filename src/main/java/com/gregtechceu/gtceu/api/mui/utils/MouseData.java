@@ -2,8 +2,8 @@ package com.gregtechceu.gtceu.api.mui.utils;
 
 import com.gregtechceu.gtceu.api.mui.base.widget.Interactable;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class MouseData {
 
@@ -41,7 +41,7 @@ public class MouseData {
         return new MouseData(Side.SERVER, button, (data & 1) != 0, (data & 2) != 0, (data & 4) != 0);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static MouseData create(int mouse) {
         return new MouseData(Side.CLIENT, mouse, Interactable.hasShiftDown(), Interactable.hasControlDown(), Interactable.hasAltDown());
     }

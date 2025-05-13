@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.api.mui.drawable;
 
 import com.google.gson.JsonObject;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderSystem;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
 
 public class AdaptableUITexture extends UITexture {
 
@@ -48,8 +48,8 @@ public class AdaptableUITexture extends UITexture {
             return;
         }
         RenderSystem.enableBlend();
-        RenderSystem.enableTexture2D();
-        Minecraft.getInstance().renderEngine.bindTexture(this.location);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, this.location);
 
         float uBl = this.bl * 1f / this.imageWidth, uBr = this.br * 1f / this.imageWidth;
         float vBt = this.bt * 1f / this.imageHeight, vBb = this.bb * 1f / this.imageHeight;
@@ -101,8 +101,8 @@ public class AdaptableUITexture extends UITexture {
             return;
         }
         RenderSystem.enableBlend();
-        RenderSystem.enableTexture2D();
-        Minecraft.getInstance().renderEngine.bindTexture(this.location);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, this.location);
 
         float uBl = this.bl * 1f / this.imageWidth, uBr = this.br * 1f / this.imageWidth;
         float vBt = this.bt * 1f / this.imageHeight, vBb = this.bb * 1f / this.imageHeight;

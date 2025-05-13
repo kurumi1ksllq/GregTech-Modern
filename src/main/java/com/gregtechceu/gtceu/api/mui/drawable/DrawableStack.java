@@ -5,8 +5,8 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.google.gson.JsonObject;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * A stack of {@link IDrawable} backed by an array which are drawn on top of each other.
@@ -21,7 +21,7 @@ public class DrawableStack implements IDrawable, IJsonSerializable {
         this.drawables = drawables == null || drawables.length == 0 ? EMPTY_BACKGROUND : drawables;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
         for (IDrawable drawable : this.drawables) {

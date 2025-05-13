@@ -6,8 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.function.ToIntFunction;
 
@@ -725,7 +725,7 @@ public class Color {
      *
      * @param color argb color
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void setGlColor(int color) {
         if (color == 0) {
             RenderSystem.color(0, 0, 0, 0);
@@ -741,7 +741,7 @@ public class Color {
      *
      * @param color ARGB color.
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void setGlColorOpaque(int color) {
         if (color == 0) {
             RenderSystem.color(0, 0, 0, 0);
@@ -753,7 +753,7 @@ public class Color {
     /**
      * Enables the OpenGL color mask and sets its colors to white.
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void resetGlColor() {
         RenderSystem.colorMask(true, true, true, true);
         setGlColorOpaque(WHITE.main);

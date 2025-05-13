@@ -6,8 +6,8 @@ import com.gregtechceu.gtceu.api.mui.network.packets.PacketSyncHandler;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.ServerPlayer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
@@ -62,7 +62,7 @@ public abstract class SyncHandler {
      * @param id             an internal denominator to identify this package
      * @param bufferConsumer the package builder
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public final void syncToServer(int id, @NotNull IPacketWriter bufferConsumer) {
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         buffer.writeVarInt(id);
@@ -130,7 +130,7 @@ public abstract class SyncHandler {
      * @throws IOException package read error
      */
     @ApiStatus.OverrideOnly
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public abstract void readOnClient(int id, FriendlyByteBuf buf) throws IOException;
 
     /**

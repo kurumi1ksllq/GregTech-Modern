@@ -2,8 +2,8 @@ package com.gregtechceu.gtceu.api.mui.utils;
 
 import com.gregtechceu.gtceu.api.mui.base.widget.Interactable;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class KeyboardData {
 
@@ -44,7 +44,7 @@ public class KeyboardData {
         return new KeyboardData(Side.SERVER, character, keycode, (data & 1) != 0, (data & 2) != 0, (data & 4) != 0);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static KeyboardData create(char character, int keycode) {
         return new KeyboardData(Side.CLIENT, character, keycode, Interactable.hasShiftDown(), Interactable.hasControlDown(), Interactable.hasAltDown());
     }

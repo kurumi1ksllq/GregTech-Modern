@@ -9,8 +9,8 @@ import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.utils.JsonHelper;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Box;
 import com.google.gson.JsonObject;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * A {@link IDrawable} wrapper with a fixed size and an alignment.
@@ -42,7 +42,7 @@ public class Icon implements IIcon, IJsonSerializable {
         return this.margin;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
         x += this.margin.left;

@@ -7,8 +7,8 @@ import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 public class AnimatedText extends StyledText {
@@ -68,7 +68,7 @@ public class AnimatedText extends StyledText {
         this.timeLastDraw += (long) amount * this.speed;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
         if (this.fullString == null || !this.fullString.equals(super.get())) {

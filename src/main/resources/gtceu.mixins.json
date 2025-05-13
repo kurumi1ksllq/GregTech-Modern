@@ -10,6 +10,7 @@
         "BiomeColorsMixin",
         "BlockModelMixin",
         "ClientLevelAccessor",
+        "StringSplitterAccessor",
         "GuiButtonMixin",
         "GuiGraphicsAccessor",
         "GuiGraphicsMixin",

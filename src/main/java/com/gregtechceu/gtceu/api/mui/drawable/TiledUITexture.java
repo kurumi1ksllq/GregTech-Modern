@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.mui.drawable;
 
 import com.google.gson.JsonObject;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class TiledUITexture extends UITexture {
 

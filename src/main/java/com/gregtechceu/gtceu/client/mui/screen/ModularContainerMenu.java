@@ -14,8 +14,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.*;
 
@@ -43,7 +43,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     private GuiData guiData;
     private UISettings settings;
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private ModularScreen optionalScreen;
 
     public ModularContainerMenu(int containerId) {
@@ -60,13 +60,13 @@ public class ModularContainerMenu extends AbstractContainerMenu {
         sortShiftClickSlots();
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     void initializeClient(ModularScreen screen) {
         this.optionalScreen = screen;
     }
 
     @ApiStatus.Internal
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void constructClientOnly() {
         this.player = Minecraft.getInstance().player;
         this.syncManager = null;
@@ -76,7 +76,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
         return this.player != null;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public ModularScreen getScreen() {
         if (this.optionalScreen == null) throw new NullPointerException("ModularScreen is not yet initialised!");
         return optionalScreen;

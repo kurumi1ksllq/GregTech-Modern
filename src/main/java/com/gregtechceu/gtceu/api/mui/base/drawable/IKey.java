@@ -12,8 +12,8 @@ import com.gregtechceu.gtceu.common.mui.widgets.TextWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.ChatFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
@@ -183,7 +183,7 @@ public interface IKey extends IDrawable, IJsonSerializable {
         return getFormatted(null);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     default void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
         renderer.setColor(widgetTheme.getTextColor());

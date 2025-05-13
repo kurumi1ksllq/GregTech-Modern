@@ -7,8 +7,8 @@ import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class IngredientDrawable implements IDrawable, IJsonSerializable {
 
@@ -22,7 +22,7 @@ public class IngredientDrawable implements IDrawable, IJsonSerializable {
         setItems(items);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
         if (this.items.length == 0) return;

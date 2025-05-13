@@ -7,8 +7,8 @@ import com.gregtechceu.gtceu.api.mui.integration.jei.JeiGhostIngredientSlot;
 import com.gregtechceu.gtceu.api.mui.integration.jei.JeiState;
 import mezz.jei.api.gui.IGhostIngredientHandler;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -24,7 +24,7 @@ import java.util.List;
  * By default, JEI is disabled in client only GUIs.
  * This class can be safely interacted with even when JEI/HEI is not installed.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class JeiSettingsImpl implements JeiSettings {
 
     private JeiState jeiState = JeiState.DEFAULT;

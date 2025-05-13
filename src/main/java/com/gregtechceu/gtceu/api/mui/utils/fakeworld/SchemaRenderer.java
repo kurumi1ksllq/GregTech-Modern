@@ -10,7 +10,7 @@ import net.minecraft.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.BlockEntityRendererDispatcher;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormat;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.tileentity.BlockEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -139,15 +139,15 @@ public class SchemaRenderer implements IDrawable {
         RenderSystem.color(1, 1, 1, 1);
 
         // render rect with FBO texture
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferbuilder = tesselator.getBuilder();
+        bufferbuilder.begin(7, DefaultVertexFormat.POSITION_TEX);
 
-        bufferbuilder.pos(x + width, y + height, 0).tex(1, 0).endVertex();
-        bufferbuilder.pos(x + width, y, 0).tex(1, 1).endVertex();
-        bufferbuilder.pos(x, y, 0).tex(0, 1).endVertex();
-        bufferbuilder.pos(x, y + height, 0).tex(0, 0).endVertex();
-        tessellator.draw();
+        bufferbuilder.vertex(x + width, y + height, 0).tex(1, 0).endVertex();
+        bufferbuilder.vertex(x + width, y, 0).tex(1, 1).endVertex();
+        bufferbuilder.vertex(x, y, 0).tex(0, 1).endVertex();
+        bufferbuilder.vertex(x, y + height, 0).tex(0, 0).endVertex();
+        tesselator.end();
 
         RenderSystem.bindTexture(lastFbo);
     }
@@ -166,8 +166,8 @@ public class SchemaRenderer implements IDrawable {
                 ForgeHooksClient.setRenderLayer(layer);
                 int pass = layer == BlockRenderLayer.TRANSLUCENT ? 1 : 0;
                 setDefaultPassRenderState(pass);
-                BufferBuilder buffer = Tessellator.getInstance().getBuffer();
-                buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+                BufferBuilder buffer = Tesselator.getInstance().getBuffer();
+                buffer.begin(GL11.GL_QUADS, DefaultVertexFormat.BLOCK);
                 BlockRendererDispatcher blockrendererdispatcher = mc.getBlockRendererDispatcher();
                 this.schema.forEach(pair -> {
                     BlockPos pos = pair.getKey();
@@ -176,8 +176,8 @@ public class SchemaRenderer implements IDrawable {
                         blockrendererdispatcher.renderBlock(state, pos, this.renderWorld, buffer);
                     }
                 });
-                Tessellator.getInstance().draw();
-                Tessellator.getInstance().getBuffer().setTranslation(0, 0, 0);
+                Tesselator.getInstance().draw();
+                Tesselator.getInstance().getBuffer().setTranslation(0, 0, 0);
             }
         } finally {
             ForgeHooksClient.setRenderLayer(oldRenderLayer);

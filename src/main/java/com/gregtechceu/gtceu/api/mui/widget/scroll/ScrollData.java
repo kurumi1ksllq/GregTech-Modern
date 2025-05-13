@@ -5,8 +5,8 @@ import com.gregtechceu.gtceu.api.mui.drawable.GuiDraw;
 import com.gregtechceu.gtceu.api.mui.utils.Animator;
 import com.gregtechceu.gtceu.api.mui.utils.Interpolation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ScrollData {
@@ -254,10 +254,10 @@ public abstract class ScrollData {
         return getScrollBarStart(area, scrollBarLength, getFullVisibleSize(area, isOtherActive));
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public abstract void drawScrollbar(ScrollArea area);
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected void drawScrollBar(int x, int y, int w, int h) {
         GuiDraw.drawRect(x, y, w, h, 0xffeeeeee);
         GuiDraw.drawRect(x + 1, y + 1, w - 1, h - 1, 0xff666666);

@@ -72,7 +72,7 @@ public class FTBChunksClientMixin {
                                   double halfSizeD, float halfSizeF, MinimapPosition minimapPosition, int x,
                                   int y, int offsetX, int offsetY,
                                   MinimapPosition.MinimapOffsetConditional offsetConditional, float border,
-                                  int alpha, Tesselator tessellator, BufferBuilder buffer, PoseStack poseStack,
+                                  int alpha, Tesselator tesselator, BufferBuilder buffer, PoseStack poseStack,
                                   Matrix4f m, float halfSizeBorderF, float offX, float offZ, float zws,
                                   Iterator var47, MapIcon icon, Vec3 pos, double distance, double d) {
         gtceu$iconCheck = icon instanceof FluidVeinIcon;

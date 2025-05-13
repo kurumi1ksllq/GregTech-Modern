@@ -5,17 +5,20 @@ import com.gregtechceu.gtceu.api.mui.drawable.Stencil;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
+import com.gregtechceu.gtceu.core.mixins.StringSplitterAccessor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.mutable.MutableFloat;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -144,7 +147,9 @@ public class TextRenderer {
             if (!simulate) line.draw(context, getFont(), x0, y0, this.color, this.shadow);
             y0 += line.getHeight(getFont());
         }
-        if (!this.simulate) context.getGraphics().pose().popPose();
+        if (!this.simulate) {
+            context.getGraphics().pose().popPose();
+        }
         this.lastWidth = this.maxWidth > 0 ? Math.min(width * this.scale, this.maxWidth) : width * this.scale;
         this.lastHeight = height * this.scale;
         this.lastWidth = Math.max(0, this.lastWidth - this.scale);
@@ -161,7 +166,7 @@ public class TextRenderer {
     public void drawCut(GuiGraphics graphics, Line line) {
         if (line.width > this.maxWidth) {
             var cutText = FormattedCharSequence.composite(
-                    splitAtMax(line.getText(), this.maxWidth - 6),
+                    splitAtMax(line.text(), this.maxWidth - 6),
                     FormattedCharSequence.forward("...", Style.EMPTY));
             drawMeasuredLines(graphics, Collections.singletonList(line(cutText)));
         } else {
@@ -172,26 +177,69 @@ public class TextRenderer {
     public FormattedCharSequence splitAtMax(FormattedCharSequence input, float maxWidth) {
         MutableFloat cur = new MutableFloat();
         // split the string at max width.
-        List<FormattedCharSequence> output = new ArrayList<>();
+        List<FormattedChar> output = new ArrayList<>();
         input.accept((pos, style, codePoint) -> {
-            var seq = FormattedCharSequence.codepoint(codePoint, style);
-            if (cur.addAndGet(getFont().width(seq)) > maxWidth) {
+            if (cur.addAndGet(getWidthProvider().getWidth(codePoint, style)) > maxWidth) {
                 return false;
             }
-            output.add(seq);
+            output.add(new FormattedChar(codePoint, style));
             return true;
         });
-        return FormattedCharSequence.composite(output);
+        return fromChars(output);
+    }
+
+    public static FormattedCharSequence fromChars(List<FormattedChar> chars) {
+        int size = chars.size();
+        return switch (size) {
+            case 0 -> FormattedCharSequence.EMPTY;
+            case 1 -> chars.get(0).asSequence();
+            default -> (sink) -> {
+                for (int i = 0; i < size; i++) {
+                    FormattedChar ch = chars.get(i);
+                    if (!sink.accept(i, ch.style(), ch.codePoint())) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+        };
+    }
+
+    public static FormattedCharSequence substring(FormattedCharSequence str, int start) {
+        return (sink) -> {
+            MutableInt globalPos = new MutableInt();
+            return str.accept((pos, style, codePoint) -> {
+                if (globalPos.addAndGet(1) >= start) {
+                    return sink.accept(pos, style, codePoint);
+                }
+                return true;
+            });
+        };
+    }
+
+    public static FormattedCharSequence substring(FormattedCharSequence str, int start, int end) {
+        return (sink) -> {
+            MutableInt globalPos = new MutableInt();
+            return str.accept((pos, style, codePoint) -> {
+                int current = globalPos.addAndGet(1);
+                if (current >= end) {
+                    return false;
+                } else if (current >= start) {
+                    return sink.accept(pos, style, codePoint);
+                }
+                return true;
+            });
+        };
     }
 
     public void drawScrolling(GuiGraphics graphics, Line line, int scroll, Area area, GuiContext context) {
-        if (line.getWidth() <= this.maxWidth) {
+        if (line.width() <= this.maxWidth) {
             drawMeasuredLines(graphics, Collections.singletonList(line));
             return;
         }
         scroll = scroll % (int) (line.width + 1);
         float max = this.maxWidth + scroll;
-        FormattedCharSequence drawString = splitAtMax(line.getText(), max);
+        FormattedCharSequence drawString = splitAtMax(line.text(), max);
         Area.SHARED.set(this.x, Integer.MIN_VALUE, this.x + (int) this.maxWidth, Integer.MAX_VALUE);
         Stencil.apply(Area.SHARED, context);
         context.getGraphics().pose().pushPose();
@@ -226,7 +274,7 @@ public class TextRenderer {
         List<Line> measuredLines = measureLines(lines);
         float w = 0;
         for (Line measuredLine : measuredLines) {
-            w = Math.max(w, measuredLine.getWidth());
+            w = Math.max(w, measuredLine.width());
         }
         return (int) Math.ceil(w);
     }
@@ -291,26 +339,21 @@ public class TextRenderer {
         return getFont().lineHeight * this.scale;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static Font getFont() {
         return Minecraft.getInstance().font;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static StringSplitter.WidthProvider getWidthProvider() {
+        return ((StringSplitterAccessor) getFont().getSplitter()).getWidthProvider();
     }
 
     public Line line(FormattedCharSequence text) {
         return new Line(text, getFont().width(text) * this.scale);
     }
 
-    public static class Line {
-
-        @Getter
-        private final FormattedCharSequence text;
-        @Getter
-        private final float width;
-
-        public Line(FormattedCharSequence text, float width) {
-            this.text = text;
-            this.width = width;
-        }
+    public record Line(@Getter FormattedCharSequence text, @Getter float width) {
 
         public int upperWidth() {
             return (int) (this.width + 1);
@@ -318,6 +361,13 @@ public class TextRenderer {
 
         public int lowerWidth() {
             return (int) (this.width + 1);
+        }
+    }
+
+    public record FormattedChar(int codePoint, Style style) {
+
+        public FormattedCharSequence asSequence() {
+            return FormattedCharSequence.codepoint(codePoint, style);
         }
     }
 }

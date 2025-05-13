@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.client.mui.screen;
 
-import com.gregtechceu.gtceu.api.mui.ModularUIConfig;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IIcon;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
@@ -14,10 +13,14 @@ import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
-import net.minecraft.client.renderer.RenderSystem;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
+import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.Nullable;
@@ -86,8 +89,17 @@ public class Tooltip {
         Area screen = context.getScreenArea();
         int mouseX = context.getMouseX(), mouseY = context.getMouseY();
         IconRenderer renderer = IconRenderer.SHARED;
-        List<String> textLines = lines.stream().filter(drawable -> drawable instanceof IKey).map(key -> ((IKey) key).get()).collect(Collectors.toList());
-        RenderTooltipEvent.Pre event = new RenderTooltipEvent.Pre(stack, textLines, mouseX, mouseY, screen.width, screen.height, this.maxWidth, TextRenderer.getFont());
+        List<Component> textLines = lines.stream()
+                .filter(drawable -> drawable instanceof IKey)
+                .map(key -> ((IKey) key).get())
+                .collect(Collectors.toList());
+        List<ClientTooltipComponent> clientComponents = textLines.stream()
+                .map(Component::getVisualOrderText)
+                .map(ClientTooltipComponent::create)
+                .toList();
+        RenderTooltipEvent.Pre event = new RenderTooltipEvent.Pre(stack, context.getGraphics(),
+                mouseX, mouseY, screen.width, screen.height,
+                TextRenderer.getFont(), clientComponents, DefaultTooltipPositioner.INSTANCE);
         if (MinecraftForge.EVENT_BUS.post(event)) {
             return;
         }
@@ -95,7 +107,7 @@ public class Tooltip {
         mouseX = event.getX();
         mouseY = event.getY();
         int screenWidth = event.getScreenWidth(), screenHeight = event.getScreenHeight();
-        this.maxWidth = event.getMaxWidth();
+        //this.maxWidth = event.getMaxWidth();
 
         renderer.setShadow(this.textShadow);
         renderer.setColor(this.textColor);
@@ -114,7 +126,7 @@ public class Tooltip {
         RenderSystem.disableDepthTest();
         RenderSystem.disableBlend();
 
-        GuiDraw.drawTooltipBackground(stack, textLines, area.x, area.y, area.width, area.height);
+        GuiDraw.drawTooltipBackground(context.getGraphics(), stack, textLines, area.x, area.y, area.width, area.height);
 
         MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(stack, textLines, area.x, area.y, TextRenderer.getFont(), area.width, area.height));
 

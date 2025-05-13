@@ -4,8 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.init.SoundEvents;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
@@ -119,7 +119,7 @@ public interface Interactable {
     /**
      * @return if left or right ctrl/cmd is pressed
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     static boolean hasControlDown() {
         return Screen.isCtrlKeyDown();
     }
@@ -127,7 +127,7 @@ public interface Interactable {
     /**
      * @return if left or right shift is pressed
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     static boolean hasShiftDown() {
         return Screen.isShiftKeyDown();
     }
@@ -135,7 +135,7 @@ public interface Interactable {
     /**
      * @return if alt or alt gr is pressed
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     static boolean hasAltDown() {
         return Screen.isAltKeyDown();
     }
@@ -144,7 +144,7 @@ public interface Interactable {
      * @param key key id, see {@link Keyboard}
      * @return if the key is pressed
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     static boolean isKeyPressed(int key) {
         return Keyboard.isKeyDown(key);
     }
@@ -152,7 +152,7 @@ public interface Interactable {
     /**
      * Plays the default button click sound
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     static void playButtonClickSound() {
         Minecraft.getInstance().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }

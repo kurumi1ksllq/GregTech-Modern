@@ -22,7 +22,7 @@ public class ScrollingTextWidget extends TextWidget {
         super(key);
         tooltipBuilder(tooltip -> {
             tooltip.showUpTimer(10);
-            if (this.line.getWidth() > getArea().width) {
+            if (this.line.width() > getArea().width) {
                 tooltip.addLine(key);
             }
         });
@@ -74,7 +74,7 @@ public class ScrollingTextWidget extends TextWidget {
 
     private void checkString() {
         var s = getKey().get().getVisualOrderText();
-        if (!s.equals(this.line.getText())) {
+        if (!s.equals(this.line.text())) {
             TextRenderer.SHARED.setScale(getScale());
             this.line = TextRenderer.SHARED.line(s);
             this.scroll = 0;

@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.mui.drawable;
 
-import com.gregtechceu.gtceu.api.mui.ModularUI;
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.IJsonSerializable;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
@@ -11,15 +11,15 @@ import com.gregtechceu.gtceu.api.mui.utils.JsonHelper;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class UITexture implements IDrawable, IJsonSerializable {
 
     public static final UITexture DEFAULT = fullImage("gui/options_background", true);
 
-    private static final ResourceLocation ICONS_LOCATION = new ResourceLocation(ModularUI.ID, "textures/gui/icons.png");
+    private static final ResourceLocation ICONS_LOCATION = GTCEu.id("textures/gui/icons.png");
 
     // only for usage in GuiTextures
     static UITexture icon(String name, int x, int y, int w, int h) {
@@ -125,7 +125,7 @@ public class UITexture implements IDrawable, IJsonSerializable {
         return Interpolations.lerp(this.v0, this.v1, v);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
         if (canApplyTheme()) {
@@ -166,7 +166,7 @@ public class UITexture implements IDrawable, IJsonSerializable {
             if (drawable != null) return drawable;
         }
         Builder builder = builder();
-        builder.location(JsonHelper.getString(json, ModularUI.ID + ":gui/widgets/error", "location"))
+        builder.location(JsonHelper.getString(json, GTCEu.MOD_ID + ":gui/widgets/error", "location"))
                 .imageSize(JsonHelper.getInt(json, defaultImageWidth, "imageWidth", "iw"), JsonHelper.getInt(json, defaultImageHeight, "imageHeight", "ih"));
         boolean mode1 = json.has("x") || json.has("y") || json.has("w") || json.has("h") || json.has("width") || json.has("height");
         boolean mode2 = json.has("u0") || json.has("v0") || json.has("u1") || json.has("u1");
@@ -401,7 +401,7 @@ public class UITexture implements IDrawable, IJsonSerializable {
             if (this.name == null) {
                 String[] p = texture.location.getPath().split("/");
                 p = p[p.length - 1].split("\\.");
-                this.name = texture.location.getNamespace().equals(ModularUI.ID) ? p[0] : texture.location.getNamespace() + ":" + p[0];
+                this.name = texture.location.getNamespace().equals(GTCEu.MOD_ID) ? p[0] : texture.location.getNamespace() + ":" + p[0];
                 if (DrawableSerialization.getTexture(this.name) != null) {
                     return texture;
                 }

@@ -29,8 +29,8 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -170,7 +170,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
         return slot(new ModularSlot(itemHandler, index));
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private void drawSlot(GuiGraphics graphics, Slot slotIn) {
         Screen guiScreen = getScreen().getScreenWrapper().getWrappedScreen();
         if (!(guiScreen instanceof AbstractContainerScreen<?>))

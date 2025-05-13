@@ -6,8 +6,8 @@ import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.utils.MathUtils;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import net.minecraft.client.gui.Screen;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Scrollable area
@@ -62,7 +62,7 @@ public class ScrollArea extends Area {
 
     /* GUI code for easier manipulations */
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public boolean mouseClicked(GuiContext context) {
         return this.mouseClicked(context.getMouseX(), context.getMouseY());
     }
@@ -80,7 +80,7 @@ public class ScrollArea extends Area {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public boolean mouseScroll(GuiContext context) {
         return this.mouseScroll(context.getMouseX(), context.getMouseY(), context.getMouseScrollDelta(), Screen.isShiftKeyDown());
     }
@@ -124,7 +124,7 @@ public class ScrollArea extends Area {
         return data.isCancelScrollEdge();
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void mouseReleased(GuiContext context) {
         this.mouseReleased(context.getMouseX(), context.getMouseY());
     }
@@ -143,7 +143,7 @@ public class ScrollArea extends Area {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void drag(GuiContext context) {
         this.drag(context.getMouseX(), context.getMouseY());
     }
@@ -201,7 +201,7 @@ public class ScrollArea extends Area {
     /**
      * This method is responsible for drawing a scroll bar
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void drawScrollbar() {
         boolean isXActive = false; // micro optimisation
         if (this.scrollX != null && this.scrollX.isScrollBarActive(this, false)) {

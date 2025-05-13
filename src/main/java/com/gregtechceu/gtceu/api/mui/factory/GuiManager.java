@@ -23,8 +23,8 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -89,7 +89,7 @@ public class GuiManager {
         MinecraftForge.EVENT_BUS.post(new PlayerContainerEvent.Open(player, container));
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static <T extends GuiData> void open(int windowId, @NotNull UIFactory<T> factory, @NotNull FriendlyByteBuf data, @NotNull LocalPlayer player) {
         T guiData = factory.readGuiData(player, data);
         UISettings settings = new UISettings();
@@ -110,7 +110,7 @@ public class GuiManager {
         player.containerMenu = guiContainer.getMenu();
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     static void openScreen(ModularScreen screen, UISettings settings) {
         screen.getContext().setSettings(settings);
         Screen guiScreen;
@@ -131,7 +131,7 @@ public class GuiManager {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onGuiOpen(GuiOpenEvent event) {
         if (lastMui != null && event.getGui() == null) {

@@ -6,8 +6,8 @@ import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -46,7 +46,7 @@ public interface UIFactory<D extends GuiData> {
      * @param mainPanel main panel created in {@link #createPanel(GuiData, PanelSyncManager, UISettings)}
      * @return new main panel
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @ApiStatus.OverrideOnly
     ModularScreen createScreen(D guiData, ModularPanel mainPanel);
 
@@ -60,7 +60,7 @@ public interface UIFactory<D extends GuiData> {
      *                               container inside is not the same as the one passed to this method. This method is not the thrower, but the
      *                               caller of this method.
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @ApiStatus.OverrideOnly
     default IMuiScreen createScreenWrapper(ModularContainerMenu container, ModularScreen screen) {
         return new GuiContainerWrapper(container, screen);

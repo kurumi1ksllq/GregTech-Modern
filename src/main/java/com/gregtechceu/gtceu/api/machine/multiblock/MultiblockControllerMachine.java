@@ -10,9 +10,8 @@ import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.pattern.BetterBlockPos;
-import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.pattern.MultiblockWorldSavedData;
-import com.gregtechceu.gtceu.api.pattern.pattern.BlockPattern;
+import com.gregtechceu.gtceu.api.pattern.pattern.CurrentBlockInfo;
 import com.gregtechceu.gtceu.api.pattern.pattern.IBlockPattern;
 import com.gregtechceu.gtceu.api.pattern.pattern.PatternState;
 import com.gregtechceu.gtceu.api.pattern.util.BlockInfo;
@@ -43,10 +42,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
@@ -65,7 +62,8 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             MultiblockControllerMachine.class, MetaMachine.MANAGED_FIELD_HOLDER);
-    private MultiblockState multiblockState;
+    private CurrentBlockInfo controllerBlockInfo;
+   // private MultiTileInfo multiTileInfo;
     private final List<IMultiPart> parts = new ArrayList<>();
     private @Nullable IParallelHatch parallelHatch = null;
     @Getter
@@ -86,6 +84,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     public static final String DEFAULT_STRUCTURE = "main";
 
     protected final Reference2ObjectMap<String, IBlockPattern> structures = new Reference2ObjectOpenHashMap<>();
+    protected Reference2ObjectMap<String, PatternState> patternStates = new Reference2ObjectOpenHashMap<>();
 
     public MultiblockControllerMachine(IMachineBlockEntity holder) {
         super(holder);
@@ -122,14 +121,13 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         }
     }
 
-    @Override
     @NotNull
-    public MultiblockState getMultiblockState() {
-        if (multiblockState == null) {
-            multiblockState = new MultiblockState();
-            multiblockState.update(getLevel(), getPos());
+    public CurrentBlockInfo getBlockInfo() {
+        if (controllerBlockInfo == null) {
+            controllerBlockInfo = new CurrentBlockInfo();
+            controllerBlockInfo.setLevelAndPos(getLevel(), getPos());
         }
-        return multiblockState;
+        return controllerBlockInfo;
     }
 
     @SuppressWarnings("unused")
@@ -183,7 +181,8 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
                     if (checkPatternWithLock()) { // formed
                         checkAndFormStructurePatterns();
                         var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-                        mwsd.addMapping(getMultiblockState());
+                        for(var state : patternStates.values())
+                            mwsd.addMapping(getBlockInfo(), state);
                         mwsd.removeAsyncLogic(this);
                     }
                     patternLock.unlock();
@@ -224,6 +223,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     @Override
     public void formStructure(String name) {
         var patternState = checkStructurePattern(name);
+        patternStates.put(name, patternState);
         if(patternState.getState().isValid()) {
             if(patternState.isFormed()) {
                 if(patternState.getState() == PatternState.CheckState.VALID_UNCACHED) {
@@ -301,6 +301,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     @Override
     public void invalidateStructure(String name) {
+        patternStates.clear();
         if(!getSubstructure(name).getPatternState().isFormed()) return;
 
         parts.removeIf(part -> {
@@ -377,7 +378,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
      * mark multiblockState as unload error first.
      * if it's actually cuz by block breaking.
      * {@link #//onStructureInvalid(String)} will be called from
-     * {@link MultiblockState#//onBlockStateChanged(BlockPos, BlockState)}
+     * {@link MultiTileInfo#//onBlockStateChanged(BlockPos, BlockState)}
      */
     @Override
     public void onPartUnload() {
@@ -396,7 +397,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             //this.onStructureInvalid();
             invalidStructureCaches();
             var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-            mwsd.removeMapping(getMultiblockState());
+            mwsd.removeMapping(getBlockInfo());
             mwsd.addAsyncLogic(this);
         }
     }

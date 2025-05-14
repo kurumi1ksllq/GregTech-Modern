@@ -1,13 +1,25 @@
 package com.gregtechceu.gtceu.api.pattern.pattern;
 
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Set;
+
+/*
+ * Contains vital information to an instanced version of a structure pattern.
+ */
 public class PatternState {
 
+    @Getter
+    protected BlockPos controllerPos;
+    @Getter
+    protected IMultiController controller;
     @Getter
     @Setter
     protected boolean isFormed = false;
@@ -23,6 +35,12 @@ public class PatternState {
     protected PatternError error;
     @Getter
     protected CheckState state;
+    @Getter
+    protected Set<BlockPos> posCache;
+    @Getter
+    protected CurrentBlockInfo cbi;
+
+
 
     @ApiStatus.Internal
     public void setFlipped(boolean flipped) {

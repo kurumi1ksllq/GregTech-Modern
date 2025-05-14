@@ -18,31 +18,29 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
-import it.unimi.dsi.fastutil.longs.LongSets;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Class allowing access to a block at a certain pos for structure checks and contains structure information.
+ * Class allowing access to a block at a certain pos for structure checks.
  */
-public class MultiblockState {
+public class MultiTileInfo {
 
-    public final static PatternError UNLOAD_ERROR = new PatternStringError("multiblocked.pattern.error.chunk");
-    public final static PatternError UNINIT_ERROR = new PatternStringError("multiblocked.pattern.error.init");
+    /*public final static PatternError UNLOAD_ERROR = new PatternStringError("multiblocked.pattern.error.chunk");
+    public final static PatternError UNINIT_ERROR = new PatternStringError("multiblocked.pattern.error.init");*/
 
     @Setter
     @Getter
     protected Level level;
+    @Getter
     private BlockPos pos;
     private BlockState blockState;
     private BlockEntity tileEntity;
-    private boolean tileEntityInitialized;
-    public IO io;
-    public BlockPos controllerPos;
-    public IMultiController lastController;
+    private boolean teInitialized;
+    /*public BlockPos controllerPos;
+    public IMultiController lastController;*/
 
     // persist
     public LongOpenHashSet cache;
@@ -61,18 +59,18 @@ public class MultiblockState {
         this.pos = pos.immutable();
         this.blockState = null;
         this.tileEntity = null;
-        this.tileEntityInitialized = false;
+        this.teInitialized = false;
     }
 
     public IMultiController getController() {
-        if (level.isLoaded(controllerPos)) {
+       /* if (level.isLoaded(controllerPos)) {
             if (level.getBlockEntity(controllerPos) instanceof IMachineBlockEntity machineBlockEntity &&
                     machineBlockEntity.getMetaMachine() instanceof IMultiController controller) {
                 return lastController = controller;
             }
         } else {
             GTCEu.LOGGER.error("Level is not loaded when trying to get controller pos");
-        }
+        }*/
         return null;
     }
 
@@ -88,30 +86,26 @@ public class MultiblockState {
         if (!getBlockState().hasBlockEntity()) {
             return null;
         }
-        if (this.tileEntity == null && !this.tileEntityInitialized) {
+        if (this.tileEntity == null && !this.teInitialized) {
             this.tileEntity = this.level.getBlockEntity(this.pos);
-            this.tileEntityInitialized = true;
+            this.teInitialized = true;
         }
 
         return this.tileEntity;
-    }
-
-    public BlockPos getPos() {
-        return this.pos.immutable();
     }
 
     public void setPos(BlockPos pos) {
         this.pos = pos.immutable();
         this.blockState = null;
         this.tileEntity = null;
-        this.tileEntityInitialized = false;
+        this.teInitialized = false;
     }
 
     public void setPos(BetterBlockPos pos) {
         this.pos = pos.immutable();
         this.blockState = null;
         this.tileEntity = null;
-        this.tileEntityInitialized = false;
+        this.teInitialized = false;
     }
 
     public void addPosCache(BlockPos pos) {
@@ -128,7 +122,7 @@ public class MultiblockState {
 
     public void onBlockStateChanged(BlockPos pos, BlockState state) {
         if (level instanceof ServerLevel serverLevel) {
-            if (pos.equals(controllerPos)) {
+            /*if (pos.equals(controllerPos)) {
                 if (lastController != null) {
                     if (!state.is(lastController.self().getBlockState().getBlock())) {
                         lastController.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
@@ -136,16 +130,16 @@ public class MultiblockState {
                         mwsd.removeMapping(this);
                     }
                 }
-            } else {
-                IMultiController controller = getController();
-                if (controller != null) {
+            } else {*/
+                //IMultiController controller = getController();
+                /*if (controller != null) {
                     if (controller.isFormed() && state.getBlock() instanceof ActiveBlock) {
-                        /*LongSet activeBlocks = getMatchContext().getOrDefault("vaBlocks", LongSets.emptySet());
+                        *//*LongSet activeBlocks = getMatchContext().getOrDefault("vaBlocks", LongSets.emptySet());
                         if (activeBlocks.contains(pos.asLong())) {
                             // fine! it's caused by active blocks.
                             // speed up here!
                             return;
-                        }*/
+                        }*//*
                     }
                     if (controller.checkPatternWithLock()) {
                         // refresh structure
@@ -159,8 +153,8 @@ public class MultiblockState {
                         mwsd.removeMapping(this);
                         mwsd.addAsyncLogic(controller);
                     }
-                }
-            }
+                }*/
+            //}
         }
     }
 }

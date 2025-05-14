@@ -3,7 +3,6 @@ package com.gregtechceu.gtceu.api.pattern.pattern;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.pattern.BetterBlockPos;
-import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.pattern.OriginOffset;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.pattern.error.PatternError;
@@ -41,7 +40,7 @@ public class BlockPattern implements IBlockPattern {
     @Getter
     protected final AisleStrategy aisleStrategy;
     protected final Char2ObjectMap<TraceabilityPredicate> predicates;
-    protected final MultiblockState multiblockState;
+    //protected final MultiTileInfo multiTileInfo;
     protected final Object2IntMap<SimplePredicate> globalCount = new Object2IntOpenHashMap<>();
     protected final Object2IntMap<SimplePredicate> layerCount = new Object2IntOpenHashMap<>();
     protected final PatternState patternState = new PatternState();
@@ -66,7 +65,7 @@ public class BlockPattern implements IBlockPattern {
             this.offset = offset;
         }
 
-        this.multiblockState = new MultiblockState();
+        patternState.cbi = new CurrentBlockInfo();
     }
 
     private void legacyStartOffset(char center) {
@@ -152,7 +151,7 @@ public class BlockPattern implements IBlockPattern {
         this.layerCount.clear();
         cache.clear();
 
-        multiblockState.setLevel(level);
+        patternState.cbi.setLevel(level);
 
         BetterBlockPos controllerPos = new BetterBlockPos(centerPos);
 
@@ -199,15 +198,17 @@ public class BlockPattern implements IBlockPattern {
 
         for(int stringI = 0; stringI < dimensions[1]; stringI++) {
             for(int charI = 0; charI < dimensions[2]; charI++) {
-                multiblockState.setPos(charPos);
+                patternState.cbi.setCurrentPos(charPos);
                 TraceabilityPredicate pred = predicates.get(aisle.charAt(stringI, charI));
 
                 if(pred != TraceabilityPredicate.ANY) {
-                    BlockEntity be = multiblockState.getTileEntity();
-                    cache.put(charPos.toLong(), new BlockInfo(multiblockState.getBlockState(), !(be instanceof IMachineBlockEntity mbe) ? be : null));
+                    var be = patternState.cbi.retrieveCurrentBlockEntity();
+                    var state = patternState.cbi.retrieveCurrentBlockState();
+                    cache.put(charPos.toLong(), new BlockInfo(state, be));
+                    patternState.posCache.add(charPos.immutable());
                 }
 
-                PatternError res = pred.test(multiblockState, globalCount, layerCount);
+                PatternError res = pred.test(patternState.cbi, globalCount, layerCount);
                 if(res != null) {
                     patternState.setError(res);
                     return false;

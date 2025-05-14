@@ -4,8 +4,6 @@ import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineFeature;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
-import com.gregtechceu.gtceu.api.pattern.pattern.BlockPattern;
-import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.pattern.pattern.IBlockPattern;
 import com.gregtechceu.gtceu.api.pattern.pattern.PatternState;
 import com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer;
@@ -20,13 +18,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
-import java.util.function.Predicate;
 
 /**
  * @author KilaBash
@@ -134,11 +130,11 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
      */
     boolean isFormed();
 
-    /**
-     * Get MultiblockState. It records all structure-related information.
-     */
-    @NotNull
-    MultiblockState getMultiblockState();
+    ///**
+    // * Get MultiblockState. It records all structure-related information.
+    // */
+    //@NotNull
+    //MultiTileInfo getMultiblockState();
 
     /**
      * Called in an async thread. It's unsafe, Don't modify anything of world but checking information.

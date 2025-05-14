@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.pattern.error;
 
-import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.pattern.pattern.CurrentBlockInfo;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
 
 import lombok.Getter;
@@ -11,7 +11,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class PatternError {
     @Getter
     protected List<List<ItemStack>> candidates;
     @Setter
-    protected MultiblockState worldState;
+    protected CurrentBlockInfo blockInfo;
 
     public PatternError(BlockPos pos, List<List<ItemStack>> candidates) {
         this.pos = pos;
@@ -43,11 +42,11 @@ public class PatternError {
     }
 
     public Level getWorld() {
-        return worldState.getLevel();
+        return blockInfo.getLevel();
     }
 
     public BlockPos getPos() {
-        return worldState.getPos();
+        return blockInfo.getBlockPos();
     }
 
     public Component getErrorInfo() {

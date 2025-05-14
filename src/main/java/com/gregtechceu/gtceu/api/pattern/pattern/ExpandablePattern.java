@@ -4,7 +4,6 @@ package com.gregtechceu.gtceu.api.pattern.pattern;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.pattern.BetterBlockPos;
-import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.pattern.OriginOffset;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.pattern.error.PatternError;
@@ -32,7 +31,7 @@ public class ExpandablePattern implements IBlockPattern {
     protected final OriginOffset offset = new OriginOffset();
 
     protected final RelativeDirection[] directions;
-    protected final MultiblockState worldState;
+    //protected final MultiTileInfo worldState;
     protected final Object2IntMap<SimplePredicate> globalCount = new Object2IntOpenHashMap<>();
     protected final PatternState state = new PatternState();
     protected final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
@@ -44,7 +43,7 @@ public class ExpandablePattern implements IBlockPattern {
         this.predicateFunc = predicateFunc;
         this.directions = directions;
 
-        this.worldState = new MultiblockState();
+        state.cbi = new CurrentBlockInfo();
     }
 
     @Override
@@ -113,7 +112,7 @@ public class ExpandablePattern implements IBlockPattern {
             posCorner.set(i, bounds[selected.ordinal()]);
         }
 
-        worldState.setLevel(level);
+        state.cbi.setLevel(level);
 
         BetterBlockPos translation = new BetterBlockPos(centerPos);
 
@@ -126,14 +125,15 @@ public class ExpandablePattern implements IBlockPattern {
             // this basically reshuffles the coordinates into absolute form from relative form
             pos.zero().offset(absolutes[0], arr[0]).offset(absolutes[1], arr[1]).offset(absolutes[2], arr[2]);
             // translate from the origin to the center
-            worldState.setPos(pos.add(translation));
+            state.cbi.setCurrentPos(pos.add(translation));
 
             if(pred != TraceabilityPredicate.ANY) {
-                BlockEntity be = worldState.getTileEntity();
-                cache.put(pos.toLong(), new BlockInfo(worldState.getBlockState(), !(be instanceof IMachineBlockEntity mbe) ? be : null));
+                var bstate = state.cbi.retrieveCurrentBlockState();
+                BlockEntity be = state.cbi.retrieveCurrentBlockEntity();
+                cache.put(pos.toLong(), new BlockInfo(bstate, be));
             }
 
-            PatternError res = pred.test(worldState, globalCount, null);
+            PatternError res = pred.test(state.cbi, globalCount, null);
             if(res != null) {
                 state.setError(res);
                 return false;

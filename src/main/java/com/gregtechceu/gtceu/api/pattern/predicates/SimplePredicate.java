@@ -2,34 +2,26 @@ package com.gregtechceu.gtceu.api.pattern.predicates;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
-import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.pattern.error.PatternError;
-import com.gregtechceu.gtceu.api.pattern.error.PatternStringError;
 import com.gregtechceu.gtceu.api.pattern.error.SinglePredicateError;
+import com.gregtechceu.gtceu.api.pattern.pattern.CurrentBlockInfo;
 import com.gregtechceu.gtceu.api.pattern.util.BlockInfo;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectArrayMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SimplePredicate {
@@ -37,7 +29,7 @@ public class SimplePredicate {
 
     @Nullable
     public Function<Map<String, String>, BlockInfo[]> candidates;
-    public Function<MultiblockState, PatternError> predicate;
+    public Function<CurrentBlockInfo, PatternError> predicate;
     public List<Component> toolTips;
     public int minCount = -1;
     public int maxCount = -1;
@@ -55,13 +47,13 @@ public class SimplePredicate {
         this.type = "Unknown";
     }
 
-    public SimplePredicate(Function<MultiblockState, PatternError> predicate, @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
+    public SimplePredicate(Function<CurrentBlockInfo, PatternError> predicate, @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
         this.predicate = predicate;
         this.candidates = candidates;
         this.type = "Unknown";
     }
 
-    public SimplePredicate(String type, Function<MultiblockState, PatternError> predicate, @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
+    public SimplePredicate(String type, Function<CurrentBlockInfo, PatternError> predicate, @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
         this.predicate = predicate;
         this.candidates = candidates;
         this.type = type;
@@ -99,15 +91,15 @@ public class SimplePredicate {
         return result;
     }
 
-    public PatternError testRaw(MultiblockState worldState) {
-        return predicate.apply(worldState);
+    public PatternError testRaw(CurrentBlockInfo currBlock) {
+        return predicate.apply(currBlock);
     }
 
-    public PatternError testLimited(MultiblockState worldState,
-                               Object2IntMap<SimplePredicate> globalCache, Object2IntMap<SimplePredicate> layerCache) {
-        PatternError error = testGlobal(worldState, globalCache, layerCache);
+    public PatternError testLimited(CurrentBlockInfo currBlock,
+                                    Object2IntMap<SimplePredicate> globalCache, Object2IntMap<SimplePredicate> layerCache) {
+        PatternError error = testGlobal(currBlock, globalCache, layerCache);
         if(error != null) return error;
-        return testLayer(worldState, layerCache);
+        return testLayer(currBlock, layerCache);
     }
 
     /*private boolean checkInnerConditions(MultiblockState blockWorldState) {
@@ -142,9 +134,9 @@ public class SimplePredicate {
         return true;
     }*/
 
-    public PatternError testGlobal(MultiblockState worldState,
-                              Object2IntMap<SimplePredicate> globalCache, Object2IntMap<SimplePredicate> layerCache) {
-        PatternError res = predicate.apply(worldState);
+    public PatternError testGlobal(CurrentBlockInfo currBlock,
+                                   Object2IntMap<SimplePredicate> globalCache, Object2IntMap<SimplePredicate> layerCache) {
+        PatternError res = predicate.apply(currBlock);
         if(!globalCache.containsKey(this)) globalCache.put(this, 0);
         if((minCount == -1 && maxCount == -1) || res != null || layerCache == null) return res;
         int count = layerCache.put(this, layerCache.getInt(this) + 1) + 1 + globalCache.getInt(this);
@@ -152,8 +144,8 @@ public class SimplePredicate {
         return new SinglePredicateError(this, 0);
     }
 
-    public PatternError testLayer(MultiblockState worldState, Object2IntMap<SimplePredicate> layerCache) {
-        PatternError res = predicate.apply(worldState);
+    public PatternError testLayer(CurrentBlockInfo currBlock, Object2IntMap<SimplePredicate> layerCache) {
+        PatternError res = predicate.apply(currBlock);
         if((minLayerCount == -1 && maxLayerCount == -1) || res != null) return res;
         if(maxLayerCount == -1 || layerCache.getInt(this) <= maxLayerCount) return null;
         return new SinglePredicateError(this, 2);

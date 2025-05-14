@@ -3,6 +3,8 @@ package com.gregtechceu.gtceu.api.pattern;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 
+import com.gregtechceu.gtceu.api.pattern.pattern.CurrentBlockInfo;
+import com.gregtechceu.gtceu.api.pattern.pattern.PatternState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -28,11 +30,11 @@ public class MultiblockWorldSavedData extends SavedData {
     /**
      * Store all formed multiblocks' structure info
      */
-    public final Map<BlockPos, MultiblockState> mapping;
+    public final Map<BlockPos, CurrentBlockInfo> mapping;
     /**
      * Chunk pos mapping.
      */
-    public final Map<ChunkPos, Set<MultiblockState>> chunkPosMapping;
+    public final Map<ChunkPos, Set<CurrentBlockInfo>> chunkPosMapping;
 
     private MultiblockWorldSavedData(ServerLevel serverLevel) {
         this.serverLevel = serverLevel;
@@ -44,22 +46,22 @@ public class MultiblockWorldSavedData extends SavedData {
         this(serverLevel);
     }
 
-    public MultiblockState[] getControllerInChunk(ChunkPos chunkPos) {
-        return chunkPosMapping.getOrDefault(chunkPos, Collections.emptySet()).toArray(MultiblockState[]::new);
+    public CurrentBlockInfo[] getControllerInChunk(ChunkPos chunkPos) {
+        return chunkPosMapping.getOrDefault(chunkPos, Collections.emptySet()).toArray(CurrentBlockInfo[]::new);
     }
 
-    public void addMapping(MultiblockState state) {
-        this.mapping.put(state.getPos(), state);
-        for (BlockPos blockPos : state.getCache()) {
-            chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c -> new HashSet<>()).add(state);
+    public void addMapping(CurrentBlockInfo cbi, PatternState patternState) {
+        this.mapping.put(cbi.getBlockPos(), cbi);
+        for (BlockPos blockPos : patternState.getPosCache()) {
+            chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c -> new HashSet<>()).add(cbi);
         }
         setDirty(true);
     }
 
-    public void removeMapping(MultiblockState state) {
-        this.mapping.remove(state.getPos());
-        for (Set<MultiblockState> set : chunkPosMapping.values()) {
-            set.remove(state);
+    public void removeMapping(CurrentBlockInfo cbi) {
+        this.mapping.remove(cbi.getBlockPos());
+        for (Set<CurrentBlockInfo> set : chunkPosMapping.values()) {
+            set.remove(cbi);
         }
         setDirty(true);
     }

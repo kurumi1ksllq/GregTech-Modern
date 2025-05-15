@@ -1,10 +1,8 @@
 package com.gregtechceu.gtceu.common.mui.widgets.textfield;
 
-import com.gregtechceu.gtceu.api.mui.ModularUIConfig;
 import com.gregtechceu.gtceu.api.mui.base.ITheme;
 import com.gregtechceu.gtceu.api.mui.base.widget.IFocusedWidget;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
-import com.gregtechceu.gtceu.api.mui.base.widget.Interactable;
 import com.gregtechceu.gtceu.api.mui.drawable.Stencil;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTextFieldTheme;
@@ -13,9 +11,13 @@ import com.gregtechceu.gtceu.api.mui.widget.AbstractScrollWidget;
 import com.gregtechceu.gtceu.api.mui.widget.scroll.HorizontalScrollData;
 import com.gregtechceu.gtceu.api.mui.widget.scroll.ScrollData;
 import com.gregtechceu.gtceu.common.mui.widgets.VoidWidget;
-import net.minecraft.client.gui.Screen;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.KeyboardHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * The base of a text input widget. Handles mouse/keyboard input and rendering.
+ * The base of a text input widget. Handles mouse/InputConstants input and rendering.
  */
 public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends AbstractScrollWidget<VoidWidget, W> implements IFocusedWidget {
 
@@ -52,7 +54,7 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
 
     protected Integer textColor;
     protected Integer markedColor;
-    protected String hintText = null;
+    protected Component hintText = null;
     protected Integer hintTextColor;
 
     public BaseTextFieldWidget() {
@@ -121,10 +123,10 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
             int c = this.renderer.getColor();
             int hintColor = this.hintTextColor != null ? this.hintTextColor : widgetTheme.getHintColor();
             this.renderer.setColor(hintColor);
-            this.renderer.draw(Collections.singletonList(this.hintText));
+            this.renderer.draw(context.getGraphics(), Collections.singletonList(this.hintText));
             this.renderer.setColor(c);
         } else {
-            this.renderer.draw(this.handler.getText());
+            this.renderer.draw(context.getGraphics(), this.handler.getTextAsComponents());
         }
         getScrollArea().getScrollX().setScrollSize(Math.max(0, (int) (this.renderer.getLastWidth() + 0.5f)));
     }
@@ -155,15 +157,15 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
     }
 
     @Override
-    public @NotNull Result onMousePressed(int mouseButton) {
-        Result result = super.onMousePressed(mouseButton);
+    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
+        Result result = super.onMousePressed(mouseX, mouseY, button);
         if (result != Result.IGNORE) {
             return Result.SUCCESS; // keep focused
         }
         if (!isHovering()) {
             return Result.IGNORE;
         }
-        if (mouseButton == 1) {
+        if (button == 1) {
             this.handler.clear();
         } else {
             // the current transformation does not include the transformation of the children (the scroll) so we need to manually transform here
@@ -189,75 +191,82 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
             return Result.IGNORE;
         }
         switch (keyCode) {
-            case Keyboard.KEY_NUMPADENTER:
-            case Keyboard.KEY_RETURN:
+            case InputConstants.KEY_NUMPADENTER:
+            case InputConstants.KEY_RETURN:
                 if (getMaxLines() > 1) {
                     this.handler.newLine();
                 } else {
                     getContext().removeFocus();
                 }
                 return Result.SUCCESS;
-            case Keyboard.KEY_ESCAPE:
+            case InputConstants.KEY_ESCAPE:
                 if (ModularUIConfig.escRestoreLastText) {
                     this.handler.clear();
                     this.handler.insert(this.lastText);
                 }
                 getContext().removeFocus();
                 return Result.SUCCESS;
-            case Keyboard.KEY_LEFT: {
-                this.handler.moveCursorLeft(Interactable.hasControlDown(), Interactable.hasShiftDown());
+            case InputConstants.KEY_LEFT: {
+                this.handler.moveCursorLeft((modifiers & GLFW.GLFW_MOD_CONTROL) != 0, (modifiers & GLFW.GLFW_MOD_SHIFT) != 0);
                 return Result.SUCCESS;
             }
-            case Keyboard.KEY_RIGHT: {
-                this.handler.moveCursorRight(Interactable.hasControlDown(), Interactable.hasShiftDown());
+            case InputConstants.KEY_RIGHT: {
+                this.handler.moveCursorRight((modifiers & GLFW.GLFW_MOD_CONTROL) != 0, (modifiers & GLFW.GLFW_MOD_SHIFT) != 0);
                 return Result.SUCCESS;
             }
-            case Keyboard.KEY_UP: {
-                this.handler.moveCursorUp(Interactable.hasControlDown(), Interactable.hasShiftDown());
+            case InputConstants.KEY_UP: {
+                this.handler.moveCursorUp((modifiers & GLFW.GLFW_MOD_CONTROL) != 0, (modifiers & GLFW.GLFW_MOD_SHIFT) != 0);
                 return Result.SUCCESS;
             }
-            case Keyboard.KEY_DOWN: {
-                this.handler.moveCursorDown(Interactable.hasControlDown(), Interactable.hasShiftDown());
+            case InputConstants.KEY_DOWN: {
+                this.handler.moveCursorDown((modifiers & GLFW.GLFW_MOD_CONTROL) != 0, (modifiers & GLFW.GLFW_MOD_SHIFT) != 0);
                 return Result.SUCCESS;
             }
-            case Keyboard.KEY_DELETE:
+            case InputConstants.KEY_DELETE:
                 this.handler.delete(true);
                 return Result.SUCCESS;
-            case Keyboard.KEY_BACK:
+            case InputConstants.KEY_BACKSPACE:
                 this.handler.delete();
                 return Result.SUCCESS;
         }
 
-        if (character == Character.MIN_VALUE) {
-            return Result.STOP;
-        }
-
-        if (Screen.isKeyComboCtrlC(keyCode)) {
+        if (Screen.isCopy(keyCode)) {
             // copy marked text
-            Screen.setClipboardString(this.handler.getSelectedText());
+            Minecraft.getInstance().keyboardHandler.setClipboard(this.handler.getSelectedText());
             return Result.SUCCESS;
-        } else if (Screen.isKeyComboCtrlV(keyCode)) {
+        } else if (Screen.isPaste(keyCode)) {
             if (this.handler.hasTextMarked()) {
                 this.handler.delete();
             }
             // paste copied text in marked text
-            this.handler.insert(Screen.getClipboardString().replace("§", ""));
+            this.handler.insert(Minecraft.getInstance().keyboardHandler.getClipboard().replace("§", ""));
             return Result.SUCCESS;
-        } else if (Screen.isKeyComboCtrlX(keyCode) && this.handler.hasTextMarked()) {
+        } else if (Screen.isCut(keyCode) && this.handler.hasTextMarked()) {
             // copy and delete copied text
-            Screen.setClipboardString(this.handler.getSelectedText());
+            Minecraft.getInstance().keyboardHandler.setClipboard(this.handler.getSelectedText());
             this.handler.delete();
             return Result.SUCCESS;
-        } else if (Screen.isKeyComboCtrlA(keyCode)) {
+        } else if (Screen.isSelectAll(keyCode)) {
             // mark whole text
             this.handler.markAll();
             return Result.SUCCESS;
-        } else if (BASE_PATTERN.matcher(String.valueOf(character)).matches() && handler.test(String.valueOf(character))) {
+        }
+        return Result.STOP;
+    }
+
+    @Override
+    public @NotNull Result onCharTyped(char codePoint, int modifiers) {
+        if (!isFocused()) {
+            return Result.IGNORE;
+        }
+        if (codePoint == Character.MIN_VALUE) {
+            return Result.STOP;
+        }if (BASE_PATTERN.matcher(String.valueOf(codePoint)).matches() && handler.test(String.valueOf(codePoint))) {
             if (this.handler.hasTextMarked()) {
                 this.handler.delete();
             }
             // insert typed char
-            this.handler.insert(String.valueOf(character));
+            this.handler.insert(String.valueOf(codePoint));
             return Result.SUCCESS;
         }
         return Result.STOP;
@@ -319,12 +328,12 @@ public class BaseTextFieldWidget<W extends BaseTextFieldWidget<W>> extends Abstr
 
     /**
      * Sets a constant hint text. The hint is displayed in a less noticeable color when the field is empty.
-     * The color is by default obtained from the current them, but can be overriden with {@link #hintColor(int)}.
+     * The color is by default obtained from the current them, but can be overridden with {@link #hintColor(int)}.
      *
      * @param hint hint text to display
      * @return this
      */
-    public W hintText(String hint) {
+    public W hintText(Component hint) {
         this.hintText = hint;
         return getThis();
     }

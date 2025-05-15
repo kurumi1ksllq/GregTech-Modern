@@ -108,6 +108,14 @@ public class TextRenderer {
         this.lastHeight = Math.max(0, this.lastHeight - this.scale);
     }
 
+    public List<Component> asComponents(List<String> lines) {
+        return lines.stream().<Component>map(Component::literal).toList();
+    }
+
+    public List<Line> measureStringLines(List<String> lines) {
+        return measureLines(asComponents(lines));
+    }
+
     public List<Line> measureLines(List<Component> lines) {
         List<Line> measuredLines = new ArrayList<>();
         for (Component line : lines) {

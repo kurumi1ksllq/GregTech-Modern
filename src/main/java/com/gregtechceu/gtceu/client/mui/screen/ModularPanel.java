@@ -286,7 +286,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
         return Objects.requireNonNull(doSafe(runnable::getAsInt));
     }
 
-    public boolean onMousePressed(int mouseButton) {
+    public boolean onMousePressed(double mouseX, double mouseY, int button) {
         return doSafeBool(() -> {
             LocatedWidget pressed = LocatedWidget.EMPTY;
             boolean result = false;
@@ -297,14 +297,14 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
                     animateClose();
                     result = true;
                 }
-            } else if (checkJeiGhostIngredient(mouseButton)) {
+            } else if (checkJeiGhostIngredient(button)) {
                 return true;
             } else {
                 for (LocatedWidget widget : this.hovering) {
                     widget.applyMatrix(getContext());
                     // click widget and see how it reacts
                     if (widget.getElement() instanceof Interactable interactable) {
-                        Interactable.Result interactResult = interactable.onMousePressed(mouseButton);
+                        Interactable.Result interactResult = interactable.onMousePressed(mouseX, mouseY, button);
                         if (interactResult.accepts) {
                             this.mouse.addAcceptedInteractable(interactable);
                             pressed = widget;
@@ -318,7 +318,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
                         }
                     }
                     // see if widget can be dragged
-                    if (getContext().onHoveredClick(mouseButton, widget)) {
+                    if (getContext().onHoveredClick(button, widget)) {
                         pressed = LocatedWidget.EMPTY;
                         result = true;
                         widget.unapplyMatrix(getContext());
@@ -340,7 +340,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
             } else {
                 getContext().removeFocus();
             }
-            this.mouse.pressed(pressed, mouseButton);
+            this.mouse.pressed(pressed, button);
             return result;
         });
     }
@@ -350,7 +350,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
             // try inserting ghost ingredient
             GhostIngredientDrag<?> drag = ModularUIJeiPlugin.getGhostDrag();
             for (LocatedWidget widget : this.hovering) {
-                if (widget.getElement() instanceof JeiGhostIngredientSlot<?> ghostSlot && JeiGhostIngredientSlot.insertGhostIngredient(drag, ghostSlot)) {
+                if (widget.getElement() instanceof GhostIngredientSlot<?> ghostSlot && GhostIngredientSlot.insertGhostIngredient(drag, ghostSlot)) {
                     ModularUIJeiPlugin.getGhostDragManager().stopDrag();
                     this.mouse.pressed(widget, mouseButton);
                     this.mouse.doRelease = false;
@@ -374,13 +374,13 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
         return false;
     }
 
-    public boolean onMouseRelease(double mouseX, double mouseY, int button) {
+    public boolean onMouseReleased(double mouseX, double mouseY, int button) {
         return isEnabled() && doSafeBool(() -> {
             if (!this.mouse.doRelease) {
                 this.mouse.reset();
                 return false;
             }
-            if (interactFocused(widget -> widget.onMouseRelease(button), false)) {
+            if (interactFocused(widget -> widget.onMouseReleased(mouseX, mouseY, button), false)) {
                 return true;
             }
             boolean lastPressedIsHovered = false;
@@ -389,7 +389,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
             for (LocatedWidget widget : this.hovering) {
                 if (this.mouse.isWidget(widget)) {
                     if (widget.getElement() instanceof Interactable interactable &&
-                            onMouseRelease(button, tryTap, widget, interactable)) {
+                            onMouseReleased(mouseX, mouseY, button, tryTap, widget, interactable)) {
                         return true;
                     }
                     lastPressedIsHovered = true;
@@ -399,7 +399,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
             // now try all other hovered
             for (LocatedWidget widget : this.hovering) {
                 if (!this.mouse.isWidget(widget) && widget.getElement() instanceof Interactable interactable &&
-                        onMouseRelease(button, tryTap, widget, interactable)) {
+                        onMouseReleased(mouseX, mouseY, button, tryTap, widget, interactable)) {
                     return true;
                 }
             }
@@ -414,17 +414,17 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
         });
     }
 
-    private boolean onMouseRelease(int mouseButton, boolean tryTap, LocatedWidget widget, Interactable interactable) {
+    private boolean onMouseReleased(double mouseX, double mouseY, int button, boolean tryTap, LocatedWidget widget, Interactable interactable) {
         boolean stop = false;
         widget.applyMatrix(getContext());
         if (tryTap && this.mouse.acceptedInteractions.remove(interactable)) {
-            Interactable.Result tabResult = interactable.onMouseTapped(mouseButton);
+            Interactable.Result tabResult = interactable.onMouseTapped(mouseX, mouseY, button);
             if (tabResult.stops) {
                 stop = true;
                 // we will try to trigger onMouseReleased() even after tapping tells to stop
             }
         }
-        if (interactable.onMouseRelease(mouseButton)) {
+        if (interactable.onMouseReleased(mouseX, mouseY, button)) {
             stop = true;
         }
         widget.unapplyMatrix(getContext());
@@ -471,13 +471,13 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
         });
     }
 
-    public boolean onKeyRelease(int keyCode, int scanCode, int modifiers) {
+    public boolean onKeyReleased(int keyCode, int scanCode, int modifiers) {
         return doSafeBool(() -> {
             if (!this.keyboard.doRelease) {
                 this.keyboard.reset();
                 return false;
             }
-            if (interactFocused(widget -> widget.onKeyRelease(keyCode, scanCode, modifiers), false)) {
+            if (interactFocused(widget -> widget.onKeyReleased(keyCode, scanCode, modifiers), false)) {
                 return true;
             }
             boolean lastPressedIsHovered = false;
@@ -486,7 +486,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
             for (LocatedWidget widget : this.hovering) {
                 if (this.keyboard.isWidget(widget)) {
                     if (widget.getElement() instanceof Interactable interactable &&
-                            onKeyRelease(keyCode, scanCode, modifiers, tryTap, widget, interactable)) {
+                            onKeyReleased(keyCode, scanCode, modifiers, tryTap, widget, interactable)) {
                         return true;
                     }
                     lastPressedIsHovered = true;
@@ -496,7 +496,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
             // now try all other hovered
             for (LocatedWidget widget : this.hovering) {
                 if (!this.keyboard.isWidget(widget) && widget.getElement() instanceof Interactable interactable &&
-                        onKeyRelease(keyCode, scanCode, modifiers, tryTap, widget, interactable)) {
+                        onKeyReleased(keyCode, scanCode, modifiers, tryTap, widget, interactable)) {
                     return true;
                 }
             }
@@ -511,7 +511,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
         });
     }
 
-    private boolean onKeyRelease(int keyCode, int scanCode, int modifiers, boolean tryTap, LocatedWidget widget, Interactable interactable) {
+    private boolean onKeyReleased(int keyCode, int scanCode, int modifiers, boolean tryTap, LocatedWidget widget, Interactable interactable) {
         boolean stop = false;
         widget.applyMatrix(getContext());
         if (tryTap && this.mouse.acceptedInteractions.remove(interactable)) {
@@ -521,7 +521,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
                 // we will try to trigger onMouseReleased() even after tapping tells to stop
             }
         }
-        if (interactable.onKeyRelease(keyCode, scanCode, modifiers)) {
+        if (interactable.onKeyReleased(keyCode, scanCode, modifiers)) {
             stop = true;
         }
         widget.unapplyMatrix(getContext());
@@ -532,16 +532,52 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
         return false;
     }
 
-    public boolean onMouseScroll(double mouseX, double mouseY, double delta) {
+    public boolean onCharTyped(char codePoint, int modifiers) {
         return doSafeBool(() -> {
-            if (interactFocused(widget -> widget.onMouseScroll(mouseX, mouseY, delta), false)) {
+            switch (interactFocused(widget -> widget.onCharTyped(codePoint, modifiers), Interactable.Result.IGNORE)) {
+                case STOP:
+                    this.keyboard.pressed(LocatedWidget.EMPTY, codePoint);
+                    return true;
+                case SUCCESS:
+                    this.keyboard.pressed(getContext().getFocusedWidget(), codePoint);
+                    return true;
+            }
+            LocatedWidget pressed = null;
+            boolean result = false;
+            for (LocatedWidget widget : this.hovering) {
+                if (widget.getElement() instanceof Interactable interactable) {
+                    widget.applyMatrix(getContext());
+                    Interactable.Result interactResult = interactable.onCharTyped(codePoint, modifiers);
+                    if (interactResult.accepts) {
+                        this.keyboard.addAcceptedInteractable(interactable);
+                        pressed = widget;
+                    } else if (interactResult.stops) {
+                        pressed = null;
+                    }
+                    if (interactResult.stops) {
+                        result = true;
+                        widget.unapplyMatrix(getContext());
+                        break;
+                    }
+                    widget.unapplyMatrix(getContext());
+                }
+                if (!widget.getElement().canClickThrough()) break;
+            }
+            this.keyboard.pressed(pressed, codePoint);
+            return result;
+        });
+    }
+
+    public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
+        return doSafeBool(() -> {
+            if (interactFocused(widget -> widget.onMouseScrolled(mouseX, mouseY, delta), false)) {
                 return true;
             }
             if (this.hovering.isEmpty()) return false;
             for (LocatedWidget widget : this.hovering) {
                 if (widget.getElement() instanceof Interactable interactable) {
                     widget.applyMatrix(getContext());
-                    boolean result = interactable.onMouseScroll(mouseX, mouseY, delta);
+                    boolean result = interactable.onMouseScrolled(mouseX, mouseY, delta);
                     widget.unapplyMatrix(getContext());
                     if (result) return true;
                 }

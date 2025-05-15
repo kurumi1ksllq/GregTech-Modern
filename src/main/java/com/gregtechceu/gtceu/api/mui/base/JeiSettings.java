@@ -1,12 +1,12 @@
 package com.gregtechceu.gtceu.api.mui.base;
 
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
-import com.gregtechceu.gtceu.api.mui.integration.jei.JeiGhostIngredientSlot;
+import com.gregtechceu.gtceu.api.mui.widget.sizer.Rectangle;
 import com.gregtechceu.gtceu.client.mui.screen.ModularScreen;
 
+import com.gregtechceu.gtceu.integration.xei.handlers.GhostIngredientSlot;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.awt.*;
 
 /**
  * Keeps track of everything related to JEI in a Modular GUI.
@@ -76,7 +76,7 @@ public interface JeiSettings {
      * @param slot slot widget
      * @param <W>  slot widget type
      */
-    <W extends IWidget & JeiGhostIngredientSlot<?>> void addJeiGhostIngredientSlot(W slot);
+    <W extends IWidget & GhostIngredientSlot<?>> void addGhostIngredientSlot(W slot);
 
     /**
      * Removes a JEI ghost slot.
@@ -84,7 +84,7 @@ public interface JeiSettings {
      * @param slot slot widget
      * @param <W>  slot widget type
      */
-    <W extends IWidget & JeiGhostIngredientSlot<?>> void removeJeiGhostIngredientSlot(W slot);
+    <W extends IWidget & GhostIngredientSlot<?>> void removeGhostIngredientSlot(W slot);
 
     JeiSettings DUMMY = new JeiSettings() {
         @Override
@@ -114,9 +114,9 @@ public interface JeiSettings {
         public void removeJeiExclusionArea(IWidget area) {}
 
         @Override
-        public <W extends IWidget & JeiGhostIngredientSlot<?>> void addJeiGhostIngredientSlot(W slot) {}
+        public <W extends IWidget & GhostIngredientSlot<?>> void addGhostIngredientSlot(W slot) {}
 
         @Override
-        public <W extends IWidget & JeiGhostIngredientSlot<?>> void removeJeiGhostIngredientSlot(W slot) {}
+        public <W extends IWidget & GhostIngredientSlot<?>> void removeGhostIngredientSlot(W slot) {}
     };
 }

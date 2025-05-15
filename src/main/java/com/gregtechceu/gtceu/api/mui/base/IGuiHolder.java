@@ -10,7 +10,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
- * An interface to implement on {@link net.minecraft.tileentity.BlockEntity} or {@link net.minecraft.item.Item}.
+ * An interface to implement on {@link net.minecraft.world.level.block.entity.BlockEntity} or {@link net.minecraft.world.item.Item}.
  */
 @FunctionalInterface
 public interface IGuiHolder<T extends GuiData> {

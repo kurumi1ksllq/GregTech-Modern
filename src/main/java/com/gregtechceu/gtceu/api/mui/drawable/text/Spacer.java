@@ -31,15 +31,15 @@ public class Spacer implements ITextLine {
     }
 
     @Override
-    public int getHeight(Font fr) {
+    public int getHeight(Font font) {
         return this.space;
     }
 
     @Override
-    public void draw(GuiContext context, Font fr, float x, float y, int color, boolean shadow) {}
+    public void draw(GuiContext context, Font font, float x, float y, int color, boolean shadow) {}
 
     @Override
-    public Object getHoveringElement(Font fr, int x, int y) {
+    public Object getHoveringElement(Font font, int x, int y) {
         return null;
     }
 }

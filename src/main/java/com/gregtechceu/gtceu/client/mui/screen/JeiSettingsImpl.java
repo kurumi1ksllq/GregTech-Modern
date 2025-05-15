@@ -2,18 +2,17 @@ package com.gregtechceu.gtceu.client.mui.screen;
 
 import com.gregtechceu.gtceu.api.mui.base.JeiSettings;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
-import com.gregtechceu.gtceu.api.mui.integration.jei.GhostIngredientTarget;
-import com.gregtechceu.gtceu.api.mui.integration.jei.JeiGhostIngredientSlot;
-import com.gregtechceu.gtceu.api.mui.integration.jei.JeiState;
-import mezz.jei.api.gui.IGhostIngredientHandler;
-import net.minecraftforge.fml.common.Optional;
+import com.gregtechceu.gtceu.api.mui.widget.sizer.Rectangle;
+import com.gregtechceu.gtceu.integration.jei.GhostIngredientTarget;
+import com.gregtechceu.gtceu.integration.xei.XeiState;
+import com.gregtechceu.gtceu.integration.xei.handlers.GhostIngredientSlot;
+import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -27,17 +26,17 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public class JeiSettingsImpl implements JeiSettings {
 
-    private JeiState jeiState = JeiState.DEFAULT;
+    private XeiState jeiState = XeiState.DEFAULT;
     private final List<IWidget> jeiExclusionWidgets = new ArrayList<>();
     private final List<Rectangle> jeiExclusionAreas = new ArrayList<>();
-    private final List<JeiGhostIngredientSlot<?>> jeiGhostIngredientSlots = new ArrayList<>();
+    private final List<GhostIngredientSlot<?>> GhostIngredientSlots = new ArrayList<>();
 
     /**
      * Force JEI to be enabled
      */
     @Override
     public void enableJei() {
-        this.jeiState = JeiState.ENABLED;
+        this.jeiState = XeiState.ENABLED;
     }
 
     /**
@@ -45,7 +44,7 @@ public class JeiSettingsImpl implements JeiSettings {
      */
     @Override
     public void disableJei() {
-        this.jeiState = JeiState.DISABLED;
+        this.jeiState = XeiState.DISABLED;
     }
 
     /**
@@ -53,7 +52,7 @@ public class JeiSettingsImpl implements JeiSettings {
      */
     @Override
     public void defaultJei() {
-        this.jeiState = JeiState.DEFAULT;
+        this.jeiState = XeiState.DEFAULT;
     }
 
     /**
@@ -121,9 +120,9 @@ public class JeiSettingsImpl implements JeiSettings {
      * @param <W>  slot widget type
      */
     @Override
-    public <W extends IWidget & JeiGhostIngredientSlot<?>> void addJeiGhostIngredientSlot(W slot) {
-        if (!this.jeiGhostIngredientSlots.contains(slot)) {
-            this.jeiGhostIngredientSlots.add(slot);
+    public <W extends IWidget & GhostIngredientSlot<?>> void addGhostIngredientSlot(W slot) {
+        if (!this.GhostIngredientSlots.contains(slot)) {
+            this.GhostIngredientSlots.add(slot);
         }
     }
 
@@ -134,8 +133,8 @@ public class JeiSettingsImpl implements JeiSettings {
      * @param <W>  slot widget type
      */
     @Override
-    public <W extends IWidget & JeiGhostIngredientSlot<?>> void removeJeiGhostIngredientSlot(W slot) {
-        this.jeiGhostIngredientSlots.remove(slot);
+    public <W extends IWidget & GhostIngredientSlot<?>> void removeGhostIngredientSlot(W slot) {
+        this.GhostIngredientSlots.remove(slot);
     }
 
     @UnmodifiableView
@@ -149,8 +148,8 @@ public class JeiSettingsImpl implements JeiSettings {
     }
 
     @UnmodifiableView
-    public List<JeiGhostIngredientSlot<?>> getJeiGhostIngredientSlots() {
-        return Collections.unmodifiableList(this.jeiGhostIngredientSlots);
+    public List<GhostIngredientSlot<?>> getGhostIngredientSlots() {
+        return Collections.unmodifiableList(this.GhostIngredientSlots);
     }
 
     @ApiStatus.Internal
@@ -171,18 +170,18 @@ public class JeiSettingsImpl implements JeiSettings {
     }
 
     @ApiStatus.Internal
-    @Optional.Method(modid = "jei")
+    // @Optional.Method(modid = "jei")
     public <I> List<IGhostIngredientHandler.Target<I>> getAllGhostIngredientTargets(@NotNull I ingredient) {
         List<IGhostIngredientHandler.Target<I>> ghostHandlerTargets = new ArrayList<>();
-        for (Iterator<JeiGhostIngredientSlot<?>> iterator = this.jeiGhostIngredientSlots.iterator(); iterator.hasNext(); ) {
-            JeiGhostIngredientSlot<?> slot = iterator.next();
+        for (Iterator<GhostIngredientSlot<?>> iterator = this.GhostIngredientSlots.iterator(); iterator.hasNext(); ) {
+            GhostIngredientSlot<?> slot = iterator.next();
             IWidget widget = (IWidget) slot;
             if (!widget.isValid()) {
                 iterator.remove();
                 continue;
             }
             if (widget.isEnabled() && slot.castGhostIngredientIfValid(ingredient) != null) {
-                JeiGhostIngredientSlot<I> slotWithType = (JeiGhostIngredientSlot<I>) slot;
+                GhostIngredientSlot<I> slotWithType = (GhostIngredientSlot<I>) slot;
                 ghostHandlerTargets.add(new GhostIngredientTarget<>(widget, slotWithType));
             }
         }

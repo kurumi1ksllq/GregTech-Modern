@@ -13,7 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.function.IntConsumer;
 
-public class Rectangle implements IDrawable, IJsonSerializable {
+public class Rectangle implements IDrawable, IJsonSerializable<Rectangle> {
 
     public static final double PI_2 = Math.PI / 2;
 

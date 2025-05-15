@@ -122,13 +122,13 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
     }
 
     @Override
-    public @NotNull Result onMousePressed(int mouseButton) {
+    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
         ClientScreenHandler.clickSlot(getScreen(), getSlot());
         return Result.SUCCESS;
     }
 
     @Override
-    public boolean onMouseRelease(int mouseButton) {
+    public boolean onMouseReleased(double mouseX, double mouseY, int button) {
         ClientScreenHandler.releaseSlot();
         return true;
     }

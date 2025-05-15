@@ -52,28 +52,28 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     }
 
     @Override
-    public @NotNull Result onMousePressed(int mouseButton) {
+    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
         Object o = this.text.getHoveringElement(getContext().getFont(), getContext().getMouseX(), getContext().getMouseY());
         if (o instanceof Interactable interactable) {
-            return interactable.onMousePressed(mouseButton);
+            return interactable.onMousePressed(mouseY, mouseY, button);
         }
         return Result.ACCEPT;
     }
 
     @Override
-    public boolean onMouseRelease(int mouseButton) {
+    public boolean onMouseReleased(double mouseX, double mouseY, int button) {
         Object o = this.text.getHoveringElement(getContext().getFont(), getContext().getMouseX(), getContext().getMouseY());
         if (o instanceof Interactable interactable) {
-            return interactable.onMouseRelease(mouseButton);
+            return interactable.onMouseReleased(mouseX, mouseY, button);
         }
         return false;
     }
 
     @Override
-    public @NotNull Result onMouseTapped(int mouseButton) {
+    public @NotNull Result onMouseTapped(double mouseX, double mouseY, int button) {
         Object o = this.text.getHoveringElement(getContext().getFont(), getContext().getMouseX(), getContext().getMouseY());
         if (o instanceof Interactable interactable) {
-            return interactable.onMouseTapped(mouseButton);
+            return interactable.onMouseTapped(mouseX, mouseY, button);
         }
         return Result.IGNORE;
     }
@@ -88,10 +88,10 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     }
 
     @Override
-    public boolean onKeyRelease(int keyCode, int scanCode, int modifiers) {
+    public boolean onKeyReleased(int keyCode, int scanCode, int modifiers) {
         Object o = this.text.getHoveringElement(getContext().getFont(), getContext().getMouseX(), getContext().getMouseY());
         if (o instanceof Interactable interactable) {
-            return interactable.onKeyRelease(keyCode, scanCode, modifiers);
+            return interactable.onKeyReleased(keyCode, scanCode, modifiers);
         }
         return false;
     }
@@ -106,10 +106,10 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
     }
 
     @Override
-    public boolean onMouseScroll(double mouseX, double mouseY, double delta) {
+    public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
         Object o = this.text.getHoveringElement(getContext().getFont(), getContext().getMouseX(), getContext().getMouseY());
         if (o instanceof Interactable interactable) {
-            return interactable.onMouseScroll(mouseX, mouseY, delta);
+            return interactable.onMouseScrolled(mouseX, mouseY, delta);
         }
         return false;
     }

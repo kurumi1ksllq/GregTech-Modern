@@ -18,7 +18,6 @@ import com.gregtechceu.gtceu.api.mui.value.sync.ValueSyncHandler;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Flex;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.IUnResizeable;
-import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
@@ -154,7 +153,7 @@ public class Widget<W extends Widget<W>> implements IWidget, IPositioned<W>, ITo
     public void draw(ModularGuiContext context, WidgetTheme widgetTheme) {}
 
     @Override
-    public void drawOverlay(GuiGraphics graphics, ModularGuiContext context, WidgetTheme widgetTheme) {
+    public void drawOverlay(ModularGuiContext context, WidgetTheme widgetTheme) {
         IDrawable bg = getCurrentOverlay(context.getTheme(), widgetTheme);
         if (bg != null) {
             bg.drawAtZero(context, getArea(), widgetTheme);

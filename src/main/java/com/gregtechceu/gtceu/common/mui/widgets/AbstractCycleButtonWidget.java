@@ -79,8 +79,8 @@ public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> e
     }
 
     @Override
-    public @NotNull Result onMousePressed(int mouseButton) {
-        switch (mouseButton) {
+    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
+        switch (button) {
             case 0:
                 next();
                 Interactable.playButtonClickSound();

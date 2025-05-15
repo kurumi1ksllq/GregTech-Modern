@@ -1,26 +1,29 @@
 package com.gregtechceu.gtceu.api.mui.utils;
 
-import com.gregtechceu.gtceu.api.mui.base.widget.Interactable;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.glfw.GLFW;
 
 public class KeyboardData {
 
-    public final Side side;
-    public final char character;
-    public final int keycode;
+    public final Dist side;
+    public final int keyCode;
+    public final int scanCode;
+    public final int modifiers;
+
     public final boolean shift;
     public final boolean ctrl;
     public final boolean alt;
 
-    public KeyboardData(Side side, char character, int keycode, boolean shift, boolean ctrl, boolean alt) {
+    public KeyboardData(Dist side, int keyCode, int scanCode, int modifiers) {
         this.side = side;
-        this.character = character;
-        this.keycode = keycode;
-        this.shift = shift;
-        this.ctrl = ctrl;
-        this.alt = alt;
+        this.keyCode = keyCode;
+        this.scanCode = scanCode;
+        this.modifiers = modifiers;
+        this.shift = (modifiers & GLFW.GLFW_MOD_SHIFT) != 0;
+        this.ctrl = (modifiers & GLFW.GLFW_MOD_CONTROL) != 0;
+        this.alt = (modifiers & GLFW.GLFW_MOD_ALT) != 0;
     }
 
     public boolean isClient() {
@@ -28,24 +31,21 @@ public class KeyboardData {
     }
 
     public void writeToPacket(FriendlyByteBuf buffer) {
-        buffer.writeChar(this.character);
-        buffer.writeVarInt(this.keycode);
-        byte data = 0;
-        if (this.shift) data |= 1;
-        if (this.ctrl) data |= 2;
-        if (this.alt) data |= 4;
-        buffer.writeByte(data);
+        buffer.writeVarInt(this.keyCode);
+        buffer.writeVarInt(this.scanCode);
+        buffer.writeVarInt(this.modifiers);
     }
 
     public static KeyboardData readPacket(FriendlyByteBuf buffer) {
-        char character = buffer.readChar();
-        int keycode = buffer.readVarInt();
+        int keyCode = buffer.readVarInt();
+        int scanCode = buffer.readVarInt();
+        int modifiers = buffer.readVarInt();
         byte data = buffer.readByte();
-        return new KeyboardData(Side.SERVER, character, keycode, (data & 1) != 0, (data & 2) != 0, (data & 4) != 0);
+        return new KeyboardData(Dist.DEDICATED_SERVER, keyCode, scanCode, modifiers);
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static KeyboardData create(char character, int keycode) {
-        return new KeyboardData(Side.CLIENT, character, keycode, Interactable.hasShiftDown(), Interactable.hasControlDown(), Interactable.hasAltDown());
+    public static KeyboardData create(int keyCode, int scanCode, int modifiers) {
+        return new KeyboardData(Dist.CLIENT, keyCode, scanCode, modifiers);
     }
 }

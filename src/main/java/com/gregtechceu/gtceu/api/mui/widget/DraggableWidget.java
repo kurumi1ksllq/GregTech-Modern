@@ -26,7 +26,7 @@ public class DraggableWidget<W extends DraggableWidget<W>> extends Widget<W> imp
 
     @Override
     public void drawMovingState(GuiGraphics graphics, ModularGuiContext context, float partialTicks) {
-        WidgetTree.drawTree(this, graphics, context, true);
+        WidgetTree.drawTree(this, context, true);
     }
 
     @Override

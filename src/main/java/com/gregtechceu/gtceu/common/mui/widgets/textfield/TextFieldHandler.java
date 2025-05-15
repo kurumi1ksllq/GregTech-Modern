@@ -3,6 +3,8 @@ package com.gregtechceu.gtceu.common.mui.widgets.textfield;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.api.mui.widget.scroll.ScrollArea;
 import com.google.common.base.Joiner;
+import lombok.Getter;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -19,6 +21,7 @@ public class TextFieldHandler {
 
     private static final Joiner JOINER = Joiner.on('\n');
 
+    @Getter
     private final List<String> text = new ArrayList<>();
     private final Point cursor = new Point(), cursorEnd = new Point();
     private final BaseTextFieldWidget<?> textFieldWidget;
@@ -93,12 +96,12 @@ public class TextFieldHandler {
             if (!this.text.isEmpty() && this.renderer != null && this.scrollArea != null) {
                 // update actual width
                 this.renderer.setSimulate(true);
-                this.renderer.draw(this.text);
+                this.renderer.draw(guiContext.getGraphics(), getTextAsComponents());
                 this.renderer.setSimulate(false);
                 this.scrollArea.getScrollX().setScrollSize((int) (this.renderer.getLastWidth() + 0.5f));
                 if (this.scrollArea.getScrollX().isScrollBarActive(this.scrollArea)) {
                     String line = this.text.get(main.y);
-                    int scrollTo = (int) this.renderer.getPosOf(this.renderer.measureLines(Collections.singletonList(line)), main).x;
+                    int scrollTo = (int) this.renderer.getPosOf(this.renderer.measureStringLines(Collections.singletonList(line)), main).x;
                     scrollTo -= this.scrollArea.getScrollX().getVisibleSize(this.scrollArea) / 2;
                     if (animate) {
                         this.scrollArea.getScrollX().animateTo(this.scrollArea, scrollTo);
@@ -229,8 +232,8 @@ public class TextFieldHandler {
         return JOINER.join(this.text);
     }
 
-    public List<String> getText() {
-        return this.text;
+    public List<Component> getTextAsComponents() {
+        return this.renderer.asComponents(this.text);
     }
 
     public boolean isTextEmpty() {

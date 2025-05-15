@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.mui.base.layout.IViewportStack;
 import com.gregtechceu.gtceu.api.mui.base.widget.IGuiElement;
 import com.gregtechceu.gtceu.api.mui.utils.MathUtils;
 
-import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -39,6 +38,7 @@ public class Area extends Rectangle implements IUnResizeable {
     private final Box padding = new Box();
 
     public Area() {
+        super();
     }
 
     public Area(int x, int y, int w, int h) {

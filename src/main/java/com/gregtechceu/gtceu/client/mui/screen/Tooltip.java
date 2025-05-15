@@ -117,7 +117,7 @@ public class Tooltip {
         renderer.setSimulate(true);
         renderer.setPos(0, 0);
 
-        //List<IIcon> icons = renderer.measureLines(this.lines);
+        //List<IIcon> icons = renderer.measureStringLines(this.lines);
         renderer.draw(context, this.lines);
 
         Rectangle area = determineTooltipArea(context, this.lines, renderer, screenWidth, screenHeight, mouseX, mouseY);

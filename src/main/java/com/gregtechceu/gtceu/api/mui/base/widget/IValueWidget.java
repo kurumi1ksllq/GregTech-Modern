@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.mui.base.widget;
 
 /**
- * Marks a widget to contain a value
+ * Marks a widget as containing a value
  *
  * @param <T>
  */

@@ -1,9 +1,8 @@
 package com.gregtechceu.gtceu.api.mui.value.sync;
 
-import com.gregtechceu.gtceu.api.mui.network.NetworkUtils;
 import com.gregtechceu.gtceu.common.mui.widgets.slot.ModularSlot;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +35,7 @@ public class ItemSlotSH extends SyncHandler {
             getSyncManager().getContainer().registerSlot(getSyncManager().getPanelName(), this.slot);
             this.registered = true;
         }
-        this.lastStoredItem = getSlot().getStack().copy();
+        this.lastStoredItem = getSlot().getItem().copy();
     }
 
     @Override
@@ -47,7 +46,7 @@ public class ItemSlotSH extends SyncHandler {
 
     @Override
     public void detectAndSendChanges(boolean init) {
-        ItemStack itemStack = getSlot().getStack();
+        ItemStack itemStack = getSlot().getItem();
         if (itemStack.isEmpty() && this.lastStoredItem.isEmpty()) return;
         boolean onlyAmountChanged = false;
         if (init ||
@@ -63,7 +62,7 @@ public class ItemSlotSH extends SyncHandler {
             final boolean forceSync = false;
             syncToClient(SYNC_ITEM, buffer -> {
                 buffer.writeBoolean(finalOnlyAmountChanged);
-                buffer.writeItemStack(itemStack);
+                buffer.writeItem(itemStack);
                 buffer.writeBoolean(init);
                 buffer.writeBoolean(forceSync);
             });
@@ -74,7 +73,7 @@ public class ItemSlotSH extends SyncHandler {
     public void readOnClient(int id, FriendlyByteBuf buf) {
         if (id == SYNC_ITEM) {
             boolean onlyAmountChanged = buf.readBoolean();
-            this.lastStoredItem = NetworkUtils.readItemStack(buf);
+            this.lastStoredItem = buf.readItem();
             onSlotUpdate(this.lastStoredItem, onlyAmountChanged, true, buf.readBoolean());
             if (buf.readBoolean()) {
                 // force sync
@@ -105,14 +104,14 @@ public class ItemSlotSH extends SyncHandler {
 
     public void forceSyncItem() {
         boolean onlyAmountChanged = false;
-        ItemStack stack = slot.getStack();
+        ItemStack stack = slot.getItem();
         boolean init = false;
         boolean forceSync = true;
         onSlotUpdate(stack, onlyAmountChanged, getSyncManager().isClient(), init);
         this.lastStoredItem = stack.isEmpty() ? ItemStack.EMPTY : stack;
         syncToClient(SYNC_ITEM, buffer -> {
             buffer.writeBoolean(onlyAmountChanged);
-            buffer.writeItemStack(stack);
+            buffer.writeItem(stack);
             buffer.writeBoolean(init);
             buffer.writeBoolean(forceSync);
         });
@@ -123,7 +122,7 @@ public class ItemSlotSH extends SyncHandler {
     }
 
     public boolean isItemValid(ItemStack itemStack) {
-        return getSlot().isItemValid(itemStack);
+        return getSlot().mayPlace(itemStack);
     }
 
     public boolean isPhantom() {

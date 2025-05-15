@@ -3,6 +3,9 @@ package com.gregtechceu.gtceu.api.mui.drawable.text;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.util.Unit;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,13 +14,13 @@ import java.util.function.Function;
 
 public class FormattingState {
 
-    private ChatFormatting reset;
-    private ChatFormatting color;
-    private ChatFormatting underline;
-    private ChatFormatting italic;
-    private ChatFormatting bold;
-    private ChatFormatting strikethrough;
-    private ChatFormatting obfuscated;
+    private @Nullable Unit reset;
+    private @Nullable TextColor color;
+    private @Nullable Boolean underline;
+    private @Nullable Boolean italic;
+    private @Nullable Boolean bold;
+    private @Nullable Boolean strikethrough;
+    private @Nullable Boolean obfuscated;
     private boolean forceDefaultColor;
 
     public void reset() {
@@ -34,20 +37,20 @@ public class FormattingState {
     public void add(ChatFormatting formatting, boolean removeAllOnReset) {
         if (formatting == ChatFormatting.RESET) {
             if (removeAllOnReset) reset();
-            this.reset = formatting;
+            this.reset = Unit.INSTANCE;
             return;
         }
         if (formatting.isFormat()) {
             switch (formatting) {
-                case UNDERLINE -> this.underline = formatting;
-                case ITALIC -> this.italic = formatting;
-                case BOLD -> this.bold = formatting;
-                case STRIKETHROUGH -> this.strikethrough = formatting;
-                case OBFUSCATED -> this.obfuscated = formatting;
+                case UNDERLINE -> this.underline = true;
+                case ITALIC -> this.italic = true;
+                case BOLD -> this.bold = true;
+                case STRIKETHROUGH -> this.strikethrough = true;
+                case OBFUSCATED -> this.obfuscated = true;
             }
             return;
         }
-        this.color = formatting;
+        this.color = TextColor.fromLegacyFormat(formatting);
     }
 
     public void forceDefaultColor() {
@@ -55,16 +58,15 @@ public class FormattingState {
         this.color = null;
     }
 
-    public String getFormatting() {
-        StringBuilder sb = new StringBuilder();
-        if (this.reset != null) sb.append(this.reset);
-        if (this.color != null) sb.append(this.color);
-        if (this.underline != null) sb.append(this.underline);
-        if (this.italic != null) sb.append(this.italic);
-        if (this.bold != null) sb.append(this.bold);
-        if (this.strikethrough != null) sb.append(strikethrough);
-        if (this.obfuscated != null) sb.append(obfuscated);
-        return sb.toString();
+    public Style getFormatting(Style style) {
+        if (this.reset != null) style = Style.EMPTY;
+        if (this.color != null) style.withColor(this.color);
+        if (this.underline != null) style.withUnderlined(this.underline);
+        if (this.italic != null) style.withItalic(this.italic);
+        if (this.bold != null) style.withBold(this.bold);
+        if (this.strikethrough != null) style.withStrikethrough(this.strikethrough);
+        if (this.obfuscated != null) style.withObfuscated(this.obfuscated);
+        return style;
     }
 
     public MutableComponent prependText(MutableComponent builder) {
@@ -72,7 +74,7 @@ public class FormattingState {
     }
 
     public MutableComponent prependText(MutableComponent builder, @Nullable FormattingState fallback) {
-        prependText(this, fallback, fs -> fs.reset, builder);
+        prependText(this, fallback, fs -> fs.reset != null ? ChatFormatting.RESET : null, builder);
         if (!this.forceDefaultColor) {
             if (this.color != null) {
                 builder.withStyle(style -> style.withColor(color));
@@ -80,11 +82,11 @@ public class FormattingState {
                 builder.withStyle(style -> style.withColor(fallback.color));
             }
         }
-        prependText(this, fallback, fs -> fs.underline, builder);
-        prependText(this, fallback, fs -> fs.italic, builder);
-        prependText(this, fallback, fs -> fs.bold, builder);
-        prependText(this, fallback, fs -> fs.strikethrough, builder);
-        prependText(this, fallback, fs -> fs.obfuscated, builder);
+        prependText(fallback, ChatFormatting.UNDERLINE, fs -> fs.underline, builder);
+        prependText(fallback, ChatFormatting.ITALIC, fs -> fs.italic, builder);
+        prependText(fallback, ChatFormatting.BOLD, fs -> fs.bold, builder);
+        prependText(fallback, ChatFormatting.STRIKETHROUGH, fs -> fs.strikethrough, builder);
+        prependText(fallback, ChatFormatting.OBFUSCATED, fs -> fs.obfuscated, builder);
         return builder;
     }
 
@@ -134,6 +136,14 @@ public class FormattingState {
 
     public boolean hasReset() {
         return this.reset != null;
+    }
+
+    private void prependText(@Nullable FormattingState fallback,
+                             ChatFormatting format,
+                             Function<FormattingState, @Nullable Boolean> getter,
+                             MutableComponent builder) {
+        if (getter.apply(this) == Boolean.TRUE) builder.withStyle(format);
+        else if (fallback != null && getter.apply(fallback) == Boolean.TRUE) builder.withStyle(format);
     }
 
     @Override

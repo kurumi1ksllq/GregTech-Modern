@@ -86,7 +86,7 @@ public abstract class AbstractScrollWidget<I extends IWidget, W extends Abstract
     }
 
     @Override
-    public @NotNull Result onMousePressed(int mouseButton) {
+    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
         ModularGuiContext context = getContext();
         if (this.scroll.mouseClicked(context)) {
             return Result.STOP;
@@ -95,12 +95,12 @@ public abstract class AbstractScrollWidget<I extends IWidget, W extends Abstract
     }
 
     @Override
-    public boolean onMouseScroll(double mouseX, double mouseY, double delta) {
+    public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
         return this.scroll.mouseScroll(getContext());
     }
 
     @Override
-    public boolean onMouseRelease(int mouseButton) {
+    public boolean onMouseReleased(double mouseX, double mouseY, int button) {
         this.scroll.mouseReleased(getContext());
         return false;
     }

@@ -118,7 +118,7 @@ public class SliderWidget extends Widget<SliderWidget> implements Interactable {
     }
 
     @Override
-    public @NotNull Result onMousePressed(int mouseButton) {
+    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
         int p = this.axis.isHorizontal() ?
                 getContext().unTransformX(getContext().getMouseX(), getContext().getMouseY()) :
                 getContext().unTransformY(getContext().getMouseX(), getContext().getMouseY());
@@ -130,7 +130,7 @@ public class SliderWidget extends Widget<SliderWidget> implements Interactable {
     @Override
     public void onMouseDrag(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (this.dragging) {
-            onMousePressed(mouseX);
+            onMousePressed(mouseY, mouseY, mouseX);
         }
     }
 

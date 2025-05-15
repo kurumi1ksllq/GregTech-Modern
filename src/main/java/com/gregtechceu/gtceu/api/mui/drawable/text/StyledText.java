@@ -41,7 +41,7 @@ public class StyledText extends BaseKey {
         renderer.setScale(this.scale);
         renderer.setPos(x, y);
         renderer.setShadow(this.shadow != null ? this.shadow : widgetTheme.getTextShadow());
-        renderer.draw(getFormatted());
+        renderer.draw(context.getGraphics(), getFormatted());
     }
 
     public Alignment getAlignment() {

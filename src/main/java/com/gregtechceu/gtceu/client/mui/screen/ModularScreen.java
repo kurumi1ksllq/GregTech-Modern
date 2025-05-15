@@ -285,15 +285,15 @@ public class ModularScreen implements GuiEventListener {
         return false;
     }
 
-    public boolean onMousePressed(int mouseButton) {
+    public boolean onMousePressed(double mouseX, double mouseY, int button) {
         for (IGuiAction.MousePressed action : getGuiActionListeners(IGuiAction.MousePressed.class)) {
-            action.press(mouseButton);
+            action.press(mouseX, mouseY, button);
         }
-        if (this.context.onMousePressed(mouseButton)) {
+        if (this.context.onMousePressed(mouseX, mouseY, button)) {
             return true;
         }
         for (ModularPanel panel : this.panelManager.getOpenPanels()) {
-            if (panel.onMousePressed(mouseButton)) {
+            if (panel.onMousePressed(mouseX, mouseY, button)) {
                 return true;
             }
             if (panel.disablePanelsBelow()) {
@@ -311,7 +311,7 @@ public class ModularScreen implements GuiEventListener {
             return true;
         }
         for (ModularPanel panel : this.panelManager.getOpenPanels()) {
-            if (panel.onMouseRelease(mouseX, mouseY, button)) {
+            if (panel.onMouseReleased(mouseX, mouseY, button)) {
                 return true;
             }
             if (panel.disablePanelsBelow()) {
@@ -330,7 +330,7 @@ public class ModularScreen implements GuiEventListener {
             return true;
         }
         for (ModularPanel panel : this.panelManager.getOpenPanels()) {
-            if (panel.onMouseRelease(mouseX, mouseY, button)) {
+            if (panel.onMouseReleased(mouseX, mouseY, button)) {
                 return true;
             }
             if (panel.disablePanelsBelow()) {
@@ -362,7 +362,23 @@ public class ModularScreen implements GuiEventListener {
             action.release(keyCode, scanCode, modifiers);
         }
         for (ModularPanel panel : this.panelManager.getOpenPanels()) {
-            if (panel.onKeyRelease(keyCode, scanCode, modifiers)) {
+            if (panel.onKeyReleased(keyCode, scanCode, modifiers)) {
+                return true;
+            }
+            if (panel.disablePanelsBelow()) {
+                break;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        for (IGuiAction.CharTyped action : getGuiActionListeners(IGuiAction.CharTyped.class)) {
+            action.type(codePoint, modifiers);
+        }
+        for (ModularPanel panel : this.panelManager.getOpenPanels()) {
+            if (panel.onCharTyped(codePoint, modifiers)) {
                 return true;
             }
             if (panel.disablePanelsBelow()) {
@@ -378,7 +394,7 @@ public class ModularScreen implements GuiEventListener {
             action.scroll(mouseX, mouseY, delta);
         }
         for (ModularPanel panel : this.panelManager.getOpenPanels()) {
-            if (panel.onMouseScroll(mouseX, mouseY, delta)) {
+            if (panel.onMouseScrolled(mouseX, mouseY, delta)) {
                 return true;
             }
             if (panel.disablePanelsBelow()) {

@@ -10,7 +10,6 @@ import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Flex;
 
-import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -56,19 +55,18 @@ public interface IWidget extends IGuiElement {
      * x = 0 and y = 0 is now in the top left corner of this widget.
      * Do NOT override this method, it is never called. Use {@link #draw(ModularGuiContext, WidgetTheme)} instead.
      *
-     * @param graphics
-     * @param context  gui context
+     * @param context gui context
      */
     @ApiStatus.NonExtendable
     @Deprecated
     @Override
-    default void draw(GuiGraphics graphics, ModularGuiContext context) {
+    default void draw(ModularGuiContext context) {
         draw(context, getWidgetTheme(context.getTheme()));
     }
 
     /**
      * Draws extra elements of this widget. Called after {@link #drawBackground(ModularGuiContext, WidgetTheme)} and before
-     * {@link #drawOverlay(GuiGraphics, ModularGuiContext, WidgetTheme)}
+     * {@link #drawOverlay(ModularGuiContext, WidgetTheme)}
      *
      * @param context     gui context
      * @param widgetTheme widget theme
@@ -78,11 +76,10 @@ public interface IWidget extends IGuiElement {
     /**
      * Draws the overlay of this theme.
      *
-     * @param graphics
      * @param context     gui context
      * @param widgetTheme widget theme
      */
-    void drawOverlay(GuiGraphics graphics, ModularGuiContext context, WidgetTheme widgetTheme);
+    void drawOverlay(ModularGuiContext context, WidgetTheme widgetTheme);
 
     /**
      * Draws foreground elements of this widget. For example tooltips.
@@ -195,7 +192,7 @@ public interface IWidget extends IGuiElement {
     }
 
     /**
-     * @return the context the current screen
+     * @return the context of the current screen
      */
     ModularGuiContext getContext();
 

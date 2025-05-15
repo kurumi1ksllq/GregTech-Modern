@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Flex;
-import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
 
 public class EmptyWidget implements IWidget {
@@ -47,7 +46,7 @@ public class EmptyWidget implements IWidget {
     }
 
     @Override
-    public void drawOverlay(GuiGraphics graphics, ModularGuiContext context, WidgetTheme widgetTheme) {
+    public void drawOverlay(ModularGuiContext context, WidgetTheme widgetTheme) {
     }
 
     @Override

@@ -7,14 +7,14 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class MouseData {
 
-    public final Side side;
+    public final Dist side;
     public final int mouseButton;
     //public final boolean doubleClick;
     public final boolean shift;
     public final boolean ctrl;
     public final boolean alt;
 
-    public MouseData(Side side, int mouseButton, boolean shift, boolean ctrl, boolean alt) {
+    public MouseData(Dist side, int mouseButton, boolean shift, boolean ctrl, boolean alt) {
         this.side = side;
         this.mouseButton = mouseButton;
         this.shift = shift;
@@ -38,11 +38,11 @@ public class MouseData {
     public static MouseData readPacket(FriendlyByteBuf buffer) {
         int button = buffer.readVarInt();
         byte data = buffer.readByte();
-        return new MouseData(Side.SERVER, button, (data & 1) != 0, (data & 2) != 0, (data & 4) != 0);
+        return new MouseData(Dist.DEDICATED_SERVER, button, (data & 1) != 0, (data & 2) != 0, (data & 4) != 0);
     }
 
     @OnlyIn(Dist.CLIENT)
     public static MouseData create(int mouse) {
-        return new MouseData(Side.CLIENT, mouse, Interactable.hasShiftDown(), Interactable.hasControlDown(), Interactable.hasAltDown());
+        return new MouseData(Dist.CLIENT, mouse, Interactable.hasShiftDown(), Interactable.hasControlDown(), Interactable.hasAltDown());
     }
 }

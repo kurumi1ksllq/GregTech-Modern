@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.mui.widget.sizer;
 
-import com.gregtechceu.gtceu.api.mui.GuiError;
 import com.gregtechceu.gtceu.api.mui.base.GuiAxis;
 import com.gregtechceu.gtceu.api.mui.base.layout.ILayoutWidget;
 import com.gregtechceu.gtceu.api.mui.base.layout.IResizeable;
@@ -9,7 +8,7 @@ import com.gregtechceu.gtceu.api.mui.base.widget.IPositioned;
 import com.gregtechceu.gtceu.api.mui.base.widget.IVanillaSlot;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
-import net.minecraft.inventory.Slot;
+import com.gregtechceu.gtceu.core.mixins.SlotAccessor;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
@@ -481,9 +480,9 @@ public class Flex implements IResizeable, IPositioned<Flex> {
         area.ry = area.y - parentArea.y;
         if (parent instanceof IVanillaSlot vanillaSlot) {
             // special treatment for minecraft slots
-            Slot slot = vanillaSlot.getVanillaSlot();
-            slot.xPos = parent.getArea().x;
-            slot.yPos = parent.getArea().y;
+            SlotAccessor slot = (SlotAccessor) vanillaSlot.getVanillaSlot();
+            slot.setX(parent.getArea().x);
+            slot.setY(parent.getArea().y);
         }
     }
 

@@ -99,11 +99,11 @@ public class TextFieldRenderer extends TextRenderer {
         }
     }
 
-    public Point getCursorPos(List<Component> lines, int x, int y) {
+    public Point getCursorPos(List<String> lines, int x, int y) {
         if (lines.isEmpty()) {
             return new Point();
         }
-        List<Line> measuredLines = measureLines(lines);
+        List<Line> measuredLines = measureStringLines(lines);
         y -= getStartY(measuredLines.size());
         int index = (int) (y / (getFontHeight()));
         if (index < 0) return new Point();

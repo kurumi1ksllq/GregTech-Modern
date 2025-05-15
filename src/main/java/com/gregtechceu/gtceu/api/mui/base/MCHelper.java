@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.mui.base;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;

@@ -387,7 +387,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
                 ItemStack toStack = toSlot.getItem().copy();
                 if (!fromSlot.isPhantom() && ItemHandlerHelper.canItemStacksStack(fromStack, toStack)) {
                     int j = toStack.getCount() + fromStack.getCount();
-                    int maxSize = toSlot.getMaxStackSize(fromStack);//Math.min(toSlot.getSlotStackLimit(), fromStack.getMaxStackSize());
+                    int maxSize = toSlot.getMaxStackSize(fromStack);//Math.min(toSlot.getMaxStackSize(), fromStack.getMaxStackSize());
 
                     if (j <= maxSize) {
                         fromStack.setCount(0);

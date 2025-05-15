@@ -24,7 +24,7 @@ public class DraggablePanelWrapper implements IDraggable {
     public void drawMovingState(GuiGraphics graphics, ModularGuiContext context, float partialTicks) {
         context.pushMatrix();
         transform(context);
-        WidgetTree.drawTree(this.panel, graphics, context, true);
+        WidgetTree.drawTree(this.panel, context, true);
         context.popMatrix();
     }
 

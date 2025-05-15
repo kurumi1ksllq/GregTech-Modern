@@ -1,24 +1,24 @@
 package com.gregtechceu.gtceu.common.mui.widgets.slot;
 
-import com.gregtechceu.gtceu.api.mui.ModularUI;
-import com.gregtechceu.gtceu.api.mui.integration.jei.JeiGhostIngredientSlot;
-import com.gregtechceu.gtceu.api.mui.integration.jei.ModularUIJeiPlugin;
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.utils.MouseData;
 import com.gregtechceu.gtceu.api.mui.value.sync.PhantomItemSlotSH;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandler;
-import net.minecraft.client.renderer.RenderSystem;
-import net.minecraft.item.ItemStack;
+import com.gregtechceu.gtceu.integration.xei.handlers.GhostIngredientSlot;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class PhantomItemSlot extends ItemSlot implements JeiGhostIngredientSlot<ItemStack> {
+public class PhantomItemSlot extends ItemSlot implements GhostIngredientSlot<ItemStack> {
 
     private PhantomItemSlotSH syncHandler;
 
     @Override
     public void onInit() {
         super.onInit();
-        getContext().getJeiSettings().addJeiGhostIngredientSlot(this);
+        getContext().getJeiSettings().addGhostIngredientSlot(this);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class PhantomItemSlot extends ItemSlot implements JeiGhostIngredientSlot<
 
     @Override
     protected void drawOverlay() {
-        if (ModularUI.isJeiLoaded() && (ModularUIJeiPlugin.hasDraggingGhostIngredient() || ModularUIJeiPlugin.hoveringOverIngredient(this))) {
+        if (GTCEu.Mods.isRecipeViewerLoaded() && (ModularUIJeiPlugin.hasDraggingGhostIngredient() || ModularUIJeiPlugin.hoveringOverIngredient(this))) {
             RenderSystem.colorMask(true, true, true, false);
             drawHighlight(getArea(), isHovering());
             RenderSystem.colorMask(true, true, true, true);
@@ -39,20 +39,20 @@ public class PhantomItemSlot extends ItemSlot implements JeiGhostIngredientSlot<
     }
 
     @Override
-    public @NotNull Result onMousePressed(int mouseButton) {
-        MouseData mouseData = MouseData.create(mouseButton);
+    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
+        MouseData mouseData = MouseData.create(button);
         this.syncHandler.syncToServer(PhantomItemSlotSH.SYNC_CLICK, mouseData::writeToPacket);
         return Result.SUCCESS;
     }
 
     @Override
-    public boolean onMouseRelease(int mouseButton) {
+    public boolean onMouseReleased(double mouseX, double mouseY, int button) {
         return true;
     }
 
     @Override
-    public boolean onMouseScroll(double mouseX, double mouseY, double delta) {
-        MouseData mouseData = MouseData.create(mouseX.modifier);
+    public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
+        MouseData mouseData = MouseData.create((int) delta);
         this.syncHandler.syncToServer(PhantomItemSlotSH.SYNC_SCROLL, mouseData::writeToPacket);
         return true;
     }
@@ -86,7 +86,7 @@ public class PhantomItemSlot extends ItemSlot implements JeiGhostIngredientSlot<
 
     @Override
     public PhantomItemSlot slot(ModularSlot slot) {
-        slot.slotNumber = -1;
+        ((Slot) slot).index = -1;
         this.syncHandler = new PhantomItemSlotSH(slot);
         super.isValidSyncHandler(this.syncHandler);
         setSyncHandler(this.syncHandler);

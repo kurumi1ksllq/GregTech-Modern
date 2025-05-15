@@ -1,11 +1,11 @@
 package com.gregtechceu.gtceu.api.mui.widget.sizer;
 
-import com.gregtechceu.gtceu.api.mui.ModularUI;
-import com.gregtechceu.gtceu.api.mui.ModularUIConfig;
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.GuiAxis;
 import com.gregtechceu.gtceu.api.mui.base.layout.IResizeable;
 import com.gregtechceu.gtceu.api.mui.base.widget.IGuiElement;
-import com.gregtechceu.gtceu.api.mui.network.NetworkUtils;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.IntSupplier;
@@ -23,10 +23,14 @@ public class DimensionSizer {
     private Unit start, end, size;
     private Unit next = p1;
 
+    @Setter
     private boolean coverChildren = false, expanded = false;
+    @Setter
     private boolean cancelAutoMovement = false;
 
+    @Getter
     private boolean posCalculated = false, sizeCalculated = false;
+    @Getter @Setter
     private boolean marginPaddingApplied = false;
 
     public DimensionSizer(GuiAxis axis) {
@@ -75,14 +79,6 @@ public class DimensionSizer {
         this.coverChildren = coverChildren;
     }
 
-    public void setExpanded(boolean expanded) {
-        this.expanded = expanded;
-    }
-
-    public void setCancelAutoMovement(boolean cancelAutoMovement) {
-        this.cancelAutoMovement = cancelAutoMovement;
-    }
-
     public boolean hasStart() {
         return this.start != null;
     }
@@ -103,14 +99,6 @@ public class DimensionSizer {
         return this.size != null;
     }
 
-    public boolean isSizeCalculated() {
-        return this.sizeCalculated;
-    }
-
-    public boolean isPosCalculated() {
-        return this.posCalculated;
-    }
-
     public boolean dependsOnChildren() {
         return this.coverChildren;
     }
@@ -128,14 +116,6 @@ public class DimensionSizer {
     public void setResized(boolean pos, boolean size) {
         this.posCalculated = pos;
         this.sizeCalculated = size;
-    }
-
-    public boolean isMarginPaddingApplied() {
-        return marginPaddingApplied;
-    }
-
-    public void setMarginPaddingApplied(boolean marginPaddingApplied) {
-        this.marginPaddingApplied = marginPaddingApplied;
     }
 
     private boolean needsSize(Unit unit) {

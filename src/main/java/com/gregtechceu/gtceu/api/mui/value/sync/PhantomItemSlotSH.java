@@ -2,9 +2,9 @@ package com.gregtechceu.gtceu.api.mui.value.sync;
 
 import com.gregtechceu.gtceu.api.mui.utils.MouseData;
 import com.gregtechceu.gtceu.common.mui.widgets.slot.ModularSlot;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -30,8 +30,8 @@ public class PhantomItemSlotSH extends ItemSlotSH {
     @Override
     public void init(String key, PanelSyncManager syncHandler) {
         super.init(key, syncHandler);
-        if (isPhantom() && !getSlot().getStack().isEmpty()) {
-            this.lastStoredPhantomItem = getSlot().getStack().copy();
+        if (isPhantom() && !getSlot().getItem().isEmpty()) {
+            this.lastStoredPhantomItem = getSlot().getItem().copy();
             this.lastStoredPhantomItem.setCount(1);
         }
     }
@@ -56,12 +56,12 @@ public class PhantomItemSlotSH extends ItemSlotSH {
             phantomScroll(MouseData.readPacket(buf));
         } else if (id == SYNC_ITEM_SIMPLE) {
             if (!isPhantom()) return;
-            phantomClick(new MouseData(Side.SERVER, 0, false, false, false), buf.readItemStack());
+            phantomClick(new MouseData(Dist.DEDICATED_SERVER, 0, false, false, false), buf.readItem());
         }
     }
 
     public void updateFromClient(ItemStack stack) {
-        syncToServer(SYNC_ITEM_SIMPLE, buf -> buf.writeItemStack(stack));
+        syncToServer(SYNC_ITEM_SIMPLE, buf -> buf.writeItem(stack));
     }
 
     protected void phantomClick(MouseData mouseData) {
@@ -69,7 +69,7 @@ public class PhantomItemSlotSH extends ItemSlotSH {
     }
 
     protected void phantomClick(MouseData mouseData, ItemStack cursorStack) {
-        ItemStack slotStack = getSlot().getStack();
+        ItemStack slotStack = getSlot().getItem();
         ItemStack stackToPut;
         if (!cursorStack.isEmpty() && !slotStack.isEmpty() && !ItemHandlerHelper.canItemStacksStack(cursorStack, slotStack)) {
             if (!isItemValid(cursorStack)) return;
@@ -111,7 +111,7 @@ public class PhantomItemSlotSH extends ItemSlotSH {
     }
 
     protected void phantomScroll(MouseData mouseData) {
-        ItemStack currentItem = getSlot().getStack();
+        ItemStack currentItem = getSlot().getItem();
         int amount = mouseData.mouseButton;
         if (mouseData.shift) amount *= 4;
         if (mouseData.ctrl) amount *= 16;
@@ -126,7 +126,7 @@ public class PhantomItemSlotSH extends ItemSlotSH {
     }
 
     public void incrementStackCount(int amount) {
-        ItemStack stack = getSlot().getStack();
+        ItemStack stack = getSlot().getItem();
         if (stack.isEmpty()) {
             return;
         }
@@ -137,7 +137,7 @@ public class PhantomItemSlotSH extends ItemSlotSH {
             if (Integer.MAX_VALUE - amount < oldAmount) {
                 amount = Integer.MAX_VALUE;
             } else {
-                int maxSize = getSlot().getSlotStackLimit();
+                int maxSize = getSlot().getMaxStackSize();
                 if (!getSlot().isIgnoreMaxStackSize() && stack.getMaxStackSize() < maxSize) {
                     maxSize = stack.getMaxStackSize();
                 }

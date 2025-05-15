@@ -6,7 +6,7 @@ import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Marks a widget as syncable
+ * Marks a widget as synced
  *
  * @param <W> widget type
  */
@@ -58,7 +58,7 @@ public interface ISynced<W extends IWidget> {
     SyncHandler getSyncHandler();
 
     /**
-     * Sets the sync handler key. The sync handler will be obtained in {@link #initialiseSyncHandler(GuiSyncManager)}
+     * Sets the sync handler key. The sync handler will be obtained in {@link #initialiseSyncHandler(ModularSyncManager)}
      *
      * @param name sync handler key name
      * @param id   sync handler key id
@@ -67,7 +67,7 @@ public interface ISynced<W extends IWidget> {
     W syncHandler(String name, int id);
 
     /**
-     * Sets the sync handler key. The sync handler will be obtained in {@link #initialiseSyncHandler(GuiSyncManager)}
+     * Sets the sync handler key. The sync handler will be obtained in {@link #initialiseSyncHandler(ModularSyncManager)}
      *
      * @param key sync handler name
      * @return this
@@ -77,7 +77,7 @@ public interface ISynced<W extends IWidget> {
     }
 
     /**
-     * Sets the sync handler key. The sync handler will be obtained in {@link #initialiseSyncHandler(GuiSyncManager)}
+     * Sets the sync handler key. The sync handler will be obtained in {@link #initialiseSyncHandler(ModularSyncManager)}
      *
      * @param id sync handler id
      * @return this

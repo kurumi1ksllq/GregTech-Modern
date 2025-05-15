@@ -10,7 +10,6 @@ import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.widget.AbstractParentWidget;
 import com.gregtechceu.gtceu.api.mui.widget.WidgetTree;
-import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -25,8 +24,8 @@ public class CategoryList extends AbstractParentWidget<IWidget, CategoryList> im
     private IDrawable collapsedOverlay;
 
     @Override
-    public void drawOverlay(GuiGraphics graphics, ModularGuiContext context, WidgetTheme widgetTheme) {
-        super.drawOverlay(graphics, context, widgetTheme);
+    public void drawOverlay(ModularGuiContext context, WidgetTheme widgetTheme) {
+        super.drawOverlay(context, widgetTheme);
         if (this.expanded) {
             this.expandedOverlay.drawAtZero(context, getArea(), widgetTheme);
         } else {
@@ -66,8 +65,8 @@ public class CategoryList extends AbstractParentWidget<IWidget, CategoryList> im
     }
 
     @Override
-    public @NotNull Result onMousePressed(int mouseButton) {
-        if (mouseButton == 0 || mouseButton == 1) {
+    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
+        if (button == 0 || button == 1) {
             expanded(!this.expanded);
             return Result.SUCCESS;
         }

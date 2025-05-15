@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param <D> gui data type
  */
-@ApiStatus.AvailableSince("2.4.0")
 public interface UIFactory<D extends GuiData> {
 
     /**

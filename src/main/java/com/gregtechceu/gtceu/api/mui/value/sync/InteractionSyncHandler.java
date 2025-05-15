@@ -109,25 +109,25 @@ public class InteractionSyncHandler extends SyncHandler {
         return true;
     }
 
-    public boolean onKeyPressed(char character, int keycode) {
+    public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.keyPressed == null) return false;
-        KeyboardData keyboardData = KeyboardData.create(character, keycode);
+        KeyboardData keyboardData = KeyboardData.create(keyCode, scanCode, modifiers);
         this.keyPressed.onServerKeyboardAction(keyboardData);
         syncToServer(11, keyboardData::writeToPacket);
         return true;
     }
 
-    public boolean onKeyReleased(char character, int keycode) {
+    public boolean onKeyReleased(int keyCode, int scanCode, int modifiers) {
         if (this.keyReleased == null) return false;
-        KeyboardData keyboardData = KeyboardData.create(character, keycode);
+        KeyboardData keyboardData = KeyboardData.create(keyCode, scanCode, modifiers);
         this.keyReleased.onServerKeyboardAction(keyboardData);
         syncToServer(12, keyboardData::writeToPacket);
         return true;
     }
 
-    public boolean onKeyTapped(char character, int keycode) {
+    public boolean onKeyTapped(int keyCode, int scanCode, int modifiers) {
         if (this.keyTapped == null) return false;
-        KeyboardData keyboardData = KeyboardData.create(character, keycode);
+        KeyboardData keyboardData = KeyboardData.create(keyCode, scanCode, modifiers);
         this.keyTapped.onServerKeyboardAction(keyboardData);
         syncToServer(13, keyboardData::writeToPacket);
         return true;

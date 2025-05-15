@@ -4,15 +4,16 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 public class AnimatedText extends StyledText {
 
+    private MutableComponent full;
     private String fullString;
     private String currentString = "";
     private int currentIndex;
@@ -27,18 +28,18 @@ public class AnimatedText extends StyledText {
     }
 
     @Override
-    public Component get() {
-        return this.currentString;
+    public MutableComponent get() {
+        return Component.literal(this.currentString);
     }
 
     public void reset() {
-        this.fullString = null;
+        this.full = null;
     }
 
     private void advance() {
         if (!this.isAnimating || (this.forward && this.currentIndex >= this.fullString.length()) || (!this.forward && this.currentIndex < 0))
             return;
-        long time = Minecraft.getSystemTime();
+        long time = System.nanoTime();
         int amount = (int) ((time - this.timeLastDraw) / this.speed);
         if (amount == 0) return;
         if (this.forward) {
@@ -71,12 +72,13 @@ public class AnimatedText extends StyledText {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
-        if (this.fullString == null || !this.fullString.equals(super.get())) {
+        if (this.full == null || !this.full.equals(super.get())) {
             if (this.isAnimating) {
-                this.fullString = super.get();
+                this.full = super.get();
+                this.fullString = this.full.getString();
                 this.currentString = this.forward ? "" : this.fullString;
                 this.currentIndex = this.forward ? 0 : this.fullString.length() - 1;
-                this.timeLastDraw = Minecraft.getSystemTime();
+                this.timeLastDraw = System.nanoTime();
             } else {
                 this.currentString = this.forward ? "" : this.fullString;
             }

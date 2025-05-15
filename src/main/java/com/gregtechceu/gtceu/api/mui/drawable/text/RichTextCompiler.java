@@ -8,10 +8,12 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.ITextLine;
 import com.gregtechceu.gtceu.api.mui.drawable.DelegateIcon;
 import com.gregtechceu.gtceu.api.mui.drawable.Icon;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -175,7 +177,14 @@ public class RichTextCompiler {
     }
 
     private void addLineElement(Object o) {
-        if (o instanceof String s2) {
+        if (o instanceof Component c) {
+            if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof String s1) {
+                // if there is already one string in the line, merge them
+                this.currentLine.set(0, s1 + c);
+                return;
+            }
+            o = c.copy().withStyle(this.formatting::getFormatting);
+        } else if (o instanceof String s2) {
             if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof String s1) {
                 // if there is already one string in the line, merge them
                 this.currentLine.set(0, s1 + s2);
@@ -189,7 +198,32 @@ public class RichTextCompiler {
                     o = trimAt(s2, l);
                 }
             }
-            o = this.formatting.getFormatting() + o;
+            Style style = this.formatting.getFormatting(Style.EMPTY);
+            StringBuilder styleBuilder = new StringBuilder();
+            if (style.getColor() != null) {
+                for (ChatFormatting legacyColor : ChatFormatting.values()) {
+                    if (!legacyColor.isColor()) continue;
+                    if (TextColor.fromLegacyFormat(legacyColor) != style.getColor()) continue;
+                    styleBuilder.append(legacyColor);
+                    break;
+                }
+            }
+            if (style.isBold()) {
+                styleBuilder.append(ChatFormatting.BOLD);
+            }
+            if (style.isItalic()) {
+                styleBuilder.append(ChatFormatting.ITALIC);
+            }
+            if (style.isUnderlined()) {
+                styleBuilder.append(ChatFormatting.UNDERLINE);
+            }
+            if (style.isStrikethrough()) {
+                styleBuilder.append(ChatFormatting.STRIKETHROUGH);
+            }
+            if (style.isObfuscated()) {
+                styleBuilder.append(ChatFormatting.OBFUSCATED);
+            }
+            o = styleBuilder.toString() + o;
             this.formatting.parseFrom(s2); // parse formatting from current string
         }
         this.currentLine.add(o);

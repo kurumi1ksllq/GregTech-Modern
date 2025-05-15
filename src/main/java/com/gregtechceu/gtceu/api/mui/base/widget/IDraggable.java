@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.api.mui.base.layout.IViewport;
 import com.gregtechceu.gtceu.api.mui.base.layout.IViewportStack;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 import com.gregtechceu.gtceu.api.mui.utils.HoveredWidgetList;
-import com.gregtechceu.gtceu.api.mui.widget.WidgetTree;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,7 +20,7 @@ public interface IDraggable extends IViewport {
     /**
      * Gets called every frame after everything else is rendered.
      * Is only called when {@link #isMoving()} is true.
-     * Translate to the mouse pos and gtceu$fixHoveredState with {@link WidgetTree#drawTree(IWidget, GuiGraphics, ModularGuiContext)}.
+     * Translate to the mouse pos and gtceu$fixHoveredState with {@link #drawTree(IWidget, ModularGuiContext)}.
      *
      * @param graphics
      * @param partialTicks difference from last from

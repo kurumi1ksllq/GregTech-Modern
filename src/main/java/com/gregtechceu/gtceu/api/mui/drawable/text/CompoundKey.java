@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.api.mui.drawable.text;
 
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,18 +17,18 @@ public class CompoundKey extends BaseKey {
     }
 
     @Override
-    public Component get() {
-        return toString(false, null);
+    public MutableComponent get() {
+        return toComponent(false, null);
     }
 
     @Override
     public MutableComponent getFormatted(@Nullable FormattingState parentFormatting) {
         // formatting is prepended to each key
-        return toString(true, parentFormatting);
+        return toComponent(true, parentFormatting);
     }
 
-    private String toString(boolean formatted, @Nullable FormattingState parentFormatting) {
-        StringBuilder builder = new StringBuilder();
+    private MutableComponent toComponent(boolean formatted, @Nullable FormattingState parentFormatting) {
+        MutableComponent builder = Component.empty();
         for (IKey key : this.keys) {
             if (formatted) {
                 // merge parent formatting and this formatting to no lose info
@@ -36,7 +37,7 @@ public class CompoundKey extends BaseKey {
                 builder.append(key.get());
             }
         }
-        return builder.toString();
+        return builder;
     }
 
     public IKey[] getKeys() {

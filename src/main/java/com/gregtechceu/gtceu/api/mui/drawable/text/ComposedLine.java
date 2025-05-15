@@ -6,6 +6,8 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IIcon;
 import com.gregtechceu.gtceu.api.mui.base.drawable.ITextLine;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 
 import java.util.List;
 
@@ -29,21 +31,29 @@ public class ComposedLine implements ITextLine {
     }
 
     @Override
-    public int getHeight(Font fr) {
-        return height == fr.lineHeight ? height : height + 1;
+    public int getHeight(Font font) {
+        return height == font.lineHeight ? height : height + 1;
     }
 
     @Override
-    public void draw(GuiContext context, Font fr, float x, float y, int color, boolean shadow) {
+    public void draw(GuiContext context, Font font, float x, float y, int color, boolean shadow) {
         this.lastX = x;
         this.lastY = y;
         for (Object o : this.elements) {
             if (o instanceof String s) {
-                float drawY = getHeight(fr) / 2f - fr.lineHeight / 2f;
-                fr.drawString(s, x, (int) (y + drawY), color, shadow);
-                x += fr.getStringWidth(s);
+                float drawY = getHeight(font) / 2f - font.lineHeight / 2f;
+                context.getGraphics().drawString(font, s, x, y + drawY, color, shadow);
+                x += font.width(s);
+            } else if (o instanceof Component c) {
+                float drawY = getHeight(font) / 2f - font.lineHeight / 2f;
+                context.getGraphics().drawString(font, c.getVisualOrderText(), x, y + drawY, color, shadow);
+                x += font.width(c);
+            } else if (o instanceof FormattedCharSequence s) {
+                float drawY = getHeight(font) / 2f - font.lineHeight / 2f;
+                context.getGraphics().drawString(font, s, x, y + drawY, color, shadow);
+                x += font.width(s);
             } else if (o instanceof IIcon icon) {
-                float drawY = getHeight(fr) / 2f - icon.getHeight() / 2f;
+                float drawY = getHeight(font) / 2f - icon.getHeight() / 2f;
                 icon.draw(context, (int) x, (int) (y + drawY), icon.getWidth(), icon.getHeight(), IThemeApi.get().getDefaultTheme().getFallback());
                 if (icon instanceof IHoverable hoverable) {
                     hoverable.setRenderedAt((int) x, (int) (y + drawY));
@@ -54,8 +64,8 @@ public class ComposedLine implements ITextLine {
     }
 
     @Override
-    public Object getHoveringElement(Font fr, int x, int y) {
-        int h0 = getHeight(fr);
+    public Object getHoveringElement(Font font, int x, int y) {
+        int h0 = getHeight(font);
         if (y < lastY || y > lastY + h0) return null; // is not hovering vertically
         if (x < lastX || x > lastX + getWidth()) return Boolean.FALSE; // is not hovering horizontally
         float x0 = x - this.lastX; // origin to 0
@@ -64,8 +74,14 @@ public class ComposedLine implements ITextLine {
         for (Object o : this.elements) {
             float w, h;
             if (o instanceof String s) {
-                w = fr.getStringWidth(s);
-                h = fr.lineHeight;
+                w = font.width(s);
+                h = font.lineHeight;
+            } else if (o instanceof Component c) {
+                w = font.width(c);
+                h = font.lineHeight;
+            } else if (o instanceof FormattedCharSequence s) {
+                w = font.width(s);
+                h = font.lineHeight;
             } else if (o instanceof IIcon icon) {
                 w = icon.getWidth();
                 h = icon.getWidth();

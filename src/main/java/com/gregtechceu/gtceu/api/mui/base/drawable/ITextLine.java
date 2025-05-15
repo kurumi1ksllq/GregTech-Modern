@@ -8,10 +8,10 @@ public interface ITextLine {
 
     int getWidth();
 
-    int getHeight(Font fr);
+    int getHeight(Font font);
 
-    void draw(GuiContext context, Font fr, float x, float y, int color, boolean shadow);
+    void draw(GuiContext context, Font font, float x, float y, int color, boolean shadow);
 
-    Object getHoveringElement(Font fr, int x, int y);
+    Object getHoveringElement(Font font, int x, int y);
 
 }

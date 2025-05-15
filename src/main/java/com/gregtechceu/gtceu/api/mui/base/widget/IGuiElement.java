@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.ModularScreen;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
-import net.minecraft.client.gui.GuiGraphics;
 
 /**
  * Base interface for gui elements. For example widgets.
@@ -48,10 +47,9 @@ public interface IGuiElement {
     /**
      * Draws this element
      *
-     * @param graphics
-     * @param context  gui context
+     * @param context gui context
      */
-    void draw(GuiGraphics graphics, ModularGuiContext context);
+    void draw(ModularGuiContext context);
 
     /**
      * Called when the mouse enters the area of this element

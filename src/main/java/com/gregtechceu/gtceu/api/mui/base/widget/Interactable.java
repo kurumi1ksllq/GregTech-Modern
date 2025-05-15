@@ -1,52 +1,59 @@
 package com.gregtechceu.gtceu.api.mui.base.widget;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.PositionedSoundRecord;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.input.Keyboard;
 
 /**
  * An interface that handles user interactions on {@link IWidget} objects.
  * These methods get called on the client
  */
+// TODO add the method parameter javadocs
 public interface Interactable {
 
     /**
      * Called when this widget is pressed.
      *
-     * @param mouseButton mouse button that was pressed.
+     * @param mouseX
+     * @param mouseY
+     * @param button mouse button that was pressed.
      * @return result that determines what happens to other widgets
-     * {@link #onMouseTapped(int)} is only called if this returns {@link Result#ACCEPT} or {@link Result#SUCCESS}
+     * {@link #onMouseTapped(double, double, int)} is only called if this returns {@link Result#ACCEPT} or {@link Result#SUCCESS}
      */
     @NotNull
-    default Result onMousePressed(int mouseButton) {
+    default Result onMousePressed(double mouseX, double mouseY, int button) {
         return Result.ACCEPT;
     }
 
     /**
      * Called when a mouse button was released over this widget.
      *
-     * @param mouseButton mouse button that was released.
-     * @return whether other widgets should get called to. If this returns false, {@link #onMouseTapped(int)} will NOT be called.
+     * @param mouseX
+     * @param mouseY
+     * @param button mouse button that was released.
+     * @return whether other widgets should get called to. If this returns false, {@link #onMouseTapped(double, double, int)} will NOT be called.
      */
-    default boolean onMouseRelease(int mouseButton) {
+    default boolean onMouseReleased(double mouseX, double mouseY, int button) {
         return false;
     }
 
     /**
      * Called when this widget was pressed and then released within a certain time frame.
      *
-     * @param mouseButton mouse button that was pressed.
+     * @param mouseX
+     * @param mouseY
+     * @param button mouse button that was pressed.
      * @return result that determines if other widgets should get tapped to
      * {@link Result#IGNORE} and {@link Result#ACCEPT} will both "ignore" the result and {@link Result#STOP} and {@link Result#SUCCESS} will both stop other widgets from getting tapped.
      */
     @NotNull
-    default Result onMouseTapped(int mouseButton) {
+    default Result onMouseTapped(double mouseX, double mouseY, int button) {
         return Result.IGNORE;
     }
 
@@ -72,7 +79,7 @@ public interface Interactable {
      * @param modifiers
      * @return whether other widgets should get called to. If this returns false, {@link #onKeyTapped(int, int, int)} will NOT be called.
      */
-    default boolean onKeyRelease(int keyCode, int scanCode, int modifiers) {
+    default boolean onKeyReleased(int keyCode, int scanCode, int modifiers) {
         return false;
     }
 
@@ -91,6 +98,19 @@ public interface Interactable {
     }
 
     /**
+     * Called when a key over this widget is pressed.
+     *
+     * @param codePoint character that was typed
+     * @param modifiers
+     * @return result that determines what happens to other widgets
+     * {@link #onKeyTapped(int, int, int)} is only called if this returns {@link Result#ACCEPT} or {@link Result#SUCCESS}
+     */
+    @NotNull
+    default Result onCharTyped(char codePoint, int modifiers) {
+        return Result.IGNORE;
+    }
+
+    /**
      * Called when this widget is focused or when the mouse is above this widget.
      * This method should return true if it can scroll at all and not if it scrolled right now.
      * If this scroll view scrolled to the end and this returns false, the scroll will get passed through another scroll view below this.
@@ -100,7 +120,7 @@ public interface Interactable {
      * @param delta  amount scrolled by (usually irrelevant)
      * @return true if this widget can be scrolled at all
      */
-    default boolean onMouseScroll(double mouseX, double mouseY, double delta) {
+    default boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
         return false;
     }
 
@@ -121,7 +141,7 @@ public interface Interactable {
      */
     @OnlyIn(Dist.CLIENT)
     static boolean hasControlDown() {
-        return Screen.isCtrlKeyDown();
+        return Screen.hasControlDown();
     }
 
     /**
@@ -129,7 +149,7 @@ public interface Interactable {
      */
     @OnlyIn(Dist.CLIENT)
     static boolean hasShiftDown() {
-        return Screen.isShiftKeyDown();
+        return Screen.hasShiftDown();
     }
 
     /**
@@ -137,16 +157,16 @@ public interface Interactable {
      */
     @OnlyIn(Dist.CLIENT)
     static boolean hasAltDown() {
-        return Screen.isAltKeyDown();
+        return Screen.hasAltDown();
     }
 
     /**
-     * @param key key id, see {@link Keyboard}
+     * @param key key id, see {@link InputConstants}
      * @return if the key is pressed
      */
     @OnlyIn(Dist.CLIENT)
     static boolean isKeyPressed(int key) {
-        return Keyboard.isKeyDown(key);
+        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), key);
     }
 
     /**
@@ -154,7 +174,7 @@ public interface Interactable {
      */
     @OnlyIn(Dist.CLIENT)
     static void playButtonClickSound() {
-        Minecraft.getInstance().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
     enum Result {

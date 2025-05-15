@@ -42,7 +42,7 @@ public class SchemaWidget extends Widget<SchemaWidget> implements Interactable {
     }
 
     @Override
-    public boolean onMouseScroll(double mouseX, double mouseY, double delta) {
+    public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
         if (this.enableScaling) {
             scale(-mouseX.modifier * delta / 120.0);
             return true;
@@ -51,7 +51,7 @@ public class SchemaWidget extends Widget<SchemaWidget> implements Interactable {
     }
 
     @Override
-    public @NotNull Result onMousePressed(int mouseButton) {
+    public @NotNull Result onMousePressed(double mouseX, double mouseY, int button) {
         this.lastMouseX = getContext().getMouseX();
         this.lastMouseY = getContext().getMouseY();
         return Result.SUCCESS;

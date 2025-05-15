@@ -115,13 +115,14 @@ public class WidgetTree {
         return !includeSelf || consumer.test(parent);
     }
 
-    public static void drawTree(IWidget parent, GuiGraphics graphics, ModularGuiContext context) {
-        drawTree(parent, graphics, context, false);
+    public static void drawTree(IWidget parent, ModularGuiContext context) {
+        drawTree(parent, context, false);
     }
 
-    public static void drawTree(IWidget parent, GuiGraphics graphics, ModularGuiContext context, boolean ignoreEnabled) {
+    public static void drawTree(IWidget parent, ModularGuiContext context, boolean ignoreEnabled) {
         if (!parent.isEnabled() && !ignoreEnabled) return;
 
+        GuiGraphics graphics = context.getGraphics();
         float alpha = parent.getPanel().getAlpha();
         IViewport viewport = parent instanceof IViewport ? (IViewport) parent : null;
 
@@ -143,7 +144,7 @@ public class WidgetTree {
             WidgetTheme widgetTheme = parent.getWidgetTheme(context.getTheme());
             parent.drawBackground(context, widgetTheme);
             parent.draw(context, widgetTheme);
-            parent.drawOverlay(graphics, context, widgetTheme);
+            parent.drawOverlay(context, widgetTheme);
         }
 
         if (viewport != null) {
@@ -172,7 +173,7 @@ public class WidgetTree {
         // render all children if there are any
         List<IWidget> children = parent.getChildren();
         if (!children.isEmpty()) {
-            children.forEach(widget -> drawTree(widget, graphics, context, false));
+            children.forEach(widget -> drawTree(widget, context, false));
         }
 
         if (viewport != null) {
@@ -200,12 +201,12 @@ public class WidgetTree {
         context.popMatrix();
     }
 
-    public static void drawTreeForeground(IWidget parent, GuiGraphics graphics, ModularGuiContext context) {
+    public static void drawTreeForeground(IWidget parent, ModularGuiContext context) {
         IViewport viewport = parent instanceof IViewport viewport1 ? viewport1 : null;
         context.pushMatrix();
         parent.transform(context);
 
-        graphics.setColor(1, 1, 1, 1);
+        context.getGraphics().setColor(1, 1, 1, 1);
         RenderSystem.enableBlend();
         parent.drawForeground(context);
 
@@ -215,7 +216,7 @@ public class WidgetTree {
                 context.pushViewport(viewport, parent.getArea());
                 viewport.transformChildren(context);
             }
-            children.forEach(widget -> drawTreeForeground(widget, graphics, context));
+            children.forEach(widget -> drawTreeForeground(widget, context));
             if (viewport != null) context.popViewport(viewport);
         }
         context.popMatrix();
@@ -230,7 +231,7 @@ public class WidgetTree {
     }
 
     public static void resize(IWidget parent) {
-        if (!NetworkUtils.isClient()) return;
+        if (!GTCEu.isClientThread()) return;
         // TODO check if widget has a parent which depends on its children
         // resize each widget and calculate their relative pos
         if (!resizeWidget(parent, true) && !resizeWidget(parent, false)) {

@@ -10,7 +10,7 @@ public interface IGuiAction {
     @FunctionalInterface
     interface MousePressed extends IGuiAction {
 
-        boolean press(int mouseButton);
+        boolean press(double mouseX, double mouseY, int button);
     }
 
     @FunctionalInterface
@@ -29,6 +29,12 @@ public interface IGuiAction {
     interface KeyReleased extends IGuiAction {
 
         boolean release(int keyCode, int scanCode, int modifiers);
+    }
+
+    @FunctionalInterface
+    interface CharTyped extends IGuiAction {
+
+        boolean type(char codePoint, int modifiers);
     }
 
     @FunctionalInterface

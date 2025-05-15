@@ -17,6 +17,7 @@ import com.gregtechceu.gtceu.api.mui.utils.NumberFormat;
 import com.gregtechceu.gtceu.api.mui.value.sync.FluidSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandler;
 import com.gregtechceu.gtceu.api.mui.widget.Widget;
+import com.gregtechceu.gtceu.integration.xei.handlers.GhostIngredientSlot;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -32,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
 
-public class FluidSlot extends Widget<FluidSlot> implements Interactable, JeiGhostIngredientSlot<FluidStack>, JeiIngredientProvider {
+public class FluidSlot extends Widget<FluidSlot> implements Interactable, GhostIngredientSlot<FluidStack>, JeiIngredientProvider {
 
     public static final int DEFAULT_SIZE = 18;
     public static final String UNIT_BUCKET = "B";
@@ -121,7 +122,7 @@ public class FluidSlot extends Widget<FluidSlot> implements Interactable, JeiGho
         this.textRenderer.setShadow(true);
         this.textRenderer.setScale(0.5f);
         this.textRenderer.setColor(Color.WHITE.main);
-        getContext().getJeiSettings().addJeiGhostIngredientSlot(this);
+        getContext().getJeiSettings().addGhostIngredientSlot(this);
     }
 
     @Override
@@ -176,21 +177,21 @@ public class FluidSlot extends Widget<FluidSlot> implements Interactable, JeiGho
 
     @NotNull
     @Override
-    public Result onMouseTapped(int mouseButton) {
+    public Result onMouseTapped(double mouseX, double mouseY, int button) {
         if (!this.syncHandler.canFillSlot() && !this.syncHandler.canDrainSlot()) {
             return Result.IGNORE;
         }
         ItemStack cursorStack = Minecraft.getInstance().player.inventoryMenu.getCarried();
         if (this.syncHandler.isPhantom() ||
                 (!cursorStack.isEmpty() && cursorStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM, null).isPresent())) {
-            MouseData mouseData = MouseData.create(mouseButton);
+            MouseData mouseData = MouseData.create(button);
             this.syncHandler.syncToServer(FluidSlotSyncHandler.SYNC_CLICK, mouseData::writeToPacket);
         }
         return Result.SUCCESS;
     }
 
     @Override
-    public boolean onMouseScroll(double mouseX, double mouseY, double delta) {
+    public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
         if (this.syncHandler.isPhantom()) {
             if ((delta > 0 && !this.syncHandler.canFillSlot()) || (delta < 0 && !this.syncHandler.canDrainSlot())) {
                 return false;
@@ -211,11 +212,11 @@ public class FluidSlot extends Widget<FluidSlot> implements Interactable, JeiGho
     }
 
     @Override
-    public boolean onKeyRelease(int keyCode, int scanCode, int modifiers) {
+    public boolean onKeyReleased(int keyCode, int scanCode, int modifiers) {
         if (keyCode == InputConstants.KEY_LSHIFT || keyCode == InputConstants.KEY_RSHIFT) {
             markTooltipDirty();
         }
-        return Interactable.super.onKeyRelease(keyCode, scanCode, modifiers);
+        return Interactable.super.onKeyReleased(keyCode, scanCode, modifiers);
     }
 
     @Nullable

@@ -620,9 +620,9 @@ public class GTMachineUtils {
     private static TraceabilityPredicate rotorHolder(int tier) {
         return new TraceabilityPredicate(new SimplePredicate((worldState) -> {
             if(MetaMachine.getMachine(worldState.getLevel(),
-                    worldState.getPos()) instanceof IRotorHolderMachine rotorHolder &&
+                    worldState.getPos().immutable()) instanceof IRotorHolderMachine rotorHolder &&
                     worldState.getLevel()
-                            .getBlockState(worldState.getPos()
+                            .getBlockState(worldState.getPos().immutable()
                                     .relative(rotorHolder.self().getFrontFacing()))
                             .isAir()) {
                 return null;

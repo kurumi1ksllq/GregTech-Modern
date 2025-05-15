@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.pattern.pattern;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.pattern.BetterBlockPos;
@@ -64,8 +65,6 @@ public class BlockPattern implements IBlockPattern {
         else {
             this.offset = offset;
         }
-
-        patternState.cbi = new CurrentBlockInfo();
     }
 
     private void legacyStartOffset(char center) {
@@ -96,7 +95,7 @@ public class BlockPattern implements IBlockPattern {
                     break;
                 }
 
-                BlockEntity cachedBlockEntity = entry.getValue().getBlockEntity(pos);
+                BlockEntity cachedBlockEntity = entry.getValue().getBlockEntity();
 
                 if (cachedBlockEntity != null) {
 
@@ -111,8 +110,10 @@ public class BlockPattern implements IBlockPattern {
             if(pass) {
                 if(patternState.hasError()) {
                     patternState.setState(PatternState.CheckState.INVALID_CACHED);
+                    GTCEu.LOGGER.info("State set to INVALID CACHED");
                 } else {
                     patternState.setState(PatternState.CheckState.VALID_CACHED);
+                    GTCEu.LOGGER.info("State set to VALID CACHED");
                 }
 
                 return patternState;
@@ -121,7 +122,9 @@ public class BlockPattern implements IBlockPattern {
 
         boolean valid = checkPatternAt(level, centerPos, frontFacing, upwardsFacing, false);
         if (valid) {
+            // reaching here means the cache failed or was empty
             patternState.setState(PatternState.CheckState.VALID_UNCACHED);
+            GTCEu.LOGGER.info("State set to VALID UNCACHED");
             patternState.setFlipped(false);
             return patternState;
         }
@@ -129,13 +132,15 @@ public class BlockPattern implements IBlockPattern {
         if(allowsFlip) {
             valid = checkPatternAt(level, centerPos, frontFacing, upwardsFacing, true);
         }
-        if(!valid) {
+        if(!valid) { // dont store a partial formed cache
             clearCache();
             patternState.setState(PatternState.CheckState.INVALID_UNCACHED);
+            GTCEu.LOGGER.info("State set to INVALID UNCACHED");
             return patternState;
         }
 
         patternState.setState(PatternState.CheckState.VALID_UNCACHED);
+        GTCEu.LOGGER.info("State set to VALID UNCACHED2");
         patternState.setFlipped(true);
         return patternState;
     }

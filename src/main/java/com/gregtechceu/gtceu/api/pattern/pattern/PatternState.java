@@ -1,14 +1,22 @@
 package com.gregtechceu.gtceu.api.pattern.pattern;
 
+import com.gregtechceu.gtceu.api.block.ActiveBlock;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
+import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
+import com.gregtechceu.gtceu.api.pattern.MultiblockWorldSavedData;
 import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 
+import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /*
@@ -22,8 +30,10 @@ public class PatternState {
     protected IMultiController controller;
     @Getter
     @Setter
+    @DescSynced
     protected boolean isFormed = false;
     @Getter
+    @DescSynced
     protected boolean isFlipped = false;
     @Setter
     @Getter
@@ -36,11 +46,15 @@ public class PatternState {
     @Getter
     protected CheckState state;
     @Getter
-    protected Set<BlockPos> posCache;
+    protected Set<BlockPos> posCache = new HashSet<>();
     @Getter
-    protected CurrentBlockInfo cbi;
+    @NotNull
+    protected CurrentBlockInfo cbi = new CurrentBlockInfo();
 
-
+    public void setController(IMultiController controller, BlockPos controllerPos) {
+        this.controller = controller;
+        this.controllerPos = controllerPos;
+    }
 
     @ApiStatus.Internal
     public void setFlipped(boolean flipped) {
@@ -57,6 +71,35 @@ public class PatternState {
 
     protected void setState(CheckState state) {
         this.state = state;
+    }
+
+    public void onBlockStateChanged(BlockPos pos, BlockState state) {
+        if(cbi.getLevel() instanceof ServerLevel serverLevel) {
+            if(pos.equals(controllerPos)) {
+                if(controller != null) {
+                    if(!state.is(controller.self().getBlockState().getBlock())) {
+                        controller.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
+                        var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
+                        mwsd.removeMapping(this);
+                    }
+                }
+            } else {
+              if(controller != null) {
+                  if(controller.isFormed() && state.getBlock() instanceof ActiveBlock) {
+                      return;
+                  }
+                  if(controller.checkPatternWithLock()) {
+                      controller.formStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
+                  } else {
+                      controller.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
+                      var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
+                      mwsd.removeMapping(this);
+                      mwsd.addAsyncLogic(controller);
+                  }
+              }
+
+            }
+        }
     }
 
 

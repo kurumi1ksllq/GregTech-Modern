@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.machine.multiblock;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.IMachineBlock;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
+import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -84,7 +85,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     public static final String DEFAULT_STRUCTURE = "main";
 
     protected final Reference2ObjectMap<String, IBlockPattern> structures = new Reference2ObjectOpenHashMap<>();
-    protected Reference2ObjectMap<String, PatternState> patternStates = new Reference2ObjectOpenHashMap<>();
+    //protected Reference2ObjectMap<String, PatternState> patternStates = new Reference2ObjectOpenHashMap<>();
 
     public MultiblockControllerMachine(IMachineBlockEntity holder) {
         super(holder);
@@ -125,7 +126,8 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     public CurrentBlockInfo getBlockInfo() {
         if (controllerBlockInfo == null) {
             controllerBlockInfo = new CurrentBlockInfo();
-            controllerBlockInfo.setLevelAndPos(getLevel(), getPos());
+            controllerBlockInfo.setLevel(getLevel());
+            controllerBlockInfo.setCurrentPos(getPos());
         }
         return controllerBlockInfo;
     }
@@ -173,20 +175,23 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     @Override
     public void asyncCheckPattern(long periodID) {
-        if ((checkStructurePattern().hasError() || !isFormed) && (getHolder().getOffset() + periodID) % 4 == 0 &&
-                checkPatternWithTryLock()) { // per second
-            if (getLevel() instanceof ServerLevel serverLevel) {
-                serverLevel.getServer().execute(() -> {
-                    patternLock.lock();
-                    if (checkPatternWithLock()) { // formed
-                        checkAndFormStructurePatterns();
-                        var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-                        for(var state : patternStates.values())
+        for(var structure : structures.values()) {
+            if ((structure.getPatternState().hasError() || !isFormed) && (getHolder().getOffset() + periodID) % 4 == 0 &&
+                    checkPatternWithTryLock()) { // per second
+                if (getLevel() instanceof ServerLevel serverLevel) {
+                    serverLevel.getServer().execute(() -> {
+                        patternLock.lock();
+                        if (checkPatternWithLock()) { // formed
+                            checkAndFormStructurePatterns();
+                            var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
+                            var state = structure.getPatternState();
                             mwsd.addMapping(getBlockInfo(), state);
-                        mwsd.removeAsyncLogic(this);
-                    }
-                    patternLock.unlock();
-                });
+                            //for(var state : patternStates.values()) mwsd.addMapping(getBlockInfo(), state);
+                            mwsd.removeAsyncLogic(this);
+                        }
+                        patternLock.unlock();
+                    });
+                }
             }
         }
     }
@@ -205,6 +210,10 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         return structures.get(DEFAULT_STRUCTURE).getPatternState();
     }
 
+    public PatternState getPatternState(String name) {
+        return structures.get(name).getPatternState();
+    }
+
     public PatternState checkStructurePattern() {
         return checkStructurePattern(DEFAULT_STRUCTURE);
     }
@@ -214,16 +223,19 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         if(!pattern.getPatternState().shouldUpdate() || getLevel() == null) return pattern.getPatternState();
 
         long time = System.nanoTime();
-        PatternState result = pattern.checkPatternFastAt(getLevel(), getPos(), getFrontFacing(), getUpwardsFacing(), allowFlip());
+        GTCEu.LOGGER.error("Changing multi state");
+        PatternState patternState = pattern.checkPatternFastAt(getLevel(), getPos(), getFrontFacing(), getUpwardsFacing(), allowFlip());
+        patternState.setController(this, getPos());
         GTCEu.LOGGER.info("Structure check for {} took {} ns", self().getDefinition().getName(), (System.nanoTime() - time));
 
-        return result;
+        return patternState;
     }
 
     @Override
     public void formStructure(String name) {
-        var patternState = checkStructurePattern(name);
-        patternStates.put(name, patternState);
+        var patternState = getPatternState(name);
+        patternState.setFormed(true);
+
         if(patternState.getState().isValid()) {
             if(patternState.isFormed()) {
                 if(patternState.getState() == PatternState.CheckState.VALID_UNCACHED) {
@@ -297,11 +309,12 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     public void invalidateStructure() {
         invalidateStructure(DEFAULT_STRUCTURE);
+        isFormed = false;
     }
 
     @Override
     public void invalidateStructure(String name) {
-        patternStates.clear();
+        //patternStates.clear();
         if(!getSubstructure(name).getPatternState().isFormed()) return;
 
         parts.removeIf(part -> {
@@ -311,6 +324,8 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             }
             return false;
         });
+        getSubstructure(name).getPatternState().setFormed(false);
+        isFormed = false;
         parallelHatch = null;
         updatePartPositions();
     }
@@ -360,8 +375,11 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         var cache = getSubstructure(name).getCache();
         for(BlockInfo info : cache.values()) {
             BlockEntity be = info.getBlockEntity();
-            if(be instanceof IMultiPart part) {
-                if(!action.test(part)) return;
+            if(be instanceof MetaMachineBlockEntity mmbe) {
+                var machine = mmbe.metaMachine;
+                if (machine instanceof IMultiPart part) {
+                    if (!action.test(part)) return;
+                }
             }
         }
     }
@@ -378,7 +396,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
      * mark multiblockState as unload error first.
      * if it's actually cuz by block breaking.
      * {@link #//onStructureInvalid(String)} will be called from
-     * {@link MultiTileInfo#//onBlockStateChanged(BlockPos, BlockState)}
+     * {@link #//onBlockStateChanged(BlockPos, BlockState)}
      */
     @Override
     public void onPartUnload() {
@@ -397,7 +415,10 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             //this.onStructureInvalid();
             invalidStructureCaches();
             var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-            mwsd.removeMapping(getBlockInfo());
+            for(var structure : structures.values()) {
+                var state = structure.getPatternState();
+                mwsd.removeMapping(state);
+            }
             mwsd.addAsyncLogic(this);
         }
     }

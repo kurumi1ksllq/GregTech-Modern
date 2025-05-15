@@ -60,7 +60,7 @@ public class ExpandablePattern implements IBlockPattern {
                     break;
                 }
 
-                BlockEntity cachedBE = entry.getValue().getBlockEntity(pos);
+                BlockEntity cachedBE = entry.getValue().getBlockEntity();
                 if(cachedBE != null) {
                     BlockEntity be = level.getBlockEntity(pos);
                     if(be != cachedBE) {

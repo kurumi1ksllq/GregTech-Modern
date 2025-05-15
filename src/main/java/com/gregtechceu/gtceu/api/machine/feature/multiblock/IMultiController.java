@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.machine.feature.multiblock;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineFeature;
@@ -49,9 +50,16 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
      */
     void checkAndFormStructurePatterns();
 
+    /**
+     * This method will check if a multiblock aisles predicates are valid and WILL update the patternState each time it is called.
+     * @return the new state
+     */
     PatternState checkStructurePattern();
 
     PatternState checkStructurePattern(String structureName);
+
+    PatternState getDefaultPatternState();
+    PatternState getPatternState(String name);
 
     /**
      * Check pattern with a lock.
@@ -59,8 +67,12 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
     default boolean checkPatternWithLock() {
         var lock = getPatternLock();
         lock.lock();
+        GTCEu.LOGGER.info("check Pattern With Lock");
         try {
-            return checkStructurePattern().getState().isValid();
+            if(getDefaultPatternState().getState() == null) {
+                checkStructurePattern();
+            }
+            return getDefaultPatternState().getState().isValid();
         } finally {
             lock.unlock();
         }
@@ -73,9 +85,13 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
      */
     default boolean checkPatternWithTryLock() {
         var lock = getPatternLock();
+        GTCEu.LOGGER.error("Checking Pattern With Try Lock");
         if (lock.tryLock()) {
             try {
-                return checkStructurePattern().getState().isValid();
+                if(getDefaultPatternState().getState() == null) {
+                    checkStructurePattern();
+                }
+                return getDefaultPatternState().getState().isValid();
             } finally {
                 lock.unlock();
             }

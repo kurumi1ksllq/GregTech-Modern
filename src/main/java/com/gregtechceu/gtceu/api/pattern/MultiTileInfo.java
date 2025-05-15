@@ -120,41 +120,41 @@ public class MultiTileInfo {
         return cache.stream().map(BlockPos::of).collect(Collectors.toList());
     }
 
-    public void onBlockStateChanged(BlockPos pos, BlockState state) {
-        if (level instanceof ServerLevel serverLevel) {
-            /*if (pos.equals(controllerPos)) {
-                if (lastController != null) {
-                    if (!state.is(lastController.self().getBlockState().getBlock())) {
-                        lastController.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
-                        var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-                        mwsd.removeMapping(this);
-                    }
-                }
-            } else {*/
-                //IMultiController controller = getController();
-                /*if (controller != null) {
-                    if (controller.isFormed() && state.getBlock() instanceof ActiveBlock) {
-                        *//*LongSet activeBlocks = getMatchContext().getOrDefault("vaBlocks", LongSets.emptySet());
-                        if (activeBlocks.contains(pos.asLong())) {
-                            // fine! it's caused by active blocks.
-                            // speed up here!
-                            return;
-                        }*//*
-                    }
-                    if (controller.checkPatternWithLock()) {
-                        // refresh structure
-                        //controller.self().setFlipped(this.neededFlip);
-                        controller.formStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
-                    } else {
-                        // invalid structure
-                        controller.self().setFlipped(false);
-                        controller.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
-                        var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-                        mwsd.removeMapping(this);
-                        mwsd.addAsyncLogic(controller);
-                    }
-                }*/
-            //}
-        }
-    }
+//    public void onBlockStateChanged(BlockPos pos, BlockState state) {
+//        if (level instanceof ServerLevel serverLevel) {
+//            if (pos.equals(controllerPos)) {
+//                if (lastController != null) {
+//                    if (!state.is(lastController.self().getBlockState().getBlock())) {
+//                        lastController.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
+//                        var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
+//                        mwsd.removeMapping(this);
+//                    }
+//                }
+//            } else {
+//                //IMultiController controller = getController();
+//                if (controller != null) {
+//                    if (controller.isFormed() && state.getBlock() instanceof ActiveBlock) {
+//                        *//*LongSet activeBlocks = getMatchContext().getOrDefault("vaBlocks", LongSets.emptySet());
+//                        if (activeBlocks.contains(pos.asLong())) {
+//                            // fine! it's caused by active blocks.
+//                            // speed up here!
+//                            return;
+//                        }
+//                    }
+//                    if (controller.checkPatternWithLock()) {
+//                        // refresh structure
+//                        //controller.self().setFlipped(this.neededFlip);
+//                        controller.formStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
+//                    } else {
+//                        // invalid structure
+//                        controller.self().setFlipped(false);
+//                        controller.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
+//                        var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
+//                        mwsd.removeMapping(this);
+//                        mwsd.addAsyncLogic(controller);
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

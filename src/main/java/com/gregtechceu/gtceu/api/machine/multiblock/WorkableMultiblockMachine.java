@@ -222,9 +222,11 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
             var blockPos = iter.nextLong();
             BlockPos pos = BlockPos.of(blockPos);
             BlockState state = getLevel().getBlockState(pos);
-            BlockState newState = ((ActiveBlock)state.getBlock()).changeActive(state, active);
-            if(newState != state) {
-                getLevel().setBlockAndUpdate(pos, newState);
+            if(state.getBlock() instanceof ActiveBlock) {
+                BlockState newState = ((ActiveBlock) state.getBlock()).changeActive(state, active);
+                if (newState != state) {
+                    getLevel().setBlockAndUpdate(pos, newState);
+                }
             }
         }
     }

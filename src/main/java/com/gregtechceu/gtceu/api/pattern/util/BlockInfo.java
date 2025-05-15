@@ -68,27 +68,8 @@ public class BlockInfo {
         return hasBlockEntity;
     }
 
-    public BlockEntity getBlockEntity(BlockPos pos) {
-        /*if(hasBlockEntity && blockState.getBlock() instanceof EntityBlock entityBlock) {
-            if(lastEntity != null && lastEntity.getBlockPos().equals(pos)) {
-                return lastEntity;
-            }
-            lastEntity = entityBlock.newBlockEntity(pos, blockState);
-            if(tag != null && lastEntity != null) {
-                var tag2 = lastEntity.saveWithoutMetadata();
-                var tag3 = tag2.copy();
-                tag2.merge(tag);
-                if(!tag2.equals(tag3)) {
-                    lastEntity.load(tag2);
-                }
-            }
-            return lastEntity;
-        }*/
-        return blockEntity;
-    }
-
     public BlockEntity getBlockEntity(Level level, BlockPos pos) {
-        BlockEntity entity = getBlockEntity(pos);
+        BlockEntity entity = getBlockEntity();
         if(entity != null) {
             entity.setLevel(level);
         }
@@ -106,7 +87,7 @@ public class BlockInfo {
 
     public void apply(Level level, BlockPos pos) {
         level.setBlockAndUpdate(pos, blockState);
-        BlockEntity be = getBlockEntity(pos);
+        BlockEntity be = getBlockEntity();
         if(be != null) {
             level.setBlockEntity(be);
         }

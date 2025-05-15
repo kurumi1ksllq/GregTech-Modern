@@ -30,11 +30,11 @@ public class MultiblockWorldSavedData extends SavedData {
     /**
      * Store all formed multiblocks' structure info
      */
-    public final Map<BlockPos, CurrentBlockInfo> mapping;
+    public final Map<BlockPos, PatternState> mapping;
     /**
      * Chunk pos mapping.
      */
-    public final Map<ChunkPos, Set<CurrentBlockInfo>> chunkPosMapping;
+    public final Map<ChunkPos, Set<PatternState>> chunkPosMapping;
 
     private MultiblockWorldSavedData(ServerLevel serverLevel) {
         this.serverLevel = serverLevel;
@@ -46,22 +46,23 @@ public class MultiblockWorldSavedData extends SavedData {
         this(serverLevel);
     }
 
-    public CurrentBlockInfo[] getControllerInChunk(ChunkPos chunkPos) {
-        return chunkPosMapping.getOrDefault(chunkPos, Collections.emptySet()).toArray(CurrentBlockInfo[]::new);
+    public PatternState[] getControllerInChunk(ChunkPos chunkPos) {
+        return chunkPosMapping.getOrDefault(chunkPos, Collections.emptySet()).toArray(PatternState[]::new);
     }
 
     public void addMapping(CurrentBlockInfo cbi, PatternState patternState) {
-        this.mapping.put(cbi.getBlockPos(), cbi);
+        this.mapping.put(cbi.getBlockPos(), patternState);
         for (BlockPos blockPos : patternState.getPosCache()) {
-            chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c -> new HashSet<>()).add(cbi);
+            chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c -> new HashSet<>()).add(patternState);
         }
         setDirty(true);
     }
 
-    public void removeMapping(CurrentBlockInfo cbi) {
-        this.mapping.remove(cbi.getBlockPos());
-        for (Set<CurrentBlockInfo> set : chunkPosMapping.values()) {
-            set.remove(cbi);
+    public void removeMapping(PatternState patternState) {
+        this.mapping.remove(patternState.getCbi().getBlockPos());
+        for (var patternSet : chunkPosMapping.values()) {
+            patternSet.remove(patternState);
+            GTCEu.LOGGER.warn("removed pattern from chunk {}", patternSet.size());
         }
         setDirty(true);
     }

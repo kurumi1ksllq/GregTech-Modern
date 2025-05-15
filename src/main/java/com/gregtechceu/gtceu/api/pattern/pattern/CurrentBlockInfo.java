@@ -19,12 +19,6 @@ public class CurrentBlockInfo {
     @Getter
     private BlockEntity tileEntity;
     private boolean teResolved;
-    private boolean isController;
-
-    public void setLevelAndPos(Level level, BlockPos pos) {
-        this.level = level;
-        this.pos = new BetterBlockPos(pos);
-    }
 
     public BlockState retrieveCurrentBlockState() {
         if(this.blockState == null) {

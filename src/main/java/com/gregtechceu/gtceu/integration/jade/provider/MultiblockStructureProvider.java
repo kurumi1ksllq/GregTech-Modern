@@ -34,7 +34,7 @@ public class MultiblockStructureProvider implements IBlockComponentProvider, ISe
     public void appendServerData(CompoundTag compoundTag, BlockAccessor blockAccessor) {
         if (blockAccessor.getBlockEntity() instanceof MetaMachineBlockEntity blockEntity) {
             if (blockEntity.getMetaMachine() instanceof IMultiController controller) {
-                PatternState state = controller.checkStructurePattern();
+                PatternState state = controller.getDefaultPatternState();
                 compoundTag.putBoolean("hasError", state.hasError());
             }
         }

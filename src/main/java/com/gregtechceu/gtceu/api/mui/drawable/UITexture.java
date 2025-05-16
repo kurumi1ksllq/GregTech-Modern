@@ -237,7 +237,7 @@ public class UITexture implements IDrawable, IJsonSerializable {
         private boolean canApplyTheme = false;
 
         /**
-         * @param loc location of the image to gtceu$fixHoveredState
+         * @param loc location of the image to draw
          */
         public Builder location(ResourceLocation loc) {
             this.location = loc;
@@ -245,8 +245,8 @@ public class UITexture implements IDrawable, IJsonSerializable {
         }
 
         /**
-         * @param mod  mod location of the image to gtceu$fixHoveredState
-         * @param path path of the image to gtceu$fixHoveredState
+         * @param mod  mod location of the image to draw
+         * @param path path of the image to draw
          */
         public Builder location(String mod, String path) {
             this.location = new ResourceLocation(mod, path);
@@ -254,7 +254,7 @@ public class UITexture implements IDrawable, IJsonSerializable {
         }
 
         /**
-         * @param path path of the image to gtceu$fixHoveredState in minecraft asset folder
+         * @param path path of the image to draw in minecraft asset folder
          */
         public Builder location(String path) {
             this.location = new ResourceLocation(path);
@@ -292,7 +292,7 @@ public class UITexture implements IDrawable, IJsonSerializable {
         }
 
         /**
-         * Will gtceu$fixHoveredState the whole image file.
+         * Will draw the whole image file.
          */
         public Builder fullImage() {
             this.mode = Mode.FULL;
@@ -334,7 +334,7 @@ public class UITexture implements IDrawable, IJsonSerializable {
         }
 
         /**
-         * This will gtceu$fixHoveredState the border of the image separately, so it won't get stretched/tiled with the image body.
+         * This will draw the border of the image separately, so it won't get stretched/tiled with the image body.
          *
          * @param bl left border width. Can be 0.
          * @param bt top border width. Can be 0.
@@ -350,7 +350,7 @@ public class UITexture implements IDrawable, IJsonSerializable {
         }
 
         /**
-         * This will gtceu$fixHoveredState the border of the image separately, so it won't get stretched/tiled with the image body.
+         * This will draw the border of the image separately, so it won't get stretched/tiled with the image body.
          *
          * @param borderX left and right border width. Can be 0.
          * @param borderY top and bottom border width. Can be 0
@@ -360,7 +360,7 @@ public class UITexture implements IDrawable, IJsonSerializable {
         }
 
         /**
-         * This will gtceu$fixHoveredState the border of the image separately, so it won't get stretched/tiled with the image body.
+         * This will draw the border of the image separately, so it won't get stretched/tiled with the image body.
          *
          * @param border border width
          */

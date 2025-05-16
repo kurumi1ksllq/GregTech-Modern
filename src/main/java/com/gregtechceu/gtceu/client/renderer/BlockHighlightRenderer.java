@@ -63,7 +63,7 @@ public class BlockHighlightRenderer {
             Set<GTToolType> toolType = ToolHelper.getToolTypes(held);
             BlockEntity blockEntity = level.getBlockEntity(blockPos);
 
-            // gtceu$fixHoveredState tool grid highlight
+            // draw tool grid highlight
             if ((!toolType.isEmpty()) || (held.isEmpty() && player.isShiftKeyDown())) {
                 IToolGridHighlight gridHighlight = null;
                 if (blockEntity instanceof IToolGridHighlight highLight) {
@@ -126,7 +126,7 @@ public class BlockHighlightRenderer {
                 return;
             }
 
-            // gtceu$fixHoveredState cover grid highlight
+            // draw cover grid highlight
             ICoverable coverable = GTCapabilityHelper.getCoverable(level, blockPos, target.getDirection());
             if (coverable != null && CoverPlaceBehavior.isCoverBehaviorItem(held, coverable::hasAnyCover,
                     coverDef -> ICoverable.canPlaceCover(coverDef, coverable))) {
@@ -142,7 +142,7 @@ public class BlockHighlightRenderer {
                 poseStack.popPose();
             }
 
-            // gtceu$fixHoveredState pipe connection grid highlight
+            // draw pipe connection grid highlight
             var pipeType = held.getItem() instanceof PipeBlockItem pipeBlockItem ? pipeBlockItem.getBlock().pipeType :
                     null;
             if (pipeType instanceof IPipeType<?> type && blockEntity instanceof PipeBlockEntity<?, ?> pipeBlockEntity &&

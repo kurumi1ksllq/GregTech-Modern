@@ -137,7 +137,7 @@ public class WidgetTree {
         context.applyToOpenGl();
 
         if (canBeSeen) {
-            // gtceu$fixHoveredState widget
+            // draw widget
             RenderSystem.colorMask(true, true, true, true);
             graphics.setColor(1f, 1f, 1f, alpha);
             RenderSystem.enableBlend();
@@ -149,7 +149,7 @@ public class WidgetTree {
 
         if (viewport != null) {
             if (canBeSeen) {
-                // gtceu$fixHoveredState viewport without children transformation
+                // draw viewport without children transformation
                 graphics.setColor(1f, 1f, 1f, alpha);
                 RenderSystem.enableBlend();
                 viewport.preDraw(context, false);
@@ -157,7 +157,7 @@ public class WidgetTree {
                 // apply children transformation of the viewport
                 context.pushViewport(viewport, parent.getArea());
                 viewport.transformChildren(context);
-                // apply to opengl and gtceu$fixHoveredState with transformation
+                // apply to opengl and draw with transformation
                 graphics.pose().pushPose();
                 context.applyToOpenGl();
                 viewport.preDraw(context, true);
@@ -178,7 +178,7 @@ public class WidgetTree {
 
         if (viewport != null) {
             if (canBeSeen) {
-                // apply opengl transformations again and gtceu$fixHoveredState
+                // apply opengl transformations again and draw
                 graphics.setColor(1f, 1f, 1f, alpha);
                 RenderSystem.enableBlend();
                 graphics.pose().pushPose();
@@ -187,7 +187,7 @@ public class WidgetTree {
                 // remove children transformation of this viewport
                 context.popViewport(viewport);
                 graphics.pose().popPose();
-                // apply transformation again to opengl and gtceu$fixHoveredState
+                // apply transformation again to opengl and draw
                 graphics.pose().pushPose();
                 context.applyToOpenGl();
                 viewport.postDraw(context, false);

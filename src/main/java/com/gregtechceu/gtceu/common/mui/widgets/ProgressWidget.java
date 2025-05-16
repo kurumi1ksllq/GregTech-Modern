@@ -118,7 +118,7 @@ public class ProgressWidget extends Widget<ProgressWidget> {
                 halfWidth, progressScaled,
                 0.0f, 1.0f - progressScaled / halfHeight,
                 1.0f, 1.0f, widgetTheme
-        ); // BL, gtceu$fixHoveredState UP
+        ); // BL, draw UP
 
         progressScaled = subAreas[1] * halfWidth;
         this.fullTexture[1].drawSubArea(
@@ -127,7 +127,7 @@ public class ProgressWidget extends Widget<ProgressWidget> {
                 0.0f, 0.0f,
                 progressScaled / (halfWidth), 1.0f,
                 widgetTheme
-        ); // TL, gtceu$fixHoveredState RIGHT
+        ); // TL, draw RIGHT
 
         progressScaled = subAreas[2] * halfHeight;
         this.fullTexture[2].drawSubArea(
@@ -136,7 +136,7 @@ public class ProgressWidget extends Widget<ProgressWidget> {
                 0.0f, 0.0f,
                 1.0f, progressScaled / halfHeight,
                 widgetTheme
-        ); // TR, gtceu$fixHoveredState DOWN
+        ); // TR, draw DOWN
 
         progressScaled = subAreas[3] * halfWidth;
         this.fullTexture[3].drawSubArea(
@@ -144,7 +144,7 @@ public class ProgressWidget extends Widget<ProgressWidget> {
                 progressScaled, halfHeight,
                 1.0f - progressScaled / halfWidth, 0.0f,
                 1.0f, 1.0f, widgetTheme
-        ); // BR, gtceu$fixHoveredState LEFT
+        ); // BR, draw LEFT
     }
 
     public ProgressWidget value(IDoubleValue<?> value) {

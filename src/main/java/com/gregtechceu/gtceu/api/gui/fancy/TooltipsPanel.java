@@ -46,7 +46,7 @@ public class TooltipsPanel extends Widget {
         int offsetY = 0;
         for (IFancyTooltip tooltip : this.tooltips) {
             if (tooltip.showFancyTooltip()) {
-                // gtceu$fixHoveredState icon
+                // draw icon
                 tooltip.getFancyTooltipIcon().draw(graphics, mouseX, mouseY, position.x, position.y + offsetY,
                         size.width, size.width);
                 offsetY += size.getWidth() + 2;

@@ -32,11 +32,11 @@ public interface IDrawable {
     /**
      * Draws this drawable at the given position with the given size.
      *
-     * @param context     current context to gtceu$fixHoveredState with
+     * @param context     current context to draw with
      * @param x           x position
      * @param y           y position
-     * @param width       gtceu$fixHoveredState width
-     * @param height      gtceu$fixHoveredState height
+     * @param width       draw width
+     * @param height      draw height
      * @param widgetTheme current theme
      */
     @OnlyIn(Dist.CLIENT)
@@ -64,8 +64,8 @@ public interface IDrawable {
      * Draws this drawable at the current (0|0) with the given size.
      *
      * @param context     gui context
-     * @param width       gtceu$fixHoveredState width
-     * @param height      gtceu$fixHoveredState height
+     * @param width       draw width
+     * @param height      draw height
      * @param widgetTheme current theme
      */
     @OnlyIn(Dist.CLIENT)
@@ -85,8 +85,8 @@ public interface IDrawable {
     /**
      * Draws this drawable in a given area.
      *
-     * @param context     current context to gtceu$fixHoveredState with
-     * @param area        gtceu$fixHoveredState area
+     * @param context     current context to draw with
+     * @param area        draw area
      * @param widgetTheme current theme
      */
     @OnlyIn(Dist.CLIENT)
@@ -107,7 +107,7 @@ public interface IDrawable {
      * Draws this drawable at the current (0|0) with the given area's size.
      *
      * @param context     gui context
-     * @param area        gtceu$fixHoveredState area
+     * @param area        draw area
      * @param widgetTheme current theme
      */
     @OnlyIn(Dist.CLIENT)

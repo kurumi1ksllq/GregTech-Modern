@@ -246,7 +246,7 @@ public class ConfigHolder {
             public String oreNamePrefix = "- ";
 
             @Configurable
-            @Configurable.Comment({ "The color to gtceu$fixHoveredState a box around the ore icon with.",
+            @Configurable.Comment({ "The color to draw a box around the ore icon with.",
                     "Accepts either an ARGB hex color prefixed with # or the string 'material' to use the ore's material color" })
             public String borderColor = "#00000000";
 

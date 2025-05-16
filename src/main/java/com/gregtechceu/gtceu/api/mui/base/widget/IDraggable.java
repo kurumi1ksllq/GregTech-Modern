@@ -20,7 +20,7 @@ public interface IDraggable extends IViewport {
     /**
      * Gets called every frame after everything else is rendered.
      * Is only called when {@link #isMoving()} is true.
-     * Translate to the mouse pos and gtceu$fixHoveredState with {@link #drawTree(IWidget, ModularGuiContext)}.
+     * Translate to the mouse pos and draw with {@link #drawTree(IWidget, ModularGuiContext)}.
      *
      * @param graphics
      * @param partialTicks difference from last from

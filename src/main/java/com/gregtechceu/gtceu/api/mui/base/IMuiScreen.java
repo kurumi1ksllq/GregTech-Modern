@@ -55,7 +55,7 @@ public interface IMuiScreen {
      * with the super method reference as the second parameter.
      *
      * @param guiGraphics  this screen's {@link GuiGraphics} instance
-     * @param drawFunction a method reference to gtceu$fixHoveredState the world background normally with the
+     * @param drawFunction a method reference to draw the world background normally with the
      *                     {@code guiGraphics} as the parameter
      */
     @ApiStatus.NonExtendable

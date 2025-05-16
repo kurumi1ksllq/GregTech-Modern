@@ -14,7 +14,7 @@ public interface IHPCAComponentHatch {
 
     /**
      * How much EU/t this component can use, if it is being utilized fully.
-     * Used to scale cost for "computational" units. Power gtceu$fixHoveredState is a range
+     * Used to scale cost for "computational" units. Power draw is a range
      * created by actual computation used vs maximum potential computation.
      */
     default int getMaxEUt() {

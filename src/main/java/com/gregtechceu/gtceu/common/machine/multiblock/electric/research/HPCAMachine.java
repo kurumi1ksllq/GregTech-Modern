@@ -572,7 +572,7 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
                 return maximumEUt;
             }
 
-            // energy gtceu$fixHoveredState is proportional to the amount of actively used computation
+            // energy draw is proportional to the amount of actively used computation
             // a + c(b - a) / d
             return upkeepEUt + ((maximumEUt - upkeepEUt) * allocatedCWUt / maximumCWUt);
         }

@@ -53,7 +53,7 @@ public class TextFieldRenderer extends TextRenderer {
     protected void drawMeasuredLines(GuiGraphics graphics, List<Line> measuredLines) {
         drawMarked(graphics, measuredLines);
         super.drawMeasuredLines(graphics, measuredLines);
-        // gtceu$fixHoveredState cursor
+        // draw cursor
         if (this.renderCursor) {
             Point main = this.handler.getMainCursor();
             Point2D.Float start = getPosOf(measuredLines, main);

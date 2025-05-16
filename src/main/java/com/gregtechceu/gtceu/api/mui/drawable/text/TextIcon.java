@@ -5,18 +5,23 @@ import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Box;
+import lombok.Getter;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class TextIcon implements IIcon {
 
-    private final String text;
+    @Getter
+    private final Component text;
+    @Getter
     private final int width, height;
     private final float scale;
     private final Alignment alignment;
     private static final Box margin = new Box();
 
-    public TextIcon(String text, int width, int height, float scale, Alignment alignment) {
+    public TextIcon(Component text, int width, int height, float scale, Alignment alignment) {
         this.text = text;
         this.width = width;
         this.height = height;
@@ -30,25 +35,11 @@ public class TextIcon implements IIcon {
         TextRenderer.SHARED.setPos(x, y);
         TextRenderer.SHARED.setAlignment(this.alignment, width);
         TextRenderer.SHARED.setScale(this.scale);
-        TextRenderer.SHARED.drawSimple(this.text);
-    }
-
-    @Override
-    public int getWidth() {
-        return this.width;
-    }
-
-    @Override
-    public int getHeight() {
-        return this.height;
+        TextRenderer.SHARED.drawSimple(context.getGraphics(), this.text);
     }
 
     @Override
     public Box getMargin() {
         return margin;
-    }
-
-    public String getText() {
-        return this.text;
     }
 }

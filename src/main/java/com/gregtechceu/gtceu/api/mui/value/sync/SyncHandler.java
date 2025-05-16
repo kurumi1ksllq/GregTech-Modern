@@ -1,18 +1,17 @@
 package com.gregtechceu.gtceu.api.mui.value.sync;
 
 import com.gregtechceu.gtceu.api.mui.base.IPacketWriter;
-import com.gregtechceu.gtceu.api.mui.network.NetworkHandler;
-import com.gregtechceu.gtceu.api.mui.network.packets.PacketSyncHandler;
+import com.gregtechceu.gtceu.common.network.GTNetwork;
+import com.gregtechceu.gtceu.common.network.packets.ui.SyncHandlerPacket;
 import io.netty.buffer.Unpooled;
-import net.minecraft.entity.player.ServerPlayer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -48,11 +47,7 @@ public abstract class SyncHandler {
     public final void syncToClient(int id, @NotNull IPacketWriter bufferConsumer) {
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         buffer.writeVarInt(id);
-        try {
-            bufferConsumer.write(buffer);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        bufferConsumer.write(buffer);
         sendToClient(getSyncManager().getPanelName(), buffer, this);
     }
 
@@ -66,11 +61,7 @@ public abstract class SyncHandler {
     public final void syncToServer(int id, @NotNull IPacketWriter bufferConsumer) {
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         buffer.writeVarInt(id);
-        try {
-            bufferConsumer.write(buffer);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        bufferConsumer.write(buffer);
         sendToServer(getSyncManager().getPanelName(), buffer, this);
     }
 
@@ -83,11 +74,7 @@ public abstract class SyncHandler {
     public final void sync(int id, @NotNull IPacketWriter bufferConsumer) {
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         buffer.writeVarInt(id);
-        try {
-            bufferConsumer.write(buffer);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        bufferConsumer.write(buffer);
         if (getSyncManager().isClient()) {
             sendToServer(getSyncManager().getPanelName(), buffer, this);
         } else {
@@ -127,21 +114,19 @@ public abstract class SyncHandler {
      *
      * @param id  an internal denominator to identify this package
      * @param buf package
-     * @throws IOException package read error
      */
     @ApiStatus.OverrideOnly
     @OnlyIn(Dist.CLIENT)
-    public abstract void readOnClient(int id, FriendlyByteBuf buf) throws IOException;
+    public abstract void readOnClient(int id, FriendlyByteBuf buf);
 
     /**
      * Called when this sync handler receives a packet on server.
      *
      * @param id  an internal denominator to identify this package
      * @param buf package
-     * @throws IOException package read error
      */
     @ApiStatus.OverrideOnly
-    public abstract void readOnServer(int id, FriendlyByteBuf buf) throws IOException;
+    public abstract void readOnServer(int id, FriendlyByteBuf buf);
 
     /**
      * Called at least every tick. Use it to compare a cached value to its original and sync it.
@@ -182,7 +167,7 @@ public abstract class SyncHandler {
         if (!syncHandler.isValid()) {
             throw new IllegalStateException();
         }
-        NetworkHandler.sendToPlayer(new PacketSyncHandler(panel, syncHandler.getKey(), buffer), (ServerPlayer) syncHandler.syncManager.getPlayer());
+        GTNetwork.NETWORK.sendToPlayer(new SyncHandlerPacket(panel, syncHandler.getKey(), buffer), (ServerPlayer) syncHandler.syncManager.getPlayer());
     }
 
     public static void sendToServer(String panel, FriendlyByteBuf buffer, SyncHandler syncHandler) {
@@ -191,6 +176,6 @@ public abstract class SyncHandler {
         if (!syncHandler.isValid()) {
             throw new IllegalStateException();
         }
-        NetworkHandler.sendToServer(new PacketSyncHandler(panel, syncHandler.getKey(), buffer));
+        GTNetwork.NETWORK.sendToServer(new SyncHandlerPacket(panel, syncHandler.getKey(), buffer));
     }
 }

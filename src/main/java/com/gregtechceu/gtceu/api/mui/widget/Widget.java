@@ -18,6 +18,8 @@ import com.gregtechceu.gtceu.api.mui.value.sync.ValueSyncHandler;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Flex;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.IUnResizeable;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +34,7 @@ public class Widget<W extends Widget<W>> implements IWidget, IPositioned<W>, ITo
 
     // other
     @Nullable private String debugName;
+    @Getter @Setter
     private boolean enabled = true;
     // gui context
     private boolean valid = false;
@@ -39,22 +42,38 @@ public class Widget<W extends Widget<W>> implements IWidget, IPositioned<W>, ITo
     private ModularPanel panel = null;
     private ModularGuiContext context = null;
     // sizing
+    @Getter
     private final Area area = new Area();
+    @Getter
     private final Flex flex = new Flex(this);
     private IResizeable resizer = this.flex;
     // syncing
+    @Getter
     @Nullable private IValue<?> value;
     @Nullable private String syncKey;
+    /**
+     * -- SETTER --
+     * This intended to only be used when build the main panel in methods like {@link com.gregtechceu.gtceu.api.mui.base.IGuiHolder#buildUI(GuiData, com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager, com.gregtechceu.gtceu.client.mui.screen.UISettings)}
+     * since it's called on server and client. Otherwise, this will not work.
+     */
+    @Setter
     @Nullable private SyncHandler syncHandler;
     // rendering
+    @Getter
     @Nullable private IDrawable background = null;
+    @Getter
     @Nullable private IDrawable overlay = null;
+    @Getter
     @Nullable private IDrawable hoverBackground = null;
+    @Getter
     @Nullable private IDrawable hoverOverlay = null;
+    @Getter
     @Nullable private RichTooltip tooltip;
+    @Getter
     @Nullable private String widgetThemeOverride = null;
     // listener
     @Nullable private List<IGuiAction> guiActionListeners;
+    @Getter
     @Nullable private Consumer<W> onUpdateListener;
 
     // -----------------
@@ -168,22 +187,6 @@ public class Widget<W extends Widget<W>> implements IWidget, IPositioned<W>, ITo
         }
     }
 
-    public @Nullable IDrawable getBackground() {
-        return this.background;
-    }
-
-    public @Nullable IDrawable getOverlay() {
-        return this.overlay;
-    }
-
-    public @Nullable IDrawable getHoverBackground() {
-        return this.hoverBackground;
-    }
-
-    public @Nullable IDrawable getHoverOverlay() {
-        return this.hoverOverlay;
-    }
-
     public IDrawable getCurrentBackground(ITheme theme, WidgetTheme widgetTheme) {
         if (isHovering()) {
             IDrawable hoverBackground = getHoverBackground();
@@ -197,12 +200,6 @@ public class Widget<W extends Widget<W>> implements IWidget, IPositioned<W>, ITo
     public IDrawable getCurrentOverlay(ITheme theme, WidgetTheme widgetTheme) {
         IDrawable hoverBackground = getHoverOverlay();
         return hoverBackground != null && hoverBackground != IDrawable.NONE && isHovering() ? hoverBackground : getOverlay();
-    }
-
-    @Nullable
-    @Override
-    public RichTooltip getTooltip() {
-        return this.tooltip;
     }
 
     @Override
@@ -288,11 +285,6 @@ public class Widget<W extends Widget<W>> implements IWidget, IPositioned<W>, ITo
         }
     }
 
-    @Nullable
-    public Consumer<W> getOnUpdateListener() {
-        return this.onUpdateListener;
-    }
-
     public W listenGuiAction(IGuiAction action) {
         if (this.guiActionListeners == null) {
             this.guiActionListeners = new ArrayList<>();
@@ -329,16 +321,6 @@ public class Widget<W extends Widget<W>> implements IWidget, IPositioned<W>, ITo
     // ----------------
     // === Resizing ===
     // ----------------
-
-    @Override
-    public Area getArea() {
-        return this.area;
-    }
-
-    @Override
-    public Flex getFlex() {
-        return this.flex;
-    }
 
     @Override
     public Flex flex() {
@@ -416,11 +398,6 @@ public class Widget<W extends Widget<W>> implements IWidget, IPositioned<W>, ITo
         return this.syncHandler;
     }
 
-    @Nullable
-    public IValue<?> getValue() {
-        return this.value;
-    }
-
     @Override
     public W syncHandler(String name, int id) {
         this.syncKey = ModularSyncManager.makeSyncKey(name, id);
@@ -434,27 +411,9 @@ public class Widget<W extends Widget<W>> implements IWidget, IPositioned<W>, ITo
         }
     }
 
-    /**
-     * This intended to only be used when build the main panel in methods like {@link com.gregtechceu.gtceu.api.mui.base.IGuiHolder#buildUI(GuiData, com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager, com.gregtechceu.gtceu.client.mui.screen.UISettings)}
-     * since it's called on server and client. Otherwise, this will not work.
-     */
-    protected void setSyncHandler(@Nullable SyncHandler syncHandler) {
-        this.syncHandler = syncHandler;
-    }
-
     // -------------
     // === Other ===
     // -------------
-
-    @Override
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
 
     public W disabled() {
         setEnabled(false);

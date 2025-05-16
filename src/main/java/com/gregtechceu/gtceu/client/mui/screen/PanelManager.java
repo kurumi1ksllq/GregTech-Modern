@@ -1,10 +1,11 @@
 package com.gregtechceu.gtceu.client.mui.screen;
 
-import com.gregtechceu.gtceu.api.mui.ModularUI;
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.IPanelHandler;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.LocatedWidget;
-import com.gregtechceu.gtceu.api.mui.utils.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import com.gregtechceu.gtceu.api.mui.utils.ReverseIterable;
 import com.gregtechceu.gtceu.api.mui.widget.WidgetTree;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -27,12 +28,12 @@ public class PanelManager {
     /**
      * List of all open panels from top to bottom.
      */
-    private final ObjectList<ModularPanel> panels = ObjectList.create();
+    private final ObjectList<ModularPanel> panels = new ObjectArrayList<>();
     // a clone of the list to avoid CMEs
     private final List<ModularPanel> panelsClone = new ArrayList<>();
     private final List<ModularPanel> panelsView = Collections.unmodifiableList(this.panelsClone);
     private final ReverseIterable<ModularPanel> reversePanels = new ReverseIterable<>(this.panelsView);
-    private final ObjectList<ModularPanel> disposal = ObjectList.create(20);
+    private final ObjectList<ModularPanel> disposal = new ObjectArrayList<>(20);
     private final Map<String, IPanelHandler> panelHandlerMap = new Object2ObjectOpenHashMap<>();
     private boolean cantDisposeNow = false;
     private boolean dirty = false;
@@ -75,7 +76,7 @@ public class PanelManager {
         }
         this.disposal.remove(panel);
         panel.setPanelGuiContext(this.screen.getContext());
-        this.panels.addFirst(panel);
+        this.panels.add(0, panel);
         this.dirty = true;
         panel.getArea().setPanelLayer((byte) this.panels.size());
         panel.onOpen(this.screen);
@@ -114,7 +115,7 @@ public class PanelManager {
      */
     @NotNull
     public ModularPanel getTopMostPanel() {
-        return this.panels.getFirst();
+        return this.panels.get(0);
     }
 
     @Nullable
@@ -184,7 +185,7 @@ public class PanelManager {
         panel.onClose();
         if (!this.disposal.contains(panel)) {
             if (this.disposal.size() == 20) {
-                this.disposal.removeFirst().dispose();
+                this.disposal.remove(0).dispose();
             }
             this.disposal.add(panel);
         }
@@ -253,7 +254,7 @@ public class PanelManager {
         if (index < 0) throw new IllegalStateException();
         if (index == 0) return;
         this.panels.remove(index);
-        this.panels.addFirst(window);
+        this.panels.add(0, window);
     }
 
     public void pushToBottom(@NotNull ModularPanel window) {
@@ -261,7 +262,7 @@ public class PanelManager {
         if (index < 0) throw new IllegalStateException();
         if (index == this.panels.size() - 1) return;
         this.panels.remove(index);
-        this.panels.addLast(window);
+        this.panels.add(window);
     }
 
     @NotNull

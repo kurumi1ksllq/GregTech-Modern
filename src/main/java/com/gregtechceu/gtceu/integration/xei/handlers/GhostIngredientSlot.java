@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.integration.xei.handlers;
 
-import com.gregtechceu.gtceu.api.mui.base.JeiSettings;
+import com.gregtechceu.gtceu.api.mui.base.XeiSettings;
+import com.gregtechceu.gtceu.api.mui.base.widget.IGuiElement;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.drawable.GuiDraw;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
@@ -11,14 +12,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * An interface for compat with JEI's ghost slots.
+ * An interface for compat with recipe viewers' ghost slots.
  * Implement this on any {@link IWidget}.
  * This slot must then be manually registered in something like {@link Widget#onInit()}
- * with {@link JeiSettings#addGhostIngredientSlot(IWidget) JeiSettings.addGhostIngredientSlot(IWidget)}
+ * with {@link XeiSettings#addGhostIngredientSlot(IWidget) JeiSettings.addGhostIngredientSlot(IWidget)}
  *
  * @param <I> type of the ingredient
  */
-public interface GhostIngredientSlot<I> {
+public interface GhostIngredientSlot<I> extends IGuiElement {
 
     /**
      * Puts the ingredient in this ghost slot.
@@ -39,13 +40,27 @@ public interface GhostIngredientSlot<I> {
     @Nullable
     I castGhostIngredientIfValid(@NotNull Object ingredient);
 
+    /**
+     * @return the class of the ingredient this slot expects
+     */
+    Class<I> ingredientClass();
+
+    /**
+     * A way to handle recipeviewer-specific ingredient instances.
+     *
+     * @return {@code true} if handling the ingredient yourself.
+     */
+    default boolean ingredientHandlingOverride(Object ingredient) {
+        return false;
+    }
+
     default void drawHighlight(Rectangle area, boolean hovering) {
         int color = hovering ? Color.argb(76, 201, 25, 128) : Color.argb(19, 201, 10, 64);
         GuiDraw.drawRect(0, 0, area.width, area.height, color);
     }
 
-    static <T> boolean insertGhostIngredient(GhostIngredientDrag<?> drag, GhostIngredientSlot<T> slot) {
-        T t = slot.castGhostIngredientIfValid(drag.getIngredient());
+    static <T> boolean insertGhostIngredient(Object currentlyDragged, GhostIngredientSlot<T> slot) {
+        T t = slot.castGhostIngredientIfValid(currentlyDragged);
         if (t != null) {
             slot.setGhostIngredient(t);
             return true;

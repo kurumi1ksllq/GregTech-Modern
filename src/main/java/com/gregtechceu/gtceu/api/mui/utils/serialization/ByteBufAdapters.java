@@ -1,35 +1,36 @@
 package com.gregtechceu.gtceu.api.mui.utils.serialization;
 
-import com.gregtechceu.gtceu.api.mui.network.NetworkUtils;
+import com.gregtechceu.gtceu.utils.NetworkUtils;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-
 public class ByteBufAdapters {
-
-    public static final IByteBufAdapter<ItemStack> ITEM_STACK = makeAdapter(FriendlyByteBuf::readItemStack, FriendlyByteBuf::writeItemStack, ItemStack::areItemStacksEqual);
-    public static final IByteBufAdapter<FluidStack> FLUID_STACK = makeAdapter(NetworkUtils::readFluidStack, NetworkUtils::writeFluidStack, FluidStack::isFluidStackIdentical);
-    public static final IByteBufAdapter<NBTTagCompound> NBT = makeAdapter(FriendlyByteBuf::readCompoundTag, FriendlyByteBuf::writeCompoundTag, null);
+    // spotless:off
+    public static final IByteBufAdapter<ItemStack> ITEM_STACK = makeAdapter(FriendlyByteBuf::readItem, FriendlyByteBuf::writeItem, ItemStack::matches);
+    public static final IByteBufAdapter<FluidStack> FLUID_STACK = makeMemberAdapter(FluidStack::readFromPacket, FluidStack::writeToPacket, FluidStack::isFluidStackIdentical);
+    public static final IByteBufAdapter<CompoundTag> NBT = makeAdapter(FriendlyByteBuf::readNbt, FriendlyByteBuf::writeNbt, null);
     public static final IByteBufAdapter<String> STRING = makeAdapter(NetworkUtils::readStringSafe, NetworkUtils::writeStringSafe, null);
     public static final IByteBufAdapter<ByteBuf> BYTE_BUF = makeAdapter(NetworkUtils::readByteBuf, NetworkUtils::writeByteBuf, null);
     public static final IByteBufAdapter<FriendlyByteBuf> PACKET_BUFFER = makeAdapter(NetworkUtils::readFriendlyByteBuf, NetworkUtils::writeByteBuf, null);
+    // spotless:on
 
-    public static <T> IByteBufAdapter<T> makeAdapter(@NotNull IByteBufDeserializer<T> deserializer, @NotNull IByteBufSerializer<T> serializer, @Nullable IEquals<T> comparator) {
+    public static <T> IByteBufAdapter<T> makeAdapter(@NotNull IByteBufDeserializer<T> deserializer,
+                                                     @NotNull IByteBufSerializer<T> serializer,
+                                                     @Nullable IEquals<T> comparator) {
         final IEquals<T> tester = comparator != null ? comparator : IEquals.defaultTester();
-        return new IByteBufAdapter<T>() {
+        return new IByteBufAdapter<>() {
             @Override
-            public T deserialize(FriendlyByteBuf buffer) throws IOException {
+            public T deserialize(FriendlyByteBuf buffer) {
                 return deserializer.deserialize(buffer);
             }
 
             @Override
-            public void serialize(FriendlyByteBuf buffer, T u) throws IOException {
+            public void serialize(FriendlyByteBuf buffer, T u) {
                 serializer.serialize(buffer, u);
             }
 
@@ -38,5 +39,11 @@ public class ByteBufAdapters {
                 return tester.areEqual(t1, t2);
             }
         };
+    }
+
+    public static <T> IByteBufAdapter<T> makeMemberAdapter(@NotNull IByteBufDeserializer<T> deserializer,
+                                                           @NotNull IByteBufMemberSerializer<T> memberSerializer,
+                                                           @Nullable IEquals<T> comparator) {
+        return makeAdapter(deserializer, memberSerializer.asBasic(), comparator);
     }
 }

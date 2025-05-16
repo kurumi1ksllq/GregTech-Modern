@@ -1,7 +1,8 @@
 package com.gregtechceu.gtceu.api.mui.base.layout;
 
 import com.gregtechceu.gtceu.client.mui.screen.viewport.TransformationMatrix;
-import com.gregtechceu.gtceu.api.mui.utils.Vector3f;
+import com.mojang.blaze3d.vertex.PoseStack;
+import org.joml.Vector3f;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 
 import org.jetbrains.annotations.Nullable;
@@ -196,7 +197,7 @@ public interface IViewportStack {
     /**
      * Applies the current matrix transformations the current OpenGL matrix.
      */
-    void applyToOpenGl();
+    void applyTo(PoseStack poseStack);
 
     /**
      * @return the top matrix or null if stack is empty

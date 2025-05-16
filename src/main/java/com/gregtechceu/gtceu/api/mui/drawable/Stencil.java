@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.ShaderInstance;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.Rectangle;
+import com.gregtechceu.gtceu.api.mui.widget.sizer.Rectangle;
 
 public class Stencil {
 

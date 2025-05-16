@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.mui.holoui;
 
-import com.gregtechceu.gtceu.client.mui.screen.GuiContainerWrapper;
+import com.gregtechceu.gtceu.client.mui.screen.ContainerScreenWrapper;
 import com.gregtechceu.gtceu.client.mui.screen.ModularContainerMenu;
 import com.gregtechceu.gtceu.client.mui.screen.ModularScreen;
 import net.minecraft.client.Minecraft;
@@ -14,6 +14,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Highly experimental
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Experimental
 public class HoloScreenEntity extends Entity {
 
-    private GuiContainerWrapper wrapper;
+    private ContainerScreenWrapper wrapper;
     private ModularScreen screen;
     private final Plane3D plane3D;
     private static final EntityDataAccessor<Byte> ORIENTATION = SynchedEntityData.defineId(HoloScreenEntity.class, EntityDataSerializers.BYTE);
@@ -37,7 +38,7 @@ public class HoloScreenEntity extends Entity {
 
     public void setScreen(ModularScreen screen) {
         this.screen = screen;
-        this.wrapper = new GuiContainerWrapper(new ModularContainerMenu(-1), screen);
+        this.wrapper = new ContainerScreenWrapper(new ModularContainerMenu(-1), screen);
         this.wrapper.init(Minecraft.getInstance(), (int) this.plane3D.getWidth(), (int) this.plane3D.getHeight());
     }
 
@@ -45,7 +46,7 @@ public class HoloScreenEntity extends Entity {
         return this.screen;
     }
 
-    public GuiContainerWrapper getWrapper() {
+    public ContainerScreenWrapper getWrapper() {
         return this.wrapper;
     }
 
@@ -107,10 +108,10 @@ public class HoloScreenEntity extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {}
+    protected void readAdditionalSaveData(@NotNull CompoundTag compound) {}
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {}
+    protected void addAdditionalSaveData(@NotNull CompoundTag compound) {}
 
     @Override
     protected void checkInsideBlocks() {}
@@ -121,12 +122,12 @@ public class HoloScreenEntity extends Entity {
     }
 
     @Override
-    public boolean canTrample(BlockState state, BlockPos pos, float fallDistance) {
+    public boolean canTrample(@NotNull BlockState state, @NotNull BlockPos pos, float fallDistance) {
         return false;
     }
 
     @Override
-    protected boolean canAddPassenger(Entity passenger) {
+    protected boolean canAddPassenger(@NotNull Entity passenger) {
         return false;
     }
 }

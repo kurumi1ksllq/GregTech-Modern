@@ -6,7 +6,8 @@ import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentContents;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.util.FormattedCharSequence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,34 +28,24 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         return this.elements.isEmpty();
     }
 
-    public List<Component> getStringRepresentation() {
-        List<Component> list = new ArrayList<>();
-        StringBuilder builder = new StringBuilder();
+    public List<FormattedText> getStringRepresentation() {
+        List<FormattedText> list = new ArrayList<>();
         for (Object o : this.elements) {
             if (o == IKey.LINE_FEED) {
-                list.add(Component.translatable(builder.toString()));
-                builder.delete(0, builder.length());
+                list.add(Component.empty());
                 continue;
             }
-            String s = null;
             if (o instanceof IKey key) {
-                s = key.get();
+                list.add(key.get());
             } else if (o instanceof String s1) {
-                s = s1;
+                list.add(Component.literal(s1));
             } else if (o instanceof TextIcon ti) {
-                s = ti.getText();
+                list.add(ti.getText());
             } else if (o instanceof Component c) {
                 list.add(c);
             }
-            if (s != null) {
-                for (String part : s.split("\n")) {
-                    builder.append(part);
-                    list.add(Component.translatable(builder.toString()));
-                    builder.delete(0, builder.length());
-                }
-            }
         }
-        if (!list.isEmpty() && list.get(list.size() - 1).getContents() != ComponentContents.EMPTY) {
+        if (!list.isEmpty() && list.get(list.size() - 1).getString().isEmpty()) {
             list.remove(list.size() - 1);
         }
         return list;
@@ -96,6 +87,13 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         return this;
     }
 
+    @Override
+    public RichText add(Component c) {
+        this.elements.add(c);
+        return this;
+    }
+
+    @Override
     public RichText add(String s) {
         this.elements.add(s);
         return this;

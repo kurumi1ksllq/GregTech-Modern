@@ -4,7 +4,7 @@ import com.gregtechceu.gtceu.api.mui.base.ITheme;
 import com.gregtechceu.gtceu.api.mui.base.MCHelper;
 import com.gregtechceu.gtceu.api.mui.base.widget.*;
 import com.gregtechceu.gtceu.client.mui.screen.*;
-import com.mojang.blaze3d.Blaze3D;
+import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.ApiStatus;
@@ -35,7 +35,7 @@ public class ModularGuiContext extends GuiContext {
 
     private LocatedElement<IDraggable> draggable;
     private int lastButton = -1;
-    private double lastClickTime = 0;
+    private long lastClickTime = 0;
     private int lastDragX, lastDragY;
 
     public List<Consumer<ModularGuiContext>> postRenderCallbacks = new ArrayList<>();
@@ -248,7 +248,7 @@ public class ModularGuiContext extends GuiContext {
     @ApiStatus.Internal
     public boolean onMouseReleased(double mouseX, double mouseY, int button) {
         if (button == this.lastButton && isMouseItemEmpty() && hasDraggable()) {
-            double time = Blaze3D.getTime();
+            long time = Util.getMillis();
             if (time - this.lastClickTime < 200) return false;
             dropDraggable();
             return true;
@@ -291,7 +291,7 @@ public class ModularGuiContext extends GuiContext {
 
                 this.draggable = draggable;
                 this.lastButton = button;
-                this.lastClickTime = Blaze3D.getTime();
+                this.lastClickTime = Util.getMillis();
                 return true;
             }
         }
@@ -357,11 +357,11 @@ public class ModularGuiContext extends GuiContext {
         return this.settings;
     }
 
-    public JeiSettingsImpl getJeiSettings() {
+    public XeiSettingsImpl getXeiSettings() {
         if (this.screen.isOverlay()) {
             throw new IllegalStateException("Overlays don't have JEI settings!");
         }
-        return (JeiSettingsImpl) getUISettings().getJeiSettings();
+        return (XeiSettingsImpl) getUISettings().getJeiSettings();
     }
 
     @ApiStatus.Internal

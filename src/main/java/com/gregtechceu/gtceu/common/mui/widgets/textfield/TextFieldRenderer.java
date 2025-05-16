@@ -2,6 +2,8 @@ package com.gregtechceu.gtceu.common.mui.widgets.textfield;
 
 import com.gregtechceu.gtceu.api.mui.drawable.text.TextRenderer;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
+import com.gregtechceu.gtceu.api.mui.widget.sizer.Point;
+import com.gregtechceu.gtceu.api.mui.widget.sizer.PointF;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -17,8 +19,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableObject;
 
-import java.awt.*;
-import java.awt.geom.Point2D;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,7 +56,7 @@ public class TextFieldRenderer extends TextRenderer {
         // draw cursor
         if (this.renderCursor) {
             Point main = this.handler.getMainCursor();
-            Point2D.Float start = getPosOf(measuredLines, main);
+            PointF start = getPosOf(measuredLines, main);
             if (this.handler.getText().get(main.y).isEmpty()) {
                 start.x += 0.7f;
             }
@@ -71,9 +71,9 @@ public class TextFieldRenderer extends TextRenderer {
 
     protected void drawMarked(GuiGraphics graphics, List<Line> measuredLines) {
         if (!this.simulate && this.handler.hasTextMarked()) {
-            Point2D.Float start = getPosOf(measuredLines, this.handler.getStartCursor());
+            PointF start = getPosOf(measuredLines, this.handler.getStartCursor());
             // render Marked
-            Point2D.Float end = getPosOf(measuredLines, this.handler.getEndCursor());
+            PointF end = getPosOf(measuredLines, this.handler.getEndCursor());
 
             if (start.y == end.y) {
                 drawMarked(graphics, start.y, start.x, end.x);
@@ -140,13 +140,13 @@ public class TextFieldRenderer extends TextRenderer {
         return new Point();
     }
 
-    public Point2D.Float getPosOf(List<Line> measuredLines, Point cursorPos) {
+    public PointF getPosOf(List<Line> measuredLines, Point cursorPos) {
         if (measuredLines.isEmpty()) {
-            return new Point2D.Float(getStartX(0), getStartYOfLines(1));
+            return new PointF(getStartX(0), getStartYOfLines(1));
         }
         Line line = measuredLines.get(cursorPos.y);
         float width = Math.min(getFont().getSplitter().stringWidth(line.text()), cursorPos.x);
-        return new Point2D.Float(getStartX(line.width()) + width * this.scale, getStartYOfLines(measuredLines.size()) + cursorPos.y * getFontHeight());
+        return new PointF(getStartX(line.width()) + width * this.scale, getStartYOfLines(measuredLines.size()) + cursorPos.y * getFontHeight());
     }
 
     @OnlyIn(Dist.CLIENT)

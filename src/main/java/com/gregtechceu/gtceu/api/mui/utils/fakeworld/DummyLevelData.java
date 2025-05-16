@@ -16,7 +16,6 @@ public class DummyLevelData implements WritableLevelData {
     private final boolean hardcore;
     @Getter
     private final GameRules gameRules;
-    private final boolean isFlat;
     @Getter
     @Setter
     private int xSpawn;
@@ -48,7 +47,6 @@ public class DummyLevelData implements WritableLevelData {
     public DummyLevelData() {
         this.difficulty = Difficulty.NORMAL;
         this.hardcore = false;
-        this.isFlat = false;
         this.gameRules = new GameRules();
     }
 

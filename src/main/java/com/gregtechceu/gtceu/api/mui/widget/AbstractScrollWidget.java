@@ -30,7 +30,7 @@ public abstract class AbstractScrollWidget<I extends IWidget, W extends Abstract
         super();
         this.scroll.setScrollDataX(x);
         this.scroll.setScrollDataY(y);
-        listenGuiAction((IGuiAction.MouseReleased) mouseButton -> {
+        listenGuiAction((IGuiAction.MouseReleased) (mouseX, mouseY, button) -> {
             this.scroll.mouseReleased(getContext());
             return false;
         });

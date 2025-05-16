@@ -143,7 +143,7 @@ public final class PanelSyncHandler extends SyncHandler implements IPanelHandler
     }
 
     @Override
-    public void readOnClient(int i, FriendlyByteBuf packetBuffer) throws IOException {
+    public void readOnClient(int i, FriendlyByteBuf packetBuffer) {
         if (i == 1) {
             openPanel(false);
         } else if (i == 2) {
@@ -154,7 +154,7 @@ public final class PanelSyncHandler extends SyncHandler implements IPanelHandler
     }
 
     @Override
-    public void readOnServer(int i, FriendlyByteBuf packetBuffer) throws IOException {
+    public void readOnServer(int i, FriendlyByteBuf packetBuffer) {
         if (i == 0) {
             openPanel(false);
             syncToClient(1);

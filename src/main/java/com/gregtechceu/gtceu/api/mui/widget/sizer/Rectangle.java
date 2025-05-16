@@ -65,7 +65,7 @@ public class Rectangle {
       this.height = height;
    }
 
-   public Rect2i asVanillaRect() {
+   public Rect2i asRect2i() {
       return new Rect2i(this.x, this.y, this.width, this.height);
    }
 

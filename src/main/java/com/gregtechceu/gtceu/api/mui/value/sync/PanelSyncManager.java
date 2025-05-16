@@ -216,7 +216,7 @@ public class PanelSyncManager {
         if (getSlotGroup(ModularSyncManager.PLAYER_INVENTORY) != null) {
             throw new IllegalStateException("The player slot group is already registered!");
         }
-        PlayerMainInvWrapper playerInventory = new PlayerMainInvWrapper(player.inventory);
+        PlayerMainInvWrapper playerInventory = new PlayerMainInvWrapper(player.getInventory());
         String key = "player";
         for (int i = 0; i < 36; i++) {
             itemSlot(key, i, slotFunction.apply(playerInventory, i).slotGroup(ModularSyncManager.PLAYER_INVENTORY));

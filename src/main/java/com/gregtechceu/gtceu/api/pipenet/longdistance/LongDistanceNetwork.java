@@ -389,11 +389,11 @@ public class LongDistanceNetwork {
             this.setDirty();
         }
 
-        public static WorldData load(@NotNull CompoundTag nbtTagCompound, ServerLevel level) {
+        public static WorldData load(@NotNull CompoundTag compoundTag, ServerLevel level) {
             WorldData data = new WorldData();
             data.networks.clear();
             data.networkList.clear();
-            ListTag list = nbtTagCompound.getList("nets", Tag.TAG_COMPOUND);
+            ListTag list = compoundTag.getList("nets", Tag.TAG_COMPOUND);
             for (Tag nbt : list) {
                 CompoundTag tag = (CompoundTag) nbt;
                 LongDistancePipeType pipeType = LongDistancePipeType.getPipeType(tag.getString("class"));
@@ -421,7 +421,7 @@ public class LongDistanceNetwork {
 
         @NotNull
         @Override
-        public CompoundTag save(@NotNull CompoundTag nbtTagCompound) {
+        public CompoundTag save(@NotNull CompoundTag compoundTag) {
             ListTag list = new ListTag();
             for (LongDistanceNetwork network : this.networkList) {
                 CompoundTag tag = new CompoundTag();
@@ -444,8 +444,8 @@ public class LongDistanceNetwork {
                     endpoints.add(LongTag.valueOf(endpoint.getPos().asLong()));
                 }
             }
-            nbtTagCompound.put("nets", list);
-            return nbtTagCompound;
+            compoundTag.put("nets", list);
+            return compoundTag;
         }
 
         public LevelAccessor getWorld() {

@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.client.forge;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.mui.theme.ThemeManager;
 import com.gregtechceu.gtceu.client.EnvironmentalHazardClientHandler;
 import com.gregtechceu.gtceu.client.TooltipsHandler;
 import com.gregtechceu.gtceu.client.renderer.BlockHighlightRenderer;
@@ -57,6 +58,11 @@ public class ForgeClientEventListener {
             EnvironmentalHazardClientHandler.INSTANCE.onClientTick();
             GTValues.CLIENT_TIME++;
         }
+    }
+
+    @SubscribeEvent
+    public static void onClientReload(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(new ThemeManager());
     }
 
     @SubscribeEvent

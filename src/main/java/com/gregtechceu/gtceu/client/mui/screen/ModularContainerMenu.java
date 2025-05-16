@@ -4,14 +4,17 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.factory.GuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.ModularSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.common.data.GTMenuTypes;
 import com.gregtechceu.gtceu.common.mui.widgets.slot.ModularSlot;
 import com.gregtechceu.gtceu.common.mui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.core.mixins.AbstractContainerMenuAccessor;
+import com.gregtechceu.gtceu.utils.NetworkUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -47,7 +50,11 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     private ModularScreen optionalScreen;
 
     public ModularContainerMenu(int containerId) {
-        super(GTMenuTypes.MODULAR, containerId);
+        super(GTMenuTypes.MODULAR_CONTAINER.get(), containerId);
+    }
+
+    public ModularContainerMenu(MenuType<ModularContainerMenu> type, int containerId, Inventory playerInv) {
+        super(type, containerId);
     }
 
     @ApiStatus.Internal

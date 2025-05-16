@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.client.mui.screen;
 
-import com.gregtechceu.gtceu.api.mui.ModularUI;
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -17,7 +17,7 @@ public abstract class CustomModularScreen extends ModularScreen {
      * Creates a new screen with ModularUI as its owner.
      */
     public CustomModularScreen() {
-        super(ModularUI.ID);
+        super(GTCEu.MOD_ID);
     }
 
     /**

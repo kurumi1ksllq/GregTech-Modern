@@ -56,18 +56,18 @@ public class ScrapeBehavior implements IToolBehavior {
             if (aoeDefinition == AoESymmetrical.none()) {
                 blocks = ImmutableSet.of(pos);
             } else {
-                HitResult rayTraceResult = ToolHelper.getPlayerDefaultRaytrace(player);
+                HitResult hitResult = ToolHelper.getPlayerDefaultRaytrace(player);
 
-                if (rayTraceResult == null)
+                if (hitResult == null)
                     return InteractionResult.PASS;
-                if (rayTraceResult.getType() != HitResult.Type.BLOCK)
+                if (hitResult.getType() != HitResult.Type.BLOCK)
                     return InteractionResult.PASS;
-                if (!(rayTraceResult instanceof BlockHitResult blockHitResult))
+                if (!(hitResult instanceof BlockHitResult blockHitResult))
                     return InteractionResult.PASS;
                 if (blockHitResult.getDirection() == null)
                     return InteractionResult.PASS;
 
-                blocks = getScrapableBlocks(stack, aoeDefinition, level, player, rayTraceResult);
+                blocks = getScrapableBlocks(stack, aoeDefinition, level, player, hitResult);
                 blocks.add(blockHitResult.getBlockPos());
             }
         } else
@@ -98,8 +98,8 @@ public class ScrapeBehavior implements IToolBehavior {
     }
 
     public static Set<BlockPos> getScrapableBlocks(ItemStack stack, AoESymmetrical aoeDefinition, Level Level,
-                                                   Player player, HitResult rayTraceResult) {
-        return ToolHelper.iterateAoE(stack, aoeDefinition, Level, player, rayTraceResult,
+                                                   Player player, HitResult hitResult) {
+        return ToolHelper.iterateAoE(stack, aoeDefinition, Level, player, hitResult,
                 ScrapeBehavior.INSTANCE::isBlockScrapable);
     }
 

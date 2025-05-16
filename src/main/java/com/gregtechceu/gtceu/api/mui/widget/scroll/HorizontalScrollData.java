@@ -52,11 +52,11 @@ public class HorizontalScrollData extends ScrollData {
         ScrollData data = getOtherScrollData(area);
         if (data != null && isOtherScrollBarActive(area, true)) {
             int thickness = data.getThickness();
-            if (data.isOnAxisStart() ? x < area.x + thickness : x >= area.ex() - thickness) {
+            if (data.isAxisStart() ? x < area.x + thickness : x >= area.ex() - thickness) {
                 return false;
             }
         }
-        return isOnAxisStart() ? y >= area.y && y < area.y + scrollbar : y >= area.ey() - scrollbar && y < area.ey();
+        return isAxisStart() ? y >= area.y && y < area.y + scrollbar : y >= area.ey() - scrollbar && y < area.ey();
     }
 
     @Override
@@ -64,14 +64,14 @@ public class HorizontalScrollData extends ScrollData {
         boolean isOtherActive = isOtherScrollBarActive(area, true);
         int l = getScrollBarLength(area);
         int x = 0;
-        int y = isOnAxisStart() ? 0 : area.height - getThickness();
+        int y = isAxisStart() ? 0 : area.height - getThickness();
         int w = area.width;
         int h = getThickness();
         GuiDraw.drawRect(x, y, w, h, area.getScrollBarBackgroundColor());
 
         x = getScrollBarStart(area, l, isOtherActive);
         ScrollData data2 = getOtherScrollData(area);
-        if (data2 != null && isOtherActive && data2.isOnAxisStart()) {
+        if (data2 != null && isOtherActive && data2.isAxisStart()) {
             x += data2.getThickness();
         }
 

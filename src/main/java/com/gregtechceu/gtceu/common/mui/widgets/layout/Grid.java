@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.IntFunction;
-import java.util.stream.Collectors;
 
 public class Grid extends AbstractScrollWidget<IWidget, Grid> implements ILayoutWidget, IParentWidget<IWidget, Grid> {
 
@@ -82,9 +81,9 @@ public class Grid extends AbstractScrollWidget<IWidget, Grid> implements ILayout
         int x = 0, y = 0;
         for (int r = 0; r < rowSizes.size(); r++) {
             x = 0;
-            int height = rowSizes.get(r);
+            int height = rowSizes.getInt(r);
             for (int c = 0; c < colSizes.size(); c++) {
-                int width = colSizes.get(c);
+                int width = colSizes.getInt(c);
                 IWidget child = this.matrix.get(r).get(c);
                 if (child != null) {
                     child.getArea().rx = (int) (x + (width - child.getArea().width) * alignment.x);
@@ -119,7 +118,7 @@ public class Grid extends AbstractScrollWidget<IWidget, Grid> implements ILayout
 
     private void makeFlatList() {
         super.getChildren().clear();
-        super.getChildren().addAll(this.matrix.stream().flatMap(List::stream).filter(Objects::nonNull).collect(Collectors.toList()));
+        super.getChildren().addAll(this.matrix.stream().flatMap(List::stream).filter(Objects::nonNull).toList());
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.mui.factory;
 
 import com.gregtechceu.gtceu.api.mui.base.MCHelper;
-import com.gregtechceu.gtceu.client.mui.screen.JeiSettingsImpl;
+import com.gregtechceu.gtceu.client.mui.screen.XeiSettingsImpl;
 import com.gregtechceu.gtceu.client.mui.screen.ModularContainerMenu;
 import com.gregtechceu.gtceu.client.mui.screen.ModularScreen;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
@@ -40,7 +40,7 @@ public class ClientGUI {
      * @param screen      new modular screen
      * @param jeiSettings custom jei settings
      */
-    public static void open(@NotNull ModularScreen screen, @NotNull JeiSettingsImpl jeiSettings) {
+    public static void open(@NotNull ModularScreen screen, @NotNull XeiSettingsImpl jeiSettings) {
         GuiManager.openScreen(screen, new UISettings(jeiSettings));
     }
 
@@ -65,7 +65,7 @@ public class ClientGUI {
      * @param jeiSettings custom jei settings
      * @param container   custom container
      */
-    public static void open(@NotNull ModularScreen screen, @NotNull JeiSettingsImpl jeiSettings, @Nullable IntFunction<ModularContainerMenu> container) {
+    public static void open(@NotNull ModularScreen screen, @NotNull XeiSettingsImpl jeiSettings, @Nullable IntFunction<ModularContainerMenu> container) {
         UISettings settings = new UISettings(jeiSettings);
         settings.customContainer(container);
         GuiManager.openScreen(screen, settings);

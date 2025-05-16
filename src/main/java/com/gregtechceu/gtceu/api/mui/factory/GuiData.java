@@ -1,7 +1,10 @@
 package com.gregtechceu.gtceu.api.mui.factory;
 
+import com.gregtechceu.gtceu.utils.NetworkUtils;
+import lombok.Getter;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 import java.util.Objects;
 
@@ -15,14 +18,15 @@ import java.util.Objects;
  */
 public class GuiData {
 
+    @Getter
     private final Player player;
 
     public GuiData(Player player) {
         this.player = Objects.requireNonNull(player);
     }
 
-    public Player getPlayer() {
-        return this.player;
+    public Level getLevel() {
+        return getPlayer().level();
     }
 
     public boolean isClient() {

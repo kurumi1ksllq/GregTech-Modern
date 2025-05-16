@@ -8,10 +8,10 @@ import java.io.IOException;
 public interface IByteBufAdapter<T> extends IByteBufSerializer<T>, IByteBufDeserializer<T>, IEquals<T> {
 
     @Override
-    T deserialize(FriendlyByteBuf buffer) throws IOException;
+    T deserialize(FriendlyByteBuf buffer);
 
     @Override
-    void serialize(FriendlyByteBuf buffer, T u) throws IOException;
+    void serialize(FriendlyByteBuf buffer, T u);
 
     @Override
     boolean areEqual(@NotNull T t1, @NotNull T t2);

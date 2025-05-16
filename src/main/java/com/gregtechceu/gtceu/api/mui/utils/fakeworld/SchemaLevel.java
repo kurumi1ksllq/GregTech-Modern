@@ -15,18 +15,18 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.function.BiPredicate;
 
-public class SchemaWorld extends DummyWorld implements ISchema {
+public class SchemaLevel extends DummyLevel implements ISchema {
 
     private final ObjectLinkedOpenHashSet<BlockPos> blocks = new ObjectLinkedOpenHashSet<>();
     private BiPredicate<BlockPos, BlockInfo> renderFilter;
     private final BlockPos.MutableBlockPos min = new BlockPos.MutableBlockPos();
     private final BlockPos.MutableBlockPos max = new BlockPos.MutableBlockPos();
 
-    public SchemaWorld() {
+    public SchemaLevel() {
         this((blockPos, blockInfo) -> true);
     }
 
-    public SchemaWorld(BiPredicate<BlockPos, BlockInfo> renderFilter) {
+    public SchemaLevel(BiPredicate<BlockPos, BlockInfo> renderFilter) {
         this.renderFilter = renderFilter;
     }
 
@@ -103,7 +103,7 @@ public class SchemaWorld extends DummyWorld implements ISchema {
             protected Map.Entry<BlockPos, BlockInfo> computeNext() {
                 while (it.hasNext()) {
                     var pos = it.next();
-                    this.info.set(SchemaWorld.this, pos);
+                    this.info.set(SchemaLevel.this, pos);
                     this.pair.setLeft(pos);
                     if (renderFilter == null || renderFilter.test(pos, info)) {
                         return this.pair;

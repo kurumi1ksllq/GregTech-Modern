@@ -11,7 +11,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Contract;
 
-public class Circle implements IDrawable, IJsonSerializable {
+public class Circle implements IDrawable, IJsonSerializable<Circle> {
 
     private int colorInner, colorOuter, segments;
 

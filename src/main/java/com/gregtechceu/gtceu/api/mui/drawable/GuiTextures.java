@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.mui.drawable;
 
-import com.gregtechceu.gtceu.api.mui.ModularUI;
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.GuiAxis;
 
 import static com.gregtechceu.gtceu.api.mui.drawable.UITexture.icon;
@@ -78,20 +78,20 @@ public interface GuiTextures {
     UITexture CURSOR = icon("cursor", 32, 240);
 
     UITexture MUI_LOGO = UITexture.builder()
-            .location(ModularUI.ID, "modular_ui_logo")
+            .location(GTCEu.MOD_ID, "modular_ui_logo")
             .imageSize(603, 603)
             .name("logo")
             .build();
 
     UITexture MC_BACKGROUND = UITexture.builder()
-            .location(ModularUI.ID, "gui/background/vanilla_background")
+            .location(GTCEu.MOD_ID, "gui/background/vanilla_background")
             .imageSize(195, 136)
             .adaptable(4)
             .name("vanilla_background").canApplyTheme()
             .build();
 
     UITexture MC_BUTTON = UITexture.builder()
-            .location(ModularUI.ID, "gui/widgets/mc_button")
+            .location(GTCEu.MOD_ID, "gui/widgets/mc_button")
             .imageSize(16, 32) // texture is 32x64, but this looks nicer
             .uv(0f, 0f, 1f, 0.5f)
             .adaptable(2).tiled()
@@ -99,7 +99,7 @@ public interface GuiTextures {
             .build();
 
     UITexture MC_BUTTON_PRESSED = UITexture.builder()
-            .location(ModularUI.ID, "gui/widgets/mc_button")
+            .location(GTCEu.MOD_ID, "gui/widgets/mc_button")
             .imageSize(16, 32)
             .uv(0f, 0.5f, 1f, 1f)
             .adaptable(2).tiled()
@@ -107,7 +107,7 @@ public interface GuiTextures {
             .build();
 
     UITexture MC_BUTTON_HOVERED = UITexture.builder()
-            .location(ModularUI.ID, "gui/widgets/mc_button_hovered")
+            .location(GTCEu.MOD_ID, "gui/widgets/mc_button_hovered")
             .imageSize(16, 32)
             .uv(0f, 0f, 1f, 0.5f)
             .adaptable(2).tiled()
@@ -115,7 +115,7 @@ public interface GuiTextures {
             .build();
 
     UITexture MC_BUTTON_HOVERED_PRESSED = UITexture.builder()
-            .location(ModularUI.ID, "gui/widgets/mc_button_hovered")
+            .location(GTCEu.MOD_ID, "gui/widgets/mc_button_hovered")
             .imageSize(16, 32)
             .uv(0f, 0.5f, 1f, 1f)
             .adaptable(2).tiled()
@@ -123,7 +123,7 @@ public interface GuiTextures {
             .build();
 
     UITexture MC_BUTTON_DISABLED = UITexture.builder()
-            .location(ModularUI.ID, "gui/widgets/mc_button_disabled")
+            .location(GTCEu.MOD_ID, "gui/widgets/mc_button_disabled")
             .imageSize(16, 16)
             .uv(0f, 0f, 1f, 0.5f)
             .adaptable(1).tiled()
@@ -131,61 +131,61 @@ public interface GuiTextures {
             .build();
 
     UITexture BUTTON_CLEAN = UITexture.builder()
-            .location(ModularUI.ID, "gui/widgets/base_button")
+            .location(GTCEu.MOD_ID, "gui/widgets/base_button")
             .imageSize(18, 18)
             .adaptable(1)
             .name("vanilla_button").canApplyTheme()
             .build();
 
     UITexture DISPLAY = UITexture.builder()
-            .location(ModularUI.ID, "gui/background/display")
+            .location(GTCEu.MOD_ID, "gui/background/display")
             .imageSize(143, 75)
             .adaptable(2)
             .name("display")
             .build();
 
     UITexture DISPLAY_SMALL = UITexture.builder()
-            .location(ModularUI.ID, "gui/background/display_small")
+            .location(GTCEu.MOD_ID, "gui/background/display_small")
             .imageSize(18, 18)
             .adaptable(1)
             .name("display_small")
             .build();
 
     UITexture SLOT_ITEM = UITexture.builder()
-            .location(ModularUI.ID, "gui/slot/item")
+            .location(GTCEu.MOD_ID, "gui/slot/item")
             .imageSize(18, 18)
             .adaptable(1)
             .name("slot_item")
             .build();
 
     UITexture SLOT_FLUID = UITexture.builder()
-            .location(ModularUI.ID, "gui/slot/fluid")
+            .location(GTCEu.MOD_ID, "gui/slot/fluid")
             .imageSize(18, 18)
             .adaptable(1)
             .name("slot_fluid")
             .build();
 
     UITexture PROGRESS_ARROW = UITexture.builder()
-            .location(ModularUI.ID, "gui/widgets/progress_bar_arrow")
+            .location(GTCEu.MOD_ID, "gui/widgets/progress_bar_arrow")
             .imageSize(20, 40)
             .build();
 
     UITexture PROGRESS_CYCLE = UITexture.builder()
-            .location(ModularUI.ID, "gui/widgets/progress_bar_mixer")
+            .location(GTCEu.MOD_ID, "gui/widgets/progress_bar_mixer")
             .imageSize(20, 40)
             .build();
 
     UITexture CYCLE_BUTTON_DEMO = UITexture.builder()
-            .location(ModularUI.ID, "gui/widgets/cycle_button_demo")
+            .location(GTCEu.MOD_ID, "gui/widgets/cycle_button_demo")
             .imageSize(18, 54)
             .build();
 
-    UITexture CHECK_BOX = UITexture.fullImage(ModularUI.ID, "gui/widgets/toggle_config");
-    UITexture CROSS = UITexture.fullImage(ModularUI.ID, "gui/icons/cross");
-    UITexture CROSS_TINY = UITexture.fullImage(ModularUI.ID, "gui/icons/cross_tiny");
+    UITexture CHECK_BOX = UITexture.fullImage(GTCEu.MOD_ID, "gui/widgets/toggle_config");
+    UITexture CROSS = UITexture.fullImage(GTCEu.MOD_ID, "gui/icons/cross");
+    UITexture CROSS_TINY = UITexture.fullImage(GTCEu.MOD_ID, "gui/icons/cross_tiny");
 
-    TabTexture TAB_TOP = TabTexture.of(UITexture.fullImage(ModularUI.ID, "gui/tab/tabs_top", true), GuiAxis.Y, false, 28, 32, 4);
-    TabTexture TAB_BOTTOM = TabTexture.of(UITexture.fullImage(ModularUI.ID, "gui/tab/tabs_bottom", true), GuiAxis.Y, true, 28, 32, 4);
-    TabTexture TAB_LEFT = TabTexture.of(UITexture.fullImage(ModularUI.ID, "gui/tab/tabs_left", true), GuiAxis.X, false, 32, 28, 4);
-    TabTexture TAB_RIGHT = TabTexture.of(UITexture.fullImage(ModularUI.ID, "gui/tab/tabs_right", true), GuiAxis.X, true, 32, 28, 4);
+    TabTexture TAB_TOP = TabTexture.of(UITexture.fullImage(GTCEu.MOD_ID, "gui/tab/tabs_top", true), GuiAxis.Y, false, 28, 32, 4);
+    TabTexture TAB_BOTTOM = TabTexture.of(UITexture.fullImage(GTCEu.MOD_ID, "gui/tab/tabs_bottom", true), GuiAxis.Y, true, 28, 32, 4);
+    TabTexture TAB_LEFT = TabTexture.of(UITexture.fullImage(GTCEu.MOD_ID, "gui/tab/tabs_left", true), GuiAxis.X, false, 32, 28, 4);
+    TabTexture TAB_RIGHT = TabTexture.of(UITexture.fullImage(GTCEu.MOD_ID, "gui/tab/tabs_right", true), GuiAxis.X, true, 32, 28, 4);
 }

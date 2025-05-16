@@ -4,7 +4,7 @@ import net.minecraft.world.inventory.Slot;
 
 public interface IClickableGuiContainer {
 
-    void modularUI$setClickedSlot(Slot slot);
+    void gtceu$setClickedSlot(Slot slot);
 
-    Slot modularUI$getClickedSlot();
+    Slot gtceu$getClickedSlot();
 }

@@ -1,39 +1,37 @@
 package com.gregtechceu.gtceu.api.mui.factory;
 
-import net.minecraft.entity.player.Player;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
+import lombok.Getter;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * See {@link GuiData} for an explanation for what this is for.
  */
 public class HandGuiData extends GuiData {
 
-    private final EnumHand hand;
+    @Getter
+    private final InteractionHand hand;
 
-    public HandGuiData(Player player, EnumHand hand) {
+    public HandGuiData(Player player, InteractionHand hand) {
         super(player);
         this.hand = hand;
     }
 
-    public EnumHand getHand() {
-        return this.hand;
-    }
-
-    public ItemStack getUsedItemStack() {
-        return getPlayer().getHeldItem(this.hand);
+    public ItemStack getUsedItem() {
+        return getPlayer().getItemInHand(this.hand);
     }
 
     public void setItemInMainHand(ItemStack item) {
-        getPlayer().setHeldItem(EnumHand.MAIN_HAND, item);
+        getPlayer().setItemInHand(InteractionHand.MAIN_HAND, item);
     }
 
     public void setItemInOffHand(ItemStack item) {
-        getPlayer().setHeldItem(EnumHand.OFF_HAND, item);
+        getPlayer().setItemInHand(InteractionHand.OFF_HAND, item);
     }
 
     public void setItemInUsedHand(ItemStack item) {
-        getPlayer().setHeldItem(this.hand, item);
+        getPlayer().setItemInHand(this.hand, item);
     }
 
 }

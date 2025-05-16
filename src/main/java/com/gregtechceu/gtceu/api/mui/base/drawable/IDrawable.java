@@ -43,24 +43,6 @@ public interface IDrawable {
     void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme);
 
     /**
-     * @deprecated use {@link #draw(GuiContext, int, int, int, int, WidgetTheme)}
-     */
-    @OnlyIn(Dist.CLIENT)
-    @Deprecated
-    default void draw(GuiContext context, int x, int y, int width, int height) {
-        draw(context, x, y, width, height, WidgetTheme.getDefault());
-    }
-
-    /**
-     * @deprecated use {@link #drawAtZero(GuiContext, int, int, WidgetTheme)}
-     */
-    @OnlyIn(Dist.CLIENT)
-    @Deprecated
-    default void drawAtZero(GuiContext context, int width, int height) {
-        drawAtZero(context, width, height, WidgetTheme.getDefault());
-    }
-
-    /**
      * Draws this drawable at the current (0|0) with the given size.
      *
      * @param context     gui context
@@ -74,15 +56,6 @@ public interface IDrawable {
     }
 
     /**
-     * @deprecated use {@link #draw(GuiContext, Area, WidgetTheme)}
-     */
-    @OnlyIn(Dist.CLIENT)
-    @Deprecated
-    default void draw(GuiContext context, Area area) {
-        draw(context, area, WidgetTheme.getDefault());
-    }
-
-    /**
      * Draws this drawable in a given area.
      *
      * @param context     current context to draw with
@@ -92,15 +65,6 @@ public interface IDrawable {
     @OnlyIn(Dist.CLIENT)
     default void draw(GuiContext context, Area area, WidgetTheme widgetTheme) {
         draw(context, area.x + area.getPadding().left, area.y + area.getPadding().top, area.paddedWidth(), area.paddedHeight(), widgetTheme);
-    }
-
-    /**
-     * @deprecated use {@link #drawAtZero(GuiContext, Area, WidgetTheme)}
-     */
-    @Deprecated
-    @OnlyIn(Dist.CLIENT)
-    default void drawAtZero(GuiContext context, Area area) {
-        drawAtZero(context, area, WidgetTheme.getDefault());
     }
 
     /**

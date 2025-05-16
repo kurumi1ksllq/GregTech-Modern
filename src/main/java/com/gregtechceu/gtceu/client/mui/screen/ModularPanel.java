@@ -16,15 +16,18 @@ import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Animator;
 import com.gregtechceu.gtceu.api.mui.utils.HoveredWidgetList;
 import com.gregtechceu.gtceu.api.mui.utils.Interpolation;
-import com.gregtechceu.gtceu.api.mui.utils.ObjectList;
+import com.gregtechceu.gtceu.integration.xei.handlers.GhostIngredientSlot;
+import com.gregtechceu.gtceu.integration.xei.handlers.RecipeViewerHandler;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandler;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.common.mui.widgets.SlotGroupWidget;
-import com.mojang.blaze3d.Blaze3D;
 import mezz.jei.gui.ghost.GhostIngredientDrag;
+import net.minecraft.Util;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
@@ -61,7 +64,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     private IPanelHandler panelHandler;
     private State state = State.IDLE;
     private boolean cantDisposeNow = false;
-    private final ObjectList<LocatedWidget> hovering = ObjectList.create();
+    private final ObjectArrayList<LocatedWidget> hovering = new ObjectArrayList<>();
     private final Input keyboard = new Input();
     private final Input mouse = new Input();
 
@@ -230,7 +233,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     @MustBeInvokedByOverriders
     public void onClose() {
         if (!getScreen().isOverlay()) {
-            getContext().getJeiSettings().removeJeiExclusionArea(this);
+            getContext().getXeiSettings().removeExclusionArea(this);
         }
         this.state = State.CLOSED;
         if (this.panelHandler != null) {
@@ -297,7 +300,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
                     animateClose();
                     result = true;
                 }
-            } else if (checkJeiGhostIngredient(button)) {
+            } else if (checkGhostIngredient(button)) {
                 return true;
             } else {
                 for (LocatedWidget widget : this.hovering) {
@@ -345,13 +348,16 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
         });
     }
 
-    private boolean checkJeiGhostIngredient(int mouseButton) {
-        if (GTCEu.Mods.isJEILoaded() && ModularUIJeiPlugin.getGhostDrag() != null) {
+    private boolean checkGhostIngredient(int mouseButton) {
+        RecipeViewerHandler handler = RecipeViewerHandler.getCurrent();
+        if (handler == null) return false;
+        Object currentlyDragged = handler.getCurrentlyDragged();
+
+        if (currentlyDragged != null) {
             // try inserting ghost ingredient
-            GhostIngredientDrag<?> drag = ModularUIJeiPlugin.getGhostDrag();
             for (LocatedWidget widget : this.hovering) {
-                if (widget.getElement() instanceof GhostIngredientSlot<?> ghostSlot && GhostIngredientSlot.insertGhostIngredient(drag, ghostSlot)) {
-                    ModularUIJeiPlugin.getGhostDragManager().stopDrag();
+                if (widget.getElement() instanceof GhostIngredientSlot<?> ghostSlot && GhostIngredientSlot.insertGhostIngredient(currentlyDragged, ghostSlot)) {
+                    handler.stopDrag();
                     this.mouse.pressed(widget, mouseButton);
                     this.mouse.doRelease = false;
                     getContext().removeFocus();
@@ -365,7 +371,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
             }
             // no target found -> tell jei to drop the ghost ingredient
             // stop all further interaction since dropping the ingredient counts as an interaction
-            ModularUIJeiPlugin.getGhostDragManager().stopDrag();
+            handler.stopDrag();
             this.mouse.pressed(LocatedWidget.EMPTY, mouseButton);
             this.mouse.doRelease = false;
             getContext().removeFocus();
@@ -680,7 +686,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     final void setPanelGuiContext(@NotNull ModularGuiContext context) {
         setContext(context);
         if (!context.getScreen().isOverlay()) {
-            context.getJeiSettings().addJeiExclusionArea(this);
+            context.getXeiSettings().addExclusionArea(this);
         }
     }
 
@@ -796,11 +802,11 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
      */
     private static class Input {
 
-        private final ObjectList<Interactable> acceptedInteractions = ObjectList.create();
+        private final ObjectList<Interactable> acceptedInteractions = new ObjectArrayList<>();
         @Nullable
         private LocatedWidget lastPressed;
         private boolean held;
-        private double time;
+        private long time;
         private int lastButton;
         private boolean doRelease = true;
 
@@ -827,7 +833,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
         }
 
         private int getTimeSinceEvent() {
-            return (int) Math.min(Blaze3D.getTime() - this.time, Integer.MAX_VALUE);
+            return (int) Math.min(Util.getMillis() - this.time, Integer.MAX_VALUE);
         }
 
         private boolean tryTap(int button) {
@@ -846,7 +852,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
             if (!this.held) {
                 this.lastPressed = pressed;
                 if (this.lastPressed != null) {
-                    this.time = Blaze3D.getTime();
+                    this.time = Util.getMillis();
                 }
                 this.lastButton = button;
                 this.held = true;

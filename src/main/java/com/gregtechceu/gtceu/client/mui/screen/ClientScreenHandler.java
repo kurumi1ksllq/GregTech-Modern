@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.client.mui.screen;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.IMuiScreen;
 import com.gregtechceu.gtceu.api.mui.base.MCHelper;
 import com.gregtechceu.gtceu.api.mui.base.widget.IGuiElement;
@@ -8,6 +7,7 @@ import com.gregtechceu.gtceu.api.mui.base.widget.IVanillaSlot;
 import com.gregtechceu.gtceu.api.mui.drawable.GuiDraw;
 import com.gregtechceu.gtceu.api.mui.drawable.Stencil;
 import com.gregtechceu.gtceu.api.mui.overlay.OverlayStack;
+import com.gregtechceu.gtceu.api.mui.widget.sizer.Rectangle;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.LocatedWidget;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
@@ -21,12 +21,11 @@ import com.gregtechceu.gtceu.common.mui.widgets.slot.ModularSlot;
 import com.gregtechceu.gtceu.common.mui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.core.mixins.AbstractContainerScreenAccessor;
 import com.gregtechceu.gtceu.core.mixins.ScreenAccessor;
-import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.gui.overlay.IngredientListOverlay;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -49,7 +48,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -138,6 +136,8 @@ public class ClientScreenHandler {
         }
     }
 
+    public static boolean shouldUnfocusRecipeViewer = false;
+
     // before JEI
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void handleMouseButtonPressed(ScreenEvent.MouseButtonPressed.Pre event) {
@@ -148,15 +148,15 @@ public class ClientScreenHandler {
         if (checkGui(event.getScreen())) currentScreen.getContext().updateMouseButton(button);
 
         if (button == -1) {
+            shouldUnfocusRecipeViewer = false;
             return;
         }
         if (currentScreen != null && currentScreen.handleDraggableInput(mouseX, mouseY, button, true) ||
                 doAction(currentScreen, ms -> ms.onMouseReleased(mouseX, mouseY, button))) {
-            if (GTCEu.Mods.isJEILoaded()) {
-                ((IngredientListOverlay) ModularUIJeiPlugin.getRuntime().getIngredientListOverlay()).setKeyboardFocus(false);
-            }
+            shouldUnfocusRecipeViewer = true;
             event.setCanceled(true);
-
+        } else {
+            shouldUnfocusRecipeViewer = false;
         }
     }
 
@@ -171,10 +171,10 @@ public class ClientScreenHandler {
 
         if (currentScreen != null && currentScreen.handleDraggableInput(mouseX, mouseY, button, false) ||
                 doAction(currentScreen, ms -> ms.mouseReleased(mouseX, mouseY, button))) {
-            if (GTCEu.Mods.isJEILoaded()) {
-                ((IngredientListOverlay) ModularUIJeiPlugin.getRuntime().getIngredientListOverlay()).setKeyboardFocus(false);
-            }
+            shouldUnfocusRecipeViewer = true;
             event.setCanceled(true);
+        } else {
+            shouldUnfocusRecipeViewer = false;
         }
     }
 
@@ -313,11 +313,11 @@ public class ClientScreenHandler {
                 // remove buttons to make sure they are not clicked
                 acc.setChildren(Collections.emptyList());
                 // set clicked slot to make sure the container clicks the desired slot
-                clickableGuiContainer.modularUI$setClickedSlot(slot);
+                clickableGuiContainer.gtceu$setClickedSlot(slot);
                 screen.mouseClicked(ctx.getMouseX(), ctx.getMouseY(), ctx.getMouseButton());
             } finally {
                 // undo modifications
-                clickableGuiContainer.modularUI$setClickedSlot(null);
+                clickableGuiContainer.gtceu$setClickedSlot(null);
                 acc.setChildren(buttonList);
             }
         }
@@ -426,7 +426,7 @@ public class ClientScreenHandler {
         }
 
         if (!acc.getSnapbackItem().isEmpty()) {
-            float f = (float) (Blaze3D.getTime() - acc.getSnapbackTime()) / 100.0F;
+            float f = (float) (Util.getMillis() - acc.getSnapbackTime()) / 100.0F;
 
             if (f >= 1.0F) {
                 f = 1.0F;
@@ -496,7 +496,7 @@ public class ClientScreenHandler {
             IGuiElement hovered = locatedHovered.getElement();
             locatedHovered.applyMatrix(context);
             graphics.pose().pushPose();
-            context.applyToOpenGl();
+            context.applyTo(graphics.pose());
 
             Area area = hovered.getArea();
             IGuiElement parent = hovered.getParent();
@@ -547,14 +547,6 @@ public class ClientScreenHandler {
 
     private static void drawSegmentLine(int y, int color) {
         GuiDraw.drawRect(5, y, 140, 1, color);
-    }
-
-    public static void updateGuiArea(AbstractContainerScreen<?> container, Rectangle area) {
-        AbstractContainerScreenAccessor acc = (AbstractContainerScreenAccessor) container;
-        acc.setLeftPos(area.x);
-        acc.setTopPos(area.y);
-        acc.setImageWidth(area.width);
-        acc.setImageHeight(area.height);
     }
 
     public static boolean hasScreen() {

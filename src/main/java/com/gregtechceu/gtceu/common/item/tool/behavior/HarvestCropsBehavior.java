@@ -55,16 +55,16 @@ public class HarvestCropsBehavior implements IToolBehavior {
         if (aoeDefinition == AoESymmetrical.none()) {
             blocks = ImmutableSet.of(pos);
         } else {
-            HitResult rayTraceResult = ToolHelper.getPlayerDefaultRaytrace(player);
+            HitResult hitResult = ToolHelper.getPlayerDefaultRaytrace(player);
 
-            if (rayTraceResult == null) return InteractionResult.PASS;
-            if (rayTraceResult.getType() != HitResult.Type.BLOCK) return InteractionResult.PASS;
-            if (!(rayTraceResult instanceof BlockHitResult blockHitResult))
+            if (hitResult == null) return InteractionResult.PASS;
+            if (hitResult.getType() != HitResult.Type.BLOCK) return InteractionResult.PASS;
+            if (!(hitResult instanceof BlockHitResult blockHitResult))
                 return InteractionResult.PASS;
             if (blockHitResult.getDirection() == null)
                 return InteractionResult.PASS;
 
-            blocks = ToolHelper.iterateAoE(stack, aoeDefinition, player.level(), player, rayTraceResult,
+            blocks = ToolHelper.iterateAoE(stack, aoeDefinition, player.level(), player, hitResult,
                     HarvestCropsBehavior::isBlockCrops);
             if (isBlockCrops(stack, context.getLevel(), player, blockHitResult.getBlockPos(), context)) {
                 blocks.add(blockHitResult.getBlockPos());

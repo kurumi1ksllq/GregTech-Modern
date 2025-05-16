@@ -6,7 +6,11 @@ import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Box;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
+@Accessors(fluent = true, chain = true)
 public class Flow extends ParentWidget<Flow> implements ILayoutWidget, IExpander {
 
     public static Flow row() {
@@ -20,23 +24,28 @@ public class Flow extends ParentWidget<Flow> implements ILayoutWidget, IExpander
     /**
      * The main axis on which to align children.
      */
+    @Getter
     private final GuiAxis axis;
     /**
      * How the children should be laid out on the main axis.
      */
-    private Alignment.MainAxis maa = Alignment.MainAxis.START;
+    @Setter
+    private Alignment.MainAxis mainAxisAlignment = Alignment.MainAxis.START;
     /**
      * How the children should be laid out on the cross axis.
      */
-    private Alignment.CrossAxis caa = Alignment.CrossAxis.CENTER;
+    @Setter
+    private Alignment.CrossAxis crossAxisAlignment = Alignment.CrossAxis.CENTER;
     /**
      * Additional space between each child on main axis.
      * Does not work with {@link Alignment.MainAxis#SPACE_BETWEEN} and {@link Alignment.MainAxis#SPACE_AROUND}.
      */
-    private int spaceBetween = 0;
+    @Setter
+    private int childPadding = 0;
     /**
      * Whether disabled child widgets should be collapsed for display.
      */
+    @Setter
     private boolean collapseDisabledChild = false;
 
     public Flow(GuiAxis axis) {
@@ -50,11 +59,11 @@ public class Flow extends ParentWidget<Flow> implements ILayoutWidget, IExpander
         final boolean hasSize = resizer().isSizeCalculated(this.axis);
         final Box padding = getArea().getPadding();
         final int size = getArea().getSize(axis) - padding.getTotal(this.axis);
-        Alignment.MainAxis maa = this.maa;
+        Alignment.MainAxis maa = this.mainAxisAlignment;
         if (!hasSize && maa != Alignment.MainAxis.START) {
             maa = Alignment.MainAxis.START;
         }
-        int space = this.spaceBetween;
+        int space = this.childPadding;
 
         int childrenSize = 0;
         int expandedAmount = 0;
@@ -146,9 +155,9 @@ public class Flow extends ParentWidget<Flow> implements ILayoutWidget, IExpander
             if (!widget.flex().hasPos(other) && widget.resizer().isSizeCalculated(other)) {
                 int crossAxisPos = margin.getStart(other) + padding.getStart(other);
                 if (hasWidth) {
-                    if (this.caa == Alignment.CrossAxis.CENTER) {
+                    if (this.crossAxisAlignment == Alignment.CrossAxis.CENTER) {
                         crossAxisPos = (int) (width / 2f - widget.getArea().getSize(other) / 2f);
-                    } else if (this.caa == Alignment.CrossAxis.END) {
+                    } else if (this.crossAxisAlignment == Alignment.CrossAxis.END) {
                         crossAxisPos = width - widget.getArea().getSize(other) - margin.getEnd(other) - padding.getStart(other);
                     }
                 }
@@ -164,31 +173,12 @@ public class Flow extends ParentWidget<Flow> implements ILayoutWidget, IExpander
         return this.collapseDisabledChild && !child.isEnabled();
     }
 
-    public Flow crossAxisAlignment(Alignment.CrossAxis caa) {
-        this.caa = caa;
-        return this;
-    }
-
-    public Flow mainAxisAlignment(Alignment.MainAxis maa) {
-        this.maa = maa;
-        return this;
-    }
-
-    public Flow childPadding(int spaceBetween) {
-        this.spaceBetween = spaceBetween;
-        return this;
-    }
-
     /**
      * Configures this widget to collapse disabled child widgets.
      */
     public Flow collapseDisabledChild() {
         this.collapseDisabledChild = true;
         return this;
-    }
-
-    public GuiAxis getAxis() {
-        return axis;
     }
 
     @Override

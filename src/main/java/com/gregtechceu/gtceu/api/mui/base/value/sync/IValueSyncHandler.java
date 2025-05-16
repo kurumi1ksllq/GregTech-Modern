@@ -55,12 +55,12 @@ public interface IValueSyncHandler<T> extends IValue<T> {
      *
      * @param buffer buffer to write to
      */
-    void write(FriendlyByteBuf buffer) throws IOException;
+    void write(FriendlyByteBuf buffer);
 
     /**
      * Reads a value from the buffer and sets the current value
      *
      * @param buffer buffer to read from
      */
-    void read(FriendlyByteBuf buffer) throws IOException;
+    void read(FriendlyByteBuf buffer);
 }

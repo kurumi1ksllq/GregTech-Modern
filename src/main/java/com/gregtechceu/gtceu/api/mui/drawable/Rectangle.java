@@ -15,8 +15,6 @@ import java.util.function.IntConsumer;
 
 public class Rectangle implements IDrawable, IJsonSerializable<Rectangle> {
 
-    public static final double PI_2 = Math.PI / 2;
-
     private int cornerRadius, colorTL, colorTR, colorBL, colorBR, cornerSegments;
     private boolean canApplyTheme = false;
 

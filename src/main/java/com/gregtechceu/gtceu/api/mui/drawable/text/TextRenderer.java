@@ -13,10 +13,12 @@ import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.lang3.mutable.MutableInt;
 
@@ -71,6 +73,10 @@ public class TextRenderer {
         this.simulate = simulate;
     }
 
+    public void draw(GuiGraphics graphics, String text) {
+        this.draw(graphics, Component.literal(text));
+    }
+
     public void draw(GuiGraphics graphics, Component text) {
         if (this.maxWidth <= 0 && !text.getString().contains("\n'")) {
             drawSimple(graphics, text);
@@ -99,17 +105,17 @@ public class TextRenderer {
     }
 
     public void drawSimple(GuiGraphics graphics, Component text) {
+        this.drawSimple(graphics, text.getVisualOrderText());
+    }
+
+    public void drawSimple(GuiGraphics graphics, FormattedCharSequence text) {
         float w = getFont().width(text) * this.scale;
         int y = getStartYOfLines(1), x = getStartX(w);
-        draw(graphics, text.getVisualOrderText(), x, y);
+        draw(graphics, text, x, y);
         this.lastWidth = w;
         this.lastHeight = getFontHeight();
         this.lastWidth = Math.max(0, this.lastWidth - this.scale);
         this.lastHeight = Math.max(0, this.lastHeight - this.scale);
-    }
-
-    public List<Component> asComponents(List<String> lines) {
-        return lines.stream().<Component>map(Component::literal).toList();
     }
 
     public List<Line> measureStringLines(List<String> lines) {
@@ -182,7 +188,7 @@ public class TextRenderer {
         }
     }
 
-    public FormattedCharSequence splitAtMax(FormattedCharSequence input, float maxWidth) {
+    public static FormattedCharSequence splitAtMax(FormattedCharSequence input, float maxWidth) {
         MutableFloat cur = new MutableFloat();
         // split the string at max width.
         List<FormattedChar> output = new ArrayList<>();
@@ -194,6 +200,27 @@ public class TextRenderer {
             return true;
         });
         return fromChars(output);
+    }
+
+    public static boolean isEmpty(FormattedCharSequence input) {
+        if (input == FormattedCharSequence.EMPTY) {
+            return true;
+        }
+        MutableBoolean value = new MutableBoolean(true);
+        input.accept((pos, style, codePoint) -> {
+            value.setFalse();
+            return false;
+        });
+        return value.isTrue();
+    }
+
+    public static FormattedText fromSequence(FormattedCharSequence input) {
+        StringBuilder value = new StringBuilder();
+        input.accept((pos, style, codePoint) -> {
+            value.append(codePoint);
+            return true;
+        });
+        return FormattedText.of(value.toString());
     }
 
     public static FormattedCharSequence fromChars(List<FormattedChar> chars) {
@@ -273,6 +300,10 @@ public class TextRenderer {
             }
         }
         return true;
+    }
+
+    public static List<Component> asComponents(List<String> lines) {
+        return lines.stream().<Component>map(Component::literal).toList();
     }
 
     public int getMaxWidth(List<Component> lines) {

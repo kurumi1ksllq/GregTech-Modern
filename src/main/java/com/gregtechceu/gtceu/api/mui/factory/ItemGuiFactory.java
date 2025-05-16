@@ -1,10 +1,10 @@
 package com.gregtechceu.gtceu.api.mui.factory;
 
 import com.gregtechceu.gtceu.api.mui.base.IGuiHolder;
-import net.minecraft.entity.player.Player;
-import net.minecraft.entity.player.ServerPlayer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.EnumHand;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -14,10 +14,10 @@ public class ItemGuiFactory extends AbstractUIFactory<HandGuiData> {
     public static final ItemGuiFactory INSTANCE = new ItemGuiFactory();
 
     private ItemGuiFactory() {
-        super("mui:item");
+        super("gtceu:item");
     }
 
-    public void open(Player player, EnumHand hand) {
+    public void open(Player player, InteractionHand hand) {
         if (player instanceof ServerPlayer entityServerPlayer) {
             open(entityServerPlayer, hand);
             return;
@@ -25,7 +25,7 @@ public class ItemGuiFactory extends AbstractUIFactory<HandGuiData> {
         throw new IllegalStateException("Synced GUIs must be opened from server side");
     }
 
-    public void open(ServerPlayer player, EnumHand hand) {
+    public void open(ServerPlayer player, InteractionHand hand) {
         Objects.requireNonNull(player);
         Objects.requireNonNull(hand);
         HandGuiData guiData = new HandGuiData(player, hand);
@@ -34,7 +34,7 @@ public class ItemGuiFactory extends AbstractUIFactory<HandGuiData> {
 
     @Override
     public @NotNull IGuiHolder<HandGuiData> getGuiHolder(HandGuiData data) {
-        return Objects.requireNonNull(castGuiHolder(data.getUsedItemStack().getItem()), "Item was not a gui holder!");
+        return Objects.requireNonNull(castGuiHolder(data.getUsedItem().getItem()), "Item was not a gui holder!");
     }
 
     @Override
@@ -44,6 +44,6 @@ public class ItemGuiFactory extends AbstractUIFactory<HandGuiData> {
 
     @Override
     public @NotNull HandGuiData readGuiData(Player player, FriendlyByteBuf buffer) {
-        return new HandGuiData(player, EnumHand.values()[buffer.readByte()]);
+        return new HandGuiData(player, InteractionHand.values()[buffer.readByte()]);
     }
 }

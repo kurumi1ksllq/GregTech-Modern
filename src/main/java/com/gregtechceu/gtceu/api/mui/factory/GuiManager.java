@@ -1,13 +1,14 @@
 package com.gregtechceu.gtceu.api.mui.factory;
 
 import com.gregtechceu.gtceu.api.mui.base.IMuiScreen;
-import com.gregtechceu.gtceu.api.mui.base.JeiSettings;
+import com.gregtechceu.gtceu.api.mui.base.XeiSettings;
 import com.gregtechceu.gtceu.api.mui.base.MCHelper;
 import com.gregtechceu.gtceu.api.mui.base.UIFactory;
 import com.gregtechceu.gtceu.client.mui.screen.*;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.WidgetTree;
 import com.gregtechceu.gtceu.common.network.GTNetwork;
+import com.gregtechceu.gtceu.common.network.packets.ui.OpenGuiPacket;
 import com.gregtechceu.gtceu.core.mixins.ServerPlayerAccessor;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
@@ -18,6 +19,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.TickEvent;
@@ -65,7 +67,7 @@ public class GuiManager {
         if (player instanceof FakePlayer || openedContainers.contains(player)) return;
         openedContainers.add(player);
         // create panel, collect sync handlers and create container
-        UISettings settings = new UISettings(JeiSettings.DUMMY);
+        UISettings settings = new UISettings(XeiSettings.DUMMY);
         settings.defaultCanInteractWith(factory, guiData);
         PanelSyncManager syncManager = new PanelSyncManager();
         ModularPanel panel = factory.createPanel(guiData, syncManager, settings);
@@ -115,9 +117,9 @@ public class GuiManager {
         screen.getContext().setSettings(settings);
         Screen guiScreen;
         if (settings.hasContainer()) {
-            ModularContainerMenu container = settings.createContainer();
+            ModularContainerMenu container = settings.createContainer(0);
             container.constructClientOnly();
-            guiScreen = new GuiContainerWrapper(container, screen);
+            guiScreen = new ContainerScreenWrapper(container, screen);
         } else {
             guiScreen = new ScreenWrapper(screen);
         }
@@ -133,17 +135,17 @@ public class GuiManager {
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public static void onGuiOpen(GuiOpenEvent event) {
-        if (lastMui != null && event.getGui() == null) {
+    public static void onGuiOpen(ScreenEvent.Opening event) {
+        if (lastMui != null && event.getNewScreen() == null) {
             if (lastMui.getScreen().getPanelManager().isOpen()) {
                 lastMui.getScreen().getPanelManager().closeAll();
             }
             lastMui.getScreen().getPanelManager().dispose();
             lastMui = null;
-        } else if (event.getGui() instanceof IMuiScreen screenWrapper) {
+        } else if (event.getNewScreen() instanceof IMuiScreen screenWrapper) {
             if (lastMui == null) {
                 lastMui = screenWrapper;
-            } else if (lastMui == event.getGui()) {
+            } else if (lastMui == event.getNewScreen()) {
                 lastMui.getScreen().getPanelManager().reopen();
             } else {
                 if (lastMui.getScreen().getPanelManager().isOpen()) {

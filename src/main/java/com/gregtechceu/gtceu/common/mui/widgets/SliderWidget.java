@@ -17,7 +17,7 @@ import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Unit;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 public class SliderWidget extends Widget<SliderWidget> implements Interactable {
@@ -37,7 +37,7 @@ public class SliderWidget extends Widget<SliderWidget> implements Interactable {
 
     public SliderWidget() {
         sliderHeight(1f).sliderWidth(6);
-        listenGuiAction((IGuiAction.MouseReleased) button -> {
+        listenGuiAction((IGuiAction.MouseReleased) (mouseX, mouseY, button) -> {
             boolean val = this.dragging;
             this.dragging = false;
             return val;
@@ -130,7 +130,7 @@ public class SliderWidget extends Widget<SliderWidget> implements Interactable {
     @Override
     public void onMouseDrag(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (this.dragging) {
-            onMousePressed(mouseY, mouseY, mouseX);
+            onMousePressed(mouseX, mouseY, button);
         }
     }
 
@@ -154,20 +154,20 @@ public class SliderWidget extends Widget<SliderWidget> implements Interactable {
             double lastDistance = Double.MAX_VALUE;
             boolean found = false;
             for (int i = 0; i < this.stopper.size(); i++) {
-                double dist = Math.abs(this.stopper.get(i) - value);
+                double dist = Math.abs(this.stopper.getDouble(i) - value);
                 if (dist < lastDistance) {
                     lastDistance = dist;
                 } else if (dist > lastDistance) {
-                    value = this.stopper.get(i - 1);
+                    value = this.stopper.getDouble(i - 1);
                     found = true;
                     break;
                 }
             }
             if (!found && lastDistance < Double.MAX_VALUE) {
-                value = this.stopper.get(this.stopper.size() - 1);
+                value = this.stopper.getDouble(this.stopper.size() - 1);
             }
         }
-        value = MathHelper.clamp(value, this.min, this.max);
+        value = Mth.clamp(value, this.min, this.max);
         this.cache = value;
         this.sliderArea.setPoint(this.axis, valueToPos(value));
         if (setSource) {

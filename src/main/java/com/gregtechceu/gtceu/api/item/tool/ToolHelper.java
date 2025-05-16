@@ -310,9 +310,9 @@ public class ToolHelper {
     }
 
     public static Set<BlockPos> iterateAoE(ItemStack stack, AoESymmetrical aoeDefinition, Level world,
-                                           Player player, HitResult rayTraceResult,
+                                           Player player, HitResult hitResult,
                                            AOEFunction function) {
-        if (aoeDefinition != AoESymmetrical.none() && rayTraceResult instanceof BlockHitResult blockHit &&
+        if (aoeDefinition != AoESymmetrical.none() && hitResult instanceof BlockHitResult blockHit &&
                 blockHit.getDirection() != null) {
             int column = aoeDefinition.column;
             int row = aoeDefinition.row;
@@ -368,8 +368,8 @@ public class ToolHelper {
     }
 
     public static Set<BlockPos> getHarvestableBlocks(ItemStack stack, AoESymmetrical aoeDefinition, Level world,
-                                                     Player player, HitResult rayTraceResult) {
-        return iterateAoE(stack, aoeDefinition, world, player, rayTraceResult, ToolHelper::isBlockAoEHarvestable);
+                                                     Player player, HitResult hitResult) {
+        return iterateAoE(stack, aoeDefinition, world, player, hitResult, ToolHelper::isBlockAoEHarvestable);
     }
 
     private static boolean isBlockAoEHarvestable(ItemStack stack, Level world, Player player, BlockPos pos,
@@ -540,8 +540,8 @@ public class ToolHelper {
     }
 
     public static Set<BlockPos> getHarvestableBlocks(ItemStack stack, Level world, Player player,
-                                                     HitResult rayTraceResult) {
-        return getHarvestableBlocks(stack, getAoEDefinition(stack), world, player, rayTraceResult);
+                                                     HitResult hitResult) {
+        return getHarvestableBlocks(stack, getAoEDefinition(stack), world, player, hitResult);
     }
 
     public static Set<BlockPos> getHarvestableBlocks(ItemStack stack, Player player) {
@@ -552,8 +552,8 @@ public class ToolHelper {
             return Collections.emptySet();
         }
 
-        HitResult rayTraceResult = getPlayerDefaultRaytrace(player);
-        return getHarvestableBlocks(stack, aoeDefiniton, player.level(), player, rayTraceResult);
+        HitResult hitResult = getPlayerDefaultRaytrace(player);
+        return getHarvestableBlocks(stack, aoeDefiniton, player.level(), player, hitResult);
     }
 
     public static HitResult getPlayerDefaultRaytrace(@NotNull Player player) {

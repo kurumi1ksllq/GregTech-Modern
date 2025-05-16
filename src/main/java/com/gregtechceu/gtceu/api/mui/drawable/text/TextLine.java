@@ -3,15 +3,16 @@ package com.gregtechceu.gtceu.api.mui.drawable.text;
 import com.gregtechceu.gtceu.api.mui.base.drawable.ITextLine;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
 
 public class TextLine implements ITextLine {
 
-    private final String text;
+    private final Component text;
     private final int width;
 
     private float lastX, lastY;
 
-    public TextLine(String text, int width) {
+    public TextLine(Component text, int width) {
         this.text = text;
         this.width = width;
     }
@@ -28,7 +29,7 @@ public class TextLine implements ITextLine {
 
     @Override
     public void draw(GuiContext context, Font font, float x, float y, int color, boolean shadow) {
-        font.drawString(this.text, x, y, color, shadow);
+        context.getGraphics().drawString(font, this.text.getVisualOrderText(), x, y, color, shadow);
         this.lastX = x;
         this.lastY = y;
     }

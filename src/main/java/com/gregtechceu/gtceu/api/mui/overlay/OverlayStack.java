@@ -50,20 +50,20 @@ public class OverlayStack {
         return false;
     }
 
-    public static void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public static void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         ModularScreen hovered = null;
         ModularScreen fallback = null;
         for (ModularScreen screen : overlay) {
             screen.getContext().updateState(mouseX, mouseY, partialTicks);
             RenderSystem.enableBlend();
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-            screen.drawScreen(guiGraphics, mouseX, mouseY, partialTicks);
+            screen.drawScreen(graphics, mouseX, mouseY, partialTicks);
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-            screen.drawForeground(guiGraphics, partialTicks);
+            screen.drawForeground(graphics, partialTicks);
             if (screen.getContext().getHovered() != null) hovered = screen;
             fallback = screen;
         }
-        ClientScreenHandler.drawDebugScreen(hovered, fallback);
+        ClientScreenHandler.drawDebugScreen(graphics, hovered, fallback);
         RenderSystem.enableDepthTest();
         Lighting.setupFor3DItems();
     }

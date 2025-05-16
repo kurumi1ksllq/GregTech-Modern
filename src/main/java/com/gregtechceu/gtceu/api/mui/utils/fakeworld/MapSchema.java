@@ -33,7 +33,7 @@ public class MapSchema implements ISchema {
     }
 
     public MapSchema(Map<BlockPos, BlockInfo> blocks, BiPredicate<BlockPos, BlockInfo> renderFilter) {
-        this.level = new DummyWorld();
+        this.level = new DummyLevel();
         this.renderFilter = renderFilter;
         BlockPos.MutableBlockPos min = BlockPosUtil.MAX.mutable();
         BlockPos.MutableBlockPos max = BlockPosUtil.MIN.mutable();

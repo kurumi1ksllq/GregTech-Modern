@@ -10,13 +10,13 @@ public abstract class ValueSyncHandler<T> extends SyncHandler implements IValueS
     private Runnable changeListener;
 
     @Override
-    public void readOnClient(int id, FriendlyByteBuf buf) throws IOException {
+    public void readOnClient(int id, FriendlyByteBuf buf) {
         read(buf);
         onValueChanged();
     }
 
     @Override
-    public void readOnServer(int id, FriendlyByteBuf buf) throws IOException {
+    public void readOnServer(int id, FriendlyByteBuf buf) {
         read(buf);
         onValueChanged();
     }

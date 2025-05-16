@@ -1,21 +1,19 @@
 package com.gregtechceu.gtceu.api.mui.factory;
 
-import net.minecraft.entity.player.Player;
-import net.minecraft.util.EnumFacing;
+import lombok.Getter;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * See {@link GuiData} for an explanation for what this is for.
  */
 public class SidedPosGuiData extends PosGuiData {
 
-    private final EnumFacing side;
+    @Getter
+    private final Direction side;
 
-    public SidedPosGuiData(Player player, int x, int y, int z, EnumFacing side) {
+    public SidedPosGuiData(Player player, int x, int y, int z, Direction side) {
         super(player, x, y, z);
         this.side = side;
-    }
-
-    public EnumFacing getSide() {
-        return this.side;
     }
 }

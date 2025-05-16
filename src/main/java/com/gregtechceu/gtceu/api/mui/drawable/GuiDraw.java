@@ -15,21 +15,18 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.List;
-import java.util.Optional;
 
 public class GuiDraw {
 
@@ -558,17 +555,14 @@ public class GuiDraw {
         RenderSystem.enableBlend();
     }
 
-    public static void drawTooltipBackground(GuiGraphics graphics, ItemStack stack, List<Component> lines, int x, int y, int textWidth, int height) {
-        List<ClientTooltipComponent> clientComponents = ForgeHooksClient.gatherTooltipComponents(stack, lines,
-                Optional.empty(), x, textWidth, height, TextRenderer.getFont());
-
+    public static void drawTooltipBackground(GuiGraphics graphics, ItemStack stack, List<ClientTooltipComponent> lines, int x, int y, int textWidth, int height) {
         // TODO theme color
         int backgroundTop = 0xF0100010;
         int backgroundBottom = backgroundTop;
         int borderColorStart = 0x505000FF;
         int borderColorEnd = (borderColorStart & 0xFEFEFE) >> 1 | borderColorStart & 0xFF000000;
         RenderTooltipEvent.Color colorEvent = new RenderTooltipEvent.Color(stack, graphics, x, y,
-                TextRenderer.getFont(),backgroundTop, borderColorStart, borderColorEnd, clientComponents);
+                TextRenderer.getFont(),backgroundTop, borderColorStart, borderColorEnd, lines);
         MinecraftForge.EVENT_BUS.post(colorEvent);
         backgroundTop = colorEvent.getBackgroundStart();
         backgroundBottom = colorEvent.getBackgroundStart();

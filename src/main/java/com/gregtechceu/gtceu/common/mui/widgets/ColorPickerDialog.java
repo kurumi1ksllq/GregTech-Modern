@@ -93,14 +93,14 @@ public class ColorPickerDialog extends Dialog<Integer> {
                         .child(new ButtonWidget<>()
                                 .heightRel(1f).width(50)
                                 .overlay(IKey.str("Cancel"))
-                                .onMousePressed(button -> {
+                                .onMousePressed((mouseX, mouseY, button) -> {
                                     animateClose();
                                     return true;
                                 }))
                         .child(new ButtonWidget<>()
                                 .heightRel(1f).width(50)
                                 .overlay(IKey.str("Confirm"))
-                                .onMousePressed(button -> {
+                                .onMousePressed((mouseX, mouseY, button) -> {
                                     closeWith(this.color);
                                     return true;
                                 }))));

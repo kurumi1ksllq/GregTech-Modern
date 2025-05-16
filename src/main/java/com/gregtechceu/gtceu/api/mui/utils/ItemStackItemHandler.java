@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.api.mui.utils;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
@@ -29,15 +29,15 @@ public class ItemStackItemHandler implements IItemHandlerModifiable {
     @Override
     public ItemStack getStackInSlot(int slot) {
         validateSlotIndex(slot);
-        NBTTagCompound item = (NBTTagCompound) getItemsNbt().get(slot);
-        return item.isEmpty() ? ItemStack.EMPTY : new ItemStack(item);
+        CompoundTag item = (CompoundTag) getItemsNbt().get(slot);
+        return item.isEmpty() ? ItemStack.EMPTY : ItemStack.of(item);
     }
 
     @Override
     public void setStackInSlot(int slot, @NotNull ItemStack stack) {
         validateSlotIndex(slot);
-        NBTTagList list = getItemsNbt();
-        list.set(slot, stack.isEmpty() ? new NBTTagCompound() : stack.serializeNBT());
+        ListTag list = getItemsNbt();
+        list.set(slot, stack.isEmpty() ? new CompoundTag() : stack.serializeNBT());
     }
 
     @NotNull
@@ -102,6 +102,11 @@ public class ItemStackItemHandler implements IItemHandlerModifiable {
         return 64;
     }
 
+    @Override
+    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+        return false;
+    }
+
     protected int getStackLimit(int slot, @NotNull ItemStack stack) {
         return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
     }
@@ -109,20 +114,16 @@ public class ItemStackItemHandler implements IItemHandlerModifiable {
     protected void onContentsChanged(int slot) {
     }
 
-    public NBTTagList getItemsNbt() {
-        NBTTagCompound nbt = this.container.getTagCompound();
-        if (nbt == null) {
-            nbt = new NBTTagCompound();
-            this.container.setTagCompound(nbt);
-        }
-        if (!nbt.hasKey(KEY_ITEMS)) {
-            NBTTagList list = new NBTTagList();
+    public ListTag getItemsNbt() {
+        CompoundTag nbt = this.container.getOrCreateTag();
+        if (!nbt.contains(KEY_ITEMS)) {
+            ListTag list = new ListTag();
             for (int i = 0; i < getSlots(); i++) {
-                list.appendTag(new NBTTagCompound());
+                list.add(new CompoundTag());
             }
-            nbt.setTag(KEY_ITEMS, list);
+            nbt.put(KEY_ITEMS, list);
         }
-        return nbt.getTagList(KEY_ITEMS, Constants.NBT.TAG_COMPOUND);
+        return nbt.getList(KEY_ITEMS, Tag.TAG_COMPOUND);
     }
 
     protected void validateSlotIndex(int slot) {

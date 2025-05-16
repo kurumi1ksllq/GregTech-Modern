@@ -9,23 +9,27 @@ import com.gregtechceu.gtceu.api.mui.drawable.Icon;
 import com.gregtechceu.gtceu.api.mui.drawable.IconRenderer;
 import com.gregtechceu.gtceu.api.mui.drawable.text.TextIcon;
 import com.gregtechceu.gtceu.api.mui.drawable.text.TextRenderer;
+import com.gregtechceu.gtceu.api.mui.widget.sizer.Rectangle;
+import com.gregtechceu.gtceu.client.mui.component.DrawableTooltipComponent;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Either;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.util.Mth;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -89,25 +93,39 @@ public class Tooltip {
         Area screen = context.getScreenArea();
         int mouseX = context.getMouseX(), mouseY = context.getMouseY();
         IconRenderer renderer = IconRenderer.SHARED;
-        List<Component> textLines = lines.stream()
-                .filter(drawable -> drawable instanceof IKey)
-                .map(key -> ((IKey) key).get())
+
+        // this only turns the text and not any drawables into strings
+        List<Either<FormattedText, TooltipComponent>> textLines = lines.stream()
+                .<Either<FormattedText, TooltipComponent>>map(drawable -> {
+                    if (drawable instanceof IKey key) {
+                        return Either.left(key.getFormatted());
+                    } else if (drawable instanceof TextIcon textIcon) {
+                        return Either.left(textIcon.getText());
+                    } else {
+                        return Either.right(new DrawableTooltipComponent(drawable));
+                    }
+                })
                 .collect(Collectors.toList());
-        List<ClientTooltipComponent> clientComponents = textLines.stream()
-                .map(Component::getVisualOrderText)
-                .map(ClientTooltipComponent::create)
+
+        var gatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height, textLines, this.maxWidth);
+        if (MinecraftForge.EVENT_BUS.post(gatherEvent)) return; // canceled
+        this.maxWidth = gatherEvent.getMaxWidth();
+        textLines = gatherEvent.getTooltipElements();
+        List<ClientTooltipComponent> components = textLines.stream()
+                .map(either -> either.map(
+                        text -> ClientTooltipComponent.create(text instanceof Component ? ((Component) text).getVisualOrderText() : Language.getInstance().getVisualOrder(text)),
+                        ClientTooltipComponent::create
+                ))
                 .toList();
+
         RenderTooltipEvent.Pre event = new RenderTooltipEvent.Pre(stack, context.getGraphics(),
                 mouseX, mouseY, screen.width, screen.height,
-                TextRenderer.getFont(), clientComponents, DefaultTooltipPositioner.INSTANCE);
-        if (MinecraftForge.EVENT_BUS.post(event)) {
-            return;
-        }
+                TextRenderer.getFont(), components, DefaultTooltipPositioner.INSTANCE);
+        if (MinecraftForge.EVENT_BUS.post(event)) return; // canceled
         //lines = event.getLines();
         mouseX = event.getX();
         mouseY = event.getY();
         int screenWidth = event.getScreenWidth(), screenHeight = event.getScreenHeight();
-        //this.maxWidth = event.getMaxWidth();
 
         renderer.setShadow(this.textShadow);
         renderer.setColor(this.textColor);
@@ -126,18 +144,18 @@ public class Tooltip {
         RenderSystem.disableDepthTest();
         RenderSystem.disableBlend();
 
-        GuiDraw.drawTooltipBackground(context.getGraphics(), stack, textLines, area.x, area.y, area.width, area.height);
+        GuiDraw.drawTooltipBackground(context.getGraphics(), stack, components, area.x, area.y, area.width, area.height);
 
-        MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(stack, textLines, area.x, area.y, TextRenderer.getFont(), area.width, area.height));
+        // MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(stack, textLines, area.x, area.y, TextRenderer.getFont(), area.width, area.height));
 
-        RenderSystem.color(1f, 1f, 1f, 1f);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
         renderer.setSimulate(false);
         //renderer.setAlignment(Alignment.TopLeft, area.width, area.height);
         renderer.setPos(area.x, area.y);
         renderer.draw(context, this.lines);
 
-        MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostText(stack, textLines, area.x, area.y, TextRenderer.getFont(), area.width, area.height));
+        // MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostText(stack, textLines, area.x, area.y, TextRenderer.getFont(), area.width, area.height));
     }
 
     public Rectangle determineTooltipArea(GuiContext context, List<IDrawable> lines, IconRenderer renderer, int screenWidth, int screenHeight, int mouseX, int mouseY) {
@@ -166,7 +184,7 @@ public class Tooltip {
                     x = padding;
                 }
             }
-            y = MathHelper.clamp(y, padding, screenHeight - padding - height);
+            y = Mth.clamp(y, padding, screenHeight - padding - height);
             return new Rectangle(x, y, width, height);
         }
 
@@ -371,6 +389,10 @@ public class Tooltip {
 
     public Tooltip addLine(String line) {
         return addLine(IKey.str(line));
+    }
+
+    public Tooltip addLine(Component line) {
+        return addLine(IKey.lang(line.copy()));
     }
 
     public Tooltip addDrawableLines(Iterable<IDrawable> lines) {

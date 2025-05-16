@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.mui.widgets.textfield;
 
+import com.gregtechceu.gtceu.api.mui.widget.sizer.Point;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.api.mui.widget.scroll.ScrollArea;
 import com.google.common.base.Joiner;
@@ -7,7 +8,6 @@ import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -233,7 +233,7 @@ public class TextFieldHandler {
     }
 
     public List<Component> getTextAsComponents() {
-        return this.renderer.asComponents(this.text);
+        return TextFieldRenderer.asComponents(this.text);
     }
 
     public boolean isTextEmpty() {

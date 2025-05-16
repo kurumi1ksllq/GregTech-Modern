@@ -8,22 +8,23 @@ import com.gregtechceu.gtceu.api.mui.utils.VectorUtil;
 import com.gregtechceu.gtceu.api.mui.utils.fakeworld.ISchema;
 import com.gregtechceu.gtceu.api.mui.utils.fakeworld.SchemaRenderer;
 import com.gregtechceu.gtceu.api.mui.widget.Widget;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector3f;
+
+import static net.minecraft.util.Mth.PI;
+import static net.minecraft.util.Mth.TWO_PI;
 
 public class SchemaWidget extends Widget<SchemaWidget> implements Interactable {
-
-    public static final float PI = (float) Math.PI;
-    public static final float PI2 = 2 * PI;
 
     private final SchemaRenderer schema;
     private boolean enableRotation = true;
     private boolean enableTranslation = true;
     private boolean enableScaling = true;
-    private int lastMouseX;
-    private int lastMouseY;
+    private float lastMouseX;
+    private float lastMouseY;
     private double scale = 10;
     private float pitch = (float) (Math.PI / 4f);
     private float yaw = (float) (Math.PI / 4f);
@@ -44,7 +45,7 @@ public class SchemaWidget extends Widget<SchemaWidget> implements Interactable {
     @Override
     public boolean onMouseScrolled(double mouseX, double mouseY, double delta) {
         if (this.enableScaling) {
-            scale(-mouseX.modifier * delta / 120.0);
+            scale(delta / 120.0);
             return true;
         }
         return false;
@@ -59,30 +60,28 @@ public class SchemaWidget extends Widget<SchemaWidget> implements Interactable {
 
     @Override
     public void onMouseDrag(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        int mouseX = getContext().getMouseX();
-        int mouseY = getContext().getMouseY();
-        int dx = mouseX - lastMouseX;
-        int dy = mouseY - lastMouseY;
+        float dx = (float) mouseX - lastMouseX;
+        float dy = (float) mouseY - lastMouseY;
         if (mouseX == 0 && this.enableRotation) {
             float moveScale = 0.025f;
-            yaw = (yaw + dx * moveScale + PI2) % PI2;
-            pitch = MathHelper.clamp(pitch + dy * moveScale, -PI2 / 4 + 0.001f, PI2 / 4 - 0.001f);
+            yaw = (yaw + dx * moveScale + TWO_PI) % TWO_PI;
+            pitch = Mth.clamp(pitch + dy * moveScale, -TWO_PI / 4 + 0.001f, TWO_PI / 4 - 0.001f);
         } else if (mouseX == 2 && this.enableTranslation) {
             // the idea is to construct a vector which points upwards from the camerae pov (y-axis on screen)
             // this vector determines the amount of z offset from mouse movement in y
             float y = (float) Math.cos(pitch);
             float moveScale = 0.06f;
             // with this the offset can be moved by dy
-            offset.translate(0, dy * y * moveScale, 0);
+            offset.add(0, dy * y * moveScale, 0);
             // to respect dx we need a new vector which is perpendicular on the previous vector (x-axis on screen)
             // y = 0 => mouse movement in x does not move y
-            float phi = (yaw + PI / 2) % PI2;
+            float phi = (yaw + PI / 2) % TWO_PI;
             float x = (float) Math.cos(phi);
             float z = (float) Math.sin(phi);
-            offset.translate(dx * x * moveScale, 0, dx * z * moveScale);
+            offset.add(dx * x * moveScale, 0, dx * z * moveScale);
         }
-        this.lastMouseX = mouseX;
-        this.lastMouseY = mouseY;
+        this.lastMouseX = (float) mouseX;
+        this.lastMouseY = (float) mouseY;
     }
 
     public SchemaWidget scale(double scale) {
@@ -145,11 +144,11 @@ public class SchemaWidget extends Widget<SchemaWidget> implements Interactable {
             this.minLayer = minLayer;
             this.maxLayer = maxLayer;
             background(GuiTextures.MC_BACKGROUND);
-            overlay(IKey.dynamic(() -> currentLayer > Integer.MIN_VALUE ? Integer.toString(currentLayer) : "ALL").scale(0.5f));
+            overlay(IKey.dynamic(() -> currentLayer > Integer.MIN_VALUE ? Component.literal(Integer.toString(currentLayer)) : Component.literal("ALL")).scale(0.5f));
 
-            onMousePressed(mouseButton -> {
-                if (mouseButton == 0 || mouseButton == 1) {
-                    if (mouseButton == 0) {
+            onMousePressed((mouseX, mouseY, button) -> {
+                if (button == 0 || button == 1) {
+                    if (button == 0) {
                         if (currentLayer == Integer.MIN_VALUE) {
                             currentLayer = minLayer;
                         } else {

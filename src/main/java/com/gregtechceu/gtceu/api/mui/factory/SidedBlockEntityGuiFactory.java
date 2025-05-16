@@ -1,12 +1,12 @@
 package com.gregtechceu.gtceu.api.mui.factory;
 
 import com.gregtechceu.gtceu.api.mui.base.IGuiHolder;
-import net.minecraft.entity.player.Player;
-import net.minecraft.entity.player.ServerPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.tileentity.BlockEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -15,22 +15,22 @@ public class SidedBlockEntityGuiFactory extends AbstractUIFactory<SidedPosGuiDat
 
     public static final SidedBlockEntityGuiFactory INSTANCE = new SidedBlockEntityGuiFactory();
 
-    public <T extends BlockEntity & IGuiHolder<SidedPosGuiData>> void open(Player player, T tile, EnumFacing facing) {
+    public <T extends BlockEntity & IGuiHolder<SidedPosGuiData>> void open(Player player, T blockEntity, Direction facing) {
         Objects.requireNonNull(player);
-        Objects.requireNonNull(tile);
+        Objects.requireNonNull(blockEntity);
         Objects.requireNonNull(facing);
-        if (tile.isInvalid()) {
+        if (blockEntity.isRemoved()) {
             throw new IllegalArgumentException("Can't open invalid BlockEntity GUI!");
         }
-        if (player.world != tile.getWorld()) {
+        if (player.level() != blockEntity.getLevel()) {
             throw new IllegalArgumentException("BlockEntity must be in same dimension as the player!");
         }
-        BlockPos pos = tile.getPos();
+        BlockPos pos = blockEntity.getBlockPos();
         SidedPosGuiData data = new SidedPosGuiData(player, pos.getX(), pos.getY(), pos.getZ(), facing);
         GuiManager.open(this, data, (ServerPlayer) player);
     }
 
-    public void open(Player player, BlockPos pos, EnumFacing facing) {
+    public void open(Player player, BlockPos pos, Direction facing) {
         Objects.requireNonNull(player);
         Objects.requireNonNull(pos);
         Objects.requireNonNull(facing);
@@ -39,7 +39,7 @@ public class SidedBlockEntityGuiFactory extends AbstractUIFactory<SidedPosGuiDat
     }
 
     private SidedBlockEntityGuiFactory() {
-        super("mui:sided_tile");
+        super("gtceu:sided_block_entity");
     }
 
     @Override
@@ -57,11 +57,13 @@ public class SidedBlockEntityGuiFactory extends AbstractUIFactory<SidedPosGuiDat
         buffer.writeVarInt(guiData.getX());
         buffer.writeVarInt(guiData.getY());
         buffer.writeVarInt(guiData.getZ());
-        buffer.writeByte(guiData.getSide().getIndex());
+        buffer.writeByte(guiData.getSide().get3DDataValue());
     }
 
     @Override
     public @NotNull SidedPosGuiData readGuiData(Player player, FriendlyByteBuf buffer) {
-        return new SidedPosGuiData(player, buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(), EnumFacing.VALUES[buffer.readByte()]);
+        return new SidedPosGuiData(player,
+                buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(),
+                Direction.from3DDataValue(buffer.readByte()));
     }
 }

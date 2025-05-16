@@ -1,21 +1,21 @@
 package com.gregtechceu.gtceu.api.mui.utils;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.Util;
 
 public class FpsCounter {
 
     private int fps = 0, frameCount = 0;
-    private long timer = Minecraft.getSystemTime();
+    private long timer = Util.getMillis();
 
     public void reset() {
         this.fps = 0;
         this.frameCount = 0;
-        this.timer = Minecraft.getSystemTime();
+        this.timer = Util.getMillis();
     }
 
     public void onDraw() {
         frameCount++;
-        long time = Minecraft.getSystemTime();
+        long time = Util.getMillis();
         if (time - timer >= 1000) {
             fps = frameCount;
             frameCount = 0;

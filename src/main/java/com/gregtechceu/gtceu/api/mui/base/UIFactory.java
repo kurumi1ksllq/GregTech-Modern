@@ -62,7 +62,7 @@ public interface UIFactory<D extends GuiData> {
     @OnlyIn(Dist.CLIENT)
     @ApiStatus.OverrideOnly
     default IMuiScreen createScreenWrapper(ModularContainerMenu container, ModularScreen screen) {
-        return new GuiContainerWrapper(container, screen);
+        return new ContainerScreenWrapper(container, screen);
     }
 
     /**

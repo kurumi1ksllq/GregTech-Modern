@@ -5,8 +5,6 @@ import com.gregtechceu.gtceu.api.mui.base.layout.IViewportStack;
 import com.gregtechceu.gtceu.api.mui.base.widget.IGuiElement;
 import com.gregtechceu.gtceu.api.mui.utils.MathUtils;
 
-import java.awt.geom.Rectangle2D;
-
 /**
  * A rectangular widget area, composed of a position and a size.
  * Also has fields for a relative position, a layer and margin & padding.
@@ -219,7 +217,7 @@ public class Area extends Rectangle implements IUnResizeable {
     /**
      * Check whether given rect intersects this rect
      */
-    public boolean intersects(Rectangle2D area) {
+    public boolean intersects(Rectangle area) {
         return this.x < area.getX() + area.getWidth() && this.y < area.getY() + area.getHeight()
                 && area.getX() < this.x + this.width && area.getY() < this.y + this.height;
     }

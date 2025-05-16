@@ -19,11 +19,11 @@ public class InteractionSyncHandler extends SyncHandler {
     private IServerKeyboardAction keyTapped;
 
     @Override
-    public void readOnClient(int id, FriendlyByteBuf buf) throws IOException {
+    public void readOnClient(int id, FriendlyByteBuf buf) {
     }
 
     @Override
-    public void readOnServer(int id, FriendlyByteBuf buf) throws IOException {
+    public void readOnServer(int id, FriendlyByteBuf buf) {
         if (id < 10) {
             MouseData mouseData = MouseData.readPacket(buf);
             switch (id) {

@@ -1,16 +1,13 @@
 package com.gregtechceu.gtceu.client.mui.screen;
 
-import com.gregtechceu.gtceu.api.mui.base.JeiSettings;
+import com.gregtechceu.gtceu.api.mui.base.XeiSettings;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Rectangle;
-import com.gregtechceu.gtceu.integration.jei.GhostIngredientTarget;
 import com.gregtechceu.gtceu.integration.xei.XeiState;
 import com.gregtechceu.gtceu.integration.xei.handlers.GhostIngredientSlot;
-import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
@@ -24,35 +21,35 @@ import java.util.List;
  * This class can be safely interacted with even when JEI/HEI is not installed.
  */
 @OnlyIn(Dist.CLIENT)
-public class JeiSettingsImpl implements JeiSettings {
+public class XeiSettingsImpl implements XeiSettings {
 
-    private XeiState jeiState = XeiState.DEFAULT;
+    private XeiState xeiState = XeiState.DEFAULT;
     private final List<IWidget> jeiExclusionWidgets = new ArrayList<>();
     private final List<Rectangle> jeiExclusionAreas = new ArrayList<>();
-    private final List<GhostIngredientSlot<?>> GhostIngredientSlots = new ArrayList<>();
+    private final List<GhostIngredientSlot<?>> ghostIngredientSlots = new ArrayList<>();
 
     /**
      * Force JEI to be enabled
      */
     @Override
-    public void enableJei() {
-        this.jeiState = XeiState.ENABLED;
+    public void forceEnabled() {
+        this.xeiState = XeiState.ENABLED;
     }
 
     /**
      * Force JEI to be disabled
      */
     @Override
-    public void disableJei() {
-        this.jeiState = XeiState.DISABLED;
+    public void forceDisabled() {
+        this.xeiState = XeiState.DISABLED;
     }
 
     /**
      * Only enabled JEI in synced GUIs
      */
     @Override
-    public void defaultJei() {
-        this.jeiState = XeiState.DEFAULT;
+    public void defaultXei() {
+        this.xeiState = XeiState.DEFAULT;
     }
 
     /**
@@ -62,18 +59,18 @@ public class JeiSettingsImpl implements JeiSettings {
      * @return true if jei is enabled
      */
     @Override
-    public boolean isJeiEnabled(ModularScreen screen) {
-        return this.jeiState.test(screen);
+    public boolean isEnabled(ModularScreen screen) {
+        return this.xeiState.test(screen);
     }
 
     /**
      * Adds an exclusion zone. JEI will always try to avoid exclusion zones. <br>
-     * <b>If a widgets wishes to have an exclusion zone it should use {@link #addJeiExclusionArea(IWidget)}!</b>
+     * <b>If a widgets wishes to have an exclusion zone it should use {@link #addExclusionArea(IWidget)}!</b>
      *
      * @param area exclusion area
      */
     @Override
-    public void addJeiExclusionArea(Rectangle area) {
+    public void addExclusionArea(Rectangle area) {
         if (!this.jeiExclusionAreas.contains(area)) {
             this.jeiExclusionAreas.add(area);
         }
@@ -85,7 +82,7 @@ public class JeiSettingsImpl implements JeiSettings {
      * @param area exclusion area to remove (must be the same instance)
      */
     @Override
-    public void removeJeiExclusionArea(Rectangle area) {
+    public void removeExclusionArea(Rectangle area) {
         this.jeiExclusionAreas.remove(area);
     }
 
@@ -96,7 +93,7 @@ public class JeiSettingsImpl implements JeiSettings {
      * @param area widget
      */
     @Override
-    public void addJeiExclusionArea(IWidget area) {
+    public void addExclusionArea(IWidget area) {
         if (!this.jeiExclusionWidgets.contains(area)) {
             this.jeiExclusionWidgets.add(area);
         }
@@ -108,7 +105,7 @@ public class JeiSettingsImpl implements JeiSettings {
      * @param area widget
      */
     @Override
-    public void removeJeiExclusionArea(IWidget area) {
+    public void removeExclusionArea(IWidget area) {
         this.jeiExclusionWidgets.remove(area);
     }
 
@@ -121,8 +118,8 @@ public class JeiSettingsImpl implements JeiSettings {
      */
     @Override
     public <W extends IWidget & GhostIngredientSlot<?>> void addGhostIngredientSlot(W slot) {
-        if (!this.GhostIngredientSlots.contains(slot)) {
-            this.GhostIngredientSlots.add(slot);
+        if (!this.ghostIngredientSlots.contains(slot)) {
+            this.ghostIngredientSlots.add(slot);
         }
     }
 
@@ -134,26 +131,26 @@ public class JeiSettingsImpl implements JeiSettings {
      */
     @Override
     public <W extends IWidget & GhostIngredientSlot<?>> void removeGhostIngredientSlot(W slot) {
-        this.GhostIngredientSlots.remove(slot);
+        this.ghostIngredientSlots.remove(slot);
     }
 
     @UnmodifiableView
-    public List<Rectangle> getJeiExclusionAreas() {
+    public List<Rectangle> getExclusionAreas() {
         return Collections.unmodifiableList(this.jeiExclusionAreas);
     }
 
     @UnmodifiableView
-    public List<IWidget> getJeiExclusionWidgets() {
+    public List<IWidget> getExclusionWidgets() {
         return Collections.unmodifiableList(this.jeiExclusionWidgets);
     }
 
     @UnmodifiableView
     public List<GhostIngredientSlot<?>> getGhostIngredientSlots() {
-        return Collections.unmodifiableList(this.GhostIngredientSlots);
+        return Collections.unmodifiableList(this.ghostIngredientSlots);
     }
 
     @ApiStatus.Internal
-    public List<Rectangle> getAllJeiExclusionAreas() {
+    public List<Rectangle> getAllExclusionAreas() {
         this.jeiExclusionWidgets.removeIf(widget -> !widget.isValid());
         List<Rectangle> areas = new ArrayList<>(this.jeiExclusionAreas);
         for (Iterator<IWidget> iterator = this.jeiExclusionWidgets.iterator(); iterator.hasNext(); ) {
@@ -167,24 +164,5 @@ public class JeiSettingsImpl implements JeiSettings {
             }
         }
         return areas;
-    }
-
-    @ApiStatus.Internal
-    // @Optional.Method(modid = "jei")
-    public <I> List<IGhostIngredientHandler.Target<I>> getAllGhostIngredientTargets(@NotNull I ingredient) {
-        List<IGhostIngredientHandler.Target<I>> ghostHandlerTargets = new ArrayList<>();
-        for (Iterator<GhostIngredientSlot<?>> iterator = this.GhostIngredientSlots.iterator(); iterator.hasNext(); ) {
-            GhostIngredientSlot<?> slot = iterator.next();
-            IWidget widget = (IWidget) slot;
-            if (!widget.isValid()) {
-                iterator.remove();
-                continue;
-            }
-            if (widget.isEnabled() && slot.castGhostIngredientIfValid(ingredient) != null) {
-                GhostIngredientSlot<I> slotWithType = (GhostIngredientSlot<I>) slot;
-                ghostHandlerTargets.add(new GhostIngredientTarget<>(widget, slotWithType));
-            }
-        }
-        return ghostHandlerTargets;
     }
 }

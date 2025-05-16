@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.mui.theme;
 
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.eventbus.api.Event;
 
 public class ReloadThemeEvent extends Event {
 

@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -39,7 +40,7 @@ public class AnimatedText extends StyledText {
     private void advance() {
         if (!this.isAnimating || (this.forward && this.currentIndex >= this.fullString.length()) || (!this.forward && this.currentIndex < 0))
             return;
-        long time = System.nanoTime();
+        long time = Util.getMillis();
         int amount = (int) ((time - this.timeLastDraw) / this.speed);
         if (amount == 0) return;
         if (this.forward) {
@@ -78,7 +79,7 @@ public class AnimatedText extends StyledText {
                 this.fullString = this.full.getString();
                 this.currentString = this.forward ? "" : this.fullString;
                 this.currentIndex = this.forward ? 0 : this.fullString.length() - 1;
-                this.timeLastDraw = System.nanoTime();
+                this.timeLastDraw = Util.getMillis();
             } else {
                 this.currentString = this.forward ? "" : this.fullString;
             }

@@ -5,7 +5,7 @@ import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.utils.MathUtils;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
-import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -82,15 +82,15 @@ public class ScrollArea extends Area {
 
     @OnlyIn(Dist.CLIENT)
     public boolean mouseScroll(GuiContext context) {
-        return this.mouseScroll(context.getMouseX(), context.getMouseY(), context.getMouseScrollDelta(), Screen.isShiftKeyDown());
+        return this.mouseScroll(context.getMouseX(), context.getMouseY(), context.getMouseScrollDelta(), Screen.hasShiftDown());
     }
 
     /**
      * This method should be invoked when mouse wheel is scrolling
      */
-    public boolean mouseScroll(int x, int y, int scroll, boolean shift) {
+    public boolean mouseScroll(int x, int y, double scroll, boolean shift) {
         if (!isInside(x, y)) {
-            // not hovering TODO: this shouldnt be required
+            // not hovering TODO: this shouldn't be required
             return false;
         }
 

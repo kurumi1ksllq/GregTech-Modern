@@ -1,21 +1,20 @@
 package com.gregtechceu.gtceu.api.mui.theme;
 
-import com.gregtechceu.gtceu.api.mui.ModularUI;
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.ITheme;
 import com.gregtechceu.gtceu.api.mui.base.IThemeApi;
 import com.gregtechceu.gtceu.client.mui.screen.RichTooltip;
 import com.gregtechceu.gtceu.api.mui.utils.*;
-import com.gregtechceu.gtceu.api.mui.utils.ObjectList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import it.unimi.dsi.fastutil.objects.*;
-import net.minecraft.client.resources.IResource;
-import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.resource.IResourceType;
-import net.minecraftforge.client.resource.ISelectiveResourceReloadListener;
-import net.minecraftforge.client.resource.VanillaResourceType;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -23,37 +22,45 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @ApiStatus.Internal
 @OnlyIn(Dist.CLIENT)
-public class ThemeManager implements ISelectiveResourceReloadListener {
+public class ThemeManager extends SimplePreparableReloadListener<Map<String, List<ResourceLocation>>> {
 
+    public static final String THEMES_PATH = "themes.json";
+    public static final FileToIdConverter THEME_LISTER = new FileToIdConverter("gtceu/themes", ".json");
     protected static final WidgetTheme defaultdefaultWidgetTheme = new WidgetTheme(null, null, Color.WHITE.main, 0xFF404040, false);
 
-    public static void reload() {
+    public ThemeManager() {}
+
+    @Override
+    protected @NotNull Map<String, List<ResourceLocation>> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
         GTCEu.LOGGER.info("Reloading Themes...");
         MinecraftForge.EVENT_BUS.post(new ReloadThemeEvent.Pre());
         ThemeAPI.INSTANCE.onReload();
-        loadThemesJsons();
-        validateJsonScreenThemes();
-        MinecraftForge.EVENT_BUS.post(new ReloadThemeEvent.Post());
-    }
 
-    private static void loadThemesJsons() {
-        Map<String, List<String>> themes = new Object2ObjectOpenHashMap<>();
-        // find any theme.json files under any domain
-        // works with mods like resource loader
-        ObjectList<String> themesJsons = ObjectList.create();
-        for (IResource resource : AssetHelper.findAssets("themes.json")) {
-            themesJsons.add(resource.getResourceLocation().toString());
-            try {
-                JsonElement element = JsonHelper.parse(resource.getInputStream());
+        Map<String, List<ResourceLocation>> themes = new Object2ObjectOpenHashMap<>();
+        profiler.startTick();
+        List<String> themeJsonSources = new ArrayList<>();
+        for(String namespace : resourceManager.getNamespaces()) {
+            profiler.push(namespace);
+
+            for(Resource resource : resourceManager.getResourceStack(new ResourceLocation(namespace, THEMES_PATH))) {
+                profiler.push(resource.sourcePackId());
+                themeJsonSources.add(resource.sourcePackId());
+
+                JsonElement element;
+                try (InputStream stream = resource.open()) {
+                    element = JsonHelper.parse(stream);
+                } catch (Exception e) {
+                    GTCEu.LOGGER.catching(e);
+                    continue;
+                }
                 JsonObject definitions;
                 if (!element.isJsonObject()) {
-                    resource.close();
                     continue;
                 }
                 definitions = element.getAsJsonObject();
@@ -70,27 +77,34 @@ public class ThemeManager implements ISelectiveResourceReloadListener {
                         GTCEu.LOGGER.throwing(new JsonParseException("Theme must be a string!"));
                         continue;
                     }
-                    themes.computeIfAbsent(entry.getKey(), key -> new ArrayList<>()).add(entry.getValue().getAsString());
+                    themes.computeIfAbsent(entry.getKey(), key -> new ArrayList<>())
+                            .add(new ResourceLocation(entry.getValue().getAsString()));
                 }
-                resource.close();
-            } catch (Exception e) {
-                GTCEu.LOGGER.catching(e);
+                profiler.pop();
             }
+
+            profiler.pop();
+
         }
-        GTCEu.LOGGER.info("Found themes.json's at {}", themesJsons);
-        loadThemes(themes);
+        GTCEu.LOGGER.info("Found themes.json's at {}", themeJsonSources);
+        return themes;
     }
 
-    public static void loadThemes(Map<String, List<String>> themesPaths) {
+    @Override
+    protected void apply(@NotNull Map<String, List<ResourceLocation>> themes,
+                         @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
         Map<String, ThemeJson> themeMap = new Object2ObjectOpenHashMap<>();
+        profiler.startTick();
 
         // load json files from the path and parse their parent
-        for (Map.Entry<String, List<String>> entry : themesPaths.entrySet()) {
+        for (Map.Entry<String, List<ResourceLocation>> entry : themes.entrySet()) {
             if (entry.getValue().isEmpty()) continue;
-            ThemeJson theme = loadThemeJson(entry.getKey(), entry.getValue());
+            profiler.push(entry.getKey());
+            ThemeJson theme = loadThemeJson(entry.getKey(), entry.getValue(), resourceManager, profiler);
             if (theme != null) {
                 themeMap.put(entry.getKey(), theme);
             }
+            profiler.pop();
         }
         for (Map.Entry<String, List<JsonBuilder>> entry : ThemeAPI.INSTANCE.defaultThemes.entrySet()) {
             if (!themeMap.containsKey(entry.getKey())) {
@@ -125,6 +139,9 @@ public class ThemeManager implements ISelectiveResourceReloadListener {
             Theme theme = themeJson.deserialize();
             ThemeAPI.INSTANCE.registerTheme(theme);
         }
+
+        validateJsonScreenThemes();
+        MinecraftForge.EVENT_BUS.post(new ReloadThemeEvent.Post());
     }
 
     private static void validateAncestorTree(Map<String, ThemeJson> themeMap) {
@@ -164,24 +181,21 @@ public class ThemeManager implements ISelectiveResourceReloadListener {
         }
     }
 
-    private static ThemeJson loadThemeJson(String id, List<String> paths) {
+    private static ThemeJson loadThemeJson(String id, List<ResourceLocation> paths,
+                                           @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
         List<JsonObject> jsons = new ArrayList<>();
         boolean override = false;
-        for (String path : paths) {
-            ResourceLocation rl;
-            if (path.contains(":")) {
-                String[] parts = path.split(":", 2);
-                rl = new ResourceLocation(parts[0], "themes/" + parts[1] + ".json");
-            } else {
-                rl = new ResourceLocation("themes/" + path + ".json");
-            }
-            IResource resource = AssetHelper.findAsset(rl);
+        for (ResourceLocation path : paths) {
+            profiler.push(path.toString());
+            ResourceLocation rl = THEME_LISTER.idToFile(path);
+            Resource resource = resourceManager.getResource(rl).orElse(null);
             if (resource == null) {
+                profiler.pop();
                 return null;
             }
-            JsonElement element = JsonHelper.parse(resource.getInputStream());
-            try {
-                resource.close();
+            JsonElement element;
+            try (InputStream stream = resource.open()) {
+                element = JsonHelper.parse(stream);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -192,6 +206,7 @@ public class ThemeManager implements ISelectiveResourceReloadListener {
                 }
                 jsons.add(element.getAsJsonObject());
             }
+            profiler.pop();
         }
         if (jsons.isEmpty()) {
             GTCEu.LOGGER.throwing(new JsonParseException("Theme must be a JsonObject!"));
@@ -218,13 +233,6 @@ public class ThemeManager implements ISelectiveResourceReloadListener {
                 GTCEu.LOGGER.error("Tried to register theme '{}' for screen '{}', but theme does not exist", entry.getValue(), entry.getKey());
                 iterator.remove();
             }
-        }
-    }
-
-    @Override
-    public void onResourceManagerReload(@NotNull IResourceManager resourceManager, @NotNull Predicate<IResourceType> resourcePredicate) {
-        if (resourcePredicate.test(VanillaResourceType.TEXTURES)) {
-            reload();
         }
     }
 

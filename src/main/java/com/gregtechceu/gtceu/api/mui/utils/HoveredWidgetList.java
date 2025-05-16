@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.mui.utils;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.LocatedWidget;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.TransformationMatrix;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import org.jetbrains.annotations.Nullable;
 
 public class HoveredWidgetList {
@@ -14,12 +15,12 @@ public class HoveredWidgetList {
     }
 
     public void add(IWidget widget, TransformationMatrix viewports) {
-        this.delegate.addFirst(new LocatedWidget(widget, viewports));
+        this.delegate.add(0, new LocatedWidget(widget, viewports));
     }
 
     @Nullable
     public IWidget peek() {
-        return isEmpty() ? null : this.delegate.getFirst().getElement();
+        return isEmpty() ? null : this.delegate.get(0).getElement();
     }
 
     public boolean isEmpty() {

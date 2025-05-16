@@ -1,27 +1,25 @@
 package com.gregtechceu.gtceu.api.mui.utils.fakeworld;
 
 import com.google.common.collect.AbstractIterator;
+import com.gregtechceu.gtceu.GTCEu;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.chars.CharArraySet;
 import it.unimi.dsi.fastutil.chars.CharSet;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 public class ArraySchema implements ISchema {
@@ -38,9 +36,9 @@ public class ArraySchema implements ISchema {
 
     public ArraySchema(BlockInfo[][][] blocks) {
         this.blocks = blocks;
-        this.level = new DummyWorld();
+        this.level = new DummyLevel();
         BlockPos.MutableBlockPos current = new BlockPos.MutableBlockPos();
-        BlockPos.MutableBlockPos max = new BlockPos.MutableBlockPos(BlockPosUtil.MIN);
+        BlockPos.MutableBlockPos max = BlockPosUtil.MIN.mutable();
         for (int x = 0; x < blocks.length; x++) {
             for (int y = 0; y < blocks[x].length; y++) {
                 for (int z = 0; z < blocks[x][y].length; z++) {
@@ -97,7 +95,7 @@ public class ArraySchema implements ISchema {
                             }
                         }
                     }
-                    pos.setPos(x, y, z);
+                    pos.set(x, y, z);
                     info = blocks[x][y][z];
                     if (info != null && renderFilter.test(pos, info)) {
                         pair.setRight(info);
@@ -144,23 +142,11 @@ public class ArraySchema implements ISchema {
             return where(c, new BlockInfo(block));
         }
 
-        public Builder where(char c, ResourceLocation registryName, int stateMeta) {
-            Block block = ForgeRegistries.BLOCKS.getValue(registryName);
-            if (block == null) throw new IllegalArgumentException("Block with name " + registryName + " doesn't exist!");
-            BlockState state = block.getStateFromMeta(stateMeta);
-            return where(c, new BlockInfo(state));
-        }
-
         public Builder where(char c, ResourceLocation registryName) {
-            return where(c, registryName, 0);
-        }
-
-        public Builder where(char c, String registryName, int stateMeta) {
-            return where(c, new ResourceLocation(registryName), stateMeta);
-        }
-
-        public Builder where(char c, String registryName) {
-            return where(c, new ResourceLocation(registryName), 0);
+            Optional<Block> block = BuiltInRegistries.BLOCK.getOptional(registryName);
+            if (block.isEmpty()) throw new IllegalArgumentException("Block with name " + registryName + " doesn't exist!");
+            BlockState state = block.get().defaultBlockState();
+            return where(c, new BlockInfo(state));
         }
 
         private void validate() {

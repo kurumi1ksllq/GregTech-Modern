@@ -5,22 +5,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class MouseData {
-
-    public final Dist side;
-    public final int mouseButton;
-    //public final boolean doubleClick;
-    public final boolean shift;
-    public final boolean ctrl;
-    public final boolean alt;
-
-    public MouseData(Dist side, int mouseButton, boolean shift, boolean ctrl, boolean alt) {
-        this.side = side;
-        this.mouseButton = mouseButton;
-        this.shift = shift;
-        this.ctrl = ctrl;
-        this.alt = alt;
-    }
+public record MouseData(Dist side, int mouseButton, boolean shift, boolean ctrl, boolean alt) {
 
     public boolean isClient() {
         return this.side.isClient();
@@ -45,4 +30,5 @@ public class MouseData {
     public static MouseData create(int mouse) {
         return new MouseData(Dist.CLIENT, mouse, Interactable.hasShiftDown(), Interactable.hasControlDown(), Interactable.hasAltDown());
     }
+
 }

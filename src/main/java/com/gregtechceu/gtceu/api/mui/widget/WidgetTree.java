@@ -11,7 +11,8 @@ import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
-import com.gregtechceu.gtceu.api.mui.utils.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import com.gregtechceu.gtceu.api.mui.value.sync.ModularSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
@@ -42,10 +43,10 @@ public class WidgetTree {
     public static List<IWidget> getAllChildrenByLayer(IWidget parent, boolean includeSelf) {
         List<IWidget> children = new ArrayList<>();
         if (includeSelf) children.add(parent);
-        ObjectList<IWidget> parents = ObjectList.create();
+        ObjectList<IWidget> parents = new ObjectArrayList<>();
         parents.add(parent);
         while (!parents.isEmpty()) {
-            for (IWidget child : parents.removeFirst().getChildren()) {
+            for (IWidget child : parents.remove(0).getChildren()) {
                 if (!child.getChildren().isEmpty()) {
                     parents.add(child);
                 }
@@ -61,12 +62,12 @@ public class WidgetTree {
 
     public static boolean foreachChildBFS(IWidget parent, Predicate<IWidget> consumer, boolean includeSelf) {
         if (includeSelf && !consumer.test(parent)) return false;
-        ObjectList<IWidget> parents = ObjectList.create();
+        ObjectList<IWidget> parents = new ObjectArrayList<>();
         parents.add(parent);
         while (!parents.isEmpty()) {
-            for (IWidget child : parents.removeFirst().getChildren()) {
+            for (IWidget child : parents.remove(0).getChildren()) {
                 if (child.hasChildren()) {
-                    parents.addLast(child);
+                    parents.add(child);
                 }
                 if (!consumer.test(child)) return false;
             }
@@ -76,14 +77,14 @@ public class WidgetTree {
 
     public static boolean foreachChildByLayer2(IWidget parent, Predicate<IWidget> consumer, boolean includeSelf) {
         if (includeSelf && !consumer.test(parent)) return false;
-        ObjectList<IWidget> parents = ObjectList.create();
+        ObjectList<IWidget> parents = new ObjectArrayList<>();
         parents.add(parent);
         while (!parents.isEmpty()) {
-            for (IWidget child : parents.removeFirst().getChildren()) {
+            for (IWidget child : parents.remove(0).getChildren()) {
                 if (!consumer.test(child)) return false;
 
                 if (child.hasChildren()) {
-                    parents.addLast(child);
+                    parents.add(child);
                 }
             }
         }
@@ -134,7 +135,7 @@ public class WidgetTree {
 
         // apply transformations to opengl
         graphics.pose().pushPose();
-        context.applyToOpenGl();
+        context.applyTo(graphics.pose());
 
         if (canBeSeen) {
             // draw widget
@@ -159,7 +160,7 @@ public class WidgetTree {
                 viewport.transformChildren(context);
                 // apply to opengl and draw with transformation
                 graphics.pose().pushPose();
-                context.applyToOpenGl();
+                context.applyTo(graphics.pose());
                 viewport.preDraw(context, true);
             } else {
                 // only transform stack
@@ -182,14 +183,14 @@ public class WidgetTree {
                 graphics.setColor(1f, 1f, 1f, alpha);
                 RenderSystem.enableBlend();
                 graphics.pose().pushPose();
-                context.applyToOpenGl();
+                context.applyTo(graphics.pose());
                 viewport.postDraw(context, true);
                 // remove children transformation of this viewport
                 context.popViewport(viewport);
                 graphics.pose().popPose();
                 // apply transformation again to opengl and draw
                 graphics.pose().pushPose();
-                context.applyToOpenGl();
+                context.applyTo(graphics.pose());
                 viewport.postDraw(context, false);
                 graphics.pose().popPose();
             } else {

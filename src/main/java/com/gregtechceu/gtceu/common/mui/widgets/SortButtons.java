@@ -1,7 +1,5 @@
 package com.gregtechceu.gtceu.common.mui.widgets;
 
-import com.cleanroommc.bogosorter.api.IBogoSortAPI;
-import com.gregtechceu.gtceu.api.mui.ModularUI;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.widget.Widget;
@@ -28,6 +26,7 @@ public class SortButtons extends Widget<SortButtons> {
         if (!this.slotGroup.isAllowSorting()) {
             throw new IllegalStateException("Slot group can't be sorted!");
         }
+        /* TODO bogosort doesn't exist (yet), pick some other sorting mod to add compat for
         this.sortButton.size(10).pos(0, 0)
                 .overlay(IKey.str("z"))
                 .onMousePressed(mouseButton -> {
@@ -40,6 +39,7 @@ public class SortButtons extends Widget<SortButtons> {
                     IBogoSortAPI.getInstance().openConfigGui();
                     return true;
                 });
+        */
         if (this.horizontal) {
             size(20, 10);
             this.settingsButton.pos(10, 0);
@@ -57,7 +57,8 @@ public class SortButtons extends Widget<SortButtons> {
 
     @Override
     public boolean isEnabled() {
-        return super.isEnabled() && ModularUI.isSortModLoaded();
+        // TODO bogosort doesn't exist (yet), pick some other sorting mod to add compat for
+        return false; //return super.isEnabled() && false; ModularUI.isSortModLoaded();
     }
 
     public String getSlotGroupName() {

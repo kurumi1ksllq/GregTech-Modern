@@ -13,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -165,8 +164,11 @@ public class RichTextCompiler {
         }
         if (currentLine.isEmpty()) {
             //lines.add(null);
-        } else if (currentLine.size() == 1 && currentLine.get(0) instanceof String) {
-            lines.add(new TextLine((String) currentLine.get(0), x));
+        } else if (currentLine.size() == 1 && currentLine.get(0) instanceof Component c) {
+            lines.add(new TextLine(c, x));
+            currentLine.clear();
+        } else if (currentLine.size() == 1 && currentLine.get(0) instanceof String s) {
+            lines.add(new TextLine(Component.literal(s), x));
             currentLine.clear();
         } else {
             lines.add(new ComposedLine(currentLine, x, h));
@@ -177,17 +179,27 @@ public class RichTextCompiler {
     }
 
     private void addLineElement(Object o) {
-        if (o instanceof Component c) {
+        if (o instanceof Component c2) {
             if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof String s1) {
                 // if there is already one string in the line, merge them
-                this.currentLine.set(0, s1 + c);
+                this.currentLine.set(0, s1 + c2);
                 return;
             }
-            o = c.copy().withStyle(this.formatting::getFormatting);
+            if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof Component c1) {
+                // if there is already one string in the line, merge them
+                this.currentLine.set(0, c1.copy().append(c2));
+                return;
+            }
+            o = c2.copy().withStyle(this.formatting::getFormatting);
         } else if (o instanceof String s2) {
             if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof String s1) {
                 // if there is already one string in the line, merge them
                 this.currentLine.set(0, s1 + s2);
+                return;
+            }
+            if (this.currentLine.size() == 1 && this.currentLine.get(0) instanceof Component c1) {
+                // if there is already one string in the line, merge them
+                this.currentLine.set(0, c1.copy().append(s2));
                 return;
             }
             if (this.currentLine.isEmpty()) {
@@ -201,9 +213,11 @@ public class RichTextCompiler {
             Style style = this.formatting.getFormatting(Style.EMPTY);
             StringBuilder styleBuilder = new StringBuilder();
             if (style.getColor() != null) {
+                int colorRGB = style.getColor().getValue();
                 for (ChatFormatting legacyColor : ChatFormatting.values()) {
                     if (!legacyColor.isColor()) continue;
-                    if (TextColor.fromLegacyFormat(legacyColor) != style.getColor()) continue;
+                    //noinspection DataFlowIssue
+                    if (colorRGB != legacyColor.getColor()) continue;
                     styleBuilder.append(legacyColor);
                     break;
                 }

@@ -15,7 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 /**
  * A {@link IDrawable} wrapper with a fixed size and an alignment.
  */
-public class Icon implements IIcon, IJsonSerializable {
+public class Icon implements IIcon, IJsonSerializable<Icon> {
 
     private final IDrawable drawable;
     private int width = 0, height = 0;

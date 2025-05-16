@@ -2,11 +2,8 @@ package com.gregtechceu.gtceu.api.mui.utils;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class FluidTankHandler implements IFluidHandler {
 
@@ -24,30 +21,41 @@ public class FluidTankHandler implements IFluidHandler {
     }
 
     @Override
-    public IFluidTankProperties[] getTankProperties() {
-        return new IFluidTankProperties[]{
-                new FluidTankProperties(this.fluidTank.getFluid(), this.fluidTank.getCapacity())
-        };
+    public int fill(FluidStack resource, FluidAction action) {
+        return this.fluidTank.fill(resource, action);
     }
 
     @Override
-    public int fill(FluidStack resource, boolean doFill) {
-        return this.fluidTank.fill(resource, doFill);
-    }
-
-    @Nullable
-    @Override
-    public FluidStack drain(FluidStack resource, boolean doDrain) {
+    public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
         FluidStack currentFluid = this.fluidTank.getFluid();
-        if (currentFluid == null || currentFluid.amount <= 0 || !currentFluid.isFluidEqual(resource)) {
-            return null;
+        if (currentFluid.isEmpty() || !currentFluid.isFluidEqual(resource)) {
+            return FluidStack.EMPTY;
         }
-        return this.fluidTank.drain(resource.amount, doDrain);
+        return this.fluidTank.drain(resource, action);
     }
 
-    @Nullable
     @Override
-    public FluidStack drain(int maxDrain, boolean doDrain) {
-        return this.fluidTank.drain(maxDrain, doDrain);
+    public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+        return this.fluidTank.drain(maxDrain, action);
+    }
+
+    @Override
+    public int getTanks() {
+        return 1;
+    }
+
+    @Override
+    public @NotNull FluidStack getFluidInTank(int tank) {
+        return this.fluidTank.getFluid();
+    }
+
+    @Override
+    public int getTankCapacity(int tank) {
+        return this.fluidTank.getCapacity();
+    }
+
+    @Override
+    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+        return this.fluidTank.isFluidValid(stack);
     }
 }

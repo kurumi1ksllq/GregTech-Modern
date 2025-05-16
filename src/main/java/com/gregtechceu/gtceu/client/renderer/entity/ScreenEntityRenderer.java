@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.client.renderer.entity;
 import com.gregtechceu.gtceu.api.mui.holoui.HoloScreenEntity;
 import com.gregtechceu.gtceu.api.mui.holoui.Plane3D;
 import com.gregtechceu.gtceu.api.mui.holoui.ScreenOrientation;
-import com.gregtechceu.gtceu.client.mui.screen.GuiContainerWrapper;
+import com.gregtechceu.gtceu.client.mui.screen.ContainerScreenWrapper;
 import com.gregtechceu.gtceu.core.mixins.GuiGraphicsAccessor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -34,7 +34,7 @@ public class ScreenEntityRenderer extends EntityRenderer<HoloScreenEntity> {
     @Override
     public void render(@NotNull HoloScreenEntity entity, float entityYaw, float partialTick,
                        @NotNull PoseStack poseStack, @NotNull MultiBufferSource buffer, int packedLight) {
-        GuiContainerWrapper screenWrapper = entity.getWrapper();
+        ContainerScreenWrapper screenWrapper = entity.getWrapper();
         if (screenWrapper == null) return;
         PoseStack oldPose = guiGraphics.pose();
         ((GuiGraphicsAccessor) guiGraphics).setPose(poseStack);
@@ -49,7 +49,7 @@ public class ScreenEntityRenderer extends EntityRenderer<HoloScreenEntity> {
         }
         poseStack.pushPose();
         poseStack.translate(entity.getX(), entity.getY(), entity.getZ());
-        plane3D.transformRectangle();
+        plane3D.transformRectangle(poseStack);
         screenWrapper.render(guiGraphics, 0, 0, partialTick);
         poseStack.popPose();
         ((GuiGraphicsAccessor) guiGraphics).setPose(oldPose);

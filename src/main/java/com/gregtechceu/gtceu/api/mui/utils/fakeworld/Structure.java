@@ -6,7 +6,7 @@ import it.unimi.dsi.fastutil.chars.CharArrayList;
 import it.unimi.dsi.fastutil.chars.CharList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import java.util.List;
 import java.util.Map;
@@ -14,13 +14,15 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Structure {
-    private Structure(){}
 
-    public static StaticBuilder staticBuilder(){
+    private Structure() {}
+
+    public static StaticBuilder staticBuilder() {
         return new StaticBuilder();
     }
 
     public static class StaticBuilder {
+
         private final List<String[]> matrix = new ObjectArrayList<>();
         private final Char2ObjectMap<BlockInfo> map = new Char2ObjectOpenHashMap<>();
 
@@ -68,10 +70,10 @@ public class Structure {
                 if (Objects.isNull(entry.getValue())) list.add(entry.getCharKey());
             }
 
-            if (!list.isEmpty()) throw new IllegalStateException(
-                    list.stream().map(Object::toString).collect(Collectors.joining(",", "Predicates for character(s) ", " are missing")));
+            if (!list.isEmpty()) throw new IllegalStateException(list.intStream()
+                    .mapToObj(Integer::toString)
+                    .collect(Collectors.joining(",", "Predicates for character(s) ", " are missing")));
         }
 
     }
-
 }

@@ -1,22 +1,36 @@
 package com.gregtechceu.gtceu.client.mui.screen;
 
 import com.gregtechceu.gtceu.api.mui.base.IMuiScreen;
+import com.gregtechceu.gtceu.api.mui.base.IScreenWithMuiScreen;
+import com.gregtechceu.gtceu.api.mui.widget.sizer.Rectangle;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
-public class GuiContainerWrapper extends AbstractContainerScreen<ModularContainerMenu> implements IMuiScreen {
+public class ContainerScreenWrapper extends AbstractContainerScreen<ModularContainerMenu>
+        implements IScreenWithMuiScreen, IMuiScreen {
 
     private final ModularScreen screen;
 
-    public GuiContainerWrapper(ModularContainerMenu container, ModularScreen screen) {
+    public ContainerScreenWrapper(ModularContainerMenu container, ModularScreen screen) {
         super(container, container.getPlayer().getInventory(), Component.empty());
         this.screen = screen;
         this.screen.construct(this);
+    }
+
+    /**
+     * This is only used to create the menu type with Registrate. Do not use for anything.
+     */
+    @ApiStatus.Internal
+    public ContainerScreenWrapper(ModularContainerMenu container, Inventory inventory, Component display) {
+        super(container, inventory, display);
+        this.screen = null;
     }
 
     @Override
@@ -26,6 +40,14 @@ public class GuiContainerWrapper extends AbstractContainerScreen<ModularContaine
 
     @Override
     protected void renderBg(@NotNull GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {}
+
+    @Override
+    public void updateGuiArea(Rectangle area) {
+        this.leftPos = area.x;
+        this.topPos = area.y;
+        this.imageWidth = area.width;
+        this.imageHeight = area.height;
+    }
 
     @Override
     public @NotNull ModularScreen getScreen() {
@@ -40,6 +62,5 @@ public class GuiContainerWrapper extends AbstractContainerScreen<ModularContaine
     @Override
     public void setFocused(boolean focused) {
         super.setFocused(focused);
-        IMuiScreen.super.setFocused(focused);
     }
 }

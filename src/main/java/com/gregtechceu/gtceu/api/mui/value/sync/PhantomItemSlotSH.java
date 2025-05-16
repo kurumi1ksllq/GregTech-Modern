@@ -8,8 +8,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.io.IOException;
-
 /**
  * Wraps a slot and handles interactions for phantom slots.
  * Use {@link ModularSlot} directly.
@@ -48,7 +46,7 @@ public class PhantomItemSlotSH extends ItemSlotSH {
     }
 
     @Override
-    public void readOnServer(int id, FriendlyByteBuf buf) throws IOException {
+    public void readOnServer(int id, FriendlyByteBuf buf) {
         super.readOnServer(id, buf);
         if (id == SYNC_CLICK) {
             phantomClick(MouseData.readPacket(buf));
@@ -74,7 +72,7 @@ public class PhantomItemSlotSH extends ItemSlotSH {
         if (!cursorStack.isEmpty() && !slotStack.isEmpty() && !ItemHandlerHelper.canItemStacksStack(cursorStack, slotStack)) {
             if (!isItemValid(cursorStack)) return;
             stackToPut = cursorStack.copy();
-            if (mouseData.mouseButton == 1) {
+            if (mouseData.mouseButton() == 1) {
                 stackToPut.setCount(1);
             }
             stackToPut.setCount(Math.min(stackToPut.getCount(), getSlot().getMaxStackSize(stackToPut)));
@@ -82,7 +80,7 @@ public class PhantomItemSlotSH extends ItemSlotSH {
             this.lastStoredPhantomItem = stackToPut.copy();
         } else if (slotStack.isEmpty()) {
             if (cursorStack.isEmpty()) {
-                if (mouseData.mouseButton == 1 && !this.lastStoredPhantomItem.isEmpty()) {
+                if (mouseData.mouseButton() == 1 && !this.lastStoredPhantomItem.isEmpty()) {
                     stackToPut = this.lastStoredPhantomItem.copy();
                 } else {
                     return;
@@ -91,20 +89,20 @@ public class PhantomItemSlotSH extends ItemSlotSH {
                 if (!isItemValid(cursorStack)) return;
                 stackToPut = cursorStack.copy();
             }
-            if (mouseData.mouseButton == 1) {
+            if (mouseData.mouseButton() == 1) {
                 stackToPut.setCount(1);
             }
             stackToPut.setCount(Math.min(stackToPut.getCount(), getSlot().getMaxStackSize(stackToPut)));
             getSlot().set(stackToPut);
             this.lastStoredPhantomItem = stackToPut.copy();
         } else {
-            if (mouseData.mouseButton == 0) {
-                if (mouseData.shift) {
+            if (mouseData.mouseButton() == 0) {
+                if (mouseData.shift()) {
                     getSlot().set(ItemStack.EMPTY);
                 } else {
                     incrementStackCount(-1);
                 }
-            } else if (mouseData.mouseButton == 1) {
+            } else if (mouseData.mouseButton() == 1) {
                 incrementStackCount(1);
             }
         }
@@ -112,10 +110,10 @@ public class PhantomItemSlotSH extends ItemSlotSH {
 
     protected void phantomScroll(MouseData mouseData) {
         ItemStack currentItem = getSlot().getItem();
-        int amount = mouseData.mouseButton;
-        if (mouseData.shift) amount *= 4;
-        if (mouseData.ctrl) amount *= 16;
-        if (mouseData.alt) amount *= 64;
+        int amount = mouseData.mouseButton();
+        if (mouseData.shift()) amount *= 4;
+        if (mouseData.ctrl()) amount *= 16;
+        if (mouseData.alt()) amount *= 64;
         if (amount > 0 && currentItem.isEmpty() && !this.lastStoredPhantomItem.isEmpty()) {
             ItemStack stackToPut = this.lastStoredPhantomItem.copy();
             stackToPut.setCount(amount);

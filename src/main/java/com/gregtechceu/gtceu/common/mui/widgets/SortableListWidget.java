@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.mui.widgets;
 
-import com.gregtechceu.gtceu.api.mui.ModularUI;
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.widget.IGuiElement;
 import com.gregtechceu.gtceu.api.mui.base.widget.IValueWidget;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;

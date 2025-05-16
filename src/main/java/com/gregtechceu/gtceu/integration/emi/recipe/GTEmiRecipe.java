@@ -12,6 +12,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.jei.IngredientIO;
 import com.lowdragmc.lowdraglib.jei.ModularWrapper;
 
+import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
@@ -31,6 +32,7 @@ import java.util.List;
 
 public class GTEmiRecipe extends ModularEmiRecipe<WidgetGroup> {
 
+    @Getter
     final EmiRecipeCategory category;
     final GTRecipe recipe;
 
@@ -38,11 +40,6 @@ public class GTEmiRecipe extends ModularEmiRecipe<WidgetGroup> {
         super(() -> new GTRecipeWidget(recipe));
         this.category = category;
         this.recipe = recipe;
-    }
-
-    @Override
-    public EmiRecipeCategory getCategory() {
-        return category;
     }
 
     @Override

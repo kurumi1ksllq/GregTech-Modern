@@ -13,11 +13,14 @@ import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.utils.MouseData;
-import com.gregtechceu.gtceu.api.mui.utils.NumberFormat;
 import com.gregtechceu.gtceu.api.mui.value.sync.FluidSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandler;
 import com.gregtechceu.gtceu.api.mui.widget.Widget;
+import com.gregtechceu.gtceu.integration.xei.entry.EntryList;
+import com.gregtechceu.gtceu.integration.xei.entry.fluid.FluidStackList;
 import com.gregtechceu.gtceu.integration.xei.handlers.GhostIngredientSlot;
+import com.gregtechceu.gtceu.integration.xei.handlers.IngredientProvider;
+import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -30,10 +33,11 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.text.DecimalFormat;
 
-public class FluidSlot extends Widget<FluidSlot> implements Interactable, GhostIngredientSlot<FluidStack>, JeiIngredientProvider {
+public class FluidSlot extends Widget<FluidSlot> implements Interactable, GhostIngredientSlot<FluidStack>, IngredientProvider<FluidStack> {
 
     public static final int DEFAULT_SIZE = 18;
     public static final String UNIT_BUCKET = "B";
@@ -122,7 +126,7 @@ public class FluidSlot extends Widget<FluidSlot> implements Interactable, GhostI
         this.textRenderer.setShadow(true);
         this.textRenderer.setScale(0.5f);
         this.textRenderer.setColor(Color.WHITE.main);
-        getContext().getJeiSettings().addGhostIngredientSlot(this);
+        getContext().getXeiSettings().addGhostIngredientSlot(this);
     }
 
     @Override
@@ -150,7 +154,7 @@ public class FluidSlot extends Widget<FluidSlot> implements Interactable, GhostI
             this.overlayTexture.drawAtZero(context, getArea(), widgetTheme);
         }
         if (content != null && this.syncHandler.controlsAmount()) {
-            String s = NumberFormat.format(getBaseUnitAmount(content.getAmount()), NumberFormat.AMOUNT_TEXT) + getBaseUnit();
+            String s = FormattingUtil.formatNumberReadable2F(content.getAmount(), true) + getBaseUnit();
             this.textRenderer.setAlignment(Alignment.CenterRight, getArea().width - this.contentOffsetX - 1f);
             this.textRenderer.setPos((int) (this.contentOffsetX + 0.5f), (int) (getArea().height - 5.5f));
             this.textRenderer.draw(context.getGraphics(), Component.literal(s));
@@ -282,7 +286,13 @@ public class FluidSlot extends Widget<FluidSlot> implements Interactable, GhostI
     }
 
     @Override
-    public @Nullable Object getIngredient() {
-        return getFluidStack();
+    public @NotNull Class<FluidStack> ingredientClass() {
+        return FluidStack.class;
     }
+
+    @Override
+    public EntryList<FluidStack> getIngredients() {
+        return FluidStackList.of(getFluidStack());
+    }
+
 }

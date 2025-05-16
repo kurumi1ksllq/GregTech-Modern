@@ -305,7 +305,7 @@ public class DimensionSizer {
             if (ret == this.start) this.start = null;
             if (ret == this.end) this.end = null;
             if (ret == this.size) this.size = null;
-            if (ModularUIConfig.guiDebugMode && NetworkUtils.isClient()) {
+            if (ModularUIConfig.guiDebugMode && GTCEu.isClientThread()) {
                 // only log on client in debug mode since its sometimes intentional
                 GTCEu.LOGGER.info("unit {} of widget {} was already used and will be overwritten with unit {}", ret.state.getText(this.axis), widget, newState.getText(this.axis));
             }

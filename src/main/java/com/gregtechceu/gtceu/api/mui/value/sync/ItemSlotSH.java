@@ -85,7 +85,7 @@ public class ItemSlotSH extends SyncHandler {
     }
 
     @Override
-    public void readOnServer(int id, FriendlyByteBuf buf) throws IOException {
+    public void readOnServer(int id, FriendlyByteBuf buf) {
         if (id == SYNC_ENABLED) {
             setEnabled(buf.readBoolean(), false);
         }

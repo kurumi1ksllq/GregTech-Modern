@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.data.worldgen.bedrockore.BedrockOreDefinition;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.IGTTool;
 import com.gregtechceu.gtceu.api.item.LampBlockItem;
+import com.gregtechceu.gtceu.client.mui.component.DrawableTooltipComponent;
 import com.gregtechceu.gtceu.client.renderer.entity.ScreenEntityRenderer;
 import com.gregtechceu.gtceu.client.particle.HazardParticle;
 import com.gregtechceu.gtceu.client.particle.MufflerParticle;
@@ -49,6 +50,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import java.util.function.Function;
+
 /**
  * @author KilaBash
  * @date 2023/7/30
@@ -89,10 +92,13 @@ public class ClientProxy extends CommonProxy {
 
         event.registerEntityRenderer(GTEntityTypes.BOAT.get(), c -> new GTBoatRenderer(c, false));
         event.registerEntityRenderer(GTEntityTypes.CHEST_BOAT.get(), c -> new GTBoatRenderer(c, true));
+    }
 
+    @SubscribeEvent
+    public void onRegisterEntityLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         for (var type : GTBoat.BoatType.values()) {
-            ForgeHooksClient.registerLayerDefinition(GTBoatRenderer.getBoatModelName(type), BoatModel::createBodyModel);
-            ForgeHooksClient.registerLayerDefinition(GTBoatRenderer.getChestBoatModelName(type),
+            event.registerLayerDefinition(GTBoatRenderer.getBoatModelName(type), BoatModel::createBodyModel);
+            event.registerLayerDefinition(GTBoatRenderer.getChestBoatModelName(type),
                     ChestBoatModel::createBodyModel);
         }
     }
@@ -135,5 +141,10 @@ public class ClientProxy extends CommonProxy {
                 GTCEu.isModLoaded(GTValues.MODID_FTB_CHUNKS)) {
             FTBChunksPlugin.addEventListeners();
         }
+    }
+
+    @SubscribeEvent
+    private void onRegisterClientTooltipEvent(RegisterClientTooltipComponentFactoriesEvent event) {
+        event.register(DrawableTooltipComponent.class, Function.identity());
     }
 }

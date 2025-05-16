@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class UITexture implements IDrawable, IJsonSerializable {
+public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
 
     public static final UITexture DEFAULT = fullImage("gui/options_background", true);
 

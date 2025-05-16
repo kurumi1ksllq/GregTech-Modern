@@ -11,6 +11,8 @@ import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -124,13 +126,9 @@ public class IconRenderer {
                     scale = styledText.getScale();
                     alignment1 = styledText.getAlignment();
                 }
-                String text = key.get();
-                for (String subLine : text.split("\\\\n")) {
-                    for (String subSubLine : wrapLine(subLine, scale)) {
-                        int width = (int) (getFont().getStringWidth(subSubLine) * scale);
-                        icons.add(new TextIcon(subSubLine, width, (int) (getFont().lineHeight * scale), scale, alignment1));
-                    }
-                }
+                Component text = key.get();
+                int width = (int) (getFont().width(text) * scale);
+                icons.add(new TextIcon(text, width, (int) (getFont().lineHeight * scale), scale, alignment1));
             } else {
                 icons.add(element.asIcon().height(getFont().lineHeight));
             }
@@ -138,8 +136,8 @@ public class IconRenderer {
         return icons;
     }
 
-    public List<String> wrapLine(String line, float scale) {
-        return this.maxWidth > 0 ? getFont().listFormattedStringToWidth(line, (int) (this.maxWidth / scale)) : Collections.singletonList(line);
+    public List<FormattedCharSequence> wrapLine(Component line, float scale) {
+        return this.maxWidth > 0 ? getFont().split(line, (int) (this.maxWidth / scale)) : Collections.singletonList(line.getVisualOrderText());
     }
 
     protected int getStartY(int totalHeight) {
@@ -171,6 +169,6 @@ public class IconRenderer {
 
     @OnlyIn(Dist.CLIENT)
     public static Font getFont() {
-        return Minecraft.getInstance().fontRenderer;
+        return Minecraft.getInstance().font;
     }
 }

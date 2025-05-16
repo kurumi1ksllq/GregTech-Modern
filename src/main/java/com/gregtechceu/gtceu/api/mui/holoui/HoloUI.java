@@ -2,11 +2,12 @@ package com.gregtechceu.gtceu.api.mui.holoui;
 
 import com.gregtechceu.gtceu.client.mui.screen.ModularScreen;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
+import com.gregtechceu.gtceu.common.data.GTEntityTypes;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.Player;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
@@ -18,10 +19,10 @@ import java.util.function.Supplier;
 @ApiStatus.Experimental
 public class HoloUI {
 
-    private static final Map<ResourceLocation, Supplier<ModularScreen>> syncedHolos = new Object2ObjectOpenHashMap<>();
+    private static final Map<ResourceLocation, Supplier<ModularScreen>> SYNCED_HOLOS = new Object2ObjectOpenHashMap<>();
 
     public static void registerSyncedHoloUI(ResourceLocation loc, Supplier<ModularScreen> screen) {
-        syncedHolos.put(loc, screen);
+        SYNCED_HOLOS.put(loc, screen);
     }
 
     public static Builder builder() {
@@ -42,9 +43,9 @@ public class HoloUI {
         }
 
         public Builder inFrontOf(Player player, double distance, boolean fixed) {
-            Vec3d look = player.getLookVec();
+            Vec3 look = player.getLookAngle();
             this.orientation = fixed ? ScreenOrientation.FIXED : ScreenOrientation.TO_PLAYER;
-            return at(player.posX + look.x * distance, player.posY + player.getEyeHeight() + look.y * distance, player.posZ + look.z * distance);
+            return at(player.getX() + look.x * distance, player.getY() + player.getEyeHeight() + look.y * distance, player.getZ() + look.z * distance);
         }
 
         public Builder faceToPlayer() {
@@ -80,9 +81,10 @@ public class HoloUI {
 
         public void open(ModularScreen screen) {
             UISettings settings = new UISettings();
-            settings.getJeiSettings().defaultJei();
+            settings.getJeiSettings().defaultXei();
             screen.getContext().setSettings(settings);
-            HoloScreenEntity holoScreenEntity = new HoloScreenEntity(Minecraft.getInstance().level, this.plane3D);
+            HoloScreenEntity holoScreenEntity = new HoloScreenEntity(GTEntityTypes.MODULAR_SCREEN.get(),
+                    Minecraft.getInstance().level, this.plane3D);
             holoScreenEntity.setPos(this.x, this.y, this.z);
             holoScreenEntity.setScreen(screen);
             holoScreenEntity.spawnInWorld();

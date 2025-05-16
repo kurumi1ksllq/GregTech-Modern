@@ -8,7 +8,7 @@ import com.gregtechceu.gtceu.api.mui.base.MCHelper;
 import com.gregtechceu.gtceu.api.mui.base.widget.IGuiAction;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.drawable.GuiDraw;
-import com.gregtechceu.gtceu.api.mui.overlay.ScreenWrapper;
+import com.gregtechceu.gtceu.api.mui.overlay.OverlayScreenWrapper;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.value.sync.ModularSyncManager;
@@ -145,7 +145,7 @@ public class ModularScreen implements GuiEventListener {
     public void constructOverlay(Screen screen) {
         if (this.screenWrapper != null) throw new IllegalStateException("ModularScreen is already constructed!");
         if (screen == null) throw new NullPointerException("ScreenWrapper must not be null!");
-        this.screenWrapper = new ScreenWrapper(screen, this);
+        this.screenWrapper = new OverlayScreenWrapper(screen, this);
         this.overlay = true;
     }
 

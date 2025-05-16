@@ -1,7 +1,8 @@
 package com.gregtechceu.gtceu.api.mui.base;
 
+import com.gregtechceu.gtceu.api.mui.widget.sizer.Rectangle;
 import com.gregtechceu.gtceu.client.mui.screen.ClientScreenHandler;
-import com.gregtechceu.gtceu.client.mui.screen.GuiContainerWrapper;
+import com.gregtechceu.gtceu.client.mui.screen.ContainerScreenWrapper;
 import com.gregtechceu.gtceu.client.mui.screen.ScreenWrapper;
 import com.gregtechceu.gtceu.client.mui.screen.ModularScreen;
 
@@ -18,14 +19,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.util.function.Consumer;
 
 /**
  * Implement this interface on a {@link Screen} to be able to use it as a custom wrapper.
  * The Screen should have final {@link ModularScreen} field, which is set from the constructor.
  * Additionally, the Screen MUST call {@link ModularScreen#construct(IMuiScreen)} in its constructor.
- * See {@link ScreenWrapper ScreenWrapper} and {@link GuiContainerWrapper GuiContainerWrapper}
+ * See {@link ScreenWrapper ScreenWrapper} and {@link ContainerScreenWrapper GuiContainerWrapper}
  * for default implementations.
  */
 @OnlyIn(Dist.CLIENT)
@@ -73,8 +73,11 @@ public interface IMuiScreen {
      * @param area area of the main panel
      */
     default void updateGuiArea(Rectangle area) {
-        if (getWrappedScreen() instanceof AbstractContainerScreen<?> container) {
-            ClientScreenHandler.updateGuiArea(container, area);
+        if (getWrappedScreen() instanceof AbstractContainerScreenAccessor acc) {
+            acc.setLeftPos(area.x);
+            acc.setTopPos(area.y);
+            acc.setImageWidth(area.width);
+            acc.setImageHeight(area.height);
         }
     }
 

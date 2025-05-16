@@ -7,21 +7,32 @@ import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.drawable.GuiDraw;
 import com.gregtechceu.gtceu.api.mui.drawable.text.RichText;
 import com.gregtechceu.gtceu.api.mui.drawable.text.TextRenderer;
+import com.gregtechceu.gtceu.api.mui.widget.sizer.Rectangle;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Either;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.util.Mth;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
@@ -92,14 +103,29 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         int mouseX = context.getMouseX(), mouseY = context.getMouseY();
         TextRenderer renderer = TextRenderer.SHARED;
         // this only turns the text and not any drawables into strings
-        List<Component> textLines = this.text.getStringRepresentation();
-        RenderTooltipEvent.Pre event = new RenderTooltipEvent.Pre(stack, textLines, mouseX, mouseY, screen.width, screen.height, this.maxWidth, TextRenderer.getFont());
+        List<Either<FormattedText, TooltipComponent>> textLines = this.text.getStringRepresentation().stream()
+                .<Either<FormattedText, TooltipComponent>>map(Either::left)
+                .collect(Collectors.toList());
+
+        var gatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height, textLines, this.maxWidth);
+        if (MinecraftForge.EVENT_BUS.post(gatherEvent)) return; // canceled
+        this.maxWidth = gatherEvent.getMaxWidth();
+        textLines = gatherEvent.getTooltipElements();
+        List<ClientTooltipComponent> components = textLines.stream()
+                .map(either -> either.map(
+                        text -> ClientTooltipComponent.create(text instanceof Component ? ((Component) text).getVisualOrderText() : Language.getInstance().getVisualOrder(text)),
+                        ClientTooltipComponent::create
+                ))
+                .toList();
+
+        RenderTooltipEvent.Pre event = new RenderTooltipEvent.Pre(stack, context.getGraphics(),
+                mouseX, mouseY, screen.width, screen.height,
+                TextRenderer.getFont(), components, DefaultTooltipPositioner.INSTANCE);
         if (MinecraftForge.EVENT_BUS.post(event)) return; // canceled
         // we are supposed to now use the strings of the event, but we can't properly determine where to put them
         mouseX = event.getX();
         mouseY = event.getY();
         int screenWidth = event.getScreenWidth(), screenHeight = event.getScreenHeight();
-        this.maxWidth = event.getMaxWidth();
 
         // simulate to figure how big this tooltip is without any restrictions
         this.text.setupRenderer(renderer, 0, 0, this.maxWidth, -1, Color.WHITE.main, false);
@@ -111,16 +137,16 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         RenderSystem.disableDepthTest();
         RenderSystem.disableBlend();
 
-        GuiDraw.drawTooltipBackground(stack, textLines, area.x, area.y, area.width, area.height);
+        GuiDraw.drawTooltipBackground(context.getGraphics(), stack, components, area.x, area.y, area.width, area.height);
 
-        MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(stack, textLines, area.x, area.y, TextRenderer.getFont(), area.width, area.height));
+        // MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(stack, textLines, area.x, area.y, TextRenderer.getFont(), area.width, area.height));
 
-        RenderSystem.color(1f, 1f, 1f, 1f);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
         renderer.setPos(area.x, area.y);
         this.text.compileAndDraw(renderer, context, false);
 
-        MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostText(stack, textLines, area.x, area.y, TextRenderer.getFont(), area.width, area.height));
+        // MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostText(stack, textLines, area.x, area.y, TextRenderer.getFont(), area.width, area.height));
     }
 
     public Rectangle determineTooltipArea(GuiContext context, TextRenderer renderer, int screenWidth, int screenHeight, int mouseX, int mouseY) {
@@ -163,7 +189,7 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
                 width = (int) renderer.getLastWidth();
                 height = (int) renderer.getLastHeight();
             }
-            y = MathHelper.clamp(y, padding, screenHeight - padding - height);
+            y = Mth.clamp(y, padding, screenHeight - padding - height);
             return new Rectangle(x, y, width, height);
         }
 
@@ -321,7 +347,7 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
     }
 
     public RichTooltip addFromItem(ItemStack item) {
-        List<String> lines = MCHelper.getItemToolTip(item);
+        List<Component> lines = MCHelper.getItemToolTip(item);
         add(lines.get(0)).spaceLine(2);
         for (int i = 1, n = lines.size(); i < n; i++) {
             add(lines.get(i)).newLine();

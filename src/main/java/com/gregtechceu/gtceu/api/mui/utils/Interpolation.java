@@ -1,14 +1,14 @@
 package com.gregtechceu.gtceu.api.mui.utils;
 
 import com.gregtechceu.gtceu.api.mui.base.drawable.IInterpolation;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Check out <a href=https://easings.net/en>this website</a> to find your desired interpolation method.
  */
-public enum Interpolation implements IInterpolation, IStringSerializable {
+public enum Interpolation implements IInterpolation, StringRepresentable {
 
     LINEAR("linear") {
         @Override
@@ -272,7 +272,7 @@ public enum Interpolation implements IInterpolation, IStringSerializable {
     CIRCLE_IN("circle_in") {
         @Override
         public float interpolate(float a, float b, float x) {
-            x = MathHelper.clamp(x, 0, 1);
+            x = Mth.clamp(x, 0, 1);
 
             float factor = 1 - (float) Math.sqrt(1 - Math.pow(x, 2));
 
@@ -282,7 +282,7 @@ public enum Interpolation implements IInterpolation, IStringSerializable {
     CIRCLE_OUT("circle_out") {
         @Override
         public float interpolate(float a, float b, float x) {
-            x = MathHelper.clamp(x, 0, 1);
+            x = Mth.clamp(x, 0, 1);
 
             float factor = (float) Math.sqrt(1 - Math.pow(x - 1, 2));
 
@@ -292,7 +292,7 @@ public enum Interpolation implements IInterpolation, IStringSerializable {
     CIRCLE_INOUT("circle_inout") {
         @Override
         public float interpolate(float a, float b, float x) {
-            x = MathHelper.clamp(x, 0, 1);
+            x = Mth.clamp(x, 0, 1);
 
             float factor = x < 0.5
                     ? (float) (1 - Math.sqrt(1 - Math.pow(2 * x, 2))) / 2
@@ -309,7 +309,7 @@ public enum Interpolation implements IInterpolation, IStringSerializable {
     }
 
     @Override
-    public @NotNull String getName() {
+    public @NotNull String getSerializedName() {
         return this.name;
     }
 }

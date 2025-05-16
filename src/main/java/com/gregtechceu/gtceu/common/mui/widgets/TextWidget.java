@@ -7,15 +7,21 @@ import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.widget.Widget;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Box;
+import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import org.jetbrains.annotations.Nullable;
 
 public class TextWidget extends Widget<TextWidget> {
 
+    @Getter
     private final IKey key;
+    @Getter
     private Alignment alignment = Alignment.CenterLeft;
+    @Getter
     private Integer color = null;
+    @Getter
     private Boolean shadow = null;
+    @Getter
     private float scale = 1f;
 
     public TextWidget(IKey key) {
@@ -69,26 +75,6 @@ public class TextWidget extends Widget<TextWidget> {
         TextRenderer renderer = simulate(maxWidth);
         Box padding = getArea().getPadding();
         return Math.max(1, (int) (renderer.getLastWidth() + padding.horizontal() + 0.5f));
-    }
-
-    public IKey getKey() {
-        return this.key;
-    }
-
-    public Alignment getAlignment() {
-        return this.alignment;
-    }
-
-    public float getScale() {
-        return this.scale;
-    }
-
-    public @Nullable Integer getColor() {
-        return this.color;
-    }
-
-    public @Nullable Boolean isShadow() {
-        return this.shadow;
     }
 
     public TextWidget alignment(Alignment alignment) {

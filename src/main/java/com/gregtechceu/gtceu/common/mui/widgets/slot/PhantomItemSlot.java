@@ -1,10 +1,10 @@
 package com.gregtechceu.gtceu.common.mui.widgets.slot;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.utils.MouseData;
 import com.gregtechceu.gtceu.api.mui.value.sync.PhantomItemSlotSH;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandler;
 import com.gregtechceu.gtceu.integration.xei.handlers.GhostIngredientSlot;
+import com.gregtechceu.gtceu.integration.xei.handlers.RecipeViewerHandler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +18,7 @@ public class PhantomItemSlot extends ItemSlot implements GhostIngredientSlot<Ite
     @Override
     public void onInit() {
         super.onInit();
-        getContext().getJeiSettings().addGhostIngredientSlot(this);
+        getContext().getXeiSettings().addGhostIngredientSlot(this);
     }
 
     @Override
@@ -29,7 +29,9 @@ public class PhantomItemSlot extends ItemSlot implements GhostIngredientSlot<Ite
 
     @Override
     protected void drawOverlay() {
-        if (GTCEu.Mods.isRecipeViewerLoaded() && (ModularUIJeiPlugin.hasDraggingGhostIngredient() || ModularUIJeiPlugin.hoveringOverIngredient(this))) {
+        RecipeViewerHandler handler = RecipeViewerHandler.getCurrent();
+
+        if (handler != null && (handler.isDraggingGhostIngredient() || handler.isHoveringOver(this))) {
             RenderSystem.colorMask(true, true, true, false);
             drawHighlight(getArea(), isHovering());
             RenderSystem.colorMask(true, true, true, true);

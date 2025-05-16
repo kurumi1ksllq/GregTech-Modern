@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.mui.value.sync;
 
-import com.gregtechceu.gtceu.api.mui.utils.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import com.gregtechceu.gtceu.api.mui.utils.serialization.IByteBufAdapter;
 import com.gregtechceu.gtceu.api.mui.utils.serialization.IByteBufDeserializer;
 import com.gregtechceu.gtceu.api.mui.utils.serialization.IByteBufSerializer;
@@ -23,7 +24,7 @@ public class GenericListSyncHandler<T> extends ValueSyncHandler<List<T>> {
     private final IByteBufDeserializer<T> deserializer;
     private final IByteBufSerializer<T> serializer;
     private final IEquals<T> equals;
-    private final ObjectList<T> cache = ObjectList.create();
+    private final ObjectList<T> cache = new ObjectArrayList<>();
 
     public GenericListSyncHandler(@NotNull Supplier<List<T>> getter,
                                   @Nullable Consumer<List<T>> setter,

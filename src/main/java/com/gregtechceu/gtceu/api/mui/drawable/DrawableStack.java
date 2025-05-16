@@ -11,7 +11,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 /**
  * A stack of {@link IDrawable} backed by an array which are drawn on top of each other.
  */
-public class DrawableStack implements IDrawable, IJsonSerializable {
+public class DrawableStack implements IDrawable, IJsonSerializable<DrawableStack> {
 
     public static final IDrawable[] EMPTY_BACKGROUND = {};
 

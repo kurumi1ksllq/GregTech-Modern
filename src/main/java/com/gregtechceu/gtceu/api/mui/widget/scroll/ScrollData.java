@@ -4,7 +4,9 @@ import com.gregtechceu.gtceu.api.mui.base.GuiAxis;
 import com.gregtechceu.gtceu.api.mui.drawable.GuiDraw;
 import com.gregtechceu.gtceu.api.mui.utils.Animator;
 import com.gregtechceu.gtceu.api.mui.utils.Interpolation;
-import net.minecraft.util.math.MathHelper;
+import lombok.Getter;
+import lombok.Setter;
+import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
@@ -48,17 +50,33 @@ public abstract class ScrollData {
 
     public static final int DEFAULT_THICKNESS = 4;
 
+    @Getter
     private final GuiAxis axis;
+    @Getter
     private final boolean axisStart;
+    @Getter
     private final int thickness;
+    @Getter @Setter
     private int scrollSpeed = 30;
+    /**
+     * Determines if scrolling of widgets below should still be canceled if this scroll view
+     * has hit the end and is currently not scrolling.
+     * Most of the time this should be true
+     *
+     * @return true if scrolling should be canceled even when this view hit an edge
+     */
+    @Getter @Setter
     private boolean cancelScrollEdge = true;
 
+    @Getter @Setter
     private int scrollSize;
+    @Getter
     private int scroll;
+    @Getter
     protected boolean dragging;
     protected int clickOffset;
 
+    @Getter
     private int animatingTo = 0;
     private final Animator scrollAnimator = new Animator(30, Interpolation.QUAD_OUT);
 
@@ -68,63 +86,12 @@ public abstract class ScrollData {
         this.thickness = thickness <= 0 ? 4 : thickness;
     }
 
-    public GuiAxis getAxis() {
-        return this.axis;
-    }
-
-    public boolean isOnAxisStart() {
-        return this.axisStart;
-    }
-
-    public int getThickness() {
-        return this.thickness;
-    }
-
-    public int getScrollSpeed() {
-        return this.scrollSpeed;
-    }
-
-    public void setScrollSpeed(int scrollSpeed) {
-        this.scrollSpeed = scrollSpeed;
-    }
-
-    public int getScrollSize() {
-        return this.scrollSize;
-    }
-
-    public void setScrollSize(int scrollSize) {
-        this.scrollSize = scrollSize;
-    }
-
-    public int getScroll() {
-        return this.scroll;
-    }
-
-    public boolean isDragging() {
-        return this.dragging;
-    }
-
     public boolean isVertical() {
         return this.axis.isVertical();
     }
 
     public boolean isHorizontal() {
         return this.axis.isHorizontal();
-    }
-
-    /**
-     * Determines if scrolling of widgets below should still be canceled if this scroll view
-     * has hit the end and is currently not scrolling.
-     * Most of the time this should be true
-     *
-     * @return true if scrolling should be canceled even when this view hit an edge
-     */
-    public boolean isCancelScrollEdge() {
-        return cancelScrollEdge;
-    }
-
-    public void setCancelScrollEdge(boolean cancelScrollEdge) {
-        this.cancelScrollEdge = cancelScrollEdge;
     }
 
     protected final int getRawVisibleSize(ScrollArea area) {
@@ -178,7 +145,7 @@ public abstract class ScrollData {
         if (this.scrollSize <= size) {
             this.scroll = 0;
         } else {
-            this.scroll = MathHelper.clamp(this.scroll, 0, this.scrollSize - size);
+            this.scroll = Mth.clamp(this.scroll, 0, this.scrollSize - size);
         }
         return old != this.scroll; // returns true if the area was clamped
     }
@@ -242,10 +209,6 @@ public abstract class ScrollData {
         return this.scrollAnimator.getMax() >= this.scrollAnimator.getMin() ? 1 : -1;
     }
 
-    public int getAnimatingTo() {
-        return this.animatingTo;
-    }
-
     public int getScrollBarStart(ScrollArea area, int scrollBarLength, int fullVisibleSize) {
         return ((fullVisibleSize - scrollBarLength) * getScroll()) / (getScrollSize() - getVisibleSize(area, fullVisibleSize));
     }
@@ -265,7 +228,7 @@ public abstract class ScrollData {
     }
 
     public boolean onMouseClicked(ScrollArea area, int mainAxisPos, int crossAxisPos, int button) {
-        if (isOnAxisStart() ? crossAxisPos <= area.getPoint(this.axis.getOther()) + getThickness() : crossAxisPos >= area.getEndPoint(this.axis.getOther()) - getThickness()) {
+        if (isAxisStart() ? crossAxisPos <= area.getPoint(this.axis.getOther()) + getThickness() : crossAxisPos >= area.getEndPoint(this.axis.getOther()) - getThickness()) {
             this.dragging = true;
             this.clickOffset = mainAxisPos;
 

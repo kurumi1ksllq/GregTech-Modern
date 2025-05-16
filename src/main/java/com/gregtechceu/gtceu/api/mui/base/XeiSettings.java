@@ -7,29 +7,28 @@ import com.gregtechceu.gtceu.client.mui.screen.ModularScreen;
 import com.gregtechceu.gtceu.integration.xei.handlers.GhostIngredientSlot;
 import org.jetbrains.annotations.ApiStatus;
 
-
 /**
  * Keeps track of everything related to JEI in a Modular GUI.
  * By default, JEI is disabled in client only GUIs.
  * This class can be safely interacted with even when JEI/HEI is not installed.
  */
 @ApiStatus.NonExtendable
-public interface JeiSettings {
+public interface XeiSettings {
 
     /**
      * Force JEI to be enabled
      */
-    void enableJei();
+    void forceEnabled();
 
     /**
      * Force JEI to be disabled
      */
-    void disableJei();
+    void forceDisabled();
 
     /**
      * Only enabled JEI in synced GUIs
      */
-    void defaultJei();
+    void defaultXei();
 
     /**
      * Checks if JEI is enabled for a given screen
@@ -37,22 +36,22 @@ public interface JeiSettings {
      * @param screen modular screen
      * @return true if jei is enabled
      */
-    boolean isJeiEnabled(ModularScreen screen);
+    boolean isEnabled(ModularScreen screen);
 
     /**
      * Adds an exclusion zone. JEI will always try to avoid exclusion zones. <br>
-     * <b>If a widgets wishes to have an exclusion zone it should use {@link #addJeiExclusionArea(IWidget)}!</b>
+     * <b>If a widgets wishes to have an exclusion zone it should use {@link #addExclusionArea(IWidget)}!</b>
      *
      * @param area exclusion area
      */
-    void addJeiExclusionArea(Rectangle area);
+    void addExclusionArea(Rectangle area);
 
     /**
      * Removes an exclusion zone.
      *
      * @param area exclusion area to remove (must be the same instance)
      */
-    void removeJeiExclusionArea(Rectangle area);
+    void removeExclusionArea(Rectangle area);
 
     /**
      * Adds an exclusion zone of a widget. JEI will always try to avoid exclusion zones. <br>
@@ -60,17 +59,17 @@ public interface JeiSettings {
      *
      * @param area widget
      */
-    void addJeiExclusionArea(IWidget area);
+    void addExclusionArea(IWidget area);
 
     /**
      * Removes a widget exclusion area.
      *
      * @param area widget
      */
-    void removeJeiExclusionArea(IWidget area);
+    void removeExclusionArea(IWidget area);
 
     /**
-     * Adds a JEI ghost slots. Ghost slots can display an ingredient, but the ingredient does not really exist.
+     * Adds a JEI ghost slot. Ghost slots can display an ingredient, but the ingredient does not really exist.
      * By calling this method users will be able to drag ingredients from JEI into the slot.
      *
      * @param slot slot widget
@@ -86,32 +85,32 @@ public interface JeiSettings {
      */
     <W extends IWidget & GhostIngredientSlot<?>> void removeGhostIngredientSlot(W slot);
 
-    JeiSettings DUMMY = new JeiSettings() {
+    XeiSettings DUMMY = new XeiSettings() {
         @Override
-        public void enableJei() {}
+        public void forceEnabled() {}
 
         @Override
-        public void disableJei() {}
+        public void forceDisabled() {}
 
         @Override
-        public void defaultJei() {}
+        public void defaultXei() {}
 
         @Override
-        public boolean isJeiEnabled(ModularScreen screen) {
+        public boolean isEnabled(ModularScreen screen) {
             return false;
         }
 
         @Override
-        public void addJeiExclusionArea(Rectangle area) {}
+        public void addExclusionArea(Rectangle area) {}
 
         @Override
-        public void removeJeiExclusionArea(Rectangle area) {}
+        public void removeExclusionArea(Rectangle area) {}
 
         @Override
-        public void addJeiExclusionArea(IWidget area) {}
+        public void addExclusionArea(IWidget area) {}
 
         @Override
-        public void removeJeiExclusionArea(IWidget area) {}
+        public void removeExclusionArea(IWidget area) {}
 
         @Override
         public <W extends IWidget & GhostIngredientSlot<?>> void addGhostIngredientSlot(W slot) {}

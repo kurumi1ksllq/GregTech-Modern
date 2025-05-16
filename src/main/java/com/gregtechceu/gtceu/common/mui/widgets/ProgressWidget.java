@@ -8,7 +8,7 @@ import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.value.DoubleValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandler;
 import com.gregtechceu.gtceu.api.mui.widget.Widget;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 import java.util.function.DoubleSupplier;
 
@@ -104,10 +104,10 @@ public class ProgressWidget extends Widget<ProgressWidget> {
 
     private void drawCircular(float progress, WidgetTheme widgetTheme) {
         float[] subAreas = {
-                getProgressUV(MathHelper.clamp(progress / 0.25f, 0, 1)),
-                getProgressUV(MathHelper.clamp((progress - 0.25f) / 0.25f, 0, 1)),
-                getProgressUV(MathHelper.clamp((progress - 0.5f) / 0.25f, 0, 1)),
-                getProgressUV(MathHelper.clamp((progress - 0.75f) / 0.25f, 0, 1))
+                getProgressUV(Mth.clamp(progress / 0.25f, 0, 1)),
+                getProgressUV(Mth.clamp((progress - 0.25f) / 0.25f, 0, 1)),
+                getProgressUV(Mth.clamp((progress - 0.5f) / 0.25f, 0, 1)),
+                getProgressUV(Mth.clamp((progress - 0.75f) / 0.25f, 0, 1))
         };
         float halfWidth = getArea().width / 2f;
         float halfHeight = getArea().height / 2f;

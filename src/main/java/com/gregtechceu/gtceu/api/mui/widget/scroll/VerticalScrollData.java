@@ -52,18 +52,18 @@ public class VerticalScrollData extends ScrollData {
         ScrollData data = getOtherScrollData(area);
         if (data != null && isOtherScrollBarActive(area, true)) {
             int thickness = data.getThickness();
-            if (data.isOnAxisStart() ? y < area.y + thickness : y >= area.ey() - thickness) {
+            if (data.isAxisStart() ? y < area.y + thickness : y >= area.ey() - thickness) {
                 return false;
             }
         }
-        return isOnAxisStart() ? x >= area.x && x < area.x + scrollbar : x >= area.ex() - scrollbar && x < area.ex();
+        return isAxisStart() ? x >= area.x && x < area.x + scrollbar : x >= area.ex() - scrollbar && x < area.ex();
     }
 
     @Override
     public void drawScrollbar(ScrollArea area) {
         boolean isOtherActive = isOtherScrollBarActive(area, true);
         int l = this.getScrollBarLength(area);
-        int x = isOnAxisStart() ? 0 : area.w() - getThickness();
+        int x = isAxisStart() ? 0 : area.w() - getThickness();
         int y = 0;
         int w = getThickness();
         int h = area.height;
@@ -71,7 +71,7 @@ public class VerticalScrollData extends ScrollData {
 
         y = getScrollBarStart(area, l, isOtherActive);
         ScrollData data2 = getOtherScrollData(area);
-        if (data2 != null && isOtherActive && data2.isOnAxisStart()) {
+        if (data2 != null && isOtherActive && data2.isAxisStart()) {
             y += data2.getThickness();
         }
         h = l;

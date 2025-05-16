@@ -28,7 +28,7 @@ public class KeyIcon implements IIcon {
 
     @Override
     public int getWidth() {
-        return getFont().getStringWidth(key.get()) + this.margin.horizontal();
+        return getFont().width(key.get()) + this.margin.horizontal();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class KeyIcon implements IIcon {
         return this;
     }
 
-    public KeyIcon fontRenderer(Font fr) {
+    public KeyIcon font(Font fr) {
         this.overrideFont = fr;
         return this;
     }

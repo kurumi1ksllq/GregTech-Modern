@@ -43,7 +43,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 @NotNullByDefault
-public class DummyWorld extends Level {
+public class DummyLevel extends Level {
 
     @Getter
     protected DummyChunkSource chunkSource = new DummyChunkSource(this);
@@ -51,9 +51,9 @@ public class DummyWorld extends Level {
     @Getter
     private final Scoreboard scoreboard = new Scoreboard();
 
-    public static final DummyWorld INSTANCE = new DummyWorld();
+    public static final DummyLevel INSTANCE = new DummyLevel();
 
-    public DummyWorld() {
+    public DummyLevel() {
         super(new DummyLevelData(), Level.OVERWORLD, GTRegistries.builtinRegistry(),
                 GTRegistries.builtinRegistry().registryOrThrow(Registries.DIMENSION_TYPE)
                         .getHolderOrThrow(BuiltinDimensionTypes.OVERWORLD),

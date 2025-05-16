@@ -21,8 +21,6 @@ public class JsonHelper {
             .registerTypeAdapter(Alignment.class, new Alignment.Json())
             .create();
 
-    public static final JsonParser parser = new JsonParser();
-
     public static JsonElement serialize(Object object) {
         return gson.toJsonTree(object);
     }
@@ -179,7 +177,7 @@ public class JsonHelper {
     }
 
     public static JsonElement parse(InputStream inputStream) {
-        return parser.parse(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        return JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
     }
 
     public static JsonObject merge(JsonObject base, JsonObject other) {

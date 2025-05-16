@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 /**
  * This represents a piece of text in a GUI.
  */
-public interface IKey extends IDrawable, IJsonSerializable {
+public interface IKey extends IDrawable, IJsonSerializable<IKey> {
 
     int TEXT_COLOR = 0xFF404040;
 

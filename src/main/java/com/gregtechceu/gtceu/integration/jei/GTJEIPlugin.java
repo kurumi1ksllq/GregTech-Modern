@@ -1,8 +1,12 @@
 package com.gregtechceu.gtceu.integration.jei;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
+import com.gregtechceu.gtceu.client.mui.screen.ClientScreenHandler;
+import com.gregtechceu.gtceu.client.mui.screen.ContainerScreenWrapper;
+import com.gregtechceu.gtceu.client.mui.screen.ScreenWrapper;
 import com.gregtechceu.gtceu.common.data.GTFluids;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
@@ -11,6 +15,8 @@ import com.gregtechceu.gtceu.common.fluid.potion.PotionFluid;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.jei.circuit.GTProgrammedCircuitCategory;
+import com.gregtechceu.gtceu.integration.jei.handler.JEIContainerHandler;
+import com.gregtechceu.gtceu.integration.jei.handler.JEIScreenHandler;
 import com.gregtechceu.gtceu.integration.jei.multipage.MultiblockInfoCategory;
 import com.gregtechceu.gtceu.integration.jei.oreprocessing.GTOreProcessingInfoCategory;
 import com.gregtechceu.gtceu.integration.jei.orevein.GTBedrockFluidInfoCategory;
@@ -19,6 +25,9 @@ import com.gregtechceu.gtceu.integration.jei.orevein.GTOreVeinInfoCategory;
 import com.gregtechceu.gtceu.integration.jei.recipe.GTRecipeJEICategory;
 import com.gregtechceu.gtceu.integration.jei.subtype.PotionFluidSubtypeInterpreter;
 
+import lombok.Getter;
+import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.gui.GuiProperties;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -49,9 +58,17 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @JeiPlugin
 public class GTJEIPlugin implements IModPlugin {
 
+    @Getter
+    private static IJeiRuntime runtime = null;
+
     @Override
     public ResourceLocation getPluginUid() {
         return GTCEu.id("jei_plugin");
+    }
+
+    @Override
+    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+        runtime = jeiRuntime;
     }
 
     @Override
@@ -113,6 +130,7 @@ public class GTJEIPlugin implements IModPlugin {
 
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
+        if (GTCEu.Mods.isREILoaded() || GTCEu.Mods.isEMILoaded()) return;
         registration.useNbtForSubtypes(GTItems.PROGRAMMED_CIRCUIT.asItem());
         registration.useNbtForSubtypes(GTItems.TURBINE_ROTOR.asItem());
     }
@@ -120,6 +138,7 @@ public class GTJEIPlugin implements IModPlugin {
     @Override
     public <T> void registerFluidSubtypes(ISubtypeRegistration registration,
                                           IPlatformFluidHelper<T> platformFluidHelper) {
+        if (GTCEu.Mods.isREILoaded() || GTCEu.Mods.isEMILoaded()) return;
         PotionFluidSubtypeInterpreter interpreter = new PotionFluidSubtypeInterpreter();
         PotionFluid potionFluid = GTFluids.POTION.get();
         registration.registerSubtypeInterpreter(ForgeTypes.FLUID_STACK, potionFluid.getSource(), interpreter);
@@ -128,11 +147,25 @@ public class GTJEIPlugin implements IModPlugin {
 
     @Override
     public void registerExtraIngredients(IExtraIngredientRegistration registration) {
+        if (GTCEu.Mods.isREILoaded() || GTCEu.Mods.isEMILoaded()) return;
         Collection<FluidStack> potionFluids = new ArrayList<>(BuiltInRegistries.POTION.size());
         for (Potion potion : BuiltInRegistries.POTION) {
             FluidStack potionFluid = PotionFluid.of(1000, potion);
             potionFluids.add(potionFluid);
         }
         registration.addExtraIngredients(ForgeTypes.FLUID_STACK, potionFluids);
+    }
+
+    @Override
+    public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+        if (GTCEu.Mods.isREILoaded() || GTCEu.Mods.isEMILoaded()) return;
+        registration.addGhostIngredientHandler(ScreenWrapper.class, JEIScreenHandler.of(ScreenWrapper.class));
+        registration.addGhostIngredientHandler(ContainerScreenWrapper.class,
+                JEIScreenHandler.of(ContainerScreenWrapper.class));
+        registration.addGuiContainerHandler(ContainerScreenWrapper.class, JEIContainerHandler.INSTANCE);
+
+        registration.addGuiScreenHandler(ScreenWrapper.class, JEIScreenHandler.of(ScreenWrapper.class));
+        registration.addGuiScreenHandler(ContainerScreenWrapper.class,
+                JEIScreenHandler.of(ContainerScreenWrapper.class));
     }
 }

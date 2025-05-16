@@ -2,12 +2,18 @@ package com.gregtechceu.gtceu.api.mui.base.drawable;
 
 import com.gregtechceu.gtceu.api.mui.drawable.text.Spacer;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
+import net.minecraft.network.chat.Component;
 
 public interface IRichTextBuilder<T extends IRichTextBuilder<T>> {
 
     T getThis();
 
     IRichTextBuilder<?> getRichText();
+
+    default T add(Component c) {
+        getRichText().add(c);
+        return getThis();
+    }
 
     default T add(String s) {
         getRichText().add(s);

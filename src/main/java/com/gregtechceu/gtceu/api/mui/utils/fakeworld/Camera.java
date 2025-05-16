@@ -1,17 +1,9 @@
 package com.gregtechceu.gtceu.api.mui.utils.fakeworld;
 
-import net.minecraft.util.math.Vec3i;
-import org.lwjgl.util.vector.Vector3f;
+import net.minecraft.core.Vec3i;
+import org.joml.Vector3f;
 
-public class Camera {
-
-    private final Vector3f pos;
-    private final Vector3f lookAt;
-
-    public Camera(Vector3f pos, Vector3f lookAt) {
-        this.pos = pos;
-        this.lookAt = lookAt;
-    }
+public record Camera(Vector3f pos, Vector3f lookAt) {
 
     public Camera setLookAt(Vector3f pos, Vector3f lookAt) {
         this.pos.set(pos);
@@ -41,16 +33,8 @@ public class Camera {
         setLookAt(lookAtX, lookAtY, lookAtZ);
         Vector3f pos = new Vector3f((float) Math.cos(yaw), (float) 0, (float) Math.sin(yaw));
         pos.y += (float) (Math.tan(pitch) * pos.length());
-        pos.normalise().scale((float) radius);
-        this.pos.set(pos.translate(lookAtX, lookAtY, lookAtZ));
+        pos.normalize().mul((float) radius);
+        this.pos.set(pos.add(lookAtX, lookAtY, lookAtZ));
         return this;
-    }
-
-    public Vector3f getPos() {
-        return pos;
-    }
-
-    public Vector3f getLookAt() {
-        return lookAt;
     }
 }

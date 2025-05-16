@@ -2,9 +2,9 @@ package com.gregtechceu.gtceu.client.mui.screen.viewport;
 
 import com.gregtechceu.gtceu.api.mui.base.layout.IViewport;
 import com.gregtechceu.gtceu.api.mui.base.layout.IViewportStack;
-import com.gregtechceu.gtceu.api.mui.utils.GuiUtils;
-import com.gregtechceu.gtceu.api.mui.utils.Matrix4f;
-import com.gregtechceu.gtceu.api.mui.utils.Vector3f;
+import com.mojang.blaze3d.vertex.PoseStack;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +16,7 @@ import java.util.ListIterator;
 /**
  * This class is a matrix stack aka pose stack. It keeps track of widget transformations (including position)
  * and can apply these transformations to OpenGL for rendering.
- * This is mainly used, but not limited to properly displacing widgets in a scroll area.
+ * This is mainly used, but not limited to, properly displacing widgets in a scroll area.
  */
 public class GuiViewportStack implements IViewportStack {
 
@@ -130,7 +130,7 @@ public class GuiViewportStack implements IViewportStack {
 
     public void translate(float x, float y) {
         checkViewport();
-        this.top.getMatrix().translate(x, y);
+        this.top.getMatrix().translate(vec(x, y, 0));
         this.top.markDirty();
     }
 
@@ -159,7 +159,7 @@ public class GuiViewportStack implements IViewportStack {
     public void resetCurrent() {
         checkViewport();
         Matrix4f belowTop = this.viewportStack.size() > 1 ? this.viewportStack.get(this.viewportStack.size() - 2).getMatrix() : new Matrix4f();
-        this.top.getMatrix().load(belowTop);
+        this.top.getMatrix().set(belowTop);
         this.top.markDirty();
     }
 
@@ -216,9 +216,9 @@ public class GuiViewportStack implements IViewportStack {
     }
 
     @Override
-    public void applyToOpenGl() {
+    public void applyTo(PoseStack poseStack) {
         if (this.top == null) return;
-        GuiUtils.applyTransformationMatrix(this.top.getMatrix());
+        poseStack.mulPoseMatrix(this.top.getMatrix());
     }
 
     @Nullable

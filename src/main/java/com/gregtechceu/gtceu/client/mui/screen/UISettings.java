@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.client.mui.screen;
 
-import com.gregtechceu.gtceu.api.mui.base.JeiSettings;
+import com.gregtechceu.gtceu.api.mui.base.XeiSettings;
 import com.gregtechceu.gtceu.api.mui.base.UIFactory;
 import com.gregtechceu.gtceu.api.mui.factory.GuiData;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
@@ -15,25 +15,25 @@ public class UISettings {
 
     public static final double DEFAULT_INTERACT_RANGE = 8.0;
 
-    private IntFunction<ModularContainerMenu> containerSupplier;
+    private IntFunction<ModularContainerMenu> containerCreator;
     private Predicate<Player> canInteractWith;
-    private final JeiSettings jeiSettings;
+    private final XeiSettings xeiSettings;
 
     public UISettings() {
-        this(new JeiSettingsImpl());
+        this(new XeiSettingsImpl());
     }
 
-    public UISettings(JeiSettings jeiSettings) {
-        this.jeiSettings = jeiSettings;
+    public UISettings(XeiSettings xeiSettings) {
+        this.xeiSettings = xeiSettings;
     }
 
     /**
      * A function for a custom {@link ModularContainerMenu} implementation. This overrides {@link UIFactory#createContainer(int)}.
      *
-     * @param containerSupplier container creator function. Must return a new instance.
+     * @param containerCreator container creator function. Must return a new instance.
      */
-    public void customContainer(IntFunction<ModularContainerMenu> containerSupplier) {
-        this.containerSupplier = containerSupplier;
+    public void customContainer(IntFunction<ModularContainerMenu> containerCreator) {
+        this.containerCreator = containerCreator;
     }
 
     /**
@@ -75,17 +75,17 @@ public class UISettings {
         canInteractWithinRange(guiData, DEFAULT_INTERACT_RANGE);
     }
 
-    public JeiSettings getJeiSettings() {
-        return jeiSettings;
+    public XeiSettings getJeiSettings() {
+        return xeiSettings;
     }
 
     @ApiStatus.Internal
     public ModularContainerMenu createContainer(int containerId) {
-        return containerSupplier.apply(containerId);
+        return containerCreator.apply(containerId);
     }
 
     public boolean hasContainer() {
-        return containerSupplier != null;
+        return containerCreator != null;
     }
 
     public boolean canPlayerInteractWithUI(Player player) {

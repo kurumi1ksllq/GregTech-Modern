@@ -12,20 +12,21 @@ import com.gregtechceu.gtceu.api.mui.theme.WidgetSlotTheme;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
-import com.gregtechceu.gtceu.api.mui.utils.NumberFormat;
 import com.gregtechceu.gtceu.api.mui.value.sync.ItemSlotSH;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandler;
 import com.gregtechceu.gtceu.api.mui.widget.Widget;
 import com.gregtechceu.gtceu.core.mixins.AbstractContainerScreenAccessor;
 import com.gregtechceu.gtceu.core.mixins.ScreenAccessor;
+import com.gregtechceu.gtceu.integration.xei.entry.item.ItemStackList;
+import com.gregtechceu.gtceu.integration.xei.handlers.IngredientProvider;
+import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+import lombok.Setter;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -33,9 +34,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interactable, JeiIngredientProvider {
+import java.util.function.UnaryOperator;
+
+public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interactable, IngredientProvider<ItemStack> {
 
     public static final int SIZE = 18;
 
@@ -45,6 +47,8 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
 
     private static final TextRenderer textRenderer = new TextRenderer();
     private ItemSlotSH syncHandler;
+    @Setter
+    protected UnaryOperator<ItemStack> itemHook;
 
     public ItemSlot() {
         tooltip().setAutoUpdate(true);//.setHasTitleMargin(true);
@@ -82,7 +86,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
     public void draw(ModularGuiContext context, WidgetTheme widgetTheme) {
         if (this.syncHandler == null) return;
         Lighting.setupFor3DItems();
-        drawSlot(graphics, getSlot());
+        drawSlot(context.getGraphics(), getSlot());
         Lighting.setupFor3DItems();
         drawOverlay();
     }
@@ -176,7 +180,6 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
         if (!(guiScreen instanceof AbstractContainerScreen<?>))
             throw new IllegalStateException("The gui must be an instance of GuiContainer if it contains slots!");
         AbstractContainerScreenAccessor acc = (AbstractContainerScreenAccessor) guiScreen;
-        ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         ItemStack slotStack = slotIn.getItem();
         boolean isDragPreview = false;
         boolean flag1 = slotIn == acc.getClickedSlot() && !acc.getDraggingItem().isEmpty() && !acc.getIsSplittingStack();
@@ -231,7 +234,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
                 }
                 // render the amount overlay
                 if (amount > 1 || format != null) {
-                    String amountText = NumberFormat.format(amount, NumberFormat.AMOUNT_TEXT);
+                    String amountText = FormattingUtil.formatNumberReadable(amount, false);
                     if (format != null) {
                         amountText = format + amountText;
                     }
@@ -250,7 +253,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
                     textRenderer.setPos(1, 1);
                     RenderSystem.disableDepthTest();
                     RenderSystem.disableBlend();
-                    textRenderer.draw(amountText);
+                    textRenderer.draw(graphics, amountText);
                     RenderSystem.enableDepthTest();
                     RenderSystem.enableBlend();
                 }
@@ -269,7 +272,17 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
     }
 
     @Override
-    public @Nullable Object getIngredient() {
-        return this.syncHandler.getSlot().getItem();
+    public ItemStackList getIngredients() {
+        return ItemStackList.of(this.syncHandler.getSlot().getItem());
+    }
+
+    @Override
+    public @NotNull Class<ItemStack> ingredientClass() {
+        return ItemStack.class;
+    }
+
+    @Override
+    public UnaryOperator<ItemStack> renderMappingFunction() {
+        return this.itemHook;
     }
 }

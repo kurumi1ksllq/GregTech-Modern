@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.api.mui.value.sync;
 
 import com.gregtechceu.gtceu.api.mui.base.value.sync.IDoubleSyncValue;
 import com.gregtechceu.gtceu.api.mui.base.value.sync.IStringSyncValue;
-import com.gregtechceu.gtceu.api.mui.network.NetworkUtils;
+import com.gregtechceu.gtceu.utils.NetworkUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +40,7 @@ public class DoubleSyncValue extends ValueSyncHandler<Double> implements IDouble
         if (clientGetter == null && serverGetter == null) {
             throw new NullPointerException("Client or server getter must not be null!");
         }
-        if (NetworkUtils.isClient()) {
+        if (GTCEu.isClientThread()) {
             this.getter = clientGetter != null ? clientGetter : serverGetter;
             this.setter = clientSetter != null ? clientSetter : serverSetter;
         } else {

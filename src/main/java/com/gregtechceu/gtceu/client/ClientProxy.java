@@ -143,7 +143,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    private void onRegisterClientTooltipEvent(RegisterClientTooltipComponentFactoriesEvent event) {
+    public void onRegisterClientTooltipEvent(RegisterClientTooltipComponentFactoriesEvent event) {
         event.register(DrawableTooltipComponent.class, Function.identity());
     }
 }

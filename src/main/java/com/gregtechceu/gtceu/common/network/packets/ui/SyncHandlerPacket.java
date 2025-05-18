@@ -10,18 +10,27 @@ import com.lowdragmc.lowdraglib.networking.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
-import java.io.IOException;
-
-@NoArgsConstructor
-@AllArgsConstructor
 public class SyncHandlerPacket implements IPacket {
 
     private String panel;
     private String key;
     private FriendlyByteBuf packet;
+
+    private final boolean shouldRelease;
+
+    @SuppressWarnings("unused")
+    public SyncHandlerPacket() {
+        // We are the owner of the buffer, release it when we are done.
+        this.shouldRelease = true;
+    }
+
+    public SyncHandlerPacket(String panel, String key, FriendlyByteBuf packet) {
+        this.panel = panel;
+        this.key = key;
+        this.packet = packet;
+        // We are not the owner of the buffer, don't release it, it might be reused.
+        this.shouldRelease = false;
+    }
 
     @Override
     public void encode(FriendlyByteBuf buf) {
@@ -34,7 +43,7 @@ public class SyncHandlerPacket implements IPacket {
     public void decode(FriendlyByteBuf buf) {
         this.panel = NetworkUtils.readStringSafe(buf);
         this.key = NetworkUtils.readStringSafe(buf);
-        this.packet = NetworkUtils.readFriendlyByteBuf(buf);
+        this.packet = NetworkUtils.readFriendlyByteBuf(buf, shouldRelease);
     }
 
     @Override

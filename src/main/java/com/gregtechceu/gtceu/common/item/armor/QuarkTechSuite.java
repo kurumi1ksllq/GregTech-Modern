@@ -205,7 +205,7 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
         }
 
         if (ret) {
-            player.inventoryMenu.sendAllDataToRemote();
+            player.containerMenu.sendAllDataToRemote();
         }
     }
 

@@ -12,7 +12,9 @@ import net.minecraft.client.gui.screens.Screen;
 
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import lombok.Getter;
+import me.shedaniel.rei.api.client.REIRuntime;
 import me.shedaniel.rei.api.client.gui.drag.*;
+import me.shedaniel.rei.api.client.gui.widgets.TextField;
 import me.shedaniel.rei.api.client.registry.screen.ExclusionZonesProvider;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 import org.jetbrains.annotations.Nullable;
@@ -150,6 +152,12 @@ public class REIScreenHandler<T extends Screen & IScreenWithMuiScreen> extends R
     }
 
     static DraggableStack currentIngredient = null;
+
+    @Override
+    public void setSearchFocused(boolean focused) {
+        TextField searchField = REIRuntime.getInstance().getSearchTextField();
+        if (searchField != null) searchField.setFocused(focused);
+    }
 
     @Override
     public @Nullable Object getCurrentlyDragged() {

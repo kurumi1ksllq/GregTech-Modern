@@ -74,7 +74,7 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
      * @param component translation component
      * @return text key
      */
-    static IKey lang(@NotNull MutableComponent component) {
+    static IKey lang(@NotNull Component component) {
         return new LangKey(component);
     }
 

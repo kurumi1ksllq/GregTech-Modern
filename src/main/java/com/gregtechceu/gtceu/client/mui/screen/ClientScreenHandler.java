@@ -21,23 +21,24 @@ import com.gregtechceu.gtceu.common.mui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.AbstractContainerScreenAccessor;
 import com.gregtechceu.gtceu.core.mixins.ScreenAccessor;
+import com.gregtechceu.gtceu.integration.xei.handlers.RecipeViewerHandler;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.util.Mth;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -48,6 +49,7 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Collections;
@@ -132,13 +134,11 @@ public class ClientScreenHandler {
         if (checkGui(event.getScreen())) {
             currentScreen.getContext().updateLatestKey(event.getKeyCode(), event.getScanCode(), event.getModifiers());
         }
-        if (handleKeyboardInput(currentScreen, event.getScreen(), true, phase,
+        if (handleKeyboardInput(currentScreen, event.getScreen(), false, phase,
                 event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
             event.setCanceled(true);
         }
     }
-
-    public static boolean shouldUnfocusRecipeViewer = false;
 
     // before JEI
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -150,15 +150,12 @@ public class ClientScreenHandler {
         if (checkGui(event.getScreen())) currentScreen.getContext().updateMouseButton(button);
 
         if (button == -1) {
-            shouldUnfocusRecipeViewer = false;
             return;
         }
         if (currentScreen != null && currentScreen.handleDraggableInput(mouseX, mouseY, button, true) ||
                 doAction(currentScreen, ms -> ms.onMouseReleased(mouseX, mouseY, button))) {
-            shouldUnfocusRecipeViewer = true;
+            RecipeViewerHandler.getCurrent().setSearchFocused(false);
             event.setCanceled(true);
-        } else {
-            shouldUnfocusRecipeViewer = false;
         }
     }
 
@@ -173,10 +170,8 @@ public class ClientScreenHandler {
 
         if (currentScreen != null && currentScreen.handleDraggableInput(mouseX, mouseY, button, false) ||
                 doAction(currentScreen, ms -> ms.mouseReleased(mouseX, mouseY, button))) {
-            shouldUnfocusRecipeViewer = true;
+            RecipeViewerHandler.getCurrent().setSearchFocused(false);
             event.setCanceled(true);
-        } else {
-            shouldUnfocusRecipeViewer = false;
         }
     }
 
@@ -270,23 +265,26 @@ public class ClientScreenHandler {
         if (isPress) {
             // pressing a key
             return inputPhase.isEarly() ? doAction(muiScreen, ms -> ms.keyPressed(keyCode, scanCode, modifiers)) :
-                    keyTyped(mcScreen, keyCode, scanCode, modifiers);
+                    keyPressed(mcScreen, keyCode, scanCode, modifiers);
         } else {
             // releasing a key
             if (inputPhase.isEarly() && doAction(muiScreen, ms -> ms.keyReleased(keyCode, scanCode, modifiers))) {
                 return true;
             }
             if (inputPhase.isLate() && keyCode >= ' ') {
-                return keyTyped(mcScreen, keyCode, scanCode, modifiers);
+                return keyPressed(mcScreen, keyCode, scanCode, modifiers);
             }
         }
         return false;
     }
 
-    private static boolean keyTyped(Screen screen, int keyCode, int scanCode, int modifiers) {
+    private static boolean keyPressed(Screen screen, int keyCode, int scanCode, int modifiers) {
         if (currentScreen == null) return false;
         // debug mode C + CTRL + SHIFT + ALT
-        if (keyCode == 'c' && Screen.hasControlDown() && Screen.hasShiftDown() && Screen.hasAltDown()) {
+        if (keyCode == 'c' &&
+                (modifiers & GLFW.GLFW_MOD_CONTROL) != 0 &&
+                (modifiers & GLFW.GLFW_MOD_SHIFT) != 0 &&
+                (modifiers & GLFW.GLFW_MOD_ALT) != 0) {
             ConfigHolder.INSTANCE.dev.debugUI = !ConfigHolder.INSTANCE.dev.debugUI;
             return true;
         }
@@ -410,43 +408,40 @@ public class ClientScreenHandler {
         graphics.pose().pushPose();
         graphics.pose().translate(x, y, 0);
         MinecraftForge.EVENT_BUS.post(new ContainerScreenEvent.Render.Foreground(mcScreen, graphics, mouseX, mouseY));
-        graphics.pose().popPose();
 
-        InventoryMenu inventory = Minecraft.getInstance().player.inventoryMenu;
-        ItemStack itemstack = acc.getDraggingItem().isEmpty() ? inventory.getCarried() : acc.getDraggingItem();
-        graphics.pose().translate((float) x, (float) y, 0.0F);
-        if (!itemstack.isEmpty()) {
-            int k2 = acc.getDraggingItem().isEmpty() ? 8 : 16;
-            String s = null;
+        AbstractContainerMenu menu = mcScreen.getMenu();
+        ItemStack draggingItem = acc.getDraggingItem().isEmpty() ? menu.getCarried() : acc.getDraggingItem();
+        if (!draggingItem.isEmpty()) {
+            int xOffset = 8;
+            int yOffset = acc.getDraggingItem().isEmpty() ? 8 : 16;
+            String text = null;
 
             if (!acc.getDraggingItem().isEmpty() && acc.getIsSplittingStack()) {
-                itemstack = itemstack.copy();
-                itemstack.setCount(Mth.ceil((float) itemstack.getCount() / 2.0F));
+                draggingItem = draggingItem.copyWithCount(Mth.ceil(draggingItem.getCount() / 2.0F));
             } else if (acc.getIsQuickCrafting() && acc.getQuickCraftSlots().size() > 1) {
-                itemstack = itemstack.copy();
-                itemstack.setCount(acc.getQuickCraftingRemainder());
-
-                if (itemstack.isEmpty()) {
-                    s = ChatFormatting.YELLOW + "0";
+                draggingItem = draggingItem.copyWithCount(acc.getQuickCraftingRemainder());
+                if (draggingItem.isEmpty()) {
+                    text = ChatFormatting.YELLOW + "0";
                 }
             }
 
-            drawItemStack(mcScreen, graphics, itemstack, mouseX - x - 8, mouseY - y - k2, s);
+            drawItemStack(mcScreen, graphics, draggingItem, mouseX - x - xOffset, mouseY - y - yOffset, text);
         }
+        graphics.pose().popPose();
 
         if (!acc.getSnapbackItem().isEmpty()) {
-            float f = (float) (Util.getMillis() - acc.getSnapbackTime()) / 100.0F;
+            float delta = (float) (Util.getMillis() - acc.getSnapbackTime()) / 100.0F;
 
-            if (f >= 1.0F) {
-                f = 1.0F;
+            if (delta >= 1.0F) {
+                delta = 1.0F;
                 acc.setSnapbackItem(ItemStack.EMPTY);
             }
 
-            int l2 = acc.getSnapbackEnd().x - acc.getSnapbackStartX();
-            int i3 = acc.getSnapbackEnd().y - acc.getSnapbackStartY();
-            int l1 = acc.getSnapbackStartX() + (int) ((float) l2 * f);
-            int i2 = acc.getSnapbackStartY() + (int) ((float) i3 * f);
-            drawItemStack(mcScreen, graphics, acc.getSnapbackItem(), l1, i2, null);
+            int snapBackOffsetX = acc.getSnapbackEnd().x - acc.getSnapbackStartX();
+            int snapBackOffsetY = acc.getSnapbackEnd().y - acc.getSnapbackStartY();
+            int snapBackX = acc.getSnapbackStartX() + (int) ((float) snapBackOffsetX * delta);
+            int snapBackY = acc.getSnapbackStartY() + (int) ((float) snapBackOffsetY * delta);
+            drawItemStack(mcScreen, graphics, acc.getSnapbackItem(), snapBackX, snapBackY, null);
         }
         graphics.pose().popPose();
         RenderSystem.enableDepthTest();
@@ -456,18 +451,15 @@ public class ClientScreenHandler {
 
     private static void drawItemStack(AbstractContainerScreen<?> mcScreen, GuiGraphics graphics, ItemStack stack, int x,
                                       int y, String altText) {
-        graphics.pose().translate(0.0F, 0.0F, 32.0F);
-        // ((AbstractContainerScreenAccessor) mcScreen).setZLevel(200f);
-        // ((MouseHandlerAccessor) mcScreen).getItemRender().zLevel = 200.0F;
-        Font font = null;// stack.getItem().getFont(stack);
+        graphics.pose().pushPose();
+        graphics.pose().translate(0.0F, 0.0F, 232.0F);
+
+        var font = IClientItemExtensions.of(stack).getFont(stack, IClientItemExtensions.FontContext.ITEM_COUNT);
         if (font == null) font = ((ScreenAccessor) mcScreen).getFont();
-        RenderSystem.enableDepthTest();
         graphics.renderItem(stack, x, y);
-        graphics.renderItemDecorations(font, stack, x,
-                y - (((AbstractContainerScreenAccessor) mcScreen).getDraggingItem().isEmpty() ? 0 : 8), altText);
-        RenderSystem.disableDepthTest();
-        // ((GuiAccessor) mcScreen).setZLevel(0f);
-        // ((MouseHandlerAccessor) mcScreen).getItemRender().zLevel = 0.0F;
+        graphics.renderItemDecorations(font, stack,
+                x, y - (((AbstractContainerScreenAccessor) mcScreen).getDraggingItem().isEmpty() ? 0 : 8), altText);
+        graphics.pose().popPose();
     }
 
     private static void drawVanillaElements(GuiGraphics graphics, Screen mcScreen, int mouseX, int mouseY,
@@ -546,7 +538,7 @@ public class ClientScreenHandler {
                 lineY -= 11;
                 if (slotWidget.isSynced()) {
                     SlotGroup slotGroup = slot.getSlotGroup();
-                    boolean allowShiftTransfer = slotGroup != null && slotGroup.allowShiftTransfer();
+                    boolean allowShiftTransfer = slotGroup != null && slotGroup.isAllowShiftTransfer();
                     GuiDraw.drawText(graphics,
                             "Shift-Click Priority: " +
                                     (allowShiftTransfer ? slotGroup.getShiftClickPriority() : "DISABLED"),
@@ -583,12 +575,12 @@ public class ClientScreenHandler {
     }
 
     private static boolean checkGui() {
-        return MCHelper.hasMc() && checkGui(Minecraft.getInstance().screen);
+        return checkGui(MCHelper.getCurrentScreen());
     }
 
     private static boolean checkGui(Screen screen) {
-        if (!MCHelper.hasMc() || currentScreen == null || !(screen instanceof IMuiScreen muiScreen)) return false;
-        if (screen != Minecraft.getInstance().screen || muiScreen.getScreen() != currentScreen) {
+        if (currentScreen == null || !(screen instanceof IMuiScreen muiScreen)) return false;
+        if (screen != MCHelper.getCurrentScreen() || muiScreen.getScreen() != currentScreen) {
             defaultContext.reset();
             currentScreen = null;
             return false;

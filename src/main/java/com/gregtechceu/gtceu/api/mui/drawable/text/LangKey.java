@@ -17,7 +17,7 @@ public class LangKey extends BaseKey {
     @Getter
     private final @Nullable Supplier<@NotNull String> keySupplier;
     @Getter
-    private final @Nullable Supplier<@NotNull Object[]> argsSupplier;
+    private final @Nullable Supplier<@NotNull Object @Nullable []> argsSupplier;
     private MutableComponent component;
     private long time = 0;
 
@@ -25,8 +25,8 @@ public class LangKey extends BaseKey {
         this(key, () -> null);
     }
 
-    public LangKey(@NotNull MutableComponent component) {
-        this.component = component;
+    public LangKey(@NotNull Component component) {
+        this.component = component.copy();
 
         this.keySupplier = null;
         this.argsSupplier = null;
@@ -54,13 +54,18 @@ public class LangKey extends BaseKey {
         if (keySupplier == null || argsSupplier == null) {
             return component;
         }
-
         if (this.time == ClientScreenHandler.getTicks()) {
             return this.component;
         }
         this.time = ClientScreenHandler.getTicks();
-        this.component = Component.translatable(Objects.requireNonNull(this.keySupplier.get()),
-                this.argsSupplier.get());
+
+        String key = Objects.requireNonNull(this.keySupplier.get());
+        Object[] args = this.argsSupplier.get();
+        if (args != null) {
+            this.component = Component.translatable(key, args);
+        } else {
+            this.component = Component.translatable(key);
+        }
         return component;
     }
 

@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.mui.factory;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.IGuiHolder;
 
 import net.minecraft.core.BlockPos;
@@ -42,7 +43,7 @@ public class SidedBlockEntityGuiFactory extends AbstractUIFactory<SidedPosGuiDat
     }
 
     private SidedBlockEntityGuiFactory() {
-        super("gtceu:sided_block_entity");
+        super(GTCEu.id("sided_block_entity"));
     }
 
     @Override

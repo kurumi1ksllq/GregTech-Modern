@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.mui;
 
 import com.gregtechceu.gtceu.api.mui.base.widget.IGuiElement;
+
 import org.apache.logging.log4j.Level;
 
 import java.util.Objects;
@@ -24,7 +25,8 @@ public class GuiError {
 
     @Override
     public String toString() {
-        return "[" + this.level.name() + "][" + this.reference.toString() + "][" + this.type.toString() + "]: " + this.msg;
+        return "[" + this.level.name() + "][" + this.reference.toString() + "][" + this.type.toString() + "]: " +
+                this.msg;
     }
 
     @Override
@@ -33,6 +35,10 @@ public class GuiError {
     }
 
     public enum Type {
-        DRAW, SIZING, WIDGET_TREE, INTERACTION, SYNC
+        DRAW,
+        SIZING,
+        WIDGET_TREE,
+        INTERACTION,
+        SYNC
     }
 }

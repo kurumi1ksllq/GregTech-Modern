@@ -10,7 +10,9 @@ import com.gregtechceu.gtceu.utils.GTMath;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 
 import dev.emi.emi.api.forge.ForgeEmiStack;
@@ -38,7 +40,7 @@ public class EmiStackConverter {
         @Override
         public @Nullable ItemStack convertFrom(EmiStack stack) {
             Item key = stack.getKeyOfType(Item.class);
-            if (key == null) {
+            if (key == null || key == Items.AIR) {
                 return null;
             }
             ItemStack itemStack = new ItemStack(key, GTMath.saturatedCast(stack.getAmount()));
@@ -72,7 +74,7 @@ public class EmiStackConverter {
         @Override
         public @Nullable FluidStack convertFrom(EmiStack stack) {
             Fluid key = stack.getKeyOfType(Fluid.class);
-            if (key == null) {
+            if (key == null || key == Fluids.EMPTY) {
                 return null;
             }
             return new FluidStack(key, GTMath.saturatedCast(stack.getAmount()), stack.getNbt());

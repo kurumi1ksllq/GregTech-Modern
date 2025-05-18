@@ -127,7 +127,7 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
                             if (chargable.getCharge() == chargable.getMaxCharge()) {
                                 inventoryIterator.remove();
                             }
-                            player.inventoryMenu.sendAllDataToRemote();
+                            player.containerMenu.sendAllDataToRemote();
                         }
                     }
 

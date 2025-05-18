@@ -28,7 +28,7 @@ public class SortButtons extends Widget<SortButtons> {
             throw new IllegalStateException("Slot group can't be sorted!");
         }
         /*
-         * TODO bogosort doesn't exist (yet), pick some other sorting mod to add compat for
+         * TODO bogosort doesn't exist (yet), choose some other sorting mod to add compat for?
          * this.sortButton.size(10).pos(0, 0)
          * .overlay(IKey.str("z"))
          * .onMousePressed(mouseButton -> {

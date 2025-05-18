@@ -16,7 +16,6 @@ import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class ModularSyncManager {
@@ -75,11 +74,11 @@ public class ModularSyncManager {
     }
 
     public ItemStack getCursorItem() {
-        return getPlayer().inventoryMenu.getCarried();
+        return getPlayer().containerMenu.getCarried();
     }
 
     public void setCursorItem(ItemStack item) {
-        getPlayer().inventoryMenu.setCarried(item);
+        getPlayer().containerMenu.setCarried(item);
         this.cursorSlotSyncHandler.sync();
     }
 

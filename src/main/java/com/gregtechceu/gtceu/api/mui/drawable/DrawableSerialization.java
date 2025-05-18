@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.utils.JsonHelper;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 import com.google.gson.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -15,8 +16,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -42,7 +41,7 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
 
     public static <
             T extends IDrawable & IJsonSerializable<T>> void registerDrawableType(String id, Class<T> type,
-                                                                                  Function<@NotNull JsonObject, @NotNull T> creator) {
+                                                                                  Function<@NotNull JsonObject, ? extends @NotNull IDrawable> creator) {
         if (DRAWABLE_TYPES.containsKey(id)) {
             throw new IllegalArgumentException("Drawable type '" + id + "' already exists!");
         }
@@ -61,6 +60,7 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
         registerDrawableType("ellipse", Circle.class, json -> new Circle());
         registerDrawableType("item", ItemDrawable.class, ItemDrawable::ofJson);
         registerDrawableType("icon", Icon.class, Icon::ofJson);
+        registerDrawableType("stack", DrawableStack.class, DrawableStack::parseJson);
     }
 
     public static IDrawable deserialize(JsonElement json) {
@@ -86,20 +86,7 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
             }
         }
         if (element.isJsonArray()) {
-            List<IDrawable> list = new ArrayList<>();
-            for (JsonElement element1 : element.getAsJsonArray()) {
-                IDrawable drawable = context.deserialize(element1, IDrawable.class);
-                if (drawable != null) {
-                    list.add(drawable);
-                }
-            }
-            if (list.isEmpty()) {
-                return IDrawable.EMPTY;
-            }
-            if (list.size() == 1) {
-                return list.get(0);
-            }
-            return new DrawableStack(list.toArray(new IDrawable[0]));
+            return DrawableStack.parseJson(element.getAsJsonArray());
         }
         if (!element.isJsonObject()) {
             GTCEu.LOGGER.throwing(new JsonParseException("Drawable json should be an object or an array."));
@@ -117,7 +104,7 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
         }
         if (!DRAWABLE_TYPES.containsKey(type)) {
             GTCEu.LOGGER
-                    .throwing(new JsonParseException("Drawable type '" + type + "' is either not json serializable!"));
+                    .throwing(new JsonParseException("Drawable type '" + type + "' is not json serializable!"));
             return IDrawable.EMPTY;
         }
         IDrawable drawable = DRAWABLE_TYPES.get(type).apply(json);
@@ -165,16 +152,25 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
     }
 
     private static IKey parseText(JsonObject json) throws JsonParseException {
+        JsonParseException exception = new JsonParseException("Could not parse IKey from %s".formatted(json));
+        try {
+            MutableComponent component = Component.Serializer.fromJson(json);
+            if (component != null) {
+                return unpackSiblings(component);
+            }
+        } catch (JsonSyntaxException e) {
+            exception = e;
+        }
         JsonElement element = JsonHelper.getJsonElement(json, "text", "string", "key");
-        if (element == null || element.isJsonNull()) return IKey.str("No text found!");
-        if (element.isJsonPrimitive()) {
+        if (element == null || element.isJsonNull()) {
+            return IKey.str("No text found!");
+        } else if (element.isJsonPrimitive()) {
             String s = element.getAsString();
-            if (s.startsWith("I18n:")) {
-                return IKey.lang(s.substring(5));
+            if (s.startsWith("translate:")) {
+                return IKey.lang(s.substring(10));
             }
             return JsonHelper.getBoolean(json, false, "lang", "translate") ? IKey.lang(s) : IKey.str(s);
-        }
-        if (element.isJsonArray()) {
+        } else if (element.isJsonArray()) {
             ObjectArrayList<IKey> strings = new ObjectArrayList<>();
             for (JsonElement element1 : element.getAsJsonArray()) {
                 strings.add(parseText(element1));
@@ -182,24 +178,45 @@ public class DrawableSerialization implements JsonSerializer<IDrawable>, JsonDes
             strings.trim();
             return IKey.comp(strings.elements());
         }
-        throw new JsonParseException("");
+        throw exception;
     }
 
     private static IKey parseText(JsonElement element) throws JsonParseException {
+        JsonParseException exception = new JsonParseException("Could not parse IKey from %s".formatted(element));
+        try {
+            MutableComponent component = Component.Serializer.fromJson(element);
+            if (component != null) {
+                return IKey.lang(component);
+            }
+        } catch (JsonSyntaxException e) {
+            exception = e;
+        }
         if (element.isJsonPrimitive()) {
             String s = element.getAsString();
-            if (s.startsWith("I18n:")) {
-                return IKey.lang(s.substring(5));
+            if (s.startsWith("translate:")) {
+                return IKey.lang(s.substring(10));
             }
             return IKey.str(s);
         }
         if (element.isJsonObject()) {
             return parseText(element.getAsJsonObject());
         }
-        throw new JsonParseException("");
+        throw exception;
     }
 
     private static IKey parseKeyFromJson(JsonObject json, Function<String, IKey> keyFunction) {
         return keyFunction.apply(JsonHelper.getString(json, "No text found!", "text", "string", "key"));
+    }
+
+    private static IKey unpackSiblings(Component component) {
+        if (component.getSiblings().isEmpty()) {
+            return IKey.lang(component);
+        }
+        ObjectArrayList<IKey> siblings = new ObjectArrayList<>();
+        for (Component sibling : component.getSiblings()) {
+            siblings.add(unpackSiblings(sibling));
+        }
+        siblings.trim();
+        return IKey.comp(siblings.elements());
     }
 }

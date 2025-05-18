@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.mui.factory;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.IGuiHolder;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -16,7 +17,7 @@ public class ItemGuiFactory extends AbstractUIFactory<HandGuiData> {
     public static final ItemGuiFactory INSTANCE = new ItemGuiFactory();
 
     private ItemGuiFactory() {
-        super("gtceu:item");
+        super(GTCEu.id("item"));
     }
 
     public void open(Player player, InteractionHand hand) {

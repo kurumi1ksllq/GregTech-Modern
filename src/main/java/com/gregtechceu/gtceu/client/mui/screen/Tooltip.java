@@ -15,8 +15,8 @@ import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Rectangle;
 import com.gregtechceu.gtceu.client.mui.component.DrawableTooltipComponent;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
-
 import com.gregtechceu.gtceu.config.ConfigHolder;
+
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.locale.Language;

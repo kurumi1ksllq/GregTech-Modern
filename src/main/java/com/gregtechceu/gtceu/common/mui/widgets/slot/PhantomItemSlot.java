@@ -32,8 +32,7 @@ public class PhantomItemSlot extends ItemSlot implements GhostIngredientSlot<Ite
     @Override
     protected void drawOverlay() {
         RecipeViewerHandler handler = RecipeViewerHandler.getCurrent();
-
-        if (handler != null && (handler.isDraggingGhostIngredient() || handler.isHoveringOver(this))) {
+        if (handler.isDraggingGhostIngredient() || handler.isHoveringOver(this)) {
             RenderSystem.colorMask(true, true, true, false);
             drawHighlight(getArea(), isHovering());
             RenderSystem.colorMask(true, true, true, true);

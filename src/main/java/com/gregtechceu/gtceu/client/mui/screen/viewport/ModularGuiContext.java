@@ -237,7 +237,7 @@ public class ModularGuiContext extends GuiContext {
 
     public boolean isMouseItemEmpty() {
         LocalPlayer player = MCHelper.getPlayer();
-        return player == null || player.inventoryMenu.getCarried().isEmpty();
+        return player == null || player.containerMenu.getCarried().isEmpty();
     }
 
     @ApiStatus.Internal

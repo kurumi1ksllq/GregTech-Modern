@@ -14,20 +14,21 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@SuppressWarnings("JavaExistingMethodCanBeUsed")
 public class JsonHelper {
 
-    public static final Gson gson = new GsonBuilder()
+    public static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .registerTypeAdapter(IDrawable.class, new DrawableSerialization())
             .registerTypeAdapter(Alignment.class, new Alignment.Json())
             .create();
 
     public static JsonElement serialize(Object object) {
-        return gson.toJsonTree(object);
+        return GSON.toJsonTree(object);
     }
 
     public static <T> T deserialize(JsonElement json, Class<T> clazz) {
-        return gson.fromJson(json, clazz);
+        return GSON.fromJson(json, clazz);
     }
 
     public static <T> T deserialize(JsonObject json, Class<T> clazz, T defaultValue, String... keys) {

@@ -6,6 +6,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 
+import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,6 +19,7 @@ public class ItemSlotSH extends SyncHandler {
     public static final int SYNC_ITEM = 1;
     public static final int SYNC_ENABLED = 2;
 
+    @Getter
     private final ModularSlot slot;
     private ItemStack lastStoredItem;
     private boolean registered = false;
@@ -115,10 +117,6 @@ public class ItemSlotSH extends SyncHandler {
             buffer.writeBoolean(init);
             buffer.writeBoolean(forceSync);
         });
-    }
-
-    public ModularSlot getSlot() {
-        return this.slot;
     }
 
     public boolean isItemValid(ItemStack itemStack) {

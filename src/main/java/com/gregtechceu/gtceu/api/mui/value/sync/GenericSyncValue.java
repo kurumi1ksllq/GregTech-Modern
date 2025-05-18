@@ -10,7 +10,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;

@@ -186,7 +186,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
         boolean isDragPreview = false;
         boolean flag1 = slotIn == acc.getClickedSlot() && !acc.getDraggingItem().isEmpty() &&
                 !acc.getIsSplittingStack();
-        ItemStack carried = guiScreen.getMinecraft().player.inventoryMenu.getCarried();
+        ItemStack carried = guiScreen.getMinecraft().player.containerMenu.getCarried();
         int amount = -1;
         String format = null;
 

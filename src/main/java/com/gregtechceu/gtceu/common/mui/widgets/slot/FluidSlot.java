@@ -189,7 +189,7 @@ public class FluidSlot extends Widget<FluidSlot>
         if (!this.syncHandler.canFillSlot() && !this.syncHandler.canDrainSlot()) {
             return Result.IGNORE;
         }
-        ItemStack cursorStack = Minecraft.getInstance().player.inventoryMenu.getCarried();
+        ItemStack cursorStack = Minecraft.getInstance().player.containerMenu.getCarried();
         if (this.syncHandler.isPhantom() ||
                 (!cursorStack.isEmpty() &&
                         cursorStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM, null).isPresent())) {

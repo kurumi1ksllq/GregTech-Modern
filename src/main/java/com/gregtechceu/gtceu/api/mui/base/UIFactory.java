@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.client.mui.screen.*;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -25,7 +26,7 @@ public interface UIFactory<D extends GuiData> {
      * @return the factory name
      */
     @NotNull
-    String getFactoryName();
+    ResourceLocation getFactoryName();
 
     /**
      * Creates the main panel for the GUI. Is called on client and server side.

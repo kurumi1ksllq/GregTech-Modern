@@ -121,7 +121,7 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack> {
 
     private void tryClickContainer(MouseData mouseData) {
         Player player = getSyncManager().getPlayer();
-        ItemStack currentStack = player.inventoryMenu.getCarried();
+        ItemStack currentStack = player.containerMenu.getCarried();
         if (!currentStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM, null).isPresent()) {
             return;
         }
@@ -190,7 +190,7 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack> {
 
     public void tryClickPhantom(MouseData mouseData) {
         Player player = getSyncManager().getPlayer();
-        ItemStack currentStack = player.inventoryMenu.getCarried();
+        ItemStack currentStack = player.containerMenu.getCarried();
         FluidStack currentFluid = this.fluidTank.getFluid();
         IFluidHandlerItem fluidHandlerItem = currentStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM, null)
                 .resolve().orElse(null);

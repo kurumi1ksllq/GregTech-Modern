@@ -14,10 +14,10 @@ import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -28,6 +28,7 @@ public class PanelSyncManager {
     private final Map<SyncHandler, String> reverseSyncHandlers = new Object2ObjectOpenHashMap<>();
     private final Map<String, SyncHandler> subPanels = new Object2ObjectArrayMap<>();
     private ModularSyncManager modularSyncManager;
+    @Getter
     private String panelName;
     private boolean init = true;
 
@@ -275,10 +276,6 @@ public class PanelSyncManager {
 
     public ModularContainerMenu getContainer() {
         return getModularSyncManager().getMenu();
-    }
-
-    public String getPanelName() {
-        return panelName;
     }
 
     public boolean isClient() {

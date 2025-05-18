@@ -1,9 +1,8 @@
 package com.gregtechceu.gtceu.integration.jei.handler;
 
 import com.gregtechceu.gtceu.api.mui.base.IScreenWithMuiScreen;
-import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
-import com.gregtechceu.gtceu.client.mui.screen.ClientScreenHandler;
-import com.gregtechceu.gtceu.client.mui.screen.ScreenWrapper;
+import com.gregtechceu.gtceu.core.mixins.jei.IngredientListOverlayAccessor;
+import com.gregtechceu.gtceu.integration.jei.GTJEIPlugin;
 import com.gregtechceu.gtceu.integration.xei.handlers.GhostIngredientSlot;
 import com.gregtechceu.gtceu.integration.xei.handlers.RecipeViewerHandler;
 
@@ -11,10 +10,7 @@ import net.minecraft.client.gui.screens.Screen;
 
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
-import mezz.jei.api.gui.handlers.IGuiProperties;
-import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.gui.GuiProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 public class JEIScreenHandler<T extends Screen & IScreenWithMuiScreen> extends RecipeViewerHandler
-                             implements IGhostIngredientHandler<T>, IScreenHandler<T> {
+                             implements IGhostIngredientHandler<T> {
 
     private static final Map<Class<?>, JEIScreenHandler<?>> CACHE = new Reference2ReferenceOpenHashMap<>();
 
@@ -58,21 +54,15 @@ public class JEIScreenHandler<T extends Screen & IScreenWithMuiScreen> extends R
         currentIngredient = null;
     }
 
+    static ITypedIngredient<?> currentIngredient = null;
+
     @Override
-    public @Nullable IGuiProperties apply(@NotNull T screen) {
-        if (ClientScreenHandler.shouldUnfocusRecipeViewer) {
-            return null;
-        } else {
-            Area area = screen.getScreen().getMainPanel().getArea();
-            Area screenArea = screen.getScreen().getContext().getScreenArea();
-            return new GuiProperties(
-                    ScreenWrapper.class,
-                    area.getX(), area.getY(), area.getWidth(), area.getHeight(),
-                    screenArea.getWidth(), screenArea.getHeight());
+    public void setSearchFocused(boolean focused) {
+        // only set the search field state if it's JEI's actual search field and not JEMI
+        if (GTJEIPlugin.getRuntime().getIngredientListOverlay() instanceof IngredientListOverlayAccessor accessor) {
+            accessor.getSearchField().setFocused(focused);
         }
     }
-
-    static ITypedIngredient<?> currentIngredient = null;
 
     @Override
     public @Nullable Object getCurrentlyDragged() {

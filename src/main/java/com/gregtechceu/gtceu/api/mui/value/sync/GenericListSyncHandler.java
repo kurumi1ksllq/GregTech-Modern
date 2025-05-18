@@ -11,8 +11,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -113,6 +113,7 @@ public class GenericListSyncHandler<T> extends ValueSyncHandler<List<T>> {
         }
     }
 
+    @UnmodifiableView
     @Override
     public List<T> getValue() {
         return Collections.unmodifiableList(this.cache);

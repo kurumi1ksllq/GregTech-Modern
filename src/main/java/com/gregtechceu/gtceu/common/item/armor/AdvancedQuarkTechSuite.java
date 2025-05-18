@@ -132,7 +132,7 @@ public class AdvancedQuarkTechSuite extends QuarkTechSuite implements IJetpack {
                             if (chargable.getCharge() == chargable.getMaxCharge()) {
                                 inventoryIterator.remove();
                             }
-                            player.inventoryMenu.sendAllDataToRemote();
+                            player.containerMenu.sendAllDataToRemote();
                         }
                     }
 

@@ -36,9 +36,4 @@ public class ScreenWrapper extends Screen implements IScreenWithMuiScreen, IMuiS
     public boolean isPauseScreen() {
         return this.screen == null || this.screen.isPauseScreen();
     }
-
-    @Override
-    public void setFocused(boolean focused) {
-        super.setFocused(focused);
-    }
 }

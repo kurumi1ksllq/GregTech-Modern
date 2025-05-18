@@ -169,7 +169,7 @@ public interface IJetpack {
             }
         }
 
-        player.inventoryMenu.sendAllDataToRemote();
+        player.containerMenu.sendAllDataToRemote();
     }
 
     private static void addYMotion(Player player, double value) {

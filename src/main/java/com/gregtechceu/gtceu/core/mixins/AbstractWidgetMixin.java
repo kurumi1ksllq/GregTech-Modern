@@ -18,10 +18,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractWidget.class)
 public abstract class AbstractWidgetMixin {
 
-    @Shadow protected boolean isHovered;
+    @Shadow
+    protected boolean isHovered;
 
     @Inject(method = "render",
-            at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD,
+            at = @At(value = "FIELD",
+                     opcode = Opcodes.PUTFIELD,
                      target = "Lnet/minecraft/client/gui/components/AbstractWidget;isHovered:Z"))
     public void gtceu$fixHoveredState(GuiGraphics guiGraphics, int mouseX, int mouseY,
                                       float partialTick, CallbackInfo ci) {

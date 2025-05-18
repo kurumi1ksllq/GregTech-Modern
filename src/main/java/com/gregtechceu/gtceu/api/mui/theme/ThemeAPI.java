@@ -6,8 +6,8 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
 import com.gregtechceu.gtceu.api.mui.drawable.GuiTextures;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.utils.JsonBuilder;
-
 import com.gregtechceu.gtceu.config.ConfigHolder;
+
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;

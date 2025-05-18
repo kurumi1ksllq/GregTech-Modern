@@ -2,9 +2,11 @@ package com.gregtechceu.gtceu.api.mui;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.widget.IGuiElement;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +20,7 @@ public class GuiErrorHandler {
     private final Set<GuiError> errorSet = new ObjectOpenHashSet<>();
     private final List<GuiError> errors = new ArrayList<>();
 
-    private GuiErrorHandler() {
-    }
+    private GuiErrorHandler() {}
 
     public void clear() {
         this.errors.clear();
@@ -37,6 +38,5 @@ public class GuiErrorHandler {
         return this.errors;
     }
 
-    public void drawErrors(int x, int y) {
-    }
+    public void drawErrors(int x, int y) {}
 }

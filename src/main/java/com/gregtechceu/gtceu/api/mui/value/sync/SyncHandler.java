@@ -10,6 +10,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import io.netty.buffer.Unpooled;
+import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,10 @@ import java.util.Objects;
 public abstract class SyncHandler {
 
     private PanelSyncManager syncManager;
+    /**
+     * the key that belongs to this sync handler
+     */
+    @Getter
     private String key;
 
     @ApiStatus.OverrideOnly
@@ -137,13 +142,6 @@ public abstract class SyncHandler {
      * @param init if this method is being called the first time.
      */
     public void detectAndSendChanges(boolean init) {}
-
-    /**
-     * @return the key that belongs to this sync handler
-     */
-    public final String getKey() {
-        return this.key;
-    }
 
     /**
      * @return is this sync handler has been initialised yet

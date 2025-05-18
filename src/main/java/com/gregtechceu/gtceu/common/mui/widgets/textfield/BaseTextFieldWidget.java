@@ -11,8 +11,8 @@ import com.gregtechceu.gtceu.api.mui.widget.scroll.HorizontalScrollData;
 import com.gregtechceu.gtceu.api.mui.widget.scroll.ScrollData;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 import com.gregtechceu.gtceu.common.mui.widgets.VoidWidget;
-
 import com.gregtechceu.gtceu.config.ConfigHolder;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;

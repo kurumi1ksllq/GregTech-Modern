@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.mui.factory;
 import com.gregtechceu.gtceu.api.mui.base.IGuiHolder;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
@@ -28,7 +29,7 @@ public class SimpleGuiFactory extends AbstractUIFactory<GuiData> {
      * @param name      name of the factory
      * @param guiHolder gui holder
      */
-    public SimpleGuiFactory(String name, IGuiHolder<GuiData> guiHolder) {
+    public SimpleGuiFactory(ResourceLocation name, IGuiHolder<GuiData> guiHolder) {
         this(name, () -> guiHolder);
     }
 
@@ -38,7 +39,7 @@ public class SimpleGuiFactory extends AbstractUIFactory<GuiData> {
      * @param name              name of the factory
      * @param guiHolderSupplier a function which retrieves a gui holder. This is only called once and then cached.
      */
-    public SimpleGuiFactory(String name, Supplier<IGuiHolder<GuiData>> guiHolderSupplier) {
+    public SimpleGuiFactory(ResourceLocation name, Supplier<IGuiHolder<GuiData>> guiHolderSupplier) {
         super(name);
         this.guiHolderSupplier = guiHolderSupplier;
         GuiManager.registerFactory(this);

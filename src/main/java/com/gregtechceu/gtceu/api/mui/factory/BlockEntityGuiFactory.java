@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.mui.factory;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.IGuiHolder;
 
 import net.minecraft.core.BlockPos;
@@ -17,7 +18,7 @@ public class BlockEntityGuiFactory extends AbstractUIFactory<PosGuiData> {
     public static final BlockEntityGuiFactory INSTANCE = new BlockEntityGuiFactory();
 
     private BlockEntityGuiFactory() {
-        super("gtceu:block_entity");
+        super(GTCEu.id("block_entity"));
     }
 
     public <T extends BlockEntity & IGuiHolder<PosGuiData>> void open(Player player, T blockEntity) {

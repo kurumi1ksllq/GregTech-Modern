@@ -15,6 +15,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -38,30 +39,28 @@ import java.util.Objects;
 
 public class GuiManager {
 
-    private static final Object2ObjectMap<String, UIFactory<?>> FACTORIES = new Object2ObjectOpenHashMap<>(16);
+    private static final Object2ObjectMap<ResourceLocation, UIFactory<?>> FACTORIES = new Object2ObjectOpenHashMap<>(
+            16);
 
     private static IMuiScreen lastMui;
     private static final List<Player> openedContainers = new ArrayList<>(4);
 
     public static void registerFactory(UIFactory<?> factory) {
         Objects.requireNonNull(factory);
-        String name = Objects.requireNonNull(factory.getFactoryName());
-        if (name.length() > 32) {
-            throw new IllegalArgumentException("The factory name length must not exceed 32!");
-        }
+        ResourceLocation name = Objects.requireNonNull(factory.getFactoryName());
         if (FACTORIES.containsKey(name)) {
             throw new IllegalArgumentException("Factory with name '" + name + "' is already registered!");
         }
         FACTORIES.put(name, factory);
     }
 
-    public static @NotNull UIFactory<?> getFactory(String name) {
+    public static @NotNull UIFactory<?> getFactory(ResourceLocation name) {
         UIFactory<?> factory = FACTORIES.get(name);
         if (factory == null) throw new NoSuchElementException();
         return factory;
     }
 
-    public static boolean hasFactory(String name) {
+    public static boolean hasFactory(ResourceLocation name) {
         return FACTORIES.containsKey(name);
     }
 

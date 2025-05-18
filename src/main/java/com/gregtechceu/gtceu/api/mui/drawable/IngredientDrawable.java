@@ -6,14 +6,19 @@ import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class IngredientDrawable implements IDrawable, IJsonSerializable {
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Tolerate;
 
+public class IngredientDrawable implements IDrawable, IJsonSerializable<IngredientDrawable> {
+
+    @Getter
+    @Setter
     private ItemStack[] items;
 
     public IngredientDrawable(Ingredient ingredient) {
@@ -34,14 +39,7 @@ public class IngredientDrawable implements IDrawable, IJsonSerializable {
         }
     }
 
-    public ItemStack[] getItems() {
-        return this.items;
-    }
-
-    public void setItems(ItemStack... items) {
-        this.items = items;
-    }
-
+    @Tolerate
     public void setItems(Ingredient ingredient) {
         setItems(ingredient.getItems());
     }

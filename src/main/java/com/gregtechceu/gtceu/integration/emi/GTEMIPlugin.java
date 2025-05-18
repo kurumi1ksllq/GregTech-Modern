@@ -15,7 +15,7 @@ import com.gregtechceu.gtceu.common.fluid.potion.PotionFluidHelper;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.emi.circuit.GTProgrammedCircuitCategory;
-import com.gregtechceu.gtceu.integration.emi.handler.EMIScreenHandler;
+import com.gregtechceu.gtceu.integration.emi.handler.EmiScreenHandler;
 import com.gregtechceu.gtceu.integration.emi.multipage.MultiblockInfoEmiCategory;
 import com.gregtechceu.gtceu.integration.emi.oreprocessing.GTOreProcessingEmiCategory;
 import com.gregtechceu.gtceu.integration.emi.orevein.GTBedrockFluidEmiCategory;
@@ -112,7 +112,7 @@ public class GTEMIPlugin implements EmiPlugin {
             registry.addEmiStack(EmiStack.of(stack.getFluid(), stack.getTag()));
         }
 
-        registry.addExclusionArea(ScreenWrapper.class, EMIScreenHandler.of(ScreenWrapper.class));
-        registry.addExclusionArea(ContainerScreenWrapper.class, EMIScreenHandler.of(ContainerScreenWrapper.class));
+        registry.addExclusionArea(ScreenWrapper.class, EmiScreenHandler.of(ScreenWrapper.class));
+        registry.addExclusionArea(ContainerScreenWrapper.class, EmiScreenHandler.of(ContainerScreenWrapper.class));
     }
 }

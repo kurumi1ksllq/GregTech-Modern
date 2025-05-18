@@ -8,6 +8,18 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public record MouseData(Dist side, int mouseButton, boolean shift, boolean ctrl, boolean alt) {
 
+    public boolean hasControlDown() {
+        return this.ctrl();
+    }
+
+    public boolean hasShiftDown() {
+        return this.shift();
+    }
+
+    public boolean hasAltDown() {
+        return this.alt();
+    }
+
     public boolean isClient() {
         return this.side.isClient();
     }

@@ -7,20 +7,22 @@ import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.ModularScreen;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 
+import net.minecraft.resources.ResourceLocation;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 public abstract class AbstractUIFactory<T extends GuiData> implements UIFactory<T> {
 
-    private final String name;
+    private final ResourceLocation name;
 
-    protected AbstractUIFactory(String name) {
+    protected AbstractUIFactory(ResourceLocation name) {
         this.name = Objects.requireNonNull(name);
     }
 
     @Override
-    public final @NotNull String getFactoryName() {
+    public final @NotNull ResourceLocation getFactoryName() {
         return this.name;
     }
 

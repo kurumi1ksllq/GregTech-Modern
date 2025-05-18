@@ -1,8 +1,6 @@
 package com.gregtechceu.gtceu.common.data;
 
 import com.gregtechceu.gtceu.api.GTCEuAPI;
-import com.gregtechceu.gtceu.api.addon.AddonFinder;
-import com.gregtechceu.gtceu.api.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
@@ -33,7 +31,6 @@ public class GTRecipeCapabilities {
         GTRegistries.RECIPE_CAPABILITIES.register(EU.name, EU);
         GTRegistries.RECIPE_CAPABILITIES.register(CWU.name, CWU);
 
-        AddonFinder.getAddons().forEach(IGTAddon::registerRecipeCapabilities);
         ModLoader.get().postEvent(new GTCEuAPI.RegisterEvent<>(GTRegistries.RECIPE_CAPABILITIES,
                 (Class<RecipeCapability<?>>) (Class<?>) RecipeCapability.class));
         GTRegistries.RECIPE_CAPABILITIES.freeze();

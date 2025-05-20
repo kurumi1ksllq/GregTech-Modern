@@ -17,11 +17,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * @author KilaBash
- * @date 2022/05/27
- * @implNote WhetherCondition, specific whether
- */
 @NoArgsConstructor
 public class PositionYCondition extends RecipeCondition {
 

@@ -281,14 +281,13 @@ public class GTValues {
     public static boolean HT = false;
 
     public static BooleanSupplier FOOLS = () -> {
-        LocalDate date = LocalDate.now();
-        return date.getMonth() == Month.APRIL && date.getDayOfMonth() == 1;
+        var now = LocalDate.now();
+        return now.getMonth() == Month.APRIL && now.getDayOfMonth() == 1;
     };
 
     public static BooleanSupplier XMAS = () -> {
-        LocalDate date = LocalDate.now();
-        int day = date.getDayOfMonth();
-        return date.getMonth() == Month.DECEMBER && (day == 24 || day == 25);
+        var now = LocalDate.now();
+        return now.getMonth() == Month.DECEMBER && (now.getDayOfMonth() == 24 || now.getDayOfMonth() == 25);
     };
 
     public static final String CUSTOM_TAG_SOURCE = "GTCEu Custom Tags";

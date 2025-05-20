@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.api.data.chemical.material.properties;
 
+import com.gregtechceu.gtceu.utils.GTMath;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Objects;
 
 public class ItemPipeProperties implements IMaterialProperty {
 
@@ -56,7 +56,7 @@ public class ItemPipeProperties implements IMaterialProperty {
 
     @Override
     public int hashCode() {
-        return Objects.hash(priority, transferRate);
+        return GTMath.hashInts(priority, Float.hashCode(transferRate));
     }
 
     @Override

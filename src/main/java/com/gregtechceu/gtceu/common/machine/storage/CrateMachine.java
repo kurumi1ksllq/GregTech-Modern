@@ -43,11 +43,6 @@ import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author h3tR
- * @date 2023/3/27
- * @implNote CrateMachine
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class CrateMachine extends MetaMachine implements IMuiMachine, IMachineLife,

@@ -500,7 +500,7 @@ public class Material implements Comparable<Material> {
         return materialInfo.resourceLocation.toString();
     }
 
-    // must be named multiply for GroovyScript to allow `mat * quantity -> MaterialStack`
+    // must be named multiply for GroovyScript to allow `material * quantity -> MaterialStack`
     public MaterialStack multiply(long amount) {
         return new MaterialStack(this, amount);
     }
@@ -1310,7 +1310,7 @@ public class Material implements Comparable<Material> {
          */
         @Getter
         @Setter
-        private IntList colors = new IntArrayList(List.of(-1, -1));
+        private IntList colors = IntArrayList.of(-1, -1);
 
         /**
          * The color of this Material.

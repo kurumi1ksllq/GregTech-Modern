@@ -51,11 +51,6 @@ import lombok.Getter;
 
 import java.util.function.Function;
 
-/**
- * @author KilaBash
- * @date 2023/7/30
- * @implNote ClientProxy
- */
 public class ClientProxy extends CommonProxy {
 
     @Getter

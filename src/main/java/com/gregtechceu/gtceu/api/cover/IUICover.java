@@ -12,11 +12,6 @@ import net.minecraft.world.entity.player.Player;
 
 import org.jetbrains.annotations.ApiStatus;
 
-/**
- * @author KilaBash
- * @date 2023/3/12
- * @implNote IUICover
- */
 @ApiStatus.ScheduledForRemoval(inVersion = "8.0.0")
 @Deprecated(since = "7.0.0", forRemoval = true)
 public interface IUICover extends IUIHolder {

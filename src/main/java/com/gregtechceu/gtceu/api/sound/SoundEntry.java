@@ -19,11 +19,6 @@ import lombok.Getter;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-/**
- * @author KilaBash
- * @date 2023/3/3
- * @implNote SoundEntry, copied from create
- */
 public abstract class SoundEntry {
 
     @Getter

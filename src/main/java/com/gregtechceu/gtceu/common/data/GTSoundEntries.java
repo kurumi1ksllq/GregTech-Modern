@@ -9,11 +9,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 
-/**
- * @author KilaBash
- * @date 2023/3/3
- * @implNote GTSounds
- */
 public class GTSoundEntries {
 
     static {

@@ -15,9 +15,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * @author KilaBash
- * @date 2023/2/17
- * @implNote A machine that has gui. can be opened via right click.
+ * A machine that has gui. can be opened via right click.
  */
 @ApiStatus.ScheduledForRemoval(inVersion = "8.0.0")
 @Deprecated(since = "7.0.0", forRemoval = true)

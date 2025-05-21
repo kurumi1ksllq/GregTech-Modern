@@ -3,13 +3,16 @@ package com.gregtechceu.gtceu.api.mui.drawable;
 import com.gregtechceu.gtceu.api.mui.drawable.text.TextRenderer;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 
+import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
@@ -33,31 +36,26 @@ public class GuiDraw {
     public static final double TWO_PI = Math.PI * 2;
     public static final double HALF_PI = Math.PI / 2;
 
-    public static void drawRect(Matrix4f pose, float x0, float y0, float w, float h, int color) {
-        drawRect(pose, x0, y0, w, h, color, color, color, color);
+    public static void drawRect(GuiGraphics graphics, float x0, float y0, float w, float h, int color) {
+        drawRect(graphics, x0, y0, w, h, color, color, color, color);
     }
 
-    public static void drawHorizontalGradientRect(Matrix4f pose, float x0, float y0, float w, float h,
+    public static void drawHorizontalGradientRect(GuiGraphics graphics, float x0, float y0, float w, float h,
                                                   int colorLeft, int colorRight) {
-        drawRect(pose, x0, y0, w, h, colorLeft, colorRight, colorLeft, colorRight);
+        drawRect(graphics, x0, y0, w, h, colorLeft, colorRight, colorLeft, colorRight);
     }
 
-    public static void drawVerticalGradientRect(Matrix4f pose, float x0, float y0, float w, float h,
+    public static void drawVerticalGradientRect(GuiGraphics graphics, float x0, float y0, float w, float h,
                                                 int colorTop, int colorBottom) {
-        drawRect(pose, x0, y0, w, h, colorTop, colorTop, colorBottom, colorBottom);
+        drawRect(graphics, x0, y0, w, h, colorTop, colorTop, colorBottom, colorBottom);
     }
 
-    public static void drawRect(Matrix4f pose, float x0, float y0, float w, float h,
+    public static void drawRect(GuiGraphics graphics, float x0, float y0, float w, float h,
                                 int colorTL, int colorTR, int colorBL, int colorBR) {
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO);
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.getBuilder();
+        Matrix4f pose = graphics.pose().last().pose();
+        VertexConsumer bufferbuilder = graphics.bufferSource().getBuffer(RenderType.guiOverlay());
+
         float x1 = x0 + w, y1 = y0 + h;
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         bufferbuilder.vertex(pose, x0, y0, 0.0f)
                 .color(Color.getRed(colorTL), Color.getGreen(colorTL), Color.getBlue(colorTL), Color.getAlpha(colorTL))
                 .endVertex();
@@ -70,34 +68,27 @@ public class GuiDraw {
         bufferbuilder.vertex(pose, x1, y0, 0.0f)
                 .color(Color.getRed(colorTR), Color.getGreen(colorTR), Color.getBlue(colorTR), Color.getAlpha(colorTR))
                 .endVertex();
-        tesselator.end();
-        RenderSystem.disableBlend();
     }
 
-    public static void drawCircle(Matrix4f pose, float x0, float y0, float diameter, int color, int segments) {
-        drawEllipse(pose, x0, y0, diameter, diameter, color, color, segments);
+    public static void drawCircle(GuiGraphics graphics, float x0, float y0, float diameter, int color, int segments) {
+        drawEllipse(graphics, x0, y0, diameter, diameter, color, color, segments);
     }
 
-    public static void drawCircle(Matrix4f pose, float x0, float y0, float diameter,
+    public static void drawCircle(GuiGraphics graphics, float x0, float y0, float diameter,
                                   int centerColor, int outerColor, int segments) {
-        drawEllipse(pose, x0, y0, diameter, diameter, centerColor, outerColor, segments);
+        drawEllipse(graphics, x0, y0, diameter, diameter, centerColor, outerColor, segments);
     }
 
-    public static void drawEllipse(Matrix4f pose, float x0, float y0, float w, float h, int color, int segments) {
-        drawEllipse(pose, x0, y0, w, h, color, color, segments);
+    public static void drawEllipse(GuiGraphics graphics, float x0, float y0, float w, float h, int color, int segments) {
+        drawEllipse(graphics, x0, y0, w, h, color, color, segments);
     }
 
-    public static void drawEllipse(Matrix4f pose, float x0, float y0, float w, float h,
+    public static void drawEllipse(GuiGraphics graphics, float x0, float y0, float w, float h,
                                    int centerColor, int outerColor, int segments) {
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO);
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.getBuilder();
+        Matrix4f pose = graphics.pose().last().pose();
+        VertexConsumer bufferbuilder = graphics.bufferSource().getBuffer(GTRenderTypes.guiOverlayTriangleFan());
+
         float x_2 = x0 + w / 2f, y_2 = y0 + h / 2f;
-        bufferbuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
         // start at center
         bufferbuilder.vertex(pose, x_2, y_2, 0.0f).color(Color.getRed(centerColor), Color.getGreen(centerColor),
                 Color.getBlue(centerColor), Color.getAlpha(centerColor)).endVertex();
@@ -110,38 +101,32 @@ public class GuiDraw {
             float y = (float) (Math.cos(angle) * (h / 2) + y_2);
             bufferbuilder.vertex(x, y, 0.0f).color(r, g, b, a).endVertex();
         }
-        tesselator.end();
         RenderSystem.disableBlend();
     }
 
-    public static void drawRoundedRect(Matrix4f pose, float x0, float y0, float w, float h,
+    public static void drawRoundedRect(GuiGraphics graphics, float x0, float y0, float w, float h,
                                        int color, int cornerRadius, int segments) {
-        drawRoundedRect(pose, x0, y0, w, h, color, color, color, color, cornerRadius, segments);
+        drawRoundedRect(graphics, x0, y0, w, h, color, color, color, color, cornerRadius, segments);
     }
 
-    public static void drawVerticalGradientRoundedRect(Matrix4f pose, float x0, float y0, float w, float h,
+    public static void drawVerticalGradientRoundedRect(GuiGraphics graphics, float x0, float y0, float w, float h,
                                                        int colorTop, int colorBottom, int cornerRadius, int segments) {
-        drawRoundedRect(pose, x0, y0, w, h, colorTop, colorTop, colorBottom, colorBottom, cornerRadius, segments);
+        drawRoundedRect(graphics, x0, y0, w, h, colorTop, colorTop, colorBottom, colorBottom, cornerRadius, segments);
     }
 
-    public static void drawHorizontalGradientRoundedRect(Matrix4f pose, float x0, float y0, float w, float h,
+    public static void drawHorizontalGradientRoundedRect(GuiGraphics graphics, float x0, float y0, float w, float h,
                                                          int colorLeft, int colorRight, int cornerRadius,
                                                          int segments) {
-        drawRoundedRect(pose, x0, y0, w, h, colorLeft, colorRight, colorLeft, colorRight, cornerRadius, segments);
+        drawRoundedRect(graphics, x0, y0, w, h, colorLeft, colorRight, colorLeft, colorRight, cornerRadius, segments);
     }
 
-    public static void drawRoundedRect(Matrix4f pose, float x0, float y0, float w, float h,
+    public static void drawRoundedRect(GuiGraphics graphics, float x0, float y0, float w, float h,
                                        int colorTL, int colorTR, int colorBL, int colorBR,
                                        int cornerRadius, int segments) {
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO);
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.getBuilder();
+        Matrix4f pose = graphics.pose().last().pose();
+        VertexConsumer bufferbuilder = graphics.bufferSource().getBuffer(GTRenderTypes.guiOverlayTriangleFan());
+
         float x1 = x0 + w, y1 = y0 + h;
-        bufferbuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
         int color = Color.average(colorBL, colorBR, colorTR, colorTL);
         // start at center
         bufferbuilder.vertex(pose, x0 + w / 2f, y0 + h / 2f, 0.0f)
@@ -197,16 +182,12 @@ public class GuiDraw {
         bufferbuilder.vertex(pose, x0, y0 + cornerRadius, 0.0f)
                 .color(Color.getRed(colorTL), Color.getGreen(colorTL), Color.getBlue(colorTL), Color.getAlpha(colorTL))
                 .endVertex();
-        tesselator.end();
-        RenderSystem.disableBlend();
     }
 
     public static void drawTexture(Matrix4f pose, ResourceLocation location, float x, float y, float w, float h,
                                    int u, int v, int textureWidth, int textureHeight) {
-        RenderSystem.enableBlend();
         RenderSystem.setShaderTexture(0, location);
         drawTexture(pose, x, y, u, v, w, h, textureWidth, textureHeight);
-        RenderSystem.disableBlend();
     }
 
     public static void drawTexture(Matrix4f pose, float x, float y, int u, int v,
@@ -227,7 +208,7 @@ public class GuiDraw {
         tesselator.end();
     }
 
-    public static void drawTexture(Matrix4f pose, BufferBuilder buffer,
+    public static void drawTexture(Matrix4f pose, VertexConsumer buffer,
                                    float x, float y, int u, int v,
                                    float w, float h, int textureW, int textureH, float z) {
         float tw = 1F / textureW;
@@ -259,7 +240,7 @@ public class GuiDraw {
         tesselator.end();
     }
 
-    public static void drawTexture(Matrix4f pose, BufferBuilder buffer,
+    public static void drawTexture(Matrix4f pose, VertexConsumer buffer,
                                    float x, float y, int u, int v,
                                    float w, float h, int textureW, int textureH,
                                    int tu, int tv, float z) {
@@ -275,11 +256,9 @@ public class GuiDraw {
     public static void drawTexture(Matrix4f pose, ResourceLocation location,
                                    float x0, float y0, float x1, float y1,
                                    float u0, float v0, float u1, float v1) {
-        RenderSystem.enableBlend();
         RenderSystem.setShaderTexture(0, location);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         drawTexture(pose, x0, y0, x1, y1, u0, v0, u1, v1, 0);
-        RenderSystem.disableBlend();
     }
 
     public static void drawTexture(Matrix4f pose, float x0, float y0, float x1, float y1,
@@ -296,7 +275,7 @@ public class GuiDraw {
         tesselator.end();
     }
 
-    public static void drawTexture(Matrix4f pose, BufferBuilder buffer,
+    public static void drawTexture(Matrix4f pose, VertexConsumer buffer,
                                    float x0, float y0, float x1, float y1,
                                    float u0, float v0, float u1, float v1, float z) {
         buffer.vertex(pose, x0, y1, z).uv(u0, v1).endVertex();
@@ -308,10 +287,8 @@ public class GuiDraw {
     public static void drawTiledTexture(Matrix4f pose, ResourceLocation location,
                                         float x, float y, float w, float h,
                                         int u, int v, int tileW, int tileH, int tw, int th, float z) {
-        RenderSystem.enableBlend();
         RenderSystem.setShaderTexture(0, location);
         drawTiledTexture(pose, x, y, w, h, u, v, tileW, tileH, tw, th, z);
-        RenderSystem.disableBlend();
     }
 
     public static void drawTiledTexture(Matrix4f pose, float x, float y, float w, float h,
@@ -336,8 +313,6 @@ public class GuiDraw {
 
             drawTexture(pose, buffer, xx, yy, u, v, xw, yh, tw, th, z);
         }
-
-        tesselator.end();
     }
 
     public static void drawTiledTexture(Matrix4f pose, ResourceLocation location,
@@ -389,13 +364,10 @@ public class GuiDraw {
     public static void drawItem(GuiGraphics graphics, ItemStack item, int x, int y, float width, float height, int z) {
         if (item.isEmpty()) return;
         graphics.pose().pushPose();
-        RenderSystem.enableDepthTest();
         graphics.pose().translate(x, y, z);
         graphics.pose().scale(width / 16f, height / 16f, 1);
         graphics.renderItem(item, 0, 0);
         graphics.renderItemDecorations(Minecraft.getInstance().font, item, 0, 0);
-
-        RenderSystem.disableDepthTest();
         graphics.pose().popPose();
     }
 
@@ -418,15 +390,8 @@ public class GuiDraw {
     }
 
     public static void drawSprite(Matrix4f pose, TextureAtlasSprite sprite, float x0, float y0, float w, float h) {
-        drawSprite(pose, Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS), sprite, x0, y0,
-                w, h);
-    }
-
-    public static void drawSprite(Matrix4f pose, TextureAtlas textureMap, TextureAtlasSprite sprite, float x0, float y0,
-                                  float w,
-                                  float h) {
         RenderSystem.enableBlend();
-        RenderSystem.bindTexture(textureMap.getId());
+        RenderSystem.setShaderTexture(0, sprite.atlasLocation());
         drawTexture(pose, x0, y0, x0 + w, y0 + h, sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1());
         RenderSystem.disableBlend();
     }
@@ -526,8 +491,9 @@ public class GuiDraw {
         RenderSystem.disableBlend();
     }
 
-    public static void drawDropCircleShadow(Matrix4f pose, int x, int y, int radius,
+    public static void drawDropCircleShadow(GuiGraphics graphics, int x, int y, int radius,
                                             int segments, int opaque, int shadow) {
+        Matrix4f pose = graphics.pose().last().pose();
         Matrix4d poseD = new Matrix4d(pose);
 
         float a1 = Color.getAlphaF(opaque);
@@ -539,17 +505,7 @@ public class GuiDraw {
         float g2 = Color.getGreenF(shadow);
         float b2 = Color.getBlueF(shadow);
 
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO);
-
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
-
-        buffer.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-
+        VertexConsumer buffer = graphics.bufferSource().getBuffer(GTRenderTypes.guiTriangleFan());
         buffer.vertex(pose, x, y, 0).color(r1, g1, b1, a1).endVertex();
 
         Vector3d pos = new Vector3d();
@@ -558,16 +514,15 @@ public class GuiDraw {
             circleVertex(buffer, poseD, pos, x, Math.cos(a), y, Math.sin(a), radius)
                     .color(r2, g2, b2, a2).endVertex();
         }
-        tesselator.end();
-        RenderSystem.disableBlend();
     }
 
-    public static void drawDropCircleShadow(Matrix4f pose, int x, int y, int radius, int offset,
+    public static void drawDropCircleShadow(GuiGraphics graphics, int x, int y, int radius, int offset,
                                             int segments, int opaque, int shadow) {
         if (offset >= radius) {
-            drawDropCircleShadow(pose, x, y, radius, segments, opaque, shadow);
+            drawDropCircleShadow(graphics, x, y, radius, segments, opaque, shadow);
             return;
         }
+        Matrix4f pose = graphics.pose().last().pose();
         Matrix4d poseD = new Matrix4d(pose);
 
         float a1 = Color.getAlphaF(opaque);
@@ -579,17 +534,8 @@ public class GuiDraw {
         float g2 = Color.getGreenF(shadow);
         float b2 = Color.getBlueF(shadow);
 
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO);
-
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
-
+        VertexConsumer buffer = graphics.bufferSource().getBuffer(GTRenderTypes.guiTriangleFan());
         /* Draw opaque base */
-        buffer.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
         buffer.vertex(pose, x, y, 0).color(r1, g1, b1, a1).endVertex();
 
         Vector3d pos = new Vector3d();
@@ -598,10 +544,9 @@ public class GuiDraw {
             circleVertex(buffer, poseD, pos, x, Math.cos(a), y, Math.sin(a), offset)
                     .color(r1, g1, b1, a1).endVertex();
         }
-        tesselator.end();
 
         /* Draw outer shadow */
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        buffer = graphics.bufferSource().getBuffer(RenderType.gui());
 
         for (int i = 0; i < segments; i++) {
             double alpha1 = i / (double) segments * TWO_PI - HALF_PI;
@@ -617,8 +562,6 @@ public class GuiDraw {
             circleVertex(buffer, poseD, pos, x, cosA1, y, sinA1, radius).color(r2, g2, b2, a2).endVertex();
             circleVertex(buffer, poseD, pos, x, cosA2, y, sinA2, radius).color(r2, g2, b2, a2).endVertex();
         }
-        tesselator.end();
-        RenderSystem.disableBlend();
     }
 
     private static VertexConsumer circleVertex(VertexConsumer buffer, Matrix4d pose, Vector3d pos,
@@ -630,23 +573,38 @@ public class GuiDraw {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static void drawBorder(Matrix4f pose, float x, float y, float width, float height, int color, float border) {
-        drawRect(pose, x - border, y - border, width + 2 * border, border, color);
-        drawRect(pose, x - border, y + height, width + 2 * border, border, color);
-        drawRect(pose, x - border, y, border, height, color);
-        drawRect(pose, x + width, y, border, height, color);
+    public static void drawBorder(GuiGraphics graphics, float x, float y, float width, float height, int color,
+                                  float border) {
+        drawRect(graphics, x - border, y - border, width + 2 * border, border, color);
+        drawRect(graphics, x - border, y + height, width + 2 * border, border, color);
+        drawRect(graphics, x - border, y, border, height, color);
+        drawRect(graphics, x + width, y, border, height, color);
     }
 
     @OnlyIn(Dist.CLIENT)
     public static void drawText(GuiGraphics graphics, String text, float x, float y,
                                 float scale, int color, boolean shadow) {
-        RenderSystem.disableBlend();
         graphics.pose().pushPose();
         graphics.pose().scale(scale, scale, 0f);
         float sf = 1 / scale;
         graphics.drawString(Minecraft.getInstance().font, text, x * sf, y * sf, color, shadow);
         graphics.pose().popPose();
-        RenderSystem.enableBlend();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void drawText(GuiGraphics graphics, Component text, float x, float y,
+                                float scale, int color, boolean shadow) {
+        drawText(graphics, text.getVisualOrderText(), x, y, scale, color, shadow);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void drawText(GuiGraphics graphics, FormattedCharSequence text, float x, float y,
+                                float scale, int color, boolean shadow) {
+        graphics.pose().pushPose();
+        graphics.pose().scale(scale, scale, 0f);
+        float sf = 1 / scale;
+        graphics.drawString(Minecraft.getInstance().font, text, x * sf, y * sf, color, shadow);
+        graphics.pose().popPose();
     }
 
     public static void drawTooltipBackground(GuiGraphics graphics, ItemStack stack, List<ClientTooltipComponent> lines,
@@ -664,26 +622,24 @@ public class GuiDraw {
         borderColorStart = colorEvent.getBorderStart();
         borderColorEnd = colorEvent.getBorderEnd();
 
-        Matrix4f pose = graphics.pose().last().pose();
-
         // top background border
-        drawVerticalGradientRect(pose, x - 3, y - 4, textWidth + 6, 1, backgroundTop, backgroundTop);
+        drawVerticalGradientRect(graphics, x - 3, y - 4, textWidth + 6, 1, backgroundTop, backgroundTop);
         // bottom background border
-        drawVerticalGradientRect(pose, x - 3, y + height + 3, textWidth + 6, 1, backgroundBottom, backgroundBottom);
+        drawVerticalGradientRect(graphics, x - 3, y + height + 3, textWidth + 6, 1, backgroundBottom, backgroundBottom);
         // center background
-        drawVerticalGradientRect(pose, x - 3, y - 3, textWidth + 6, height + 6, backgroundTop, backgroundBottom);
+        drawVerticalGradientRect(graphics, x - 3, y - 3, textWidth + 6, height + 6, backgroundTop, backgroundBottom);
         // left background border
-        drawVerticalGradientRect(pose, x - 4, y - 3, 1, height + 6, backgroundTop, backgroundBottom);
+        drawVerticalGradientRect(graphics, x - 4, y - 3, 1, height + 6, backgroundTop, backgroundBottom);
         // right background border
-        drawVerticalGradientRect(pose, x + textWidth + 3, y - 3, 1, height + 6, backgroundTop, backgroundBottom);
+        drawVerticalGradientRect(graphics, x + textWidth + 3, y - 3, 1, height + 6, backgroundTop, backgroundBottom);
 
         // left accent border
-        drawVerticalGradientRect(pose, x - 3, y - 2, 1, height + 4, borderColorStart, borderColorEnd);
+        drawVerticalGradientRect(graphics, x - 3, y - 2, 1, height + 4, borderColorStart, borderColorEnd);
         // right accent border
-        drawVerticalGradientRect(pose, x + textWidth + 2, y - 2, 1, height + 4, borderColorStart, borderColorEnd);
+        drawVerticalGradientRect(graphics, x + textWidth + 2, y - 2, 1, height + 4, borderColorStart, borderColorEnd);
         // top accent border
-        drawVerticalGradientRect(pose, x - 3, y - 3, textWidth + 6, 1, borderColorStart, borderColorStart);
+        drawVerticalGradientRect(graphics, x - 3, y - 3, textWidth + 6, 1, borderColorStart, borderColorStart);
         // bottom accent border
-        drawVerticalGradientRect(pose, x - 3, y + height + 2, textWidth + 6, 1, borderColorEnd, borderColorEnd);
+        drawVerticalGradientRect(graphics, x - 3, y + height + 2, textWidth + 6, 1, borderColorEnd, borderColorEnd);
     }
 }

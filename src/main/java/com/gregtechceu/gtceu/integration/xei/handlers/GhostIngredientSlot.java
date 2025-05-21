@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * An interface for compat with recipe viewers' ghost slots.
  * Implement this on any {@link IWidget}.
  * This slot must then be manually registered in something like {@link Widget#onInit()}
- * with {@link XeiSettings#addGhostIngredientSlot(IWidget) JeiSettings.addGhostIngredientSlot(IWidget)}
+ * with {@link XeiSettings#addGhostIngredientSlot(IWidget)}
  *
  * @param <I> type of the ingredient
  */
@@ -57,6 +57,6 @@ public interface GhostIngredientSlot<I> extends IGuiElement {
 
     default void drawHighlight(GuiContext context, Rectangle area, boolean hovering) {
         int color = hovering ? Color.argb(76, 201, 25, 128) : Color.argb(19, 201, 10, 64);
-        GuiDraw.drawRect(context.getLastPose(), 0, 0, area.width, area.height, color);
+        GuiDraw.drawRect(context.getGraphics(), 0, 0, area.width, area.height, color);
     }
 }

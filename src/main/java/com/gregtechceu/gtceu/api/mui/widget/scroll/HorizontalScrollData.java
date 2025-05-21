@@ -68,7 +68,7 @@ public class HorizontalScrollData extends ScrollData {
         int y = isAxisStart() ? 0 : area.height - getThickness();
         int w = area.width;
         int h = getThickness();
-        GuiDraw.drawRect(context.getLastPose(), x, y, w, h, area.getScrollBarBackgroundColor());
+        GuiDraw.drawRect(context.getGraphics(), x, y, w, h, area.getScrollBarBackgroundColor());
 
         x = getScrollBarStart(area, l, isOtherActive);
         ScrollData data2 = getOtherScrollData(area);

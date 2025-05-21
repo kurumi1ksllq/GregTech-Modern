@@ -74,7 +74,7 @@ public class FusionReactorRenderer extends WorkableCasingMachineRenderer {
         var r = Mth.lerp(lerpFactor, red(lastColor), 255) / 255f;
         var g = Mth.lerp(lerpFactor, green(lastColor), 255) / 255f;
         var b = Mth.lerp(lerpFactor, blue(lastColor), 255) / 255f;
-        RenderBufferHelper.renderRing(stack, buffer.getBuffer(GTRenderTypes.getLightRing()),
+        RenderBufferHelper.renderRing(stack, buffer.getBuffer(GTRenderTypes.lightRing()),
                 back.getStepX() * 7 + 0.5F,
                 back.getStepY() * 7 + 0.5F,
                 back.getStepZ() * 7 + 0.5F,

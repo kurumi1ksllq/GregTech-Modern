@@ -35,7 +35,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
 import java.util.*;
 import java.util.function.Function;
@@ -254,14 +253,13 @@ public class ModularScreen implements GuiEventListener {
     public void drawScreen(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         Lighting.setupForFlatItems();
         RenderSystem.disableDepthTest();
-        Matrix4f pose = graphics.pose().last().pose();
 
         this.context.reset();
         this.context.pushViewport(null, this.context.getScreenArea());
         for (ModularPanel panel : this.panelManager.getReverseOpenPanels()) {
             this.context.updateZ(panel.getArea().getPanelLayer() * 20);
             if (panel.disablePanelsBelow()) {
-                GuiDraw.drawRect(pose, 0, 0, this.context.getScreenArea().w(), this.context.getScreenArea().h(),
+                GuiDraw.drawRect(graphics, 0, 0, this.context.getScreenArea().w(), this.context.getScreenArea().h(),
                         Color.argb(16, 16, 16, (int) (125 * panel.getAlpha())));
             }
             WidgetTree.drawTree(panel, this.context);

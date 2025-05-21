@@ -230,9 +230,9 @@ public abstract class ScrollData {
 
     @OnlyIn(Dist.CLIENT)
     protected void drawScrollBar(GuiContext context, int x, int y, int w, int h) {
-        GuiDraw.drawRect(context.getLastPose(), x, y, w, h, 0xffeeeeee);
-        GuiDraw.drawRect(context.getLastPose(), x + 1, y + 1, w - 1, h - 1, 0xff666666);
-        GuiDraw.drawRect(context.getLastPose(), x + 1, y + 1, w - 2, h - 2, 0xffaaaaaa);
+        GuiDraw.drawRect(context.getGraphics(), x, y, w, h, 0xffeeeeee);
+        GuiDraw.drawRect(context.getGraphics(), x + 1, y + 1, w - 1, h - 1, 0xff666666);
+        GuiDraw.drawRect(context.getGraphics(), x + 1, y + 1, w - 2, h - 2, 0xffaaaaaa);
     }
 
     public boolean onMouseClicked(ScrollArea area, int mainAxisPos, int crossAxisPos, int button) {

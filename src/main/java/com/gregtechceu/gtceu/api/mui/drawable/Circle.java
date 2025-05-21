@@ -55,7 +55,7 @@ public class Circle implements IDrawable, IJsonSerializable<Circle> {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void draw(GuiContext context, int x0, int y0, int width, int height, WidgetTheme widgetTheme) {
-        GuiDraw.drawEllipse(context.getLastPose(), x0, y0, width, height,
+        GuiDraw.drawEllipse(context.getGraphics(), x0, y0, width, height,
                 this.colorInner, this.colorOuter, this.segments);
     }
 

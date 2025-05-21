@@ -37,9 +37,8 @@ public class ContainerScreenWrapper extends AbstractContainerScreen<ModularConta
     @SuppressWarnings("DataFlowIssue")
     @Deprecated
     @ApiStatus.Internal
-    public <T extends GuiData> ContainerScreenWrapper(ModularContainerMenu container, Inventory inventory,
-                                                      Component display) {
-        super(container, inventory, display);
+    public ContainerScreenWrapper(ModularContainerMenu container, Inventory playerInventory, Component title) {
+        super(container, playerInventory, title);
         if (container.isScreenInitialized()) {
             this.screen = container.getScreen();
             this.screen.construct(this);

@@ -72,11 +72,11 @@ public class Rectangle implements IDrawable, IJsonSerializable<Rectangle> {
             Color.setGlColorOpaque(Color.WHITE.main);
         }
         if (this.cornerRadius <= 0) {
-            GuiDraw.drawRect(context.getLastPose(), x0, y0, width, height,
+            GuiDraw.drawRect(context.getGraphics(), x0, y0, width, height,
                     this.colorTL, this.colorTR, this.colorBL, this.colorBR);
             return;
         }
-        GuiDraw.drawRoundedRect(context.getLastPose(), x0, y0, width, height,
+        GuiDraw.drawRoundedRect(context.getGraphics(), x0, y0, width, height,
                 this.colorTL, this.colorTR, this.colorBL, this.colorBR,
                 this.cornerRadius, this.cornerSegments);
     }

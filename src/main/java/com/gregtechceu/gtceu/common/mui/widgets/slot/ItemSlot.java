@@ -95,7 +95,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
     protected void drawOverlay(ModularGuiContext context) {
         if (isHovering()) {
             RenderSystem.colorMask(true, true, true, false);
-            GuiDraw.drawRect(context.getLastPose(), 1, 1, 16, 16, getSlotHoverColor());
+            GuiDraw.drawRect(context.getGraphics(), 1, 1, 16, 16, getSlotHoverColor());
             RenderSystem.colorMask(true, true, true, true);
         }
     }
@@ -226,7 +226,7 @@ public class ItemSlot extends Widget<ItemSlot> implements IVanillaSlot, Interact
 
         if (!flag1) {
             if (isDragPreview) {
-                GuiDraw.drawRect(context.getLastPose(), 1, 1, 16, 16, -2130706433);
+                GuiDraw.drawRect(context.getGraphics(), 1, 1, 16, 16, -2130706433);
             }
 
             if (!slotStack.isEmpty()) {

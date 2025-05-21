@@ -343,9 +343,10 @@ public class ClientScreenHandler {
             int color = 0x101010;
             int startAlpha = 0xc0;
             int endAlpha = 0xd0;
-            GuiDraw.drawVerticalGradientRect(guiGraphics.pose().last().pose(), 0, 0, screen.width, screen.height,
+            GuiDraw.drawVerticalGradientRect(guiGraphics, 0, 0, screen.width, screen.height,
                     Color.withAlpha(color, (int) (startAlpha * alpha)),
                     Color.withAlpha(color, (int) (endAlpha * alpha)));
+            MinecraftForge.EVENT_BUS.post(new ScreenEvent.BackgroundRendered(screen, guiGraphics));
         }
     }
 
@@ -497,7 +498,7 @@ public class ClientScreenHandler {
         graphics.drawString(Minecraft.getInstance().font, "FPS: " + fpsCounter.getFps(), 5, screenH - 24, color);
         LocatedWidget locatedHovered = muiScreen.getPanelManager().getTopWidgetLocated(true);
         if (locatedHovered != null) {
-            drawSegmentLine(pose, lineY -= 4, color);
+            drawSegmentLine(graphics, lineY -= 4, color);
             lineY -= 10;
 
             IGuiElement hovered = locatedHovered.getElement();
@@ -508,9 +509,9 @@ public class ClientScreenHandler {
             Area area = hovered.getArea();
             IGuiElement parent = hovered.getParent();
 
-            GuiDraw.drawBorder(pose, 0, 0, area.width, area.height, color, 1f);
+            GuiDraw.drawBorder(graphics, 0, 0, area.width, area.height, color, 1f);
             if (hovered.hasParent()) {
-                GuiDraw.drawBorder(pose, -area.rx, -area.ry, parent.getArea().width, parent.getArea().height,
+                GuiDraw.drawBorder(graphics, -area.rx, -area.ry, parent.getArea().width, parent.getArea().height,
                         Color.withAlpha(color, 0.3f), 1f);
             }
             graphics.pose().popPose();
@@ -522,7 +523,7 @@ public class ClientScreenHandler {
             lineY -= 11;
             GuiDraw.drawText(graphics, "Class: " + hovered, 5, lineY, 1, color, false);
             if (hovered.hasParent()) {
-                drawSegmentLine(pose, lineY -= 4, color);
+                drawSegmentLine(graphics, lineY -= 4, color);
                 lineY -= 10;
                 area = parent.getArea();
                 GuiDraw.drawText(graphics, "Parent size: " + area.width + ", " + area.height, 5, lineY, 1, color,
@@ -531,7 +532,7 @@ public class ClientScreenHandler {
                 GuiDraw.drawText(graphics, "Parent: " + parent, 5, lineY, 1, color, false);
             }
             if (hovered instanceof ItemSlot slotWidget) {
-                drawSegmentLine(pose, lineY -= 4, color);
+                drawSegmentLine(graphics, lineY -= 4, color);
                 lineY -= 10;
                 ModularSlot slot = slotWidget.getSlot();
                 GuiDraw.drawText(graphics, "Slot Index: " + slot.getSlotIndex(), 5, lineY, 1, color, false);
@@ -547,19 +548,19 @@ public class ClientScreenHandler {
                             5, lineY, 1, color, false);
                 }
             } else if (hovered instanceof RichTextWidget richTextWidget) {
-                drawSegmentLine(pose, lineY -= 4, color);
+                drawSegmentLine(graphics, lineY -= 4, color);
                 lineY -= 10;
                 Object hoveredElement = richTextWidget.getHoveredElement();
                 GuiDraw.drawText(graphics, "Hovered: " + hoveredElement, 5, lineY, 1, color, false);
             }
         }
         // dot at mouse pos
-        GuiDraw.drawRect(pose, mouseX, mouseY, 1, 1, Color.withAlpha(Color.GREEN.main, 0.8f));
+        GuiDraw.drawRect(graphics, mouseX, mouseY, 1, 1, Color.withAlpha(Color.GREEN.main, 0.8f));
         graphics.setColor(1f, 1f, 1f, 1f);
     }
 
-    private static void drawSegmentLine(Matrix4f pose, int y, int color) {
-        GuiDraw.drawRect(pose, 5, y, 140, 1, color);
+    private static void drawSegmentLine(GuiGraphics graphics, int y, int color) {
+        GuiDraw.drawRect(graphics, 5, y, 140, 1, color);
     }
 
     public static boolean hasScreen() {

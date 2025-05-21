@@ -68,7 +68,7 @@ public class VerticalScrollData extends ScrollData {
         int y = 0;
         int w = getThickness();
         int h = area.height;
-        GuiDraw.drawRect(context.getLastPose(), x, y, w, h, area.getScrollBarBackgroundColor());
+        GuiDraw.drawRect(context.getGraphics(), x, y, w, h, area.getScrollBarBackgroundColor());
 
         y = getScrollBarStart(area, l, isOtherActive);
         ScrollData data2 = getOtherScrollData(area);

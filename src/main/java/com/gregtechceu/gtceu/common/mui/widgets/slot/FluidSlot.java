@@ -164,7 +164,7 @@ public class FluidSlot extends Widget<FluidSlot>
         }
         if (isHovering()) {
             RenderSystem.colorMask(true, true, true, false);
-            GuiDraw.drawRect(context.getLastPose(), 1, 1, getArea().w() - 2, getArea().h() - 2, getSlotHoverColor());
+            GuiDraw.drawRect(context.getGraphics(), 1, 1, getArea().w() - 2, getArea().h() - 2, getSlotHoverColor());
             RenderSystem.colorMask(true, true, true, true);
         }
     }

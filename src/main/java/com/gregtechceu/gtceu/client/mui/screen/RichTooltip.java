@@ -328,6 +328,10 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         return text;
     }
 
+    public RichTooltip showUpTimer(int showUpTimer) {
+        return this.setShowUpTimer(showUpTimer);
+    }
+
     public RichTooltip tooltipBuilder(Consumer<RichTooltip> tooltipBuilder) {
         Consumer<RichTooltip> existingBuilder = this.tooltipBuilder;
         if (existingBuilder != null) {

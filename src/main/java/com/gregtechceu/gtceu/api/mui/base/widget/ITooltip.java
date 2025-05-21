@@ -176,7 +176,7 @@ public interface ITooltip<W extends ITooltip<W>> {
      * @return this
      */
     default W tooltipShowUpTimer(int showUpTimer) {
-        tooltip().setShowUpTimer(showUpTimer);
+        tooltip().showUpTimer(showUpTimer);
         return getThis();
     }
 

@@ -6,11 +6,21 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
 
+import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableFloat;
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 public class FontRenderHelper {
 
@@ -20,7 +30,7 @@ public class FontRenderHelper {
 
     static {
         for (ChatFormatting formatting : ChatFormatting.values()) {
-            char c = formatting.toString().charAt(1);
+            char c = formatting.getChar();
             formattingMap[c - min] = formatting;
             if (Character.isLetter(c)) {
                 formattingMap[Character.toUpperCase(c) - min] = formatting;
@@ -106,5 +116,113 @@ public class FontRenderHelper {
             }
         }
         return l;
+    }
+
+    public static FormattedCharSequence splitAtMax(FormattedCharSequence input, float maxWidth) {
+        MutableFloat cur = new MutableFloat();
+        // split the string at max width.
+        List<TextRenderer.FormattedChar> output = new ArrayList<>();
+        input.accept((pos, style, codePoint) -> {
+            if (cur.addAndGet(TextRenderer.getWidthProvider().getWidth(codePoint, style)) > maxWidth) {
+                return false;
+            }
+            output.add(new TextRenderer.FormattedChar(codePoint, style));
+            return true;
+        });
+        return fromChars(output);
+    }
+
+    public static boolean isEmpty(FormattedCharSequence input) {
+        if (input == FormattedCharSequence.EMPTY) {
+            return true;
+        }
+        MutableBoolean value = new MutableBoolean(true);
+        input.accept((pos, style, codePoint) -> {
+            value.setFalse();
+            return false;
+        });
+        return value.isTrue();
+    }
+
+    public static FormattedText fromSequence(FormattedCharSequence input) {
+        List<FormattedText> parts = new ArrayList<>();
+        StringBuilder value = new StringBuilder();
+        MutableObject<Style> lastStyle = new MutableObject<>(Style.EMPTY);
+        input.accept((pos, style, codePoint) -> {
+            // if the style changed, add the built part and reset the string builder
+            if (!style.equals(lastStyle.getValue())) {
+                lastStyle.setValue(style);
+                parts.add(FormattedText.of(value.toString(), style));
+                value.setLength(0);
+            } else {
+                value.append(codePoint);
+            }
+            return true;
+        });
+        // add the last component that will be left behind
+        if (!value.isEmpty()) {
+            parts.add(FormattedText.of(value.toString(), lastStyle.getValue()));
+        }
+        // remove completely empty components even if they're not == FormattedText.EMPTY;
+        parts.removeIf(FontRenderHelper::checkEmpty);
+        // no need to make composites from completely empty strings or singular ones
+        if (parts.isEmpty()) return FormattedText.EMPTY;
+        else if (parts.size() == 1) return parts.get(0);
+
+        return FormattedText.composite(parts);
+    }
+
+    public static boolean checkEmpty(FormattedText text) {
+        if (text == FormattedText.EMPTY) return true;
+        // if the text has ANY content, this will return false.
+        return text.visit(content -> Optional.of(false)).orElse(true);
+    }
+
+    public static FormattedCharSequence fromChars(List<TextRenderer.FormattedChar> chars) {
+        int size = chars.size();
+        return switch (size) {
+            case 0 -> FormattedCharSequence.EMPTY;
+            case 1 -> chars.get(0).asSequence();
+            default -> (sink) -> {
+                for (int i = 0; i < size; i++) {
+                    TextRenderer.FormattedChar ch = chars.get(i);
+                    if (!sink.accept(i, ch.style(), ch.codePoint())) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+        };
+    }
+
+    public static FormattedCharSequence substring(FormattedCharSequence str, int start) {
+        return (sink) -> {
+            MutableInt globalPos = new MutableInt();
+            return str.accept((pos, style, codePoint) -> {
+                if (globalPos.addAndGet(1) >= start) {
+                    return sink.accept(pos, style, codePoint);
+                }
+                return true;
+            });
+        };
+    }
+
+    public static FormattedCharSequence substring(FormattedCharSequence str, int start, int end) {
+        return (sink) -> {
+            MutableInt globalPos = new MutableInt();
+            return str.accept((pos, style, codePoint) -> {
+                int current = globalPos.addAndGet(1);
+                if (current >= end) {
+                    return false;
+                } else if (current >= start) {
+                    return sink.accept(pos, style, codePoint);
+                }
+                return true;
+            });
+        };
+    }
+
+    public static List<Component> asComponents(List<String> lines) {
+        return lines.stream().<Component>map(Component::literal).toList();
     }
 }

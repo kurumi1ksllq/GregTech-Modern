@@ -12,7 +12,6 @@ import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraftforge.api.distmarker.Dist;
@@ -21,9 +20,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.apache.commons.lang3.mutable.MutableFloat;
-import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -115,7 +111,7 @@ public class TextRenderer {
     }
 
     public List<Line> measureStringLines(List<String> lines) {
-        return measureLines(asComponents(lines));
+        return measureLines(FontRenderHelper.asComponents(lines));
     }
 
     public List<Line> measureLines(List<Component> lines) {
@@ -176,91 +172,12 @@ public class TextRenderer {
     public void drawCut(GuiGraphics graphics, Line line) {
         if (line.width > this.maxWidth) {
             var cutText = FormattedCharSequence.composite(
-                    splitAtMax(line.text(), this.maxWidth - 6),
+                    FontRenderHelper.splitAtMax(line.text(), this.maxWidth - 6),
                     FormattedCharSequence.forward("...", Style.EMPTY));
             drawMeasuredLines(graphics, Collections.singletonList(line(cutText)));
         } else {
             drawMeasuredLines(graphics, Collections.singletonList(line));
         }
-    }
-
-    public static FormattedCharSequence splitAtMax(FormattedCharSequence input, float maxWidth) {
-        MutableFloat cur = new MutableFloat();
-        // split the string at max width.
-        List<FormattedChar> output = new ArrayList<>();
-        input.accept((pos, style, codePoint) -> {
-            if (cur.addAndGet(getWidthProvider().getWidth(codePoint, style)) > maxWidth) {
-                return false;
-            }
-            output.add(new FormattedChar(codePoint, style));
-            return true;
-        });
-        return fromChars(output);
-    }
-
-    public static boolean isEmpty(FormattedCharSequence input) {
-        if (input == FormattedCharSequence.EMPTY) {
-            return true;
-        }
-        MutableBoolean value = new MutableBoolean(true);
-        input.accept((pos, style, codePoint) -> {
-            value.setFalse();
-            return false;
-        });
-        return value.isTrue();
-    }
-
-    public static FormattedText fromSequence(FormattedCharSequence input) {
-        StringBuilder value = new StringBuilder();
-        input.accept((pos, style, codePoint) -> {
-            value.append(codePoint);
-            return true;
-        });
-        return FormattedText.of(value.toString());
-    }
-
-    public static FormattedCharSequence fromChars(List<FormattedChar> chars) {
-        int size = chars.size();
-        return switch (size) {
-            case 0 -> FormattedCharSequence.EMPTY;
-            case 1 -> chars.get(0).asSequence();
-            default -> (sink) -> {
-                for (int i = 0; i < size; i++) {
-                    FormattedChar ch = chars.get(i);
-                    if (!sink.accept(i, ch.style(), ch.codePoint())) {
-                        return false;
-                    }
-                }
-                return true;
-            };
-        };
-    }
-
-    public static FormattedCharSequence substring(FormattedCharSequence str, int start) {
-        return (sink) -> {
-            MutableInt globalPos = new MutableInt();
-            return str.accept((pos, style, codePoint) -> {
-                if (globalPos.addAndGet(1) >= start) {
-                    return sink.accept(pos, style, codePoint);
-                }
-                return true;
-            });
-        };
-    }
-
-    public static FormattedCharSequence substring(FormattedCharSequence str, int start, int end) {
-        return (sink) -> {
-            MutableInt globalPos = new MutableInt();
-            return str.accept((pos, style, codePoint) -> {
-                int current = globalPos.addAndGet(1);
-                if (current >= end) {
-                    return false;
-                } else if (current >= start) {
-                    return sink.accept(pos, style, codePoint);
-                }
-                return true;
-            });
-        };
     }
 
     public void drawScrolling(GuiGraphics graphics, Line line, int scroll, Area area, GuiContext context) {
@@ -270,7 +187,7 @@ public class TextRenderer {
         }
         scroll = scroll % (int) (line.width + 1);
         float max = this.maxWidth + scroll;
-        FormattedCharSequence drawString = splitAtMax(line.text(), max);
+        FormattedCharSequence drawString = FontRenderHelper.splitAtMax(line.text(), max);
         Area.SHARED.set(this.x, Integer.MIN_VALUE, this.x + (int) this.maxWidth, Integer.MAX_VALUE);
         Stencil.apply(Area.SHARED, context);
         context.getGraphics().pose().pushPose();
@@ -297,10 +214,6 @@ public class TextRenderer {
             }
         }
         return true;
-    }
-
-    public static List<Component> asComponents(List<String> lines) {
-        return lines.stream().<Component>map(Component::literal).toList();
     }
 
     public int getMaxWidth(List<Component> lines) {

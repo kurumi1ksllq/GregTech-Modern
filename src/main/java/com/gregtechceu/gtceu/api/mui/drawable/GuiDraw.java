@@ -2,8 +2,8 @@ package com.gregtechceu.gtceu.api.mui.drawable;
 
 import com.gregtechceu.gtceu.api.mui.drawable.text.TextRenderer;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
-
 import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -79,7 +79,8 @@ public class GuiDraw {
         drawEllipse(graphics, x0, y0, diameter, diameter, centerColor, outerColor, segments);
     }
 
-    public static void drawEllipse(GuiGraphics graphics, float x0, float y0, float w, float h, int color, int segments) {
+    public static void drawEllipse(GuiGraphics graphics, float x0, float y0, float w, float h,
+                                   int color, int segments) {
         drawEllipse(graphics, x0, y0, w, h, color, color, segments);
     }
 

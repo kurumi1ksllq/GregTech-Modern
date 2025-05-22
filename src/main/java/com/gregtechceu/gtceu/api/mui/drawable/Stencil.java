@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Rectangle;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
 
@@ -33,12 +34,12 @@ public class Stencil {
         stencils.clear();
         stencilShapes.clear();
         stencilValue = 0;
-        GL11.glStencilMask(0xFF);
-        GL11.glClearStencil(0);
-        GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
-        GL11.glStencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
-        GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
-        GL11.glStencilMask(0x00);
+        RenderSystem.stencilMask(0xFF);
+        RenderSystem.clearStencil(0);
+        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
+        RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
+        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+        RenderSystem.stencilMask(0x00);
     }
 
     public static void apply(Rectangle area, @Nullable GuiContext context) {
@@ -96,18 +97,18 @@ public class Stencil {
         GL11.glEnable(GL11.GL_STENCIL_TEST);
         setStencilValue(stencilShape, stencilValue, false, hideStencilShape);
         stencilValue++;
-        GL11.glStencilFunc(GL11.GL_LEQUAL, stencilValue, 0xFF);
-        GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
-        GL11.glStencilMask(0x00);
+        RenderSystem.stencilFunc(GL11.GL_LEQUAL, stencilValue, 0xFF);
+        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+        RenderSystem.stencilMask(0x00);
     }
 
     private static void setStencilValue(Runnable stencilShape, int stencilValue, boolean remove,
                                         boolean hideStencilShape) {
         // Set stencil func
         int mode = remove ? GL11.GL_DECR : GL11.GL_INCR;
-        GL11.glStencilFunc(GL11.GL_EQUAL, stencilValue, 0xFF);
-        GL11.glStencilOp(GL11.GL_KEEP, mode, mode);
-        GL11.glStencilMask(0xFF);
+        RenderSystem.stencilFunc(GL11.GL_EQUAL, stencilValue, 0xFF);
+        RenderSystem.stencilOp(GL11.GL_KEEP, mode, mode);
+        RenderSystem.stencilMask(0xFF);
 
         if (hideStencilShape) {
             // disable colors and depth
@@ -124,7 +125,6 @@ public class Stencil {
 
     private static void drawRectangleStencilShape(int x, int y, int w, int h) {
         RenderSystem.enableBlend();
-
         ShaderInstance lastShader = RenderSystem.getShader();
         RenderSystem.setShader(GameRenderer::getPositionShader);
 
@@ -155,9 +155,9 @@ public class Stencil {
         }
         setStencilValue(stencilShape, stencilValue, true, true);
         stencilValue--;
-        GL11.glStencilFunc(GL11.GL_LEQUAL, stencilValue, 0xFF);
-        GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
-        GL11.glStencilMask(0x00);
+        RenderSystem.stencilFunc(GL11.GL_LEQUAL, stencilValue, 0xFF);
+        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+        RenderSystem.stencilMask(0x00);
     }
 
     public static boolean isInsideScissorArea(Area area, IViewportStack stack) {

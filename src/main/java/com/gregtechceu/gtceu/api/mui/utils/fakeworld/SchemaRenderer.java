@@ -27,17 +27,15 @@ import net.minecraftforge.client.model.data.ModelData;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -107,7 +105,10 @@ public class SchemaRenderer implements IDrawable {
             cameraPos.mul((float) scale.getAsDouble());
             cameraPos.add(looking);
         }
-        int lastFbo = bindFBO();
+        this.renderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+        this.renderTarget.clear(Minecraft.ON_OSX);
+        this.renderTarget.bindWrite(true);
+
         context.getGraphics().pose().pushPose();
         setupCamera(this.renderTarget.viewWidth, this.renderTarget.viewHeight);
         renderWorld(context);
@@ -127,12 +128,12 @@ public class SchemaRenderer implements IDrawable {
         }
         resetCamera();
         context.getGraphics().pose().popPose();
-        unbindFBO(lastFbo);
+        this.renderTarget.unbindWrite();
+        Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
 
         // bind FBO as texture
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        lastFbo = GL11.glGetInteger(GL11.GL_TEXTURE_2D);
-        RenderSystem.bindTexture(this.renderTarget.frameBufferId);
+        RenderSystem.setShaderTexture(0, this.renderTarget.getColorTextureId());
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         // render rect with FBO texture
@@ -145,8 +146,6 @@ public class SchemaRenderer implements IDrawable {
         bufferbuilder.vertex(x, y, 0).uv(0, 1).endVertex();
         bufferbuilder.vertex(x, y + height, 0).uv(0, 0).endVertex();
         tesselator.end();
-
-        RenderSystem.bindTexture(lastFbo);
     }
 
     private void renderWorld(GuiContext context) {
@@ -222,22 +221,23 @@ public class SchemaRenderer implements IDrawable {
         RenderSystem.viewport(0, 0, width, height);
         Color.setGlColor(clearColor);
         RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
-
         RenderSystem.backupProjectionMatrix();
-        RenderSystem.getProjectionMatrix().identity();
 
         float near = this.isometric ? 1f : 0.1f;
         float far = 10000.0f;
         float fovY = 60.0f; // Field of view in the Y direction
         float aspect = (float) width / height; // width and height are the dimensions of your window
-        float top = near * (float) Math.tan(Math.toRadians(fovY) / 2.0);
-        float bottom = -top;
-        float left = aspect * bottom;
-        float right = aspect * top;
+        Matrix4f projection = new Matrix4f();
         if (this.isometric) {
-            GL11.glOrtho(left, right, bottom, top, near, far);
+            float top = near * (float) Math.tan(Math.toRadians(fovY) / 2.0);
+            float bottom = -top;
+            float left = aspect * bottom;
+            float right = aspect * top;
+            projection.setOrtho(left, right, bottom, top, near, far);
+            RenderSystem.setProjectionMatrix(projection, VertexSorting.ORTHOGRAPHIC_Z);
         } else {
-            GL11.glFrustum(left, right, bottom, top, near, far);
+            projection.setPerspective(fovY, aspect, near, far);
+            RenderSystem.setProjectionMatrix(projection, VertexSorting.byDistance(camera.lookAt()));
         }
 
         // setup modelview matrix
@@ -269,19 +269,6 @@ public class SchemaRenderer implements IDrawable {
 
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
-    }
-
-    private int bindFBO() {
-        int lastID = GL11.glGetInteger(EXTFramebufferObject.GL_FRAMEBUFFER_BINDING_EXT);
-        this.renderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
-        this.renderTarget.clear(Minecraft.ON_OSX);
-        this.renderTarget.bindWrite(true);
-        return lastID;
-    }
-
-    private void unbindFBO(int lastID) {
-        this.renderTarget.unbindWrite();
-        GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, lastID);
     }
 
     private HitResult rayTrace(Vector3f hitPos) {

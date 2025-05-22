@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.client.mui.screen;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.IMuiScreen;
 import com.gregtechceu.gtceu.api.mui.base.MCHelper;
 import com.gregtechceu.gtceu.api.mui.base.widget.IGuiElement;
@@ -35,7 +36,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
@@ -43,6 +43,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Lighting;
@@ -59,38 +60,49 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 @ApiStatus.Internal
-@OnlyIn(Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = GTCEu.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientScreenHandler {
 
     @Getter
     private static final GuiContext defaultContext = new GuiContext();
-
-    private static ModularScreen currentScreen = null;
     private static final FpsCounter fpsCounter = new FpsCounter();
+    private static ModularScreen currentScreen = null;
     @Getter
     private static long ticks = 0L;
 
     @SubscribeEvent
-    public static void onGuiOpen(ScreenEvent.Opening event) {
+    public static void onOpenScreen(ScreenEvent.Opening event) {
         defaultContext.reset();
         if (event.getNewScreen() instanceof IMuiScreen muiScreen) {
             Objects.requireNonNull(muiScreen.getScreen(), "ModularScreen must not be null!");
-            if (currentScreen != muiScreen.getScreen()) {
+            if (currentScreen == muiScreen.getScreen()) {
+                currentScreen.getPanelManager().reopen();
+            } else {
                 if (hasScreen()) {
                     currentScreen.onCloseParent();
-                    currentScreen = null;
+                    currentScreen.getPanelManager().dispose();
                 }
                 currentScreen = muiScreen.getScreen();
                 fpsCounter.reset();
             }
-        } else if (hasScreen() && getMCScreen() != null && event.getNewScreen() != getMCScreen()) {
+        } else if (hasScreen() && event.getNewScreen() != event.getCurrentScreen()) {
             currentScreen.onCloseParent();
+            currentScreen.getPanelManager().dispose();
             currentScreen = null;
         }
     }
 
     @SubscribeEvent
-    public static void onGuiInit(ScreenEvent.Init.Post event) {
+    public static void onCloseScreen(ScreenEvent.Closing event) {
+        if (hasScreen() && !currentScreen.getPanelManager().isReopened()) {
+            currentScreen.onCloseParent();
+            currentScreen.getPanelManager().dispose();
+            currentScreen = null;
+        }
+    }
+
+    @SubscribeEvent
+    public static void onInitScreenPost(ScreenEvent.Init.Post event) {
         defaultContext.updateScreenArea(event.getScreen().width, event.getScreen().height);
         if (checkGui(event.getScreen())) {
             currentScreen.onResize(event.getScreen().width, event.getScreen().height);
@@ -100,18 +112,18 @@ public class ClientScreenHandler {
 
     // before JEI
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void onGuiInputHigh(ScreenEvent.KeyPressed.Pre event) {
+    public static void onScreenKeyPressedHigh(ScreenEvent.KeyPressed.Pre event) {
         defaultContext.updateLatestKey(event.getKeyCode(), event.getScanCode(), event.getModifiers());
-        inputPressedEvent(event, InputPhase.EARLY);
+        keyPressedEvent(event, InputPhase.EARLY);
     }
 
     // after JEI
     @SubscribeEvent(priority = EventPriority.LOW)
-    public static void onGuiInputLow(ScreenEvent.KeyPressed.Pre event) {
-        inputPressedEvent(event, InputPhase.LATE);
+    public static void onScreenKeyPressedLow(ScreenEvent.KeyPressed.Pre event) {
+        keyPressedEvent(event, InputPhase.LATE);
     }
 
-    private static void inputPressedEvent(ScreenEvent.KeyPressed.Pre event, InputPhase phase) {
+    private static void keyPressedEvent(ScreenEvent.KeyPressed.Pre event, InputPhase phase) {
         if (checkGui(event.getScreen())) {
             currentScreen.getContext().updateLatestKey(event.getKeyCode(), event.getScanCode(), event.getModifiers());
         }
@@ -123,18 +135,18 @@ public class ClientScreenHandler {
 
     // before JEI
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void inputReleasedHigh(ScreenEvent.KeyReleased.Pre event) {
+    public static void onScreenKeyReleasedHigh(ScreenEvent.KeyReleased.Pre event) {
         defaultContext.updateLatestKey(event.getKeyCode(), event.getScanCode(), event.getModifiers());
-        inputReleasedEvent(event, InputPhase.EARLY);
+        keyReleasedEvent(event, InputPhase.EARLY);
     }
 
     // after JEI
     @SubscribeEvent(priority = EventPriority.LOW)
-    public static void inputReleasedLow(ScreenEvent.KeyReleased.Pre event) {
-        inputReleasedEvent(event, InputPhase.LATE);
+    public static void onScreenKeyReleasedLow(ScreenEvent.KeyReleased.Pre event) {
+        keyReleasedEvent(event, InputPhase.LATE);
     }
 
-    private static void inputReleasedEvent(ScreenEvent.KeyReleased.Pre event, InputPhase phase) {
+    private static void keyReleasedEvent(ScreenEvent.KeyReleased.Pre event, InputPhase phase) {
         if (checkGui(event.getScreen())) {
             currentScreen.getContext().updateLatestKey(event.getKeyCode(), event.getScanCode(), event.getModifiers());
         }
@@ -146,7 +158,7 @@ public class ClientScreenHandler {
 
     // before JEI
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void handleMouseButtonPressed(ScreenEvent.MouseButtonPressed.Pre event) {
+    public static void onScreenMousePressed(ScreenEvent.MouseButtonPressed.Pre event) {
         int button = event.getButton();
         double mouseX = event.getMouseX();
         double mouseY = event.getMouseY();
@@ -165,7 +177,7 @@ public class ClientScreenHandler {
 
     // before JEI
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void handleMouseButtonReleased(ScreenEvent.MouseButtonReleased.Pre event) {
+    public static void onScreenMouseReleased(ScreenEvent.MouseButtonReleased.Pre event) {
         int button = event.getButton();
         double mouseX = event.getMouseX();
         double mouseY = event.getMouseY();
@@ -181,7 +193,7 @@ public class ClientScreenHandler {
 
     // before JEI
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void handleMouseScrolled(ScreenEvent.MouseScrolled.Pre event) {
+    public static void onScreenMouseScrolled(ScreenEvent.MouseScrolled.Pre event) {
         double w = event.getScrollDelta();
         if (w == 0) return;
         defaultContext.updateMouseWheel(w);
@@ -194,7 +206,7 @@ public class ClientScreenHandler {
 
     // before JEI
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void handleMouseDragged(ScreenEvent.MouseDragged.Pre event) {
+    public static void onScreenMouseDragged(ScreenEvent.MouseDragged.Pre event) {
         checkGui(event.getScreen());
         if (event.getMouseButton() == -1) {
             return;
@@ -206,7 +218,7 @@ public class ClientScreenHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public static void onGuiDraw(ScreenEvent.Render.Pre event) {
+    public static void onScreenRenderLow(ScreenEvent.Render.Pre event) {
         int mx = event.getMouseX(), my = event.getMouseY();
         float pt = event.getPartialTick();
         GuiGraphics gc = event.getGuiGraphics();
@@ -222,12 +234,12 @@ public class ClientScreenHandler {
     }
 
     @SubscribeEvent
-    public static void onGuiDraw(ScreenEvent.Render.Post event) {
+    public static void onScreenRenderNormal(ScreenEvent.Render.Post event) {
         OverlayStack.draw(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
     }
 
     @SubscribeEvent
-    public static void onTick(TickEvent.ClientTickEvent event) {
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             OverlayStack.onTick();
             defaultContext.tick();
@@ -239,7 +251,7 @@ public class ClientScreenHandler {
     }
 
     @SubscribeEvent
-    public static void preDraw(TickEvent.RenderTickEvent event) {
+    public static void onRenderTick(TickEvent.RenderTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             GL11.glEnable(GL11.GL_STENCIL_TEST);
         }

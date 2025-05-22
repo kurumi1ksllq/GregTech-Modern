@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.mui.factory;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.IMuiScreen;
 import com.gregtechceu.gtceu.api.mui.base.MCHelper;
 import com.gregtechceu.gtceu.api.mui.base.UIFactory;
@@ -21,12 +22,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
@@ -38,12 +39,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+@Mod.EventBusSubscriber(modid = GTCEu.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class GuiManager {
 
     private static final Object2ObjectMap<ResourceLocation, UIFactory<?>> FACTORIES = new Object2ObjectOpenHashMap<>(
             16);
 
-    private static IMuiScreen lastMui;
     private static final List<Player> openedContainers = new ArrayList<>(4);
 
     public static void registerFactory(UIFactory<?> factory) {
@@ -137,30 +138,6 @@ public class GuiManager {
     public static void onTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             openedContainers.clear();
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public static void onGuiOpen(ScreenEvent.Opening event) {
-        if (lastMui != null && event.getNewScreen() == null) {
-            if (lastMui.getScreen().getPanelManager().isOpen()) {
-                lastMui.getScreen().getPanelManager().closeAll();
-            }
-            lastMui.getScreen().getPanelManager().dispose();
-            lastMui = null;
-        } else if (event.getNewScreen() instanceof IMuiScreen screenWrapper) {
-            if (lastMui == null) {
-                lastMui = screenWrapper;
-            } else if (lastMui == event.getNewScreen()) {
-                lastMui.getScreen().getPanelManager().reopen();
-            } else {
-                if (lastMui.getScreen().getPanelManager().isOpen()) {
-                    lastMui.getScreen().getPanelManager().closeAll();
-                }
-                lastMui.getScreen().getPanelManager().dispose();
-                lastMui = screenWrapper;
-            }
         }
     }
 

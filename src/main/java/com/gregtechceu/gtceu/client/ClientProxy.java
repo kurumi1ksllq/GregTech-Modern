@@ -9,9 +9,7 @@ import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.IGTTool;
 import com.gregtechceu.gtceu.api.item.LampBlockItem;
 import com.gregtechceu.gtceu.api.mui.drawable.DrawableSerialization;
-import com.gregtechceu.gtceu.api.mui.overlay.OverlayManager;
 import com.gregtechceu.gtceu.client.mui.component.DrawableTooltipComponent;
-import com.gregtechceu.gtceu.client.mui.screen.ClientScreenHandler;
 import com.gregtechceu.gtceu.client.particle.HazardParticle;
 import com.gregtechceu.gtceu.client.particle.MufflerParticle;
 import com.gregtechceu.gtceu.client.renderer.entity.GTBoatRenderer;
@@ -45,7 +43,6 @@ import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.client.event.*;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -78,8 +75,6 @@ public class ClientProxy extends CommonProxy {
         }
 
         /* MUI Initialization */
-        MinecraftForge.EVENT_BUS.register(ClientScreenHandler.class);
-        MinecraftForge.EVENT_BUS.register(OverlayManager.class);
         DrawableSerialization.init();
     }
 

@@ -85,13 +85,13 @@ public class TextFieldHandler {
     }
 
     public void setOffsetCursor(int linePos, int charPos) {
-        getOffsetCursor().setLocation(charPos, linePos);
+        getOffsetCursor().set(charPos, linePos);
     }
 
     public void setMainCursor(int linePos, int charPos, boolean animate) {
         Point main = getMainCursor();
         if (main.x != charPos || main.y != linePos) {
-            main.setLocation(charPos, linePos);
+            main.set(charPos, linePos);
             if (!this.text.isEmpty() && this.renderer != null && this.scrollArea != null) {
                 // update actual width
                 this.renderer.setSimulate(true);

@@ -2,28 +2,21 @@ package com.gregtechceu.gtceu.client.renderer.machine;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.MachineDefinition;
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.machine.storage.CreativeChestMachine;
 import com.gregtechceu.gtceu.common.machine.storage.QuantumChestMachine;
-import com.gregtechceu.gtceu.core.mixins.GuiGraphicsAccessor;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import com.lowdragmc.lowdraglib.client.utils.RenderUtils;
-import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
-import com.lowdragmc.lowdraglib.gui.texture.TransformTexture;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -33,11 +26,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
-
-import java.util.List;
 
 import static com.gregtechceu.gtceu.utils.GTMatrixUtils.*;
 
@@ -55,13 +44,6 @@ public class QuantumChestRenderer extends TieredHullMachineRenderer {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void renderBaseModel(List<BakedQuad> quads, MachineDefinition definition, @Nullable MetaMachine machine,
-                                ModelState modelState, @Nullable Direction side, RandomSource rand) {
-        quads.addAll(getRotatedModel(modelState).getQuads(definition.defaultBlockState(), side, rand));
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
     public boolean hasTESR(BlockEntity blockEntity) {
         return true;
     }
@@ -74,7 +56,7 @@ public class QuantumChestRenderer extends TieredHullMachineRenderer {
         model = getItemBakedModel();
         if (model != null && stack.hasTag()) {
             poseStack.pushPose();
-            model.getTransforms().getTransform(transformType).apply(leftHand, poseStack);
+            model = model.applyTransform(transformType, poseStack, leftHand);
             poseStack.translate(-0.5D, -0.5D, -0.5D);
 
             ItemStack itemStack = ItemStack.of(stack.getOrCreateTagElement("stored"));
@@ -82,8 +64,7 @@ public class QuantumChestRenderer extends TieredHullMachineRenderer {
             float tick = Minecraft.getInstance().level.getGameTime() + Minecraft.getInstance().getFrameTime();
             // Don't need to handle locked items here since they don't get saved to the item
             renderChest(poseStack, buffer, Direction.NORTH, itemStack, storedAmount, tick,
-                    ItemStack.EMPTY,
-                    stack.is(CREATIVE_CHEST_ITEM));
+                    ItemStack.EMPTY, stack.is(CREATIVE_CHEST_ITEM));
 
             poseStack.popPose();
         }
@@ -134,6 +115,11 @@ public class QuantumChestRenderer extends TieredHullMachineRenderer {
                 Item.getId(itemStack.getItem()) + itemStack.getDamageValue());
         poseStack.popPose();
 
+        drawAmountText(poseStack, buffer, frontFacing, storedAmount, isCreative);
+    }
+
+    public static void drawAmountText(PoseStack poseStack, MultiBufferSource buffer, Direction frontFacing,
+                                      long storedAmount, boolean isCreative) {
         poseStack.pushPose();
         RenderSystem.disableDepthTest();
         poseStack.translate(frontFacing.getStepX() * -1 / 16f, frontFacing.getStepY() * -1 / 16f,
@@ -148,16 +134,26 @@ public class QuantumChestRenderer extends TieredHullMachineRenderer {
         poseStack.scale(1f / 64, 1f / 64, 0);
         poseStack.translate(-32, -32, 0);
 
-        TransformTexture text;
+        String text;
+        int x = 0, y = 24;
+        int w = 64, h = 28;
+        float textX = x + w / 2.0f;
+        float textY = y + h / 2.0f;
+
+        poseStack.pushPose();
         if (isCreative) {
-            text = new TextTexture("∞").setDropShadow(false).scale(3.0f);
+            text = "∞";
+            poseStack.translate(textX, textY, 0);
+            poseStack.scale(3.0f, 3.0f, 1.0f);
+            poseStack.translate(-textX, -textY, 0);
         } else {
-            var amount = stored.isEmpty() ? "*" : FormattingUtil.formatNumberReadable(storedAmount, false);
-            text = new TextTexture(amount).setDropShadow(false);
+            text = storedAmount <= 0 ? "*" : FormattingUtil.formatNumberReadable(storedAmount, false);
         }
-        text.draw(GuiGraphicsAccessor.create(Minecraft.getInstance(), poseStack,
-                MultiBufferSource.immediate(Tesselator.getInstance().getBuilder())),
-                0, 0, 0, 24, 64, 28);
+
+        Font font = Minecraft.getInstance().font;
+        font.drawInBatch(text, textX - font.width(text) / 2.0f, textY - font.lineHeight / 2.0f, 0xffffffff, false,
+                poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, 0xf000f0);
+        poseStack.popPose();
         RenderSystem.enableDepthTest();
         poseStack.popPose();
     }

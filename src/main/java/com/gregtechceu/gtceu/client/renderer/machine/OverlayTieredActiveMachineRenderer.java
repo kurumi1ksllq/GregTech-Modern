@@ -5,8 +5,7 @@ import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
-
-import com.lowdragmc.lowdraglib.client.renderer.impl.IModelRenderer;
+import com.gregtechceu.gtceu.client.renderer.block.BasicModelRenderer;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.ModelState;
@@ -20,17 +19,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-@SuppressWarnings("removal")
 public class OverlayTieredActiveMachineRenderer extends TieredHullMachineRenderer {
 
-    protected IModelRenderer activeOverlayModel;
-    protected IModelRenderer overlayModel;
+    protected BasicModelRenderer activeOverlayModel;
+    protected BasicModelRenderer overlayModel;
 
     public OverlayTieredActiveMachineRenderer(int tier, ResourceLocation overlayModel,
                                               ResourceLocation activeOverlayModel) {
         super(tier, GTCEu.id("block/machine/hull_machine"));
-        this.overlayModel = new IModelRenderer(overlayModel);
-        this.activeOverlayModel = new IModelRenderer(activeOverlayModel);
+        this.overlayModel = new BasicModelRenderer(overlayModel);
+        this.activeOverlayModel = new BasicModelRenderer(activeOverlayModel);
     }
 
     @Override
@@ -41,18 +39,18 @@ public class OverlayTieredActiveMachineRenderer extends TieredHullMachineRendere
         super.renderMachine(quads, definition, machine, frontFacing, side, rand, modelFacing, modelState);
         if (machine instanceof IRecipeLogicMachine rlm) {
             if (rlm.isActive()) {
-                quads.addAll(activeOverlayModel.getRotatedModel(frontFacing).getQuads(definition.defaultBlockState(),
-                        side, rand));
+                quads.addAll(activeOverlayModel.getRotatedModel(modelState)
+                        .getQuads(definition.defaultBlockState(), side, rand));
                 return;
             }
         } else if (machine instanceof IMultiPart part) {
             if (part.getControllers().stream()
                     .anyMatch(controller -> controller instanceof IRecipeLogicMachine rlm && rlm.isActive())) {
-                quads.addAll(activeOverlayModel.getRotatedModel(frontFacing).getQuads(definition.defaultBlockState(),
-                        side, rand));
+                quads.addAll(activeOverlayModel.getRotatedModel(modelState)
+                        .getQuads(definition.defaultBlockState(), side, rand));
                 return;
             }
         }
-        quads.addAll(overlayModel.getRotatedModel(frontFacing).getQuads(definition.defaultBlockState(), side, rand));
+        quads.addAll(overlayModel.getRotatedModel(modelState).getQuads(definition.defaultBlockState(), side, rand));
     }
 }

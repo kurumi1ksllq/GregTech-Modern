@@ -3,9 +3,8 @@ package com.gregtechceu.gtceu.client.renderer.machine;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.client.renderer.block.BasicModelRenderer;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-
-import com.lowdragmc.lowdraglib.client.renderer.impl.IModelRenderer;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.ModelState;
@@ -19,15 +18,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-@SuppressWarnings("removal")
 public class OverlaySteamMachineRenderer extends SteamHullMachineRenderer implements IPartRenderer {
 
-    protected IModelRenderer overlayModel;
+    protected BasicModelRenderer overlayModel;
 
     public OverlaySteamMachineRenderer(ResourceLocation overlayModel) {
         super(ConfigHolder.INSTANCE.machines.steelSteamMultiblocks ? "steel" : "bronze",
                 GTCEu.id("block/machine/hull_machine"));
-        this.overlayModel = new IModelRenderer(overlayModel);
+        this.overlayModel = new BasicModelRenderer(overlayModel);
     }
 
     @Override
@@ -36,6 +34,6 @@ public class OverlaySteamMachineRenderer extends SteamHullMachineRenderer implem
                               Direction frontFacing, @Nullable Direction side, RandomSource rand, Direction modelFacing,
                               ModelState modelState) {
         super.renderMachine(quads, definition, machine, frontFacing, side, rand, modelFacing, modelState);
-        quads.addAll(overlayModel.getRotatedModel(frontFacing).getQuads(definition.defaultBlockState(), side, rand));
+        quads.addAll(overlayModel.getRotatedModel(modelState).getQuads(definition.defaultBlockState(), side, rand));
     }
 }

@@ -8,10 +8,7 @@ import com.lowdragmc.lowdraglib.client.model.ModelFactory;
 
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.BlockModelRotation;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -23,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -34,8 +30,6 @@ public class TextureOverrideRenderer extends CTMModelRenderer {
     protected Map<String, ResourceLocation> override;
     @Nullable
     protected Supplier<Map<String, ResourceLocation>> overrideSupplier;
-    @OnlyIn(Dist.CLIENT)
-    protected Map<ModelState, BakedModel> bakedModelCache;
 
     public TextureOverrideRenderer(ResourceLocation model, @NotNull Map<String, ResourceLocation> override) {
         super(model);
@@ -61,14 +55,6 @@ public class TextureOverrideRenderer extends CTMModelRenderer {
         if (GTCEu.isClientSide()) {
             registerEvent();
         }
-    }
-
-    @Override
-    public void initRenderer() {
-        if (GTCEu.isClientSide()) {
-            this.bakedModelCache = new ConcurrentHashMap<>();
-        }
-        super.initRenderer();
     }
 
     public void setTextureOverride(Map<String, ResourceLocation> override) {

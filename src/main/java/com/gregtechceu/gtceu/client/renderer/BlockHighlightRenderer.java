@@ -18,6 +18,7 @@ import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
@@ -34,7 +35,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -45,6 +45,9 @@ import java.util.function.Function;
 
 @OnlyIn(Dist.CLIENT)
 public class BlockHighlightRenderer {
+
+    private static final GuiGraphics GRAPHICS = new GuiGraphics(Minecraft.getInstance(),
+            Minecraft.getInstance().renderBuffers().bufferSource());
 
     public static void renderBlockHighlight(PoseStack poseStack, Camera camera, BlockHitResult target,
                                             MultiBufferSource multiBufferSource, float partialTick) {
@@ -87,10 +90,9 @@ public class BlockHighlightRenderer {
                 poseStack.pushPose();
                 poseStack.translate(-pos.x, -pos.y, -pos.z);
                 if (gridHighlight.shouldRenderGrid(player, blockPos, state, held, toolType)) {
-                    var buffer = multiBufferSource.getBuffer(RenderType.lines());
                     RenderSystem.lineWidth(3);
                     final IToolGridHighlight finalGridHighlight = gridHighlight;
-                    drawGridOverlays(poseStack, buffer, target,
+                    drawGridOverlays(poseStack, multiBufferSource, target,
                             side -> finalGridHighlight.sideTips(player, blockPos, state, toolType, side));
                 } else {
                     var facing = target.getDirection();
@@ -109,10 +111,8 @@ public class BlockHighlightRenderer {
                         }
                         poseStack.scale(1f / 16, 1f / 16, 0);
                         poseStack.translate(-8, -8, 0);
-                        texture.copy()
-                                .draw(GuiGraphicsAccessor.create(Minecraft.getInstance(), poseStack,
-                                        MultiBufferSource.immediate(Tesselator.getInstance().getBuilder())), 0, 0, 4, 4,
-                                        8, 8);
+                        ((GuiGraphicsAccessor) GRAPHICS).setPose(poseStack);
+                        texture.draw(GRAPHICS, 0, 0, 4, 4, 8, 8);
                         RenderSystem.disableBlend();
                         RenderSystem.enableDepthTest();
                     }
@@ -128,10 +128,9 @@ public class BlockHighlightRenderer {
                 Vec3 pos = camera.getPosition();
                 poseStack.pushPose();
                 poseStack.translate(-pos.x, -pos.y, -pos.z);
-                var buffer = multiBufferSource.getBuffer(RenderType.lines());
                 RenderSystem.lineWidth(3);
 
-                drawGridOverlays(poseStack, buffer, target,
+                drawGridOverlays(poseStack, multiBufferSource, target,
                         side -> coverable.hasCover(side) ? null : GuiTextures.TOOL_ATTACH_COVER);
 
                 poseStack.popPose();
@@ -145,10 +144,9 @@ public class BlockHighlightRenderer {
                 Vec3 pos = camera.getPosition();
                 poseStack.pushPose();
                 poseStack.translate(-pos.x, -pos.y, -pos.z);
-                var buffer = multiBufferSource.getBuffer(RenderType.lines());
                 RenderSystem.lineWidth(3);
 
-                drawGridOverlays(poseStack, buffer, target, side -> level.isEmptyBlock(blockPos.relative(side)) ?
+                drawGridOverlays(poseStack, multiBufferSource, target, side -> level.isEmptyBlock(blockPos.relative(side)) ?
                         pipeBlockEntity.getPipeTexture(true) : null);
 
                 poseStack.popPose();
@@ -160,8 +158,8 @@ public class BlockHighlightRenderer {
     private static float gColour;
     private static float bColour;
 
-    private static void drawGridOverlays(PoseStack poseStack, VertexConsumer buffer, BlockHitResult blockHitResult,
-                                         Function<Direction, ResourceTexture> test) {
+    private static void drawGridOverlays(PoseStack poseStack, MultiBufferSource multiBufferSource,
+                                         BlockHitResult blockHitResult, Function<Direction, ResourceTexture> test) {
         rColour = gColour = 0.2F + (float) Math.sin((System.currentTimeMillis() % (Mth.PI * 800)) / 800) / 2;
         bColour = 1f;
         var blockPos = blockHitResult.getBlockPos();
@@ -303,6 +301,8 @@ public class BlockHighlightRenderer {
         topLeft.add(cubeCenter);
 
         var mat = poseStack.last().pose();
+        VertexConsumer buffer = multiBufferSource.getBuffer(RenderType.lines());
+
         // straight top bottom lines
         drawLine(mat, buffer, new Vector3f(topRight).add(new Vector3f(shift).mul(-1)),
                 new Vector3f(bottomRight).add(new Vector3f(shift).mul(-1)));
@@ -330,8 +330,8 @@ public class BlockHighlightRenderer {
         poseStack.scale(1f / 16, 1f / 16, 0);
         poseStack.translate(-8, -8, 0);
 
-        var graphics = GuiGraphicsAccessor.create(Minecraft.getInstance(), poseStack,
-                MultiBufferSource.immediate(Tesselator.getInstance().getBuilder()));
+        var graphics = GRAPHICS;
+        ((GuiGraphicsAccessor) graphics).setPose(poseStack);
         if (leftBlocked != null) {
             leftBlocked.copy().scale(0.9f).setColor(hoverLeft ? -1 : 0x44ffffff).draw(graphics, 0, 0, 0, 6, 4, 4);
         }

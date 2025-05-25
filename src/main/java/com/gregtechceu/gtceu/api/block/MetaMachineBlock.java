@@ -183,10 +183,6 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
         return state;
     }
 
-    public Direction getFrontFacing(BlockState state) {
-        return getRotationState() == RotationState.NONE ? Direction.NORTH : state.getValue(getRotationState().property);
-    }
-
     @Override
     public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {
         ItemStack itemStack = super.getCloneItemStack(level, pos, state);

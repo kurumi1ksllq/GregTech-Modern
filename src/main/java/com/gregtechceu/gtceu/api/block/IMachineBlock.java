@@ -33,6 +33,10 @@ public interface IMachineBlock extends IBlockRendererProvider, EntityBlock {
 
     RotationState getRotationState();
 
+    default Direction getFrontFacing(BlockState state) {
+        return getRotationState() == RotationState.NONE ? Direction.NORTH : state.getValue(getRotationState().property);
+    }
+
     static int colorTinted(BlockState blockState, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos,
                            int index) {
         if (level != null && pos != null) {

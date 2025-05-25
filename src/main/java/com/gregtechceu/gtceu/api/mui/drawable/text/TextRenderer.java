@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
@@ -18,6 +19,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -66,28 +68,40 @@ public class TextRenderer {
     }
 
     public void draw(GuiGraphics graphics, String text) {
-        this.draw(graphics, Component.literal(text));
+        this.draw(graphics.pose(), graphics.bufferSource(), Component.literal(text));
+    }
+
+    public void draw(PoseStack poseStack, MultiBufferSource.BufferSource buffers, String text) {
+        this.draw(poseStack, buffers, Component.literal(text));
     }
 
     public void draw(GuiGraphics graphics, Component text) {
+        if (simulate) {
+            this.draw(null, null, text);
+        }
+        this.draw(graphics.pose(), graphics.bufferSource(), text);
+    }
+
+    public void draw(PoseStack poseStack, MultiBufferSource.BufferSource buffers, Component text) {
         if (this.maxWidth <= 0 && !text.getString().contains("\n'")) {
-            drawSimple(graphics, text);
+            drawSimple(poseStack, buffers, text);
         } else {
-            draw(graphics, Collections.singletonList(text));
+            draw(poseStack, buffers, Collections.singletonList(text));
         }
     }
 
-    public void draw(GuiGraphics graphics, List<Component> lines) {
-        drawMeasuredLines(graphics, measureLines(lines));
+    public void draw(PoseStack poseStack, MultiBufferSource.BufferSource buffers, List<Component> lines) {
+        drawMeasuredLines(poseStack, buffers, measureLines(lines));
     }
 
-    protected void drawMeasuredLines(GuiGraphics graphics, List<Line> measuredLines) {
+    protected void drawMeasuredLines(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                                     List<Line> measuredLines) {
         float maxW = 0;
         int y0 = getStartYOfLines(measuredLines.size());
         for (Line measuredLine : measuredLines) {
             int x0 = getStartX(measuredLine.width);
             maxW = Math.max(maxW, measuredLine.width);
-            draw(graphics, measuredLine.text, x0, y0);
+            draw(poseStack, buffers, measuredLine.text, x0, y0);
             y0 += (int) getFontHeight();
         }
         this.lastWidth = this.maxWidth > 0 ? Math.min(maxW, this.maxWidth) : maxW;
@@ -96,14 +110,14 @@ public class TextRenderer {
         this.lastHeight = Math.max(0, this.lastHeight - this.scale);
     }
 
-    public void drawSimple(GuiGraphics graphics, Component text) {
-        this.drawSimple(graphics, text.getVisualOrderText());
+    public void drawSimple(PoseStack poseStack, MultiBufferSource.BufferSource buffers, Component text) {
+        this.drawSimple(poseStack, buffers, text.getVisualOrderText());
     }
 
-    public void drawSimple(GuiGraphics graphics, FormattedCharSequence text) {
+    public void drawSimple(PoseStack poseStack, MultiBufferSource.BufferSource buffers, FormattedCharSequence text) {
         float w = getFont().width(text) * this.scale;
         int y = getStartYOfLines(1), x = getStartX(w);
-        draw(graphics, text, x, y);
+        draw(poseStack, buffers, text, x, y);
         this.lastWidth = w;
         this.lastHeight = getFontHeight();
         this.lastWidth = Math.max(0, this.lastWidth - this.scale);
@@ -129,32 +143,37 @@ public class TextRenderer {
     }
 
     public List<ITextLine> compileAndDraw(GuiContext context, List<Object> raw) {
+        return compileAndDraw(context.getGraphics().pose(), context.getGraphics().bufferSource(), raw);
+    }
+
+    public List<ITextLine> compileAndDraw(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                                          List<Object> raw) {
         List<ITextLine> lines = compile(raw);
-        drawCompiled(context, lines);
+        drawCompiled(poseStack, buffers, lines);
         return lines;
     }
 
-    public void drawCompiled(GuiContext context, List<ITextLine> lines) {
+    public void drawCompiled(PoseStack poseStack, MultiBufferSource.BufferSource buffers, List<ITextLine> lines) {
         int height = 0, width = 0;
         for (ITextLine line : lines) {
             height += line.getHeight(getFont());
             width = Math.max(width, line.getWidth());
         }
         if (!this.simulate) {
-            context.getGraphics().pose().pushPose();
-            context.getGraphics().pose().translate(this.x, this.y, 10);
-            context.getGraphics().pose().scale(this.scale, this.scale, 1f);
-            context.getGraphics().pose().translate(-this.x, -this.y, 0);
+            poseStack.pushPose();
+            poseStack.translate(this.x, this.y, 10);
+            poseStack.scale(this.scale, this.scale, 1f);
+            poseStack.translate(-this.x, -this.y, 0);
         }
         int y0 = getStartY(height, height);
         this.lastY = y0;
         for (ITextLine line : lines) {
             int x0 = getStartX(width, line.getWidth());
-            if (!simulate) line.draw(context, getFont(), x0, y0, this.color, this.shadow);
+            if (!simulate) line.draw(poseStack, buffers, getFont(), x0, y0, this.color, this.shadow);
             y0 += line.getHeight(getFont());
         }
         if (!this.simulate) {
-            context.getGraphics().pose().popPose();
+            poseStack.popPose();
         }
         this.lastWidth = this.maxWidth > 0 ? Math.min(width * this.scale, this.maxWidth) : width * this.scale;
         this.lastHeight = height * this.scale;
@@ -163,26 +182,39 @@ public class TextRenderer {
     }
 
     public void drawCut(GuiGraphics graphics, String text) {
+        drawCut(graphics.pose(), graphics.bufferSource(), text);
+    }
+
+    public void drawCut(PoseStack poseStack, MultiBufferSource.BufferSource buffers, String text) {
         if (text.contains("\n")) {
             throw new IllegalArgumentException("Scrolling text can't wrap!");
         }
-        drawCut(graphics, line(Component.literal(text).getVisualOrderText()));
+        drawCut(poseStack, buffers, line(Component.literal(text).getVisualOrderText()));
     }
 
     public void drawCut(GuiGraphics graphics, Line line) {
+        drawCut(graphics.pose(), graphics.bufferSource(), line);
+    }
+
+    public void drawCut(PoseStack poseStack, MultiBufferSource.BufferSource buffers, Line line) {
         if (line.width > this.maxWidth) {
             var cutText = FormattedCharSequence.composite(
                     FontRenderHelper.splitAtMax(line.text(), this.maxWidth - 6),
                     FormattedCharSequence.forward("...", Style.EMPTY));
-            drawMeasuredLines(graphics, Collections.singletonList(line(cutText)));
+            drawMeasuredLines(poseStack, buffers, Collections.singletonList(line(cutText)));
         } else {
-            drawMeasuredLines(graphics, Collections.singletonList(line));
+            drawMeasuredLines(poseStack, buffers, Collections.singletonList(line));
         }
     }
 
-    public void drawScrolling(GuiGraphics graphics, Line line, int scroll, Area area, GuiContext context) {
+    public void drawScrolling(GuiContext context, Line line, int scroll, Area area) {
+        drawScrolling(context.getGraphics().pose(), context.getGraphics().bufferSource(), line, scroll, area, context);
+    }
+
+    public void drawScrolling(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                              Line line, int scroll, Area area, GuiContext context) {
         if (line.width() <= this.maxWidth) {
-            drawMeasuredLines(graphics, Collections.singletonList(line));
+            drawMeasuredLines(poseStack, buffers, Collections.singletonList(line));
             return;
         }
         scroll = scroll % (int) (line.width + 1);
@@ -190,10 +222,10 @@ public class TextRenderer {
         FormattedCharSequence drawString = FontRenderHelper.splitAtMax(line.text(), max);
         Area.SHARED.set(this.x, Integer.MIN_VALUE, this.x + (int) this.maxWidth, Integer.MAX_VALUE);
         Stencil.apply(Area.SHARED, context);
-        context.getGraphics().pose().pushPose();
-        context.getGraphics().pose().translate(-scroll, 0, 0);
-        drawMeasuredLines(graphics, Collections.singletonList(line(drawString)));
-        context.getGraphics().pose().popPose();
+        poseStack.pushPose();
+        poseStack.translate(-scroll, 0, 0);
+        drawMeasuredLines(poseStack, buffers, Collections.singletonList(line(drawString)));
+        poseStack.popPose();
         Stencil.remove();
     }
 
@@ -254,13 +286,14 @@ public class TextRenderer {
         return this.x;
     }
 
-    protected void draw(GuiGraphics graphics, FormattedCharSequence text, float x, float y) {
+    protected void draw(PoseStack poseStack, MultiBufferSource buffers, FormattedCharSequence text, float x, float y) {
         if (this.simulate) return;
         RenderSystem.disableBlend();
-        graphics.pose().pushPose();
-        graphics.pose().scale(this.scale, this.scale, 0f);
-        graphics.drawString(getFont(), text, (int) (x / this.scale), (int) (y / this.scale), this.color, this.shadow);
-        graphics.pose().popPose();
+        poseStack.pushPose();
+        poseStack.scale(this.scale, this.scale, 0f);
+        getFont().drawInBatch(text, x / this.scale, y / this.scale, this.color, this.shadow,
+                poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, 0, 0xf000f0);
+        poseStack.popPose();
         RenderSystem.enableBlend();
     }
 

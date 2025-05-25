@@ -9,10 +9,12 @@ import com.gregtechceu.gtceu.api.mui.utils.JsonHelper;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Box;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 
 /**
@@ -52,6 +54,28 @@ public class Icon implements IIcon, IJsonSerializable<Icon> {
             widgetTheme = widgetTheme.withColor(this.color);
         }
         this.drawable.draw(context, x, y, width, height, widgetTheme);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void drawNoContext(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                              int x, int y, int width, int height, WidgetTheme widgetTheme) {
+        x += this.margin.left;
+        y += this.margin.top;
+        width -= this.margin.horizontal();
+        height -= this.margin.vertical();
+        if (this.width > 0) {
+            x += (int) (width * this.alignment.x - this.width * this.alignment.x);
+            width = this.width;
+        }
+        if (this.height > 0) {
+            y += (int) (height * this.alignment.y - this.height * this.alignment.y);
+            height = this.height;
+        }
+        if (this.color != 0 && this.color != widgetTheme.getColor()) {
+            widgetTheme = widgetTheme.withColor(this.color);
+        }
+        this.drawable.drawNoContext(poseStack, buffers, x, y, width, height, widgetTheme);
     }
 
     public Icon width(int width) {

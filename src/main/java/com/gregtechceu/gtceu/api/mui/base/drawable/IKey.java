@@ -6,16 +6,17 @@ import com.gregtechceu.gtceu.api.mui.drawable.text.*;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.utils.JsonHelper;
-import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.common.mui.widgets.TextWidget;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +25,7 @@ import java.util.function.Supplier;
 /**
  * This represents a piece of text in a GUI.
  */
-public interface IKey extends IDrawable, IJsonSerializable<IKey> {
+public interface IKey extends INoContextDrawable, IJsonSerializable<IKey> {
 
     int TEXT_COLOR = 0xFF404040;
 
@@ -185,13 +186,14 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    default void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
+    default void drawNoContext(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                               int x, int y, int width, int height, WidgetTheme widgetTheme) {
         renderer.setColor(widgetTheme.getTextColor());
         renderer.setShadow(widgetTheme.getTextShadow());
         renderer.setAlignment(Alignment.Center, width, height);
         renderer.setScale(1f);
         renderer.setPos(x, y);
-        renderer.draw(context.getGraphics(), getFormatted());
+        renderer.draw(poseStack, buffers, getFormatted());
     }
 
     @Override

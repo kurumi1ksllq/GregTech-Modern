@@ -3,17 +3,20 @@ package com.gregtechceu.gtceu.api.mui.drawable.text;
 import com.gregtechceu.gtceu.api.mui.base.MCHelper;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IIcon;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
+import com.gregtechceu.gtceu.api.mui.base.drawable.INoContextDrawable;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Box;
-import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.MultiBufferSource;
+
+import com.mojang.blaze3d.vertex.PoseStack;
 
 /**
  * An icon which represents a {@link IKey} object.
  * Note: This class assumes the string will be a single line!
  */
-public class KeyIcon implements IIcon {
+public class KeyIcon implements IIcon, INoContextDrawable {
 
     private final IKey key;
     private Font overrideFont;
@@ -43,11 +46,12 @@ public class KeyIcon implements IIcon {
     }
 
     @Override
-    public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
+    public void drawNoContext(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                              int x, int y, int width, int height, WidgetTheme widgetTheme) {
         int w = getWidth(), h = getHeight();
         x += (int) (width / 2f - w / 2f);
         y += (int) (height / 2f - h / 2f);
-        this.key.draw(context, x, y, width, height, widgetTheme);
+        this.key.drawNoContext(poseStack, buffers, x, y, width, height, widgetTheme);
     }
 
     public KeyIcon margin(int left, int right, int top, int bottom) {

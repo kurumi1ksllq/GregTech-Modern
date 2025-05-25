@@ -1,21 +1,22 @@
 package com.gregtechceu.gtceu.api.mui.drawable;
 
 import com.gregtechceu.gtceu.api.mui.base.IJsonSerializable;
-import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
+import com.gregtechceu.gtceu.api.mui.base.drawable.INoContextDrawable;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.utils.JsonHelper;
-import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Accessors(fluent = true, chain = true)
-public class Circle implements IDrawable, IJsonSerializable<Circle> {
+public class Circle implements INoContextDrawable, IJsonSerializable<Circle> {
 
     @Setter
     private int colorInner, colorOuter, segments;
@@ -54,8 +55,9 @@ public class Circle implements IDrawable, IJsonSerializable<Circle> {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void draw(GuiContext context, int x0, int y0, int width, int height, WidgetTheme widgetTheme) {
-        GuiDraw.drawEllipse(context.getGraphics(), x0, y0, width, height,
+    public void drawNoContext(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                              int x0, int y0, int width, int height, WidgetTheme widgetTheme) {
+        GuiDraw.drawEllipse(poseStack.last().pose(), buffers, x0, y0, width, height,
                 this.colorInner, this.colorOuter, this.segments);
     }
 

@@ -5,9 +5,11 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 
 import java.util.function.Supplier;
@@ -32,6 +34,16 @@ public class DynamicDrawable implements IDrawable {
         IDrawable drawable = this.supplier.get();
         if (drawable != null) {
             drawable.draw(context, x, y, width, height, widgetTheme);
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void drawNoContext(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                              int x, int y, int width, int height, WidgetTheme widgetTheme) {
+        IDrawable drawable = this.supplier.get();
+        if (drawable != null) {
+            drawable.drawNoContext(poseStack, buffers, x, y, width, height, widgetTheme);
         }
     }
 

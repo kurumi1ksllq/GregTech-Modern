@@ -3,15 +3,16 @@ package com.gregtechceu.gtceu.api.mui.drawable.text;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
-import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.Nullable;
 
 public class AnimatedText extends StyledText {
@@ -75,7 +76,8 @@ public class AnimatedText extends StyledText {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
+    public void drawNoContext(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                              int x, int y, int width, int height, WidgetTheme widgetTheme) {
         if (this.full == null || !this.full.equals(super.get())) {
             if (this.isAnimating) {
                 this.full = super.get();
@@ -89,7 +91,7 @@ public class AnimatedText extends StyledText {
         }
         advance();
         if (this.currentString.isEmpty()) return;
-        super.draw(context, x, y, width, height, widgetTheme);
+        super.drawNoContext(poseStack, buffers, x, y, width, height, widgetTheme);
     }
 
     public AnimatedText startAnimation() {

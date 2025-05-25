@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.JsonHelper;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -14,6 +15,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -39,6 +41,15 @@ public class DrawableStack implements IDrawable, IJsonSerializable<DrawableStack
     public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
         for (IDrawable drawable : this.drawables) {
             drawable.draw(context, x, y, width, height, widgetTheme);
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void drawNoContext(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                              int x, int y, int width, int height, WidgetTheme widgetTheme) {
+        for (IDrawable drawable : this.drawables) {
+            drawable.drawNoContext(poseStack, buffers, x, y, width, height, widgetTheme);
         }
     }
 

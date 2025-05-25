@@ -5,8 +5,8 @@ import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Point;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.PointF;
 
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
@@ -14,12 +14,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.*;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.joml.Matrix4f;
 
 import java.util.Collections;
 import java.util.List;
@@ -52,9 +50,10 @@ public class TextFieldRenderer extends TextRenderer {
     }
 
     @Override
-    protected void drawMeasuredLines(GuiGraphics graphics, List<Line> measuredLines) {
-        drawMarked(graphics, measuredLines);
-        super.drawMeasuredLines(graphics, measuredLines);
+    protected void drawMeasuredLines(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                                     List<Line> measuredLines) {
+        drawMarked(poseStack.last().pose(), measuredLines);
+        super.drawMeasuredLines(poseStack, buffers, measuredLines);
         // draw cursor
         if (this.renderCursor) {
             Point main = this.handler.getMainCursor();
@@ -62,7 +61,7 @@ public class TextFieldRenderer extends TextRenderer {
             if (this.handler.getText().get(main.y).isEmpty()) {
                 start.x += 0.7f;
             }
-            drawCursor(graphics, start.x, start.y);
+            drawCursor(poseStack, start.x, start.y);
         }
     }
 
@@ -71,32 +70,32 @@ public class TextFieldRenderer extends TextRenderer {
         return Collections.singletonList(line.getVisualOrderText());
     }
 
-    protected void drawMarked(GuiGraphics graphics, List<Line> measuredLines) {
+    protected void drawMarked(Matrix4f pose, List<Line> measuredLines) {
         if (!this.simulate && this.handler.hasTextMarked()) {
             PointF start = getPosOf(measuredLines, this.handler.getStartCursor());
             // render Marked
             PointF end = getPosOf(measuredLines, this.handler.getEndCursor());
 
             if (start.y == end.y) {
-                drawMarked(graphics, start.y, start.x, end.x);
+                drawMarked(pose, start.y, start.x, end.x);
             } else {
                 int min = this.handler.getStartCursor().y;
                 int max = this.handler.getEndCursor().y;
                 Line line = measuredLines.get(min);
                 int startX = getStartX(line.width());
-                drawMarked(graphics, start.y, start.x, startX + line.width());
+                drawMarked(pose, start.y, start.x, startX + line.width());
                 start.y += getFontHeight();
                 if (max - min > 1) {
                     for (int i = min + 1; i < max; i++) {
                         line = measuredLines.get(i);
                         startX = getStartX(line.width());
-                        drawMarked(graphics, start.y, startX, startX + line.width());
+                        drawMarked(pose, start.y, startX, startX + line.width());
                         start.y += getFontHeight();
                     }
                 }
                 line = measuredLines.get(max);
                 startX = getStartX(line.width());
-                drawMarked(graphics, start.y, startX, end.x);
+                drawMarked(pose, start.y, startX, end.x);
             }
         }
     }
@@ -155,7 +154,7 @@ public class TextFieldRenderer extends TextRenderer {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void drawMarked(GuiGraphics graphics, float y0, float x0, float x1) {
+    public void drawMarked(Matrix4f pose, float y0, float x0, float x1) {
         y0 -= 1;
         float y1 = y0 + getFontHeight();
         float red = Color.getRedF(this.markedColor);
@@ -166,20 +165,20 @@ public class TextFieldRenderer extends TextRenderer {
             alpha = 1f;
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tesselator.getBuilder();
-        graphics.setColor(red, green, blue, alpha);
+        RenderSystem.setShaderColor(red, green, blue, alpha);
         RenderSystem.setShader(GameRenderer::getPositionShader);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        bufferbuilder.vertex(x0, y1, 0.0D).endVertex();
-        bufferbuilder.vertex(x1, y1, 0.0D).endVertex();
-        bufferbuilder.vertex(x1, y0, 0.0D).endVertex();
-        bufferbuilder.vertex(x0, y0, 0.0D).endVertex();
+        bufferbuilder.vertex(pose, x0, y1, 0.0f).endVertex();
+        bufferbuilder.vertex(pose, x1, y1, 0.0f).endVertex();
+        bufferbuilder.vertex(pose, x1, y0, 0.0f).endVertex();
+        bufferbuilder.vertex(pose, x0, y0, 0.0f).endVertex();
         tesselator.end();
         RenderSystem.disableColorLogicOp();
-        graphics.setColor(1, 1, 1, 1);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
     @OnlyIn(Dist.CLIENT)
-    private void drawCursor(GuiGraphics graphics, float x0, float y0) {
+    private void drawCursor(PoseStack poseStack, float x0, float y0) {
         x0 = (x0 - 0.8f) / this.scale;
         y0 = (y0 - 1) / this.scale;
         float x1 = x0 + 0.6f;
@@ -194,9 +193,9 @@ public class TextFieldRenderer extends TextRenderer {
         BufferBuilder bufferbuilder = tesselator.getBuilder();
 
         RenderSystem.disableBlend();
-        graphics.pose().pushPose();
-        graphics.pose().scale(this.scale, this.scale, 0);
-        graphics.setColor(red, green, blue, alpha);
+        poseStack.pushPose();
+        poseStack.scale(this.scale, this.scale, 0);
+        RenderSystem.setShaderColor(red, green, blue, alpha);
         RenderSystem.setShader(GameRenderer::getPositionShader);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
         bufferbuilder.vertex(x0, y1, 0.0D).endVertex();
@@ -204,9 +203,9 @@ public class TextFieldRenderer extends TextRenderer {
         bufferbuilder.vertex(x1, y0, 0.0D).endVertex();
         bufferbuilder.vertex(x0, y0, 0.0D).endVertex();
         tesselator.end();
-        graphics.setColor(1, 1, 1, 1);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
 
-        graphics.pose().popPose();
+        poseStack.popPose();
         RenderSystem.enableBlend();
     }
 }

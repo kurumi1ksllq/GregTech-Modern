@@ -1,11 +1,12 @@
 package com.gregtechceu.gtceu.api.mui.drawable.text;
 
 import com.gregtechceu.gtceu.api.mui.base.drawable.ITextLine;
-import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 
 public class TextLine implements ITextLine {
@@ -27,8 +28,10 @@ public class TextLine implements ITextLine {
     }
 
     @Override
-    public void draw(GuiContext context, Font font, float x, float y, int color, boolean shadow) {
-        context.getGraphics().drawString(font, this.text.getVisualOrderText(), x, y, color, shadow);
+    public void draw(PoseStack poseStack, MultiBufferSource.BufferSource buffers, Font font,
+                     float x, float y, int color, boolean shadow) {
+        font.drawInBatch(this.text, x, y, color, shadow, poseStack.last().pose(), buffers,
+                Font.DisplayMode.NORMAL, 0, 0xf000f0);
         this.lastX = x;
         this.lastY = y;
     }

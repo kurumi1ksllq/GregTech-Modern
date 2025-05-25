@@ -1,10 +1,9 @@
 package com.gregtechceu.gtceu.api.mui.drawable;
 
-import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
-
 import net.minecraft.resources.ResourceLocation;
 
 import com.google.gson.JsonObject;
+import org.joml.Matrix4f;
 
 public class TiledUITexture extends UITexture {
 
@@ -21,12 +20,12 @@ public class TiledUITexture extends UITexture {
     }
 
     @Override
-    public void draw(GuiContext context, float x, float y, float width, float height) {
+    public void draw(Matrix4f pose, float x, float y, float width, float height) {
         if (width == this.imageWidth && height == this.imageHeight) {
-            super.draw(context, x, y, width, height);
+            super.draw(pose, x, y, width, height);
             return;
         }
-        GuiDraw.drawTiledTexture(context.getLastPose(), this.location, x, y, width, height,
+        GuiDraw.drawTiledTexture(pose, this.location, x, y, width, height,
                 this.u0, this.v0, this.u1, this.v1,
                 this.imageWidth, this.imageHeight, 0);
     }

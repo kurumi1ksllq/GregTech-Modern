@@ -1,17 +1,18 @@
 package com.gregtechceu.gtceu.api.mui.drawable;
 
 import com.gregtechceu.gtceu.api.mui.base.IJsonSerializable;
-import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
+import com.gregtechceu.gtceu.api.mui.base.drawable.INoContextDrawable;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.utils.JsonHelper;
-import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -19,7 +20,7 @@ import lombok.experimental.Accessors;
 import java.util.function.IntConsumer;
 
 @Accessors(fluent = true, chain = true)
-public class Rectangle implements IDrawable, IJsonSerializable<Rectangle> {
+public class Rectangle implements INoContextDrawable, IJsonSerializable<Rectangle> {
 
     private int cornerRadius, colorTL, colorTR, colorBL, colorBR;
     @Setter
@@ -65,18 +66,19 @@ public class Rectangle implements IDrawable, IJsonSerializable<Rectangle> {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void draw(GuiContext context, int x0, int y0, int width, int height, WidgetTheme widgetTheme) {
+    public void drawNoContext(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                              int x0, int y0, int width, int height, WidgetTheme widgetTheme) {
         if (canApplyTheme()) {
             Color.setGlColor(widgetTheme.getColor());
         } else {
             Color.setGlColorOpaque(Color.WHITE.main);
         }
         if (this.cornerRadius <= 0) {
-            GuiDraw.drawRect(context.getGraphics(), x0, y0, width, height,
+            GuiDraw.drawRect(poseStack.last().pose(), buffers, x0, y0, width, height,
                     this.colorTL, this.colorTR, this.colorBL, this.colorBR);
             return;
         }
-        GuiDraw.drawRoundedRect(context.getGraphics(), x0, y0, width, height,
+        GuiDraw.drawRoundedRect(poseStack.last().pose(), buffers, x0, y0, width, height,
                 this.colorTL, this.colorTR, this.colorBL, this.colorBR,
                 this.cornerRadius, this.cornerSegments);
     }

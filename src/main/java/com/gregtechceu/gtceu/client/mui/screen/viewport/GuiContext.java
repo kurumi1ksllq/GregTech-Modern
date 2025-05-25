@@ -6,13 +6,16 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
 import com.gregtechceu.gtceu.api.mui.base.widget.IGuiElement;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.client.mui.screen.ClientScreenHandler;
+import com.gregtechceu.gtceu.core.mixins.GuiGraphicsAccessor;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
@@ -34,7 +37,9 @@ public class GuiContext extends GuiViewportStack {
     private final Area screenArea = new Area();
     @Getter
     private GuiGraphics graphics = new GuiGraphics(Minecraft.getInstance(),
-            Minecraft.getInstance().renderBuffers().bufferSource());;
+            Minecraft.getInstance().renderBuffers().bufferSource());
+    private PoseStack lastPoseStack;
+    private MultiBufferSource.BufferSource lastBufferSource;
 
     /* Mouse states */
     /**
@@ -169,5 +174,26 @@ public class GuiContext extends GuiViewportStack {
 
     public ModularGuiContext getMuiContext() {
         throw new UnsupportedOperationException("This is not a MuiContext");
+    }
+
+    @ApiStatus.Internal
+    public final boolean isNoContextDraw() {
+        return this.lastPoseStack != null;
+    }
+
+    @ApiStatus.Internal
+    public final void setupNoContextDraw(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource) {
+        if (isNoContextDraw()) return;
+        this.lastPoseStack = graphics.pose();
+        this.lastBufferSource = graphics.bufferSource();
+        ((GuiGraphicsAccessor) graphics).setPose(poseStack);
+        ((GuiGraphicsAccessor) graphics).setBufferSource(bufferSource);
+    }
+
+    @ApiStatus.Internal
+    public final void clearNoContextDraw() {
+        if (!isNoContextDraw()) return;
+        ((GuiGraphicsAccessor) graphics).setPose(lastPoseStack);
+        ((GuiGraphicsAccessor) graphics).setBufferSource(lastBufferSource);
     }
 }

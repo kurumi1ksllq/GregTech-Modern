@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.api.mui.drawable;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.base.IJsonSerializable;
-import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
+import com.gregtechceu.gtceu.api.mui.base.drawable.INoContextDrawable;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.utils.Interpolations;
@@ -10,17 +10,20 @@ import com.gregtechceu.gtceu.api.mui.utils.JsonHelper;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import org.joml.Matrix4f;
 
 @Accessors(fluent = true, chain = true)
-public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
+public class UITexture implements INoContextDrawable, IJsonSerializable<UITexture> {
 
     public static final UITexture DEFAULT = fullImage("gui/options_background", true);
 
@@ -131,20 +134,26 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
         return Interpolations.lerp(this.v0, this.v1, v);
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
-    public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
+    @OnlyIn(Dist.CLIENT)
+    public void drawNoContext(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                              int x, int y, int width, int height, WidgetTheme widgetTheme) {
         if (canApplyTheme()) {
             Color.setGlColor(widgetTheme.getColor());
         } else {
             Color.setGlColorOpaque(Color.WHITE.main);
         }
-        draw(context, (float) x, y, width, height);
+        draw(poseStack.last().pose(), (float) x, y, width, height);
     }
 
     public void draw(GuiContext context, float x, float y, float width, float height) {
         GuiDraw.drawTexture(context.getLastPose(), this.location, x, y, x + width, y + height, this.u0, this.v0,
                 this.u1, this.v1);
+    }
+
+    public void draw(Matrix4f pose, float x, float y, float width, float height) {
+        GuiDraw.drawTexture(pose, this.location,
+                x, y, x + width, y + height, this.u0, this.v0, this.u1, this.v1);
     }
 
     public void drawSubArea(GuiContext context, float x, float y, float width, float height, float uStart, float vStart,

@@ -8,9 +8,11 @@ import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -41,6 +43,33 @@ public interface IDrawable {
      */
     @OnlyIn(Dist.CLIENT)
     void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme);
+
+    /**
+     * Draws this drawable at the given position with the given size without using a {@link GuiContext}.
+     * By default, this sets up a valid state and delegates to
+     * {@link IDrawable#draw(GuiContext, int, int, int, int, WidgetTheme)}.
+     *
+     *
+     * @param poseStack   current pose stack containing the location to render at
+     * @param buffers     buffer source to render with
+     * @param x           x position
+     * @param y           y position
+     * @param width       draw width
+     * @param height      draw height
+     * @param widgetTheme current theme
+     *
+     * @see IDrawable#draw(GuiContext, int, int, int, int, WidgetTheme) draw
+     */
+    @OnlyIn(Dist.CLIENT)
+    default void drawNoContext(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                               int x, int y, int width, int height, WidgetTheme widgetTheme) {
+        GuiContext context = GuiContext.getDefault();
+        context.setupNoContextDraw(poseStack, buffers);
+
+        draw(context, x, y, width, height, widgetTheme);
+
+        context.clearNoContextDraw();
+    }
 
     /**
      * Draws this drawable at the current (0|0) with the given size.
@@ -136,4 +165,6 @@ public interface IDrawable {
             this.drawable.drawAtZero(context, getArea(), widgetTheme);
         }
     }
+
+    record GuiGraphicsState(GuiContext context, PoseStack lastPose, MultiBufferSource.BufferSource lastBuffers) {}
 }

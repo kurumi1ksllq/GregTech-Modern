@@ -3,11 +3,14 @@ package com.gregtechceu.gtceu.api.mui.drawable;
 import com.gregtechceu.gtceu.api.mui.drawable.text.TextRenderer;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
+import com.gregtechceu.gtceu.core.mixins.GuiGraphicsAccessor;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
@@ -15,22 +18,24 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.joml.*;
 
 import java.lang.Math;
 import java.util.List;
 
+@Slf4j
 public class GuiDraw {
 
     public static final double TWO_PI = Math.PI * 2;
@@ -40,9 +45,20 @@ public class GuiDraw {
         drawRect(graphics, x0, y0, w, h, color, color, color, color);
     }
 
+    public static void drawRect(Matrix4f pose, MultiBufferSource buffers,
+                                float x0, float y0, float w, float h, int color) {
+        drawRect(pose, buffers, x0, y0, w, h, color, color, color, color);
+    }
+
     public static void drawHorizontalGradientRect(GuiGraphics graphics, float x0, float y0, float w, float h,
                                                   int colorLeft, int colorRight) {
         drawRect(graphics, x0, y0, w, h, colorLeft, colorRight, colorLeft, colorRight);
+    }
+
+    public static void drawHorizontalGradientRect(Matrix4f pose, MultiBufferSource buffers,
+                                                  float x0, float y0, float w, float h,
+                                                  int colorLeft, int colorRight) {
+        drawRect(pose, buffers, x0, y0, w, h, colorLeft, colorRight, colorLeft, colorRight);
     }
 
     public static void drawVerticalGradientRect(GuiGraphics graphics, float x0, float y0, float w, float h,
@@ -50,10 +66,22 @@ public class GuiDraw {
         drawRect(graphics, x0, y0, w, h, colorTop, colorTop, colorBottom, colorBottom);
     }
 
+    public static void drawVerticalGradientRect(Matrix4f pose, MultiBufferSource buffers,
+                                                float x0, float y0, float w, float h,
+                                                int colorTop, int colorBottom) {
+        drawRect(pose, buffers, x0, y0, w, h, colorTop, colorTop, colorBottom, colorBottom);
+    }
+
     public static void drawRect(GuiGraphics graphics, float x0, float y0, float w, float h,
                                 int colorTL, int colorTR, int colorBL, int colorBR) {
-        Matrix4f pose = graphics.pose().last().pose();
-        VertexConsumer bufferbuilder = graphics.bufferSource().getBuffer(RenderType.guiOverlay());
+        drawRect(graphics.pose().last().pose(), graphics.bufferSource(),
+                x0, y0, w, h, colorTL, colorTR, colorBL, colorBR);
+    }
+
+    public static void drawRect(Matrix4f pose, MultiBufferSource buffers,
+                                float x0, float y0, float w, float h,
+                                int colorTL, int colorTR, int colorBL, int colorBR) {
+        VertexConsumer bufferbuilder = buffers.getBuffer(RenderType.guiOverlay());
 
         float x1 = x0 + w, y1 = y0 + h;
         bufferbuilder.vertex(pose, x0, y0, 0.0f)
@@ -86,8 +114,14 @@ public class GuiDraw {
 
     public static void drawEllipse(GuiGraphics graphics, float x0, float y0, float w, float h,
                                    int centerColor, int outerColor, int segments) {
-        Matrix4f pose = graphics.pose().last().pose();
-        VertexConsumer bufferbuilder = graphics.bufferSource().getBuffer(GTRenderTypes.guiOverlayTriangleFan());
+        drawEllipse(graphics.pose().last().pose(), graphics.bufferSource(),
+                x0, y0, w, h, centerColor, outerColor, segments);
+    }
+
+    public static void drawEllipse(Matrix4f pose, MultiBufferSource buffers,
+                                   float x0, float y0, float w, float h,
+                                   int centerColor, int outerColor, int segments) {
+        VertexConsumer bufferbuilder = buffers.getBuffer(GTRenderTypes.guiOverlayTriangleFan());
 
         float x_2 = x0 + w / 2f, y_2 = y0 + h / 2f;
         // start at center
@@ -100,7 +134,7 @@ public class GuiDraw {
             float angle = incr * i;
             float x = (float) (Math.sin(angle) * (w / 2) + x_2);
             float y = (float) (Math.cos(angle) * (h / 2) + y_2);
-            bufferbuilder.vertex(x, y, 0.0f).color(r, g, b, a).endVertex();
+            bufferbuilder.vertex(pose, x, y, 0.0f).color(r, g, b, a).endVertex();
         }
         RenderSystem.disableBlend();
     }
@@ -124,8 +158,15 @@ public class GuiDraw {
     public static void drawRoundedRect(GuiGraphics graphics, float x0, float y0, float w, float h,
                                        int colorTL, int colorTR, int colorBL, int colorBR,
                                        int cornerRadius, int segments) {
-        Matrix4f pose = graphics.pose().last().pose();
-        VertexConsumer bufferbuilder = graphics.bufferSource().getBuffer(GTRenderTypes.guiOverlayTriangleFan());
+        drawRoundedRect(graphics.pose().last().pose(), graphics.bufferSource(), x0, y0, w, h,
+                colorTL, colorTR, colorBL, colorBR, cornerRadius, segments);
+    }
+
+    public static void drawRoundedRect(Matrix4f pose, MultiBufferSource buffers,
+                                       float x0, float y0, float w, float h,
+                                       int colorTL, int colorTR, int colorBL, int colorBR,
+                                       int cornerRadius, int segments) {
+        VertexConsumer bufferbuilder = buffers.getBuffer(GTRenderTypes.guiOverlayTriangleFan());
 
         float x1 = x0 + w, y1 = y0 + h;
         int color = Color.average(colorBL, colorBR, colorTR, colorTL);
@@ -368,26 +409,32 @@ public class GuiDraw {
         graphics.pose().translate(x, y, z);
         graphics.pose().scale(width / 16f, height / 16f, 1);
         graphics.renderItem(item, 0, 0);
-        graphics.renderItemDecorations(Minecraft.getInstance().font, item, 0, 0);
+
+        Font font = IClientItemExtensions.of(item).getFont(item, IClientItemExtensions.FontContext.ITEM_COUNT);
+        if (font == null) font = Minecraft.getInstance().font;
+        graphics.renderItemDecorations(font, item, 0, 0);
         graphics.pose().popPose();
     }
 
-    public static void drawFluidTexture(GuiGraphics graphics, FluidStack content,
+    public static void drawFluidTexture(GuiGraphics graphics, @NotNull FluidStack content,
                                         float x0, float y0, float width, float height, float z) {
-        if (content == null) {
-            return;
-        }
-        Fluid fluid = content.getFluid();
-        ResourceLocation fluidStill = IClientFluidTypeExtensions.of(fluid).getStillTexture(content);
+        drawFluidTexture(graphics.pose().last().pose(), content, x0, y0, width, height, z);
+    }
+
+    public static void drawFluidTexture(Matrix4f pose, @NotNull FluidStack fluid,
+                                        float x0, float y0, float width, float height, float z) {
+        if (fluid.isEmpty()) return;
+        var extensions = IClientFluidTypeExtensions.of(fluid.getFluid());
+        ResourceLocation fluidStill = extensions.getStillTexture(fluid);
         TextureAtlasSprite sprite = Minecraft.getInstance()
                 .getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
-        int fluidColor = IClientFluidTypeExtensions.of(fluid).getTintColor(content);
-        graphics.setColor(Color.getRedF(fluidColor), Color.getGreenF(fluidColor), Color.getBlueF(fluidColor),
+        int fluidColor = extensions.getTintColor(fluid);
+        RenderSystem.setShaderColor(Color.getRedF(fluidColor), Color.getGreenF(fluidColor), Color.getBlueF(fluidColor),
                 Color.getAlphaF(fluidColor));
-        drawTiledTexture(graphics.pose().last().pose(), InventoryMenu.BLOCK_ATLAS, x0, y0, width, height,
+        drawTiledTexture(pose, InventoryMenu.BLOCK_ATLAS, x0, y0, width, height,
                 sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1(),
                 sprite.contents().width(), sprite.contents().height(), z);
-        graphics.setColor(1f, 1f, 1f, 1f);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
     }
 
     public static void drawSprite(Matrix4f pose, TextureAtlasSprite sprite, float x0, float y0, float w, float h) {
@@ -425,16 +472,18 @@ public class GuiDraw {
     /**
      * Draws a rectangular shadow
      *
-     * @param x      left of solid shadow part
-     * @param y      top of solid shadow part
-     * @param w      width of solid shadow part
-     * @param h      height of solid shadow part
-     * @param oX     shadow gradient size in x
-     * @param oY     shadow gradient size in y
-     * @param opaque solid shadow color
-     * @param shadow gradient end color
+     * @param pose    render transformation matrix
+     * @param buffers the buffer source to render with
+     * @param x       left of solid shadow part
+     * @param y       top of solid shadow part
+     * @param w       width of solid shadow part
+     * @param h       height of solid shadow part
+     * @param oX      shadow gradient size in x
+     * @param oY      shadow gradient size in y
+     * @param opaque  solid shadow color
+     * @param shadow  gradient end color
      */
-    public static void drawDropShadow(Matrix4f pose, int x, int y, int w, int h,
+    public static void drawDropShadow(Matrix4f pose, MultiBufferSource buffers, int x, int y, int w, int h,
                                       int oX, int oY, int opaque, int shadow) {
         float a1 = Color.getAlphaF(opaque);
         float r1 = Color.getRedF(opaque);
@@ -445,17 +494,7 @@ public class GuiDraw {
         float g2 = Color.getGreenF(shadow);
         float b2 = Color.getBlueF(shadow);
 
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO);
-
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
-
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-
+        VertexConsumer buffer = buffers.getBuffer(RenderType.gui());
         float x1 = x + w, y1 = y + h;
 
         /* Draw opaque part */
@@ -487,14 +526,16 @@ public class GuiDraw {
         buffer.vertex(pose, x1, y, 0).color(r1, g1, b1, a1).endVertex();
         buffer.vertex(pose, x1, y1, 0).color(r1, g1, b1, a1).endVertex();
         buffer.vertex(pose, x1 + oX, y1 + oY, 0).color(r2, g2, b2, a2).endVertex();
-
-        tesselator.end();
-        RenderSystem.disableBlend();
     }
 
     public static void drawDropCircleShadow(GuiGraphics graphics, int x, int y, int radius,
                                             int segments, int opaque, int shadow) {
-        Matrix4f pose = graphics.pose().last().pose();
+        drawDropCircleShadow(graphics.pose().last().pose(), graphics.bufferSource(),
+                x, y, radius, segments, opaque, shadow);
+    }
+
+    public static void drawDropCircleShadow(Matrix4f pose, MultiBufferSource buffers, int x, int y, int radius,
+                                            int segments, int opaque, int shadow) {
         Matrix4d poseD = new Matrix4d(pose);
 
         float a1 = Color.getAlphaF(opaque);
@@ -506,7 +547,7 @@ public class GuiDraw {
         float g2 = Color.getGreenF(shadow);
         float b2 = Color.getBlueF(shadow);
 
-        VertexConsumer buffer = graphics.bufferSource().getBuffer(GTRenderTypes.guiTriangleFan());
+        VertexConsumer buffer = buffers.getBuffer(GTRenderTypes.guiTriangleFan());
         buffer.vertex(pose, x, y, 0).color(r1, g1, b1, a1).endVertex();
 
         Vector3d pos = new Vector3d();
@@ -519,11 +560,17 @@ public class GuiDraw {
 
     public static void drawDropCircleShadow(GuiGraphics graphics, int x, int y, int radius, int offset,
                                             int segments, int opaque, int shadow) {
+        drawDropCircleShadow(graphics.pose().last().pose(), graphics.bufferSource(),
+                x, y, radius, offset, segments, opaque, shadow);
+    }
+
+    public static void drawDropCircleShadow(Matrix4f pose, MultiBufferSource buffers,
+                                            int x, int y, int radius, int offset,
+                                            int segments, int opaque, int shadow) {
         if (offset >= radius) {
-            drawDropCircleShadow(graphics, x, y, radius, segments, opaque, shadow);
+            drawDropCircleShadow(pose, buffers, x, y, radius, segments, opaque, shadow);
             return;
         }
-        Matrix4f pose = graphics.pose().last().pose();
         Matrix4d poseD = new Matrix4d(pose);
 
         float a1 = Color.getAlphaF(opaque);
@@ -535,7 +582,7 @@ public class GuiDraw {
         float g2 = Color.getGreenF(shadow);
         float b2 = Color.getBlueF(shadow);
 
-        VertexConsumer buffer = graphics.bufferSource().getBuffer(GTRenderTypes.guiTriangleFan());
+        VertexConsumer buffer = buffers.getBuffer(GTRenderTypes.guiTriangleFan());
         /* Draw opaque base */
         buffer.vertex(pose, x, y, 0).color(r1, g1, b1, a1).endVertex();
 
@@ -547,7 +594,7 @@ public class GuiDraw {
         }
 
         /* Draw outer shadow */
-        buffer = graphics.bufferSource().getBuffer(RenderType.gui());
+        buffer = buffers.getBuffer(RenderType.gui());
 
         for (int i = 0; i < segments; i++) {
             double alpha1 = i / (double) segments * TWO_PI - HALF_PI;
@@ -576,20 +623,34 @@ public class GuiDraw {
     @OnlyIn(Dist.CLIENT)
     public static void drawBorder(GuiGraphics graphics, float x, float y, float width, float height, int color,
                                   float border) {
-        drawRect(graphics, x - border, y - border, width + 2 * border, border, color);
-        drawRect(graphics, x - border, y + height, width + 2 * border, border, color);
-        drawRect(graphics, x - border, y, border, height, color);
-        drawRect(graphics, x + width, y, border, height, color);
+        drawBorder(graphics.pose().last().pose(), graphics.bufferSource(), x, y, width, height, color, border);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void drawBorder(Matrix4f pose, MultiBufferSource buffers,
+                                  float x, float y, float width, float height, int color, float border) {
+        drawRect(pose, buffers, x - border, y - border, width + 2 * border, border, color);
+        drawRect(pose, buffers, x - border, y + height, width + 2 * border, border, color);
+        drawRect(pose, buffers, x - border, y, border, height, color);
+        drawRect(pose, buffers, x + width, y, border, height, color);
     }
 
     @OnlyIn(Dist.CLIENT)
     public static void drawText(GuiGraphics graphics, String text, float x, float y,
                                 float scale, int color, boolean shadow) {
-        graphics.pose().pushPose();
-        graphics.pose().scale(scale, scale, 0f);
+        drawText(graphics.pose(), graphics.bufferSource(), text, x, y, scale, color, shadow);
+        ((GuiGraphicsAccessor) graphics).callFlushIfUnmanaged();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void drawText(PoseStack poseStack, MultiBufferSource buffers, String text, float x, float y,
+                                float scale, int color, boolean shadow) {
+        poseStack.pushPose();
+        poseStack.scale(scale, scale, 0f);
         float sf = 1 / scale;
-        graphics.drawString(Minecraft.getInstance().font, text, x * sf, y * sf, color, shadow);
-        graphics.pose().popPose();
+        Minecraft.getInstance().font.drawInBatch(text, x * sf, y * sf, color, shadow,
+                poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, 0, 0xf000f0);
+        poseStack.popPose();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -601,11 +662,19 @@ public class GuiDraw {
     @OnlyIn(Dist.CLIENT)
     public static void drawText(GuiGraphics graphics, FormattedCharSequence text, float x, float y,
                                 float scale, int color, boolean shadow) {
-        graphics.pose().pushPose();
-        graphics.pose().scale(scale, scale, 0f);
+        drawText(graphics.pose(), graphics.bufferSource(), text, x, y, scale, color, shadow);
+        ((GuiGraphicsAccessor) graphics).callFlushIfUnmanaged();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void drawText(PoseStack poseStack, MultiBufferSource buffers,
+                                FormattedCharSequence text, float x, float y, float scale, int color, boolean shadow) {
+        poseStack.pushPose();
+        poseStack.scale(scale, scale, 0f);
         float sf = 1 / scale;
-        graphics.drawString(Minecraft.getInstance().font, text, x * sf, y * sf, color, shadow);
-        graphics.pose().popPose();
+        Minecraft.getInstance().font.drawInBatch(text, x * sf, y * sf, color, shadow,
+                poseStack.last().pose(), buffers, Font.DisplayMode.NORMAL, 0, 0xf000f0);
+        poseStack.popPose();
     }
 
     public static void drawTooltipBackground(GuiGraphics graphics, ItemStack stack, List<ClientTooltipComponent> lines,

@@ -18,4 +18,8 @@ public interface GuiGraphicsAccessor {
     @Mutable
     @Accessor
     void setPose(PoseStack pose);
+
+    @Mutable
+    @Accessor
+    void setBufferSource(MultiBufferSource.BufferSource bufferSource);
 }

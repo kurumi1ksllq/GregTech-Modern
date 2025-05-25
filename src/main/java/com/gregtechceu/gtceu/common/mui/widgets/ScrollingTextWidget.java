@@ -68,7 +68,7 @@ public class ScrollingTextWidget extends TextWidget {
         renderer.setScale(getScale());
         renderer.setSimulate(false);
         if (this.hovering) {
-            renderer.drawScrolling(context.getGraphics(), this.line, this.scroll, getArea(), context);
+            renderer.drawScrolling(context, this.line, this.scroll, getArea());
         } else {
             renderer.drawCut(context.getGraphics(), this.line);
         }

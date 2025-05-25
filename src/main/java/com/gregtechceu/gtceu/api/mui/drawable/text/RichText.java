@@ -6,15 +6,19 @@ import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RichText implements IDrawable, IRichTextBuilder<RichText> {
+public class RichText implements INoContextDrawable, IRichTextBuilder<RichText> {
 
     private static final TextRenderer renderer = new TextRenderer();
 
@@ -151,15 +155,18 @@ public class RichText implements IDrawable, IRichTextBuilder<RichText> {
         return this;
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void draw(GuiContext context, int x, int y, int width, int height, WidgetTheme widgetTheme) {
-        draw(context, x, y, width, height, widgetTheme.getTextColor(), widgetTheme.getTextShadow());
+    public void drawNoContext(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                              int x, int y, int width, int height, WidgetTheme widgetTheme) {
+        draw(poseStack, buffers, x, y, width, height, widgetTheme.getTextColor(), widgetTheme.getTextShadow());
     }
 
-    public void draw(GuiContext context, int x, int y, int width, int height, int color, boolean shadow) {
+    public void draw(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+                     int x, int y, int width, int height, int color, boolean shadow) {
         renderer.setSimulate(false);
         setupRenderer(renderer, x, y, width, height, color, shadow);
-        this.cachedText = renderer.compileAndDraw(context, this.elements);
+        this.cachedText = renderer.compileAndDraw(poseStack, buffers, this.elements);
     }
 
     public void setupRenderer(TextRenderer renderer, int x, int y, float width, float height, int color,

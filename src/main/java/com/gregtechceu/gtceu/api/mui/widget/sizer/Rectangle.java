@@ -57,10 +57,7 @@ public class Rectangle {
     }
 
     public void setBounds(Rectangle toCopy) {
-        this.x = toCopy.x;
-        this.y = toCopy.y;
-        this.width = toCopy.width;
-        this.height = toCopy.height;
+        setBounds(toCopy.x, toCopy.y, toCopy.width, toCopy.height);
     }
 
     public void setBounds(int x, int y, int width, int height) {
@@ -70,11 +67,19 @@ public class Rectangle {
         this.height = height;
     }
 
+    public PointF getCenter() {
+        return new PointF(x + width / 2.0f, y + height / 2.0f);
+    }
+
     public Rect2i asRect2i() {
         return new Rect2i(this.x, this.y, this.width, this.height);
     }
 
     public boolean contains(int x, int y) {
         return x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height;
+    }
+
+    public boolean contains(Point point) {
+        return contains(point.x, point.y);
     }
 }

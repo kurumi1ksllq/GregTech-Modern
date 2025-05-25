@@ -6,13 +6,13 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.base.value.IStringValue;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTextFieldTheme;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
-import com.gregtechceu.gtceu.api.mui.utils.MathUtils;
 import com.gregtechceu.gtceu.api.mui.utils.ParseResult;
 import com.gregtechceu.gtceu.api.mui.value.StringValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.ValueSyncHandler;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Point;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
+import com.gregtechceu.gtceu.utils.GTMath;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +39,7 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
     private double defaultNumber = 0;
 
     public double parse(String num) {
-        ParseResult result = MathUtils.parseExpression(num, this.defaultNumber, true);
+        ParseResult result = GTMath.parseExpression(num, this.defaultNumber, true);
         double value = result.getResult();
         if (result.isFailure()) {
             this.mathFailMessage = result.getError();

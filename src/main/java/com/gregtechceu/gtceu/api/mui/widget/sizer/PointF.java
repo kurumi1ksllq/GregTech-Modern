@@ -23,16 +23,49 @@ public final class PointF {
         this.y = y;
     }
 
-    public static PointF fromTopLeft(Rectangle bounds) {
-        return new PointF(bounds.getX(), bounds.getY());
+    public PointF(PointF point) {
+        this(point.x, point.y);
+    }
+
+    public PointF(Point point) {
+        this(point.x, point.y);
+    }
+
+    public PointF copy() {
+        return new PointF(this);
+    }
+
+    public PointF inverse() {
+        return new PointF(-this.x, -this.y);
     }
 
     public PointF move(float x, float y) {
         return new PointF(this.x + x, this.y + y);
     }
 
-    public boolean isIn(Rectangle rect) {
-        return x >= rect.getX() && y >= rect.getY() && x < rect.getX() + rect.getWidth() &&
-                y < rect.getY() + rect.getHeight();
+    public PointF move(PointF point) {
+        return move(point.x, point.y);
+    }
+
+    public PointF offset(float x, float y) {
+        return move(x, y);
+    }
+
+    public PointF offset(PointF point) {
+        return move(point);
+    }
+
+    public PointF set(float x, float y) {
+        this.x = x;
+        this.y = y;
+        return this;
+    }
+
+    public PointF set(PointF point) {
+        return set(point.x, point.y);
+    }
+
+    public PointF set(Point point) {
+        return set(point.x, point.y);
     }
 }

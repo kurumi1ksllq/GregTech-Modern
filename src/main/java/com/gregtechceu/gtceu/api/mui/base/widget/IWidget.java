@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.mui.drawable.Stencil;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Flex;
+import com.gregtechceu.gtceu.api.mui.widget.sizer.Point;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 
@@ -122,6 +123,18 @@ public interface IWidget extends IGuiElement {
         int x = stack.unTransformX(mx, my);
         int y = stack.unTransformY(mx, my);
         return x >= 0 && x < getArea().w() && y >= 0 && y < getArea().h();
+    }
+
+    /**
+     * Calculates if a given pos is inside this widgets area.
+     * This should be used over {@link Area#isInside(int, int)}, since this accounts for transformations.
+     *
+     * @param stack viewport stack
+     * @param point position
+     * @return if pos is inside this widgets area
+     */
+    default boolean isInside(IViewportStack stack, Point point) {
+        return isInside(stack, point.x, point.y);
     }
 
     /**

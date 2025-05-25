@@ -23,21 +23,45 @@ public final class Point {
         this.y = y;
     }
 
-    public static Point fromTopLeft(Rectangle bounds) {
-        return new Point(bounds.getX(), bounds.getY());
+    public Point(Point point) {
+        this(point.x, point.y);
+    }
+
+    public Point copy() {
+        return new Point(this);
+    }
+
+    public Point inverse() {
+        return new Point(-this.x, -this.y);
     }
 
     public Point move(int x, int y) {
         return new Point(this.x + x, this.y + y);
     }
 
-    public void setLocation(int x, int y) {
-        this.setX(x);
-        this.setY(y);
+    public Point move(Point point) {
+        return this.move(point.x, point.y);
     }
 
-    public boolean isIn(Rectangle rect) {
-        return x >= rect.getX() && y >= rect.getY() && x < rect.getX() + rect.getWidth() &&
-                y < rect.getY() + rect.getHeight();
+    public Point offset(int x, int y) {
+        return move(x, y);
+    }
+
+    public Point offset(Point point) {
+        return this.move(point);
+    }
+
+    public Point set(int x, int y) {
+        this.x = x;
+        this.y = y;
+        return this;
+    }
+
+    public Point set(Point point) {
+        return set(point.x, point.y);
+    }
+
+    public Point set(PointF point) {
+        return set(Math.round(point.x), Math.round(point.y));
     }
 }

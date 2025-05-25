@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.api.mui.widget.sizer;
 import com.gregtechceu.gtceu.api.mui.base.GuiAxis;
 import com.gregtechceu.gtceu.api.mui.base.layout.IViewportStack;
 import com.gregtechceu.gtceu.api.mui.base.widget.IGuiElement;
-import com.gregtechceu.gtceu.api.mui.utils.MathUtils;
+import com.gregtechceu.gtceu.utils.GTMath;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -215,6 +215,15 @@ public class Area extends Rectangle implements IUnResizeable {
     }
 
     /**
+     * Check whether given point is inside the rect.
+     * Use {@link com.gregtechceu.gtceu.api.mui.base.widget.IWidget#isInside(IViewportStack, Point)} rather than
+     * this!
+     */
+    public boolean isInside(Point point) {
+        return isInside(point.x, point.y);
+    }
+
+    /**
      * Check whether given rect intersects this rect
      */
     public boolean intersects(Rectangle area) {
@@ -231,10 +240,10 @@ public class Area extends Rectangle implements IUnResizeable {
         int x2 = area.ex();
         int y2 = area.ey();
 
-        x1 = MathUtils.clamp(x1, this.x, this.ex());
-        y1 = MathUtils.clamp(y1, this.y, this.ey());
-        x2 = MathUtils.clamp(x2, this.x, this.ex());
-        y2 = MathUtils.clamp(y2, this.y, this.ey());
+        x1 = GTMath.clamp(x1, this.x, this.ex());
+        y1 = GTMath.clamp(y1, this.y, this.ey());
+        x2 = GTMath.clamp(x2, this.x, this.ex());
+        y2 = GTMath.clamp(y2, this.y, this.ey());
 
         area.setPos(x1, y1, x2, y2);
     }
@@ -457,10 +466,10 @@ public class Area extends Rectangle implements IUnResizeable {
                 xBL = stack.transformX(this.x, ey()), xBR = stack.transformX(ex(), ey());
         int yTL = stack.transformY(this.x, this.y), yTR = stack.transformY(ex(), this.y),
                 yBL = stack.transformY(this.x, ey()), yBR = stack.transformY(ex(), ey());
-        int x0 = MathUtils.min(xTL, xTR, xBL, xBR);
-        int x1 = MathUtils.max(xTL, xTR, xBL, xBR);
-        int y0 = MathUtils.min(yTL, yTR, yBL, yBR);
-        int y1 = MathUtils.max(yTL, yTR, yBL, yBR);
+        int x0 = GTMath.min(xTL, xTR, xBL, xBR);
+        int x1 = GTMath.max(xTL, xTR, xBL, xBR);
+        int y0 = GTMath.min(yTL, yTR, yBL, yBR);
+        int y1 = GTMath.max(yTL, yTR, yBL, yBR);
         setPos(x0, y0, x1, y1);
     }
 

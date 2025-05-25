@@ -146,8 +146,9 @@ public class BlockHighlightRenderer {
                 poseStack.translate(-pos.x, -pos.y, -pos.z);
                 RenderSystem.lineWidth(3);
 
-                drawGridOverlays(poseStack, multiBufferSource, target, side -> level.isEmptyBlock(blockPos.relative(side)) ?
-                        pipeBlockEntity.getPipeTexture(true) : null);
+                drawGridOverlays(poseStack, multiBufferSource, target,
+                        side -> level.isEmptyBlock(blockPos.relative(side)) ?
+                                pipeBlockEntity.getPipeTexture(true) : null);
 
                 poseStack.popPose();
             }

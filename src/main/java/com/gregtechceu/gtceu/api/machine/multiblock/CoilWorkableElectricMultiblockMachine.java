@@ -3,6 +3,8 @@ package com.gregtechceu.gtceu.api.machine.multiblock;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.block.ICoilType;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.pattern.error.PatternError;
+import com.gregtechceu.gtceu.api.pattern.error.PatternStringError;
 import com.gregtechceu.gtceu.common.block.CoilBlock;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -43,6 +45,7 @@ public class CoilWorkableElectricMultiblockMachine extends WorkableElectricMulti
                     else {
                         if(coilType != coil.coilType) {
                             invalidateStructure();
+                            patternStates.get(name).setError(new PatternStringError("gtceu.coils.mismatch"));
                             return;
                         }
                     }

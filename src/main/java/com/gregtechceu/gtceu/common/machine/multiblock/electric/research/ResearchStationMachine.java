@@ -117,7 +117,7 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
 
     @Override
     public void addDisplayText(List<Component> textList) {
-        MultiblockDisplayText.builder(textList, isFormed())
+        MultiblockDisplayText.builder(textList, getDefaultPatternState())
                 .setWorkingStatus(recipeLogic.isWorkingEnabled(), recipeLogic.isActive())
                 .setWorkingStatusKeys("gtceu.multiblock.idling", "gtceu.multiblock.work_paused",
                         "gtceu.multiblock.research_station.researching")

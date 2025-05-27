@@ -191,7 +191,7 @@ public class LargeCombustionEngineMachine extends WorkableElectricMultiblockMach
 
     @Override
     public void addDisplayText(List<Component> textList) {
-        MultiblockDisplayText.Builder builder = MultiblockDisplayText.builder(textList, isFormed())
+        MultiblockDisplayText.Builder builder = MultiblockDisplayText.builder(textList, getDefaultPatternState())
                 .setWorkingStatus(recipeLogic.isWorkingEnabled(), recipeLogic.isActive());
 
         if (isExtreme()) {

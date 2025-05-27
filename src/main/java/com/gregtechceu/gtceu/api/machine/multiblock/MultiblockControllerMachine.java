@@ -449,7 +449,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     public Direction getUpwardsFacing() {
         return this.allowExtendedFacing() ? this.getBlockState().getValue(IMachineBlock.UPWARDS_FACING_PROPERTY) :
-                Direction.NORTH;
+                Direction.UP;
     }
 
     public void setUpwardsFacing(@NotNull Direction upwardsFacing) {

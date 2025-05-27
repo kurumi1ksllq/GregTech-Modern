@@ -175,7 +175,7 @@ public class DataBankMachine extends WorkableElectricMultiblockMachine
 
     @Override
     public void addDisplayText(List<Component> textList) {
-        MultiblockDisplayText.builder(textList, isFormed())
+        MultiblockDisplayText.builder(textList, getDefaultPatternState())
                 .setWorkingStatus(true, isActive() && isWorkingEnabled()) // transform into two-state system for display
                 .setWorkingStatusKeys(
                         "gtceu.multiblock.idling",

@@ -62,7 +62,6 @@ public class MultiblockWorldSavedData extends SavedData {
         this.mapping.remove(patternState.getCbi().getBlockPos());
         for (var patternSet : chunkPosMapping.values()) {
             patternSet.remove(patternState);
-            GTCEu.LOGGER.warn("removed pattern from chunk {}", patternSet.size());
         }
         setDirty(true);
     }

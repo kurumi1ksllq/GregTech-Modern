@@ -24,6 +24,7 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.syncdata.annotation.UpdateListener;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -85,7 +86,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     public static final String DEFAULT_STRUCTURE = "main";
 
     protected final Reference2ObjectMap<String, IBlockPattern> structures = new Reference2ObjectOpenHashMap<>();
-    //protected Reference2ObjectMap<String, PatternState> patternStates = new Reference2ObjectOpenHashMap<>();
+    protected Reference2ObjectMap<String, PatternState> patternStates = new Reference2ObjectOpenHashMap<>();
 
     public MultiblockControllerMachine(IMachineBlockEntity holder) {
         super(holder);
@@ -175,17 +176,20 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     @Override
     public void asyncCheckPattern(long periodID) {
-        for(var structure : structures.values()) {
-            if ((structure.getPatternState().hasError() || !isFormed) && (getHolder().getOffset() + periodID) % 4 == 0 &&
-                    checkPatternWithTryLock()) { // per second
+        for(var entry : patternStates.entrySet()) {
+            var name = entry.getKey();
+            var patternState = entry.getValue();
+            if ((patternState.hasError() || !isFormed) && (getHolder().getOffset() + periodID) % 4 == 0 &&
+                    checkPatternWithTryLock(name)) { // per second
                 if (getLevel() instanceof ServerLevel serverLevel) {
                     serverLevel.getServer().execute(() -> {
                         patternLock.lock();
-                        if (checkPatternWithLock()) { // formed
-                            checkAndFormStructurePatterns();
+                        if (checkPatternWithLock(name)) { // formed
+                            formStructure(name);
+                            //checkAndFormStructurePatterns();
                             var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-                            var state = structure.getPatternState();
-                            mwsd.addMapping(getBlockInfo(), state);
+                            //var state = structure.getPatternState();
+                            mwsd.addMapping(getBlockInfo(), patternState);
                             //for(var state : patternStates.values()) mwsd.addMapping(getBlockInfo(), state);
                             mwsd.removeAsyncLogic(this);
                         }
@@ -197,7 +201,11 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     }
 
     public void createStructurePatterns() {
-        structures.put(DEFAULT_STRUCTURE, createStructurePattern());
+        var defaultPattern = createStructurePattern();
+        var defaultPatternState = new PatternState();
+        patternStates.put(DEFAULT_STRUCTURE, defaultPatternState);
+        defaultPattern.setActivePatternState(defaultPatternState);
+        structures.put(DEFAULT_STRUCTURE, defaultPattern);
     }
 
     public void checkAndFormStructurePatterns() {
@@ -207,11 +215,13 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     }
 
     public PatternState getDefaultPatternState() {
-        return structures.get(DEFAULT_STRUCTURE).getPatternState();
+        return patternStates.get(DEFAULT_STRUCTURE);
+        //return structures.get(DEFAULT_STRUCTURE).getPatternState();
     }
 
     public PatternState getPatternState(String name) {
-        return structures.get(name).getPatternState();
+        return patternStates.get(name);
+        //return structures.get(name).getPatternState();
     }
 
     public PatternState checkStructurePattern() {
@@ -220,15 +230,16 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     public PatternState checkStructurePattern(String name) {
         IBlockPattern pattern = getSubstructure(name);
-        if(!pattern.getPatternState().shouldUpdate() || getLevel() == null) return pattern.getPatternState();
+        var pState = patternStates.get(name);
+        if(!pState.shouldUpdate() || getLevel() == null) return pState;
 
         long time = System.nanoTime();
-        GTCEu.LOGGER.error("Changing multi state");
-        PatternState patternState = pattern.checkPatternFastAt(getLevel(), getPos(), getFrontFacing(), getUpwardsFacing(), allowFlip());
-        patternState.setController(this, getPos());
-        GTCEu.LOGGER.info("Structure check for {} took {} ns", self().getDefinition().getName(), (System.nanoTime() - time));
+        pState.setController(this, getPos());
+        pattern.setActivePatternState(pState);
+        pattern.checkPatternFastAt(getLevel(), getPos(), getFrontFacing(), getUpwardsFacing(), allowFlip());
+        //GTCEu.LOGGER.info("Structure check for {} took {} ns", self().getDefinition().getName(), (System.nanoTime() - time));
 
-        return patternState;
+        return pState;
     }
 
     @Override
@@ -315,7 +326,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     @Override
     public void invalidateStructure(String name) {
         //patternStates.clear();
-        if(!getSubstructure(name).getPatternState().isFormed()) return;
+        if(!patternStates.get(name).isFormed()) return;
 
         parts.removeIf(part -> {
             if(name.equals(part.getSubstructureName())) {
@@ -324,15 +335,15 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             }
             return false;
         });
-        getSubstructure(name).getPatternState().setFormed(false);
+        patternStates.get(name).setFormed(false);
         isFormed = false;
         parallelHatch = null;
         updatePartPositions();
     }
 
     protected void invalidStructureCaches() {
-        for(var pattern : structures.values()) {
-            pattern.clearCache();
+        for(var pState : patternStates.values()) {
+            pState.getPosCache().clear();
         }
     }
 

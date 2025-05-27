@@ -41,11 +41,8 @@ public class BlockPattern implements IBlockPattern {
     @Getter
     protected final AisleStrategy aisleStrategy;
     protected final Char2ObjectMap<TraceabilityPredicate> predicates;
-    //protected final MultiTileInfo multiTileInfo;
-    protected final Object2IntMap<SimplePredicate> globalCount = new Object2IntOpenHashMap<>();
-    protected final Object2IntMap<SimplePredicate> layerCount = new Object2IntOpenHashMap<>();
-    protected final PatternState patternState = new PatternState();
-    protected final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
+    protected PatternState patternState;
+
 
     public BlockPattern(@NotNull PatternAisle @NotNull[] aisles, @NotNull AisleStrategy aisleStrategy,
                         int @NotNull[] dimensions, @NotNull RelativeDirection @NotNull[] directions,
@@ -67,6 +64,11 @@ public class BlockPattern implements IBlockPattern {
         }
     }
 
+    @Override
+    public void setActivePatternState(PatternState state) {
+        patternState = state;
+    }
+
     private void legacyStartOffset(char center) {
         if(center == 0) return;
         for(int aisleI = 0; aisleI < dimensions[0]; aisleI++) {
@@ -83,10 +85,13 @@ public class BlockPattern implements IBlockPattern {
 
     @Override
     public PatternState checkPatternFastAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing, boolean allowsFlip) {
-        if(!cache.isEmpty()) {
+        if(patternState == null) {
+            throw new IllegalStateException("PatternState not set");
+        }
+        if(!patternState.cache.isEmpty()) {
             boolean pass = true;
             BetterBlockPos bbPos = new BetterBlockPos();
-            for(var entry : cache.long2ObjectEntrySet()) {
+            for(var entry : patternState.cache.long2ObjectEntrySet()) {
                 BlockPos pos = bbPos.fromLong(entry.getLongKey()).immutable();
                 BlockState state = level.getBlockState(pos);
 
@@ -110,10 +115,8 @@ public class BlockPattern implements IBlockPattern {
             if(pass) {
                 if(patternState.hasError()) {
                     patternState.setState(PatternState.CheckState.INVALID_CACHED);
-                    GTCEu.LOGGER.info("State set to INVALID CACHED");
                 } else {
                     patternState.setState(PatternState.CheckState.VALID_CACHED);
-                    GTCEu.LOGGER.info("State set to VALID CACHED");
                 }
 
                 return patternState;
@@ -124,7 +127,6 @@ public class BlockPattern implements IBlockPattern {
         if (valid) {
             // reaching here means the cache failed or was empty
             patternState.setState(PatternState.CheckState.VALID_UNCACHED);
-            GTCEu.LOGGER.info("State set to VALID UNCACHED");
             patternState.setFlipped(false);
             return patternState;
         }
@@ -135,26 +137,30 @@ public class BlockPattern implements IBlockPattern {
         if(!valid) { // dont store a partial formed cache
             clearCache();
             patternState.setState(PatternState.CheckState.INVALID_UNCACHED);
-            GTCEu.LOGGER.info("State set to INVALID UNCACHED");
             return patternState;
         }
 
         patternState.setState(PatternState.CheckState.VALID_UNCACHED);
-        GTCEu.LOGGER.info("State set to VALID UNCACHED2");
         patternState.setFlipped(true);
         return patternState;
     }
 
     @Override
     public Long2ObjectMap<BlockInfo> getCache() {
-        return cache;
+        if(patternState == null) {
+            throw new IllegalStateException("PatternState not set");
+        }
+        return patternState.cache;
     }
 
     @Override
     public boolean checkPatternAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing, boolean isFlipped) {
-        this.globalCount.clear();
-        this.layerCount.clear();
-        cache.clear();
+        if(patternState == null) {
+            throw new IllegalStateException("PatternState not set");
+        }
+        patternState.globalCount.clear();
+        patternState.layerCount.clear();
+        patternState.cache.clear();
 
         patternState.cbi.setLevel(level);
 
@@ -164,7 +170,7 @@ public class BlockPattern implements IBlockPattern {
         aisleStrategy.start(controllerPos, frontFacing, upwardsFacing);
         if(!aisleStrategy.check(isFlipped)) return false;
 
-        for(Object2IntMap.Entry<SimplePredicate> entry : globalCount.object2IntEntrySet()) {
+        for(Object2IntMap.Entry<SimplePredicate> entry : patternState.globalCount.object2IntEntrySet()) {
             if(entry.getIntValue() < entry.getKey().minCount) {
                 patternState.setError(new SinglePredicateError(entry.getKey(), 1));
                 return false;
@@ -189,6 +195,9 @@ public class BlockPattern implements IBlockPattern {
      * @return True if the check passed
      */
     public boolean checkAisle(BetterBlockPos controllerPos, Direction frontFacing, Direction upwardsFacing, int aisleIndex, int aisleOffset, boolean flip) {
+        if(patternState == null) {
+            throw new IllegalStateException("PatternState not set");
+        }
         Direction absoluteAisle = directions[0].getRelativeFacing(frontFacing, upwardsFacing, flip);
         Direction absoluteString = directions[1].getRelativeFacing(frontFacing, upwardsFacing, flip);
         Direction absoluteChar = directions[2].getRelativeFacing(frontFacing, upwardsFacing, flip);
@@ -199,7 +208,7 @@ public class BlockPattern implements IBlockPattern {
         BetterBlockPos charPos = aisleStart.copy();
         PatternAisle aisle = aisles[aisleIndex];
 
-        layerCount.clear();
+        patternState.layerCount.clear();
 
         for(int stringI = 0; stringI < dimensions[1]; stringI++) {
             for(int charI = 0; charI < dimensions[2]; charI++) {
@@ -209,11 +218,11 @@ public class BlockPattern implements IBlockPattern {
                 if(pred != TraceabilityPredicate.ANY) {
                     var be = patternState.cbi.retrieveCurrentBlockEntity();
                     var state = patternState.cbi.retrieveCurrentBlockState();
-                    cache.put(charPos.toLong(), new BlockInfo(state, be));
+                    patternState.cache.put(charPos.toLong(), new BlockInfo(state, be));
                     patternState.posCache.add(charPos.immutable());
                 }
 
-                PatternError res = pred.test(patternState.cbi, globalCount, layerCount);
+                PatternError res = pred.test(patternState.cbi, patternState.globalCount, patternState.layerCount);
                 if(res != null) {
                     patternState.setError(res);
                     return false;
@@ -226,15 +235,15 @@ public class BlockPattern implements IBlockPattern {
             charPos.from(stringStart);
         }
 
-        for(Object2IntMap.Entry<SimplePredicate> entry : layerCount.object2IntEntrySet()) {
+        for(Object2IntMap.Entry<SimplePredicate> entry : patternState.layerCount.object2IntEntrySet()) {
             if(entry.getIntValue() < entry.getKey().minLayerCount) {
                 patternState.setError(new SinglePredicateError(entry.getKey(), 3));
                 return false;
             }
         }
 
-        for(Object2IntMap.Entry<SimplePredicate> entry : layerCount.object2IntEntrySet()) {
-            globalCount.put(entry.getKey(), globalCount.getInt(entry.getKey()) + entry.getIntValue());
+        for(Object2IntMap.Entry<SimplePredicate> entry : patternState.layerCount.object2IntEntrySet()) {
+            patternState.globalCount.put(entry.getKey(), patternState.globalCount.getInt(entry.getKey()) + entry.getIntValue());
         }
 
         return true;

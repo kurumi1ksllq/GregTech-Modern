@@ -6,8 +6,14 @@ import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.pattern.MultiblockWorldSavedData;
 import com.gregtechceu.gtceu.api.pattern.error.PatternError;
 
+import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
+import com.gregtechceu.gtceu.api.pattern.util.BlockInfo;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -50,6 +56,9 @@ public class PatternState {
     @Getter
     @NotNull
     protected CurrentBlockInfo cbi = new CurrentBlockInfo();
+    protected final Object2IntMap<SimplePredicate> globalCount = new Object2IntOpenHashMap<>();
+    protected final Object2IntMap<SimplePredicate> layerCount = new Object2IntOpenHashMap<>();
+    protected final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
 
     public void setController(IMultiController controller, BlockPos controllerPos) {
         this.controller = controller;
@@ -88,7 +97,7 @@ public class PatternState {
                   if(controller.isFormed() && state.getBlock() instanceof ActiveBlock) {
                       return;
                   }
-                  if(controller.checkPatternWithLock()) {
+                  if(!controller.checkStructurePattern(MultiblockControllerMachine.DEFAULT_STRUCTURE).hasError()) {
                       controller.formStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
                   } else {
                       controller.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);

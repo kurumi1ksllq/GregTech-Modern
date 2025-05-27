@@ -123,13 +123,14 @@ public class MultiblockPartMachine extends MetaMachine implements IMultiPart {
     public void removedFromController(IMultiController controller) {
         controllerPositions.remove(controller.self().getPos());
         controllers.remove(controller);
-        substructureName = null;
+        if(controllers.isEmpty()) substructureName = null;
     }
 
     @Override
     public void addedToController(IMultiController controller, String name) {
-        controllerPositions.add(controller.self().getPos());
-        controllers.add(controller);
+        if(controllerPositions.add(controller.self().getPos())) {
+            controllers.add(controller);
+        }
         substructureName = name;
     }
 

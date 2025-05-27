@@ -54,6 +54,8 @@ public interface IBlockPattern {
      */
     Long2ObjectSortedMap<TraceabilityPredicate> getDefaultShape(MultiblockControllerMachine src, @NotNull Map<String, String> keyMap);
 
+    void setActivePatternState(PatternState patternState);
+
     /**
      * Gets the internal pattern state, you should use the one returned from
      * {@link IBlockPattern#checkPatternFastAt(Level, BlockPos, Direction, Direction, boolean)} always

@@ -32,9 +32,9 @@ public class ExpandablePattern implements IBlockPattern {
 
     protected final RelativeDirection[] directions;
     //protected final MultiTileInfo worldState;
-    protected final Object2IntMap<SimplePredicate> globalCount = new Object2IntOpenHashMap<>();
-    protected final PatternState state = new PatternState();
-    protected final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
+    //protected final Object2IntMap<SimplePredicate> globalCount = new Object2IntOpenHashMap<>();
+    protected PatternState patternState;
+    //protected final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
 
     public ExpandablePattern(@NotNull QuadFunction<Level, BetterBlockPos, Direction, Direction, int[]> boundsFunc,
                              @NotNull BiFunction<BetterBlockPos, int[], TraceabilityPredicate> predicateFunc,
@@ -42,16 +42,22 @@ public class ExpandablePattern implements IBlockPattern {
         this.boundsFunc = boundsFunc;
         this.predicateFunc = predicateFunc;
         this.directions = directions;
+    }
 
-        state.cbi = new CurrentBlockInfo();
+    @Override
+    public void setActivePatternState(PatternState state) {
+        patternState = state;
     }
 
     @Override
     public PatternState checkPatternFastAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing, boolean allowsFlip) {
-        if(!cache.isEmpty()) {
+        if(patternState == null) {
+            throw new IllegalStateException("PatternState not set");
+        }
+        if(!patternState.cache.isEmpty()) {
             boolean pass = true;
             BetterBlockPos bbp = new BetterBlockPos();
-            for(var entry : cache.long2ObjectEntrySet()) {
+            for(var entry : patternState.cache.long2ObjectEntrySet()) {
                 BlockPos pos = bbp.fromLong(entry.getLongKey()).immutable();
                 BlockState state = level.getBlockState(pos);
 
@@ -70,33 +76,36 @@ public class ExpandablePattern implements IBlockPattern {
                 }
             }
             if(pass) {
-                if(state.hasError())
-                    state.setState(PatternState.CheckState.INVALID_CACHED);
+                if(patternState.hasError())
+                    patternState.setState(PatternState.CheckState.INVALID_CACHED);
                 else
-                    state.setState(PatternState.CheckState.VALID_CACHED);
+                    patternState.setState(PatternState.CheckState.VALID_CACHED);
 
-                return state;
+                return patternState;
             }
         }
 
-        state.setFlipped(false);
+        patternState.setFlipped(false);
         boolean valid = checkPatternAt(level, centerPos, frontFacing, upwardsFacing, false);
         if(valid) {
-            state.setState(PatternState.CheckState.VALID_UNCACHED);
-            return state;
+            patternState.setState(PatternState.CheckState.VALID_UNCACHED);
+            return patternState;
         }
 
         clearCache();
-        state.setState(PatternState.CheckState.INVALID_UNCACHED);
-        return state;
+        patternState.setState(PatternState.CheckState.INVALID_UNCACHED);
+        return patternState;
     }
 
     @Override
     public boolean checkPatternAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing, boolean isFlipped) {
+        if(patternState == null) {
+            throw new IllegalStateException("PatternState not set");
+        }
         int[] bounds = boundsFunc.apply(level, new BetterBlockPos(centerPos), frontFacing, upwardsFacing);
         if(bounds == null) return false;
 
-        globalCount.clear();
+        patternState.globalCount.clear();
 
         BetterBlockPos negCorner = new BetterBlockPos();
         BetterBlockPos posCorner = new BetterBlockPos();
@@ -112,7 +121,7 @@ public class ExpandablePattern implements IBlockPattern {
             posCorner.set(i, bounds[selected.ordinal()]);
         }
 
-        state.cbi.setLevel(level);
+        patternState.cbi.setLevel(level);
 
         BetterBlockPos translation = new BetterBlockPos(centerPos);
 
@@ -125,24 +134,24 @@ public class ExpandablePattern implements IBlockPattern {
             // this basically reshuffles the coordinates into absolute form from relative form
             pos.zero().offset(absolutes[0], arr[0]).offset(absolutes[1], arr[1]).offset(absolutes[2], arr[2]);
             // translate from the origin to the center
-            state.cbi.setCurrentPos(pos.add(translation));
+            patternState.cbi.setCurrentPos(pos.add(translation));
 
             if(pred != TraceabilityPredicate.ANY) {
-                var bstate = state.cbi.retrieveCurrentBlockState();
-                BlockEntity be = state.cbi.retrieveCurrentBlockEntity();
-                cache.put(pos.toLong(), new BlockInfo(bstate, be));
+                var bstate = patternState.cbi.retrieveCurrentBlockState();
+                BlockEntity be = patternState.cbi.retrieveCurrentBlockEntity();
+                patternState.cache.put(pos.toLong(), new BlockInfo(bstate, be));
             }
 
-            PatternError res = pred.test(state.cbi, globalCount, null);
+            PatternError res = pred.test(patternState.cbi, patternState.globalCount, null);
             if(res != null) {
-                state.setError(res);
+                patternState.setError(res);
                 return false;
             }
         }
 
-        for(var entry : globalCount.object2IntEntrySet()) {
+        for(var entry : patternState.globalCount.object2IntEntrySet()) {
             if(entry.getIntValue() < entry.getKey().minCount) {
-                state.setError(new SinglePredicateError(entry.getKey(), 1));
+                patternState.setError(new SinglePredicateError(entry.getKey(), 1));
                 return false;
             }
         }
@@ -191,17 +200,15 @@ public class ExpandablePattern implements IBlockPattern {
 
     @Override
     public PatternState getPatternState() {
-        return state;
+        return patternState;
     }
 
     @Override
     public Long2ObjectMap<BlockInfo> getCache() {
-        return cache;
-    }
-
-    @Override
-    public void clearCache() {
-        cache.clear();
+        if(patternState == null) {
+            throw new IllegalStateException("PatternState not set");
+        }
+        return patternState.cache;
     }
 
     @Override

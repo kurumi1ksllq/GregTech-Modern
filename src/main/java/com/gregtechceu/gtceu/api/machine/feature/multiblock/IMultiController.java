@@ -19,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -64,15 +65,15 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
     /**
      * Check pattern with a lock.
      */
-    default boolean checkPatternWithLock() {
+    default boolean checkPatternWithLock(String name) {
         var lock = getPatternLock();
         lock.lock();
-        GTCEu.LOGGER.info("check Pattern With Lock");
         try {
-            if(getDefaultPatternState().getState() == null) {
-                checkStructurePattern();
+            var patternCheckState = getPatternState(name).getState();
+            if(patternCheckState == null || !patternCheckState.isValid()) {
+                checkStructurePattern(name);
             }
-            return getDefaultPatternState().getState().isValid();
+            return getPatternState(name).getState().isValid();
         } finally {
             lock.unlock();
         }
@@ -83,15 +84,15 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
      *
      * @return false - checking failed or cant get the lock.
      */
-    default boolean checkPatternWithTryLock() {
+    default boolean checkPatternWithTryLock(String name) {
         var lock = getPatternLock();
-        GTCEu.LOGGER.error("Checking Pattern With Try Lock");
         if (lock.tryLock()) {
             try {
-                if(getDefaultPatternState().getState() == null) {
-                    checkStructurePattern();
+                var patternCheckState = getPatternState(name).getState();
+                if(patternCheckState == null || !patternCheckState.isValid()) {
+                    checkStructurePattern(name);
                 }
-                return getDefaultPatternState().getState().isValid();
+                return getPatternState(name).getState().isValid();
             } finally {
                 lock.unlock();
             }
@@ -112,7 +113,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
      *  Call to form a multiblock
      * @param name the structure with which to form
      */
-    void formStructure(String name);
+    void formStructure(@NotNull String name);
 
     void invalidateStructure(String name);
 

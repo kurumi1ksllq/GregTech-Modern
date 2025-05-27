@@ -62,7 +62,7 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
         for (IMultiPart part : getParts()) {
             if (part instanceof IObjectHolder iObjectHolder) {
                 if (iObjectHolder.getFrontFacing() != getFrontFacing().getOpposite()) {
-                    onStructureInvalid();
+                    invalidateStructure(name);
                     return;
                 }
                 this.objectHolder = iObjectHolder;

@@ -134,7 +134,7 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IMachi
     }
 
     @Override
-    public void addedToController(IMultiController controller) {
+    public void addedToController(IMultiController controller, String substructureName) {
         if (!controller.allowCircuitSlots()) {
             if (!ConfigHolder.INSTANCE.machines.ghostCircuit) {
                 clearInventory(circuitInventory.storage);
@@ -143,7 +143,7 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IMachi
             }
             setCircuitSlotEnabled(false);
         }
-        super.addedToController(controller);
+        super.addedToController(controller, substructureName);
     }
 
     @Override

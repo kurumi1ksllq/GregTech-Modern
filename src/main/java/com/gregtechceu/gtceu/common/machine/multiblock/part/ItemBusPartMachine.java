@@ -138,7 +138,7 @@ public class ItemBusPartMachine extends TieredIOPartMachine implements IDistinct
     }
 
     @Override
-    public void addedToController(IMultiController controller) {
+    public void addedToController(IMultiController controller, String substructureName) {
         if (hasCircuitSlot && !controller.allowCircuitSlots()) {
             if (!ConfigHolder.INSTANCE.machines.ghostCircuit) {
                 clearInventory(circuitInventory.storage);
@@ -147,7 +147,7 @@ public class ItemBusPartMachine extends TieredIOPartMachine implements IDistinct
             }
             setCircuitSlotEnabled(false);
         }
-        super.addedToController(controller);
+        super.addedToController(controller, substructureName);
     }
 
     @Override

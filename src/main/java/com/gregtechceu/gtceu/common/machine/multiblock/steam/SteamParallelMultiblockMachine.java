@@ -83,7 +83,7 @@ public class SteamParallelMultiblockMachine extends WorkableMultiblockMachine im
             }
         }
         if (steamEnergy == null) { // No steam hatch found
-            onStructureInvalid();
+            invalidateStructure(name);
         }
     }
 

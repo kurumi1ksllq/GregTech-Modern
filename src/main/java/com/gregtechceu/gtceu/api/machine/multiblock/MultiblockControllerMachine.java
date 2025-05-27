@@ -51,11 +51,6 @@ import java.util.function.Predicate;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/3/3
- * @implNote MultiblockControllerMachine
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class MultiblockControllerMachine extends MetaMachine implements IMultiController {
@@ -431,29 +426,16 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         }
     }
 
-    public boolean allowExtendedFacing() {
-        return getDefinition().isAllowExtendedFacing();
-    }
-
     public boolean allowFlip() {
         return getDefinition().isAllowFlip();
     }
 
     @Override
-    public boolean isFacingValid(Direction facing) {
-        return allowExtendedFacing() || super.isFacingValid(facing);
-    }
-
-    public Direction getUpwardsFacing() {
-        return this.allowExtendedFacing() ? this.getBlockState().getValue(IMachineBlock.UPWARDS_FACING_PROPERTY) :
-                Direction.UP;
-    }
-
     public void setUpwardsFacing(@NotNull Direction upwardsFacing) {
         if (getLevel() == null) return;
         if (!getDefinition().isAllowExtendedFacing()) return;
         BlockState blockState = getBlockState();
-        if (blockState.getBlock() instanceof MetaMachineBlock metaMachineBlock &&
+        if (blockState.getBlock() instanceof MetaMachineBlock &&
                 blockState.getValue(IMachineBlock.UPWARDS_FACING_PROPERTY) != upwardsFacing) {
             getLevel().setBlockAndUpdate(getPos(),
                     blockState.setValue(IMachineBlock.UPWARDS_FACING_PROPERTY, upwardsFacing));
@@ -474,7 +456,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             var newUp = getUpwardsFacing().getClockWise(getFrontFacing().getAxis());
             if(playerIn.isShiftKeyDown()) newUp = newUp.getOpposite();
             setUpwardsFacing(newUp);
-
+            playerIn.swing(hand);
             return InteractionResult.CONSUME;
         }
         if (playerIn.isShiftKeyDown()) {
@@ -484,6 +466,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             if (!isRemote()) {
                 setFrontFacing(gridSide);
             }
+            playerIn.swing(hand);
             return InteractionResult.CONSUME;
         }
         return super.onWrenchClick(playerIn, hand, gridSide, hitResult);
@@ -491,18 +474,9 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     @Override
     public void setFrontFacing(Direction facing) {
-        Direction oldFacing = getFrontFacing();
-
-        if (allowExtendedFacing()) {
-            Direction newUpwardsFacing = RelativeDirection.simulateAxisRotation(facing, oldFacing, getUpwardsFacing());
-            setUpwardsFacing(newUpwardsFacing);
-        }
         super.setFrontFacing(facing);
 
         if (getLevel() != null && !getLevel().isClientSide) {
-            notifyBlockUpdate();
-            markDirty();
-
             invalidStructureCaches();
             checkAndFormStructurePatterns();
         }

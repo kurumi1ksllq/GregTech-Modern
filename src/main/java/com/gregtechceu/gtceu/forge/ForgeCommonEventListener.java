@@ -19,6 +19,7 @@ import com.gregtechceu.gtceu.api.item.DrumMachineItem;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.TagPrefixItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
+import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.misc.forge.FilteredFluidHandlerItemStack;
@@ -37,7 +38,7 @@ import com.gregtechceu.gtceu.common.fluid.potion.PotionFluidHelper;
 import com.gregtechceu.gtceu.common.item.ToggleEnergyConsumerBehavior;
 import com.gregtechceu.gtceu.common.item.armor.IJetpack;
 import com.gregtechceu.gtceu.common.item.armor.QuarkTechSuite;
-import com.gregtechceu.gtceu.common.machine.owner.IMachineOwner;
+import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.common.network.GTNetwork;
 import com.gregtechceu.gtceu.common.network.packets.*;
 import com.gregtechceu.gtceu.common.network.packets.hazard.SPacketAddHazardZone;
@@ -109,11 +110,6 @@ import java.util.regex.Pattern;
 
 import static com.gregtechceu.gtceu.utils.FormattingUtil.toLowerCaseUnder;
 
-/**
- * @author KilaBash
- * @date 2022/8/27
- * @implNote ForgeCommonEventListener
- */
 @Mod.EventBusSubscriber(modid = GTCEu.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ForgeCommonEventListener {
 
@@ -248,7 +244,7 @@ public class ForgeCommonEventListener {
         for (int i = 0; i < inventory.getSlots(); ++i) {
             ItemStack stack = inventory.getStackInSlot(i);
             Material material = HazardProperty.getValidHazardMaterial(stack);
-            if (material == null || !material.hasProperty(PropertyKey.HAZARD)) {
+            if (material.isNull() || !material.hasProperty(PropertyKey.HAZARD)) {
                 continue;
             }
             HazardProperty property = material.getProperty(PropertyKey.HAZARD);
@@ -269,8 +265,8 @@ public class ForgeCommonEventListener {
             if (item.is(GTItems.QUANTUM_HELMET.asItem()) && GTCapabilityHelper.getElectricItem(item) != null) {
                 IElectricItem helmet = GTCapabilityHelper.getElectricItem(item);
                 MobEffectInstance effect = event.getEffectInstance();
-                Integer cost = QuarkTechSuite.potionRemovalCost.get(effect.getEffect());
-                if (cost != null) {
+                int cost = QuarkTechSuite.potionRemovalCost.getOrDefault(effect.getEffect(), -1);
+                if (cost != -1) {
                     cost = cost * (effect.getAmplifier() + 1);
                     if (helmet.canUse(cost)) {
                         helmet.discharge(cost, helmet.getTier(), true, false, false);
@@ -297,7 +293,7 @@ public class ForgeCommonEventListener {
     public static void onBreakEvent(BlockEvent.BreakEvent event) {
         var machine = MetaMachine.getMachine(event.getLevel(), event.getPos());
         if (machine != null) {
-            if (!IMachineOwner.canBreakOwnerMachine(event.getPlayer(), machine.holder)) {
+            if (!MachineOwner.canBreakOwnerMachine(event.getPlayer(), machine)) {
                 event.setCanceled(true);
             }
         }
@@ -519,6 +515,31 @@ public class ForgeCommonEventListener {
             }
             if (mapping.getKey().equals(GTCEu.id("steam_miner"))) {
                 mapping.remap(GTMachines.STEAM_MINER.first().getItem());
+            }
+            if (mapping.getKey().equals(GTCEu.id("tungstensteel_fluid_cell"))) {
+                mapping.remap(GTItems.FLUID_CELL_LARGE_TUNGSTEN_STEEL.get().asItem());
+            }
+            if (mapping.getKey().equals(GTCEu.id("avanced_nanomuscle_chestplate"))) {
+                mapping.remap(GTItems.NANO_CHESTPLATE_ADVANCED.get());
+            }
+            String path = mapping.getKey().getPath();
+            if (path.matches("[lhi]v_.+_wirecutter")) {
+                String suffix = "_wirecutter";
+                String typeString = path.substring(0, 2) + suffix; // [lhi]v_wirecutter -- tooltype name
+                String matString = path.substring(3, path.length() - suffix.length()); // material name
+
+                GTToolType type = GTToolType.getTypes().get(typeString);
+                Material material = GTMaterials.get(matString);
+                if (type == null || material.isNull()) {
+                    mapping.warn();
+                    return;
+                }
+                var tool = GTMaterialItems.TOOL_ITEMS.get(material, type);
+                if (tool == null) {
+                    mapping.warn();
+                    return;
+                }
+                mapping.remap(tool.asItem());
             }
         });
         event.getMappings(Registries.BLOCK_ENTITY_TYPE, GTCEu.MOD_ID).forEach(mapping -> {

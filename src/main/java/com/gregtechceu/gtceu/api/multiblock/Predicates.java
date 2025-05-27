@@ -267,11 +267,15 @@ public class Predicates {
      * Use this predicate for Frames in your Multiblock. Allows for Framed Pipes as well as normal Frame blocks.
      */
     public static TraceabilityPredicate frames(Material... frameMaterials) {
-        return blocks(Arrays.stream(frameMaterials).map(m -> GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, m))
-                .filter(Objects::nonNull).filter(RegistryEntry::isPresent).map(RegistryEntry::get)
-                .toArray(Block[]::new))
-                .or(new TraceabilityPredicate(worldState -> {
-                    BlockEntity tileEntity = worldState.getTileEntity();
+        var frameBlocks = Arrays.stream(frameMaterials)
+                .map(m -> GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, m))
+                .filter(Objects::nonNull)
+                .filter(RegistryEntry::isPresent)
+                .map(RegistryEntry::get)
+                .toArray(Block[]::new);
+        return blocks(frameBlocks)
+                .or(new TraceabilityPredicate(blockWorldState -> {
+                    BlockEntity tileEntity = blockWorldState.getTileEntity();
                     if (!(tileEntity instanceof IPipeNode<?, ?> pipeNode)) {
                         return PatternError.PLACEHOLDER;
                     }

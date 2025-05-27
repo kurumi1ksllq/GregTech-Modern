@@ -50,11 +50,6 @@ import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/2/22
- * @implNote ComponentItem
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class ComponentItem extends Item
@@ -238,6 +233,18 @@ public class ComponentItem extends Item
             }
         }
         return InteractionResult.PASS;
+    }
+
+    @Override
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+        for (IItemComponent component : components) {
+            if (component instanceof IInteractionItem interactionItem) {
+                // this will cancel the left click animation
+                return interactionItem.onEntitySwing(stack, entity);
+            }
+        }
+        // normal behavior
+        return super.onEntitySwing(stack, entity);
     }
 
     @Override

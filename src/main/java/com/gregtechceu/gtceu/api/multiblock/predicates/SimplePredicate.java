@@ -126,7 +126,7 @@ public class SimplePredicate {
             return false;
         }
         if (slotName != null) {
-            Map<Long, Set<String>> slots = blockWorldState.getMatchContext().getOrCreate("slots",
+            Long2ObjectMap<Set<String>> slots = blockWorldState.getMatchContext().getOrCreate("slots",
                     Long2ObjectArrayMap::new);
             slots.computeIfAbsent(blockWorldState.getPos().asLong(), s -> new HashSet<>()).add(slotName);
             return true;

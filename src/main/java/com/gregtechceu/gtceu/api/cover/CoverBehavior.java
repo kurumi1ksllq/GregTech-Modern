@@ -162,6 +162,8 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
             }
             return InteractionResult.sidedSuccess(player.level().isClientSide);
         } else if (this instanceof IUICover) {
+            // backward compat for a short while
+            // TODO: I might just remove this before merging, we'll see.
             if (player instanceof ServerPlayer serverPlayer) {
                 com.gregtechceu.gtceu.api.gui.factory.CoverUIFactory.INSTANCE.openUI(this, serverPlayer);
             }

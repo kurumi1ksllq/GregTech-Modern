@@ -14,14 +14,13 @@ import org.jetbrains.annotations.NotNull;
  * An interface that handles user interactions on {@link IWidget} objects.
  * These methods get called on the client
  */
-// TODO add the method parameter javadocs
 public interface Interactable {
 
     /**
      * Called when this widget is pressed.
      *
-     * @param mouseX
-     * @param mouseY
+     * @param mouseX the X coordinate of the mouse.
+     * @param mouseY the Y coordinate of the mouse.
      * @param button mouse button that was pressed.
      * @return result that determines what happens to other widgets
      *         {@link #onMouseTapped(double, double, int)} is only called if this returns {@link Result#ACCEPT} or
@@ -35,8 +34,8 @@ public interface Interactable {
     /**
      * Called when a mouse button was released over this widget.
      *
-     * @param mouseX
-     * @param mouseY
+     * @param mouseX the X coordinate of the mouse.
+     * @param mouseY the Y coordinate of the mouse.
      * @param button mouse button that was released.
      * @return whether other widgets should get called to. If this returns false,
      *         {@link #onMouseTapped(double, double, int)} will NOT be called.
@@ -48,12 +47,13 @@ public interface Interactable {
     /**
      * Called when this widget was pressed and then released within a certain time frame.
      *
-     * @param mouseX
-     * @param mouseY
+     * @param mouseX the X coordinate of the mouse.
+     * @param mouseY the Y coordinate of the mouse.
      * @param button mouse button that was pressed.
      * @return result that determines if other widgets should get tapped to
-     *         {@link Result#IGNORE} and {@link Result#ACCEPT} will both "ignore" the result and {@link Result#STOP} and
-     *         {@link Result#SUCCESS} will both stop other widgets from getting tapped.
+     *         {@link Result#IGNORE IGNORE} and {@link Result#ACCEPT ACCEPT} will both "ignore" the result and
+     *         {@link Result#STOP STOP} and {@link Result#SUCCESS SUCCESS} will both stop other widgets
+     *         from getting tapped.
      */
     @NotNull
     default Result onMouseTapped(double mouseX, double mouseY, int button) {
@@ -123,8 +123,8 @@ public interface Interactable {
      * If this scroll view scrolled to the end and this returns false, the scroll will get passed through another scroll
      * view below this.
      *
-     * @param mouseX
-     * @param mouseY
+     * @param mouseX the X coordinate of the mouse.
+     * @param mouseY the Y coordinate of the mouse.
      * @param delta  amount scrolled by (usually irrelevant)
      * @return true if this widget can be scrolled at all
      */
@@ -135,8 +135,8 @@ public interface Interactable {
     /**
      * Called when this widget was clicked and mouse is now dragging.
      *
-     * @param mouseX
-     * @param mouseY
+     * @param mouseX the X coordinate of the mouse.
+     * @param mouseY the Y coordinate of the mouse.
      * @param button mouse button that drags
      * @param dragX
      * @param dragY

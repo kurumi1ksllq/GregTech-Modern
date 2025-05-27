@@ -127,9 +127,34 @@ public class GTMatrixUtils {
         var matrix = new Matrix4f();
         var front = rotateMatrixToFront(matrix, frontFace);
         front.absolute();
-        rotateMatrixToUp(matrix, front, upwardFace);
+        rotateMatrixToUp(matrix, front, adjustUpwardsToLocal(frontFace, upwardFace.getOpposite()));
         var rotation = new SimpleModelState(new Transformation(matrix));
         rotations.put(frontFace, upwardFace, rotation);
         return rotation;
+    }
+
+    public static Direction adjustUpwardsToLocal(Direction frontFacing, Direction upwardFacing) {
+
+        if(frontFacing.getAxis() == Direction.Axis.Y) {
+            return frontFacing.getAxisDirection() == Direction.AxisDirection.POSITIVE ?
+                    upwardFacing : upwardFacing.getOpposite();
+        } else if(frontFacing.getAxis() == Direction.Axis.Z) {
+            if(upwardFacing.getAxis() == Direction.Axis.Y) {
+                return Direction.fromAxisAndDirection(Direction.Axis.Z, upwardFacing.getAxisDirection());
+            } else if(upwardFacing.getAxis() == Direction.Axis.X) {
+                Direction.AxisDirection dir = frontFacing.getAxisDirection() == Direction.AxisDirection.POSITIVE ?
+                        upwardFacing.getAxisDirection().opposite() : upwardFacing.getAxisDirection();
+                return Direction.fromAxisAndDirection(Direction.Axis.X, dir);
+            }
+        } else if(frontFacing.getAxis() == Direction.Axis.X) {
+            if(upwardFacing.getAxis() == Direction.Axis.Y) {
+                return Direction.fromAxisAndDirection(Direction.Axis.Z, upwardFacing.getAxisDirection());
+            } else if(upwardFacing.getAxis() == Direction.Axis.Z) {
+                Direction.AxisDirection dir = frontFacing.getAxisDirection() == Direction.AxisDirection.POSITIVE ?
+                        upwardFacing.getAxisDirection().opposite() : upwardFacing.getAxisDirection();
+                return Direction.fromAxisAndDirection(Direction.Axis.X, dir);
+            }
+        }
+        return Direction.NORTH;
     }
 }

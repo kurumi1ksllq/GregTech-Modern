@@ -1,12 +1,11 @@
 package com.gregtechceu.gtceu.api.machine.feature.multiblock;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineFeature;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
-import com.gregtechceu.gtceu.api.pattern.pattern.IBlockPattern;
-import com.gregtechceu.gtceu.api.pattern.pattern.PatternState;
+import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
+import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
 import com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
@@ -146,12 +145,6 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
      * Its parts maybe invalid due to unloaded chunks.
      */
     boolean isFormed();
-
-    ///**
-    // * Get MultiblockState. It records all structure-related information.
-    // */
-    //@NotNull
-    //MultiTileInfo getMultiblockState();
 
     /**
      * Called in an async thread. It's unsafe, Don't modify anything of world but checking information.

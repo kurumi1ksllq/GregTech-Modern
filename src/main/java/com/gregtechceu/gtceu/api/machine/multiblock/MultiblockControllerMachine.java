@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.machine.multiblock;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.IMachineBlock;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
@@ -10,13 +9,13 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
-import com.gregtechceu.gtceu.api.pattern.BetterBlockPos;
-import com.gregtechceu.gtceu.api.pattern.MultiblockWorldSavedData;
-import com.gregtechceu.gtceu.api.pattern.pattern.CurrentBlockInfo;
-import com.gregtechceu.gtceu.api.pattern.pattern.IBlockPattern;
-import com.gregtechceu.gtceu.api.pattern.pattern.PatternState;
-import com.gregtechceu.gtceu.api.pattern.util.BlockInfo;
-import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
+import com.gregtechceu.gtceu.api.multiblock.BetterBlockPos;
+import com.gregtechceu.gtceu.api.multiblock.MultiblockWorldSavedData;
+import com.gregtechceu.gtceu.api.multiblock.pattern.CurrentBlockInfo;
+import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
+import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
+import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
+import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
@@ -24,7 +23,6 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.syncdata.annotation.UpdateListener;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
-import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -65,7 +63,6 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             MultiblockControllerMachine.class, MetaMachine.MANAGED_FIELD_HOLDER);
     private CurrentBlockInfo controllerBlockInfo;
-   // private MultiTileInfo multiTileInfo;
     private final List<IMultiPart> parts = new ArrayList<>();
     private @Nullable IParallelHatch parallelHatch = null;
     @Getter

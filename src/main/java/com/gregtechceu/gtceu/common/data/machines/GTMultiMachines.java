@@ -12,11 +12,11 @@ import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.CoilWorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.pattern.pattern.FactoryBlockPattern;
-import com.gregtechceu.gtceu.api.pattern.MultiblockShapeInfo;
-import com.gregtechceu.gtceu.api.pattern.Predicates;
-import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
-import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
+import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryBlockPattern;
+import com.gregtechceu.gtceu.api.multiblock.MultiblockShapeInfo;
+import com.gregtechceu.gtceu.api.multiblock.Predicates;
+import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.client.renderer.machine.*;
 import com.gregtechceu.gtceu.client.util.TooltipHelper;
 import com.gregtechceu.gtceu.common.block.BoilerFireboxType;
@@ -50,8 +50,8 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
-import static com.gregtechceu.gtceu.api.pattern.Predicates.*;
-import static com.gregtechceu.gtceu.api.pattern.util.RelativeDirection.*;
+import static com.gregtechceu.gtceu.api.multiblock.Predicates.*;
+import static com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection.*;
 import static com.gregtechceu.gtceu.common.data.GTBlocks.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.Aluminium;
@@ -92,7 +92,7 @@ public class GTMultiMachines {
             .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.COKE_OVEN_RECIPES)
             .appearanceBlock(CASING_COKE_BRICKS)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern.start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
                     .aisle("XXX", "XXX", "XXX")
                     .aisle("XXX", "X#X", "XXX")
                     .aisle("XXX", "XYX", "XXX")
@@ -113,7 +113,7 @@ public class GTMultiMachines {
                     GTCEu.id("block/multiblock/primitive_blast_furnace")))
             .hasTESR(true)
             .appearanceBlock(CASING_PRIMITIVE_BRICKS)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern.start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
                     .aisle("XXX", "XXX", "XXX", "XXX")
                     .aisle("XXX", "X#X", "X#X", "X#X")
                     .aisle("XXX", "XYX", "XXX", "XXX")
@@ -197,7 +197,7 @@ public class GTMultiMachines {
                 var casing = blocks(CASING_PTFE_INERT.get()).setMinGlobalLimited(10);
                 var abilities = Predicates.autoAbilities(definition.getRecipeTypes())
                         .or(Predicates.autoAbilities(true, false, false));
-                return FactoryBlockPattern.start()
+                return FactoryBlockPattern.start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
                         .aisle("XXX", "XCX", "XXX")
                         .aisle("XCX", "CPC", "XCX")
                         .aisle("XXX", "XSX", "XXX")

@@ -167,6 +167,8 @@ public class WorkableOverlayModel {
 
         matrix.rotate(rot);
 
+        var rotation = new SimpleModelState(GTUtil.)
+
         var rotation = new SimpleModelState(new Transformation(matrix));
 
         for (Direction renderSide : GTUtil.DIRECTIONS) {

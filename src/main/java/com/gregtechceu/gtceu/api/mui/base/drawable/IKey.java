@@ -1,13 +1,12 @@
 package com.gregtechceu.gtceu.api.mui.base.drawable;
 
 import com.gregtechceu.gtceu.api.mui.base.IJsonSerializable;
-import com.gregtechceu.gtceu.api.mui.drawable.Icon;
 import com.gregtechceu.gtceu.api.mui.drawable.text.*;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.utils.JsonHelper;
+import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
-import com.gregtechceu.gtceu.common.mui.widgets.TextWidget;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -250,11 +249,6 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
 
     default StyledText shadow(@Nullable Boolean shadow) {
         return withStyle().shadow(shadow);
-    }
-
-    @Override
-    default Icon asIcon() {
-        return new Icon(this);
     }
 
     default KeyIcon asTextIcon() {

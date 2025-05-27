@@ -3,8 +3,8 @@ package com.gregtechceu.gtceu.api.mui.widget;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
+import com.gregtechceu.gtceu.api.mui.widgets.VoidWidget;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
-import com.gregtechceu.gtceu.common.mui.widgets.VoidWidget;
 
 import org.jetbrains.annotations.NotNull;
 

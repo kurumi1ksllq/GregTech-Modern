@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.mui.value.sync;
 
+import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.client.mui.screen.ModularContainerMenu;
-import com.gregtechceu.gtceu.common.mui.widgets.slot.SlotGroup;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;

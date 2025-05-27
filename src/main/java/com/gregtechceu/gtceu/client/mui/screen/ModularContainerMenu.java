@@ -7,9 +7,9 @@ import com.gregtechceu.gtceu.api.mui.factory.GuiManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.ModularSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.WidgetTree;
+import com.gregtechceu.gtceu.api.mui.widgets.slot.ModularSlot;
+import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.common.data.GTMenuTypes;
-import com.gregtechceu.gtceu.common.mui.widgets.slot.ModularSlot;
-import com.gregtechceu.gtceu.common.mui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.core.mixins.AbstractContainerMenuAccessor;
 import com.gregtechceu.gtceu.utils.NetworkUtils;
 

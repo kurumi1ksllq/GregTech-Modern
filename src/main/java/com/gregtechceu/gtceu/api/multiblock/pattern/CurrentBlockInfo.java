@@ -14,7 +14,7 @@ public class CurrentBlockInfo {
     @Getter
     protected Level level;
     @Getter
-    private BlockPos.MutableBlockPos pos;
+    private BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
     @Getter
     private BlockState blockState;
     @Getter

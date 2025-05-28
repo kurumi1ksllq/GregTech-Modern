@@ -162,7 +162,8 @@ public class ExpandablePattern implements IBlockPattern {
 
         for (var entry : patternState.globalCount.object2IntEntrySet()) {
             if (entry.getIntValue() < entry.getKey().minCount) {
-                patternState.setError(new SinglePredicateError(entry.getKey(), 1));
+                patternState
+                        .setError(new SinglePredicateError(entry.getKey(), SinglePredicateError.ErrorType.MIN_COUNT));
                 return false;
             }
         }

@@ -11,9 +11,9 @@ import java.util.List;
 public class SinglePredicateError extends PatternError {
 
     public final SimplePredicate predicate;
-    public final int type;
+    public final ErrorType type;
 
-    public SinglePredicateError(SimplePredicate failingPredicate, int type) {
+    public SinglePredicateError(SimplePredicate failingPredicate, ErrorType type) {
         super(null, failingPredicate);
         this.predicate = failingPredicate;
         this.type = type;
@@ -27,18 +27,25 @@ public class SinglePredicateError extends PatternError {
     @Override
     public Component getErrorInfo() {
         int number = -1;
-        if (type == 0) {
+        if (type == ErrorType.MAX_COUNT) {
             number = predicate.maxCount;
         }
-        if (type == 1) {
+        if (type == ErrorType.MIN_COUNT) {
             number = predicate.minCount;
         }
-        if (type == 2) {
+        if (type == ErrorType.MAX_LAYER_COUNT) {
             number = predicate.maxLayerCount;
         }
-        if (type == 3) {
+        if (type == ErrorType.MIN_LAYER_COUNT) {
             number = predicate.minLayerCount;
         }
-        return Component.translatable("gtceu.multiblock.pattern.error.limited." + type, number);
+        return Component.translatable("gtceu.multiblock.pattern.error.limited." + type.ordinal(), number);
+    }
+
+    public enum ErrorType {
+        MAX_COUNT,
+        MIN_COUNT,
+        MAX_LAYER_COUNT,
+        MIN_LAYER_COUNT
     }
 }

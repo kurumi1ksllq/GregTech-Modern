@@ -67,7 +67,8 @@ public class MultiblockMachineDefinition extends MachineDefinition {
         var designs = shapes.get();
         if (!designs.isEmpty()) return designs;
         var structurePattern = patternFactory.get();
-        return null;
+        return new ArrayList<>();
+        // return null;
         // int[][] aisleRepetitions = structurePattern.aisleRepetitions;
         // return repetitionDFS(structurePattern, new ArrayList<>(), aisleRepetitions, new IntArrayList());
     }

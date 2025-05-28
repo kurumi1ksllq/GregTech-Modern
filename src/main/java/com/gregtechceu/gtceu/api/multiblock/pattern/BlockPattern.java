@@ -170,7 +170,8 @@ public class BlockPattern implements IBlockPattern {
 
         for (Object2IntMap.Entry<SimplePredicate> entry : patternState.globalCount.object2IntEntrySet()) {
             if (entry.getIntValue() < entry.getKey().minCount) {
-                patternState.setError(new SinglePredicateError(entry.getKey(), 1));
+                patternState
+                        .setError(new SinglePredicateError(entry.getKey(), SinglePredicateError.ErrorType.MIN_COUNT));
                 return false;
             }
         }
@@ -237,7 +238,8 @@ public class BlockPattern implements IBlockPattern {
 
         for (Object2IntMap.Entry<SimplePredicate> entry : patternState.layerCount.object2IntEntrySet()) {
             if (entry.getIntValue() < entry.getKey().minLayerCount) {
-                patternState.setError(new SinglePredicateError(entry.getKey(), 3));
+                patternState.setError(
+                        new SinglePredicateError(entry.getKey(), SinglePredicateError.ErrorType.MIN_LAYER_COUNT));
                 return false;
             }
         }

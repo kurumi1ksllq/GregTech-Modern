@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.IMiner;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.IDataInfoProvider;
@@ -42,8 +41,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -131,7 +128,7 @@ public class LargeMinerMachine extends WorkableElectricMultiblockMachine
     @Override
     public PatternState checkStructurePattern(String name) {
         var patternState = super.checkStructurePattern(name);
-        if(this.getUpwardsFacing() != Direction.UP && this.getUpwardsFacing() != Direction.DOWN) {
+        if (this.getUpwardsFacing() != Direction.UP && this.getUpwardsFacing() != Direction.DOWN) {
             patternState.setError(PatternError.PLACEHOLDER);
         }
         return patternState;
@@ -140,15 +137,15 @@ public class LargeMinerMachine extends WorkableElectricMultiblockMachine
     private void initializeAbilities() {
         List<IEnergyContainer> energyContainers = new ArrayList<>();
         List<IFluidHandler> fluidTanks = new ArrayList<>();
-        //Long2ObjectMap<IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap",
-        //        Long2ObjectMaps::emptyMap);
+        // Long2ObjectMap<IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap",
+        // Long2ObjectMaps::emptyMap);
         for (IMultiPart part : getParts()) {
-            //IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
-            //if (io == IO.NONE) continue;
+            // IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
+            // if (io == IO.NONE) continue;
 
             var handlerLists = part.getRecipeHandlers();
             for (var handlerList : handlerLists) {
-                //if (!handlerList.isValid(io)) continue;
+                // if (!handlerList.isValid(io)) continue;
                 handlerList.getCapability(EURecipeCapability.CAP).stream()
                         .filter(IEnergyContainer.class::isInstance)
                         .map(IEnergyContainer.class::cast)

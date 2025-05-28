@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.multiblock.util;
 
 import com.lowdragmc.lowdraglib.utils.FacadeBlockAndTintGetter;
-import lombok.Getter;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -12,13 +12,16 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import lombok.Getter;
+
 public class BlockInfo {
+
     public static final BlockInfo EMPTY = new BlockInfo(Blocks.AIR);
 
     @Getter
     private BlockState blockState;
     private final boolean hasBlockEntity;
-    //private CompoundTag tag;
+    // private CompoundTag tag;
     private final ItemStack itemStack;
     @Getter
     private BlockEntity blockEntity;
@@ -47,9 +50,9 @@ public class BlockInfo {
     }
 
     public static BlockInfo fromBlockState(BlockState state) {
-        if(state.getBlock() instanceof EntityBlock entityBlock) {
+        if (state.getBlock() instanceof EntityBlock entityBlock) {
             BlockEntity be = entityBlock.newBlockEntity(BlockPos.ZERO, state);
-            if(be != null) {
+            if (be != null) {
                 return new BlockInfo(state, true);
             }
         }
@@ -66,7 +69,7 @@ public class BlockInfo {
 
     public BlockEntity getBlockEntity(Level level, BlockPos pos) {
         BlockEntity entity = getBlockEntity();
-        if(entity != null) {
+        if (entity != null) {
             entity.setLevel(level);
         }
         return entity;
@@ -77,14 +80,15 @@ public class BlockInfo {
     }
 
     public ItemStack getItemStackForm(BlockAndTintGetter level, BlockPos pos) {
-        if(itemStack != null) return itemStack;
-        return blockState.getBlock().getCloneItemStack(new FacadeBlockAndTintGetter(level, pos, blockState, null), pos, blockState);
+        if (itemStack != null) return itemStack;
+        return blockState.getBlock().getCloneItemStack(new FacadeBlockAndTintGetter(level, pos, blockState, null), pos,
+                blockState);
     }
 
     public void apply(Level level, BlockPos pos) {
         level.setBlockAndUpdate(pos, blockState);
         BlockEntity be = getBlockEntity();
-        if(be != null) {
+        if (be != null) {
             level.setBlockEntity(be);
         }
     }

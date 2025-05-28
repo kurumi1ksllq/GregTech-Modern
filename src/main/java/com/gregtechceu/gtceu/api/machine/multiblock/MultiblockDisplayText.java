@@ -64,12 +64,12 @@ public class MultiblockDisplayText {
                         .withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover))));
             }
 
-            if(!isStructureFormed) {
-                if(state.hasError()) {
+            if (!isStructureFormed) {
+                if (state.hasError()) {
                     Component comp = state.getError().getErrorInfo();
                     textList.add(comp);
                 }
-                //textList.add(state.getError().getErrorInfo());
+                // textList.add(state.getError().getErrorInfo());
             }
         }
 

@@ -4,12 +4,13 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
 import com.gregtechceu.gtceu.api.multiblock.pattern.CurrentBlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
-
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import lombok.Getter;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import lombok.Getter;
 
 import java.util.*;
 import java.util.function.Function;
@@ -18,10 +19,9 @@ import java.util.stream.Collectors;
 public class TraceabilityPredicate {
 
     public static TraceabilityPredicate ANY = new TraceabilityPredicate(currentBlockInfo -> null);
-    public static TraceabilityPredicate AIR = new TraceabilityPredicate(currentBlockInfo ->
-            currentBlockInfo.getBlockState().isAir() ? null :
+    public static TraceabilityPredicate AIR = new TraceabilityPredicate(
+            currentBlockInfo -> currentBlockInfo.getBlockState().isAir() ? null :
                     new PatternError(currentBlockInfo.getBlockPos(), Collections.emptyList()));
-
 
     public List<SimplePredicate> simple = new ArrayList<>();
     @Getter
@@ -41,10 +41,11 @@ public class TraceabilityPredicate {
 
     /**
      *
-     * @param predicate the testing function for if the current block information is valid
+     * @param predicate  the testing function for if the current block information is valid
      * @param candidates the valid list of BlockInfos that this traceability predicate allows
      */
-    public TraceabilityPredicate(Function<CurrentBlockInfo, PatternError> predicate, Function<Map<String, String>, BlockInfo[]> candidates) {
+    public TraceabilityPredicate(Function<CurrentBlockInfo, PatternError> predicate,
+                                 Function<Map<String, String>, BlockInfo[]> candidates) {
         simple.add(new SimplePredicate(predicate, candidates));
     }
 
@@ -177,14 +178,16 @@ public class TraceabilityPredicate {
         return this;
     }
 
-    public PatternError test(CurrentBlockInfo currBlock, Object2IntMap<SimplePredicate> globalCache, Object2IntMap<SimplePredicate> layerCache) {
+    public PatternError test(CurrentBlockInfo currBlock, Object2IntMap<SimplePredicate> globalCache,
+                             Object2IntMap<SimplePredicate> layerCache) {
         PatternError lastError = null;
-        for(SimplePredicate p : simple) {
+        for (SimplePredicate p : simple) {
             PatternError error = p.testLimited(currBlock, globalCache, layerCache);
-            if(error == null) return null;
+            if (error == null) return null;
             lastError = error;
         }
-        return lastError == PatternError.PLACEHOLDER ? new PatternError(currBlock.getBlockPos(), getCandidates()) : lastError;
+        return lastError == PatternError.PLACEHOLDER ? new PatternError(currBlock.getBlockPos(), getCandidates()) :
+                lastError;
     }
 
     public TraceabilityPredicate or(TraceabilityPredicate other) {

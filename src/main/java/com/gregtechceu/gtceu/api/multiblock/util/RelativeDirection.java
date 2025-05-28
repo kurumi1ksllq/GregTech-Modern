@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.multiblock.util;
 
 import com.gregtechceu.gtceu.utils.GTUtil;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
@@ -36,7 +37,7 @@ public enum RelativeDirection {
     }
 
     public Direction getRelativeFacing(Direction frontFacing, Direction upwardsFacing) {
-        if(frontFacing.getAxis() == upwardsFacing.getAxis()) {
+        if (frontFacing.getAxis() == upwardsFacing.getAxis()) {
             throw new IllegalArgumentException("front facing and up facing must be on different axes");
         }
         return facingFunction.apply(frontFacing, upwardsFacing);
@@ -70,14 +71,14 @@ public enum RelativeDirection {
      */
     public static Direction simulateAxisRotation(Direction newFrontFacing, Direction oldFrontFacing,
                                                  Direction upwardsFacing) {
-        if(newFrontFacing.getAxis() == oldFrontFacing.getAxis()) return upwardsFacing;
+        if (newFrontFacing.getAxis() == oldFrontFacing.getAxis()) return upwardsFacing;
 
         Direction cross = GTUtil.cross(newFrontFacing, oldFrontFacing);
 
         assert cross != null;
-        if(cross.getAxis() == upwardsFacing.getAxis()) return upwardsFacing;
+        if (cross.getAxis() == upwardsFacing.getAxis()) return upwardsFacing;
 
-        if(oldFrontFacing.getClockWise(cross.getAxis()) == newFrontFacing)
+        if (oldFrontFacing.getClockWise(cross.getAxis()) == newFrontFacing)
             return oldFrontFacing.getOpposite();
 
         return oldFrontFacing;
@@ -97,13 +98,13 @@ public enum RelativeDirection {
     }
 
     public static <T extends Enum<T>> void validateFacingsArray(T[] facings) {
-        if(facings.length != 3) throw new IllegalArgumentException("Facings must be array of length 3!");
+        if (facings.length != 3) throw new IllegalArgumentException("Facings must be array of length 3!");
 
         int c = 0;
-        for(int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             c |= (1 << facings[i].ordinal() / 2);
         }
 
-        if(c != 7) throw new IllegalArgumentException("The 3 facings must use each axis exactly once!");
+        if (c != 7) throw new IllegalArgumentException("The 3 facings must use each axis exactly once!");
     }
 }

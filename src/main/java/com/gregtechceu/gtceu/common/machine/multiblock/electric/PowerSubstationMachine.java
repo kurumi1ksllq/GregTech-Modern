@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.electric;
 
-import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.IEnergyInfoProvider;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
@@ -38,8 +37,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.player.Player;
 
 import com.google.common.annotations.VisibleForTesting;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,7 +45,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class PowerSubstationMachine extends WorkableMultiblockMachine
                                     implements IEnergyInfoProvider, IFancyUIMachine, IDisplayUIMachine {
@@ -97,17 +93,17 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
         super.formStructure(name);
         List<IEnergyContainer> inputs = new ArrayList<>();
         List<IEnergyContainer> outputs = new ArrayList<>();
-        //Long2ObjectMap<IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap",
-        //        Long2ObjectMaps::emptyMap);
+        // Long2ObjectMap<IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap",
+        // Long2ObjectMaps::emptyMap);
         for (IMultiPart part : getParts()) {
-            //IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
-            //if (io == IO.NONE) continue;
+            // IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
+            // if (io == IO.NONE) continue;
             if (part instanceof IMaintenanceMachine maintenanceMachine) {
                 this.maintenance = maintenanceMachine;
             }
             var handlerLists = part.getRecipeHandlers();
             for (var handlerList : handlerLists) {
-                //if (!handlerList.isValid(io)) continue;
+                // if (!handlerList.isValid(io)) continue;
 
                 var containers = handlerList.getCapability(EURecipeCapability.CAP).stream()
                         .filter(IEnergyContainer.class::isInstance)
@@ -129,23 +125,25 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
 
         List<IBatteryData> batteries = new ArrayList<>();
         var cache = getSubstructure(name).getCache();
-        for(var entry : cache.long2ObjectEntrySet()) {
+        for (var entry : cache.long2ObjectEntrySet()) {
             var state = entry.getValue();
             if (state.getBlockState().getBlock() instanceof BatteryBlock batteryBlock) {
-                if(batteryBlock.getData().getCapacity() > 0) {
+                if (batteryBlock.getData().getCapacity() > 0) {
                     batteries.add(batteryBlock.getData());
                 }
             }
         }
 
-        /*for (Map.Entry<String, Object> battery : getMultiblockState().getMatchContext().entrySet()) {
-            if (battery.getKey().startsWith(PMC_BATTERY_HEADER) &&
-                    battery.getValue() instanceof BatteryMatchWrapper wrapper) {
-                for (int i = 0; i < wrapper.amount; i++) {
-                    batteries.add(wrapper.partType);
-                }
-            }
-        }*/
+        /*
+         * for (Map.Entry<String, Object> battery : getMultiblockState().getMatchContext().entrySet()) {
+         * if (battery.getKey().startsWith(PMC_BATTERY_HEADER) &&
+         * battery.getValue() instanceof BatteryMatchWrapper wrapper) {
+         * for (int i = 0; i < wrapper.amount; i++) {
+         * batteries.add(wrapper.partType);
+         * }
+         * }
+         * }
+         */
         if (batteries.isEmpty()) {
             // only empty batteries found in the structure
             invalidateStructure();

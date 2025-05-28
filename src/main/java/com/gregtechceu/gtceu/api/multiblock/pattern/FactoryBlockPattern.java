@@ -1,9 +1,10 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
-import com.google.common.base.Joiner;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
+
+import com.google.common.base.Joiner;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import org.apache.commons.lang3.ArrayUtils;
@@ -36,9 +37,10 @@ import java.util.List;
  * </pre>
  */
 public class FactoryBlockPattern {
+
     protected static final Joiner COMMA_JOIN = Joiner.on(",");
 
-    private final int[] dimensions = {-1, -1, -1};
+    private final int[] dimensions = { -1, -1, -1 };
 
     private OriginOffset offset;
     private char centerChar;
@@ -60,15 +62,15 @@ public class FactoryBlockPattern {
 
     public FactoryBlockPattern aisleRepeatable(int minRepeats, int maxRepeats, @NotNull String... aisle) {
         validateAisle(aisle);
-        for(String s : aisle) {
+        for (String s : aisle) {
             for (char c : s.toCharArray()) {
-                if(!this.symbolMap.containsKey(c)) {
+                if (!this.symbolMap.containsKey(c)) {
                     this.symbolMap.put(c, null);
                 }
             }
         }
 
-        if(minRepeats > maxRepeats) {
+        if (minRepeats > maxRepeats) {
             throw new IllegalArgumentException("minRepeats must be smaller than maxRepeats");
         }
         // PA returns in gtm :lets:
@@ -114,7 +116,7 @@ public class FactoryBlockPattern {
 
     public FactoryBlockPattern where(char symbol, TraceabilityPredicate predicate) {
         this.symbolMap.put(symbol, predicate);
-        if(predicate.isController()) centerChar = symbol;
+        if (predicate.isController()) centerChar = symbol;
         return this;
     }
 
@@ -126,7 +128,7 @@ public class FactoryBlockPattern {
     public BlockPattern build() {
         checkMissingPredicates();
         this.dimensions[0] = aisles.size();
-        if(aisleStrategy == null) aisleStrategy = new BasicAisleStrategy();
+        if (aisleStrategy == null) aisleStrategy = new BasicAisleStrategy();
 
         aisleStrategy.finish(dimensions, directions, aisles);
         return new BlockPattern(aisles.toArray(new PatternAisle[0]), aisleStrategy, dimensions,
@@ -137,34 +139,34 @@ public class FactoryBlockPattern {
         List<Character> list = new ArrayList<>();
 
         for (var entry : this.symbolMap.char2ObjectEntrySet()) {
-            if(entry.getValue() == null) {
+            if (entry.getValue() == null) {
                 list.add(entry.getCharKey());
             }
         }
 
-        if(!list.isEmpty()) {
+        if (!list.isEmpty()) {
             throw new IllegalStateException("Predicates for character(s) " + COMMA_JOIN.join(list) + " are missing");
         }
     }
 
     public void validateAisle(String[] aisle) {
-        if(ArrayUtils.isEmpty(aisle) || StringUtils.isEmpty(aisle[0]))
+        if (ArrayUtils.isEmpty(aisle) || StringUtils.isEmpty(aisle[0]))
             throw new IllegalArgumentException("Empty pattern for aisle");
 
-        if(dimensions[2] == -1) {
+        if (dimensions[2] == -1) {
             dimensions[2] = aisle[0].length();
         }
 
-        if(dimensions[1] == -1) {
+        if (dimensions[1] == -1) {
             dimensions[1] = aisle.length;
         }
 
-        if(aisle.length != dimensions[1]) {
+        if (aisle.length != dimensions[1]) {
             throw new IllegalArgumentException("Expected aisle with height of " + dimensions[1] +
                     ", but was given one with a height of " + aisle.length);
         } else {
-            for(String s : aisle) {
-                if(s.length() != dimensions[2]) {
+            for (String s : aisle) {
+                if (s.length() != dimensions[2]) {
                     throw new IllegalArgumentException("" +
                             "Not all rows in the given aisle are the correct width (expected " + dimensions[2] +
                             ", found one with " + s.length() + ")");

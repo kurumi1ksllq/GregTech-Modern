@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.api.multiblock.pattern.CurrentBlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -18,6 +17,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -25,7 +25,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SimplePredicate {
-
 
     @Nullable
     public Function<Map<String, String>, BlockInfo[]> candidates;
@@ -47,13 +46,15 @@ public class SimplePredicate {
         this.type = "Unknown";
     }
 
-    public SimplePredicate(Function<CurrentBlockInfo, PatternError> predicate, @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
+    public SimplePredicate(Function<CurrentBlockInfo, PatternError> predicate,
+                           @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
         this.predicate = predicate;
         this.candidates = candidates;
         this.type = "Unknown";
     }
 
-    public SimplePredicate(String type, Function<CurrentBlockInfo, PatternError> predicate, @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
+    public SimplePredicate(String type, Function<CurrentBlockInfo, PatternError> predicate,
+                           @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
         this.predicate = predicate;
         this.candidates = candidates;
         this.type = type;
@@ -96,58 +97,62 @@ public class SimplePredicate {
     }
 
     public PatternError testLimited(CurrentBlockInfo currBlock,
-                                    Object2IntMap<SimplePredicate> globalCache, Object2IntMap<SimplePredicate> layerCache) {
+                                    Object2IntMap<SimplePredicate> globalCache,
+                                    Object2IntMap<SimplePredicate> layerCache) {
         PatternError error = testGlobal(currBlock, globalCache, layerCache);
-        if(error != null) return error;
+        if (error != null) return error;
         return testLayer(currBlock, layerCache);
     }
 
-    /*private boolean checkInnerConditions(MultiblockState blockWorldState) {
-        if (disableRenderFormed) {
-            blockWorldState.getMatchContext().getOrCreate("renderMask", LongOpenHashSet::new)
-                    .add(blockWorldState.getPos().asLong());
-        }
-        if (io != IO.BOTH) {
-            if (blockWorldState.io == IO.BOTH) {
-                blockWorldState.io = io;
-            } else if (blockWorldState.io != io) {
-                blockWorldState.io = null;
-            }
-        }
-        if (nbtParser != null && !blockWorldState.world.isClientSide) {
-            BlockEntity te = blockWorldState.getTileEntity();
-            if (te != null) {
-                CompoundTag nbt = te.saveWithFullMetadata();
-                if (Pattern.compile(nbtParser).matcher(nbt.toString()).find()) {
-                    return true;
-                }
-            }
-            blockWorldState.setError(new PatternStringError("The NBT fails to match"));
-            return false;
-        }
-        if (slotName != null) {
-            Long2ObjectMap<Set<String>> slots = blockWorldState.getMatchContext().getOrCreate("slots",
-                    Long2ObjectArrayMap::new);
-            slots.computeIfAbsent(blockWorldState.getPos().asLong(), s -> new HashSet<>()).add(slotName);
-            return true;
-        }
-        return true;
-    }*/
+    /*
+     * private boolean checkInnerConditions(MultiblockState blockWorldState) {
+     * if (disableRenderFormed) {
+     * blockWorldState.getMatchContext().getOrCreate("renderMask", LongOpenHashSet::new)
+     * .add(blockWorldState.getPos().asLong());
+     * }
+     * if (io != IO.BOTH) {
+     * if (blockWorldState.io == IO.BOTH) {
+     * blockWorldState.io = io;
+     * } else if (blockWorldState.io != io) {
+     * blockWorldState.io = null;
+     * }
+     * }
+     * if (nbtParser != null && !blockWorldState.world.isClientSide) {
+     * BlockEntity te = blockWorldState.getTileEntity();
+     * if (te != null) {
+     * CompoundTag nbt = te.saveWithFullMetadata();
+     * if (Pattern.compile(nbtParser).matcher(nbt.toString()).find()) {
+     * return true;
+     * }
+     * }
+     * blockWorldState.setError(new PatternStringError("The NBT fails to match"));
+     * return false;
+     * }
+     * if (slotName != null) {
+     * Long2ObjectMap<Set<String>> slots = blockWorldState.getMatchContext().getOrCreate("slots",
+     * Long2ObjectArrayMap::new);
+     * slots.computeIfAbsent(blockWorldState.getPos().asLong(), s -> new HashSet<>()).add(slotName);
+     * return true;
+     * }
+     * return true;
+     * }
+     */
 
     public PatternError testGlobal(CurrentBlockInfo currBlock,
-                                   Object2IntMap<SimplePredicate> globalCache, Object2IntMap<SimplePredicate> layerCache) {
+                                   Object2IntMap<SimplePredicate> globalCache,
+                                   Object2IntMap<SimplePredicate> layerCache) {
         PatternError res = predicate.apply(currBlock);
-        if(!globalCache.containsKey(this)) globalCache.put(this, 0);
-        if((minCount == -1 && maxCount == -1) || res != null || layerCache == null) return res;
+        if (!globalCache.containsKey(this)) globalCache.put(this, 0);
+        if ((minCount == -1 && maxCount == -1) || res != null || layerCache == null) return res;
         int count = layerCache.put(this, layerCache.getInt(this) + 1) + 1 + globalCache.getInt(this);
-        if(maxCount == -1 || count <= maxCount) return null;
+        if (maxCount == -1 || count <= maxCount) return null;
         return new SinglePredicateError(this, 0);
     }
 
     public PatternError testLayer(CurrentBlockInfo currBlock, Object2IntMap<SimplePredicate> layerCache) {
         PatternError res = predicate.apply(currBlock);
-        if((minLayerCount == -1 && maxLayerCount == -1) || res != null) return res;
-        if(maxLayerCount == -1 || layerCache.getInt(this) <= maxLayerCount) return null;
+        if ((minLayerCount == -1 && maxLayerCount == -1) || res != null) return res;
+        if (maxLayerCount == -1 || layerCache.getInt(this) <= maxLayerCount) return null;
         return new SinglePredicateError(this, 2);
     }
 

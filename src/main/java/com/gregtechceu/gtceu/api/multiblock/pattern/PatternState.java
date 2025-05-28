@@ -5,19 +5,21 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockWorldSavedData;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
-
 import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
+
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
+
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -82,36 +84,36 @@ public class PatternState {
     }
 
     public void onBlockStateChanged(BlockPos pos, BlockState state) {
-        if(cbi.getLevel() instanceof ServerLevel serverLevel) {
-            if(pos.equals(controllerPos)) {
-                if(controller != null) {
-                    if(!state.is(controller.self().getBlockState().getBlock())) {
+        if (cbi.getLevel() instanceof ServerLevel serverLevel) {
+            if (pos.equals(controllerPos)) {
+                if (controller != null) {
+                    if (!state.is(controller.self().getBlockState().getBlock())) {
                         controller.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
                         var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
                         mwsd.removeMapping(this);
                     }
                 }
             } else {
-              if(controller != null) {
-                  if(controller.isFormed() && state.getBlock() instanceof ActiveBlock) {
-                      return;
-                  }
-                  if(!controller.checkStructurePattern(MultiblockControllerMachine.DEFAULT_STRUCTURE).hasError()) {
-                      controller.formStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
-                  } else {
-                      controller.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
-                      var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-                      mwsd.removeMapping(this);
-                      mwsd.addAsyncLogic(controller);
-                  }
-              }
+                if (controller != null) {
+                    if (controller.isFormed() && state.getBlock() instanceof ActiveBlock) {
+                        return;
+                    }
+                    if (!controller.checkStructurePattern(MultiblockControllerMachine.DEFAULT_STRUCTURE).hasError()) {
+                        controller.formStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
+                    } else {
+                        controller.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
+                        var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
+                        mwsd.removeMapping(this);
+                        mwsd.addAsyncLogic(controller);
+                    }
+                }
 
             }
         }
     }
 
-
     public enum CheckState {
+
         /**
          * The cache doesn't match with the structure's data. The structure has been rechecked from scratch, is valid,
          * and the cache is now populated.
@@ -138,5 +140,4 @@ public class PatternState {
             return ordinal() < 2;
         }
     }
-
 }

@@ -525,7 +525,7 @@ public class GTUtil {
     }
 
     public static Direction cross(Direction a, Direction b) {
-        if(a.getAxis() == b.getAxis()) return null;
+        if (a.getAxis() == b.getAxis()) return null;
 
         return Direction.getNearest(
                 a.getStepY() * b.getStepZ() - a.getStepZ() * b.getStepY(),

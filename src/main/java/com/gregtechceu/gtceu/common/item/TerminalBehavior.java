@@ -25,7 +25,8 @@ public class TerminalBehavior implements IInteractionItem {
                     MetaMachine.getMachine(level, blockPos) instanceof IMultiController controller) {
                 if (!controller.isFormed()) {
                     if (!level.isClientSide) {
-                        //controller.createStructurePattern().autoBuild(context.getPlayer(), controller.getMultiblockState());
+                        // controller.createStructurePattern().autoBuild(context.getPlayer(),
+                        // controller.getMultiblockState());
                     }
                     return InteractionResult.sidedSuccess(level.isClientSide);
                 }

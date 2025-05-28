@@ -1,13 +1,15 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class CurrentBlockInfo {
+
     @Setter
     @Getter
     protected Level level;
@@ -20,17 +22,17 @@ public class CurrentBlockInfo {
     private boolean teResolved;
 
     public BlockState retrieveCurrentBlockState() {
-        if(this.blockState == null) {
+        if (this.blockState == null) {
             this.blockState = level.getBlockState(pos.immutable());
         }
         return blockState;
     }
 
     public BlockEntity retrieveCurrentBlockEntity() {
-        if(!retrieveCurrentBlockState().hasBlockEntity()) {
+        if (!retrieveCurrentBlockState().hasBlockEntity()) {
             return null;
         }
-        if(tileEntity == null && !teResolved) {
+        if (tileEntity == null && !teResolved) {
             tileEntity = level.getBlockEntity(pos.immutable());
             teResolved = true;
         }
@@ -56,5 +58,4 @@ public class CurrentBlockInfo {
         tileEntity = level.getBlockEntity(pos.immutable());
         teResolved = true;
     }
-
 }

@@ -13,7 +13,7 @@ public class PatternAisle {
 
     public PatternAisle(int repeats, char[][] pattern) {
         this.pattern = new String[pattern.length];
-        for(int i = 0; i < pattern.length; i++) {
+        for (int i = 0; i < pattern.length; i++) {
             this.pattern[i] = new String(pattern[i]);
         }
         this.minRepeats = this.maxRepeats = repeats;
@@ -48,9 +48,9 @@ public class PatternAisle {
     }
 
     public int[] firstInstanceOf(char c) {
-        for(int strI = 0; strI < pattern.length; strI++) {
+        for (int strI = 0; strI < pattern.length; strI++) {
             int pos = pattern[strI].indexOf(c);
-            if(pos != -1) return new int[] {strI, pos};
+            if (pos != -1) return new int[] { strI, pos };
         }
         return null;
     }

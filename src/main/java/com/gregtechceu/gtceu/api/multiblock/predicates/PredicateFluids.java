@@ -19,7 +19,7 @@ public class PredicateFluids extends SimplePredicate {
         if (fluids.length == 0) this.fluids = new Fluid[] { Fluids.WATER };
         else this.fluids = Arrays.stream(fluids).filter(Objects::nonNull).toArray(Fluid[]::new);
         predicate = state -> ArrayUtils.contains(this.fluids, state.getBlockState().getFluidState().getType()) ?
-            null : PatternError.PLACEHOLDER;
+                null : PatternError.PLACEHOLDER;
         candidates = (map) -> Arrays.stream(this.fluids)
                 .map(fluid -> BlockInfo.fromBlockState(fluid.defaultFluidState().createLegacyBlock()))
                 .toArray(BlockInfo[]::new);

@@ -1,8 +1,10 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class AisleStrategy {
+
     protected final int[] dimensions = new int[3];
     protected final RelativeDirection[] directions = new RelativeDirection[3];
 

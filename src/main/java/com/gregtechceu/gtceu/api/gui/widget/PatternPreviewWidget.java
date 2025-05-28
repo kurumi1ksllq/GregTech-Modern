@@ -210,15 +210,17 @@ public class PatternPreviewWidget extends WidgetGroup {
         Stream<BlockPos> stream = pattern.blockMap.keySet().stream()
                 .filter(pos -> layer == -1 || layer + pattern.minY == pos.getY());
         if (pattern.controllerBase.isFormed()) {
-            /*LongSet set = pattern.controllerBase.getMultiblockState().getMatchContext().getOrDefault("renderMask",
-                    LongSets.EMPTY_SET);
-            Set<BlockPos> modelDisabled = set.stream().map(BlockPos::of).collect(Collectors.toSet());
-            if (!modelDisabled.isEmpty()) {
-                sceneWidget.setRenderedCore(
-                        stream.filter(pos -> !modelDisabled.contains(pos)).collect(Collectors.toList()), null);
-            } else {
-                sceneWidget.setRenderedCore(stream.toList(), null);
-            }*/
+            /*
+             * LongSet set = pattern.controllerBase.getMultiblockState().getMatchContext().getOrDefault("renderMask",
+             * LongSets.EMPTY_SET);
+             * Set<BlockPos> modelDisabled = set.stream().map(BlockPos::of).collect(Collectors.toSet());
+             * if (!modelDisabled.isEmpty()) {
+             * sceneWidget.setRenderedCore(
+             * stream.filter(pos -> !modelDisabled.contains(pos)).collect(Collectors.toList()), null);
+             * } else {
+             * sceneWidget.setRenderedCore(stream.toList(), null);
+             * }
+             */
         } else {
             sceneWidget.setRenderedCore(stream.toList(), null);
         }
@@ -364,7 +366,7 @@ public class PatternPreviewWidget extends WidgetGroup {
         Map<BlockPos, TraceabilityPredicate> predicateMap = new HashMap<>();
         if (controllerBase != null) {
             loadControllerFormed(predicateMap.keySet(), controllerBase);
-            //predicateMap = controllerBase.getMultiblockState().getMatchContext().get("predicates");
+            // predicateMap = controllerBase.getMultiblockState().getMatchContext().get("predicates");
         }
         return controllerBase == null ? null : new MBPattern(blockMap, parts.values().stream().sorted((one, two) -> {
             if (one.isController) return -1;
@@ -379,19 +381,21 @@ public class PatternPreviewWidget extends WidgetGroup {
 
     private void loadControllerFormed(Collection<BlockPos> poses, IMultiController controllerBase) {
         IBlockPattern pattern = controllerBase.createStructurePattern();
-        if (pattern != null  /* && pattern.checkPatternAt(controllerBase.getMultiblockState(), true)*/) {
+        if (pattern != null /* && pattern.checkPatternAt(controllerBase.getMultiblockState(), true) */) {
             controllerBase.checkAndFormStructurePatterns();
         }
         if (controllerBase.isFormed()) {
-            /*LongSet set = controllerBase.getMultiblockState().getMatchContext().getOrDefault("renderMask",
-                    LongSets.EMPTY_SET);
-            Set<BlockPos> modelDisabled = set.stream().map(BlockPos::of).collect(Collectors.toSet());
-            if (!modelDisabled.isEmpty()) {
-                sceneWidget.setRenderedCore(
-                        poses.stream().filter(pos -> !modelDisabled.contains(pos)).collect(Collectors.toList()), null);
-            } else {
-                sceneWidget.setRenderedCore(poses, null);
-            }*/
+            /*
+             * LongSet set = controllerBase.getMultiblockState().getMatchContext().getOrDefault("renderMask",
+             * LongSets.EMPTY_SET);
+             * Set<BlockPos> modelDisabled = set.stream().map(BlockPos::of).collect(Collectors.toSet());
+             * if (!modelDisabled.isEmpty()) {
+             * sceneWidget.setRenderedCore(
+             * poses.stream().filter(pos -> !modelDisabled.contains(pos)).collect(Collectors.toList()), null);
+             * } else {
+             * sceneWidget.setRenderedCore(poses, null);
+             * }
+             */
         } else {
             GTCEu.LOGGER.warn("Pattern formed checking failed: {}", controllerBase.self().getDefinition());
         }
@@ -440,7 +444,7 @@ public class PatternPreviewWidget extends WidgetGroup {
                         var item = itemStack.copy();
                         item.setCount(amount);
                         return item;
-                    }).filter(item -> !((ItemStack)item).isEmpty()).toList();
+                    }).filter(item -> !((ItemStack) item).isEmpty()).toList();
         }
     }
 

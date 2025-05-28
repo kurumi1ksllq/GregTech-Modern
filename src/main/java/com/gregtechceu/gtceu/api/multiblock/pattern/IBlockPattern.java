@@ -5,16 +5,19 @@ import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectSortedMap;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectSortedMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
 public interface IBlockPattern {
+
     /**
      * Checks the pattern fast, this should always be preferred to checkPatternAt(...) for multiblock code.
      *
@@ -27,7 +30,8 @@ public interface IBlockPattern {
      * @param allowsFlip    Whether the multiblock allows flipping.
      * @return The internal state of the pattern. Check whether its valid first before using other fields.
      */
-    PatternState checkPatternFastAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing, boolean allowsFlip);
+    PatternState checkPatternFastAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
+                                    boolean allowsFlip);
 
     /**
      * Checks the whole pattern, you should probably use checkPatternFastAt(...) instead.
@@ -41,17 +45,20 @@ public interface IBlockPattern {
      * @param isFlipped     Is the multiblock flipped or not.
      * @return True if the check passed, in which case the context is mutated for returning from checkPatternFastAt(...)
      */
-    boolean checkPatternAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing, boolean isFlipped);
+    boolean checkPatternAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
+                           boolean isFlipped);
 
     /**
      * Gets the default shape, if the multiblock does not specify one. Return null to represent the default shape does
      * not exist.
      *
      * @param keyMap The map from multiblock builder for autobuild.
-     * @return The long key is using {@link net.minecraft.core.BlockPos.MutableBlockPos#asLong(int, int, int)} with x, y, z
+     * @return The long key is using {@link net.minecraft.core.BlockPos.MutableBlockPos#asLong(int, int, int)} with x,
+     *         y, z
      *         respectively being. The map is sorted using the natural ordering(thus with x, y, z order).
      */
-    Long2ObjectSortedMap<TraceabilityPredicate> getDefaultShape(MultiblockControllerMachine src, @NotNull Map<String, String> keyMap);
+    Long2ObjectSortedMap<TraceabilityPredicate> getDefaultShape(MultiblockControllerMachine src,
+                                                                @NotNull Map<String, String> keyMap);
 
     void setActivePatternState(PatternState patternState);
 

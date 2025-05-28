@@ -96,7 +96,6 @@ public class PrimitivePumpMachine extends MultiblockControllerMachine {
     }
 
     private void produceWater() {
-
         if (getOffsetTimer() % 20 == 0 && isFormed()) {
             if (biomeModifier == 0) {
                 biomeModifier = GTUtil.getPumpBiomeModifier(getLevel().getBiome(getPos()));

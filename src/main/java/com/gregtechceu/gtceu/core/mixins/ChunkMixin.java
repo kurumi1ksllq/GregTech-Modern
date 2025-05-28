@@ -37,7 +37,7 @@ public class ChunkMixin {
                 for (var structure : MultiblockWorldSavedData.getOrCreate(serverLevel)
                         .getControllerInChunk(((LevelChunk) (Object) this).getPos())) {
 
-                    if(structure.getPosCache().contains(pos)) {
+                    if (structure.getPosCache().contains(pos)) {
                         server.executeBlocking(() -> structure.onBlockStateChanged(pos, state));
                     }
                 }

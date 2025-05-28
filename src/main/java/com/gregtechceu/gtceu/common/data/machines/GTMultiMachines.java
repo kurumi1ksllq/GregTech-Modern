@@ -12,10 +12,10 @@ import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.CoilWorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.client.renderer.machine.*;
 import com.gregtechceu.gtceu.client.util.TooltipHelper;
@@ -91,7 +91,8 @@ public class GTMultiMachines {
             .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.COKE_OVEN_RECIPES)
             .appearanceBlock(CASING_COKE_BRICKS)
-            .pattern(definition -> FactoryBlockPattern.start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
+            .pattern(definition -> FactoryBlockPattern
+                    .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
                     .aisle("XXX", "XXX", "XXX")
                     .aisle("XXX", "X#X", "XXX")
                     .aisle("XXX", "XYX", "XXX")
@@ -112,7 +113,8 @@ public class GTMultiMachines {
                     GTCEu.id("block/multiblock/primitive_blast_furnace")))
             .hasTESR(true)
             .appearanceBlock(CASING_PRIMITIVE_BRICKS)
-            .pattern(definition -> FactoryBlockPattern.start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
+            .pattern(definition -> FactoryBlockPattern
+                    .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
                     .aisle("XXX", "XXX", "XXX", "XXX")
                     .aisle("XXX", "X#X", "X#X", "X#X")
                     .aisle("XXX", "XYX", "XXX", "XXX")
@@ -128,7 +130,8 @@ public class GTMultiMachines {
             .recipeType(GTRecipeTypes.BLAST_RECIPES)
             .recipeModifier(GTRecipeModifiers::ebfOverclock)
             .appearanceBlock(CASING_INVAR_HEATPROOF)
-            .pattern(definition -> FactoryBlockPattern.start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
+            .pattern(definition -> FactoryBlockPattern
+                    .start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.RIGHT)
                     .aisle("XXX", "CCC", "CCC", "XXX")
                     .aisle("XXX", "C#C", "C#C", "XMX")
                     .aisle("XSX", "CCC", "CCC", "XXX")
@@ -955,7 +958,8 @@ public class GTMultiMachines {
             .pattern(definition -> FactoryBlockPattern.start(RIGHT, BACK, UP)
                     .aisle("XXSXX", "XXXXX", "XXXXX", "XXXXX", "XXXXX")
                     .aisle("XXXXX", "XCCCX", "XCCCX", "XCCCX", "XXXXX")
-                    .aisleRepeatable(1, PowerSubstationMachine.MAX_BATTERY_LAYERS, "GGGGG", "GBBBG", "GBBBG", "GBBBG", "GGGGG")
+                    .aisleRepeatable(1, PowerSubstationMachine.MAX_BATTERY_LAYERS, "GGGGG", "GBBBG", "GBBBG", "GBBBG",
+                            "GGGGG")
                     .aisle("GGGGG", "GGGGG", "GGGGG", "GGGGG", "GGGGG")
                     .where('S', controller(blocks(definition.getBlock())))
                     .where('C', blocks(CASING_PALLADIUM_SUBSTATION.get()))

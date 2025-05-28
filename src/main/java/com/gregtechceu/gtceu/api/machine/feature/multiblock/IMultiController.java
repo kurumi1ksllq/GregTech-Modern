@@ -46,7 +46,9 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
     void checkAndFormStructurePatterns();
 
     /**
-     * This method will check if a multiblock aisles predicates are valid and WILL update the patternState each time it is called.
+     * This method will check if a multiblock aisles predicates are valid and WILL update the patternState each time it
+     * is called.
+     * 
      * @return the new state
      */
     PatternState checkStructurePattern();
@@ -54,6 +56,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
     PatternState checkStructurePattern(String structureName);
 
     PatternState getDefaultPatternState();
+
     PatternState getPatternState(String name);
 
     /**
@@ -64,7 +67,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
         lock.lock();
         try {
             var patternCheckState = getPatternState(name).getState();
-            if(patternCheckState == null || !patternCheckState.isValid()) {
+            if (patternCheckState == null || !patternCheckState.isValid()) {
                 checkStructurePattern(name);
             }
             return getPatternState(name).getState().isValid();
@@ -83,7 +86,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
         if (lock.tryLock()) {
             try {
                 var patternCheckState = getPatternState(name).getState();
-                if(patternCheckState == null || !patternCheckState.isValid()) {
+                if (patternCheckState == null || !patternCheckState.isValid()) {
                     checkStructurePattern(name);
                 }
                 return getPatternState(name).getState().isValid();
@@ -104,34 +107,36 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
     }
 
     /**
-     *  Call to form a multiblock
+     * Call to form a multiblock
+     * 
      * @param name the structure with which to form
      */
     void formStructure(@NotNull String name);
 
     void invalidateStructure(String name);
 
-//    /**
-//     * Called when structure is formed, have to be called after {@link #formStructure(String)}. (server-side / fake scene only)
-//     * <br>
-//     * Trigger points:
-//     * <br>
-//     * 1 - Blocks in structure changed but still formed.
-//     * <br>
-//     * 2 - Literally, structure formed.
-//     */
-//    void onStructureFormed(String name);
-//
-//    /**
-//     * Called when structure is invalid. (server-side / fake scene only)
-//     * <br>
-//     * Trigger points:
-//     * <br>
-//     * 1 - Blocks in structure changed.
-//     * <br>
-//     * 2 - Before controller machine removed.
-//     */
-//    void onStructureInvalid(String name);
+    // /**
+    // * Called when structure is formed, have to be called after {@link #formStructure(String)}. (server-side / fake
+    // scene only)
+    // * <br>
+    // * Trigger points:
+    // * <br>
+    // * 1 - Blocks in structure changed but still formed.
+    // * <br>
+    // * 2 - Literally, structure formed.
+    // */
+    // void onStructureFormed(String name);
+    //
+    // /**
+    // * Called when structure is invalid. (server-side / fake scene only)
+    // * <br>
+    // * Trigger points:
+    // * <br>
+    // * 1 - Blocks in structure changed.
+    // * <br>
+    // * 2 - Before controller machine removed.
+    // */
+    // void onStructureInvalid(String name);
 
     /**
      * Whether multiblock is formed.

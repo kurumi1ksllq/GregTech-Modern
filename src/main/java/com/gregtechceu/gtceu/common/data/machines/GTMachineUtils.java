@@ -22,10 +22,10 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IRotorHolderMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.steam.SimpleSteamMachine;
-import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
-import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
+import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.registry.registrate.MachineBuilder;
@@ -621,7 +621,7 @@ public class GTMachineUtils {
 
     private static TraceabilityPredicate rotorHolder(int tier) {
         return new TraceabilityPredicate(new SimplePredicate((worldState) -> {
-            if(MetaMachine.getMachine(worldState.getLevel(),
+            if (MetaMachine.getMachine(worldState.getLevel(),
                     worldState.getPos().immutable()) instanceof IRotorHolderMachine rotorHolder &&
                     worldState.getLevel()
                             .getBlockState(worldState.getPos().immutable()
@@ -631,7 +631,8 @@ public class GTMachineUtils {
             }
             return PatternError.PLACEHOLDER;
         }, (map) -> PartAbility.ROTOR_HOLDER.getAllBlocks().stream()
-                .map(com.gregtechceu.gtceu.api.multiblock.util.BlockInfo::fromBlock).toArray(com.gregtechceu.gtceu.api.multiblock.util.BlockInfo[]::new)))
+                .map(com.gregtechceu.gtceu.api.multiblock.util.BlockInfo::fromBlock)
+                .toArray(com.gregtechceu.gtceu.api.multiblock.util.BlockInfo[]::new)))
                 .addTooltips(Component.translatable("gtceu.multiblock.pattern.clear_amount_3"))
                 .addTooltips(Component.translatable("gtceu.multiblock.pattern.error.limited.1",
                         VN[tier]));

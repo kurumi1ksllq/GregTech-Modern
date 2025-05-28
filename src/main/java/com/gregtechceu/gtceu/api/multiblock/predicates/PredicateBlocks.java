@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.api.multiblock.predicates;
 
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
-
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
+
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
@@ -14,8 +14,6 @@ import java.util.Objects;
 public class PredicateBlocks extends SimplePredicate {
 
     public Block[] blocks;
-
-
 
     public PredicateBlocks(Block... blocks) {
         this.blocks = blocks;

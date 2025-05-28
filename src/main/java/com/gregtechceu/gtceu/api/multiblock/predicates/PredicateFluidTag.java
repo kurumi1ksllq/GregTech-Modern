@@ -20,7 +20,7 @@ public class PredicateFluidTag extends SimplePredicate {
             candidates = (map) -> new BlockInfo[] { BlockInfo.fromBlock(Blocks.BARRIER) };
         } else {
             predicate = state -> state.getBlockState().getFluidState().is(tag) ? null :
-                PatternError.PLACEHOLDER;
+                    PatternError.PLACEHOLDER;
             candidates = (map) -> BuiltInRegistries.FLUID.getTag(tag)
                     .stream()
                     .flatMap(HolderSet.Named::stream)

@@ -134,22 +134,21 @@ public class GTMatrixUtils {
     }
 
     public static Direction adjustUpwardsToLocal(Direction frontFacing, Direction upwardFacing) {
-
-        if(frontFacing.getAxis() == Direction.Axis.Y) {
+        if (frontFacing.getAxis() == Direction.Axis.Y) {
             return frontFacing.getAxisDirection() == Direction.AxisDirection.POSITIVE ?
                     upwardFacing : upwardFacing.getOpposite();
-        } else if(frontFacing.getAxis() == Direction.Axis.Z) {
-            if(upwardFacing.getAxis() == Direction.Axis.Y) {
+        } else if (frontFacing.getAxis() == Direction.Axis.Z) {
+            if (upwardFacing.getAxis() == Direction.Axis.Y) {
                 return Direction.fromAxisAndDirection(Direction.Axis.Z, upwardFacing.getAxisDirection());
-            } else if(upwardFacing.getAxis() == Direction.Axis.X) {
+            } else if (upwardFacing.getAxis() == Direction.Axis.X) {
                 Direction.AxisDirection dir = frontFacing.getAxisDirection() == Direction.AxisDirection.POSITIVE ?
                         upwardFacing.getAxisDirection().opposite() : upwardFacing.getAxisDirection();
                 return Direction.fromAxisAndDirection(Direction.Axis.X, dir);
             }
-        } else if(frontFacing.getAxis() == Direction.Axis.X) {
-            if(upwardFacing.getAxis() == Direction.Axis.Y) {
+        } else if (frontFacing.getAxis() == Direction.Axis.X) {
+            if (upwardFacing.getAxis() == Direction.Axis.Y) {
                 return Direction.fromAxisAndDirection(Direction.Axis.Z, upwardFacing.getAxisDirection());
-            } else if(upwardFacing.getAxis() == Direction.Axis.Z) {
+            } else if (upwardFacing.getAxis() == Direction.Axis.Z) {
                 Direction.AxisDirection dir = frontFacing.getAxisDirection() == Direction.AxisDirection.POSITIVE ?
                         upwardFacing.getAxisDirection().opposite() : upwardFacing.getAxisDirection();
                 return Direction.fromAxisAndDirection(Direction.Axis.X, dir);

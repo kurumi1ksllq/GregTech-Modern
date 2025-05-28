@@ -4,16 +4,16 @@ import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.pattern.CurrentBlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Collections;
 import java.util.List;
-
 
 public class PatternError {
 

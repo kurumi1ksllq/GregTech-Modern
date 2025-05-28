@@ -70,7 +70,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     private static final int MAX_DEPTH = 5;
     private static final int MAX_RADIUS = 5;
 
-    private final int[] bounds = new int[] {0, MIN_DEPTH, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS};
+    private final int[] bounds = new int[] { 0, MIN_DEPTH, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS };
 
     @DescSynced
     @RequireRerender
@@ -87,7 +87,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     public void formStructure(String name) {
         super.formStructure(name);
         forEachFormed(DEFAULT_STRUCTURE, (info, pos) -> {
-            if(info.getBlockState().is(BlockTags.LOGS)) {
+            if (info.getBlockState().is(BlockTags.LOGS)) {
                 logPos.add(pos.immutable());
             }
         });
@@ -151,7 +151,8 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         return FactoryExpandablePattern.start(RelativeDirection.UP, RelativeDirection.RIGHT, RelativeDirection.FRONT)
                 .boundsFunction((l, b, f, u) -> bounds)
                 .predicateFunction((bp, b) -> {
-                    if (bp.equals(BlockPos.ZERO)) return Predicates.controller(Predicates.blocks(getDefinition().getBlock()));
+                    if (bp.equals(BlockPos.ZERO))
+                        return Predicates.controller(Predicates.blocks(getDefinition().getBlock()));
 
                     int intersects = 0;
 
@@ -207,7 +208,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         int f = findWallPos(front, getPos().mutable().move(Direction.DOWN));
         int d = findFloorPos(Direction.DOWN, getPos().mutable());
 
-        if(d <= 0 || l <= 0 || r <= 0 || b <= 0 || f <= 0) {
+        if (d <= 0 || l <= 0 || r <= 0 || b <= 0 || f <= 0) {
             invalidateStructure();
             return;
         }
@@ -221,7 +222,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
 
     private int findWallPos(Direction direction, BlockPos.MutableBlockPos bp) {
         for (int i = 1; i <= MAX_RADIUS; i++) {
-            if(WALL_BLOCKS.contains(getLevel().getBlockState(bp.move(direction).immutable()).getBlock())) {
+            if (WALL_BLOCKS.contains(getLevel().getBlockState(bp.move(direction).immutable()).getBlock())) {
                 return i;
             }
         }
@@ -230,7 +231,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
 
     private int findFloorPos(Direction direction, BlockPos.MutableBlockPos bp) {
         for (int i = 1; i <= MAX_RADIUS; i++) {
-            if(getLevel().getBlockState(bp.move(direction).immutable()).getBlock() == Blocks.BRICKS) {
+            if (getLevel().getBlockState(bp.move(direction).immutable()).getBlock() == Blocks.BRICKS) {
                 return i;
             }
         }

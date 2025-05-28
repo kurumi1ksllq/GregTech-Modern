@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.*;
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
@@ -187,8 +186,8 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
                 if (frontFacing == Direction.UP || frontFacing == Direction.DOWN) {
                     newUpFacing = player.getDirection();
                     state = state.setValue(IMachineBlock.UPWARDS_FACING_PROPERTY, player.getDirection());
-                    if(machine != null) {
-                        if(machine instanceof MultiblockControllerMachine controller) {
+                    if (machine != null) {
+                        if (machine instanceof MultiblockControllerMachine controller) {
                             controller.setUpwardsFacing(newUpFacing);
                         }
                     }

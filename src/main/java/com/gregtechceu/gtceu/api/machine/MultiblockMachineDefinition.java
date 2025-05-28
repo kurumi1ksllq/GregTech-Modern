@@ -2,8 +2,8 @@ package com.gregtechceu.gtceu.api.machine;
 
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
-import com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockShapeInfo;
+import com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern;
 
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -68,8 +68,8 @@ public class MultiblockMachineDefinition extends MachineDefinition {
         if (!designs.isEmpty()) return designs;
         var structurePattern = patternFactory.get();
         return null;
-        //int[][] aisleRepetitions = structurePattern.aisleRepetitions;
-        //return repetitionDFS(structurePattern, new ArrayList<>(), aisleRepetitions, new IntArrayList());
+        // int[][] aisleRepetitions = structurePattern.aisleRepetitions;
+        // return repetitionDFS(structurePattern, new ArrayList<>(), aisleRepetitions, new IntArrayList());
     }
 
     private List<MultiblockShapeInfo> repetitionDFS(BlockPattern pattern, List<MultiblockShapeInfo> pages,
@@ -79,7 +79,7 @@ public class MultiblockMachineDefinition extends MachineDefinition {
             for (int i = 0; i < repetitionStack.size(); i++) {
                 repetition[i] = repetitionStack.getInt(i);
             }
-            //pages.add(new MultiblockShapeInfo(pattern.getPreview(repetition)));
+            // pages.add(new MultiblockShapeInfo(pattern.getPreview(repetition)));
         } else {
             for (int i = aisleRepetitions[repetitionStack.size()][0]; i <=
                     aisleRepetitions[repetitionStack.size()][1]; i++) {

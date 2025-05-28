@@ -31,13 +31,13 @@ public class CoilWorkableElectricMultiblockMachine extends WorkableElectricMulti
         super.formStructure(name);
         var cache = getSubstructure(name).getCache();
         ICoilType coilType = null;
-        for(var entry : cache.long2ObjectEntrySet()) {
+        for (var entry : cache.long2ObjectEntrySet()) {
             var state = entry.getValue().getBlockState();
-            if(state.getBlock() instanceof CoilBlock coil) {
-                if(GTCEuAPI.HEATING_COILS.containsKey(coil.coilType)) {
-                    if(coilType == null) coilType = coil.coilType;
+            if (state.getBlock() instanceof CoilBlock coil) {
+                if (GTCEuAPI.HEATING_COILS.containsKey(coil.coilType)) {
+                    if (coilType == null) coilType = coil.coilType;
                     else {
-                        if(coilType != coil.coilType) {
+                        if (coilType != coil.coilType) {
                             invalidateStructure();
                             patternStates.get(name).setError(new PatternStringError("gtceu.coils.mismatch"));
                             return;
@@ -46,14 +46,16 @@ public class CoilWorkableElectricMultiblockMachine extends WorkableElectricMulti
                 }
             }
         }
-        if(coilType != null) {
+        if (coilType != null) {
             this.coilType = coilType;
         }
 
-        /*var type = getMultiblockState().getMatchContext().get("CoilType");
-        if (type instanceof ICoilType coil) {
-            this.coilType = coil;
-        }*/
+        /*
+         * var type = getMultiblockState().getMatchContext().get("CoilType");
+         * if (type instanceof ICoilType coil) {
+         * this.coilType = coil;
+         * }
+         */
     }
 
     public int getCoilTier() {

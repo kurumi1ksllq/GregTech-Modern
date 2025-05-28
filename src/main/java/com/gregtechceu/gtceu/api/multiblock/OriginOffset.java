@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.multiblock;
 
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
 public class OriginOffset {
@@ -20,9 +21,9 @@ public class OriginOffset {
         return offset[dir.ordinal() / 2] * ((dir.ordinal() % 2 == 0) ? 1 : -1);
     }
 
-    public void apply(BetterBlockPos pos, Direction front, Direction up, boolean flip) {
+    public void apply(BlockPos.MutableBlockPos pos, Direction front, Direction up, boolean flip) {
         for(int i = 0; i < 3; i++) {
-            pos.offset(RelativeDirection.values()[2 * i].getRelativeFacing(front, up, flip), offset[i]);
+            pos.move(RelativeDirection.values()[2 * i].getRelativeFacing(front, up, flip), offset[i]);
         }
     }
 }

@@ -21,7 +21,6 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMa
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
-import com.gregtechceu.gtceu.api.multiblock.BetterBlockPos;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
@@ -47,6 +46,7 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -58,10 +58,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -240,11 +236,11 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
         Direction left = front.getCounterClockWise();
         Direction right = left.getOpposite();
 
-        int l = findWallPos(left, new BetterBlockPos(getPos()));
-        int r = findWallPos(right, new BetterBlockPos(getPos()));
-        int b = findWallPos(back, new BetterBlockPos(getPos()));
-        int f = findWallPos(front, new BetterBlockPos(getPos()));
-        int d = findFloorPos(Direction.DOWN, new BetterBlockPos(getPos()));
+        int l = findWallPos(left, getPos().mutable());
+        int r = findWallPos(right, getPos().mutable());
+        int b = findWallPos(back, getPos().mutable());
+        int f = findWallPos(front, getPos().mutable());
+        int d = findFloorPos(Direction.DOWN, getPos().mutable());
 
         if (d <= MIN_DEPTH || l < MIN_RADIUS || r < MIN_RADIUS || b < MIN_RADIUS || f < MIN_RADIUS) {
             invalidateStructure();
@@ -310,9 +306,9 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
         this.hDist = hDist;*/
     }
 
-    public int findWallPos(Direction dir, BetterBlockPos pos) {
+    public int findWallPos(Direction dir, BlockPos.MutableBlockPos pos) {
         for(int i = 1; i < MAX_RADIUS; i++) {
-            var state = getLevel().getBlockState(pos.offset(dir).immutable());
+            var state = getLevel().getBlockState(pos.move(dir).immutable());
             if(state == getCasingState() || state == getGlassState()) {
                 return i;
             }
@@ -320,17 +316,17 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
         return -1;
     }
 
-    public int findFloorPos(Direction dir, BetterBlockPos pos) {
+    public int findFloorPos(Direction dir, BlockPos.MutableBlockPos pos) {
         for(int i = 1; i < MAX_DEPTH; i++) {
-            if(isAllFloorBlocks(pos.copy().offset(dir, i))) {
+            if(isAllFloorBlocks(getPos().mutable().move(dir, i))) {
                 return i;
             }
         }
         return -1;
     }
 
-    private boolean isAllFloorBlocks(BetterBlockPos pos) {
-        pos.offset(Direction.SOUTH, 1).offset(Direction.WEST, 1);
+    private boolean isAllFloorBlocks(BlockPos.MutableBlockPos pos) {
+        pos.move(Direction.SOUTH, 1).move(Direction.WEST, 1);
         for (int j = 0; j < 3; j++) {
             for (int k = 0; k < 3; k++) {
                 var checkPos = pos.immutable();
@@ -338,10 +334,10 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
                 if (s1 != getCasingState() && s1 != getGlassState() && !(s1.is(CustomTags.CLEANROOM_FLOORS))) {
                     return false;
                 }
-                pos.offset(Direction.NORTH);
+                pos.move(Direction.NORTH);
             }
-            pos.offset(Direction.SOUTH, 3);
-            pos.offset(Direction.EAST);
+            pos.move(Direction.SOUTH, 3);
+            pos.move(Direction.EAST);
         }
         return true;
     }
@@ -370,20 +366,20 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
         return FactoryExpandablePattern.start(RelativeDirection.UP, RelativeDirection.RIGHT, RelativeDirection.FRONT)
                 .boundsFunction((l, bp, f, u) -> bounds)
                 .predicateFunction((bp, b) -> {
-                    if(bp.origin()) return Predicates.controller(Predicates.blocks(getDefinition().getBlock()));
+                    if(bp.equals(BlockPos.ZERO)) return Predicates.controller(Predicates.blocks(getDefinition().getBlock()));
 
                     int intersections = 0;
 
-                    boolean topAisle = bp.x() == b[0];
-                    boolean bottomAisle = bp.x() == -b[1];
+                    boolean topAisle = bp.getX() == b[0];
+                    boolean bottomAisle = bp.getX() == -b[1];
 
                     if(topAisle || bottomAisle) intersections++;
 
                     // negative signs for the LEFT and BACK ordinals
                     // string dir is right, so its bounds[2] and bounds[3]
-                    if (bp.y() == -b[2] || bp.y() == b[3]) intersections++;
+                    if (bp.getY() == -b[2] || bp.getY() == b[3]) intersections++;
                     // char dir is front, so its bounds[4] and bounds[5]
-                    if (bp.z() == b[4] || bp.z() == -b[5]) intersections++;
+                    if (bp.getZ() == b[4] || bp.getZ() == -b[5]) intersections++;
 
                     if(intersections >= 2) {
                         if(topAisle || bottomAisle) return edgePredicate;

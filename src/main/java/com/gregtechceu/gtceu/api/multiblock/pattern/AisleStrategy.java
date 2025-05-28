@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
-import com.gregtechceu.gtceu.api.multiblock.BetterBlockPos;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +14,7 @@ public abstract class AisleStrategy {
     protected final RelativeDirection[] directions = new RelativeDirection[3];
 
     protected BlockPattern pattern;
-    protected BetterBlockPos pos;
+    protected BlockPos.MutableBlockPos pos;
     protected Direction front, up;
 
     /**
@@ -37,7 +37,7 @@ public abstract class AisleStrategy {
     /**
      * Called at the start of a structure check.
      */
-    protected void start(BetterBlockPos pos, Direction front, Direction up) {
+    protected void start(BlockPos.MutableBlockPos pos, Direction front, Direction up) {
         this.pos = pos;
         this.front = front;
         this.up = up;

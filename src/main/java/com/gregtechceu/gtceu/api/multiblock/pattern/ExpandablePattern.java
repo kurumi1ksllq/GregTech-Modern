@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.api.multiblock.pattern;
 
 
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
-import com.gregtechceu.gtceu.api.multiblock.BetterBlockPos;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
@@ -22,8 +21,8 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 public class ExpandablePattern implements IBlockPattern {
-    protected final QuadFunction<Level, BetterBlockPos, Direction, Direction, int[]> boundsFunc;
-    protected final BiFunction<BetterBlockPos, int[], TraceabilityPredicate> predicateFunc;
+    protected final QuadFunction<Level, BlockPos.MutableBlockPos, Direction, Direction, int[]> boundsFunc;
+    protected final BiFunction<BlockPos.MutableBlockPos, int[], TraceabilityPredicate> predicateFunc;
     protected final OriginOffset offset = new OriginOffset();
 
     protected final RelativeDirection[] directions;
@@ -31,8 +30,8 @@ public class ExpandablePattern implements IBlockPattern {
     protected PatternState patternState;
     //protected final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
 
-    public ExpandablePattern(@NotNull QuadFunction<Level, BetterBlockPos, Direction, Direction, int[]> boundsFunc,
-                             @NotNull BiFunction<BetterBlockPos, int[], TraceabilityPredicate> predicateFunc,
+    public ExpandablePattern(@NotNull QuadFunction<Level, BlockPos.MutableBlockPos, Direction, Direction, int[]> boundsFunc,
+                             @NotNull BiFunction<BlockPos.MutableBlockPos, int[], TraceabilityPredicate> predicateFunc,
                              @NotNull RelativeDirection[] directions) {
         this.boundsFunc = boundsFunc;
         this.predicateFunc = predicateFunc;
@@ -51,9 +50,9 @@ public class ExpandablePattern implements IBlockPattern {
         }
         if(!patternState.cache.isEmpty()) {
             boolean pass = true;
-            BetterBlockPos bbp = new BetterBlockPos();
+            BlockPos.MutableBlockPos mbp = new BlockPos.MutableBlockPos();
             for(var entry : patternState.cache.long2ObjectEntrySet()) {
-                BlockPos pos = bbp.fromLong(entry.getLongKey()).immutable();
+                BlockPos pos = mbp.set(entry.getLongKey()).immutable();
                 BlockState state = level.getBlockState(pos);
 
                 if(state != entry.getValue().getBlockState()) {
@@ -97,13 +96,13 @@ public class ExpandablePattern implements IBlockPattern {
         if(patternState == null) {
             throw new IllegalStateException("PatternState not set");
         }
-        int[] bounds = boundsFunc.apply(level, new BetterBlockPos(centerPos), frontFacing, upwardsFacing);
+        int[] bounds = boundsFunc.apply(level, centerPos.mutable(), frontFacing, upwardsFacing);
         if(bounds == null) return false;
 
         patternState.globalCount.clear();
 
-        BetterBlockPos negCorner = new BetterBlockPos();
-        BetterBlockPos posCorner = new BetterBlockPos();
+        BlockPos.MutableBlockPos negCorner = new BlockPos.MutableBlockPos();
+        BlockPos.MutableBlockPos posCorner = new BlockPos.MutableBlockPos();
 
         Direction[] absolutes = new Direction[3];
 
@@ -112,29 +111,40 @@ public class ExpandablePattern implements IBlockPattern {
 
             absolutes[i] = selected.getRelativeFacing(frontFacing, upwardsFacing, isFlipped);
 
-            negCorner.set(i, -bounds[selected.oppositeOrdinal()]);
-            posCorner.set(i, bounds[selected.ordinal()]);
+            if(i == 0) {
+                negCorner.setX(-bounds[selected.oppositeOrdinal()]);
+                posCorner.setX(bounds[selected.ordinal()]);
+            } else if(i == 1) {
+                negCorner.setY(-bounds[selected.oppositeOrdinal()]);
+                posCorner.setY(bounds[selected.ordinal()]);
+            } else {
+                negCorner.setZ(-bounds[selected.oppositeOrdinal()]);
+                posCorner.setZ(bounds[selected.ordinal()]);
+            }
         }
 
         patternState.cbi.setLevel(level);
 
-        BetterBlockPos translation = new BetterBlockPos(centerPos);
+        BlockPos.MutableBlockPos translation = centerPos.mutable();
 
         // SOUTH, UP, EAST means point is +z, line is +y, plane is +x. this basically means the x val of the iter is
         // aisle count, y is str count, and z is char count.
-        for(BetterBlockPos pos : BetterBlockPos.allInBox(negCorner, posCorner, Direction.SOUTH, Direction.UP, Direction.EAST)) {
-            TraceabilityPredicate pred = predicateFunc.apply(pos, bounds);
+        //for(BetterBlockPos pos : BetterBlockPos.allInBox(negCorner, posCorner, Direction.SOUTH, Direction.UP, Direction.EAST)) {
+        for(var pos : BlockPos.betweenClosed(negCorner, posCorner)) {
+            BlockPos.MutableBlockPos mPos = pos.mutable();
+            TraceabilityPredicate pred = predicateFunc.apply(mPos, bounds);
 
-            int[] arr = pos.getAll();
+            //int[] arr = pos.getAll();
             // this basically reshuffles the coordinates into absolute form from relative form
-            pos.zero().offset(absolutes[0], arr[0]).offset(absolutes[1], arr[1]).offset(absolutes[2], arr[2]);
+            mPos.set(BlockPos.ZERO).move(absolutes[0], mPos.getX()).move(absolutes[1], mPos.getY()).move(absolutes[2], mPos.getZ());
+            //pos.zero().offset(absolutes[0], arr[0]).offset(absolutes[1], arr[1]).offset(absolutes[2], arr[2]);
             // translate from the origin to the center
-            patternState.cbi.setCurrentPos(pos.add(translation));
+            patternState.cbi.setCurrentPos(mPos.offset(translation));
 
             if(pred != TraceabilityPredicate.ANY) {
                 var bstate = patternState.cbi.retrieveCurrentBlockState();
                 BlockEntity be = patternState.cbi.retrieveCurrentBlockEntity();
-                patternState.cache.put(pos.toLong(), new BlockInfo(bstate, be));
+                patternState.cache.put(mPos.asLong(), new BlockInfo(bstate, be));
             }
 
             PatternError res = pred.test(patternState.cbi, patternState.globalCount, null);
@@ -158,13 +168,13 @@ public class ExpandablePattern implements IBlockPattern {
         Direction front = src.getFrontFacing();
         Direction up = src.getUpwardsFacing();
 
-        int[] bounds = boundsFunc.apply(src.getLevel(), new BetterBlockPos(src.getPos()), front, up);
+        int[] bounds = boundsFunc.apply(src.getLevel(), src.getPos().mutable(), front, up);
         if(bounds == null) return Long2ObjectSortedMaps.emptyMap();
 
         Long2ObjectSortedMap<TraceabilityPredicate> predicates = new Long2ObjectRBTreeMap<>();
 
-        BetterBlockPos negCorner = new BetterBlockPos();
-        BetterBlockPos posCorner = new BetterBlockPos();
+        BlockPos.MutableBlockPos negCorner = new BlockPos.MutableBlockPos();
+        BlockPos.MutableBlockPos posCorner = new BlockPos.MutableBlockPos();
 
         Direction[] absolutes = new Direction[3];
 
@@ -173,21 +183,30 @@ public class ExpandablePattern implements IBlockPattern {
 
             absolutes[i] = selected.getRelativeFacing(front, up, false);
 
-            negCorner.set(i, -bounds[selected.oppositeOrdinal()]);
-            posCorner.set(i, bounds[selected.ordinal()]);
+            if(i == 0) {
+                negCorner.setX(-bounds[selected.oppositeOrdinal()]);
+                posCorner.setX(bounds[selected.ordinal()]);
+            } else if(i == 1) {
+                negCorner.setY(-bounds[selected.oppositeOrdinal()]);
+                posCorner.setY(bounds[selected.ordinal()]);
+            } else {
+                negCorner.setZ(-bounds[selected.oppositeOrdinal()]);
+                posCorner.setZ(bounds[selected.ordinal()]);
+            }
         }
 
-        BetterBlockPos translation = new BetterBlockPos(src.getPos());
+        //BetterBlockPos translation = new BetterBlockPos(src.getPos());
 
-        for(BetterBlockPos pos : BetterBlockPos.allInBox(negCorner, posCorner, Direction.SOUTH, Direction.UP, Direction.EAST)) {
-            TraceabilityPredicate pred = predicateFunc.apply(pos, bounds);
+        for(var pos : BlockPos.betweenClosed(negCorner, posCorner)) {
+            BlockPos.MutableBlockPos mPos = pos.mutable();
+            TraceabilityPredicate pred = predicateFunc.apply(mPos, bounds);
 
-            int[] arr = pos.getAll();
+            //int[] arr = pos.getAll();
             // this basically reshuffles the coordinates into absolute form from relative form
-            pos.zero().offset(absolutes[0], arr[0]).offset(absolutes[1], arr[1]).offset(absolutes[2], arr[2]);
+            mPos.set(BlockPos.ZERO).move(absolutes[0], mPos.getX()).move(absolutes[1], mPos.getY()).move(absolutes[2], mPos.getZ());
 
             if(pred != TraceabilityPredicate.ANY && pred != TraceabilityPredicate.AIR) {
-                predicates.put(pos.toLong(), pred);
+                predicates.put(mPos.asLong(), pred);
             }
         }
         return predicates;

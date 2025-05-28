@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.multiblock.util;
 
-import com.gregtechceu.gtceu.api.multiblock.BetterBlockPos;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -90,10 +89,21 @@ public enum RelativeDirection {
      */
     public static BlockPos offsetPos(BlockPos pos, Direction frontFacing, Direction upwardsFacing, boolean isFlipped,
                                      int upOffset, int leftOffset, int forwardOffset) {
-        BetterBlockPos bbp = new BetterBlockPos(pos);
-        bbp.offset(UP.getRelativeFacing(frontFacing, upwardsFacing, isFlipped), upOffset);
-        bbp.offset(LEFT.getRelativeFacing(frontFacing, upwardsFacing, isFlipped), leftOffset);
-        bbp.offset(FRONT.getRelativeFacing(frontFacing, upwardsFacing, isFlipped), forwardOffset);
-        return bbp.immutable();
+        BlockPos.MutableBlockPos mbp = pos.mutable();
+        mbp.move(UP.getRelativeFacing(frontFacing, upwardsFacing, isFlipped), upOffset);
+        mbp.move(LEFT.getRelativeFacing(frontFacing, upwardsFacing, isFlipped), leftOffset);
+        mbp.move(FRONT.getRelativeFacing(frontFacing, upwardsFacing, isFlipped), forwardOffset);
+        return mbp.immutable();
+    }
+
+    public static <T extends Enum<T>> void validateFacingsArray(T[] facings) {
+        if(facings.length != 3) throw new IllegalArgumentException("Facings must be array of length 3!");
+
+        int c = 0;
+        for(int i = 0; i < 3; i++) {
+            c |= (1 << facings[i].ordinal() / 2);
+        }
+
+        if(c != 7) throw new IllegalArgumentException("The 3 facings must use each axis exactly once!");
     }
 }

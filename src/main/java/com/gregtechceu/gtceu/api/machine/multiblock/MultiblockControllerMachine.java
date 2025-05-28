@@ -9,13 +9,11 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
-import com.gregtechceu.gtceu.api.multiblock.BetterBlockPos;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockWorldSavedData;
 import com.gregtechceu.gtceu.api.multiblock.pattern.CurrentBlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
-import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
@@ -387,11 +385,11 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         }
     }
 
-    protected void forEachFormed(String name, BiConsumer<BlockInfo, BetterBlockPos> action) {
+    protected void forEachFormed(String name, BiConsumer<BlockInfo, BlockPos.MutableBlockPos> action) {
         var cache = getSubstructure(name).getCache();
-        BetterBlockPos pos = new BetterBlockPos();
+        var pos = new BlockPos.MutableBlockPos();
         for(var entry : cache.long2ObjectEntrySet()) {
-            action.accept(entry.getValue(), pos.fromLong(entry.getLongKey()));
+            action.accept(entry.getValue(), pos.set(entry.getLongKey()));
         }
     }
 

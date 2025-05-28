@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
 import com.google.common.base.Joiner;
-import com.gregtechceu.gtceu.api.multiblock.BetterBlockPos;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
@@ -55,7 +54,7 @@ public class FactoryBlockPattern {
         directions[0] = aisleDir;
         directions[1] = stringDir;
         directions[2] = charDir;
-        BetterBlockPos.validateFacingsArray(directions);
+        RelativeDirection.validateFacingsArray(directions);
         this.symbolMap.put(' ', TraceabilityPredicate.ANY);
     }
 

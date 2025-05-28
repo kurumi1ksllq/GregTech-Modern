@@ -7,7 +7,6 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
-import com.gregtechceu.gtceu.api.multiblock.BetterBlockPos;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
@@ -152,22 +151,22 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         return FactoryExpandablePattern.start(RelativeDirection.UP, RelativeDirection.RIGHT, RelativeDirection.FRONT)
                 .boundsFunction((l, b, f, u) -> bounds)
                 .predicateFunction((bp, b) -> {
-                    if (bp.origin()) return Predicates.controller(Predicates.blocks(getDefinition().getBlock()));
+                    if (bp.equals(BlockPos.ZERO)) return Predicates.controller(Predicates.blocks(getDefinition().getBlock()));
 
                     int intersects = 0;
 
                     // aisle dir is up, so its bounds[0] and bounds[1]
                     // DOWN is negative
-                    boolean topAisle = bp.x() == b[0];
-                    boolean bottomAisle = bp.x() == -b[1];
+                    boolean topAisle = bp.getX() == b[0];
+                    boolean bottomAisle = bp.getX() == -b[1];
 
                     if (topAisle || bottomAisle) intersects++;
 
                     // negative signs for the LEFT and BACK ordinals
                     // string dir is right, so its bounds[2] and bounds[3]
-                    if (bp.y() == -b[2] || bp.y() == b[3]) intersects++;
+                    if (bp.getY() == -b[2] || bp.getY() == b[3]) intersects++;
                     // char dir is front, so its bounds[4] and bounds[5]
-                    if (bp.z() == b[4] || bp.z() == -b[5]) intersects++;
+                    if (bp.getZ() == b[4] || bp.getZ() == -b[5]) intersects++;
 
                     if (intersects >= 2) return TraceabilityPredicate.ANY;
 
@@ -202,11 +201,11 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         Direction left = front.getCounterClockWise();
         Direction right = left.getOpposite();
 
-        int l = findWallPos(left, new BetterBlockPos(getPos()).offset(Direction.DOWN));
-        int r = findWallPos(right, new BetterBlockPos(getPos()).offset(Direction.DOWN));
-        int b = findWallPos(back, new BetterBlockPos(getPos()).offset(Direction.DOWN));
-        int f = findWallPos(front, new BetterBlockPos(getPos()).offset(Direction.DOWN));
-        int d = findFloorPos(Direction.DOWN, new BetterBlockPos(getPos()));
+        int l = findWallPos(left, getPos().mutable().move(Direction.DOWN));
+        int r = findWallPos(right, getPos().mutable().move(Direction.DOWN));
+        int b = findWallPos(back, getPos().mutable().move(Direction.DOWN));
+        int f = findWallPos(front, getPos().mutable().move(Direction.DOWN));
+        int d = findFloorPos(Direction.DOWN, getPos().mutable());
 
         if(d <= 0 || l <= 0 || r <= 0 || b <= 0 || f <= 0) {
             invalidateStructure();
@@ -220,18 +219,18 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         bounds[5] = b;
     }
 
-    private int findWallPos(Direction direction, BetterBlockPos bp) {
+    private int findWallPos(Direction direction, BlockPos.MutableBlockPos bp) {
         for (int i = 1; i <= MAX_RADIUS; i++) {
-            if(WALL_BLOCKS.contains(getLevel().getBlockState(bp.offset(direction).immutable()).getBlock())) {
+            if(WALL_BLOCKS.contains(getLevel().getBlockState(bp.move(direction).immutable()).getBlock())) {
                 return i;
             }
         }
         return -1;
     }
 
-    private int findFloorPos(Direction direction, BetterBlockPos bp) {
+    private int findFloorPos(Direction direction, BlockPos.MutableBlockPos bp) {
         for (int i = 1; i <= MAX_RADIUS; i++) {
-            if(getLevel().getBlockState(bp.offset(direction).immutable()).getBlock() == Blocks.BRICKS) {
+            if(getLevel().getBlockState(bp.move(direction).immutable()).getBlock() == Blocks.BRICKS) {
                 return i;
             }
         }

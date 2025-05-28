@@ -1,24 +1,24 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
-import com.gregtechceu.gtceu.api.multiblock.BetterBlockPos;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.utils.QuadFunction;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 
 import java.util.function.BiFunction;
 
 public class FactoryExpandablePattern {
-    protected QuadFunction<Level, BetterBlockPos, Direction, Direction, int[]> boundsFunc;
-    protected BiFunction<BetterBlockPos, int[], TraceabilityPredicate> predicateFunc;
+    protected QuadFunction<Level, BlockPos.MutableBlockPos, Direction, Direction, int[]> boundsFunc;
+    protected BiFunction<BlockPos.MutableBlockPos, int[], TraceabilityPredicate> predicateFunc;
     protected final RelativeDirection[] directions = new RelativeDirection[3];
 
     private FactoryExpandablePattern(RelativeDirection aisleDir, RelativeDirection stringDir, RelativeDirection charDir) {
         directions[0] = aisleDir;
         directions[1] = stringDir;
         directions[2] = charDir;
-        BetterBlockPos.validateFacingsArray(directions);
+        RelativeDirection.validateFacingsArray(directions);
     }
 
     public static FactoryExpandablePattern start(RelativeDirection aisleDir, RelativeDirection stringDir, RelativeDirection charDir) {
@@ -29,12 +29,12 @@ public class FactoryExpandablePattern {
         return new FactoryExpandablePattern(RelativeDirection.BACK, RelativeDirection.UP, RelativeDirection.RIGHT);
     }
 
-    public FactoryExpandablePattern boundsFunction(QuadFunction<Level, BetterBlockPos, Direction, Direction, int[]> func) {
+    public FactoryExpandablePattern boundsFunction(QuadFunction<Level, BlockPos.MutableBlockPos, Direction, Direction, int[]> func) {
         this.boundsFunc = func;
         return this;
     }
 
-    public FactoryExpandablePattern predicateFunction(BiFunction<BetterBlockPos, int[], TraceabilityPredicate> func) {
+    public FactoryExpandablePattern predicateFunction(BiFunction<BlockPos.MutableBlockPos, int[], TraceabilityPredicate> func) {
         this.predicateFunc = func;
         return this;
     }

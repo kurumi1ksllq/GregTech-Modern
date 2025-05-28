@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
-import com.gregtechceu.gtceu.api.multiblock.BetterBlockPos;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -13,7 +12,7 @@ public class CurrentBlockInfo {
     @Getter
     protected Level level;
     @Getter
-    private BetterBlockPos pos;
+    private BlockPos.MutableBlockPos pos;
     @Getter
     private BlockState blockState;
     @Getter
@@ -38,13 +37,13 @@ public class CurrentBlockInfo {
         return tileEntity;
     }
 
-    public void setCurrentPos(BetterBlockPos pos) {
-        this.pos = pos;
+    public void setCurrentPos(BlockPos pos) {
+        this.pos.set(pos);
         updateStateAndEntity();
     }
 
-    public void setCurrentPos(BlockPos pos) {
-        this.pos = new BetterBlockPos(pos);
+    public void setCurrentPos(BlockPos.MutableBlockPos pos) {
+        this.pos.set(pos);
         updateStateAndEntity();
     }
 

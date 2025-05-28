@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
-import com.gregtechceu.gtceu.api.multiblock.BetterBlockPos;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
@@ -49,7 +48,7 @@ public interface IBlockPattern {
      * not exist.
      *
      * @param keyMap The map from multiblock builder for autobuild.
-     * @return The long key is using {@link BetterBlockPos#toLong(int, int, int)} with x, y, z
+     * @return The long key is using {@link net.minecraft.core.BlockPos.MutableBlockPos#asLong(int, int, int)} with x, y, z
      *         respectively being. The map is sorted using the natural ordering(thus with x, y, z order).
      */
     Long2ObjectSortedMap<TraceabilityPredicate> getDefaultShape(MultiblockControllerMachine src, @NotNull Map<String, String> keyMap);

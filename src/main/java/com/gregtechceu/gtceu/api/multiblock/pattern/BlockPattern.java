@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
-import com.gregtechceu.gtceu.api.multiblock.BetterBlockPos;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
@@ -86,9 +85,9 @@ public class BlockPattern implements IBlockPattern {
         }
         if(!patternState.cache.isEmpty()) {
             boolean pass = true;
-            BetterBlockPos bbPos = new BetterBlockPos();
+            BlockPos.MutableBlockPos mBlockPos = new BlockPos.MutableBlockPos();
             for(var entry : patternState.cache.long2ObjectEntrySet()) {
-                BlockPos pos = bbPos.fromLong(entry.getLongKey()).immutable();
+                BlockPos pos = mBlockPos.set(entry.getLongKey()).immutable();
                 BlockState state = level.getBlockState(pos);
 
                 if(state != entry.getValue().getBlockState()) {
@@ -160,7 +159,7 @@ public class BlockPattern implements IBlockPattern {
 
         patternState.cbi.setLevel(level);
 
-        BetterBlockPos controllerPos = new BetterBlockPos(centerPos);
+        BlockPos.MutableBlockPos controllerPos = centerPos.mutable();
 
         aisleStrategy.pattern = this;
         aisleStrategy.start(controllerPos, frontFacing, upwardsFacing);
@@ -190,7 +189,7 @@ public class BlockPattern implements IBlockPattern {
      * @param flip          Whether to flip or not
      * @return True if the check passed
      */
-    public boolean checkAisle(BetterBlockPos controllerPos, Direction frontFacing, Direction upwardsFacing, int aisleIndex, int aisleOffset, boolean flip) {
+    public boolean checkAisle(BlockPos.MutableBlockPos controllerPos, Direction frontFacing, Direction upwardsFacing, int aisleIndex, int aisleOffset, boolean flip) {
         if(patternState == null) {
             throw new IllegalStateException("PatternState not set");
         }
@@ -198,10 +197,10 @@ public class BlockPattern implements IBlockPattern {
         Direction absoluteString = directions[1].getRelativeFacing(frontFacing, upwardsFacing, flip);
         Direction absoluteChar = directions[2].getRelativeFacing(frontFacing, upwardsFacing, flip);
 
-        BetterBlockPos aisleStart = startPos(controllerPos, frontFacing, upwardsFacing, flip).offset(absoluteAisle, aisleOffset);
+        BlockPos.MutableBlockPos aisleStart = startPos(controllerPos, frontFacing, upwardsFacing, flip).move(absoluteAisle, aisleOffset);
 
-        BetterBlockPos stringStart = aisleStart.copy();
-        BetterBlockPos charPos = aisleStart.copy();
+        BlockPos.MutableBlockPos stringStart = aisleStart.mutable();
+        BlockPos.MutableBlockPos charPos = aisleStart.mutable();
         PatternAisle aisle = aisles[aisleIndex];
 
         patternState.layerCount.clear();
@@ -214,7 +213,7 @@ public class BlockPattern implements IBlockPattern {
                 if(pred != TraceabilityPredicate.ANY) {
                     var be = patternState.cbi.retrieveCurrentBlockEntity();
                     var state = patternState.cbi.retrieveCurrentBlockState();
-                    patternState.cache.put(charPos.toLong(), new BlockInfo(state, be));
+                    patternState.cache.put(charPos.asLong(), new BlockInfo(state, be));
                     patternState.posCache.add(charPos.immutable());
                 }
 
@@ -224,11 +223,11 @@ public class BlockPattern implements IBlockPattern {
                     return false;
                 }
 
-                charPos.offset(absoluteChar);
+                charPos.move(absoluteChar);
             }
 
-            stringStart.offset(absoluteString);
-            charPos.from(stringStart);
+            stringStart.move(absoluteString);
+            charPos.set(stringStart);
         }
 
         for(Object2IntMap.Entry<SimplePredicate> entry : patternState.layerCount.object2IntEntrySet()) {
@@ -256,9 +255,9 @@ public class BlockPattern implements IBlockPattern {
         Direction absoluteString = directions[1].getRelativeFacing(src.getFrontFacing(), src.getUpwardsFacing());
         Direction absoluteChar = directions[2].getRelativeFacing(src.getFrontFacing(), src.getUpwardsFacing());
 
-        BetterBlockPos pos = new BetterBlockPos(src.getPos());
-        BetterBlockPos start = startPos(pos, src.getFrontFacing(), src.getUpwardsFacing(), false);
-        BetterBlockPos serial = new BetterBlockPos().from(start);
+        BlockPos.MutableBlockPos pos = src.getPos().mutable();
+        BlockPos.MutableBlockPos start = startPos(pos, src.getFrontFacing(), src.getUpwardsFacing(), false);
+        BlockPos.MutableBlockPos serial = start.mutable();
 
         int[] order = aisleStrategy.getDefaultAisles(keyMap);
         for(int i = 0; i < order.length; i++) {
@@ -266,14 +265,14 @@ public class BlockPattern implements IBlockPattern {
                 for(int k = 0; k < dimensions[2]; k++) {
                     TraceabilityPredicate pred = predicates.get(aisles[order[i]].charAt(j, k));
                     if(pred != TraceabilityPredicate.ANY && pred != TraceabilityPredicate.AIR)
-                        map.put(serial.toLong(), predicates.get(aisles[order[i]].charAt(j, k)));
-                    serial.offset(absoluteChar);
+                        map.put(serial.asLong(), predicates.get(aisles[order[i]].charAt(j, k)));
+                    serial.move(absoluteChar);
                 }
-                serial.offset(absoluteString);
-                serial.offset(absoluteChar.getOpposite(), dimensions[2]);
+                serial.move(absoluteString);
+                serial.move(absoluteChar.getOpposite(), dimensions[2]);
             }
-            serial.from(start);
-            serial.offset(absoluteAisle, i + 1);
+            serial.set(start);
+            serial.move(absoluteAisle, i + 1);
         }
 
         return map;
@@ -289,8 +288,8 @@ public class BlockPattern implements IBlockPattern {
         return offset;
     }
 
-    private BetterBlockPos startPos(BetterBlockPos controllerPos, Direction frontFacing, Direction upwardsFacing, boolean flip) {
-        BetterBlockPos start = controllerPos.copy();
+    private BlockPos.MutableBlockPos startPos(BlockPos.MutableBlockPos controllerPos, Direction frontFacing, Direction upwardsFacing, boolean flip) {
+        BlockPos.MutableBlockPos start = controllerPos.mutable();
         offset.apply(start, frontFacing, upwardsFacing, flip);
         return start;
     }

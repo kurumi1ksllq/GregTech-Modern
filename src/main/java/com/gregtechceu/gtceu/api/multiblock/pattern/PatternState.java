@@ -59,6 +59,7 @@ public class PatternState {
     protected CurrentBlockInfo cbi = new CurrentBlockInfo();
     protected final Object2IntMap<SimplePredicate> globalCount = new Object2IntOpenHashMap<>();
     protected final Object2IntMap<SimplePredicate> layerCount = new Object2IntOpenHashMap<>();
+    @Getter
     protected final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
 
     public void setController(IMultiController controller, BlockPos controllerPos) {

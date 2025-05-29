@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
@@ -42,9 +43,11 @@ public class ExpandablePattern implements IBlockPattern {
         this.boundsFunc = boundsFunc;
         this.predicateFunc = predicateFunc;
         this.directions = directions;
+
+        patternState = new PatternState();
     }
 
-    @Override
+    /*@Override
     public void setActivePatternState(PatternState state) {
         patternLock.lock();
         try {
@@ -52,14 +55,12 @@ public class ExpandablePattern implements IBlockPattern {
         } finally {
             patternLock.unlock();
         }
-    }
+    }*/
 
     @Override
-    public PatternState checkPatternFastAt(Level level, BlockPos centerPos, Direction frontFacing,
+    public PatternState checkPatternFastAt(Level level, IMultiController controller, BlockPos centerPos, Direction frontFacing,
                                            Direction upwardsFacing, boolean allowsFlip) {
-        if (patternState == null) {
-            throw new IllegalStateException("PatternState not set");
-        }
+        patternState.setController(controller, centerPos);
         if (!patternState.cache.isEmpty()) {
             boolean pass = true;
             BlockPos.MutableBlockPos mbp = new BlockPos.MutableBlockPos();
@@ -98,7 +99,8 @@ public class ExpandablePattern implements IBlockPattern {
             return patternState;
         }
 
-        clearCache();
+        //clearCache();
+        patternState.getCache().clear();
         patternState.setState(PatternState.CheckState.INVALID_UNCACHED);
         return patternState;
     }
@@ -106,9 +108,6 @@ public class ExpandablePattern implements IBlockPattern {
     @Override
     public boolean checkPatternAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
                                   boolean isFlipped) {
-        if (patternState == null) {
-            throw new IllegalStateException("PatternState not set");
-        }
         int[] bounds = boundsFunc.apply(level, centerPos.mutable(), frontFacing, upwardsFacing);
         if (bounds == null) return false;
 
@@ -235,13 +234,14 @@ public class ExpandablePattern implements IBlockPattern {
         return patternState;
     }
 
+    /*
     @Override
     public Long2ObjectMap<BlockInfo> getCache() {
         if (patternState == null) {
             throw new IllegalStateException("PatternState not set");
         }
         return patternState.cache;
-    }
+    }*/
 
     @Override
     public OriginOffset getOffset() {

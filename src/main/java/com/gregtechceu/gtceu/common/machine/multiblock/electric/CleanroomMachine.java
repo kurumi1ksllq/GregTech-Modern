@@ -128,7 +128,8 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
         super.formStructure(name);
         initializeAbilities();
 
-        var cache = getSubstructure(name).getCache();
+        //var cache = getSubstructure(name).getCache();
+        var cache = patternStates.get(name).getCache();
         IFilterType filterType = null;
         for (var entry : cache.long2ObjectEntrySet()) {
             var state = entry.getValue().getBlockState();

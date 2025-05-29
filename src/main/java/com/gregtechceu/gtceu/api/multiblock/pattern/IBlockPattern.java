@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
@@ -30,7 +31,7 @@ public interface IBlockPattern {
      * @param allowsFlip    Whether the multiblock allows flipping.
      * @return The internal state of the pattern. Check whether its valid first before using other fields.
      */
-    PatternState checkPatternFastAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
+    PatternState checkPatternFastAt(Level level, IMultiController controller, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
                                     boolean allowsFlip);
 
     /**
@@ -60,7 +61,7 @@ public interface IBlockPattern {
     Long2ObjectSortedMap<TraceabilityPredicate> getDefaultShape(MultiblockControllerMachine src,
                                                                 @NotNull Map<String, String> keyMap);
 
-    void setActivePatternState(PatternState patternState);
+    //void setActivePatternState(PatternState patternState);
 
     /**
      * Gets the internal pattern state, you should use the one returned from
@@ -73,9 +74,9 @@ public interface IBlockPattern {
      * Clears the cache for checkPatternFastAt(...) in case something in the pattern is changed. Default impl just
      * getCache and then clears it.
      */
-    default void clearCache() {
+    /*default void clearCache() {
         getCache().clear();
-    }
+    }*/
 
     /**
      * Gets the cache, do not modify. Note that the cache stores everything in the AABB of the substructure, except for
@@ -83,7 +84,7 @@ public interface IBlockPattern {
      *
      * @return The cache for rapid pattern checking.
      */
-    Long2ObjectMap<BlockInfo> getCache();
+    //Long2ObjectMap<BlockInfo> getCache();
 
     OriginOffset getOffset();
 

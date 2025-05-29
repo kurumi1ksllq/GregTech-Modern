@@ -29,7 +29,8 @@ public class CoilWorkableElectricMultiblockMachine extends WorkableElectricMulti
     @Override
     public void formStructure(String name) {
         super.formStructure(name);
-        var cache = getSubstructure(name).getCache();
+        //var cache = getSubstructure(name).getCache();
+        var cache = patternStates.get(name).getCache();
         ICoilType coilType = null;
         for (var entry : cache.long2ObjectEntrySet()) {
             var state = entry.getValue().getBlockState();

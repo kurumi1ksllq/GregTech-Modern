@@ -109,7 +109,8 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
     public void formStructure(String name) {
         super.formStructure(name);
         // attach parts' traits
-        var cache = getSubstructure(name).getCache();
+        //var cache = getSubstructure(name).getCache();
+        var cache = patternStates.get(name).getCache();
         for (var entry : cache.long2ObjectEntrySet()) {
             if (entry.getValue().getBlockState().getBlock() instanceof ActiveBlock) {
                 if (activeBlocks == null) activeBlocks = new LongOpenHashSet();

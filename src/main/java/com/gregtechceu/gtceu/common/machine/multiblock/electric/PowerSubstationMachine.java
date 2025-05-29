@@ -124,7 +124,8 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
         this.outputHatches = new EnergyContainerList(outputs);
 
         List<IBatteryData> batteries = new ArrayList<>();
-        var cache = getSubstructure(name).getCache();
+        //var cache = getSubstructure(name).getCache();
+        var cache = patternStates.get(name).getCache();
         for (var entry : cache.long2ObjectEntrySet()) {
             var state = entry.getValue();
             if (state.getBlockState().getBlock() instanceof BatteryBlock batteryBlock) {

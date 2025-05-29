@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
@@ -43,7 +44,7 @@ public class BlockPattern implements IBlockPattern {
     @Getter
     protected final AisleStrategy aisleStrategy;
     protected final Char2ObjectMap<TraceabilityPredicate> predicates;
-    protected PatternState patternState;
+    protected volatile PatternState patternState;
 
     private final ReadWriteLock patternLock = new ReentrantReadWriteLock();
 
@@ -65,9 +66,11 @@ public class BlockPattern implements IBlockPattern {
         } else {
             this.offset = offset;
         }
+
+        patternState = new PatternState();
     }
 
-    @Override
+    /*@Override
     public void setActivePatternState(PatternState state) {
         var wLock = patternLock.writeLock();
         try {
@@ -76,7 +79,7 @@ public class BlockPattern implements IBlockPattern {
         } finally {
             wLock.unlock();
         }
-    }
+    }*/
 
     private void legacyStartOffset(char center) {
         if (center == 0) return;
@@ -93,80 +96,67 @@ public class BlockPattern implements IBlockPattern {
     }
 
     @Override
-    public PatternState checkPatternFastAt(Level level, BlockPos centerPos, Direction frontFacing,
+    public PatternState checkPatternFastAt(Level level, IMultiController controller, BlockPos centerPos, Direction frontFacing,
                                            Direction upwardsFacing, boolean allowsFlip) {
-        var wLock = patternLock.writeLock();
-        try {
-            wLock.lock();
-            if (patternState == null) {
-                throw new IllegalStateException("PatternState not set");
-            }
+        patternState.setController(controller, centerPos);
+        if (!patternState.cache.isEmpty()) {
+            boolean pass = true;
+            BlockPos.MutableBlockPos mBlockPos = new BlockPos.MutableBlockPos();
+            for (var entry : patternState.cache.long2ObjectEntrySet()) {
+                BlockPos pos = mBlockPos.set(entry.getLongKey()).immutable();
+                BlockState state = level.getBlockState(pos);
 
-            /*if (patternState.cbi.level == null) {
-                patternState.cbi.setLevel(level);
-            }*/
+                if (state != entry.getValue().getBlockState()) {
+                    pass = false;
+                    break;
+                }
 
-            if (!patternState.cache.isEmpty()) {
-                boolean pass = true;
-                BlockPos.MutableBlockPos mBlockPos = new BlockPos.MutableBlockPos();
-                for (var entry : patternState.cache.long2ObjectEntrySet()) {
-                    BlockPos pos = mBlockPos.set(entry.getLongKey()).immutable();
-                    BlockState state = level.getBlockState(pos);
+                BlockEntity cachedBlockEntity = entry.getValue().getBlockEntity();
 
-                    if (state != entry.getValue().getBlockState()) {
+                if (cachedBlockEntity != null) {
+                    BlockEntity be = level.getBlockEntity(pos);
+                    if (be != cachedBlockEntity) {
                         pass = false;
                         break;
                     }
-
-                    BlockEntity cachedBlockEntity = entry.getValue().getBlockEntity();
-
-                    if (cachedBlockEntity != null) {
-                        BlockEntity be = level.getBlockEntity(pos);
-                        if (be != cachedBlockEntity) {
-                            pass = false;
-                            break;
-                        }
-                    }
-                }
-
-                if (pass) {
-                    if (patternState.hasError()) {
-                        patternState.setState(PatternState.CheckState.INVALID_CACHED);
-                    } else {
-                        patternState.setState(PatternState.CheckState.VALID_CACHED);
-                    }
-
-                    return patternState;
                 }
             }
 
-            boolean valid = checkPatternAt(level, centerPos, frontFacing, upwardsFacing, false);
-            if (valid) {
-                // reaching here means the cache failed or was empty
-                patternState.setState(PatternState.CheckState.VALID_UNCACHED);
-                patternState.setFlipped(false);
+            if (pass) {
+                if (patternState.hasError()) {
+                    patternState.setState(PatternState.CheckState.INVALID_CACHED);
+                } else {
+                    patternState.setState(PatternState.CheckState.VALID_CACHED);
+                }
+
                 return patternState;
             }
+        }
 
-            if (allowsFlip) {
-                valid = checkPatternAt(level, centerPos, frontFacing, upwardsFacing, true);
-            }
-            if (!valid) { // dont store a partial formed cache
-                clearCache();
-                patternState.setState(PatternState.CheckState.INVALID_UNCACHED);
-                return patternState;
-            }
-
+        boolean valid = checkPatternAt(level, centerPos, frontFacing, upwardsFacing, false);
+        if (valid) {
+            // reaching here means the cache failed or was empty
             patternState.setState(PatternState.CheckState.VALID_UNCACHED);
-            patternState.setFlipped(true);
+            patternState.setFlipped(false);
             return patternState;
         }
-        finally {
-            wLock.unlock();
+
+        if (allowsFlip) {
+            valid = checkPatternAt(level, centerPos, frontFacing, upwardsFacing, true);
         }
+        if (!valid) { // dont store a partial formed cache
+            patternState.getCache().clear();
+            patternState.setState(PatternState.CheckState.INVALID_UNCACHED);
+            return patternState;
+        }
+
+
+        patternState.setState(PatternState.CheckState.VALID_UNCACHED);
+        patternState.setFlipped(true);
+        return patternState;
     }
 
-    @Override
+    /*@Override
     public Long2ObjectMap<BlockInfo> getCache() {
         var rLock = patternLock.readLock();
         try {
@@ -178,42 +168,35 @@ public class BlockPattern implements IBlockPattern {
         } finally {
             rLock.unlock();
         }
-    }
+    */
 
     @Override
     public boolean checkPatternAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
                                   boolean isFlipped) {
-        var wLock = patternLock.writeLock();
-        try {
-            wLock.lock();
-            if (patternState == null) {
-                throw new IllegalStateException("PatternState not set");
-            }
-            patternState.globalCount.clear();
-            patternState.layerCount.clear();
-            patternState.cache.clear();
-
-            patternState.cbi.setLevel(level);
-
-            BlockPos.MutableBlockPos controllerPos = centerPos.mutable();
-
-            aisleStrategy.pattern = this;
-            aisleStrategy.start(controllerPos, frontFacing, upwardsFacing);
-            if (!aisleStrategy.check(isFlipped)) return false;
-
-            for (Object2IntMap.Entry<SimplePredicate> entry : patternState.globalCount.object2IntEntrySet()) {
-                if (entry.getIntValue() < entry.getKey().minCount) {
-                    patternState
-                            .setError(new SinglePredicateError(entry.getKey(), SinglePredicateError.ErrorType.MIN_COUNT));
-                    return false;
-                }
-            }
-
-            patternState.setError(null);
-            return true;
-        } finally {
-            wLock.unlock();
+        if (patternState == null) {
+            throw new IllegalStateException("PatternState not set");
         }
+        patternState.globalCount.clear();
+        patternState.layerCount.clear();
+        patternState.cache.clear();
+
+        patternState.cbi.setLevel(level);
+
+        BlockPos.MutableBlockPos controllerPos = centerPos.mutable();
+
+        aisleStrategy.pattern = this;
+        aisleStrategy.start(controllerPos, frontFacing, upwardsFacing);
+        if (!aisleStrategy.check(isFlipped)) return false;
+
+        for (Object2IntMap.Entry<SimplePredicate> entry : patternState.globalCount.object2IntEntrySet()) {
+            if (entry.getIntValue() < entry.getKey().minCount) {
+                patternState.setError(new SinglePredicateError(entry.getKey(), SinglePredicateError.ErrorType.MIN_COUNT));
+                return false;
+            }
+        }
+
+        patternState.setError(null);
+        return true;
     }
 
     /**
@@ -231,67 +214,58 @@ public class BlockPattern implements IBlockPattern {
      */
     public boolean checkAisle(BlockPos.MutableBlockPos controllerPos, Direction frontFacing, Direction upwardsFacing,
                               int aisleIndex, int aisleOffset, boolean flip) {
-        var wLock = patternLock.writeLock();
-        try {
-            wLock.lock();
-            if (patternState == null) {
-                throw new IllegalStateException("PatternState not set");
-            }
-            Direction absoluteAisle = directions[0].getRelativeFacing(frontFacing, upwardsFacing, flip);
-            Direction absoluteString = directions[1].getRelativeFacing(frontFacing, upwardsFacing, flip);
-            Direction absoluteChar = directions[2].getRelativeFacing(frontFacing, upwardsFacing, flip);
+        Direction absoluteAisle = directions[0].getRelativeFacing(frontFacing, upwardsFacing, flip);
+        Direction absoluteString = directions[1].getRelativeFacing(frontFacing, upwardsFacing, flip);
+        Direction absoluteChar = directions[2].getRelativeFacing(frontFacing, upwardsFacing, flip);
 
-            BlockPos.MutableBlockPos aisleStart = startPos(controllerPos, frontFacing, upwardsFacing, flip)
-                    .move(absoluteAisle, aisleOffset);
+        BlockPos.MutableBlockPos aisleStart = startPos(controllerPos, frontFacing, upwardsFacing, flip)
+                .move(absoluteAisle, aisleOffset);
 
-            BlockPos.MutableBlockPos stringStart = aisleStart.mutable();
-            BlockPos.MutableBlockPos charPos = aisleStart.mutable();
-            PatternAisle aisle = aisles[aisleIndex];
+        BlockPos.MutableBlockPos stringStart = aisleStart.mutable();
+        BlockPos.MutableBlockPos charPos = aisleStart.mutable();
+        PatternAisle aisle = aisles[aisleIndex];
 
-            patternState.layerCount.clear();
+        patternState.layerCount.clear();
 
-            for (int stringI = 0; stringI < dimensions[1]; stringI++) {
-                for (int charI = 0; charI < dimensions[2]; charI++) {
-                    patternState.cbi.setCurrentPos(charPos);
-                    TraceabilityPredicate pred = predicates.get(aisle.charAt(stringI, charI));
+        for (int stringI = 0; stringI < dimensions[1]; stringI++) {
+            for (int charI = 0; charI < dimensions[2]; charI++) {
+                patternState.cbi.setCurrentPos(charPos);
+                TraceabilityPredicate pred = predicates.get(aisle.charAt(stringI, charI));
 
-                    if (pred != TraceabilityPredicate.ANY) {
-                        var be = patternState.cbi.retrieveCurrentBlockEntity();
-                        var state = patternState.cbi.retrieveCurrentBlockState();
-                        patternState.cache.put(charPos.asLong(), new BlockInfo(state, be));
-                        patternState.posCache.add(charPos.immutable());
-                    }
-
-                    PatternError res = pred.test(patternState.cbi, patternState.globalCount, patternState.layerCount);
-                    if (res != null) {
-                        patternState.setError(res);
-                        return false;
-                    }
-
-                    charPos.move(absoluteChar);
+                if (pred != TraceabilityPredicate.ANY) {
+                    var be = patternState.cbi.retrieveCurrentBlockEntity();
+                    var state = patternState.cbi.retrieveCurrentBlockState();
+                    patternState.cache.put(charPos.asLong(), new BlockInfo(state, be));
+                    patternState.posCache.add(charPos.immutable());
                 }
 
-                stringStart.move(absoluteString);
-                charPos.set(stringStart);
-            }
-
-            for (Object2IntMap.Entry<SimplePredicate> entry : patternState.layerCount.object2IntEntrySet()) {
-                if (entry.getIntValue() < entry.getKey().minLayerCount) {
-                    patternState.setError(
-                            new SinglePredicateError(entry.getKey(), SinglePredicateError.ErrorType.MIN_LAYER_COUNT));
+                PatternError res = pred.test(patternState.cbi, patternState.globalCount, patternState.layerCount);
+                if (res != null) {
+                    patternState.setError(res);
                     return false;
                 }
+
+                charPos.move(absoluteChar);
             }
 
-            for (Object2IntMap.Entry<SimplePredicate> entry : patternState.layerCount.object2IntEntrySet()) {
-                patternState.globalCount.put(entry.getKey(),
-                        patternState.globalCount.getInt(entry.getKey()) + entry.getIntValue());
-            }
-
-            return true;
-        } finally {
-            wLock.unlock();
+            stringStart.move(absoluteString);
+            charPos.set(stringStart);
         }
+
+        for (Object2IntMap.Entry<SimplePredicate> entry : patternState.layerCount.object2IntEntrySet()) {
+            if (entry.getIntValue() < entry.getKey().minLayerCount) {
+                patternState.setError(
+                        new SinglePredicateError(entry.getKey(), SinglePredicateError.ErrorType.MIN_LAYER_COUNT));
+                return false;
+            }
+        }
+
+        for (Object2IntMap.Entry<SimplePredicate> entry : patternState.layerCount.object2IntEntrySet()) {
+            patternState.globalCount.put(entry.getKey(),
+                    patternState.globalCount.getInt(entry.getKey()) + entry.getIntValue());
+        }
+
+        return true;
     }
 
     public int getRepetitionCount(int aisleI) {

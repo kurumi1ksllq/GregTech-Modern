@@ -19,6 +19,8 @@ import it.unimi.dsi.fastutil.longs.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
 
 public class ExpandablePattern implements IBlockPattern {
@@ -32,6 +34,8 @@ public class ExpandablePattern implements IBlockPattern {
     protected PatternState patternState;
     // protected final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
 
+    private final Lock patternLock = new ReentrantLock();
+
     public ExpandablePattern(@NotNull QuadFunction<Level, BlockPos.MutableBlockPos, Direction, Direction, int[]> boundsFunc,
                              @NotNull BiFunction<BlockPos.MutableBlockPos, int[], TraceabilityPredicate> predicateFunc,
                              @NotNull RelativeDirection[] directions) {
@@ -42,7 +46,12 @@ public class ExpandablePattern implements IBlockPattern {
 
     @Override
     public void setActivePatternState(PatternState state) {
-        patternState = state;
+        patternLock.lock();
+        try {
+            patternState = state;
+        } finally {
+            patternLock.unlock();
+        }
     }
 
     @Override

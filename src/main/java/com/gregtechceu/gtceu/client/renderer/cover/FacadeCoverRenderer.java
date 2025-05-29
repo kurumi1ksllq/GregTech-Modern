@@ -3,13 +3,13 @@ package com.gregtechceu.gtceu.client.renderer.cover;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.client.model.ModelUtil;
+import com.gregtechceu.gtceu.client.renderer.block.FakeBlockTintGetter;
 import com.gregtechceu.gtceu.common.cover.FacadeCover;
 import com.gregtechceu.gtceu.common.item.FacadeItemBehaviour;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.client.bakedpipeline.FaceQuad;
 import com.lowdragmc.lowdraglib.client.model.ModelFactory;
-import com.lowdragmc.lowdraglib.utils.FacadeBlockAndTintGetter;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -47,7 +47,12 @@ public class FacadeCoverRenderer implements ICoverRenderer {
 
     public final static FacadeCoverRenderer INSTANCE = new FacadeCoverRenderer();
 
-    protected FacadeCoverRenderer() {}
+    public static FakeBlockTintGetter fakeBlockTintGetter;
+
+    protected FacadeCoverRenderer() {
+        fakeBlockTintGetter = new FakeBlockTintGetter();
+        fakeBlockTintGetter.setPos(BlockPos.ZERO);
+    }
 
     @Override
     @OnlyIn(Dist.CLIENT)
@@ -66,6 +71,8 @@ public class FacadeCoverRenderer implements ICoverRenderer {
             blockState = blockItem.getBlock().defaultBlockState();
         }
         if (blockState != null && mc.level != null) {
+            fakeBlockTintGetter.setParent(mc.level);
+            fakeBlockTintGetter.setState(blockState);
             model = mc.getBlockRenderer().getBlockModel(blockState);
             if (!model.isCustomRenderer()) {
                 matrixStack.pushPose();
@@ -80,9 +87,9 @@ public class FacadeCoverRenderer implements ICoverRenderer {
                 }
                 var pose = matrixStack.last();
 
-                var level = new FacadeBlockAndTintGetter(mc.level, BlockPos.ZERO, blockState, null);
-                var quads = new LinkedList<>(ModelUtil.getBakedModelQuads(model, level, BlockPos.ZERO, blockState,
-                        Direction.NORTH, mc.level.random));
+                var quads = new LinkedList<>(
+                        ModelUtil.getBakedModelQuads(model, fakeBlockTintGetter, BlockPos.ZERO, blockState,
+                                Direction.NORTH, mc.level.random));
 
                 var cube = new AABB(0.01, 0.01, 0.01, 0.99, 0.99, 1 / 16f);
 

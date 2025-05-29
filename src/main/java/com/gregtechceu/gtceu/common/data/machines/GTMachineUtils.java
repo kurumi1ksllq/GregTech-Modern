@@ -27,6 +27,7 @@ import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
 import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
+import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.registry.registrate.MachineBuilder;
 import com.gregtechceu.gtceu.api.registry.registrate.MultiblockMachineBuilder;
@@ -631,8 +632,8 @@ public class GTMachineUtils {
             }
             return PatternError.PLACEHOLDER;
         }, (map) -> PartAbility.ROTOR_HOLDER.getAllBlocks().stream()
-                .map(com.gregtechceu.gtceu.api.multiblock.util.BlockInfo::fromBlock)
-                .toArray(com.gregtechceu.gtceu.api.multiblock.util.BlockInfo[]::new)))
+                .map(BlockInfo::fromBlock)
+                .toArray(BlockInfo[]::new)))
                 .addTooltips(Component.translatable("gtceu.multiblock.pattern.clear_amount_3"))
                 .addTooltips(Component.translatable("gtceu.multiblock.pattern.error.limited.1",
                         VN[tier]));

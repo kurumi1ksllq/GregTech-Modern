@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
+import com.gregtechceu.gtceu.GTCEu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -22,8 +23,8 @@ public class CurrentBlockInfo {
     private boolean teResolved;
 
     public BlockState retrieveCurrentBlockState() {
-        if (this.blockState == null) {
-            this.blockState = level.getBlockState(pos.immutable());
+        if (this.blockState == null && level != null) {
+            this.blockState = level.getBlockState(pos);
         }
         return blockState;
     }
@@ -32,8 +33,8 @@ public class CurrentBlockInfo {
         if (!retrieveCurrentBlockState().hasBlockEntity()) {
             return null;
         }
-        if (tileEntity == null && !teResolved) {
-            tileEntity = level.getBlockEntity(pos.immutable());
+        if (tileEntity == null && !teResolved && level != null) {
+            tileEntity = level.getBlockEntity(pos);
             teResolved = true;
         }
         return tileEntity;
@@ -50,12 +51,25 @@ public class CurrentBlockInfo {
     }
 
     public BlockPos getBlockPos() {
-        return pos.immutable();
+        return pos;
     }
 
     private void updateStateAndEntity() {
-        blockState = level.getBlockState(pos.immutable());
-        tileEntity = level.getBlockEntity(pos.immutable());
+        if(level == null) {
+            GTCEu.LOGGER.error("CBI Level is null");
+            return;
+        }
+        blockState = level.getBlockState(pos);
+        tileEntity = level.getBlockEntity(pos);
         teResolved = true;
+    }
+
+    public CurrentBlockInfo copy() {
+        CurrentBlockInfo ret = new CurrentBlockInfo();
+        ret.level = level;
+        ret.pos = pos;
+        ret.blockState = blockState;
+        ret.tileEntity = tileEntity;
+        return ret;
     }
 }

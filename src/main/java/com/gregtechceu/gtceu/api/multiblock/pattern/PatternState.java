@@ -51,7 +51,7 @@ public class PatternState {
     @Getter
     protected PatternError error;
     @Getter
-    protected CheckState state;
+    protected CheckState state = CheckState.UNINITIALIZED;
     @Getter
     protected Set<BlockPos> posCache = new HashSet<>();
     @Getter
@@ -134,7 +134,12 @@ public class PatternState {
         /**
          * The cache is empty. The structure has been rechecked from scratch and is invalid, the cache remains empty.
          */
-        INVALID_UNCACHED;
+        INVALID_UNCACHED,
+
+        /**
+         * The Check State is not initialized, structure checking failed
+         */
+        UNINITIALIZED;
 
         public boolean isValid() {
             return ordinal() < 2;

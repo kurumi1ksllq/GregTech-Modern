@@ -5,6 +5,8 @@ import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
+import lombok.Getter;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -26,26 +28,28 @@ public class SinglePredicateError extends PatternError {
 
     @Override
     public Component getErrorInfo() {
-        int number = -1;
-        if (type == ErrorType.MAX_COUNT) {
-            number = predicate.maxCount;
-        }
-        if (type == ErrorType.MIN_COUNT) {
-            number = predicate.minCount;
-        }
-        if (type == ErrorType.MAX_LAYER_COUNT) {
-            number = predicate.maxLayerCount;
-        }
-        if (type == ErrorType.MIN_LAYER_COUNT) {
-            number = predicate.minLayerCount;
-        }
-        return Component.translatable("gtceu.multiblock.pattern.error.limited." + type.ordinal(), number);
+        int number = switch (type) {
+            case MAX_COUNT -> predicate.maxCount;
+            case MIN_COUNT -> predicate.minCount;
+            case MAX_LAYER_COUNT -> predicate.maxLayerCount;
+            case MIN_LAYER_COUNT -> predicate.minLayerCount;
+        };
+
+        return Component.translatable("gtceu.multiblock.pattern.error.limited." + type.getName(), number);
     }
 
     public enum ErrorType {
-        MAX_COUNT,
-        MIN_COUNT,
-        MAX_LAYER_COUNT,
-        MIN_LAYER_COUNT
+
+        MAX_COUNT("max_count"),
+        MIN_COUNT("min_count"),
+        MAX_LAYER_COUNT("max_layer_count"),
+        MIN_LAYER_COUNT("min_layer_count");
+
+        @Getter
+        String name;
+
+        ErrorType(String name) {
+            this.name = name;
+        }
     }
 }

@@ -1167,8 +1167,10 @@ public class LangHandler {
         provider.add("gtceu.multiblock.pattern.error", "Expected components (%s) at (%s).");
         provider.add("gtceu.multiblock.pattern.error.limited_exact", "§cExactly: %d§r");
         provider.add("gtceu.multiblock.pattern.error.limited_within", "§cBetween %d and %d§r");
-        multiLang(provider, "gtceu.multiblock.pattern.error.limited", "§cMaximum: %d§r", "§cMinimum: %d§r",
-                "§cMaximum: %d per layer§r", "§cMinimum: %d per layer§r");
+        provider.add("gtceu.multiblock.pattern.error.limited.max_count", "§cMaximum: %d§r");
+        provider.add("gtceu.multiblock.pattern.error.limited.min_count", "§cMinimum: %d§r");
+        provider.add("gtceu.multiblock.pattern.error.limited.max_layer_count", "§cMaximum: %d per layer§r");
+        provider.add("gtceu.multiblock.pattern.error.limited.min_layer_count", "§cMinimum: %d per layer§r");
         provider.add("gtceu.multiblock.pattern.error.coils", "§cAll heating coils must be the same§r");
         provider.add("gtceu.multiblock.pattern.error.filters", "§cAll filters must be the same§r");
         provider.add("gtceu.multiblock.pattern.error.batteries", "§cAll batteries must be the same§r");

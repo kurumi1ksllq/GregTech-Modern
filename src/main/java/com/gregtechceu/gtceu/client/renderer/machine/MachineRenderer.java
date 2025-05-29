@@ -18,7 +18,6 @@ import com.lowdragmc.lowdraglib.client.bakedpipeline.Quad;
 import com.lowdragmc.lowdraglib.client.model.ModelFactory;
 import com.lowdragmc.lowdraglib.client.model.custommodel.ICTMPredicate;
 import com.lowdragmc.lowdraglib.client.renderer.IItemRendererProvider;
-import com.lowdragmc.lowdraglib.utils.FacadeBlockAndTintGetter;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -198,9 +197,8 @@ public class MachineRenderer extends TextureOverrideRenderer
     @Override
     public boolean isConnected(BlockAndTintGetter level, BlockState state, BlockPos pos, BlockState sourceState,
                                BlockPos sourcePos, Direction side) {
-        var stateAppearance = FacadeBlockAndTintGetter.getAppearance(state, level, pos, side, sourceState, sourcePos);
-        var sourceStateAppearance = FacadeBlockAndTintGetter.getAppearance(sourceState, level, sourcePos, side, state,
-                pos);
+        var stateAppearance = state.getAppearance(level, pos, side, sourceState, sourcePos);
+        var sourceStateAppearance = sourceState.getAppearance(level, sourcePos, side, state, pos);
         return stateAppearance == sourceStateAppearance;
     }
 

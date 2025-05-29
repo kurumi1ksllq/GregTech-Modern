@@ -224,13 +224,11 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
         long time = System.nanoTime();
         //.setController(this, getPos());
-        pState = pattern.checkPatternFastAt(getLevel(), this, getPos(), getFrontFacing(), getUpwardsFacing(), allowFlip());
-        patternStates.put(name, pState);
+        pState.setController(this, getPos());
+        pattern.checkPatternFastAt(getLevel(), pState, getPos(), getFrontFacing(), getUpwardsFacing(), allowFlip());
+        //patternStates.put(name, pState);
         //pattern.setActivePatternState(pState);
         GTCEu.LOGGER.info("Structure check for {} took {} ns", self().getDefinition().getName(), (System.nanoTime() - time));
-        if(pState.getState() == null) {
-            GTCEu.LOGGER.error("Check State was not set");
-        }
         return pState;
     }
 
@@ -238,6 +236,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     public void formStructure(String name) {
         var patternState = getPatternState(name);
         patternState.setFormed(true);
+        isFormed = true;
 
         if (patternState.getState().isValid()) {
             if (patternState.isFormed()) {
@@ -271,6 +270,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
                     updatePartPositions();
 
                     patternState.setFormed(true);
+                    isFormed = true;
                     setFlipped(patternState.isFlipped(), patternState);
                 }
                 return;
@@ -317,8 +317,8 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     @Override
     public void invalidateStructure(String name) {
-        // patternStates.clear();
-        if (!patternStates.get(name).isFormed()) return;
+        var pState = patternStates.get(name);
+        if (!pState.isFormed()) return;
 
         parts.removeIf(part -> {
             if (name.equals(part.getSubstructureName())) {
@@ -327,7 +327,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             }
             return false;
         });
-        patternStates.get(name).setFormed(false);
+        pState.setFormed(false);
         isFormed = false;
         parallelHatch = null;
         updatePartPositions();

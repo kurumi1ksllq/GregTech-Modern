@@ -44,7 +44,7 @@ public class BlockPattern implements IBlockPattern {
     @Getter
     protected final AisleStrategy aisleStrategy;
     protected final Char2ObjectMap<TraceabilityPredicate> predicates;
-    protected volatile PatternState patternState;
+    //protected volatile PatternState patternState;
 
     private final ReadWriteLock patternLock = new ReentrantReadWriteLock();
 
@@ -67,7 +67,7 @@ public class BlockPattern implements IBlockPattern {
             this.offset = offset;
         }
 
-        patternState = new PatternState();
+        //patternState = new PatternState();
     }
 
     /*@Override
@@ -96,9 +96,9 @@ public class BlockPattern implements IBlockPattern {
     }
 
     @Override
-    public PatternState checkPatternFastAt(Level level, IMultiController controller, BlockPos centerPos, Direction frontFacing,
+    public void checkPatternFastAt(Level level, PatternState patternState, BlockPos centerPos, Direction frontFacing,
                                            Direction upwardsFacing, boolean allowsFlip) {
-        patternState.setController(controller, centerPos);
+        //patternState.setController(controller, centerPos);
         if (!patternState.cache.isEmpty()) {
             boolean pass = true;
             BlockPos.MutableBlockPos mBlockPos = new BlockPos.MutableBlockPos();
@@ -129,31 +129,30 @@ public class BlockPattern implements IBlockPattern {
                     patternState.setState(PatternState.CheckState.VALID_CACHED);
                 }
 
-                return patternState;
+                return;
             }
         }
 
-        boolean valid = checkPatternAt(level, centerPos, frontFacing, upwardsFacing, false);
+        boolean valid = checkPatternAt(level, patternState, centerPos, frontFacing, upwardsFacing, false);
         if (valid) {
             // reaching here means the cache failed or was empty
             patternState.setState(PatternState.CheckState.VALID_UNCACHED);
             patternState.setFlipped(false);
-            return patternState;
+            return;
         }
 
         if (allowsFlip) {
-            valid = checkPatternAt(level, centerPos, frontFacing, upwardsFacing, true);
+            valid = checkPatternAt(level, patternState, centerPos, frontFacing, upwardsFacing, true);
         }
         if (!valid) { // dont store a partial formed cache
             patternState.getCache().clear();
             patternState.setState(PatternState.CheckState.INVALID_UNCACHED);
-            return patternState;
+            return;
         }
 
 
         patternState.setState(PatternState.CheckState.VALID_UNCACHED);
         patternState.setFlipped(true);
-        return patternState;
     }
 
     /*@Override
@@ -171,7 +170,7 @@ public class BlockPattern implements IBlockPattern {
     */
 
     @Override
-    public boolean checkPatternAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
+    public boolean checkPatternAt(Level level, PatternState patternState, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
                                   boolean isFlipped) {
         if (patternState == null) {
             throw new IllegalStateException("PatternState not set");
@@ -186,7 +185,7 @@ public class BlockPattern implements IBlockPattern {
 
         aisleStrategy.pattern = this;
         aisleStrategy.start(controllerPos, frontFacing, upwardsFacing);
-        if (!aisleStrategy.check(isFlipped)) return false;
+        if (!aisleStrategy.check(patternState, isFlipped)) return false;
 
         for (Object2IntMap.Entry<SimplePredicate> entry : patternState.globalCount.object2IntEntrySet()) {
             if (entry.getIntValue() < entry.getKey().minCount) {
@@ -212,7 +211,7 @@ public class BlockPattern implements IBlockPattern {
      * @param flip          Whether to flip or not
      * @return True if the check passed
      */
-    public boolean checkAisle(BlockPos.MutableBlockPos controllerPos, Direction frontFacing, Direction upwardsFacing,
+    public boolean checkAisle(BlockPos.MutableBlockPos controllerPos, PatternState patternState, Direction frontFacing, Direction upwardsFacing,
                               int aisleIndex, int aisleOffset, boolean flip) {
         Direction absoluteAisle = directions[0].getRelativeFacing(frontFacing, upwardsFacing, flip);
         Direction absoluteString = directions[1].getRelativeFacing(frontFacing, upwardsFacing, flip);
@@ -301,11 +300,6 @@ public class BlockPattern implements IBlockPattern {
         }
 
         return map;
-    }
-
-    @Override
-    public PatternState getPatternState() {
-        return patternState;
     }
 
     @Override

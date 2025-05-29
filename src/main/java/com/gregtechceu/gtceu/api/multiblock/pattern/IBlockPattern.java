@@ -29,9 +29,9 @@ public interface IBlockPattern {
      * @param upwardsFacing The up facing of the controller, obtained via
      *                      {@link MultiblockControllerMachine#getUpwardsFacing()}
      * @param allowsFlip    Whether the multiblock allows flipping.
-     * @return The internal state of the pattern. Check whether its valid first before using other fields.
+     * Will edit the internal state of the pattern. Check whether its valid first before using other fields.
      */
-    PatternState checkPatternFastAt(Level level, IMultiController controller, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
+    void checkPatternFastAt(Level level, PatternState state, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
                                     boolean allowsFlip);
 
     /**
@@ -46,7 +46,7 @@ public interface IBlockPattern {
      * @param isFlipped     Is the multiblock flipped or not.
      * @return True if the check passed, in which case the context is mutated for returning from checkPatternFastAt(...)
      */
-    boolean checkPatternAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
+    boolean checkPatternAt(Level level, PatternState state, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
                            boolean isFlipped);
 
     /**
@@ -68,7 +68,7 @@ public interface IBlockPattern {
      * {@link IBlockPattern#checkPatternFastAt(Level, BlockPos, Direction, Direction, boolean)} always
      * except for the shouldUpdate field.
      */
-    PatternState getPatternState();
+    //PatternState getPatternState();
 
     /**
      * Clears the cache for checkPatternFastAt(...) in case something in the pattern is changed. Default impl just

@@ -26,7 +26,7 @@ public abstract class AisleStrategy {
      * @param flip Whether this is a flipped pattern check.
      * @return Whether the pattern is formed after this.
      */
-    public abstract boolean check(boolean flip);
+    public abstract boolean check(PatternState state, boolean flip);
 
     /**
      * Gets the order in which aisles should be displayed, or built in case of autobuild.
@@ -54,7 +54,7 @@ public abstract class AisleStrategy {
         System.arraycopy(directions, 0, this.directions, 0, 3);
     }
 
-    protected boolean checkAisle(int index, int offset, boolean flip) {
-        return pattern.checkAisle(pos, front, up, index, offset, flip);
+    protected boolean checkAisle(PatternState state, int index, int offset, boolean flip) {
+        return pattern.checkAisle(pos, state, front, up, index, offset, flip);
     }
 }

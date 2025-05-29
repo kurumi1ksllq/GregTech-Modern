@@ -41,7 +41,7 @@ public class PatternState {
     protected boolean isFormed = false;
     @Getter
     @DescSynced
-    protected boolean isFlipped = false;
+    protected volatile boolean isFlipped = false;
     @Setter
     @Getter
     protected boolean actualFlipped = false;
@@ -51,7 +51,7 @@ public class PatternState {
     @Getter
     protected PatternError error;
     @Getter
-    protected CheckState state = CheckState.UNINITIALIZED;
+    protected volatile CheckState state = CheckState.UNINITIALIZED;
     @Getter
     protected Set<BlockPos> posCache = new HashSet<>();
     @Getter

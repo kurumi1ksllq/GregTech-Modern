@@ -32,7 +32,7 @@ public class ExpandablePattern implements IBlockPattern {
 
     protected final RelativeDirection[] directions;
     // protected final Object2IntMap<SimplePredicate> globalCount = new Object2IntOpenHashMap<>();
-    protected PatternState patternState;
+    //protected PatternState patternState;
     // protected final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
 
     private final Lock patternLock = new ReentrantLock();
@@ -44,7 +44,7 @@ public class ExpandablePattern implements IBlockPattern {
         this.predicateFunc = predicateFunc;
         this.directions = directions;
 
-        patternState = new PatternState();
+        //patternState = new PatternState();
     }
 
     /*@Override
@@ -58,9 +58,8 @@ public class ExpandablePattern implements IBlockPattern {
     }*/
 
     @Override
-    public PatternState checkPatternFastAt(Level level, IMultiController controller, BlockPos centerPos, Direction frontFacing,
+    public void checkPatternFastAt(Level level, PatternState patternState,  BlockPos centerPos, Direction frontFacing,
                                            Direction upwardsFacing, boolean allowsFlip) {
-        patternState.setController(controller, centerPos);
         if (!patternState.cache.isEmpty()) {
             boolean pass = true;
             BlockPos.MutableBlockPos mbp = new BlockPos.MutableBlockPos();
@@ -83,30 +82,30 @@ public class ExpandablePattern implements IBlockPattern {
                 }
             }
             if (pass) {
-                if (patternState.hasError())
+                if (patternState.hasError()) {
                     patternState.setState(PatternState.CheckState.INVALID_CACHED);
-                else
+                } else {
                     patternState.setState(PatternState.CheckState.VALID_CACHED);
+                }
 
-                return patternState;
+                return;
             }
         }
 
         patternState.setFlipped(false);
-        boolean valid = checkPatternAt(level, centerPos, frontFacing, upwardsFacing, false);
+        boolean valid = checkPatternAt(level, patternState, centerPos, frontFacing, upwardsFacing, false);
         if (valid) {
             patternState.setState(PatternState.CheckState.VALID_UNCACHED);
-            return patternState;
+            return;
         }
 
         //clearCache();
         patternState.getCache().clear();
         patternState.setState(PatternState.CheckState.INVALID_UNCACHED);
-        return patternState;
     }
 
     @Override
-    public boolean checkPatternAt(Level level, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
+    public boolean checkPatternAt(Level level, PatternState patternState, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
                                   boolean isFlipped) {
         int[] bounds = boundsFunc.apply(level, centerPos.mutable(), frontFacing, upwardsFacing);
         if (bounds == null) return false;
@@ -227,11 +226,6 @@ public class ExpandablePattern implements IBlockPattern {
             }
         }
         return predicates;
-    }
-
-    @Override
-    public PatternState getPatternState() {
-        return patternState;
     }
 
     /*

@@ -201,7 +201,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         var defaultPattern = createStructurePattern();
         var defaultPatternState = new PatternState();
         patternStates.put(DEFAULT_STRUCTURE, defaultPatternState);
-        //defaultPattern.setActivePatternState(defaultPatternState);
+        // defaultPattern.setActivePatternState(defaultPatternState);
         structures.put(DEFAULT_STRUCTURE, defaultPattern);
     }
 
@@ -229,12 +229,13 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         if (!pState.shouldUpdate() || getLevel() == null) return pState;
 
         long time = System.nanoTime();
-        //.setController(this, getPos());
+        // .setController(this, getPos());
         pState.setController(this, getPos());
         pattern.checkPatternFastAt(getLevel(), pState, getPos(), getFrontFacing(), getUpwardsFacing(), allowFlip());
-        //patternStates.put(name, pState);
-        //pattern.setActivePatternState(pState);
-        GTCEu.LOGGER.info("Structure check for {} took {} ns", self().getDefinition().getName(), (System.nanoTime() - time));
+        // patternStates.put(name, pState);
+        // pattern.setActivePatternState(pState);
+        GTCEu.LOGGER.info("Structure check for {} took {} ns", self().getDefinition().getName(),
+                (System.nanoTime() - time));
         return pState;
     }
 
@@ -383,7 +384,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     }
 
     void forEachMultiPart(String name, Predicate<IMultiPart> action) {
-        //var cache = getSubstructure(name).getCache();
+        // var cache = getSubstructure(name).getCache();
         var cache = patternStates.get(name).getCache();
         for (BlockInfo info : cache.values()) {
             BlockEntity be = info.getBlockEntity();
@@ -397,7 +398,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     }
 
     protected void forEachFormed(String name, BiConsumer<BlockInfo, BlockPos.MutableBlockPos> action) {
-        //var cache = getSubstructure(name).getCache();
+        // var cache = getSubstructure(name).getCache();
         var cache = patternStates.get(name).getCache();
         var pos = new BlockPos.MutableBlockPos();
         for (var entry : cache.long2ObjectEntrySet()) {
@@ -431,7 +432,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             invalidStructureCaches();
             var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
             for (var patternState : patternStates.values()) {
-                //var state = structure.getPatternState();
+                // var state = structure.getPatternState();
                 mwsd.removeMapping(patternState);
             }
             mwsd.addAsyncLogic(this);

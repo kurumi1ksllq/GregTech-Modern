@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
@@ -10,7 +9,6 @@ import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -18,7 +16,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectSortedMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -27,10 +24,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class BlockPattern implements IBlockPattern {
 
@@ -44,9 +37,6 @@ public class BlockPattern implements IBlockPattern {
     @Getter
     protected final AisleStrategy aisleStrategy;
     protected final Char2ObjectMap<TraceabilityPredicate> predicates;
-    //protected volatile PatternState patternState;
-
-    private final ReadWriteLock patternLock = new ReentrantReadWriteLock();
 
     public BlockPattern(@NotNull PatternAisle @NotNull [] aisles, @NotNull AisleStrategy aisleStrategy,
                         int @NotNull [] dimensions, @NotNull RelativeDirection @NotNull [] directions,
@@ -66,20 +56,7 @@ public class BlockPattern implements IBlockPattern {
         } else {
             this.offset = offset;
         }
-
-        //patternState = new PatternState();
     }
-
-    /*@Override
-    public void setActivePatternState(PatternState state) {
-        var wLock = patternLock.writeLock();
-        try {
-            wLock.lock();
-            patternState = state;
-        } finally {
-            wLock.unlock();
-        }
-    }*/
 
     private void legacyStartOffset(char center) {
         if (center == 0) return;
@@ -97,8 +74,7 @@ public class BlockPattern implements IBlockPattern {
 
     @Override
     public void checkPatternFastAt(Level level, PatternState patternState, BlockPos centerPos, Direction frontFacing,
-                                           Direction upwardsFacing, boolean allowsFlip) {
-        //patternState.setController(controller, centerPos);
+                                   Direction upwardsFacing, boolean allowsFlip) {
         if (!patternState.cache.isEmpty()) {
             boolean pass = true;
             BlockPos.MutableBlockPos mBlockPos = new BlockPos.MutableBlockPos();
@@ -150,27 +126,13 @@ public class BlockPattern implements IBlockPattern {
             return;
         }
 
-
         patternState.setState(PatternState.CheckState.VALID_UNCACHED);
         patternState.setFlipped(true);
     }
 
-    /*@Override
-    public Long2ObjectMap<BlockInfo> getCache() {
-        var rLock = patternLock.readLock();
-        try {
-            rLock.lock();
-            if (patternState == null) {
-                throw new IllegalStateException("PatternState not set");
-            }
-            return new Long2ObjectOpenHashMap<>(patternState.cache);
-        } finally {
-            rLock.unlock();
-        }
-    */
-
     @Override
-    public boolean checkPatternAt(Level level, PatternState patternState, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
+    public boolean checkPatternAt(Level level, PatternState patternState, BlockPos centerPos, Direction frontFacing,
+                                  Direction upwardsFacing,
                                   boolean isFlipped) {
         if (patternState == null) {
             throw new IllegalStateException("PatternState not set");
@@ -189,7 +151,8 @@ public class BlockPattern implements IBlockPattern {
 
         for (Object2IntMap.Entry<SimplePredicate> entry : patternState.globalCount.object2IntEntrySet()) {
             if (entry.getIntValue() < entry.getKey().minCount) {
-                patternState.setError(new SinglePredicateError(entry.getKey(), SinglePredicateError.ErrorType.MIN_COUNT));
+                patternState
+                        .setError(new SinglePredicateError(entry.getKey(), SinglePredicateError.ErrorType.MIN_COUNT));
                 return false;
             }
         }
@@ -211,7 +174,8 @@ public class BlockPattern implements IBlockPattern {
      * @param flip          Whether to flip or not
      * @return True if the check passed
      */
-    public boolean checkAisle(BlockPos.MutableBlockPos controllerPos, PatternState patternState, Direction frontFacing, Direction upwardsFacing,
+    public boolean checkAisle(BlockPos.MutableBlockPos controllerPos, PatternState patternState, Direction frontFacing,
+                              Direction upwardsFacing,
                               int aisleIndex, int aisleOffset, boolean flip) {
         Direction absoluteAisle = directions[0].getRelativeFacing(frontFacing, upwardsFacing, flip);
         Direction absoluteString = directions[1].getRelativeFacing(frontFacing, upwardsFacing, flip);

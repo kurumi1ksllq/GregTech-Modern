@@ -24,6 +24,7 @@ import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
+import com.gregtechceu.gtceu.api.multiblock.pattern.ExpandablePattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryExpandablePattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
@@ -128,7 +129,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
         super.formStructure(name);
         initializeAbilities();
 
-        //var cache = getSubstructure(name).getCache();
+        // var cache = getSubstructure(name).getCache();
         var cache = patternStates.get(name).getCache();
         IFilterType filterType = null;
         for (var entry : cache.long2ObjectEntrySet()) {
@@ -182,12 +183,17 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
 
     @Override
     public boolean shouldAddPartToController(IMultiPart part) {
-        // var cache = getMultiTileInfo().getCache();
-        // for (Direction side : GTUtil.DIRECTIONS) {
-        // if (!cache.contains(part.self().getPos().relative(side))) {
-        // return true;
-        // }
-        // }
+         var posCache = patternStates.get(DEFAULT_STRUCTURE).getPosCache();
+         for (Direction side : GTUtil.DIRECTIONS) {
+            if (!posCache.contains(part.self().getPos().relative(side))) { // part is on a wall or edge
+                return true;
+            }
+         }
+        return false;
+    }
+
+    @Override
+    public boolean shouldUpdateActiveBlocks() {
         return false;
     }
 
@@ -309,7 +315,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
 
     public int findWallPos(Direction dir, BlockPos.MutableBlockPos pos) {
         for (int i = 1; i < MAX_RADIUS; i++) {
-            var state = getLevel().getBlockState(pos.move(dir).immutable());
+            var state = getLevel().getBlockState(pos.move(dir));
             if (state == getCasingState() || state == getGlassState()) {
                 return i;
             }
@@ -552,6 +558,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
 
     @Override
     public void addDisplayText(List<Component> textList) {
+        var state = patternStates.get(DEFAULT_STRUCTURE);
         if (isFormed()) {
             var maxVoltage = getMaxVoltage();
             if (maxVoltage > 0) {
@@ -592,6 +599,11 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
             textList.add(Component.translatable("gtceu.multiblock.invalid_structure")
                     .withStyle(Style.EMPTY.withColor(ChatFormatting.RED)
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltip))));
+
+        }
+        if (state.hasError()) {
+            Component comp = state.getError().getErrorInfo();
+            textList.add(comp);
         }
     }
 

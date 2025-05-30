@@ -167,9 +167,9 @@ public class FactoryBlockPattern {
         } else {
             for (String s : aisle) {
                 if (s.length() != dimensions[2]) {
-                    throw new IllegalArgumentException("" +
+                    throw new IllegalArgumentException(
                             "Not all rows in the given aisle are the correct width (expected " + dimensions[2] +
-                            ", found one with " + s.length() + ")");
+                                    ", found one with " + s.length() + ")");
                 }
             }
         }

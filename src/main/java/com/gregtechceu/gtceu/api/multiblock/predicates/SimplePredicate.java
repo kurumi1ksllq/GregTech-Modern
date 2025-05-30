@@ -142,15 +142,19 @@ public class SimplePredicate {
                                    Object2IntMap<SimplePredicate> globalCache,
                                    Object2IntMap<SimplePredicate> layerCache) {
         PatternError res = predicate.apply(currBlock);
-        if (!globalCache.containsKey(this)) globalCache.put(this, 0);
+        //if (!globalCache.containsKey(this)) globalCache.put(this, 0);
+        globalCache.mergeInt(this, (res == null ? 1 : 0), Integer::sum);
         if ((minCount == -1 && maxCount == -1) || res != null || layerCache == null) return res;
-        int count = layerCache.put(this, layerCache.getInt(this) + 1) + 1 + globalCache.getInt(this);
+        int count = globalCache.getInt(this);
+        //int count = layerCache.put(this, layerCache.getInt(this) + 1) + 1 + globalCache.getInt(this);
         if (maxCount == -1 || count <= maxCount) return null;
         return new SinglePredicateError(this, SinglePredicateError.ErrorType.MAX_COUNT);
     }
 
     public PatternError testLayer(CurrentBlockInfo currBlock, Object2IntMap<SimplePredicate> layerCache) {
         PatternError res = predicate.apply(currBlock);
+        if(layerCache == null) return res;
+        layerCache.mergeInt(this, (res == null ? 1 : 0), Integer::sum);
         if ((minLayerCount == -1 && maxLayerCount == -1) || res != null) return res;
         if (maxLayerCount == -1 || layerCache.getInt(this) <= maxLayerCount) return null;
         return new SinglePredicateError(this, SinglePredicateError.ErrorType.MAX_LAYER_COUNT);

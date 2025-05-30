@@ -109,7 +109,7 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
     public void formStructure(String name) {
         super.formStructure(name);
         // attach parts' traits
-        //var cache = getSubstructure(name).getCache();
+        // var cache = getSubstructure(name).getCache();
         var cache = patternStates.get(name).getCache();
         for (var entry : cache.long2ObjectEntrySet()) {
             if (entry.getValue().getBlockState().getBlock() instanceof ActiveBlock) {
@@ -235,9 +235,16 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
     @Override
     public void notifyStatusChanged(RecipeLogic.Status oldStatus, RecipeLogic.Status newStatus) {
         IWorkableMultiController.super.notifyStatusChanged(oldStatus, newStatus);
-        if (newStatus == RecipeLogic.Status.WORKING || oldStatus == RecipeLogic.Status.WORKING) {
+        if ((newStatus == RecipeLogic.Status.WORKING || oldStatus == RecipeLogic.Status.WORKING) && shouldUpdateActiveBlocks()) {
             updateActiveBlocks(newStatus == RecipeLogic.Status.WORKING);
         }
+    }
+
+    /**
+     * If the multiblock should update all active blocks in its structure
+     */
+    public boolean shouldUpdateActiveBlocks() {
+        return true;
     }
 
     @Override

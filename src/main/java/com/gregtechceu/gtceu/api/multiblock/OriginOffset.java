@@ -9,6 +9,15 @@ public class OriginOffset {
 
     protected final int[] offset = new int[3];
 
+    public OriginOffset move(int xi, int yi, int zi) {
+        return move(RelativeDirection.LEFT, RelativeDirection.UP, RelativeDirection.FRONT, xi, yi, zi);
+    }
+
+    public OriginOffset move(RelativeDirection x, RelativeDirection y, RelativeDirection z, int xi, int yi, int zi) {
+        RelativeDirection.validateFacingsArray(new RelativeDirection[] { x, y, z });
+        return move(x, xi).move(y, yi).move(z, zi);
+    }
+
     public OriginOffset move(RelativeDirection dir, int amount) {
         amount *= dir.ordinal() % 2 == 0 ? 1 : -1;
         offset[dir.ordinal() / 2] += amount;

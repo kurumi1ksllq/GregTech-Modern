@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
@@ -20,8 +19,6 @@ import it.unimi.dsi.fastutil.longs.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
 
 public class ExpandablePattern implements IBlockPattern {
@@ -31,11 +28,6 @@ public class ExpandablePattern implements IBlockPattern {
     protected final OriginOffset offset = new OriginOffset();
 
     protected final RelativeDirection[] directions;
-    // protected final Object2IntMap<SimplePredicate> globalCount = new Object2IntOpenHashMap<>();
-    //protected PatternState patternState;
-    // protected final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
-
-    private final Lock patternLock = new ReentrantLock();
 
     public ExpandablePattern(@NotNull QuadFunction<Level, BlockPos.MutableBlockPos, Direction, Direction, int[]> boundsFunc,
                              @NotNull BiFunction<BlockPos.MutableBlockPos, int[], TraceabilityPredicate> predicateFunc,
@@ -43,23 +35,11 @@ public class ExpandablePattern implements IBlockPattern {
         this.boundsFunc = boundsFunc;
         this.predicateFunc = predicateFunc;
         this.directions = directions;
-
-        //patternState = new PatternState();
     }
 
-    /*@Override
-    public void setActivePatternState(PatternState state) {
-        patternLock.lock();
-        try {
-            patternState = state;
-        } finally {
-            patternLock.unlock();
-        }
-    }*/
-
     @Override
-    public void checkPatternFastAt(Level level, PatternState patternState,  BlockPos centerPos, Direction frontFacing,
-                                           Direction upwardsFacing, boolean allowsFlip) {
+    public void checkPatternFastAt(Level level, PatternState patternState, BlockPos centerPos, Direction frontFacing,
+                                   Direction upwardsFacing, boolean allowsFlip) {
         if (!patternState.cache.isEmpty()) {
             boolean pass = true;
             BlockPos.MutableBlockPos mbp = new BlockPos.MutableBlockPos();
@@ -99,13 +79,14 @@ public class ExpandablePattern implements IBlockPattern {
             return;
         }
 
-        //clearCache();
+        // clearCache();
         patternState.getCache().clear();
         patternState.setState(PatternState.CheckState.INVALID_UNCACHED);
     }
 
     @Override
-    public boolean checkPatternAt(Level level, PatternState patternState, BlockPos centerPos, Direction frontFacing, Direction upwardsFacing,
+    public boolean checkPatternAt(Level level, PatternState patternState, BlockPos centerPos, Direction frontFacing,
+                                  Direction upwardsFacing,
                                   boolean isFlipped) {
         int[] bounds = boundsFunc.apply(level, centerPos.mutable(), frontFacing, upwardsFacing);
         if (bounds == null) return false;
@@ -140,24 +121,23 @@ public class ExpandablePattern implements IBlockPattern {
 
         // SOUTH, UP, EAST means point is +z, line is +y, plane is +x. this basically means the x val of the iter is
         // aisle count, y is str count, and z is char count.
-        // for(BetterBlockPos pos : BetterBlockPos.allInBox(negCorner, posCorner, Direction.SOUTH, Direction.UP,
-        // Direction.EAST)) {
         for (var pos : BlockPos.betweenClosed(negCorner, posCorner)) {
             BlockPos.MutableBlockPos mPos = pos.mutable();
             TraceabilityPredicate pred = predicateFunc.apply(mPos, bounds);
 
             // int[] arr = pos.getAll();
             // this basically reshuffles the coordinates into absolute form from relative form
-            mPos.set(BlockPos.ZERO).move(absolutes[0], mPos.getX()).move(absolutes[1], mPos.getY()).move(absolutes[2],
-                    mPos.getZ());
-            // pos.zero().offset(absolutes[0], arr[0]).offset(absolutes[1], arr[1]).offset(absolutes[2], arr[2]);
+            mPos.set(BlockPos.ZERO).move(absolutes[0], pos.getX()).move(absolutes[1], pos.getY()).move(absolutes[2],
+                    pos.getZ());
             // translate from the origin to the center
-            patternState.cbi.setCurrentPos(mPos.offset(translation));
+            mPos = mPos.offset(translation).mutable();
+            patternState.cbi.setCurrentPos(mPos);
 
             if (pred != TraceabilityPredicate.ANY) {
                 var bstate = patternState.cbi.retrieveCurrentBlockState();
                 BlockEntity be = patternState.cbi.retrieveCurrentBlockEntity();
                 patternState.cache.put(mPos.asLong(), new BlockInfo(bstate, be));
+                patternState.posCache.add(mPos.immutable());
             }
 
             PatternError res = pred.test(patternState.cbi, patternState.globalCount, null);
@@ -169,11 +149,13 @@ public class ExpandablePattern implements IBlockPattern {
 
         for (var entry : patternState.globalCount.object2IntEntrySet()) {
             if (entry.getIntValue() < entry.getKey().minCount) {
-                patternState
-                        .setError(new SinglePredicateError(entry.getKey(), SinglePredicateError.ErrorType.MIN_COUNT));
+                patternState.setError(new SinglePredicateError(entry.getKey(),
+                        SinglePredicateError.ErrorType.MIN_COUNT));
                 return false;
             }
         }
+
+        patternState.setError(null);
         return true;
     }
 
@@ -227,15 +209,6 @@ public class ExpandablePattern implements IBlockPattern {
         }
         return predicates;
     }
-
-    /*
-    @Override
-    public Long2ObjectMap<BlockInfo> getCache() {
-        if (patternState == null) {
-            throw new IllegalStateException("PatternState not set");
-        }
-        return patternState.cache;
-    }*/
 
     @Override
     public OriginOffset getOffset() {

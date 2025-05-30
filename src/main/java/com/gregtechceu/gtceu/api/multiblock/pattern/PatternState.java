@@ -18,6 +18,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
@@ -51,7 +52,8 @@ public class PatternState {
     @Getter
     protected PatternError error;
     @Getter
-    protected volatile CheckState state = CheckState.UNINITIALIZED;
+    @Setter(AccessLevel.PROTECTED)
+    protected CheckState state = CheckState.UNINITIALIZED;
     @Getter
     protected Set<BlockPos> posCache = new HashSet<>();
     @Getter
@@ -80,10 +82,6 @@ public class PatternState {
         return error != null;
     }
 
-    protected void setState(CheckState state) {
-        this.state = state;
-    }
-
     public void onBlockStateChanged(BlockPos pos, BlockState state) {
         if (cbi.getLevel() instanceof ServerLevel serverLevel) {
             if (pos.equals(controllerPos)) {
@@ -100,20 +98,19 @@ public class PatternState {
                         return;
                     }
 
-                    for(var name : controller.getStructureNames()) {
+                    for (var name : controller.getStructureNames()) {
                         if (!controller.checkStructurePattern(name).hasError()) {
                             controller.formStructure(name);
                         } else {
                             controller.invalidateStructure(name);
-                        }
-                        if (name.equals(MultiblockControllerMachine.DEFAULT_STRUCTURE)) {
-                            var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-                            mwsd.removeMapping(this);
-                            mwsd.addAsyncLogic(controller);
+                            if (name.equals(MultiblockControllerMachine.DEFAULT_STRUCTURE)) {
+                                var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
+                                mwsd.removeMapping(this);
+                                mwsd.addAsyncLogic(controller);
+                            }
                         }
                     }
                 }
-
             }
         }
     }
@@ -124,31 +121,41 @@ public class PatternState {
          * The cache doesn't match with the structure's data. The structure has been rechecked from scratch, is valid,
          * and the cache is now populated.
          */
-        VALID_UNCACHED,
+        VALID_UNCACHED(true, false),
 
         /**
          * The cache matches the structure's data.
          */
-        VALID_CACHED,
+        VALID_CACHED(true, false),
 
         /**
          * The cache doesn't match with the structure's data. The structure has been rechecked from scratch, is invalid,
          * and the cache is now empty.
          */
-        INVALID_CACHED,
+        INVALID_CACHED(false, true),
 
         /**
          * The cache is empty. The structure has been rechecked from scratch and is invalid, the cache remains empty.
          */
-        INVALID_UNCACHED,
+        INVALID_UNCACHED(false, false),
 
         /**
          * The Check State is not initialized, structure checking failed
          */
-        UNINITIALIZED;
+        UNINITIALIZED(false, false);
 
-        public boolean isValid() {
-            return ordinal() < 2;
+        @Getter
+        private final boolean valid;
+        @Getter
+        private final boolean cached;
+
+        CheckState(boolean valid, boolean cached) {
+            this.valid = valid;
+            this.cached = cached;
         }
+
+        // public boolean isValid() {
+        // return ordinal() < 2;
+        // }
     }
 }

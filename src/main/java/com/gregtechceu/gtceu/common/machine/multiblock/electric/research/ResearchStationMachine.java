@@ -83,7 +83,7 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
     @Override
     public PatternState checkStructurePattern(String name) {
         var patternState = super.checkStructurePattern(name);
-        //var cache = getSubstructure(name).getCache();
+        // var cache = getSubstructure(name).getCache();
         var cache = patternStates.get(name).getCache();
         IObjectHolder objHolder = null;
         for (var entry : cache.long2ObjectEntrySet()) {

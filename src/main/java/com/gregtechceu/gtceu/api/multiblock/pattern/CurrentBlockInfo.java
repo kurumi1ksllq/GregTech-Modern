@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
 import com.gregtechceu.gtceu.GTCEu;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -55,7 +56,7 @@ public class CurrentBlockInfo {
     }
 
     private void updateStateAndEntity() {
-        if(level == null) {
+        if (level == null) {
             GTCEu.LOGGER.error("CBI Level is null");
             return;
         }

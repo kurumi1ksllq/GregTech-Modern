@@ -22,6 +22,7 @@ import com.gregtechceu.gtceu.client.util.TooltipHelper;
 import com.gregtechceu.gtceu.common.block.BoilerFireboxType;
 import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.*;
+import com.gregtechceu.gtceu.common.machine.multiblock.electric.testmultis.PCBFactoryMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.primitive.CharcoalPileIgniterMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.primitive.CokeOvenMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.primitive.PrimitiveBlastFurnaceMachine;
@@ -1088,6 +1089,26 @@ public class GTMultiMachines {
             null,
             (builder, overlay) -> builder.workableCasingRenderer(
                     GTCEu.id("block/casings/solid/machine_casing_solid_steel"), overlay));
+
+    public static final MultiblockMachineDefinition PCB = REGISTRATE
+            .multiblock("pcb", PCBFactoryMachine::new)
+            .rotationState(RotationState.ALL)
+            .recipeType(DUMMY_RECIPES)
+            .appearanceBlock(PLASTCRETE)
+            .pattern(def -> FactoryBlockPattern.start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.LEFT)
+                    .aisle("CCC", "CCC")
+                    .aisle("CCC", "CBC")
+                    .aisle("CSC", "CCC")
+                    .where('C', /*Predicates.autoAbilities(true, false, false)
+                            .or(*/Predicates.blocks(CASING_GRATE.get()).setMinGlobalLimited(12))
+                    .where('S', Predicates.controller(Predicates.blocks(def.getBlock())))
+                    .where('B', Predicates.frames(GTMaterials.Steel))
+                    .build())
+            .allowExtendedFacing(false)
+            .allowFlip(false)
+            .workableCasingRenderer(GTCEu.id("block/casings/cleanroom/plascrete"),
+                    GTCEu.id("block/multiblock/cleanroom"))
+            .register();
 
     public static void init() {}
 }

@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 public interface IMultiController extends IMachineFeature, IInteractedMachine {
@@ -44,6 +45,8 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
      * @return whether it can be formed.
      */
     void checkAndFormStructurePatterns();
+
+    Set<String> getStructureNames();
 
     /**
      * This method will check if a multiblock aisles predicates are valid and WILL update the patternState each time it

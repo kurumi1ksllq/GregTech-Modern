@@ -99,13 +99,18 @@ public class PatternState {
                     if (controller.isFormed() && state.getBlock() instanceof ActiveBlock) {
                         return;
                     }
-                    if (!controller.checkStructurePattern(MultiblockControllerMachine.DEFAULT_STRUCTURE).hasError()) {
-                        controller.formStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
-                    } else {
-                        controller.invalidateStructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
-                        var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-                        mwsd.removeMapping(this);
-                        mwsd.addAsyncLogic(controller);
+
+                    for(var name : controller.getStructureNames()) {
+                        if (!controller.checkStructurePattern(name).hasError()) {
+                            controller.formStructure(name);
+                        } else {
+                            controller.invalidateStructure(name);
+                        }
+                        if (name.equals(MultiblockControllerMachine.DEFAULT_STRUCTURE)) {
+                            var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
+                            mwsd.removeMapping(this);
+                            mwsd.addAsyncLogic(controller);
+                        }
                     }
                 }
 

@@ -1,0 +1,76 @@
+package com.gregtechceu.gtceu.common.machine.multiblock.electric.testmultis;
+
+import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
+import com.gregtechceu.gtceu.api.multiblock.Predicates;
+import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryBlockPattern;
+import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
+import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
+import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
+import com.gregtechceu.gtceu.common.data.GTBlocks;
+import com.gregtechceu.gtceu.common.data.GTMaterials;
+import net.minecraft.network.chat.Component;
+
+import java.util.List;
+
+import static com.gregtechceu.gtceu.common.data.GTBlocks.CASING_GRATE;
+
+public class PCBFactoryMachine extends WorkableElectricMultiblockMachine {
+
+
+    public PCBFactoryMachine(IMachineBlockEntity holder, Object... args) {
+        super(holder, args);
+    }
+
+    @Override
+    public IBlockPattern createStructurePattern() {
+        return FactoryBlockPattern.start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.LEFT)
+                .aisle("CCC", "CCC")
+                .aisle("CCC", "CBC")
+                .aisle("CSC", "CCC")
+                .where('C', /*Predicates.autoAbilities(true, false, false)
+                            .or(*/Predicates.blocks(CASING_GRATE.get()).setMinGlobalLimited(12))
+                .where('S', Predicates.controller(Predicates.blocks(getDefinition().getBlock())))
+                .where('B', Predicates.frames(GTMaterials.Steel))
+                .build();
+    }
+
+    @Override
+    public void createStructurePatterns() {
+        super.createStructurePatterns();
+        patternStates.put("cooler", new PatternState());
+        structures.put("cooler", FactoryBlockPattern.start(RelativeDirection.FRONT, RelativeDirection.UP, RelativeDirection.LEFT)
+                        .aisle("BBBBBBB","BBBBBBB", "#######", "#######" )
+                        .aisle("BBBBBBB","B#####B", "#######", "#######" )
+                        .aisle("BBBBBBB","B#####B", "###B###", "##BBB##" )
+                        .aisle("BBBBBBB","B##B##B", "##BBB##", "##BCB##" )
+                        .aisle("BBBBBBB","B#####B", "###B###", "##BBB##" )
+                        .aisle("BBBBBBB","B#####B", "#######", "#######" )
+                        .aisle("BBBBBBB","BBBBBBB", "#######", "#######" )
+                        .where('#', TraceabilityPredicate.AIR)
+                        .where('B', Predicates.blocks(GTBlocks.CASING_COKE_BRICKS.get()))
+                        .where('C', Predicates.blocks(GTBlocks.CASING_ALUMINIUM_FROSTPROOF.get()))
+                        .startOffset(new OriginOffset().move(RelativeDirection.FRONT, 10))
+                .build());
+    }
+
+    @Override
+    public void formStructure(String name) {
+        super.formStructure(name);
+    }
+
+    @Override
+    public void addDisplayText(List<Component> textList) {
+        super.addDisplayText(textList);
+        var coolerState = patternStates.get("cooler");
+        if(coolerState.isFormed()) {
+            textList.add(Component.literal("Has Substructure"));
+        } else if(coolerState.hasError()) {
+            textList.add(Component.literal("Has no Substructure"));
+            Component c = coolerState.getError().getErrorInfo();
+            textList.add(c);
+        }
+    }
+}

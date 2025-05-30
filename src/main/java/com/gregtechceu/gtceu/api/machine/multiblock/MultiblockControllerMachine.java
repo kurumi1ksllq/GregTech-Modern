@@ -43,6 +43,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
@@ -189,6 +190,11 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
                 }
             }
         }
+    }
+
+    @Override
+    public Set<String> getStructureNames() {
+        return structures.keySet();
     }
 
     public void createStructurePatterns() {

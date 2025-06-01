@@ -24,9 +24,9 @@ import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
-import com.gregtechceu.gtceu.api.multiblock.pattern.ExpandablePattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryExpandablePattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
+import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
@@ -183,12 +183,12 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
 
     @Override
     public boolean shouldAddPartToController(IMultiPart part) {
-         var posCache = patternStates.get(DEFAULT_STRUCTURE).getPosCache();
-         for (Direction side : GTUtil.DIRECTIONS) {
+        var posCache = patternStates.get(DEFAULT_STRUCTURE).getPosCache();
+        for (Direction side : GTUtil.DIRECTIONS) {
             if (!posCache.contains(part.self().getPos().relative(side))) { // part is on a wall or edge
                 return true;
             }
-         }
+        }
         return false;
     }
 
@@ -347,6 +347,12 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
             pos.move(Direction.EAST);
         }
         return true;
+    }
+
+    @Override
+    public PatternState checkStructurePattern(String name) {
+        createStructurePattern();
+        return super.checkStructurePattern(name);
     }
 
     @Override

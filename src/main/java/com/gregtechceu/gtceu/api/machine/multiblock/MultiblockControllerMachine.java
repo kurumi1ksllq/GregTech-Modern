@@ -82,6 +82,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     public MultiblockControllerMachine(IMachineBlockEntity holder) {
         super(holder);
+        markDirty();
         createStructurePatterns();
     }
 
@@ -102,8 +103,9 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     public void onLoad() {
         super.onLoad();
         if (getLevel() instanceof ServerLevel serverLevel) {
-            createStructurePatterns();
             MultiblockWorldSavedData.getOrCreate(serverLevel).addAsyncLogic(this);
+
+            // serverLevel.getServer().tell(new TickTask(1, this::createStructurePatterns));
         }
     }
 
@@ -171,7 +173,9 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         for (var entry : patternStates.entrySet()) {
             var name = entry.getKey();
             var patternState = entry.getValue();
-            if ((patternState.hasError() || !isFormed) && (getHolder().getOffset() + periodID) % 4 == 0 &&
+            if ((patternState.hasError() || !isFormed ||
+                    patternState.getState() == PatternState.CheckState.UNINITIALIZED) &&
+                    (getHolder().getOffset() + periodID) % 4 == 0 &&
                     checkPatternWithTryLock(name)) { // per second
                 if (getLevel() instanceof ServerLevel serverLevel) {
                     serverLevel.getServer().execute(() -> {

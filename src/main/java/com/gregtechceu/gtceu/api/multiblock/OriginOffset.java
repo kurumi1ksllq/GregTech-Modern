@@ -9,6 +9,24 @@ public class OriginOffset {
 
     protected final int[] offset = new int[3];
 
+    public static final OriginOffset ZERO = new OriginOffset();
+
+    public OriginOffset() {}
+
+    public OriginOffset(int xi, int yi, int zi) {
+        offset[0] = xi;
+        offset[1] = yi;
+        offset[2] = zi;
+    }
+
+    public static OriginOffset of(int xi, int yi, int zi) {
+        return new OriginOffset(xi, yi, zi);
+    }
+
+    public static OriginOffset of(RelativeDirection direction, int amount) {
+        return new OriginOffset().move(direction, amount);
+    }
+
     public OriginOffset move(int xi, int yi, int zi) {
         return move(RelativeDirection.LEFT, RelativeDirection.UP, RelativeDirection.FRONT, xi, yi, zi);
     }

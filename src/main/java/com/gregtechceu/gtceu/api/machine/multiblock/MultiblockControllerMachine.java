@@ -104,8 +104,10 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         super.onLoad();
         if (getLevel() instanceof ServerLevel serverLevel) {
             MultiblockWorldSavedData.getOrCreate(serverLevel).addAsyncLogic(this);
-
-            // serverLevel.getServer().tell(new TickTask(1, this::createStructurePatterns));
+            if (isFormed) {
+                // run a structure check on the first tick
+                asyncCheckPattern(getHolder().getOffset() % 4);
+            }
         }
     }
 
@@ -182,11 +184,8 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
                         patternLock.lock();
                         if (checkPatternWithLock(name)) { // formed
                             formStructure(name);
-                            // checkAndFormStructurePatterns();
                             var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-                            // var state = structure.getPatternState();
                             mwsd.addMapping(getBlockInfo(), patternState);
-                            // for(var state : patternStates.values()) mwsd.addMapping(getBlockInfo(), state);
                             mwsd.removeAsyncLogic(this);
                         }
                         patternLock.unlock();

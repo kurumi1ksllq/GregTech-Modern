@@ -235,8 +235,7 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
     @Override
     public void notifyStatusChanged(RecipeLogic.Status oldStatus, RecipeLogic.Status newStatus) {
         IWorkableMultiController.super.notifyStatusChanged(oldStatus, newStatus);
-        if ((newStatus == RecipeLogic.Status.WORKING || oldStatus == RecipeLogic.Status.WORKING) &&
-                shouldUpdateActiveBlocks()) {
+        if (shouldUpdateActiveBlocks()) {
             updateActiveBlocks(newStatus == RecipeLogic.Status.WORKING);
         }
     }

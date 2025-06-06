@@ -591,17 +591,5 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
                 map.put(entry, value);
             }
         }
-        this.chanceCaches.forEach((cap, cache) -> {
-            ListTag cacheTag = new ListTag();
-            for (var entry : cache.object2IntEntrySet()) {
-                CompoundTag compoundTag = new CompoundTag();
-                var obj = cap.serializer.toNbtGeneric(cap.of(entry.getKey()));
-                compoundTag.put("entry", obj);
-                compoundTag.putInt("cached_chance", entry.getIntValue());
-                cacheTag.add(compoundTag);
-            }
-            chanceCache.put(cap.name, cacheTag);
-        });
-        tag.put("chance_cache", chanceCache);
     }
 }

@@ -1,5 +1,9 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
+import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
@@ -9,8 +13,14 @@ import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
+import com.gregtechceu.gtceu.utils.GTUtil;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,7 +33,9 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiPredicate;
 
 public class BlockPattern implements IBlockPattern {
 
@@ -237,7 +249,7 @@ public class BlockPattern implements IBlockPattern {
 
     @Override
     public Long2ObjectSortedMap<TraceabilityPredicate> getDefaultShape(MultiblockControllerMachine src,
-                                                                       @NotNull Map<String, String> keyMap) {
+                                                                       @Nullable Map<String, String> keyMap) {
         Long2ObjectSortedMap<TraceabilityPredicate> map = new Long2ObjectRBTreeMap<>();
         Direction absoluteAisle = directions[0].getRelativeFacing(src.getFrontFacing(), src.getUpwardsFacing());
         Direction absoluteString = directions[1].getRelativeFacing(src.getFrontFacing(), src.getUpwardsFacing());
@@ -253,7 +265,7 @@ public class BlockPattern implements IBlockPattern {
                 for (int k = 0; k < dimensions[2]; k++) {
                     TraceabilityPredicate pred = predicates.get(aisles[order[i]].charAt(j, k));
                     if (pred != TraceabilityPredicate.ANY && pred != TraceabilityPredicate.AIR)
-                        map.put(serial.asLong(), predicates.get(aisles[order[i]].charAt(j, k)));
+                        map.put(serial.asLong(), pred);
                     serial.move(absoluteChar);
                 }
                 serial.move(absoluteString);
@@ -276,5 +288,135 @@ public class BlockPattern implements IBlockPattern {
         BlockPos.MutableBlockPos start = controllerPos.mutable();
         offset.apply(start, frontFacing, upwardsFacing, flip);
         return start;
+    }
+
+    @Override
+    public void autobuild(Reference2ObjectMap<String, IBlockPattern> patterns, MultiblockControllerMachine controller, UseOnContext context) {
+
+        var predicates = getDefaultShape(controller, null);
+
+        var level = context.getLevel();
+
+        /*Direction absoluteAisle = directions[0].getRelativeFacing(controller.getFrontFacing(), controller.getUpwardsFacing());
+        Direction absoluteString = directions[1].getRelativeFacing(controller.getFrontFacing(), controller.getUpwardsFacing());
+        Direction absoluteChar = directions[2].getRelativeFacing(controller.getFrontFacing(), controller.getUpwardsFacing());
+
+        BlockPos.MutableBlockPos pos = controller.getPos().mutable();
+        BlockPos.MutableBlockPos start = startPos(pos, controller.getFrontFacing(), controller.getUpwardsFacing(), false);
+        BlockPos.MutableBlockPos serial = start.mutable();*/
+
+        Object2IntMap<TraceabilityPredicate> predicateIndex = new Object2IntOpenHashMap<>();
+        Object2IntMap<SimplePredicate> globalCache = new Object2IntOpenHashMap<>();
+        Map<SimplePredicate, BlockInfo> cache = new HashMap<>();
+
+        BiPredicate<Long, BlockInfo> placePredicate = (l, info) -> {
+            BlockPos p = BlockPos.of(l);
+
+            if(!level.isEmptyBlock(p)) {
+                // cache the block?
+                return true;
+            }
+
+            if(info.hasBlockEntity() && info.getBlockEntity() instanceof MetaMachineBlockEntity mmbe) {
+                var removed = tryRemoveItem(context.getPlayer(), info.getItemStackForm());
+                if(removed.isEmpty()) return false;
+
+                // try to force the front face to an air block
+                if(predicates.containsKey(p.relative(mmbe.metaMachine.getFrontFacing()).asLong())) {
+                    Direction valid = null;
+                    for (var dir : GTUtil.HORIZONTALS) {
+                        if(!predicates.containsKey(p.relative(dir).asLong())) {
+                            valid = dir;
+                            break;
+                        }
+                    }
+                    if(valid != null) mmbe.metaMachine.setFrontFacing(valid);
+                    else {
+                        if(predicates.containsKey(p.relative(Direction.UP).asLong())) {
+                            mmbe.metaMachine.setFrontFacing(Direction.UP);
+                        } else if (predicates.containsKey(p.relative(Direction.DOWN).asLong())) {
+                            mmbe.metaMachine.setFrontFacing(Direction.DOWN);
+                        }
+                    }
+                }
+
+                level.setBlockAndUpdate(p, info.getBlockState());
+                level.setBlockEntity(info.getBlockEntity());
+            } else {
+                if(!tryRemoveItem(context.getPlayer(), info.getItemStackForm()).isEmpty()) {
+                    level.setBlockAndUpdate(p, info.getBlockState());
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        for(var entry : predicates.long2ObjectEntrySet()) {
+            var pred = entry.getValue();
+            if(predicateIndex.getInt(pred) >= pred.simple.size()) continue;
+
+            int pointer = predicateIndex.getInt(pred);
+            SimplePredicate simplePred = pred.simple.get(pointer);
+            int count = globalCache.getInt(simplePred);
+
+            try {
+                while((simplePred.previewCount == -1 || count == simplePred.previewCount) &&
+                        (simplePred.minCount == -1 || count == simplePred.minCount)) {
+                    pointer++;
+                    simplePred = pred.simple.get(pointer);
+                    count = globalCache.getInt(simplePred);
+                }
+                predicateIndex.put(pred, pointer);
+            } catch (IndexOutOfBoundsException e) {
+                continue;
+            }
+
+            globalCache.mergeInt(simplePred, 1, Integer::sum);
+            if(simplePred.candidates == null) continue;
+
+            var finalSimple = simplePred;
+            cache.computeIfAbsent(simplePred, k -> finalSimple.candidates.apply(null)[0]);
+
+            if(!placePredicate.test(entry.getLongKey(), cache.get(simplePred))) return;
+            entry.setValue(null);
+        }
+        predicateIndex.clear();
+
+        for(var entry : predicates.long2ObjectEntrySet()) {
+            var pred = entry.getValue();
+            if(pred == null || predicateIndex.getInt(pred) >= pred.simple.size()) continue;
+
+            SimplePredicate simplePred = pred.simple.get(predicateIndex.getInt(pred));
+            int count = globalCache.getInt(simplePred);
+
+            while(count == simplePred.previewCount || count == simplePred.maxCount) {
+                int newIdx = predicateIndex.mergeInt(pred, 1, Integer::sum);
+                if(newIdx >= pred.simple.size())  {
+                    GTCEu.LOGGER.warn("failed to generate default structure pattern");
+                    return;
+                }
+                simplePred = pred.simple.get(newIdx);
+                count = globalCache.getInt(simplePred);
+            }
+            globalCache.mergeInt(simplePred, 1, Integer::sum);
+            if(simplePred.candidates == null) continue;
+            var finalSimple = simplePred;
+            cache.computeIfAbsent(simplePred, k -> finalSimple.candidates.apply(null)[0]);
+            if(!placePredicate.test(entry.getLongKey(), cache.get(simplePred))) return;
+        }
+    }
+
+    private static ItemStack tryRemoveItem(Player player, ItemStack stack) {
+        if (stack.isEmpty()) return ItemStack.EMPTY;
+        if (player.isCreative()) return stack.copy();
+
+        for (var item : player.getInventory().items) {
+            if (stack.is(stack.getItem()) && stack.getCount() <= item.getCount()) {
+                item.setCount(item.getCount() - stack.getCount());
+                return item.copy();
+            }
+        }
+        return ItemStack.EMPTY;
     }
 }

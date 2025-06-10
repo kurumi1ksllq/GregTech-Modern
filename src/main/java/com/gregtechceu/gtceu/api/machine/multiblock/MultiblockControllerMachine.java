@@ -129,6 +129,10 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         return controllerBlockInfo;
     }
 
+    public Reference2ObjectMap<String, IBlockPattern> getStructurePatterns() {
+        return structures;
+    }
+
     @SuppressWarnings("unused")
     protected void onPartsUpdated(BlockPos[] newValue, BlockPos[] oldValue) {
         if (getLevel() == null) return;
@@ -175,19 +179,20 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         for (var entry : patternStates.entrySet()) {
             var name = entry.getKey();
             var patternState = entry.getValue();
-            if ((patternState.hasError() || !isFormed ||
+            boolean formed = name.equals(DEFAULT_STRUCTURE) ? isFormed : patternState.isFormed();
+            if ((patternState.hasError() || !formed ||
                     patternState.getState() == PatternState.CheckState.UNINITIALIZED) &&
                     (getHolder().getOffset() + periodID) % 4 == 0 &&
                     checkPatternWithTryLock(name)) { // per second
                 if (getLevel() instanceof ServerLevel serverLevel) {
                     serverLevel.getServer().execute(() -> {
                         patternLock.lock();
+                        var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
                         if (checkPatternWithLock(name)) { // formed
                             formStructure(name);
-                            var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-                            mwsd.addMapping(getBlockInfo(), patternState);
                             mwsd.removeAsyncLogic(this);
                         }
+                        mwsd.addMapping(getBlockInfo(), patternState);
                         patternLock.unlock();
                     });
                 }
@@ -246,7 +251,9 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     public void formStructure(String name) {
         var patternState = getPatternState(name);
         patternState.setFormed(true);
-        isFormed = true;
+        if(name.equals(DEFAULT_STRUCTURE)) {
+            isFormed = true;
+        }
 
         if (patternState.getState().isValid()) {
             if (patternState.isFormed()) {
@@ -280,7 +287,9 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
                     updatePartPositions();
 
                     patternState.setFormed(true);
-                    isFormed = true;
+                    if(name.equals(DEFAULT_STRUCTURE)) {
+                        isFormed = true;
+                    }
                     setFlipped(patternState.isFlipped(), patternState);
                 }
                 return;
@@ -300,7 +309,9 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             if (!valid[0]) return;
 
             patternState.setFormed(true);
-            isFormed = true;
+            if(name.equals(DEFAULT_STRUCTURE)) {
+                isFormed = true;
+            }
             setFlipped(patternState.isFlipped(), patternState);
 
         } else {
@@ -338,8 +349,10 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             return false;
         });
         pState.setFormed(false);
-        isFormed = false;
-        parallelHatch = null;
+        if(name.equals(DEFAULT_STRUCTURE)) {
+            isFormed = false;
+            parallelHatch = null;
+        }
         updatePartPositions();
     }
 

@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
 import com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -34,6 +35,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
     }
 
     void createStructurePatterns();
+    Reference2ObjectMap<String, IBlockPattern> getStructurePatterns();
 
     /**
      * Check MultiBlock Pattern. Just checking pattern without any other logic.
@@ -92,7 +94,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
                 if (patternCheckState == null || !patternCheckState.isValid()) {
                     checkStructurePattern(name);
                 }
-                return getPatternState(name).getState().isValid();
+                return getPatternState(name).getState() != PatternState.CheckState.UNINITIALIZED;
             } finally {
                 lock.unlock();
             }

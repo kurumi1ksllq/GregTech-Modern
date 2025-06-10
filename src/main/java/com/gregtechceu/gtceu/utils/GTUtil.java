@@ -57,6 +57,7 @@ import static com.gregtechceu.gtceu.api.data.chemical.material.properties.Proper
 public class GTUtil {
 
     public static final Direction[] DIRECTIONS = Direction.values();
+    public static final Direction[] HORIZONTALS = {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
 
     private static final Object2IntMap<String> RVN = new Object2IntArrayMap<>(GTValues.VN, GTValues.ALL_TIERS);
 

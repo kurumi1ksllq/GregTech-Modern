@@ -26,8 +26,9 @@ public class TerminalBehavior implements IInteractionItem {
                 if (!controller.isFormed()) {
                     if (!level.isClientSide) {
                         var patterns = controller.getStructurePatterns();
-                        patterns.get(MultiblockControllerMachine.DEFAULT_STRUCTURE)
-                                .autobuild(patterns, controller, context);
+                        for (var pattern : patterns.values()) {
+                            pattern.autobuild(patterns, controller, context);
+                        }
                         // controller.createStructurePattern().autoBuild(context.getPlayer(),
                         // controller.getMultiblockState());
                     }

@@ -235,11 +235,6 @@ public class BlockPattern implements IBlockPattern {
             }
         }
 
-        for (Object2IntMap.Entry<SimplePredicate> entry : patternState.layerCount.object2IntEntrySet()) {
-            patternState.globalCount.put(entry.getKey(),
-                    patternState.globalCount.getInt(entry.getKey()) + entry.getIntValue());
-        }
-
         return true;
     }
 

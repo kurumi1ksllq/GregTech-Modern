@@ -58,6 +58,7 @@ public class PatternError {
             }
         }
         builder.append("...");
-        return Component.translatable("gtceu.multiblock.pattern.error", builder.toString(), pos.getX(), pos.getY(), pos.getZ());
+        return Component.translatable("gtceu.multiblock.pattern.error", builder.toString(), pos.getX(), pos.getY(),
+                pos.getZ());
     }
 }

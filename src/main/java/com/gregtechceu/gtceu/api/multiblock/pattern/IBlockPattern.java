@@ -1,18 +1,17 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
-import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectSortedMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -101,5 +100,6 @@ public interface IBlockPattern {
         getOffset().move(dir);
     }
 
-    default void autobuild(Reference2ObjectMap<String, IBlockPattern> patterns, MultiblockControllerMachine controller, UseOnContext context) {}
+    default void autobuild(Reference2ObjectMap<String, IBlockPattern> patterns, MultiblockControllerMachine controller,
+                           UseOnContext context) {}
 }

@@ -74,7 +74,7 @@ public class BasicAisleStrategy extends AisleStrategy {
         for (int i = 0; i < multiAisles.size(); i++) {
             int[] multi = multiAisles.get(i);
             int multiRepeats = 0;
-            if(map == null) {
+            if (map == null) {
                 multiRepeats = multi[0];
             } else {
                 multiRepeats = Mth.clamp(GTStringUtils.parseInt(map.get("multi." + 1)), multi[0], multi[1]);
@@ -82,7 +82,7 @@ public class BasicAisleStrategy extends AisleStrategy {
             for (int j = 0; j < multiRepeats; j++) {
                 for (int k = multi[2]; k < multi[3]; k++) {
                     int aisleRepeats = 0;
-                    if(map == null) {
+                    if (map == null) {
                         aisleRepeats = aisles.get(k).minRepeats;
                     } else {
                         aisleRepeats = Mth.clamp(GTStringUtils.parseInt(map.get("multi." + i + "." + (k - multi[2]))),

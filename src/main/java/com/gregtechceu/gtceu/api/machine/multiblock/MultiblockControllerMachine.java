@@ -251,7 +251,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     public void formStructure(String name) {
         var patternState = getPatternState(name);
         patternState.setFormed(true);
-        if(name.equals(DEFAULT_STRUCTURE)) {
+        if (name.equals(DEFAULT_STRUCTURE)) {
             isFormed = true;
         }
 
@@ -287,7 +287,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
                     updatePartPositions();
 
                     patternState.setFormed(true);
-                    if(name.equals(DEFAULT_STRUCTURE)) {
+                    if (name.equals(DEFAULT_STRUCTURE)) {
                         isFormed = true;
                     }
                     setFlipped(patternState.isFlipped(), patternState);
@@ -309,7 +309,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             if (!valid[0]) return;
 
             patternState.setFormed(true);
-            if(name.equals(DEFAULT_STRUCTURE)) {
+            if (name.equals(DEFAULT_STRUCTURE)) {
                 isFormed = true;
             }
             setFlipped(patternState.isFlipped(), patternState);
@@ -349,7 +349,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             return false;
         });
         pState.setFormed(false);
-        if(name.equals(DEFAULT_STRUCTURE)) {
+        if (name.equals(DEFAULT_STRUCTURE)) {
             isFormed = false;
             parallelHatch = null;
         }

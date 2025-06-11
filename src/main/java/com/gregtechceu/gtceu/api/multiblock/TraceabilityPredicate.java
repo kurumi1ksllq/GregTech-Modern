@@ -165,14 +165,6 @@ public class TraceabilityPredicate {
         return this;
     }
 
-    /**
-     * Set io.
-     */
-    public TraceabilityPredicate setIO(IO io) {
-        simple.forEach(predicate -> predicate.io = io);
-        return this;
-    }
-
     public TraceabilityPredicate setNBTParser(String nbtParser) {
         simple.forEach(predicate -> predicate.nbtParser = nbtParser);
         return this;

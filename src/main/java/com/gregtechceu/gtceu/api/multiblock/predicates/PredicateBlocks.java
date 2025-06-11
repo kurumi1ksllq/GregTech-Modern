@@ -28,7 +28,5 @@ public class PredicateBlocks extends SimplePredicate {
         candidates = (map) -> Arrays.stream(finalBlocks)
                 .map(BlockInfo::fromBlock)
                 .toArray(BlockInfo[]::new);
-
-        buildPredicate();
     }
 }

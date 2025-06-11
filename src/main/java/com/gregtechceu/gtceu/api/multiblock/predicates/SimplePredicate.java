@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.api.multiblock.predicates;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
+import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
 import com.gregtechceu.gtceu.api.multiblock.error.SinglePredicateError;
@@ -9,10 +10,14 @@ import com.gregtechceu.gtceu.api.multiblock.pattern.CurrentBlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -36,8 +41,6 @@ public class SimplePredicate {
     public int maxLayerCount = -1;
     public int previewCount = -1;
     public boolean disableRenderFormed = false;
-    public IO io = IO.BOTH;
-    public String slotName;
     public String nbtParser;
 
     public String type;
@@ -46,22 +49,21 @@ public class SimplePredicate {
         this.type = "Unknown";
     }
 
+    /**
+     * @param predicate The precicate function for being a valid block state or tile entity in a pattern
+     * @param candidates The qualifying blocks or item stacks valid in this predicate based on information from either the
+     * autobuilder {@link com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern#autobuild},  {@link com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer#renderInWorldPreview(PoseStack, Camera, float)}
+     */
     public SimplePredicate(Function<CurrentBlockInfo, PatternError> predicate,
                            @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
-        this.predicate = predicate;
-        this.candidates = candidates;
-        this.type = "Unknown";
+        this("Unknown", predicate, candidates);
     }
 
     public SimplePredicate(String type, Function<CurrentBlockInfo, PatternError> predicate,
                            @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
+        this.type = type;
         this.predicate = predicate;
         this.candidates = candidates;
-        this.type = type;
-    }
-
-    public SimplePredicate buildPredicate() {
-        return this;
     }
 
     @OnlyIn(Dist.CLIENT)

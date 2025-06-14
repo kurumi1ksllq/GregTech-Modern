@@ -2,7 +2,9 @@ package com.gregtechceu.gtceu.api.multiblock.predicates;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
+import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
+import com.gregtechceu.gtceu.api.multiblock.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
 import com.gregtechceu.gtceu.api.multiblock.error.SinglePredicateError;
@@ -52,7 +54,9 @@ public class SimplePredicate {
     /**
      * @param predicate The precicate function for being a valid block state or tile entity in a pattern
      * @param candidates The qualifying blocks or item stacks valid in this predicate based on information from either the
-     * autobuilder {@link com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern#autobuild},  {@link com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer#renderInWorldPreview(PoseStack, Camera, float)}
+     *  {@link com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern#autobuild(Reference2ObjectMap, MultiblockControllerMachine, UseOnContext) Terminal Auto-Builder},
+     *  {@link com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer#renderInWorldPreview(PoseStack, Camera, float) In-world Preview} or
+     *  {@link com.gregtechceu.gtceu.api.gui.widget.PatternPreviewWidget#getPatternWidget(MultiblockMachineDefinition) XEI Preview}
      */
     public SimplePredicate(Function<CurrentBlockInfo, PatternError> predicate,
                            @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {

@@ -50,7 +50,7 @@ public class BlockPattern implements IBlockPattern {
 
     public BlockPattern(@NotNull PatternAisle @NotNull [] aisles, @NotNull AisleStrategy aisleStrategy,
                         int @NotNull [] dimensions, @NotNull RelativeDirection @NotNull [] directions,
-                        @Nullable OriginOffset offset,
+                        @Nullable OriginOffset offset, @Nullable OriginOffset anchorOffset,
                         @NotNull Char2ObjectMap<@NotNull TraceabilityPredicate> predicates,
                         char centerChar) {
         this.aisles = aisles;
@@ -65,6 +65,12 @@ public class BlockPattern implements IBlockPattern {
             legacyStartOffset(centerChar);
         } else {
             this.offset = offset;
+        }
+
+        if(anchorOffset != null) { // needs to be negative cause of double offsetting
+            this.offset.move(RelativeDirection.FRONT, -anchorOffset.get(RelativeDirection.FRONT));
+            this.offset.move(RelativeDirection.UP, -anchorOffset.get(RelativeDirection.UP));
+            this.offset.move(RelativeDirection.LEFT, -anchorOffset.get(RelativeDirection.LEFT));
         }
     }
 

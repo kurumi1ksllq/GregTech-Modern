@@ -56,6 +56,7 @@ public class PCBFactoryMachine extends WorkableElectricMultiblockMachine {
                         .where('B', Predicates.blocks(GTBlocks.CASING_COKE_BRICKS.get()))
                         .where('C', Predicates.blocks(GTBlocks.CASING_ALUMINIUM_FROSTPROOF.get()))
                         .startOffset(OriginOffset.of(RelativeDirection.FRONT, 10))
+                        .anchorOffset(OriginOffset.of(RelativeDirection.FRONT, 3).move(RelativeDirection.LEFT, 3))
                         .build());
     }
 

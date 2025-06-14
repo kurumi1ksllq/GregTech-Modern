@@ -116,6 +116,9 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         super.onUnload();
         if (getLevel() instanceof ServerLevel serverLevel) {
             MultiblockWorldSavedData.getOrCreate(serverLevel).removeAsyncLogic(this);
+            for(var pattern : patternStates.values()) {
+                MultiblockWorldSavedData.getOrCreate(serverLevel).removeMapping(pattern);
+            }
         }
     }
 
@@ -192,7 +195,9 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
                             formStructure(name);
                             mwsd.removeAsyncLogic(this);
                         }
-                        mwsd.addMapping(getBlockInfo(), patternState);
+
+                        mwsd.addMapping(patternState);
+
                         patternLock.unlock();
                     });
                 }

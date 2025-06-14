@@ -30,7 +30,7 @@ public class MultiblockWorldSavedData extends SavedData {
     /**
      * Store all formed multiblocks' structure info
      */
-    public final Map<BlockPos, PatternState> mapping;
+    public final Map<BlockPos, Set<PatternState>> mapping;
     /**
      * Chunk pos mapping.
      */
@@ -46,12 +46,12 @@ public class MultiblockWorldSavedData extends SavedData {
         this(serverLevel);
     }
 
-    public PatternState[] getControllerInChunk(ChunkPos chunkPos) {
+    public PatternState[] getPatternsInChunk(ChunkPos chunkPos) {
         return chunkPosMapping.getOrDefault(chunkPos, Collections.emptySet()).toArray(PatternState[]::new);
     }
 
-    public void addMapping(CurrentBlockInfo cbi, PatternState patternState) {
-        this.mapping.put(cbi.getBlockPos(), patternState);
+    public void addMapping(PatternState patternState) {
+        this.mapping.computeIfAbsent(patternState.getControllerPos(), x -> new HashSet<>()).add(patternState);
         for (BlockPos blockPos : patternState.getPosCache()) {
             chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c -> new HashSet<>()).add(patternState);
         }
@@ -59,10 +59,13 @@ public class MultiblockWorldSavedData extends SavedData {
     }
 
     public void removeMapping(PatternState patternState) {
-        this.mapping.remove(patternState.getCbi().getBlockPos());
-        for (var patternSet : chunkPosMapping.values()) {
+        this.mapping.getOrDefault(patternState.getControllerPos(), new HashSet<>()).remove(patternState);
+        this.mapping.entrySet().removeIf(e -> e.getValue().isEmpty());
+
+        for(var patternSet : chunkPosMapping.values()) {
             patternSet.remove(patternState);
         }
+        chunkPosMapping.entrySet().removeIf(e -> e.getValue().isEmpty());
         setDirty(true);
     }
 

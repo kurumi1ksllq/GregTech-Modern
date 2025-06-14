@@ -19,8 +19,7 @@ import java.util.List;
  * When the multiblock is placed, its facings are concrete. Then, the {@link RelativeDirection}s passed into
  * {@link FactoryBlockPattern#start(RelativeDirection, RelativeDirection, RelativeDirection)} are ways in which the
  * pattern progresses. It can be thought like this, where startPos() is either defined via
- * {@link FactoryBlockPattern#startOffset(OriginOffset)}
- * , or automatically detected(for legacy compat only, you should use
+ * {@link FactoryBlockPattern#startOffset(OriginOffset)}, or automatically detected(for legacy compat only, you should use
  * {@link FactoryBlockPattern#startOffset(OriginOffset)} always for new code):
  *
  * <pre>
@@ -43,6 +42,7 @@ public class FactoryBlockPattern {
     private final int[] dimensions = { -1, -1, -1 };
 
     private OriginOffset offset;
+    private OriginOffset anchorOffset;
     private char centerChar;
     private AisleStrategy aisleStrategy;
 
@@ -90,6 +90,11 @@ public class FactoryBlockPattern {
         return this;
     }
 
+    public FactoryBlockPattern anchorOffset(OriginOffset anchorOffset) {
+        this.anchorOffset = anchorOffset;
+        return this;
+    }
+
     /**
      * Starts the builder, this is equivlent to calling
      * {@link FactoryBlockPattern#start(RelativeDirection, RelativeDirection, RelativeDirection)} with RIGHT, UP, BACK
@@ -132,7 +137,7 @@ public class FactoryBlockPattern {
 
         aisleStrategy.finish(dimensions, directions, aisles);
         return new BlockPattern(aisles.toArray(new PatternAisle[0]), aisleStrategy, dimensions,
-                directions, offset, symbolMap, centerChar);
+                directions, offset, anchorOffset, symbolMap, centerChar);
     }
 
     private void checkMissingPredicates() {

@@ -10,11 +10,14 @@ import com.gregtechceu.gtceu.api.fluids.PropertyFluidFilter;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.CoilWorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.pattern.BasicAisleStrategy;
+import com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.client.renderer.machine.*;
@@ -1127,6 +1130,30 @@ public class GTMultiMachines {
             .allowFlip(false)
             .workableCasingRenderer(GTCEu.id("block/casings/cleanroom/plascrete"),
                     GTCEu.id("block/multiblock/cleanroom"))
+            .register();
+
+    public static final MultiblockMachineDefinition AISLE_TEST = REGISTRATE
+            .multiblock("aisle", WorkableElectricMultiblockMachine::new)
+            .rotationState(RotationState.ALL)
+            .recipeType(DUMMY_RECIPES)
+            .appearanceBlock(PLASTCRETE)
+            .pattern(def -> FactoryBlockPattern
+                    .start(RIGHT, FRONT, UP)
+                    .aisle("C")
+                    .aisle("C")
+                    .aisle("S")
+                    .where('C', blocks(Blocks.DIRT))
+                    .where('S', controller(blocks(def.getBlock())))
+                    .aisleStrategy(new BasicAisleStrategy().multiAisle(1, 2, 1, 2))
+                    .build())
+            .allowExtendedFacing(false)
+            .allowFlip(false)
+            .workableCasingRenderer(GTCEu.id("block/casings/cleanroom/plascrete"),
+                    GTCEu.id("block/multiblock/cleanroom"))
+            .additionalDisplay((cont, text) -> {
+                var aisles = ((BasicAisleStrategy)((BlockPattern)cont.getStructurePatterns().get(MultiblockControllerMachine.DEFAULT_STRUCTURE)).getAisleStrategy()).getMultiAisleRepeats(1);
+                text.add(Component.literal("has aisle " + aisles));
+            })
             .register();
 
     public static void init() {}

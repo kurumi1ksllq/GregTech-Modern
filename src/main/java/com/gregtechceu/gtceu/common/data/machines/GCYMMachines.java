@@ -766,8 +766,7 @@ public class GCYMMachines {
             .pattern(definition -> FactoryBlockPattern
                     .start(FRONT, UP, RIGHT)
                     .aisle("##XXX", "##XXX", "##XXX")
-                    .aisle("##XXX", "##XPX", "##XGX")
-                    .aisle("##XXX", "##XPX", "##XGX")
+                    .aisleRepeatable(2, 2, "##XXX", "##XPX", "##XGX")
                     .aisle("XXXXX", "XXXPX", "XXXGX")
                     .aisle("XXXXX", "XAXPX", "XXXGX")
                     .aisle("XXXXX", "XSXXX", "XXXXX")

@@ -16,14 +16,35 @@ import java.util.*;
 
 public class BasicAisleStrategy extends AisleStrategy {
 
-    protected final List<int[]> multiAisles = new ArrayList<>();
+    protected class MultiAisle {
+        public int minRepeats = -1;
+        public int maxRepeats = -1;
+        public int startInclusive = -1;
+        public int endExclusive = -1;
+        public int actualRepeats = -1;
+
+        public MultiAisle(int minRepeats, int maxRepeats, int startInclusive, int endExclusive, int actualRepeats) {
+            this.minRepeats = minRepeats;
+            this.maxRepeats = maxRepeats;
+            this.startInclusive = startInclusive;
+            this.endExclusive = endExclusive;
+            this.actualRepeats = actualRepeats;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("[min %s, max %s, startInc %s, endExc %s, actual %s]", minRepeats, maxRepeats, startInclusive, endExclusive, actualRepeats);
+        }
+    }
+
+    protected final List<MultiAisle> multiAisles = new ArrayList<>();
     protected final List<PatternAisle> aisles = new ArrayList<>();
     protected final int[] result = new int[2];
 
     @Override
     public boolean check(PatternState state, boolean flip) {
         int offset = 0;
-        for (int[] multiAisle : multiAisles) {
+        for (var multiAisle : multiAisles) {
             int result = checkMultiAisle(state, multiAisle, offset, flip);
             if (result == -1) return false;
             offset += result;
@@ -32,26 +53,26 @@ public class BasicAisleStrategy extends AisleStrategy {
     }
 
     public int getMultiAisleRepeats(int index) {
-        return multiAisles.get(index)[4];
+        return multiAisles.get(index).actualRepeats;
     }
 
-    protected int checkMultiAisle(PatternState state, int[] multiAisle, int offset, boolean flip) {
+    protected int checkMultiAisle(PatternState state, MultiAisle multiAisle, int offset, boolean flip) {
         int aisleOffset = 0;
         int temp = 0;
-        for (int i = 1; i <= multiAisle[1]; i++) {
-            for (int j = multiAisle[2]; j < multiAisle[3]; j++) {
+        for (int i = 1; i <= multiAisle.maxRepeats; i++) {
+            for (int j = multiAisle.startInclusive; j < multiAisle.endExclusive; j++) {
                 int res = checkRepeatAisle(state, j, offset + temp, flip);
                 if (res == -1) {
-                    if (i <= multiAisle[0]) return -1;
-                    multiAisle[4] = i - 1;
+                    if (i <= multiAisle.minRepeats) return -1;
+                    multiAisle.actualRepeats = i - 1;
                     return aisleOffset;
                 }
                 temp += res;
             }
-            aisleOffset += temp;
+            aisleOffset = temp;
         }
 
-        multiAisle[4] = multiAisle[1];
+        multiAisle.actualRepeats = multiAisle.maxRepeats;
         return aisleOffset;
     }
 
@@ -72,20 +93,20 @@ public class BasicAisleStrategy extends AisleStrategy {
     public int @NotNull [] getDefaultAisles(@Nullable Map<String, String> map) {
         IntList list = new IntArrayList();
         for (int i = 0; i < multiAisles.size(); i++) {
-            int[] multi = multiAisles.get(i);
+            var multi = multiAisles.get(i);
             int multiRepeats = 0;
             if (map == null) {
-                multiRepeats = multi[0];
+                multiRepeats = multi.minRepeats;
             } else {
-                multiRepeats = Mth.clamp(GTStringUtils.parseInt(map.get("multi." + 1)), multi[0], multi[1]);
+                multiRepeats = Mth.clamp(GTStringUtils.parseInt(map.get("multi." + 1)), multi.minRepeats, multi.maxRepeats);
             }
             for (int j = 0; j < multiRepeats; j++) {
-                for (int k = multi[2]; k < multi[3]; k++) {
+                for (int k = multi.startInclusive; k < multi.endExclusive; k++) {
                     int aisleRepeats = 0;
                     if (map == null) {
                         aisleRepeats = aisles.get(k).minRepeats;
                     } else {
-                        aisleRepeats = Mth.clamp(GTStringUtils.parseInt(map.get("multi." + i + "." + (k - multi[2]))),
+                        aisleRepeats = Mth.clamp(GTStringUtils.parseInt(map.get("multi." + i + "." + (k - multi.startInclusive))),
                                 aisles.get(k).minRepeats, aisles.get(k).maxRepeats);
                     }
                     for (int l = 0; l < aisleRepeats; l++) {
@@ -105,9 +126,9 @@ public class BasicAisleStrategy extends AisleStrategy {
 
         BitSet covered = new BitSet(aisles.size());
         int sum = 0;
-        for (int[] arr : multiAisles) {
-            covered.set(arr[2], arr[3]);
-            sum += arr[3] - arr[2];
+        for (var arr : multiAisles) {
+            covered.set(arr.startInclusive, arr.endExclusive);
+            sum += arr.endExclusive - arr.startInclusive;
         }
 
         if (sum != covered.cardinality()) {
@@ -123,18 +144,18 @@ public class BasicAisleStrategy extends AisleStrategy {
 
         int i = covered.nextClearBit(0);
         while ((i = covered.nextClearBit(i)) < aisles.size()) {
-            multiAisles.add(new int[] { 1, 1, i, i + 1, -1 });
+            multiAisles.add(new MultiAisle(1, 1, i, i + 1, -1 ));
             covered.set(i);
         }
 
-        multiAisles.sort(Comparator.comparingInt(a -> a[2]));
+        multiAisles.sort(Comparator.comparingInt(a -> a.startInclusive));
     }
 
     protected void multiAisleError() {
         GTCEu.LOGGER.error(
                 "multiAisles in the pattern, formatted as [minRepeats, maxRepeats, startInclusive, endExclusive, actualRepeats]");
         for (var arr : multiAisles) {
-            GTCEu.LOGGER.error(Arrays.toString(arr));
+            GTCEu.LOGGER.error(arr.toString());
         }
         throw new IllegalStateException("Illegal multiAisles, see log above.");
     }
@@ -143,7 +164,7 @@ public class BasicAisleStrategy extends AisleStrategy {
         Preconditions.checkArgument(max >= min, "max: %s is less than min: %s", max, min);
         Preconditions.checkArgument(from >= 0, "from argument is negative: %s", from);
         Preconditions.checkArgument(to > 0, "to argument is not positive: %s", to);
-        multiAisles.add(new int[] { min, max, from, to, -1 });
+        multiAisles.add(new MultiAisle(min, max, from, to, -1));
         return this;
     }
 }

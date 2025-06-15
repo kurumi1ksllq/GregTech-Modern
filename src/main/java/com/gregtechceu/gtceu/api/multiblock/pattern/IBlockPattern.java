@@ -60,6 +60,7 @@ public interface IBlockPattern {
      *         y, z
      *         respectively being. The map is sorted using the natural ordering(thus with x, y, z order).
      */
+    // TODO move the keyMap to a NBTCompoundTag
     Long2ObjectSortedMap<TraceabilityPredicate> getDefaultShape(MultiblockControllerMachine src,
                                                                 @NotNull Map<String, String> keyMap);
 

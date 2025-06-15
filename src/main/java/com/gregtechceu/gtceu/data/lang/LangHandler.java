@@ -1164,7 +1164,7 @@ public class LangHandler {
         provider.add("gtceu.multiblock.preview.zoom", "Use mousewheel or right-click + drag to zoom");
         provider.add("gtceu.multiblock.preview.rotate", "Click and drag to rotate");
         provider.add("gtceu.multiblock.preview.select", "Right-click to check candidates");
-        provider.add("gtceu.multiblock.pattern.error", "Expected components (%s) at: %s, %s, %s.");
+        multilineLang(provider, "gtceu.multiblock.pattern.error", "Expected components (%s) at:\n  %s, %s, %s.");
         provider.add("gtceu.multiblock.pattern.error.limited_exact", "§cExactly: %d§r");
         provider.add("gtceu.multiblock.pattern.error.limited_within", "§cBetween %d and %d§r");
         provider.add("gtceu.multiblock.pattern.error.limited.max_count", "§cMaximum: %d§r");

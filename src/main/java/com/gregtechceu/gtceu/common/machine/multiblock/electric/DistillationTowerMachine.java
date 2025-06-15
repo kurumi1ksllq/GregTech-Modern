@@ -111,11 +111,11 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
                     GTCEu.LOGGER.error(
                             "The Distillation Tower at {} has a fluid export hatch with an unexpected Y position",
                             getPos());
-                    invalidateStructure();
+                    invalidateStructure(name);
                     return;
                 }
             }
-        } else invalidateStructure();
+        } else invalidateStructure(name);
     }
 
     private void addOutput(IFluidHandler handler) {

@@ -211,7 +211,7 @@ public class BlockPattern implements IBlockPattern {
                 patternState.cbi.setCurrentPos(charPos);
                 TraceabilityPredicate pred = predicates.get(aisle.charAt(stringI, charI));
 
-                if (pred != TraceabilityPredicate.ANY) {
+                if (!pred.equals(TraceabilityPredicate.ANY)) {
                     var be = patternState.cbi.retrieveCurrentBlockEntity();
                     var state = patternState.cbi.retrieveCurrentBlockState();
                     patternState.cache.put(charPos.asLong(), new BlockInfo(state, be));
@@ -263,7 +263,7 @@ public class BlockPattern implements IBlockPattern {
             for (int j = 0; j < dimensions[1]; j++) {
                 for (int k = 0; k < dimensions[2]; k++) {
                     TraceabilityPredicate pred = predicates.get(aisles[order[i]].charAt(j, k));
-                    if (pred != TraceabilityPredicate.ANY && pred != TraceabilityPredicate.AIR)
+                    if (!pred.equals(TraceabilityPredicate.ANY) && !pred.equals(TraceabilityPredicate.AIR))
                         map.put(serial.asLong(), pred);
                     serial.move(absoluteChar);
                 }

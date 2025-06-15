@@ -59,7 +59,7 @@ public class LargeBoilerRenderer extends WorkableCasingMachineRenderer implement
         if (side == relativeDown) {
             quads.add(
                     StaticFaceBakery.bakeFace(multiFacing, ModelFactory.getBlockSprite(firebox.bottom()), multiState));
-        } else if (side == RelativeDirection.UP.getRelativeFacing(multiFacing, multiUpward, flipped)) {
+        } else if (side == RelativeDirection.UP.getRelativeFacing(multiFront, multiUpward, flipped)) {
             quads.add(StaticFaceBakery.bakeFace(multiFacing, ModelFactory.getBlockSprite(firebox.top()), multiState));
         } else {
             quads.add(StaticFaceBakery.bakeFace(multiFacing, ModelFactory.getBlockSprite(firebox.side()), multiState));

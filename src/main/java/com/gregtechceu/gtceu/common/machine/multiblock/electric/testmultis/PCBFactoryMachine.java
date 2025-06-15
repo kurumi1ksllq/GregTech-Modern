@@ -73,8 +73,8 @@ public class PCBFactoryMachine extends WorkableElectricMultiblockMachine {
             textList.add(Component.literal("Has Substructure"));
         } else if (coolerState.hasError()) {
             textList.add(Component.literal("Has no Substructure"));
-            Component c = coolerState.getError().getErrorInfo();
-            textList.add(c);
+            var c = coolerState.getError().getErrorInfo();
+            textList.addAll(c);
         }
     }
 }

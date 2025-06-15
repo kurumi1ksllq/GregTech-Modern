@@ -133,7 +133,7 @@ public class ExpandablePattern implements IBlockPattern {
             mPos = mPos.offset(translation).mutable();
             patternState.cbi.setCurrentPos(mPos);
 
-            if (pred != TraceabilityPredicate.ANY) {
+            if (!pred.equals(TraceabilityPredicate.ANY)) {
                 var bstate = patternState.cbi.retrieveCurrentBlockState();
                 BlockEntity be = patternState.cbi.retrieveCurrentBlockEntity();
                 patternState.cache.put(mPos.asLong(), new BlockInfo(bstate, be));
@@ -203,7 +203,7 @@ public class ExpandablePattern implements IBlockPattern {
             mPos.set(BlockPos.ZERO).move(absolutes[0], mPos.getX()).move(absolutes[1], mPos.getY()).move(absolutes[2],
                     mPos.getZ());
 
-            if (pred != TraceabilityPredicate.ANY && pred != TraceabilityPredicate.AIR) {
+            if (!pred.equals(TraceabilityPredicate.ANY) && !pred.equals(TraceabilityPredicate.AIR)) {
                 predicates.put(mPos.asLong(), pred);
             }
         }

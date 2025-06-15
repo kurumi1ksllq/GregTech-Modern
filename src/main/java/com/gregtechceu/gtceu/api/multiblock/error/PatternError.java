@@ -12,6 +12,7 @@ import net.minecraft.world.level.Level;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class PatternError {
         return blockInfo.getBlockPos();
     }
 
-    public Component getErrorInfo() {
+    public List<Component> getErrorInfo() {
         StringBuilder builder = new StringBuilder();
         for (List<ItemStack> candidate : candidates) {
             if (!candidate.isEmpty()) {
@@ -58,7 +59,10 @@ public class PatternError {
             }
         }
         builder.append("...");
-        return Component.translatable("gtceu.multiblock.pattern.error", builder.toString(), pos.getX(), pos.getY(),
-                pos.getZ());
+        List<Component> comps = new ArrayList<>();
+        comps.add(Component.translatable("gtceu.multiblock.pattern.error.0", builder.toString()));
+        comps.add(Component.translatable("gtceu.multiblock.pattern.error.1", pos.getX(), pos.getY(),
+                pos.getZ()));
+        return comps;
     }
 }

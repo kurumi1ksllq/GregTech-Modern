@@ -191,4 +191,14 @@ public class TraceabilityPredicate {
         }
         return this;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof TraceabilityPredicate pred)) return false;
+
+        return this.hasAir == pred.hasAir &&
+                this.isController == pred.isController &&
+                this.simple.equals(pred.simple);
+    }
 }

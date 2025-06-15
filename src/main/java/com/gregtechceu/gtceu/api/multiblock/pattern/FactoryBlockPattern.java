@@ -97,9 +97,9 @@ public class FactoryBlockPattern {
 
     /**
      * Starts the builder, this is equivlent to calling
-     * {@link FactoryBlockPattern#start(RelativeDirection, RelativeDirection, RelativeDirection)} with RIGHT, UP, BACK
+     * {@link FactoryBlockPattern#start(RelativeDirection aisle, RelativeDirection string, RelativeDirection char)}
+     * with BACK, UP, RIGHT
      *
-     * @see FactoryBlockPattern#start(RelativeDirection, RelativeDirection, RelativeDirection)
      */
     public static FactoryBlockPattern start() {
         return new FactoryBlockPattern(RelativeDirection.BACK, RelativeDirection.UP, RelativeDirection.RIGHT);
@@ -108,11 +108,11 @@ public class FactoryBlockPattern {
     /**
      * Starts the builder, each pair of {@link RelativeDirection} must be used at exactly once!
      *
-     * @param charDir   The direction chars progress in, each successive char in a string progresses by this direction
-     * @param stringDir The direction strings progress in, each successive string in an aisle progresses by this
-     *                  direction
      * @param aisleDir  The direction aisles progress in, each successive {@link FactoryBlockPattern#aisle(String...)}
      *                  progresses in this direction
+     * @param stringDir The direction strings progress in, each successive string in an aisle progresses by this
+     *                  direction
+     * @param charDir   The direction chars progress in, each successive char in a string progresses by this direction
      */
     public static FactoryBlockPattern start(RelativeDirection aisleDir, RelativeDirection stringDir,
                                             RelativeDirection charDir) {

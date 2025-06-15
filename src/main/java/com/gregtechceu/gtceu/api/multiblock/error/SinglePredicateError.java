@@ -27,7 +27,7 @@ public class SinglePredicateError extends PatternError {
     }
 
     @Override
-    public Component getErrorInfo() {
+    public List<Component> getErrorInfo() {
         int number = switch (type) {
             case MAX_COUNT -> predicate.maxCount;
             case MIN_COUNT -> predicate.minCount;
@@ -35,7 +35,7 @@ public class SinglePredicateError extends PatternError {
             case MIN_LAYER_COUNT -> predicate.minLayerCount;
         };
 
-        return Component.translatable("gtceu.multiblock.pattern.error.limited." + type.getName(), number);
+        return List.of(Component.translatable("gtceu.multiblock.pattern.error.limited." + type.getName(), number));
     }
 
     public enum ErrorType {

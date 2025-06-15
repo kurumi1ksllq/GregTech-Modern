@@ -83,7 +83,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_SECURE_MACERATION)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXXXX", "XXXXX", "XXXXX", "XXXXX")
                     .aisle("XXXXX", "XGGGX", "XGGGX", "XAAAX")
                     .aisle("XXXXX", "XGGGX", "XGGGX", "XAAAX")
@@ -114,7 +115,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_WATERTIGHT)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXXXX", "XXXXX", "XXXXX")
                     .aisle("XXXXX", "XTTTX", "X   X")
                     .aisle("XXXXX", "X   X", "X   X")
@@ -142,7 +144,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_VIBRATION_SAFE)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("#XXX#", "XXXXX", "#XXX#")
                     .aisle("XXXXX", "XAPAX", "XXXXX")
                     .aisle("XXXXX", "XPAPX", "XXXXX")
@@ -174,7 +177,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_REACTION_SAFE)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("#XXX#", "#XXX#", "#XXX#", "#XXX#", "#XXX#", "##F##")
                     .aisle("XXXXX", "XAPAX", "XAAAX", "XAPAX", "XAAAX", "##F##")
                     .aisle("XXXXX", "XPPPX", "XAPAX", "XPPPX", "XAGAX", "FFGFF")
@@ -184,7 +188,7 @@ public class GCYMMachines {
                     .where('X', blocks(CASING_REACTION_SAFE.get()).setMinGlobalLimited(50)
                             .or(autoAbilities(definition.getRecipeTypes()))
                             .or(Predicates.autoAbilities(true, false, true)))
-                    .where('F', blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, GTMaterials.HastelloyX)))
+                    .where('F', frames(GTMaterials.HastelloyX))
                     .where('G', blocks(CASING_STAINLESS_STEEL_GEARBOX.get()))
                     .where('P', blocks(CASING_TITANIUM_PIPE.get()))
                     .where('A', Predicates.air())
@@ -203,7 +207,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_NONCONDUCTING)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXXXX", "XXXXX", "XXXXX")
                     .aisle("XXXXX", "XCCCX", "XCCCX")
                     .aisle("XXXXX", "XCCCX", "XCCCX")
@@ -230,7 +235,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_NONCONDUCTING)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXXXX", "XXXXX", "XXXXX")
                     .aisle("XCXCX", "XCXCX", "XCXCX")
                     .aisle("XCXCX", "XCXCX", "XCXCX")
@@ -256,7 +262,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_TUNGSTENSTEEL_ROBUST)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXX", "XXX", "XXX")
                     .aisle("XXX", "XAX", "XXX")
                     .aisle("XXX", "XAX", "XXX")
@@ -287,7 +294,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.DEFAULT_ENVIRONMENT_REQUIREMENT, GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_LARGE_SCALE_ASSEMBLING)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXXXXXXXX", "XXXXXXXXX", "XXXXXXXXX")
                     .aisle("XXXXXXXXX", "XAAAXAAAX", "XGGGXXXXX")
                     .aisle("XXXXXXXXX", "XGGGXXSXX", "XGGGX###X")
@@ -319,7 +327,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.DEFAULT_ENVIRONMENT_REQUIREMENT, GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_LARGE_SCALE_ASSEMBLING)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXXXXXX", "XXXXXXX", "XXXXXXX")
                     .aisle("XXXXXXX", "XPPPPPX", "XGGGGGX")
                     .aisle("XXXXXXX", "XAAAAPX", "XGGGGGX")
@@ -352,7 +361,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_HIGH_TEMPERATURE_SMELTING)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("#XXX#", "#XXX#", "#XXX#", "#XXX#")
                     .aisle("XXXXX", "XCACX", "XCACX", "XXXXX")
                     .aisle("XXXXX", "XAAAX", "XAAAX", "XXMXX")
@@ -384,7 +394,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.DEFAULT_ENVIRONMENT_REQUIREMENT, GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_LASER_SAFE_ENGRAVING)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXXXX", "XXGXX", "XXGXX", "XXXXX")
                     .aisle("XXXXX", "XAAAX", "XAAAX", "XKKKX")
                     .aisle("XXXXX", "GAAAG", "GACAG", "XKXKX")
@@ -414,7 +425,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_VIBRATION_SAFE)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("#X#X#", "#X#X#", "#XXX#", "XXXXX", "#XXX#")
                     .aisle("XXXXX", "XAXAX", "XKKKX", "XKKKX", "X###X")
                     .aisle("#XXX#", "#XAX#", "XKKKX", "XKKKX", "X###X")
@@ -444,7 +456,8 @@ public class GCYMMachines {
             .recipeType(ALLOY_BLAST_RECIPES)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH, GTRecipeModifiers::ebfOverclock)
             .appearanceBlock(CASING_HIGH_TEMPERATURE_SMELTING)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("#XXX#", "#CCC#", "#GGG#", "#CCC#", "#XXX#")
                     .aisle("XXXXX", "CAAAC", "GAAAG", "CAAAC", "XXXXX")
                     .aisle("XXXXX", "CAAAC", "GAAAG", "CAAAC", "XXMXX")
@@ -511,7 +524,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_WATERTIGHT)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXX", "XXX", "XXX")
                     .aisle("XXX", "XTX", "XXX")
                     .aisle("XXX", "XTX", "XXX")
@@ -540,7 +554,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_STRESS_PROOF)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXXXXXX", "XXXXXXX", "XXXXXXX")
                     .aisle("XXXXXXX", "XAXGGGX", "XXXXXXX")
                     .aisle("XXXXXXX", "XSXCCCX", "XXXXXXX")
@@ -568,7 +583,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_CORROSION_PROOF)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("#XXX#", "#XXX#", "#XXX#", "#XXX#", "#####")
                     .aisle("XXXXX", "XCCCX", "XAAAX", "XXAXX", "##X##")
                     .aisle("XXXXX", "XCPCX", "XAPAX", "XAPAX", "#XMX#")
@@ -599,7 +615,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_SHOCK_PROOF)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXXXXXX", "XXXXXXX", "XXXXXXX", "##XXXXX")
                     .aisle("XXXXXXX", "XAXCCCX", "XXXAAAX", "##XXXXX")
                     .aisle("XXXXXXX", "XAXCCCX", "XXXAAAX", "##XXXXX")
@@ -634,7 +651,7 @@ public class GCYMMachines {
                 if (GTCEu.Mods.isAE2Loaded())
                     exportPredicate = exportPredicate.or(blocks(GTAEMachines.FLUID_EXPORT_HATCH_ME.get()));
                 exportPredicate.setMaxLayerLimited(1);
-                return FactoryBlockPattern.start(RIGHT, BACK, UP)
+                return FactoryBlockPattern.start(UP, BACK, RIGHT)
                         .aisle("#YYY#", "YYYYY", "YYYYY", "YYYYY", "#YYY#")
                         .aisle("#YSY#", "YAAAY", "YAAAY", "YAAAY", "#YYY#")
                         .aisleRepeatable(1, 12, "##X##", "#XAX#", "XAPAX", "#XAX#", "##X##")
@@ -719,7 +736,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_WATERTIGHT)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXXXX", "XXXXX", "XXXXX")
                     .aisle("XXXXX", "XCACX", "XXXXX")
                     .aisle("XXXXX", "XXSXX", "XXXXX")
@@ -745,9 +763,11 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_STRESS_PROOF)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("##XXX", "##XXX", "##XXX")
-                    .aisleRepeatable(2, 2, "##XXX", "##XPX", "##XGX")
+                    .aisle("##XXX", "##XPX", "##XGX")
+                    .aisle("##XXX", "##XPX", "##XGX")
                     .aisle("XXXXX", "XXXPX", "XXXGX")
                     .aisle("XXXXX", "XAXPX", "XXXGX")
                     .aisle("XXXXX", "XSXXX", "XXXXX")
@@ -775,7 +795,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_WATERTIGHT)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("#XXX#", "#XXX#", "#XXX#", "#XXX#")
                     .aisle("XXXXX", "XCACX", "XCACX", "XXXXX")
                     .aisle("XXXXX", "XAAAX", "XAAAX", "XXXXX")
@@ -804,7 +825,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_STRESS_PROOF)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXXXX", "XXXXX", "XXX##")
                     .aisle("XXXXX", "X#CCX", "XXXXX")
                     .aisle("XXXXX", "XSXXX", "XXX##")
@@ -835,7 +857,8 @@ public class GCYMMachines {
             .appearanceBlock(CASING_HIGH_TEMPERATURE_SMELTING)
             .pattern(definition -> {
                 TraceabilityPredicate casing = blocks(CASING_HIGH_TEMPERATURE_SMELTING.get()).setMinGlobalLimited(360);
-                return FactoryBlockPattern.start()
+                return FactoryBlockPattern
+                        .start(FRONT, UP, RIGHT)
                         .aisle("##XXXXXXXXX##", "##XXXXXXXXX##", "#############", "#############", "#############",
                                 "#############", "#############", "#############", "#############", "#############",
                                 "#############", "#############", "#############", "#############", "#############",
@@ -893,7 +916,7 @@ public class GCYMMachines {
                                 .or(Predicates.autoAbilities(true, false, true)))
                         .where('C', heatingCoils())
                         .where('M', abilities(PartAbility.MUFFLER))
-                        .where('F', blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, NaquadahAlloy)))
+                        .where('F', frames(NaquadahAlloy))
                         .where('H', casing)
                         .where('T', blocks(CASING_TUNGSTENSTEEL_ROBUST.get()))
                         .where('B', blocks(FIREBOX_TUNGSTENSTEEL.get()))
@@ -1008,7 +1031,8 @@ public class GCYMMachines {
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH,
                     GTRecipeModifiers.OC_NON_PERFECT_SUBTICK)
             .appearanceBlock(CASING_ALUMINIUM_FROSTPROOF)
-            .pattern(definition -> FactoryBlockPattern.start()
+            .pattern(definition -> FactoryBlockPattern
+                    .start(FRONT, UP, RIGHT)
                     .aisle("XXXXXXX#KKK", "XXXXXXX#KVK", "XXXXXXX#KVK", "XXXXXXX#KVK", "XXXXXXX#KKK", "XXXXXXX####",
                             "XXXXXXX####")
                     .aisle("XXXXXXX#KVK", "XPPPPPPPPPV", "XPAPAPX#VPV", "XPPPPPPPPPV", "XPAPAPX#KVK", "XPPPPPX####",

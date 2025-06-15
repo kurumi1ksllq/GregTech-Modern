@@ -79,6 +79,7 @@ import static com.gregtechceu.gtceu.api.GTValues.UV;
 import static com.gregtechceu.gtceu.api.capability.recipe.IO.IN;
 import static com.gregtechceu.gtceu.api.multiblock.Predicates.*;
 import static com.gregtechceu.gtceu.api.multiblock.Predicates.autoAbilities;
+import static com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection.*;
 import static com.gregtechceu.gtceu.common.data.GTBlocks.ALL_FIREBOXES;
 import static com.gregtechceu.gtceu.common.data.GTCreativeModeTabs.MACHINE;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.DUMMY_RECIPES;
@@ -429,7 +430,8 @@ public class GTMachineUtils {
                         Component.translatable("gtceu.universal.tooltip.fluid_storage_capacity", capacity))
                 .rotationState(RotationState.ALL)
                 .recipeType(DUMMY_RECIPES)
-                .pattern(definition -> FactoryBlockPattern.start()
+                .pattern(definition -> FactoryBlockPattern
+                        .start(FRONT, UP, RIGHT)
                         .aisle("CCC", "CCC", "CCC")
                         .aisle("CCC", "C#C", "CCC")
                         .aisle("CCC", "CSC", "CCC")
@@ -539,7 +541,8 @@ public class GTMachineUtils {
                 .generator(true)
                 .recipeModifier(LargeCombustionEngineMachine::recipeModifier, true)
                 .appearanceBlock(casing)
-                .pattern(definition -> FactoryBlockPattern.start()
+                .pattern(definition -> FactoryBlockPattern
+                        .start(FRONT, UP, RIGHT)
                         .aisle("XXX", "XDX", "XXX")
                         .aisle("XCX", "CGC", "XCX")
                         .aisle("XCX", "CGC", "XCX")
@@ -597,7 +600,8 @@ public class GTMachineUtils {
                 .generator(true)
                 .recipeModifier(LargeTurbineMachine::recipeModifier, true)
                 .appearanceBlock(casing)
-                .pattern(definition -> FactoryBlockPattern.start()
+                .pattern(definition -> FactoryBlockPattern
+                        .start(FRONT, UP, RIGHT)
                         .aisle("CCCC", "CHHC", "CCCC")
                         .aisle("CHHC", "RGGR", "CHHC")
                         .aisle("CCCC", "CSHC", "CCCC")

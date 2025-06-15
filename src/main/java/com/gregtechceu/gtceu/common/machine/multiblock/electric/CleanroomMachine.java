@@ -608,8 +608,8 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
 
         }
         if (state.hasError()) {
-            Component comp = state.getError().getErrorInfo();
-            textList.add(comp);
+            var comp = state.getError().getErrorInfo();
+            textList.addAll(comp);
         }
     }
 

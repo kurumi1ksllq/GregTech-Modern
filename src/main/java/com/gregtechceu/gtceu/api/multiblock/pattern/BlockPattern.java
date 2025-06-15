@@ -2,6 +2,8 @@ package com.gregtechceu.gtceu.api.multiblock.pattern;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
@@ -10,6 +12,7 @@ import com.gregtechceu.gtceu.api.multiblock.error.SinglePredicateError;
 import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
+import com.gregtechceu.gtceu.utils.DummyMachineBlockEntity;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
@@ -322,36 +325,34 @@ public class BlockPattern implements IBlockPattern {
                 return true;
             }
 
-            if (info.hasBlockEntity() && info.getBlockEntity() instanceof MetaMachineBlockEntity mmbe) {
-                var removed = tryRemoveItem(context.getPlayer(), info.getItemStackForm());
-                if (removed.isEmpty()) return false;
+            var removed = tryRemoveItem(context.getPlayer(), info.getItemStackForm());
+            if (removed.isEmpty()) return false;
 
-                // try to force the front face to an air block
-                if (predicates.containsKey(p.relative(mmbe.metaMachine.getFrontFacing()).asLong())) {
-                    Direction valid = null;
-                    for (var dir : GTUtil.HORIZONTALS) {
-                        if (!predicates.containsKey(p.relative(dir).asLong())) {
-                            valid = dir;
-                            break;
-                        }
-                    }
-                    if (valid != null) mmbe.metaMachine.setFrontFacing(valid);
-                    else {
-                        if (predicates.containsKey(p.relative(Direction.UP).asLong())) {
-                            mmbe.metaMachine.setFrontFacing(Direction.UP);
-                        } else if (predicates.containsKey(p.relative(Direction.DOWN).asLong())) {
-                            mmbe.metaMachine.setFrontFacing(Direction.DOWN);
-                        }
+            level.setBlockAndUpdate(p, info.getBlockState());
+
+            var be = level.getBlockEntity(p);
+            if (!(be instanceof IMachineBlockEntity mbe)) return true;
+            //if (be instanceof IMachineBlockEntity mbe) {
+
+            MetaMachine metaMachine = mbe.getMetaMachine();
+            if (metaMachine == null) return false;
+
+            // try to force the front face to an air block
+            if (predicates.containsKey(p.relative(metaMachine.getFrontFacing()).asLong())) {
+                Direction valid = null;
+                for (var dir : GTUtil.HORIZONTALS) {
+                    if (!predicates.containsKey(p.relative(dir).asLong())) {
+                        valid = dir;
+                        break;
                     }
                 }
-
-                level.setBlockAndUpdate(p, info.getBlockState());
-                level.setBlockEntity(info.getBlockEntity());
-            } else {
-                if (!tryRemoveItem(context.getPlayer(), info.getItemStackForm()).isEmpty()) {
-                    level.setBlockAndUpdate(p, info.getBlockState());
-                } else {
-                    return false;
+                if (valid != null) metaMachine.setFrontFacing(valid);
+                else {
+                    if (!predicates.containsKey(p.relative(Direction.UP).asLong())) {
+                        metaMachine.setFrontFacing(Direction.UP);
+                    } else if (!predicates.containsKey(p.relative(Direction.DOWN).asLong())) {
+                        metaMachine.setFrontFacing(Direction.DOWN);
+                    }
                 }
             }
             return true;

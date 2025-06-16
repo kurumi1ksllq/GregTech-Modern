@@ -279,7 +279,7 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
                             getTimeToFillDrainText(timeToDrainSeconds).setStyle(STYLE_RED)));
                 }
             }
-        } else if(pState.hasError()) {
+        } else if (pState.hasError()) {
             textList.addAll(pState.getError().getErrorInfo());
         }
         getDefinition().getAdditionalDisplay().accept(this, textList);

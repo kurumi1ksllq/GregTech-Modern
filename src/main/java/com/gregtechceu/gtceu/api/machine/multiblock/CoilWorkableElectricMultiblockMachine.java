@@ -4,13 +4,12 @@ import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.block.ICoilType;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.multiblock.error.CoilMatchingError;
-import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
 import com.gregtechceu.gtceu.common.block.CoilBlock;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.BlockPos;
 
 import lombok.Getter;
-import net.minecraft.core.BlockPos;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -40,7 +39,8 @@ public class CoilWorkableElectricMultiblockMachine extends WorkableElectricMulti
                     if (coilType == null) coilType = coil.coilType;
                     else {
                         if (coilType != coil.coilType) {
-                            patternStates.get(name).setError(new CoilMatchingError(BlockPos.of(entry.getLongKey()), coilType, coil.coilType));
+                            patternStates.get(name).setError(
+                                    new CoilMatchingError(BlockPos.of(entry.getLongKey()), coilType, coil.coilType));
                             invalidateStructure(name);
                             return;
                         }

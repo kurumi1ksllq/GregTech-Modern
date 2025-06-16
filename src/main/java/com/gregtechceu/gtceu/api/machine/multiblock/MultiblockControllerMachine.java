@@ -116,7 +116,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         super.onUnload();
         if (getLevel() instanceof ServerLevel serverLevel) {
             MultiblockWorldSavedData.getOrCreate(serverLevel).removeAsyncLogic(this);
-            for(var pattern : patternStates.values()) {
+            for (var pattern : patternStates.values()) {
                 MultiblockWorldSavedData.getOrCreate(serverLevel).removeMapping(pattern);
             }
         }
@@ -179,8 +179,8 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     @Override
     public void asyncCheckPattern(long periodID) {
-        if(getLevel() instanceof ServerLevel serverLevel) {
-            if(getMachine(serverLevel, getPos()) != this) {
+        if (getLevel() instanceof ServerLevel serverLevel) {
+            if (getMachine(serverLevel, getPos()) != this) {
                 MultiblockWorldSavedData.getOrCreate(serverLevel).removeAsyncLogic(this);
             }
         }

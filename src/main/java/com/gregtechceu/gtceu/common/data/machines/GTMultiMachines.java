@@ -1151,7 +1151,9 @@ public class GTMultiMachines {
             .workableCasingRenderer(GTCEu.id("block/casings/cleanroom/plascrete"),
                     GTCEu.id("block/multiblock/cleanroom"))
             .additionalDisplay((cont, text) -> {
-                var aisles = ((BasicAisleStrategy)((BlockPattern)cont.getStructurePatterns().get(MultiblockControllerMachine.DEFAULT_STRUCTURE)).getAisleStrategy()).getMultiAisleRepeats(1);
+                var aisles = ((BasicAisleStrategy) ((BlockPattern) cont.getStructurePatterns()
+                        .get(MultiblockControllerMachine.DEFAULT_STRUCTURE)).getAisleStrategy())
+                        .getMultiAisleRepeats(1);
                 text.add(Component.literal("has aisle " + aisles));
             })
             .register();

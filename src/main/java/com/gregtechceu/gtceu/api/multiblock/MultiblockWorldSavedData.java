@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.api.multiblock;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
-import com.gregtechceu.gtceu.api.multiblock.pattern.CurrentBlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
 
 import net.minecraft.core.BlockPos;
@@ -62,7 +61,7 @@ public class MultiblockWorldSavedData extends SavedData {
         this.mapping.getOrDefault(patternState.getControllerPos(), new HashSet<>()).remove(patternState);
         this.mapping.entrySet().removeIf(e -> e.getValue().isEmpty());
 
-        for(var patternSet : chunkPosMapping.values()) {
+        for (var patternSet : chunkPosMapping.values()) {
             patternSet.remove(patternState);
         }
         chunkPosMapping.entrySet().removeIf(e -> e.getValue().isEmpty());

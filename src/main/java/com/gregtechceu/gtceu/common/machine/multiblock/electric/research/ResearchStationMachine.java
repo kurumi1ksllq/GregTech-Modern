@@ -14,7 +14,6 @@ import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockDisplayText;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
-import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
 import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
 import com.gregtechceu.gtceu.api.recipe.ActionResult;
@@ -87,7 +86,6 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
             pState.setError(new PatternStringError("gtceu.predicate_error.research.missing_object_holder"));
             invalidateStructure(name);
         }
-
     }
 
     @Override

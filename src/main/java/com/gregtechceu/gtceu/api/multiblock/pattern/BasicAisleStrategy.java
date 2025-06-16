@@ -17,6 +17,7 @@ import java.util.*;
 public class BasicAisleStrategy extends AisleStrategy {
 
     protected class MultiAisle {
+
         public int minRepeats = -1;
         public int maxRepeats = -1;
         public int startInclusive = -1;
@@ -33,7 +34,8 @@ public class BasicAisleStrategy extends AisleStrategy {
 
         @Override
         public String toString() {
-            return String.format("[min %s, max %s, startInc %s, endExc %s, actual %s]", minRepeats, maxRepeats, startInclusive, endExclusive, actualRepeats);
+            return String.format("[min %s, max %s, startInc %s, endExc %s, actual %s]", minRepeats, maxRepeats,
+                    startInclusive, endExclusive, actualRepeats);
         }
     }
 
@@ -98,7 +100,8 @@ public class BasicAisleStrategy extends AisleStrategy {
             if (map == null) {
                 multiRepeats = multi.minRepeats;
             } else {
-                multiRepeats = Mth.clamp(GTStringUtils.parseInt(map.get("multi." + 1)), multi.minRepeats, multi.maxRepeats);
+                multiRepeats = Mth.clamp(GTStringUtils.parseInt(map.get("multi." + 1)), multi.minRepeats,
+                        multi.maxRepeats);
             }
             for (int j = 0; j < multiRepeats; j++) {
                 for (int k = multi.startInclusive; k < multi.endExclusive; k++) {
@@ -106,7 +109,8 @@ public class BasicAisleStrategy extends AisleStrategy {
                     if (map == null) {
                         aisleRepeats = aisles.get(k).minRepeats;
                     } else {
-                        aisleRepeats = Mth.clamp(GTStringUtils.parseInt(map.get("multi." + i + "." + (k - multi.startInclusive))),
+                        aisleRepeats = Mth.clamp(
+                                GTStringUtils.parseInt(map.get("multi." + i + "." + (k - multi.startInclusive))),
                                 aisles.get(k).minRepeats, aisles.get(k).maxRepeats);
                     }
                     for (int l = 0; l < aisleRepeats; l++) {
@@ -144,7 +148,7 @@ public class BasicAisleStrategy extends AisleStrategy {
 
         int i = covered.nextClearBit(0);
         while ((i = covered.nextClearBit(i)) < aisles.size()) {
-            multiAisles.add(new MultiAisle(1, 1, i, i + 1, -1 ));
+            multiAisles.add(new MultiAisle(1, 1, i, i + 1, -1));
             covered.set(i);
         }
 

@@ -14,9 +14,6 @@ import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.QuadFunction;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -27,6 +24,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import it.unimi.dsi.fastutil.longs.*;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -179,8 +179,8 @@ public class ExpandablePattern implements IBlockPattern {
         Direction up = src.getUpwardsFacing();
 
         int[] bounds = boundsFunc.apply(src.getLevel(), src.getPos().mutable(), front, up);
-        if(keyMap == null) {
-            bounds = new int[]{0, 4, 2, 2, 2, 2};
+        if (keyMap == null) {
+            bounds = new int[] { 0, 4, 2, 2, 2, 2 };
         }
         if (bounds == null) return Long2ObjectSortedMaps.emptyMap();
 
@@ -235,7 +235,8 @@ public class ExpandablePattern implements IBlockPattern {
     }
 
     @Override
-    public void autobuild(Reference2ObjectMap<String, IBlockPattern> patterns, MultiblockControllerMachine controller, UseOnContext context) {
+    public void autobuild(Reference2ObjectMap<String, IBlockPattern> patterns, MultiblockControllerMachine controller,
+                          UseOnContext context) {
         var predicates = getDefaultShape(controller, null);
 
         var level = context.getLevel();
@@ -259,7 +260,7 @@ public class ExpandablePattern implements IBlockPattern {
 
             var be = level.getBlockEntity(p);
             if (!(be instanceof IMachineBlockEntity mbe)) return true;
-            //if (be instanceof IMachineBlockEntity mbe) {
+            // if (be instanceof IMachineBlockEntity mbe) {
 
             MetaMachine metaMachine = mbe.getMetaMachine();
             if (metaMachine == null) return false;

@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
@@ -85,7 +84,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         forEachFormed(DEFAULT_STRUCTURE, (info, pos) -> {
             if (info.getBlockState().is(BlockTags.LOGS)) {
                 logPos.add(pos.immutable());
-            } else if(info.getBlockState().isAir()) {
+            } else if (info.getBlockState().isAir()) {
                 hasAir = true;
             }
         });

@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.multiblock.error;
 
-import com.gregtechceu.gtceu.api.block.ICoilType;
 import com.gregtechceu.gtceu.api.block.IFilterType;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 

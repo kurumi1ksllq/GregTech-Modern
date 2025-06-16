@@ -1,10 +1,8 @@
 package com.gregtechceu.gtceu.api.multiblock.predicates;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
-import com.gregtechceu.gtceu.api.multiblock.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
 import com.gregtechceu.gtceu.api.multiblock.error.SinglePredicateError;
@@ -12,8 +10,6 @@ import com.gregtechceu.gtceu.api.multiblock.pattern.CurrentBlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -24,7 +20,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -52,11 +50,15 @@ public class SimplePredicate {
     }
 
     /**
-     * @param predicate The precicate function for being a valid block state or tile entity in a pattern
-     * @param candidates The qualifying blocks or item stacks valid in this predicate based on information from either the
-     *  {@link com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern#autobuild(Reference2ObjectMap, MultiblockControllerMachine, UseOnContext) Terminal Auto-Builder},
-     *  {@link com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer#renderInWorldPreview(PoseStack, Camera, float) In-world Preview} or
-     *  {@link com.gregtechceu.gtceu.api.gui.widget.PatternPreviewWidget#getPatternWidget(MultiblockMachineDefinition) XEI Preview}
+     * @param predicate  The precicate function for being a valid block state or tile entity in a pattern
+     * @param candidates The qualifying blocks or item stacks valid in this predicate based on information from either
+     *                   the
+     *                   {@link com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern#autobuild(Reference2ObjectMap, MultiblockControllerMachine, UseOnContext)
+     *                   Terminal Auto-Builder},
+     *                   {@link com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer#renderInWorldPreview(PoseStack, Camera, float)
+     *                   In-world Preview} or
+     *                   {@link com.gregtechceu.gtceu.api.gui.widget.PatternPreviewWidget#getPatternWidget(MultiblockMachineDefinition)
+     *                   XEI Preview}
      */
     public SimplePredicate(Function<CurrentBlockInfo, PatternError> predicate,
                            @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {

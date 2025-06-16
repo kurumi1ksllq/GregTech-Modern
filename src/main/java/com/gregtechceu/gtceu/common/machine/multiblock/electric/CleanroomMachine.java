@@ -142,7 +142,8 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
                     if (filterType == null) filterType = filter.getKey();
                     else {
                         if (filterType != filter.getKey()) {
-                            pState.setError(new FilterMatchingError(BlockPos.of(entry.getLongKey()), filterType, filter.getKey()));
+                            pState.setError(new FilterMatchingError(BlockPos.of(entry.getLongKey()), filterType,
+                                    filter.getKey()));
                             invalidateStructure(name);
                             return;
                         }

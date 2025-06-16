@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
@@ -12,7 +11,6 @@ import com.gregtechceu.gtceu.api.multiblock.error.SinglePredicateError;
 import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
-import com.gregtechceu.gtceu.utils.DummyMachineBlockEntity;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
@@ -70,7 +68,7 @@ public class BlockPattern implements IBlockPattern {
             this.offset = offset;
         }
 
-        if(anchorOffset != null) { // needs to be negative cause of double offsetting
+        if (anchorOffset != null) { // needs to be negative cause of double offsetting
             this.offset.move(RelativeDirection.FRONT, -anchorOffset.get(RelativeDirection.FRONT));
             this.offset.move(RelativeDirection.UP, -anchorOffset.get(RelativeDirection.UP));
             this.offset.move(RelativeDirection.LEFT, -anchorOffset.get(RelativeDirection.LEFT));
@@ -318,7 +316,7 @@ public class BlockPattern implements IBlockPattern {
 
             var be = level.getBlockEntity(p);
             if (!(be instanceof IMachineBlockEntity mbe)) return true;
-            //if (be instanceof IMachineBlockEntity mbe) {
+            // if (be instanceof IMachineBlockEntity mbe) {
 
             MetaMachine metaMachine = mbe.getMetaMachine();
             if (metaMachine == null) return false;

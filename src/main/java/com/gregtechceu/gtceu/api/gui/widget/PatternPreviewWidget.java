@@ -9,8 +9,6 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
-import com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern;
-import com.gregtechceu.gtceu.api.multiblock.pattern.ExpandablePattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.config.ConfigHolder;
@@ -371,7 +369,7 @@ public class PatternPreviewWidget extends WidgetGroup {
             for (var patternEntry : controllerBase.getStructurePatterns().entrySet()) {
                 var defaultPredicateMap = patternEntry.getValue()
                         .getDefaultShape((MultiblockControllerMachine) controllerBase, null);
-                for(var predEntry : defaultPredicateMap.long2ObjectEntrySet()) {
+                for (var predEntry : defaultPredicateMap.long2ObjectEntrySet()) {
                     predicateMap.put(BlockPos.of(predEntry.getLongKey()), predEntry.getValue());
                 }
             }

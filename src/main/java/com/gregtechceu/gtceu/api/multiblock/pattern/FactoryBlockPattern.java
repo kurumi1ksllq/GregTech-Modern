@@ -19,8 +19,8 @@ import java.util.List;
  * When the multiblock is placed, its facings are concrete. Then, the {@link RelativeDirection}s passed into
  * {@link FactoryBlockPattern#start(RelativeDirection, RelativeDirection, RelativeDirection)} are ways in which the
  * pattern progresses. It can be thought like this, where startPos() is either defined via
- * {@link FactoryBlockPattern#startOffset(OriginOffset)}, or automatically detected(for legacy compat only, you should use
- * {@link FactoryBlockPattern#startOffset(OriginOffset)} always for new code):
+ * {@link FactoryBlockPattern#startOffset(OriginOffset)}, or automatically detected(for legacy compat only, you should
+ * use {@link FactoryBlockPattern#startOffset(OriginOffset)} always for new code):
  *
  * <pre>
  * {@code

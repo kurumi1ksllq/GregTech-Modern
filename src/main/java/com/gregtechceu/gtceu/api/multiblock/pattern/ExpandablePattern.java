@@ -180,7 +180,7 @@ public class ExpandablePattern implements IBlockPattern {
 
         int[] bounds = boundsFunc.apply(src.getLevel(), src.getPos().mutable(), front, up);
         if(keyMap == null) {
-            bounds = new int[]{0, 4, 2, 2, 2, 2};
+            bounds = new int[]{0, 4, 3, 3, 3, 3};
         }
         if (bounds == null) return Long2ObjectSortedMaps.emptyMap();
 

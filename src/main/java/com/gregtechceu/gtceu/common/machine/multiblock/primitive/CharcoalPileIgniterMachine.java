@@ -5,19 +5,19 @@ import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
+import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
-import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
+import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
 import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryExpandablePattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
+import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
+import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.item.tool.behavior.LighterBehavior;
 
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.core.BlockPos;
@@ -71,13 +71,8 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     private static final int MAX_RADIUS = 5;
 
     private final int[] bounds = new int[] { 0, MIN_DEPTH, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS };
-
-    @DescSynced
-    @RequireRerender
-    private boolean isActive;
-    private int progressTime = 0;
     private int maxTime = 0;
-    private TickableSubscription burnLogsSubscription;
+    private boolean hasAir = false;
 
     public CharcoalPileIgniterMachine(IMachineBlockEntity holder) {
         super(holder);
@@ -86,22 +81,25 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     @Override
     public void formStructure(String name) {
         super.formStructure(name);
+        hasAir = false;
         forEachFormed(DEFAULT_STRUCTURE, (info, pos) -> {
             if (info.getBlockState().is(BlockTags.LOGS)) {
                 logPos.add(pos.immutable());
+            } else if(info.getBlockState().isAir()) {
+                hasAir = true;
             }
         });
-        updateMaxProgessTime();
-        burnLogsSubscription = subscribeServerTick(this::tick);
-        tick();
+        this.getRecipeLogic().setDuration(Math.max(1, (int) Math.sqrt(logPos.size() * 240_000)));
     }
 
     @Override
-    public void invalidateStructure(String name) {
-        super.invalidateStructure(name);
-        resetState();
-        this.progressTime = 0;
-        this.maxTime = 0;
+    protected CharcoalRecipeLogic createRecipeLogic(Object... args) {
+        return new CharcoalRecipeLogic(this);
+    }
+
+    @Override
+    public CharcoalRecipeLogic getRecipeLogic() {
+        return (CharcoalRecipeLogic) super.getRecipeLogic();
     }
 
     @Override
@@ -110,29 +108,8 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     }
 
     @Override
-    public void onUnload() {
-        super.onUnload();
-        resetState();
-    }
-
-    private void resetState() {
-        unsubscribe(burnLogsSubscription);
-        isActive = false;
-    }
-
-    @Override
-    public int getProgress() {
-        return progressTime;
-    }
-
-    @Override
-    public int getMaxProgress() {
-        return maxTime;
-    }
-
-    @Override
     public boolean isActive() {
-        return isActive;
+        return recipeLogic.isWorking();
     }
 
     @Override
@@ -141,9 +118,15 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     }
 
     @Override
+    public PatternState checkStructurePattern(String name) {
+        createStructurePattern();
+        return super.checkStructurePattern(name);
+    }
+
+    @Override
     public IBlockPattern createStructurePattern() {
         var floor = Predicates.blocks(Blocks.BRICKS);
-        var logs = logPredicate();
+        var logs = TraceabilityPredicate.AIR.or(logPredicate());
         var walls = wallPredicate();
 
         updateDimensions();
@@ -183,14 +166,16 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     private TraceabilityPredicate wallPredicate() {
         return new TraceabilityPredicate(
                 multiblockState -> WALL_BLOCKS.contains(multiblockState.getBlockState().getBlock()) ?
-                        null : PatternError.PLACEHOLDER,
-                null);
+                        null : new PatternStringError("gtceu.predicate_error.charcoal.walls"),
+                map -> WALL_BLOCKS.stream()
+                        .map(block -> BlockInfo.fromBlockState(block.defaultBlockState()))
+                        .toArray(BlockInfo[]::new));
     }
 
     private TraceabilityPredicate logPredicate() {
         return new TraceabilityPredicate(multiblockState -> {
             boolean match = multiblockState.getBlockState().is(BlockTags.LOGS_THAT_BURN);
-            return match ? null : PatternError.PLACEHOLDER;
+            return match ? null : new PatternStringError("gtceu.predicate_error.charcoal.logs");
         }, null);
     }
 
@@ -206,7 +191,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         int r = findWallPos(right, getPos().mutable().move(Direction.DOWN));
         int b = findWallPos(back, getPos().mutable().move(Direction.DOWN));
         int f = findWallPos(front, getPos().mutable().move(Direction.DOWN));
-        int d = findFloorPos(Direction.DOWN, getPos().mutable());
+        int d = findFloorPos(getPos().mutable());
 
         if (d < MIN_DEPTH || l < MIN_RADIUS || r < MIN_RADIUS || b < MIN_RADIUS || f < MIN_RADIUS) {
             invalidateStructure();
@@ -230,9 +215,9 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         return -1;
     }
 
-    private int findFloorPos(Direction direction, BlockPos.MutableBlockPos bp) {
+    private int findFloorPos(BlockPos.MutableBlockPos bp) {
         for (int i = 1; i <= MAX_DEPTH; i++) {
-            var block = getLevel().getBlockState(bp.move(direction)).getBlock();
+            var block = getLevel().getBlockState(bp.move(Direction.DOWN)).getBlock();
             if (block == Blocks.BRICKS) {
                 return i;
             }
@@ -240,19 +225,11 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         return -1;
     }
 
-    public void setActive(boolean active) {
-        isActive = active;
-    }
-
-    private void updateMaxProgessTime() {
-        this.maxTime = Math.max(1, (int) Math.sqrt(logPos.size() * 240_000));
-    }
-
     @Override
     @OnlyIn(Dist.CLIENT)
     public void clientTick() {
         super.clientTick();
-        if (isActive) {
+        if (isActive()) {
             var pos = this.getPos();
             var facing = Direction.UP;
             float xPos = facing.getStepX() * 0.76F + pos.getX() + 0.25F + GTValues.RNG.nextFloat() / 2.0F;
@@ -277,17 +254,6 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         }
     }
 
-    public void tick() {
-        if (isActive && maxTime > 0) {
-            if (++progressTime == maxTime) {
-                progressTime = 0;
-                maxTime = 0;
-                convertLogBlocks();
-                isActive = false;
-            }
-        }
-    }
-
     private void convertLogBlocks() {
         Level level = getLevel();
         for (BlockPos pos : logPos) {
@@ -300,44 +266,71 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
                                    BlockHitResult hit) {
         BlockEntity be = world.getBlockEntity(pos);
-        if (be instanceof IMachineBlockEntity machineBe) {
-            MetaMachine mte = machineBe.getMetaMachine();
-            if (mte instanceof CharcoalPileIgniterMachine cpi && cpi.isFormed()) {
-                if (world.isClientSide) {
-                    player.swing(hand);
-                } else if (!cpi.isActive()) {
-                    boolean shouldActivate = false;
-                    ItemStack stack = player.getItemInHand(hand);
-                    if (stack.getItem() instanceof FlintAndSteelItem) {
-                        stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
-                        getLevel().playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
+        if (!(be instanceof IMachineBlockEntity machineBe)) return super.onUse(state, world, pos, player, hand, hit);
+        MetaMachine mte = machineBe.getMetaMachine();
 
-                        shouldActivate = true;
-                    } else if (stack.getItem() instanceof FireChargeItem) {
-                        stack.shrink(1);
+        if (mte instanceof CharcoalPileIgniterMachine cpi && cpi.isFormed() && !hasAir) {
+            if (world.isClientSide) {
+                player.swing(hand);
+            } else if (!cpi.isActive()) {
+                boolean shouldActivate = false;
+                ItemStack stack = player.getItemInHand(hand);
+                if (stack.getItem() instanceof FlintAndSteelItem) {
+                    stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
+                    getLevel().playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
 
-                        getLevel().playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
+                    shouldActivate = true;
+                } else if (stack.getItem() instanceof FireChargeItem) {
+                    stack.shrink(1);
 
-                        shouldActivate = true;
-                    } else if (stack.getItem() instanceof ComponentItem compItem) {
-                        for (var component : compItem.getComponents()) {
-                            if (component instanceof LighterBehavior lighter && lighter.consumeFuel(player, stack)) {
-                                getLevel().playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f,
-                                        1.0f);
+                    getLevel().playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
 
-                                shouldActivate = true;
-                                break;
-                            }
+                    shouldActivate = true;
+                } else if (stack.getItem() instanceof ComponentItem compItem) {
+                    for (var component : compItem.getComponents()) {
+                        if (component instanceof LighterBehavior lighter && lighter.consumeFuel(player, stack)) {
+                            getLevel().playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f,
+                                    1.0f);
+
+                            shouldActivate = true;
+                            break;
                         }
                     }
+                }
 
-                    if (shouldActivate) {
-                        cpi.setActive(true);
-                        return InteractionResult.CONSUME;
-                    }
+                if (shouldActivate) {
+                    cpi.getRecipeLogic().setStatus(RecipeLogic.Status.WORKING);
+                    return InteractionResult.CONSUME;
                 }
             }
         }
+
         return super.onUse(state, world, pos, player, hand, hit);
+    }
+
+    public class CharcoalRecipeLogic extends RecipeLogic {
+
+        private CharcoalPileIgniterMachine machine;
+
+        public CharcoalRecipeLogic(CharcoalPileIgniterMachine machine) {
+            super(machine);
+        }
+
+        @Override
+        public void serverTick() {
+            super.serverTick();
+            if (isWorking() && duration > 0) {
+                if (++progress == duration) {
+                    progress = 0;
+                    duration = 0;
+                    machine.convertLogBlocks();
+                    setStatus(Status.IDLE);
+                }
+            }
+        }
+
+        public void setDuration(int max) {
+            this.duration = max;
+        }
     }
 }

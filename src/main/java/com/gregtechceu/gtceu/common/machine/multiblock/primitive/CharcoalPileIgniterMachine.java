@@ -267,44 +267,38 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
                                    BlockHitResult hit) {
         BlockEntity be = world.getBlockEntity(pos);
         if (!(be instanceof IMachineBlockEntity machineBe)) return super.onUse(state, world, pos, player, hand, hit);
-        MetaMachine mte = machineBe.getMetaMachine();
 
-        if (mte instanceof CharcoalPileIgniterMachine cpi && cpi.isFormed() && !hasAir) {
-            if (world.isClientSide) {
-                player.swing(hand);
-            } else if (!cpi.isActive()) {
-                boolean shouldActivate = false;
-                ItemStack stack = player.getItemInHand(hand);
-                if (stack.getItem() instanceof FlintAndSteelItem) {
-                    stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
-                    getLevel().playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
-
-                    shouldActivate = true;
-                } else if (stack.getItem() instanceof FireChargeItem) {
-                    stack.shrink(1);
-
-                    getLevel().playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
-
-                    shouldActivate = true;
-                } else if (stack.getItem() instanceof ComponentItem compItem) {
-                    for (var component : compItem.getComponents()) {
-                        if (component instanceof LighterBehavior lighter && lighter.consumeFuel(player, stack)) {
-                            getLevel().playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f,
-                                    1.0f);
-
-                            shouldActivate = true;
-                            break;
-                        }
+        if (!isFormed() || hasAir) return super.onUse(state, world, pos, player, hand, hit);
+        if (world.isClientSide) {
+            player.swing(hand);
+        }
+        if (!world.isClientSide && !isActive()) {
+            boolean shouldActivate = false;
+            ItemStack stack = player.getItemInHand(hand);
+            if (stack.getItem() instanceof FlintAndSteelItem) {
+                stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
+                getLevel().playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
+                shouldActivate = true;
+            } else if (stack.getItem() instanceof FireChargeItem) {
+                stack.shrink(1);
+                getLevel().playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
+                shouldActivate = true;
+            } else if (stack.getItem() instanceof ComponentItem compItem) {
+                for (var component : compItem.getComponents()) {
+                    if (component instanceof LighterBehavior lighter && lighter.consumeFuel(player, stack)) {
+                        getLevel().playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f,
+                                1.0f);
+                        shouldActivate = true;
+                        break;
                     }
                 }
+            }
 
-                if (shouldActivate) {
-                    cpi.getRecipeLogic().setStatus(RecipeLogic.Status.WORKING);
-                    return InteractionResult.CONSUME;
-                }
+            if (shouldActivate) {
+                getRecipeLogic().setStatus(RecipeLogic.Status.WORKING);
+                return InteractionResult.CONSUME;
             }
         }
-
         return super.onUse(state, world, pos, player, hand, hit);
     }
 

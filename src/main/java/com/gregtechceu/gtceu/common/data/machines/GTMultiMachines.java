@@ -758,7 +758,7 @@ public class GTMultiMachines {
                                             .setMaxGlobalLimited(2))
                                     .or(abilities(PartAbility.EXPORT_FLUIDS).setMaxGlobalLimited(1)))
                             .where('C', blocks(FluidDrillMachine.getCasingState(tier)))
-                            .where('F', blocks(FluidDrillMachine.getFrameState(tier)))
+                            .where('F', frames(FluidDrillMachine.getFrameMaterial(tier)))
                             .where('#', any())
                             .build())
                     .workableCasingRenderer(FluidDrillMachine.getBaseTexture(tier),
@@ -1080,7 +1080,7 @@ public class GTMultiMachines {
                                                     .setMaxGlobalLimited(2))
                                             .or(abilities(PartAbility.EXPORT_ITEMS).setMaxGlobalLimited(1)))
                             .where('C', blocks(BedrockOreMinerMachine.getCasingState(tier)))
-                            .where('F', blocks(BedrockOreMinerMachine.getFrameState(tier)))
+                            .where('F', frames(BedrockOreMinerMachine.getFrameMaterial(tier)))
                             .where('#', any())
                             .build())
                     .workableCasingRenderer(BedrockOreMinerMachine.getBaseTexture(tier),

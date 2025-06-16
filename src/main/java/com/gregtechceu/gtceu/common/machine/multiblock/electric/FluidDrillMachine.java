@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
+import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
@@ -133,15 +134,13 @@ public class FluidDrillMachine extends WorkableElectricMultiblockMachine impleme
         return GTBlocks.CASING_STEEL_SOLID.get();
     }
 
-    @SuppressWarnings("DataFlowIssue")
-    public static Block getFrameState(int tier) {
-        if (tier == GTValues.MV)
-            return GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, GTMaterials.Steel).get();
-        if (tier == GTValues.HV)
-            return GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, GTMaterials.Titanium).get();
-        if (tier == GTValues.EV)
-            return GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, GTMaterials.TungstenSteel).get();
-        return GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, GTMaterials.Steel).get();
+    public static Material getFrameMaterial(int tier) {
+        return switch(tier) {
+            case GTValues.MV -> GTMaterials.Steel;
+            case GTValues.HV -> GTMaterials.Titanium;
+            case GTValues.EV -> GTMaterials.TungstenSteel;
+            default -> GTMaterials.Steel;
+        };
     }
 
     public static ResourceLocation getBaseTexture(int tier) {

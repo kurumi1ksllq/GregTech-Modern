@@ -266,7 +266,7 @@ public class BlockPattern implements IBlockPattern {
             for (int j = 0; j < dimensions[1]; j++) {
                 for (int k = 0; k < dimensions[2]; k++) {
                     TraceabilityPredicate pred = predicates.get(aisles[order[i]].charAt(j, k));
-                    if (!pred.equals(TraceabilityPredicate.ANY) && !pred.equals(TraceabilityPredicate.AIR))
+                    if (!pred.equals(TraceabilityPredicate.ANY))
                         map.put(serial.asLong(), pred);
                     serial.move(absoluteChar);
                 }
@@ -298,20 +298,6 @@ public class BlockPattern implements IBlockPattern {
         var predicates = getDefaultShape(controller, null);
 
         var level = context.getLevel();
-
-        /*
-         * Direction absoluteAisle = directions[0].getRelativeFacing(controller.getFrontFacing(),
-         * controller.getUpwardsFacing());
-         * Direction absoluteString = directions[1].getRelativeFacing(controller.getFrontFacing(),
-         * controller.getUpwardsFacing());
-         * Direction absoluteChar = directions[2].getRelativeFacing(controller.getFrontFacing(),
-         * controller.getUpwardsFacing());
-         * 
-         * BlockPos.MutableBlockPos pos = controller.getPos().mutable();
-         * BlockPos.MutableBlockPos start = startPos(pos, controller.getFrontFacing(), controller.getUpwardsFacing(),
-         * false);
-         * BlockPos.MutableBlockPos serial = start.mutable();
-         */
 
         Object2IntMap<TraceabilityPredicate> predicateIndex = new Object2IntOpenHashMap<>();
         Object2IntMap<SimplePredicate> globalCache = new Object2IntOpenHashMap<>();

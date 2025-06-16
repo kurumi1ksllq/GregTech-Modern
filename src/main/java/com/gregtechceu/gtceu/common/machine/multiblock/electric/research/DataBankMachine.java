@@ -78,7 +78,7 @@ public class DataBankMachine extends WorkableElectricMultiblockMachine
         this.energyUsage = calculateEnergyUsage();
 
         if (this.maintenance == null) {
-            invalidateStructure();
+            invalidateStructure(name);
             return;
         }
 

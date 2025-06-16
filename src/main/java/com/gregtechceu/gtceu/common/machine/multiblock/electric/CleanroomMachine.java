@@ -81,7 +81,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     public static final int MIN_CLEAN_AMOUNT = 0;
 
     public static final int MIN_RADIUS = 2;
-    public static final int MIN_DEPTH = 4;
+    public static final int MIN_DEPTH = 3;
     public static final int MAX_RADIUS = 7;
     public static final int MAX_DEPTH = 14;
 
@@ -247,7 +247,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
         int f = findWallPos(front, getPos().mutable());
         int d = findFloorPos(Direction.DOWN, getPos().mutable());
 
-        if (d <= MIN_DEPTH || l < MIN_RADIUS || r < MIN_RADIUS || b < MIN_RADIUS || f < MIN_RADIUS) {
+        if (d < MIN_DEPTH || l < MIN_RADIUS || r < MIN_RADIUS || b < MIN_RADIUS || f < MIN_RADIUS) {
             invalidateStructure();
             return;
         }
@@ -314,7 +314,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     }
 
     public int findWallPos(Direction dir, BlockPos.MutableBlockPos pos) {
-        for (int i = 1; i < MAX_RADIUS; i++) {
+        for (int i = 1; i <= MAX_RADIUS; i++) {
             var state = getLevel().getBlockState(pos.move(dir));
             if (state == getCasingState() || state == getGlassState()) {
                 return i;
@@ -324,7 +324,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     }
 
     public int findFloorPos(Direction dir, BlockPos.MutableBlockPos pos) {
-        for (int i = 1; i < MAX_DEPTH; i++) {
+        for (int i = 1; i <= MAX_DEPTH; i++) {
             if (isAllFloorBlocks(getPos().mutable().move(dir, i))) {
                 return i;
             }

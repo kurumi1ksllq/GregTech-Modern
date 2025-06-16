@@ -15,6 +15,7 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMa
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
+import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
 import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
 import com.gregtechceu.gtceu.api.recipe.ActionResult;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
@@ -58,10 +59,12 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
 
     @Override
     public void formStructure(String name) {
+        var patternState = patternStates.get(name);
         super.formStructure(name);
         for (IMultiPart part : getParts()) {
             if (part instanceof IObjectHolder iObjectHolder) {
                 if (iObjectHolder.getFrontFacing() != getFrontFacing().getOpposite()) {
+                    patternState.setError(new PatternStringError("gtceu.object_holder.direction"));
                     invalidateStructure(name);
                     return;
                 }
@@ -78,6 +81,7 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
         if (computationProvider == null || objectHolder == null) {
             invalidateStructure();
         }
+
     }
 
     @Override
@@ -92,7 +96,8 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
             }
         }
         if (objHolder != null && objHolder.getFrontFacing() != getFrontFacing().getOpposite()) {
-            patternState.setError(PatternError.PLACEHOLDER);
+            patternState.setError(new PatternStringError("gtceu.object_holder.direction"));
+            invalidateStructure(name);
         }
         return patternState;
     }

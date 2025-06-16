@@ -23,7 +23,7 @@ public class TerminalBehavior implements IInteractionItem {
             BlockPos blockPos = context.getClickedPos();
             if (context.getPlayer() != null &&
                     MetaMachine.getMachine(level, blockPos) instanceof MultiblockControllerMachine controller) {
-                if (!controller.isFormed()) {
+                if (!controller.getDefaultPatternState().isFormed()) {
                     if (!level.isClientSide) {
                         var patterns = controller.getStructurePatterns();
                         for (var pattern : patterns.values()) {

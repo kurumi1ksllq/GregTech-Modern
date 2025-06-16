@@ -601,7 +601,7 @@ public class GTMachineUtils {
                 .recipeModifier(LargeTurbineMachine::recipeModifier, true)
                 .appearanceBlock(casing)
                 .pattern(definition -> FactoryBlockPattern
-                        .start(FRONT, UP, LEFT)
+                        .start(FRONT, UP, RIGHT)
                         .aisle("CCCC", "CHHC", "CCCC")
                         .aisle("CHHC", "RGGR", "CHHC")
                         .aisle("CCCC", "CSHC", "CCCC")

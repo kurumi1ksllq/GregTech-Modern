@@ -179,6 +179,11 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     @Override
     public void asyncCheckPattern(long periodID) {
+        if(getLevel() instanceof ServerLevel serverLevel) {
+            if(getMachine(serverLevel, getPos()) != this) {
+                MultiblockWorldSavedData.getOrCreate(serverLevel).removeAsyncLogic(this);
+            }
+        }
         for (var entry : patternStates.entrySet()) {
             var name = entry.getKey();
             var patternState = entry.getValue();

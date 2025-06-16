@@ -208,7 +208,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         int f = findWallPos(front, getPos().mutable().move(Direction.DOWN));
         int d = findFloorPos(Direction.DOWN, getPos().mutable());
 
-        if (d <= 0 || l <= 0 || r <= 0 || b <= 0 || f <= 0) {
+        if (d < MIN_DEPTH || l < MIN_RADIUS || r < MIN_RADIUS || b < MIN_RADIUS || f < MIN_RADIUS) {
             invalidateStructure();
             return;
         }
@@ -222,7 +222,8 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
 
     private int findWallPos(Direction direction, BlockPos.MutableBlockPos bp) {
         for (int i = 1; i <= MAX_RADIUS; i++) {
-            if (WALL_BLOCKS.contains(getLevel().getBlockState(bp.move(direction).immutable()).getBlock())) {
+            var block = getLevel().getBlockState(bp.move(direction)).getBlock();
+            if (WALL_BLOCKS.contains(block)) {
                 return i;
             }
         }
@@ -230,8 +231,9 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     }
 
     private int findFloorPos(Direction direction, BlockPos.MutableBlockPos bp) {
-        for (int i = 1; i <= MAX_RADIUS; i++) {
-            if (getLevel().getBlockState(bp.move(direction).immutable()).getBlock() == Blocks.BRICKS) {
+        for (int i = 1; i <= MAX_DEPTH; i++) {
+            var block = getLevel().getBlockState(bp.move(direction)).getBlock();
+            if (block == Blocks.BRICKS) {
                 return i;
             }
         }

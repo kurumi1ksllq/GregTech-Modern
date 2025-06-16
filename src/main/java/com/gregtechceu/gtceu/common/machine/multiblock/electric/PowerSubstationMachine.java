@@ -20,6 +20,7 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
+import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
 import com.gregtechceu.gtceu.common.block.BatteryBlock;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
@@ -91,6 +92,7 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
     @Override
     public void formStructure(String name) {
         super.formStructure(name);
+        var pState = patternStates.get(name);
         List<IEnergyContainer> inputs = new ArrayList<>();
         List<IEnergyContainer> outputs = new ArrayList<>();
         // Long2ObjectMap<IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap",
@@ -147,6 +149,7 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
          */
         if (batteries.isEmpty()) {
             // only empty batteries found in the structure
+            pState.setError(new PatternStringError("gtceu.predicate_error.power_substation.missing_batteries"));
             invalidateStructure();
             return;
         }
@@ -207,6 +210,7 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
     @Override
     public void addDisplayText(List<Component> textList) {
         IDisplayUIMachine.super.addDisplayText(textList);
+        var pState = patternStates.get(DEFAULT_STRUCTURE);
         if (isFormed()) {
             if (!isWorkingEnabled()) {
                 textList.add(Component.translatable("gtceu.multiblock.work_paused"));
@@ -275,6 +279,8 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
                             getTimeToFillDrainText(timeToDrainSeconds).setStyle(STYLE_RED)));
                 }
             }
+        } else if(pState.hasError()) {
+            textList.addAll(pState.getError().getErrorInfo());
         }
         getDefinition().getAdditionalDisplay().accept(this, textList);
     }

@@ -23,7 +23,9 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.error.FilterMatchingError;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
+import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
 import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryExpandablePattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
@@ -85,7 +87,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     public static final int MAX_RADIUS = 7;
     public static final int MAX_DEPTH = 14;
 
-    private final int[] bounds = { 0, MIN_DEPTH, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS };
+    private final int[] bounds = { 0, 0, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS };
     @Nullable
     private CleanroomType cleanroomType = null;
     @Persisted
@@ -127,6 +129,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     @Override
     public void formStructure(String name) {
         super.formStructure(name);
+        var pState = patternStates.get(name);
         initializeAbilities();
 
         // var cache = getSubstructure(name).getCache();
@@ -139,7 +142,8 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
                     if (filterType == null) filterType = filter.getKey();
                     else {
                         if (filterType != filter.getKey()) {
-                            invalidateStructure();
+                            pState.setError(new FilterMatchingError(BlockPos.of(entry.getLongKey()), filterType, filter.getKey()));
+                            invalidateStructure(name);
                             return;
                         }
                     }
@@ -236,6 +240,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
      */
     public void updateStructureDimensions() {
         if (getLevel() == null) return;
+        var pState = patternStates.get(DEFAULT_STRUCTURE);
         Direction front = getFrontFacing();
         Direction back = front.getOpposite();
         Direction left = front.getCounterClockWise();
@@ -248,11 +253,13 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
         int d = findFloorPos(Direction.DOWN, getPos().mutable());
 
         if (d < MIN_DEPTH || l < MIN_RADIUS || r < MIN_RADIUS || b < MIN_RADIUS || f < MIN_RADIUS) {
+            pState.setError(new PatternStringError("gtceu.predicate_error.cleanroom.too_small"));
             invalidateStructure();
             return;
         }
 
         if (Math.abs(l - r) > 1 || Math.abs(b - f) > 1) {
+            pState.setError(new PatternStringError("gtceu.predicate_error.cleanroom.not_centered"));
             invalidateStructure();
             return;
         }

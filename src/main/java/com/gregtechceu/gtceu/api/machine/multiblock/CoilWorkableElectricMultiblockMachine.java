@@ -3,12 +3,14 @@ package com.gregtechceu.gtceu.api.machine.multiblock;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.block.ICoilType;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.multiblock.error.CoilMatchingError;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
 import com.gregtechceu.gtceu.common.block.CoilBlock;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 
 import lombok.Getter;
+import net.minecraft.core.BlockPos;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -29,7 +31,6 @@ public class CoilWorkableElectricMultiblockMachine extends WorkableElectricMulti
     @Override
     public void formStructure(String name) {
         super.formStructure(name);
-        // var cache = getSubstructure(name).getCache();
         var cache = patternStates.get(name).getCache();
         ICoilType coilType = null;
         for (var entry : cache.long2ObjectEntrySet()) {
@@ -39,8 +40,8 @@ public class CoilWorkableElectricMultiblockMachine extends WorkableElectricMulti
                     if (coilType == null) coilType = coil.coilType;
                     else {
                         if (coilType != coil.coilType) {
-                            invalidateStructure();
-                            patternStates.get(name).setError(new PatternStringError("gtceu.coils.mismatch"));
+                            patternStates.get(name).setError(new CoilMatchingError(BlockPos.of(entry.getLongKey()), coilType, coil.coilType));
+                            invalidateStructure(name);
                             return;
                         }
                     }
@@ -50,13 +51,6 @@ public class CoilWorkableElectricMultiblockMachine extends WorkableElectricMulti
         if (coilType != null) {
             this.coilType = coilType;
         }
-
-        /*
-         * var type = getMultiblockState().getMatchContext().get("CoilType");
-         * if (type instanceof ICoilType coil) {
-         * this.coilType = coil;
-         * }
-         */
     }
 
     public int getCoilTier() {

@@ -18,6 +18,7 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMa
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
@@ -79,6 +80,7 @@ public class ActiveTransformerMachine extends WorkableElectricMultiblockMachine
     @Override
     public void formStructure(String name) {
         super.formStructure(name);
+        var pState = patternStates.get(name);
         // capture all energy containers
         List<IEnergyContainer> powerInput = new ArrayList<>();
         List<IEnergyContainer> powerOutput = new ArrayList<>();
@@ -110,7 +112,8 @@ public class ActiveTransformerMachine extends WorkableElectricMultiblockMachine
 
         // Invalidate the structure if there is not at least one output and one input
         if (powerInput.isEmpty() || powerOutput.isEmpty()) {
-            this.invalidateStructure();
+            pState.setError(new PatternStringError("gtceu.predicate_error.active_transformer.missing_io", powerInput.isEmpty(), powerOutput.isEmpty()));
+            this.invalidateStructure(name);
         }
 
         this.powerOutput = new EnergyContainerList(powerOutput);
@@ -191,6 +194,11 @@ public class ActiveTransformerMachine extends WorkableElectricMultiblockMachine
                 }
             } else {
                 textList.add(Component.translatable("gtceu.multiblock.idling"));
+            }
+        } else {
+            if (patternStates.get(DEFAULT_STRUCTURE).hasError()) {
+                var comp = patternStates.get(DEFAULT_STRUCTURE).getError().getErrorInfo();
+                textList.addAll(comp);
             }
         }
     }

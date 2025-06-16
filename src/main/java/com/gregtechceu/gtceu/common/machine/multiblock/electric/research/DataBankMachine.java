@@ -15,6 +15,7 @@ import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
+import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -56,6 +57,7 @@ public class DataBankMachine extends WorkableElectricMultiblockMachine
     @Override
     public void formStructure(String name) {
         super.formStructure(name);
+        var pState = patternStates.get(name);
         List<IEnergyContainer> energyContainers = new ArrayList<>();
         // Long2ObjectMap<IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap",
         // Long2ObjectMaps::emptyMap);
@@ -78,6 +80,7 @@ public class DataBankMachine extends WorkableElectricMultiblockMachine
         this.energyUsage = calculateEnergyUsage();
 
         if (this.maintenance == null) {
+            pState.setError(new PatternStringError("gtceu.predicate_error.databank.missing_maint"));
             invalidateStructure(name);
             return;
         }

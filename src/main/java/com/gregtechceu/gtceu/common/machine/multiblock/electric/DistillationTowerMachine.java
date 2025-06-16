@@ -9,6 +9,8 @@ import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
+import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
+import com.gregtechceu.gtceu.api.multiblock.error.SinglePredicateError;
 import com.gregtechceu.gtceu.api.recipe.ActionResult;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
@@ -78,6 +80,7 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
         getDefinition().setPartSorter(Comparator.comparingInt(p -> p.self().getPos().getY()));
         getDefinition().setAllowExtendedFacing(false);
         super.formStructure(name);
+        var pState = patternStates.get(name);
         final int startY = getPos().getY() + yOffset;
         List<IMultiPart> parts = getParts().stream()
                 .filter(part -> PartAbility.EXPORT_FLUIDS.isApplicable(part.self().getBlockState().getBlock()))
@@ -108,6 +111,7 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
                 } else if (part.self().getPos().getY() > y) {
                     fluidOutputs.add(VoidFluidHandler.INSTANCE);
                 } else {
+                    pState.setError(new PatternStringError("gtceu.predicate_error.distillery.unexpected_hatch"));
                     GTCEu.LOGGER.error(
                             "The Distillation Tower at {} has a fluid export hatch with an unexpected Y position",
                             getPos());
@@ -115,7 +119,10 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
                     return;
                 }
             }
-        } else invalidateStructure(name);
+        } else {
+            pState.setError(new PatternStringError("gtceu.predicate_error.distillation.missing_outputs"));
+            invalidateStructure(name);
+        }
     }
 
     private void addOutput(IFluidHandler handler) {

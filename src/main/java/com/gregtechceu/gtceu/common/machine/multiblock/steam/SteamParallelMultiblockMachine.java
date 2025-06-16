@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.steam.SteamEnergyRecipeHandler;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
+import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
@@ -65,8 +66,15 @@ public class SteamParallelMultiblockMachine extends WorkableMultiblockMachine im
     }
 
     @Override
+    public void invalidateStructure(String name) {
+        super.invalidateStructure(name);
+        this.steamEnergy = null;
+    }
+
+    @Override
     public void formStructure(String name) {
         super.formStructure(name);
+        var pState = patternStates.get(name);
         for (var part : getParts()) {
             if (!PartAbility.STEAM.isApplicable(part.self().getDefinition().getBlock())) continue;
             var handlers = part.getRecipeHandlers();
@@ -83,6 +91,7 @@ public class SteamParallelMultiblockMachine extends WorkableMultiblockMachine im
             }
         }
         if (steamEnergy == null) { // No steam hatch found
+            pState.setError(new PatternStringError("gtceu.predicate_error.steam.missing_steam_hatch"));
             invalidateStructure(name);
         }
     }
@@ -129,6 +138,7 @@ public class SteamParallelMultiblockMachine extends WorkableMultiblockMachine im
     @Override
     public void addDisplayText(List<Component> textList) {
         IDisplayUIMachine.super.addDisplayText(textList);
+        var pState = patternStates.get(DEFAULT_STRUCTURE);
         if (isFormed()) {
             if (steamEnergy != null && steamEnergy.getCapacity() > 0) {
                 long steamStored = steamEnergy.getStored();
@@ -156,6 +166,8 @@ public class SteamParallelMultiblockMachine extends WorkableMultiblockMachine im
                 textList.add(Component.translatable("gtceu.multiblock.steam.low_steam")
                         .setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
             }
+        } else if (pState.hasError()) {
+            textList.addAll(pState.getError().getErrorInfo());
         }
     }
 

@@ -59,12 +59,12 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
 
     @Override
     public void formStructure(String name) {
-        var patternState = patternStates.get(name);
+        var pState = patternStates.get(name);
         super.formStructure(name);
         for (IMultiPart part : getParts()) {
             if (part instanceof IObjectHolder iObjectHolder) {
                 if (iObjectHolder.getFrontFacing() != getFrontFacing().getOpposite()) {
-                    patternState.setError(new PatternStringError("gtceu.object_holder.direction"));
+                    pState.setError(new PatternStringError("gtceu.predicate_error.object_holder.direction"));
                     invalidateStructure(name);
                     return;
                 }
@@ -78,8 +78,14 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
         }
 
         // should never happen, but would rather do this than have an obscure NPE
-        if (computationProvider == null || objectHolder == null) {
-            invalidateStructure();
+        if (computationProvider == null) {
+            pState.setError(new PatternStringError("gtceu.predicate_error.research.missing_computation"));
+            invalidateStructure(name);
+        }
+
+        if (objectHolder == null) {
+            pState.setError(new PatternStringError("gtceu.predicate_error.research.missing_object_holder"));
+            invalidateStructure(name);
         }
 
     }
@@ -96,7 +102,7 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
             }
         }
         if (objHolder != null && objHolder.getFrontFacing() != getFrontFacing().getOpposite()) {
-            patternState.setError(new PatternStringError("gtceu.object_holder.direction"));
+            patternState.setError(new PatternStringError("gtceu.predicate_error.object_holder.direction"));
             invalidateStructure(name);
         }
         return patternState;

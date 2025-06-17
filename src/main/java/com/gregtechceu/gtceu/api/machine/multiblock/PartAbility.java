@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.api.machine.multiblock;
 
 import com.gregtechceu.gtceu.utils.memoization.GTMemoizer;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import net.minecraft.world.level.block.Block;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -56,7 +57,7 @@ public class PartAbility {
     /**
      * tier -> available blocks
      */
-    private final Int2ObjectMap<Set<Block>> registry = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<List<Block>> registry = new Int2ObjectLinkedOpenHashMap<>();
 
     private final Supplier<Collection<Block>> allBlocks = GTMemoizer
             .memoize(() -> registry.values().stream().flatMap(Collection::stream).toList());
@@ -69,7 +70,7 @@ public class PartAbility {
     }
 
     public void register(int tier, Block block) {
-        registry.computeIfAbsent(tier, T -> new HashSet<>()).add(block);
+        registry.computeIfAbsent(tier, T -> new ArrayList<>()).add(block);
     }
 
     public Collection<Block> getAllBlocks() {

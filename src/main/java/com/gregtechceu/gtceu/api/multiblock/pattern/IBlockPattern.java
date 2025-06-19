@@ -2,19 +2,17 @@ package com.gregtechceu.gtceu.api.multiblock.pattern;
 
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
-import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectSortedMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Map;
 
 public interface IBlockPattern {
 
@@ -61,8 +59,8 @@ public interface IBlockPattern {
      *         respectively being. The map is sorted using the natural ordering(thus with x, y, z order).
      */
     // TODO move the keyMap to a NBTCompoundTag
-    Long2ObjectSortedMap<TraceabilityPredicate> getDefaultShape(MultiblockControllerMachine src,
-                                                                @NotNull Map<String, String> keyMap);
+    Long2ObjectSortedMap<PatternPredicate> getDefaultShape(MultiblockControllerMachine src,
+                                                           CompoundTag tag);
 
     // void setActivePatternState(PatternState patternState);
 
@@ -102,5 +100,7 @@ public interface IBlockPattern {
     }
 
     default void autobuild(Reference2ObjectMap<String, IBlockPattern> patterns, MultiblockControllerMachine controller,
-                           UseOnContext context) {}
+                           CompoundTag tag, UseOnContext context) {}
+
+    default void retrievePatternInformation(String name, MultiblockControllerMachine controller, CompoundTag tag) {}
 }

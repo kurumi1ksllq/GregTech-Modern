@@ -10,23 +10,35 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
-public class PredicateBlockTag extends SimplePredicate {
+public class PredicateBlockTag extends BasePredicate {
 
     public TagKey<Block> tag;
 
     public PredicateBlockTag(TagKey<Block> tag) {
+        this(null, tag);
+    }
+
+    public PredicateBlockTag(String debugName, TagKey<Block> tag) {
         this.tag = tag;
         if (tag == null) {
-            predicate = state -> PatternError.PLACEHOLDER;
-            candidates = (map) -> new BlockInfo[] { BlockInfo.fromBlock(Blocks.BARRIER) };
+            errorPredicate = state -> PatternError.PLACEHOLDER;
+            candidates = (candidateTag) -> new BlockInfo[] { BlockInfo.fromBlock(Blocks.BARRIER) };
+            this.debugName = "nullTag";
+            return;
         } else {
-            predicate = state -> state.getBlockState().is(tag) ? null : PatternError.PLACEHOLDER;
-            candidates = (map) -> BuiltInRegistries.BLOCK.getTag(tag)
+            errorPredicate = state -> state.getBlockState().is(tag) ? null : PatternError.PLACEHOLDER;
+            candidates = (candidateTag) -> BuiltInRegistries.BLOCK.getTag(tag)
                     .stream()
                     .flatMap(HolderSet.Named::stream)
                     .map(Holder::value)
                     .map(BlockInfo::fromBlock)
                     .toArray(BlockInfo[]::new);
+        }
+
+        if (debugName == null) {
+            this.debugName = tag.registry().location() + "/" + tag.location();
+        } else {
+            this.debugName = debugName;
         }
     }
 }

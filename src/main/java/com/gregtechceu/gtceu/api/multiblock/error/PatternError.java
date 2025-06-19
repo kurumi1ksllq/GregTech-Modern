@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.api.multiblock.error;
 
-import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
 import com.gregtechceu.gtceu.api.multiblock.pattern.CurrentBlockInfo;
-import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
+import com.gregtechceu.gtceu.api.multiblock.predicates.BasePredicate;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -34,11 +34,11 @@ public class PatternError {
         this.candidates = candidates;
     }
 
-    public PatternError(BlockPos pos, TraceabilityPredicate predicate) {
+    public PatternError(BlockPos pos, PatternPredicate predicate) {
         this(pos, predicate.getCandidates());
     }
 
-    public PatternError(BlockPos pos, SimplePredicate failingPredicate) {
+    public PatternError(BlockPos pos, BasePredicate failingPredicate) {
         this(pos, Collections.singletonList(failingPredicate.getCandidates()));
     }
 

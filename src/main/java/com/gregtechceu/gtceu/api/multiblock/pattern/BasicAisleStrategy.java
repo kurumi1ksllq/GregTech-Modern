@@ -4,13 +4,13 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.utils.GTStringUtils;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -92,25 +92,25 @@ public class BasicAisleStrategy extends AisleStrategy {
     }
 
     @Override
-    public int @NotNull [] getDefaultAisles(@Nullable Map<String, String> map) {
+    public int @NotNull [] getDefaultAisles(CompoundTag tag) {
         IntList list = new IntArrayList();
         for (int i = 0; i < multiAisles.size(); i++) {
             var multi = multiAisles.get(i);
             int multiRepeats = 0;
-            if (map == null) {
+            if (tag.isEmpty()) {
                 multiRepeats = multi.minRepeats;
             } else {
-                multiRepeats = Mth.clamp(GTStringUtils.parseInt(map.get("multi." + 1)), multi.minRepeats,
+                multiRepeats = Mth.clamp(GTStringUtils.parseInt(tag.getString("multi." + 1)), multi.minRepeats,
                         multi.maxRepeats);
             }
             for (int j = 0; j < multiRepeats; j++) {
                 for (int k = multi.startInclusive; k < multi.endExclusive; k++) {
                     int aisleRepeats = 0;
-                    if (map == null) {
+                    if (tag.isEmpty()) {
                         aisleRepeats = aisles.get(k).minRepeats;
                     } else {
                         aisleRepeats = Mth.clamp(
-                                GTStringUtils.parseInt(map.get("multi." + i + "." + (k - multi.startInclusive))),
+                                GTStringUtils.parseInt(tag.getString("multi." + i + "." + (k - multi.startInclusive))),
                                 aisles.get(k).minRepeats, aisles.get(k).maxRepeats);
                     }
                     for (int l = 0; l < aisleRepeats; l++) {

@@ -6,8 +6,8 @@ import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
+import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
-import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
 import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryExpandablePattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
@@ -125,7 +125,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     @Override
     public IBlockPattern createStructurePattern() {
         var floor = Predicates.blocks(Blocks.BRICKS);
-        var logs = TraceabilityPredicate.AIR.or(logPredicate());
+        var logs = PatternPredicate.AIR.or(logPredicate());
         var walls = wallPredicate();
 
         updateDimensions();
@@ -151,7 +151,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
                     // char dir is front, so its bounds[4] and bounds[5]
                     if (bp.getZ() == b[4] || bp.getZ() == -b[5]) intersects++;
 
-                    if (intersects >= 2) return TraceabilityPredicate.ANY;
+                    if (intersects >= 2) return PatternPredicate.ANY;
 
                     if (intersects == 1) {
                         if (bottomAisle) return floor;
@@ -162,8 +162,8 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
                 .build();
     }
 
-    private TraceabilityPredicate wallPredicate() {
-        return new TraceabilityPredicate(
+    private PatternPredicate wallPredicate() {
+        return new PatternPredicate("Wall Blocks",
                 multiblockState -> WALL_BLOCKS.contains(multiblockState.getBlockState().getBlock()) ?
                         null : new PatternStringError("gtceu.predicate_error.charcoal.walls"),
                 map -> WALL_BLOCKS.stream()
@@ -171,8 +171,8 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
                         .toArray(BlockInfo[]::new));
     }
 
-    private TraceabilityPredicate logPredicate() {
-        return new TraceabilityPredicate(multiblockState -> {
+    private PatternPredicate logPredicate() {
+        return new PatternPredicate(multiblockState -> {
             boolean match = multiblockState.getBlockState().is(BlockTags.LOGS_THAT_BURN);
             return match ? null : new PatternStringError("gtceu.predicate_error.charcoal.logs");
         }, null);

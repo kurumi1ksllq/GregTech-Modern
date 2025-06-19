@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
-import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.utils.QuadFunction;
 
@@ -13,7 +13,7 @@ import java.util.function.BiFunction;
 public class FactoryExpandablePattern {
 
     protected QuadFunction<Level, BlockPos.MutableBlockPos, Direction, Direction, int[]> boundsFunc;
-    protected BiFunction<BlockPos.MutableBlockPos, int[], TraceabilityPredicate> predicateFunc;
+    protected BiFunction<BlockPos.MutableBlockPos, int[], PatternPredicate> predicateFunc;
     protected final RelativeDirection[] directions = new RelativeDirection[3];
 
     private FactoryExpandablePattern(RelativeDirection aisleDir, RelativeDirection stringDir,
@@ -38,7 +38,7 @@ public class FactoryExpandablePattern {
         return this;
     }
 
-    public FactoryExpandablePattern predicateFunction(BiFunction<BlockPos.MutableBlockPos, int[], TraceabilityPredicate> func) {
+    public FactoryExpandablePattern predicateFunction(BiFunction<BlockPos.MutableBlockPos, int[], PatternPredicate> func) {
         this.predicateFunc = func;
         return this;
     }

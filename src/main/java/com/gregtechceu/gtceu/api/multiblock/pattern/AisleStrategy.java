@@ -4,12 +4,11 @@ import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Map;
 
 public abstract class AisleStrategy {
 
@@ -29,13 +28,13 @@ public abstract class AisleStrategy {
     public abstract boolean check(PatternState state, boolean flip);
 
     /**
-     * Gets the order in which aisles should be displayed, or built in case of autobuild.
+     * Gets the order in which aisles should be displayed (JEI) or built (terminal auto builder).
      *
-     * @param map The map, the same one that is passed through
-     *            {@link stuff}
+     * @param tag The tag information, the same one that is passed through
+     *            {@link IBlockPattern#autobuild}
      * @return Array where the i-th element specifies that at offset i there would be aisle a_i
      */
-    public abstract int @NotNull [] getDefaultAisles(@Nullable Map<String, String> map);
+    public abstract int @NotNull [] getDefaultAisles(CompoundTag tag);
 
     /**
      * Called at the start of a structure check.

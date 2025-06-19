@@ -21,8 +21,8 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMa
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
+import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
-import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.FilterMatchingError;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
@@ -526,7 +526,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     }
 
     @NotNull
-    protected static TraceabilityPredicate doorPredicate() {
+    protected static PatternPredicate doorPredicate() {
         return Predicates.custom(
                 blockWorldState -> blockWorldState.getBlockState().getBlock() instanceof DoorBlock ? null :
                         PatternError.PLACEHOLDER,
@@ -534,13 +534,13 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
                         Blocks.IRON_DOOR.defaultBlockState().setValue(DoorBlock.HALF, DoubleBlockHalf.UPPER)) });
     }
 
-    private TraceabilityPredicate getValidFloorBlocks() {
+    private PatternPredicate getValidFloorBlocks() {
         return Predicates.blockTag(CustomTags.CLEANROOM_FLOORS);
     }
 
     @NotNull
-    protected TraceabilityPredicate innerPredicate() {
-        return new TraceabilityPredicate(blockWorldState -> {
+    protected PatternPredicate innerPredicate() {
+        return new PatternPredicate(blockWorldState -> {
             // all non-GTMachines are allowed inside by default
             BlockEntity blockEntity = blockWorldState.getTileEntity();
             if (blockEntity instanceof IMachineBlockEntity machineBlockEntity) {

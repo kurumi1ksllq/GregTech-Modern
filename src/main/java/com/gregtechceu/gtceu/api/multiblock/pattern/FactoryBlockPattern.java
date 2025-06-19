@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
-import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 
 import com.google.common.base.Joiner;
@@ -48,7 +48,7 @@ public class FactoryBlockPattern {
 
     private final List<PatternAisle> aisles = new ArrayList<>();
 
-    private final Char2ObjectMap<TraceabilityPredicate> symbolMap = new Char2ObjectOpenHashMap<>();
+    private final Char2ObjectMap<PatternPredicate> symbolMap = new Char2ObjectOpenHashMap<>();
 
     private final RelativeDirection[] directions = new RelativeDirection[3];
 
@@ -57,7 +57,7 @@ public class FactoryBlockPattern {
         directions[1] = stringDir;
         directions[2] = charDir;
         RelativeDirection.validateFacingsArray(directions);
-        this.symbolMap.put(' ', TraceabilityPredicate.ANY);
+        this.symbolMap.put(' ', PatternPredicate.ANY);
     }
 
     public FactoryBlockPattern aisleRepeatable(int minRepeats, int maxRepeats, @NotNull String... aisle) {
@@ -119,7 +119,7 @@ public class FactoryBlockPattern {
         return new FactoryBlockPattern(aisleDir, stringDir, charDir);
     }
 
-    public FactoryBlockPattern where(char symbol, TraceabilityPredicate predicate) {
+    public FactoryBlockPattern where(char symbol, PatternPredicate predicate) {
         this.symbolMap.put(symbol, predicate);
         if (predicate.isController()) centerChar = symbol;
         return this;

@@ -5,16 +5,17 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
-import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
 import com.gregtechceu.gtceu.api.multiblock.error.SinglePredicateError;
-import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
+import com.gregtechceu.gtceu.api.multiblock.predicates.BasePredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -47,12 +48,12 @@ public class BlockPattern implements IBlockPattern {
     protected final PatternAisle[] aisles;
     @Getter
     protected final AisleStrategy aisleStrategy;
-    protected final Char2ObjectMap<TraceabilityPredicate> predicates;
+    protected final Char2ObjectMap<PatternPredicate> predicates;
 
     public BlockPattern(@NotNull PatternAisle @NotNull [] aisles, @NotNull AisleStrategy aisleStrategy,
                         int @NotNull [] dimensions, @NotNull RelativeDirection @NotNull [] directions,
                         @Nullable OriginOffset offset, @Nullable OriginOffset anchorOffset,
-                        @NotNull Char2ObjectMap<@NotNull TraceabilityPredicate> predicates,
+                        @NotNull Char2ObjectMap<@NotNull PatternPredicate> predicates,
                         char centerChar) {
         this.aisles = aisles;
         this.aisleStrategy = aisleStrategy;
@@ -166,7 +167,7 @@ public class BlockPattern implements IBlockPattern {
         aisleStrategy.start(controllerPos, frontFacing, upwardsFacing);
         if (!aisleStrategy.check(patternState, isFlipped)) return false;
 
-        for (Object2IntMap.Entry<SimplePredicate> entry : patternState.globalCount.object2IntEntrySet()) {
+        for (Object2IntMap.Entry<BasePredicate> entry : patternState.globalCount.object2IntEntrySet()) {
             if (entry.getIntValue() < entry.getKey().minCount) {
                 patternState
                         .setError(new SinglePredicateError(entry.getKey(), SinglePredicateError.ErrorType.MIN_COUNT));
@@ -210,9 +211,9 @@ public class BlockPattern implements IBlockPattern {
         for (int stringI = 0; stringI < dimensions[1]; stringI++) {
             for (int charI = 0; charI < dimensions[2]; charI++) {
                 patternState.cbi.setCurrentPos(charPos);
-                TraceabilityPredicate pred = predicates.get(aisle.charAt(stringI, charI));
+                PatternPredicate pred = predicates.get(aisle.charAt(stringI, charI));
 
-                if (!pred.equals(TraceabilityPredicate.ANY)) {
+                if (!pred.equals(PatternPredicate.ANY)) {
                     var be = patternState.cbi.retrieveCurrentBlockEntity();
                     var state = patternState.cbi.retrieveCurrentBlockState();
                     patternState.cache.put(charPos.asLong(), new BlockInfo(state, be));
@@ -232,7 +233,7 @@ public class BlockPattern implements IBlockPattern {
             charPos.set(stringStart);
         }
 
-        for (Object2IntMap.Entry<SimplePredicate> entry : patternState.layerCount.object2IntEntrySet()) {
+        for (Object2IntMap.Entry<BasePredicate> entry : patternState.layerCount.object2IntEntrySet()) {
             if (entry.getIntValue() < entry.getKey().minLayerCount) {
                 patternState.setError(
                         new SinglePredicateError(entry.getKey(), SinglePredicateError.ErrorType.MIN_LAYER_COUNT));
@@ -248,9 +249,9 @@ public class BlockPattern implements IBlockPattern {
     }
 
     @Override
-    public Long2ObjectSortedMap<TraceabilityPredicate> getDefaultShape(MultiblockControllerMachine src,
-                                                                       @Nullable Map<String, String> keyMap) {
-        Long2ObjectSortedMap<TraceabilityPredicate> map = new Long2ObjectRBTreeMap<>();
+    public Long2ObjectSortedMap<PatternPredicate> getDefaultShape(MultiblockControllerMachine src,
+                                                                  CompoundTag tag) {
+        Long2ObjectSortedMap<PatternPredicate> map = new Long2ObjectRBTreeMap<>();
         Direction absoluteAisle = directions[0].getRelativeFacing(src.getFrontFacing(), src.getUpwardsFacing());
         Direction absoluteString = directions[1].getRelativeFacing(src.getFrontFacing(), src.getUpwardsFacing());
         Direction absoluteChar = directions[2].getRelativeFacing(src.getFrontFacing(), src.getUpwardsFacing());
@@ -259,12 +260,12 @@ public class BlockPattern implements IBlockPattern {
         BlockPos.MutableBlockPos start = startPos(pos, src.getFrontFacing(), src.getUpwardsFacing(), false);
         BlockPos.MutableBlockPos serial = start.mutable();
 
-        int[] order = aisleStrategy.getDefaultAisles(keyMap);
+        int[] order = aisleStrategy.getDefaultAisles(tag);
         for (int i = 0; i < order.length; i++) {
             for (int j = 0; j < dimensions[1]; j++) {
                 for (int k = 0; k < dimensions[2]; k++) {
-                    TraceabilityPredicate pred = predicates.get(aisles[order[i]].charAt(j, k));
-                    if (!pred.equals(TraceabilityPredicate.ANY))
+                    PatternPredicate pred = predicates.get(aisles[order[i]].charAt(j, k));
+                    if (!pred.equals(PatternPredicate.ANY))
                         map.put(serial.asLong(), pred);
                     serial.move(absoluteChar);
                 }
@@ -292,14 +293,14 @@ public class BlockPattern implements IBlockPattern {
 
     @Override
     public void autobuild(Reference2ObjectMap<String, IBlockPattern> patterns, MultiblockControllerMachine controller,
-                          UseOnContext context) {
-        var predicates = getDefaultShape(controller, null);
+                          CompoundTag tag, UseOnContext context) {
+        var predicates = getDefaultShape(controller, tag);
 
         var level = context.getLevel();
 
-        Object2IntMap<TraceabilityPredicate> predicateIndex = new Object2IntOpenHashMap<>();
-        Object2IntMap<SimplePredicate> globalCache = new Object2IntOpenHashMap<>();
-        Map<SimplePredicate, BlockInfo> cache = new HashMap<>();
+        Object2IntMap<PatternPredicate> predicateIndex = new Object2IntOpenHashMap<>();
+        Object2IntMap<BasePredicate> globalCache = new Object2IntOpenHashMap<>();
+        Map<BasePredicate, BlockInfo> cache = new HashMap<>();
 
         BiPredicate<Long, BlockInfo> placePredicate = (l, info) -> {
             BlockPos p = BlockPos.of(l);
@@ -344,17 +345,17 @@ public class BlockPattern implements IBlockPattern {
 
         for (var entry : predicates.long2ObjectEntrySet()) {
             var pred = entry.getValue();
-            if (predicateIndex.getInt(pred) >= pred.simple.size()) continue;
+            if (predicateIndex.getInt(pred) >= pred.predicateList.size()) continue;
 
             int pointer = predicateIndex.getInt(pred);
-            SimplePredicate simplePred = pred.simple.get(pointer);
+            BasePredicate simplePred = pred.predicateList.get(pointer);
             int count = globalCache.getInt(simplePred);
 
             try {
                 while ((simplePred.previewCount == -1 || count == simplePred.previewCount) &&
                         (simplePred.minCount == -1 || count == simplePred.minCount)) {
                     pointer++;
-                    simplePred = pred.simple.get(pointer);
+                    simplePred = pred.predicateList.get(pointer);
                     count = globalCache.getInt(simplePred);
                 }
                 predicateIndex.put(pred, pointer);
@@ -366,7 +367,7 @@ public class BlockPattern implements IBlockPattern {
             if (simplePred.candidates == null) continue;
 
             var finalSimple = simplePred;
-            cache.computeIfAbsent(simplePred, k -> finalSimple.candidates.apply(null)[0]);
+            cache.computeIfAbsent(simplePred, k -> finalSimple.candidates.apply(tag)[0]);
 
             if (!placePredicate.test(entry.getLongKey(), cache.get(simplePred))) return;
             entry.setValue(null);
@@ -375,25 +376,51 @@ public class BlockPattern implements IBlockPattern {
 
         for (var entry : predicates.long2ObjectEntrySet()) {
             var pred = entry.getValue();
-            if (pred == null || predicateIndex.getInt(pred) >= pred.simple.size()) continue;
+            if (pred == null || predicateIndex.getInt(pred) >= pred.predicateList.size()) continue;
 
-            SimplePredicate simplePred = pred.simple.get(predicateIndex.getInt(pred));
+            BasePredicate simplePred = pred.predicateList.get(predicateIndex.getInt(pred));
             int count = globalCache.getInt(simplePred);
 
             while (count == simplePred.previewCount || count == simplePred.maxCount) {
                 int newIdx = predicateIndex.mergeInt(pred, 1, Integer::sum);
-                if (newIdx >= pred.simple.size()) {
+                if (newIdx >= pred.predicateList.size()) {
                     GTCEu.LOGGER.warn("failed to generate default structure pattern");
                     return;
                 }
-                simplePred = pred.simple.get(newIdx);
+                simplePred = pred.predicateList.get(newIdx);
                 count = globalCache.getInt(simplePred);
             }
             globalCache.mergeInt(simplePred, 1, Integer::sum);
             if (simplePred.candidates == null) continue;
             var finalSimple = simplePred;
-            cache.computeIfAbsent(simplePred, k -> finalSimple.candidates.apply(null)[0]);
+            cache.computeIfAbsent(simplePred, k -> finalSimple.candidates.apply(tag)[0]);
             if (!placePredicate.test(entry.getLongKey(), cache.get(simplePred))) return;
+        }
+    }
+
+    public void retrievePatternInformation(String name, MultiblockControllerMachine controller, CompoundTag tag) {
+        String controllerName = controller.getDefinition().getName();
+        tag.putString("name", controllerName + "#" + name);
+
+        for (var mapping : predicates.char2ObjectEntrySet()) {
+            var predicate = mapping.getValue();
+            if (predicate.equals(PatternPredicate.ANY)) continue;
+
+            if (predicate.predicateList.size() == 1) {
+                CompoundTag predicateTag = new CompoundTag();
+
+                BasePredicate simplePred = predicate.predicateList.get(0);
+                predicateTag.putInt("min", simplePred.minCount);
+                predicateTag.putInt("max", simplePred.maxCount);
+                predicateTag.putInt("minLayer", simplePred.minLayerCount);
+                predicateTag.putInt("maxLayer", simplePred.maxLayerCount);
+
+                tag.put(simplePred.getPredicateName(), predicateTag);
+            }
+
+            if (predicate.predicateList.size() > 1) {
+
+            }
         }
     }
 

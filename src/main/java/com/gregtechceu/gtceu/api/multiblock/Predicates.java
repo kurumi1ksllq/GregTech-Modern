@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.multiblock;
 
 import com.gregtechceu.gtceu.api.GTCEuAPI;
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.ActiveBlock;
 import com.gregtechceu.gtceu.api.block.IMachineBlock;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
@@ -8,6 +9,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
 import com.gregtechceu.gtceu.api.multiblock.pattern.CurrentBlockInfo;
@@ -18,6 +20,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
@@ -33,11 +36,15 @@ import java.util.function.Function;
 
 public class Predicates {
 
-    public static TraceabilityPredicate controller(TraceabilityPredicate predicate) {
+    public static PatternPredicate controller(MultiblockMachineDefinition def) {
+        return controller(blocks(def.getBlock()));
+    }
+
+    public static PatternPredicate controller(PatternPredicate predicate) {
         return predicate.setController();
     }
 
-    public static TraceabilityPredicate states(BlockState... allowedStates) {
+    public static PatternPredicate states(BlockState... allowedStates) {
         var candidates = new ArrayList<BlockState>();
         for (BlockState state : allowedStates) {
             candidates.add(state);
@@ -45,64 +52,78 @@ public class Predicates {
                 candidates.add(block.changeActive(state, !block.isActive(state)));
             }
         }
-        return new TraceabilityPredicate(new PredicateStates(candidates.toArray(BlockState[]::new)));
+        return new PatternPredicate(new PredicateStates(candidates.toArray(BlockState[]::new)));
     }
 
-    public static TraceabilityPredicate blocks(Block... blocks) {
-        return new TraceabilityPredicate(new PredicateBlocks(blocks));
+    public static PatternPredicate blocks(String debugName, Block... blocks) {
+        return new PatternPredicate(new PredicateBlocks(debugName, blocks));
     }
 
-    public static TraceabilityPredicate blocks(IMachineBlock... blocks) {
-        return new TraceabilityPredicate(
+    public static PatternPredicate blocks(Block... blocks) {
+        return new PatternPredicate(new PredicateBlocks(blocks));
+    }
+
+    public static PatternPredicate blocks(IMachineBlock... blocks) {
+        return new PatternPredicate(
                 new PredicateBlocks(Arrays.stream(blocks).map(IMachineBlock::self).toArray(Block[]::new)));
     }
 
-    public static TraceabilityPredicate blockTag(TagKey<Block> tag) {
-        return new TraceabilityPredicate(new PredicateBlockTag(tag));
+    public static PatternPredicate blockTag(TagKey<Block> tag) {
+        return new PatternPredicate(new PredicateBlockTag(tag));
     }
 
-    public static TraceabilityPredicate fluids(Fluid... fluids) {
-        return new TraceabilityPredicate(new PredicateFluids(fluids));
+    public static PatternPredicate fluids(Fluid... fluids) {
+        return new PatternPredicate(new PredicateFluids(fluids));
     }
 
-    public static TraceabilityPredicate fluidTag(TagKey<Fluid> tag) {
-        return new TraceabilityPredicate(new PredicateFluidTag(tag));
+    public static PatternPredicate fluidTag(TagKey<Fluid> tag) {
+        return new PatternPredicate(new PredicateFluidTag(tag));
     }
 
-    public static TraceabilityPredicate custom(Function<CurrentBlockInfo, PatternError> predicate,
-                                               Function<Map<String, String>, BlockInfo[]> candidates) {
-        return new TraceabilityPredicate(predicate, candidates);
+    public static PatternPredicate custom(Function<CurrentBlockInfo, PatternError> predicate,
+                                          Function<CompoundTag, BlockInfo[]> candidates) {
+        return new PatternPredicate(predicate, candidates);
     }
 
-    public static TraceabilityPredicate any() {
-        return new TraceabilityPredicate(TraceabilityPredicate.ANY);
+    public static PatternPredicate any() {
+        return new PatternPredicate(PatternPredicate.ANY);
     }
 
-    public static TraceabilityPredicate air() {
-        return new TraceabilityPredicate(TraceabilityPredicate.AIR);
+    public static PatternPredicate air() {
+        return new PatternPredicate(PatternPredicate.AIR);
     }
 
-    public static TraceabilityPredicate abilities(PartAbility... abilities) {
-        return blocks(Arrays.stream(abilities).map(PartAbility::getAllBlocks).flatMap(Collection::stream)
+    public static PatternPredicate abilities(PartAbility... abilities) {
+        StringJoiner sb = new StringJoiner("-");
+        for (PartAbility ability : abilities) {
+            sb.add(ability.getName());
+        }
+        String debugName = sb.toString();
+
+        return blocks(debugName, Arrays.stream(abilities).map(PartAbility::getAllBlocks).flatMap(Collection::stream)
                 .toArray(Block[]::new));
     }
 
-    public static TraceabilityPredicate ability(PartAbility ability, int... tiers) {
-        return blocks((tiers.length == 0 ? ability.getAllBlocks() : ability.getBlocks(tiers)).toArray(Block[]::new));
+    public static PatternPredicate ability(PartAbility ability, int... tiers) {
+        StringJoiner sb = new StringJoiner("-");
+        for (int tier : tiers) {
+            sb.add(GTValues.VN[tier]);
+        }
+        String debugName = ability.getName() + sb;
+
+        return blocks(debugName,
+                (tiers.length == 0 ? ability.getAllBlocks() : ability.getBlocks(tiers)).toArray(Block[]::new));
     }
 
-    public static TraceabilityPredicate autoAbilities(GTRecipeType... recipeType) {
+    public static PatternPredicate autoAbilities(GTRecipeType... recipeType) {
         return autoAbilities(recipeType, true, true, true, true, true, true);
     }
 
-    public static TraceabilityPredicate autoAbilities(GTRecipeType[] recipeType,
-                                                      boolean checkEnergyIn,
-                                                      boolean checkEnergyOut,
-                                                      boolean checkItemIn,
-                                                      boolean checkItemOut,
-                                                      boolean checkFluidIn,
-                                                      boolean checkFluidOut) {
-        TraceabilityPredicate predicate = new TraceabilityPredicate();
+    public static PatternPredicate autoAbilities(GTRecipeType[] recipeType,
+                                                 boolean checkEnergyIn, boolean checkEnergyOut,
+                                                 boolean checkItemIn, boolean checkItemOut,
+                                                 boolean checkFluidIn, boolean checkFluidOut) {
+        PatternPredicate predicate = new PatternPredicate();
 
         if (checkEnergyIn) {
             for (var type : recipeType) {
@@ -157,9 +178,9 @@ public class Predicates {
         return predicate;
     }
 
-    public static TraceabilityPredicate autoAbilities(boolean checkMaintenance, boolean checkMuffler,
-                                                      boolean checkParallel) {
-        TraceabilityPredicate predicate = new TraceabilityPredicate();
+    public static PatternPredicate autoAbilities(boolean checkMaintenance, boolean checkMuffler,
+                                                 boolean checkParallel) {
+        PatternPredicate predicate = new PatternPredicate();
         if (checkMaintenance) {
             predicate = predicate.or(abilities(PartAbility.MAINTENANCE)
                     .setMinGlobalLimited(ConfigHolder.INSTANCE.machines.enableMaintenance ? 1 : 0)
@@ -174,8 +195,8 @@ public class Predicates {
         return predicate;
     }
 
-    public static TraceabilityPredicate heatingCoils() {
-        return new TraceabilityPredicate(worldState -> {
+    public static PatternPredicate heatingCoils() {
+        return new PatternPredicate("Heating Coils", worldState -> {
             var blockState = worldState.getBlockState();
             for (var entry : GTCEuAPI.HEATING_COILS.entrySet()) {
                 if (blockState.is(entry.getValue().get())) {
@@ -195,8 +216,8 @@ public class Predicates {
                 .addTooltips(Component.translatable("gtceu.multiblock.pattern.error.coils"));
     }
 
-    public static TraceabilityPredicate cleanroomFilters() {
-        return new TraceabilityPredicate(worldState -> {
+    public static PatternPredicate cleanroomFilters() {
+        return new PatternPredicate("Cleanroom Filters", worldState -> {
             var blockState = worldState.getBlockState();
             for (var entry : GTCEuAPI.CLEANROOM_FILTERS.entrySet()) {
                 if (blockState.is(entry.getValue().get())) {
@@ -211,8 +232,8 @@ public class Predicates {
                 .addTooltips(Component.translatable("gtceu.multiblock.pattern.error.filters"));
     }
 
-    public static TraceabilityPredicate powerSubstationBatteries() {
-        return new TraceabilityPredicate(worldState -> {
+    public static PatternPredicate powerSubstationBatteries() {
+        return new PatternPredicate("PSS Batteries", worldState -> {
             var state = worldState.getBlockState();
             for (var entry : GTCEuAPI.PSS_BATTERIES.entrySet()) {
                 if (state.is(entry.getValue().get())) {
@@ -252,7 +273,7 @@ public class Predicates {
          */
     }
 
-    public static TraceabilityPredicate dataHatchPredicate(TraceabilityPredicate def) {
+    public static PatternPredicate dataHatchPredicate(PatternPredicate def) {
         // if research is enabled, require the data hatch, otherwise use a grate instead
         if (ConfigHolder.INSTANCE.machines.enableResearch) {
             return abilities(PartAbility.DATA_ACCESS, PartAbility.OPTICAL_DATA_RECEPTION)
@@ -265,7 +286,7 @@ public class Predicates {
     /**
      * Use this predicate for Frames in your Multiblock. Allows for Framed Pipes as well as normal Frame blocks.
      */
-    public static TraceabilityPredicate frames(Material... frameMaterials) {
+    public static PatternPredicate frames(Material... frameMaterials) {
         var frameBlocks = Arrays.stream(frameMaterials)
                 .map(m -> GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, m))
                 .filter(Objects::nonNull)
@@ -273,7 +294,7 @@ public class Predicates {
                 .map(RegistryEntry::get)
                 .toArray(Block[]::new);
         return blocks(frameBlocks)
-                .or(new TraceabilityPredicate(blockWorldState -> {
+                .or(new PatternPredicate(blockWorldState -> {
                     BlockEntity tileEntity = blockWorldState.getTileEntity();
                     if (!(tileEntity instanceof IPipeNode<?, ?> pipeNode)) {
                         return PatternError.PLACEHOLDER;

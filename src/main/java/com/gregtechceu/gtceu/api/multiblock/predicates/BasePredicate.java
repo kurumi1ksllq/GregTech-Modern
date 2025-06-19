@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.api.multiblock.predicates;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
-import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
 import com.gregtechceu.gtceu.api.multiblock.error.SinglePredicateError;
 import com.gregtechceu.gtceu.api.multiblock.pattern.CurrentBlockInfo;
@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.data.lang.LangHandler;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -29,11 +30,11 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class SimplePredicate {
+public class BasePredicate {
 
     @Nullable
-    public Function<Map<String, String>, BlockInfo[]> candidates;
-    public Function<CurrentBlockInfo, PatternError> predicate;
+    public Function<CompoundTag, BlockInfo[]> candidates;
+    public Function<CurrentBlockInfo, PatternError> errorPredicate;
     public List<Component> toolTips;
     public int minCount = -1;
     public int maxCount = -1;
@@ -43,37 +44,38 @@ public class SimplePredicate {
     public boolean disableRenderFormed = false;
     public String nbtParser;
 
-    public String type;
+    protected String debugName;
 
-    public SimplePredicate() {
-        this.type = "Unknown";
+    public BasePredicate() {
+        this.debugName = "Unknown";
     }
 
     /**
-     * @param predicate  The precicate function for being a valid block state or tile entity in a pattern
-     * @param candidates The qualifying blocks or item stacks valid in this predicate based on information from either
-     *                   the
-     *                   {@link com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern#autobuild(Reference2ObjectMap, MultiblockControllerMachine, UseOnContext)
-     *                   Terminal Auto-Builder},
-     *                   {@link com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer#renderInWorldPreview(PoseStack, Camera, float)
-     *                   In-world Preview} or
-     *                   {@link com.gregtechceu.gtceu.api.gui.widget.PatternPreviewWidget#getPatternWidget(MultiblockMachineDefinition)
-     *                   XEI Preview}
+     * @param errorPredicate The precicate function for being a valid block state or tile entity in a pattern
+     * @param candidates     The qualifying blocks or item stacks valid in this predicate based on information from
+     *                       either
+     *                       the
+     *                       {@link com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern#autobuild(Reference2ObjectMap, MultiblockControllerMachine, UseOnContext)
+     *                       Terminal Auto-Builder},
+     *                       {@link com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer#renderInWorldPreview(PoseStack, Camera, float)
+     *                       In-world Preview} or
+     *                       {@link com.gregtechceu.gtceu.api.gui.widget.PatternPreviewWidget#getPatternWidget(MultiblockMachineDefinition)
+     *                       XEI Preview}
      */
-    public SimplePredicate(Function<CurrentBlockInfo, PatternError> predicate,
-                           @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
-        this("Unknown", predicate, candidates);
+    public BasePredicate(Function<CurrentBlockInfo, PatternError> errorPredicate,
+                         @Nullable Function<CompoundTag, BlockInfo[]> candidates) {
+        this("Unknown", errorPredicate, candidates);
     }
 
-    public SimplePredicate(String type, Function<CurrentBlockInfo, PatternError> predicate,
-                           @Nullable Function<Map<String, String>, BlockInfo[]> candidates) {
-        this.type = type;
-        this.predicate = predicate;
+    public BasePredicate(String debugName, Function<CurrentBlockInfo, PatternError> errorPredicate,
+                         @Nullable Function<CompoundTag, BlockInfo[]> candidates) {
+        this.debugName = debugName;
+        this.errorPredicate = errorPredicate;
         this.candidates = candidates;
     }
 
     @OnlyIn(Dist.CLIENT)
-    public List<Component> getToolTips(TraceabilityPredicate predicates) {
+    public List<Component> getToolTips(PatternPredicate predicates) {
         List<Component> result = new ArrayList<>();
         if (toolTips != null) {
             result.addAll(toolTips);
@@ -101,12 +103,12 @@ public class SimplePredicate {
     }
 
     public PatternError testRaw(CurrentBlockInfo currBlock) {
-        return predicate.apply(currBlock);
+        return errorPredicate.apply(currBlock);
     }
 
     public PatternError testLimited(CurrentBlockInfo currBlock,
-                                    Object2IntMap<SimplePredicate> globalCache,
-                                    Object2IntMap<SimplePredicate> layerCache) {
+                                    Object2IntMap<BasePredicate> globalCache,
+                                    Object2IntMap<BasePredicate> layerCache) {
         PatternError error = testGlobal(currBlock, globalCache, layerCache);
         if (error != null) return error;
         return testLayer(currBlock, layerCache);
@@ -147,9 +149,9 @@ public class SimplePredicate {
      */
 
     public PatternError testGlobal(CurrentBlockInfo currBlock,
-                                   Object2IntMap<SimplePredicate> globalCache,
-                                   Object2IntMap<SimplePredicate> layerCache) {
-        PatternError res = predicate.apply(currBlock);
+                                   Object2IntMap<BasePredicate> globalCache,
+                                   Object2IntMap<BasePredicate> layerCache) {
+        PatternError res = errorPredicate.apply(currBlock);
         // if (!globalCache.containsKey(this)) globalCache.put(this, 0);
         globalCache.mergeInt(this, (res == null ? 1 : 0), Integer::sum);
         if ((minCount == -1 && maxCount == -1) || res != null || layerCache == null) return res;
@@ -159,8 +161,8 @@ public class SimplePredicate {
         return new SinglePredicateError(this, SinglePredicateError.ErrorType.MAX_COUNT);
     }
 
-    public PatternError testLayer(CurrentBlockInfo currBlock, Object2IntMap<SimplePredicate> layerCache) {
-        PatternError res = predicate.apply(currBlock);
+    public PatternError testLayer(CurrentBlockInfo currBlock, Object2IntMap<BasePredicate> layerCache) {
+        PatternError res = errorPredicate.apply(currBlock);
         if (layerCache == null) return res;
         layerCache.mergeInt(this, (res == null ? 1 : 0), Integer::sum);
         if ((minLayerCount == -1 && maxLayerCount == -1) || res != null) return res;
@@ -171,15 +173,19 @@ public class SimplePredicate {
     public List<ItemStack> getCandidates() {
         if (GTCEu.isClientSide()) {
             return candidates == null ? Collections.emptyList() :
-                    Arrays.stream(this.candidates.apply(Collections.emptyMap()))
+                    Arrays.stream(this.candidates.apply(new CompoundTag()))
                             .filter(info -> info.getBlockState().getBlock() != Blocks.AIR)
                             .map(blockInfo -> blockInfo.getItemStackForm(Minecraft.getInstance().level, BlockPos.ZERO))
                             .collect(Collectors.toList());
         }
         return candidates == null ? Collections.emptyList() :
-                Arrays.stream(this.candidates.apply(Collections.emptyMap()))
+                Arrays.stream(this.candidates.apply(new CompoundTag()))
                         .filter(info -> info.getBlockState().getBlock() != Blocks.AIR)
                         .map(BlockInfo::getItemStackForm)
                         .collect(Collectors.toList());
+    }
+
+    public String getPredicateName() {
+        return debugName;
     }
 }

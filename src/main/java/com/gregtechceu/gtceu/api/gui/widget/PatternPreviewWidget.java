@@ -8,9 +8,9 @@ import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockShapeInfo;
-import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
 import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
-import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
+import com.gregtechceu.gtceu.api.multiblock.predicates.BasePredicate;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.xei.handlers.item.CycleItemStackHandler;
 
@@ -31,6 +31,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -67,7 +68,7 @@ public class PatternPreviewWidget extends WidgetGroup {
     private final DraggableScrollableWidgetGroup scrollableWidgetGroup;
     public final MultiblockMachineDefinition controllerDefinition;
     public final MBPattern[] patterns;
-    private final List<SimplePredicate> predicates;
+    private final List<BasePredicate> predicates;
     private int index;
     public int layer;
     private SlotWidget[] slotWidgets;
@@ -272,10 +273,10 @@ public class PatternPreviewWidget extends WidgetGroup {
 
     private void onPosSelected(BlockPos pos, Direction facing) {
         if (index >= patterns.length || index < 0) return;
-        TraceabilityPredicate predicate = patterns[index].predicateMap.get(pos);
+        PatternPredicate predicate = patterns[index].predicateMap.get(pos);
         if (predicate != null) {
             predicates.clear();
-            predicates.addAll(predicate.simple);
+            predicates.addAll(predicate.predicateList);
             predicates.removeIf(p -> p == null || p.candidates == null); // why it happens?
             if (candidates != null) {
                 for (SlotWidget candidate : candidates) {
@@ -284,11 +285,11 @@ public class PatternPreviewWidget extends WidgetGroup {
             }
             List<List<ItemStack>> candidateStacks = new ArrayList<>();
             List<List<Component>> predicateTips = new ArrayList<>();
-            for (SimplePredicate simplePredicate : predicates) {
-                List<ItemStack> itemStacks = simplePredicate.getCandidates();
+            for (BasePredicate basePredicate : predicates) {
+                List<ItemStack> itemStacks = basePredicate.getCandidates();
                 if (!itemStacks.isEmpty()) {
                     candidateStacks.add(itemStacks);
-                    predicateTips.add(simplePredicate.getToolTips(predicate));
+                    predicateTips.add(basePredicate.getToolTips(predicate));
                 }
             }
             candidates = new SlotWidget[candidateStacks.size()];
@@ -363,12 +364,12 @@ public class PatternPreviewWidget extends WidgetGroup {
         Map<ItemStackKey, PartInfo> parts = gatherBlockDrops(blockMap);
         blockDrops.addAll(parts.keySet());
 
-        Map<BlockPos, TraceabilityPredicate> predicateMap = new HashMap<>();
+        Map<BlockPos, PatternPredicate> predicateMap = new HashMap<>();
         if (controllerBase != null) {
             loadControllerFormed(predicateMap.keySet(), controllerBase);
             for (var patternEntry : controllerBase.getStructurePatterns().entrySet()) {
                 var defaultPredicateMap = patternEntry.getValue()
-                        .getDefaultShape((MultiblockControllerMachine) controllerBase, null);
+                        .getDefaultShape((MultiblockControllerMachine) controllerBase, new CompoundTag());
                 for (var predEntry : defaultPredicateMap.long2ObjectEntrySet()) {
                     predicateMap.put(BlockPos.of(predEntry.getLongKey()), predEntry.getValue());
                 }
@@ -461,7 +462,7 @@ public class PatternPreviewWidget extends WidgetGroup {
         @NotNull
         final List<List<ItemStack>> parts;
         @NotNull
-        final Map<BlockPos, TraceabilityPredicate> predicateMap;
+        final Map<BlockPos, PatternPredicate> predicateMap;
         @NotNull
         final Map<BlockPos, BlockInfo> blockMap;
         @NotNull
@@ -469,7 +470,7 @@ public class PatternPreviewWidget extends WidgetGroup {
         final int maxY, minY;
 
         public MBPattern(@NotNull Map<BlockPos, BlockInfo> blockMap, @NotNull List<List<ItemStack>> parts,
-                         @NotNull Map<BlockPos, TraceabilityPredicate> predicateMap,
+                         @NotNull Map<BlockPos, PatternPredicate> predicateMap,
                          @NotNull IMultiController controllerBase) {
             this.parts = parts;
             this.blockMap = blockMap;

@@ -5,7 +5,7 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockWorldSavedData;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
-import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
+import com.gregtechceu.gtceu.api.multiblock.predicates.BasePredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
@@ -59,8 +59,8 @@ public class PatternState {
     @Getter
     @NotNull
     protected CurrentBlockInfo cbi = new CurrentBlockInfo();
-    protected final Object2IntMap<SimplePredicate> globalCount = new Object2IntOpenHashMap<>();
-    protected final Object2IntMap<SimplePredicate> layerCount = new Object2IntOpenHashMap<>();
+    protected final Object2IntMap<BasePredicate> globalCount = new Object2IntOpenHashMap<>();
+    protected final Object2IntMap<BasePredicate> layerCount = new Object2IntOpenHashMap<>();
     @Getter
     protected final Long2ObjectMap<BlockInfo> cache = new Long2ObjectOpenHashMap<>();
 

@@ -5,10 +5,10 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
-import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
+import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
 import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
 import com.gregtechceu.gtceu.api.multiblock.error.SinglePredicateError;
-import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
+import com.gregtechceu.gtceu.api.multiblock.predicates.BasePredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -16,6 +16,7 @@ import com.gregtechceu.gtceu.utils.QuadFunction;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -37,13 +38,13 @@ import java.util.function.BiPredicate;
 public class ExpandablePattern implements IBlockPattern {
 
     protected final QuadFunction<Level, BlockPos.MutableBlockPos, Direction, Direction, int[]> boundsFunc;
-    protected final BiFunction<BlockPos.MutableBlockPos, int[], TraceabilityPredicate> predicateFunc;
+    protected final BiFunction<BlockPos.MutableBlockPos, int[], PatternPredicate> predicateFunc;
     protected final OriginOffset offset = new OriginOffset();
 
     protected final RelativeDirection[] directions;
 
     public ExpandablePattern(@NotNull QuadFunction<Level, BlockPos.MutableBlockPos, Direction, Direction, int[]> boundsFunc,
-                             @NotNull BiFunction<BlockPos.MutableBlockPos, int[], TraceabilityPredicate> predicateFunc,
+                             @NotNull BiFunction<BlockPos.MutableBlockPos, int[], PatternPredicate> predicateFunc,
                              @NotNull RelativeDirection[] directions) {
         this.boundsFunc = boundsFunc;
         this.predicateFunc = predicateFunc;
@@ -136,7 +137,7 @@ public class ExpandablePattern implements IBlockPattern {
         // aisle count, y is str count, and z is char count.
         for (var pos : BlockPos.betweenClosed(negCorner, posCorner)) {
             BlockPos.MutableBlockPos mPos = pos.mutable();
-            TraceabilityPredicate pred = predicateFunc.apply(mPos, bounds);
+            PatternPredicate pred = predicateFunc.apply(mPos, bounds);
 
             // int[] arr = pos.getAll();
             // this basically reshuffles the coordinates into absolute form from relative form
@@ -146,7 +147,7 @@ public class ExpandablePattern implements IBlockPattern {
             mPos = mPos.offset(translation).mutable();
             patternState.cbi.setCurrentPos(mPos);
 
-            if (!pred.equals(TraceabilityPredicate.ANY)) {
+            if (!pred.equals(PatternPredicate.ANY)) {
                 var bstate = patternState.cbi.retrieveCurrentBlockState();
                 BlockEntity be = patternState.cbi.retrieveCurrentBlockEntity();
                 patternState.cache.put(mPos.asLong(), new BlockInfo(bstate, be));
@@ -173,18 +174,18 @@ public class ExpandablePattern implements IBlockPattern {
     }
 
     @Override
-    public Long2ObjectSortedMap<TraceabilityPredicate> getDefaultShape(MultiblockControllerMachine src,
-                                                                       @NotNull Map<String, String> keyMap) {
+    public Long2ObjectSortedMap<PatternPredicate> getDefaultShape(MultiblockControllerMachine src,
+                                                                  CompoundTag tag) {
         Direction front = src.getFrontFacing();
         Direction up = src.getUpwardsFacing();
 
         int[] bounds = boundsFunc.apply(src.getLevel(), src.getPos().mutable(), front, up);
-        if (keyMap == null) {
+        if (tag.isEmpty()) {
             bounds = new int[] { 0, 4, 2, 2, 2, 2 };
         }
         if (bounds == null) return Long2ObjectSortedMaps.emptyMap();
 
-        Long2ObjectSortedMap<TraceabilityPredicate> predicates = new Long2ObjectRBTreeMap<>();
+        Long2ObjectSortedMap<PatternPredicate> predicates = new Long2ObjectRBTreeMap<>();
 
         BlockPos.MutableBlockPos negCorner = new BlockPos.MutableBlockPos();
         BlockPos.MutableBlockPos posCorner = new BlockPos.MutableBlockPos();
@@ -213,7 +214,7 @@ public class ExpandablePattern implements IBlockPattern {
         for (var pos : BlockPos.betweenClosed(negCorner, posCorner)) {
             BlockPos.MutableBlockPos mPos = pos.mutable();
             BlockPos.MutableBlockPos adjustPos = pos.mutable();
-            TraceabilityPredicate pred = predicateFunc.apply(mPos, bounds);
+            PatternPredicate pred = predicateFunc.apply(mPos, bounds);
 
             // this basically reshuffles the coordinates into absolute form from relative form
             mPos.set(BlockPos.ZERO)
@@ -222,7 +223,7 @@ public class ExpandablePattern implements IBlockPattern {
                     .move(absolutes[2], adjustPos.getZ())
                     .move(translation.getX(), translation.getY(), translation.getZ());
 
-            if (!pred.equals(TraceabilityPredicate.ANY) && !pred.equals(TraceabilityPredicate.AIR)) {
+            if (!pred.equals(PatternPredicate.ANY) && !pred.equals(PatternPredicate.AIR)) {
                 predicates.put(mPos.asLong(), pred);
             }
         }
@@ -236,14 +237,14 @@ public class ExpandablePattern implements IBlockPattern {
 
     @Override
     public void autobuild(Reference2ObjectMap<String, IBlockPattern> patterns, MultiblockControllerMachine controller,
-                          UseOnContext context) {
+                          CompoundTag tag, UseOnContext context) {
         var predicates = getDefaultShape(controller, null);
 
         var level = context.getLevel();
 
-        Object2IntMap<TraceabilityPredicate> predicateIndex = new Object2IntOpenHashMap<>();
-        Object2IntMap<SimplePredicate> globalCache = new Object2IntOpenHashMap<>();
-        Map<SimplePredicate, BlockInfo> cache = new HashMap<>();
+        Object2IntMap<PatternPredicate> predicateIndex = new Object2IntOpenHashMap<>();
+        Object2IntMap<BasePredicate> globalCache = new Object2IntOpenHashMap<>();
+        Map<BasePredicate, BlockInfo> cache = new HashMap<>();
 
         BiPredicate<Long, BlockInfo> placePredicate = (l, info) -> {
             BlockPos p = BlockPos.of(l);
@@ -288,17 +289,17 @@ public class ExpandablePattern implements IBlockPattern {
 
         for (var entry : predicates.long2ObjectEntrySet()) {
             var pred = entry.getValue();
-            if (predicateIndex.getInt(pred) >= pred.simple.size()) continue;
+            if (predicateIndex.getInt(pred) >= pred.predicateList.size()) continue;
 
             int pointer = predicateIndex.getInt(pred);
-            SimplePredicate simplePred = pred.simple.get(pointer);
+            BasePredicate simplePred = pred.predicateList.get(pointer);
             int count = globalCache.getInt(simplePred);
 
             try {
                 while ((simplePred.previewCount == -1 || count == simplePred.previewCount) &&
                         (simplePred.minCount == -1 || count == simplePred.minCount)) {
                     pointer++;
-                    simplePred = pred.simple.get(pointer);
+                    simplePred = pred.predicateList.get(pointer);
                     count = globalCache.getInt(simplePred);
                 }
                 predicateIndex.put(pred, pointer);
@@ -310,7 +311,7 @@ public class ExpandablePattern implements IBlockPattern {
             if (simplePred.candidates == null) continue;
 
             var finalSimple = simplePred;
-            cache.computeIfAbsent(simplePred, k -> finalSimple.candidates.apply(null)[0]);
+            cache.computeIfAbsent(simplePred, k -> finalSimple.candidates.apply(tag)[0]);
 
             if (!placePredicate.test(entry.getLongKey(), cache.get(simplePred))) return;
             entry.setValue(null);
@@ -319,24 +320,24 @@ public class ExpandablePattern implements IBlockPattern {
 
         for (var entry : predicates.long2ObjectEntrySet()) {
             var pred = entry.getValue();
-            if (pred == null || predicateIndex.getInt(pred) >= pred.simple.size()) continue;
+            if (pred == null || predicateIndex.getInt(pred) >= pred.predicateList.size()) continue;
 
-            SimplePredicate simplePred = pred.simple.get(predicateIndex.getInt(pred));
+            BasePredicate simplePred = pred.predicateList.get(predicateIndex.getInt(pred));
             int count = globalCache.getInt(simplePred);
 
             while (count == simplePred.previewCount || count == simplePred.maxCount) {
                 int newIdx = predicateIndex.mergeInt(pred, 1, Integer::sum);
-                if (newIdx >= pred.simple.size()) {
+                if (newIdx >= pred.predicateList.size()) {
                     GTCEu.LOGGER.warn("failed to generate default structure pattern");
                     return;
                 }
-                simplePred = pred.simple.get(newIdx);
+                simplePred = pred.predicateList.get(newIdx);
                 count = globalCache.getInt(simplePred);
             }
             globalCache.mergeInt(simplePred, 1, Integer::sum);
             if (simplePred.candidates == null) continue;
             var finalSimple = simplePred;
-            cache.computeIfAbsent(simplePred, k -> finalSimple.candidates.apply(null)[0]);
+            cache.computeIfAbsent(simplePred, k -> finalSimple.candidates.apply(tag)[0]);
             if (!placePredicate.test(entry.getLongKey(), cache.get(simplePred))) return;
         }
     }

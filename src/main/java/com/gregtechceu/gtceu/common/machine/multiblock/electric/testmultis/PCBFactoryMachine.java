@@ -3,8 +3,8 @@ package com.gregtechceu.gtceu.common.machine.multiblock.electric.testmultis;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
+import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
-import com.gregtechceu.gtceu.api.multiblock.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
@@ -52,7 +52,7 @@ public class PCBFactoryMachine extends WorkableElectricMultiblockMachine {
                         .aisle("BBBBBBB", "B#####B", "###B###", "##BBB##")
                         .aisle("BBBBBBB", "B#####B", "#######", "#######")
                         .aisle("BBBBBBB", "BBBBBBB", "#######", "#######")
-                        .where('#', TraceabilityPredicate.AIR)
+                        .where('#', PatternPredicate.AIR)
                         .where('B', Predicates.blocks(GTBlocks.CASING_COKE_BRICKS.get()))
                         .where('C', Predicates.blocks(GTBlocks.CASING_ALUMINIUM_FROSTPROOF.get()))
                         .startOffset(OriginOffset.of(RelativeDirection.FRONT, 10))

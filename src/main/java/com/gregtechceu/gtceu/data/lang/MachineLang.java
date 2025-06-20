@@ -7,6 +7,8 @@ import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 public class MachineLang {
 
     protected static void init(RegistrateLangProvider provider) {
+        generateMultiblockKeys(provider);
+
         // Custom machine names
         replace(provider, "block.gtceu.steam_large_turbine", "Large Steam Turbine");
         replace(provider, "block.gtceu.gas_large_turbine", "Large Gas Turbine");
@@ -986,5 +988,83 @@ public class MachineLang {
         provider.add("%s.%s_%s.tooltip".formatted(root, "luv", machine), "§7%s".formatted(midTier));
         provider.add("%s.%s_%s.tooltip".formatted(root, "zpm", machine), "§7%s".formatted(midTier));
         provider.add("%s.%s_%s.tooltip".formatted(root, "uv", machine), "§7%s".formatted(highTier));
+    }
+
+    public static void generateMultiblockKeys(RegistrateLangProvider provider) {
+        provider.add("gtceu.multiblock.work_paused", "Work Paused.");
+        provider.add("gtceu.multiblock.running", "Running perfectly.");
+        provider.add("gtceu.multiblock.idling", "§6Idling.");
+        provider.add("gtceu.multiblock.research_station.researching", "§6Researching.");
+        provider.add("gtceu.multiblock.not_enough_energy", "WARNING: Machine needs more energy.");
+        provider.add("gtceu.multiblock.not_enough_energy_output", "WARNING: Energy Dynamo Tier Too Low!");
+        provider.add("gtceu.multiblock.waiting", "WARNING: Machine is waiting.");
+        provider.add("gtceu.multiblock.progress_percent", "Progress: %s%%");
+        provider.add("gtceu.multiblock.progress", "Progress: %ss / %ss (%s%%)");
+        provider.add("gtceu.multiblock.output_line.0", "%s x §e%s§r (%ss/ea)");
+        provider.add("gtceu.multiblock.output_line.1", "%s x §e%s§r (%s/s)");
+        provider.add("gtceu.multiblock.output_line.2", "%s ≈ §e%s§r (%ss/ea)");
+        provider.add("gtceu.multiblock.output_line.3", "%s ≈ §e%s§r (%s/s)");
+        provider.add("gtceu.multiblock.invalid_structure", "Invalid structure.");
+        provider.add("gtceu.multiblock.invalid_structure.tooltip",
+                "This block is a controller of the multiblock structure. For building help, see structure template in JEI.");
+        provider.add("gtceu.multiblock.validation_failed", "Invalid amount of inputs/outputs.");
+        provider.add("gtceu.multiblock.max_recipe_tier", "Max Recipe Tier: %s");
+        provider.add("gtceu.multiblock.max_recipe_tier_hover", "The maximum tier of recipes that can be run");
+        provider.add("gtceu.multiblock.max_energy_per_tick", "Max EU/t: §a%s (%s§r)");
+        provider.add("gtceu.multiblock.max_energy_per_tick_hover",
+                "The maximum EU/t available for running recipes or overclocking");
+        provider.add("gtceu.multiblock.max_energy_per_tick_amps", "Max EU/t: %s (%sA %s)");
+        provider.add("gtceu.multiblock.energy_consumption", "Energy Usage: %s EU/t (%s)");
+        provider.add("gtceu.multiblock.generation_eu", "Outputting: §a%s EU/t");
+        provider.add("gtceu.multiblock.universal.no_problems", "No Maintenance Problems!");
+        provider.add("gtceu.multiblock.universal.has_problems", "Has Maintenance Problems!");
+        provider.add("gtceu.multiblock.universal.has_problems_header",
+                "Fix the following issues in a Maintenance Hatch:");
+        provider.add("gtceu.multiblock.universal.problem.wrench", "§7Pipe is loose. (§aWrench§7)");
+        provider.add("gtceu.multiblock.universal.problem.screwdriver", "§7Screws are loose. (§aScrewdriver§7)");
+        provider.add("gtceu.multiblock.universal.problem.soft_mallet", "§7Something is stuck. (§aSoft Mallet§7)");
+        provider.add("gtceu.multiblock.universal.problem.hard_hammer", "§7Plating is dented. (§aHard Hammer§7)");
+        provider.add("gtceu.multiblock.universal.problem.wire_cutter", "§7Wires burned out. (§aWire Cutter§7)");
+        provider.add("gtceu.multiblock.universal.problem.crowbar", "§7That doesn't belong there. (§aCrowbar§7)");
+        provider.add("gtceu.multiblock.universal.muffler_obstructed", "Muffler Hatch is Obstructed!");
+        provider.add("gtceu.multiblock.universal.muffler_obstructed.tooltip",
+                "Muffler Hatch must have a block of airspace in front of it.");
+        provider.add("gtceu.multiblock.universal.rotor_obstructed", "Rotor is Obstructed!");
+        provider.add("gtceu.multiblock.universal.distinct", "Distinct Buses:");
+        provider.add("gtceu.multiblock.universal.distinct.no", "No");
+        provider.add("gtceu.multiblock.universal.distinct.yes", "Yes");
+        provider.add("gtceu.multiblock.universal.distinct.info",
+                "If enabled, each Item Input Bus will be treated as fully distinct from each other for recipe lookup. Useful for things like Programmed Circuits, Extruder Shapes, etc.");
+        provider.add("gtceu.multiblock.parallel", "Performing up to %d Recipes in Parallel");
+        provider.add("gtceu.multiblock.parallel.exact", "Performing %d Recipes in Parallel");
+        provider.add("gtceu.multiblock.multiple_recipemaps.header", "Machine Mode:");
+        provider.add("gtceu.multiblock.multiple_recipemaps.tooltip",
+                "Screwdriver the controller to change which machine mode to use.");
+        provider.add("gtceu.multiblock.multiple_recipemaps_recipes.tooltip", "Machine Modes: §e%s§r");
+        provider.add("gtceu.multiblock.multiple_recipemaps.switch_message",
+                "The machine must be off to switch modes!");
+        provider.add("gtceu.multiblock.preview.zoom", "Use mousewheel or right-click + drag to zoom");
+        provider.add("gtceu.multiblock.preview.rotate", "Click and drag to rotate");
+        provider.add("gtceu.multiblock.preview.select", "Right-click to check candidates");
+        provider.add("gtceu.multiblock.pattern.error", "Expected components (%s) at (%s).");
+        provider.add("gtceu.multiblock.pattern.error.limited_exact", "§cExactly: %d§r");
+        provider.add("gtceu.multiblock.pattern.error.limited_within", "§cBetween %d and %d§r");
+        multiLang(provider, "gtceu.multiblock.pattern.error.limited", "§cMaximum: %d§r", "§cMinimum: %d§r",
+                "§cMaximum: %d per layer§r", "§cMinimum: %d per layer§r");
+        provider.add("gtceu.multiblock.pattern.error.coils", "§cAll heating coils must be the same§r");
+        provider.add("gtceu.multiblock.pattern.error.filters", "§cAll filters must be the same§r");
+        provider.add("gtceu.multiblock.pattern.error.batteries", "§cAll batteries must be the same§r");
+        provider.add("gtceu.multiblock.pattern.clear_amount_1", "§6Must have a clear 1x1x1 space in front§r");
+        provider.add("gtceu.multiblock.pattern.clear_amount_3", "§6Must have a clear 3x3x1 space in front§r");
+        provider.add("gtceu.multiblock.pattern.single", "§6Only this block can be used§r");
+        provider.add("gtceu.multiblock.pattern.location_end", "§cVery End§r");
+        provider.add("gtceu.multiblock.pattern.replaceable_air", "Replaceable by Air");
+
+        provider.add("gtceu.multiblock.computation.max", "Max CWU/t: %s");
+        provider.add("gtceu.multiblock.computation.usage", "Using: %s");
+        provider.add("gtceu.multiblock.computation.non_bridging", "Non-bridging connection found");
+        provider.add("gtceu.multiblock.computation.non_bridging.detailed",
+                "A Reception Hatch is linked to a machine which cannot bridge");
+        provider.add("gtceu.multiblock.computation.not_enough_computation", "Machine needs more computation!");
     }
 }

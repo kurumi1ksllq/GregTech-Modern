@@ -99,7 +99,8 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
                     player.displayClientMessage(Component.translatable("armor.gtceu.nms.nightvision.error"), true);
                 } else {
                     player.displayClientMessage(Component
-                            .translatable("armor.gtceu.nms.nightvision." + (nightVision ? "enabled" : "disabled")), true);
+                            .translatable("armor.gtceu.nms.nightvision." + (nightVision ? "enabled" : "disabled")),
+                            true);
                 }
             }
 

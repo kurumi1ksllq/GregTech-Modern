@@ -49,7 +49,7 @@ public class MedicalCondition {
         this.color = color;
         this.maxProgression = maxProgression;
         this.damageTypeData = new DamageTypeData.Builder()
-                .simpleId("medical_condition/" + name)
+                .simpleId("medical_condition." + name)
                 .scaling(DamageScaling.NEVER)
                 .tag(DamageTypeTags.BYPASSES_ARMOR)
                 .build();

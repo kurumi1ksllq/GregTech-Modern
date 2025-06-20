@@ -15,8 +15,8 @@ public class ItemLang {
         initGeneratedNames(provider);
         initItemNames(provider);
         initItemTooltips(provider);
+        generateBehaviorKeys(provider);
         provider.add("item.invalid.name", "Invalid item");
-
     }
 
     private static void initGeneratedNames(RegistrateLangProvider provider) {
@@ -501,12 +501,9 @@ public class ItemLang {
         provider.add("item.gtceu.uxv_voltage_coil.tooltip", "Epic Coil");
         provider.add("item.gtceu.opv_voltage_coil.tooltip", "Legendary Coil");
         provider.add("item.gtceu.max_voltage_coil.tooltip", "Maximum Coil");
-
-
-
     }
 
-    public static void generateBehaviorKeys(RegistrateLangProvider provider){
+    public static void generateBehaviorKeys(RegistrateLangProvider provider) {
         provider.add("behaviour.hoe", "Can till dirt");
         provider.add("behaviour.soft_hammer", "Activates and Deactivates Machines");
         provider.add("behaviour.soft_hammer.enabled", "Working Enabled");
@@ -613,6 +610,5 @@ public class ItemLang {
         provider.add("behavior.portable_scanner.mode.show_electrical_info", "Show electrical info");
         provider.add("behavior.portable_scanner.mode.show_recipe_info", "Show recipe info");
         provider.add("behavior.portable_scanner.mode.show_environmental_info", "Show environmental info");
-
     }
 }

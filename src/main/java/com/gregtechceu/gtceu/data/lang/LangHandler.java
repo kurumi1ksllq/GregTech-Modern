@@ -1,34 +1,45 @@
 package com.gregtechceu.gtceu.data.lang;
+
 import com.tterrag.registrate.providers.RegistrateLangProvider;
+
 import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 
 public class LangHandler {
 
     /**
      *
-     Unformatted text must be in light gray - §7
-     Items must be in gold - §6
-     Fluids must be in blue - §9
-     Directions must be in yellow - §e
-     Disabled/Inactive must be in red - §c
-     Enabled/Active must be in green - §a
-     Potion effects must be in yellow - §e
-     Time must be in red - §c
-     Percentages must be in green - §a
-     Keys must be in all caps
-     Key combos must follow the format KEY1 + KEY2 (for example, SHIFT + R-CLICK)
-
+     * Unformatted text must be in light gray - §7
+     * Items must be in gold - §6
+     * Fluids must be in blue - §9
+     * Directions must be in yellow - §e
+     * Disabled/Inactive must be in red - §c
+     * Enabled/Active must be in green - §a
+     * Potion effects must be in yellow - §e
+     * Time must be in red - §c
+     * Percentages must be in green - §a
+     * Keys must be in all caps
+     * Key combos must follow the format KEY1 + KEY2 (for example, SHIFT + R-CLICK)
+     * 
      * @param provider
      */
 
     public static void init(RegistrateLangProvider provider) {
         AdvancementLang.init(provider);
+        ArmorLang.init(provider);
         BlockLang.init(provider);
+        CommandLang.init(provider);
+        ConfigurationLang.init(provider);
+        CoverLang.init(provider);
+        HazardLang.init(provider);
         IntegrationLang.init(provider);
         ItemLang.init(provider);
         MachineLang.init(provider);
+        MaterialLang.init(provider);
+        RecipeLang.init(provider);
+        SubtitleLang.init(provider);
         ToolLang.init(provider);
-        ConfigurationLang.init(provider);
+
+        generateTooltipKeys(provider);
 
         provider.add("gtceu.gui.editor.tips.citation", "Number of citations");
         provider.add("gtceu.gui.editor.group.recipe_type", "cap");
@@ -50,8 +61,6 @@ public class LangHandler {
                 "Right click to decrease the OC", "Middle click to reset the OC",
                 "Hold Shift to change by Perfect OC");
 
-
-
         provider.add("gtceu.multiblock.page_switcher.io.import", "§2Inputs");
         provider.add("gtceu.multiblock.page_switcher.io.export", "§4Outputs");
         provider.add("gtceu.multiblock.page_switcher.io.both", "§5Combined Inputs + Outputs");
@@ -59,7 +68,7 @@ public class LangHandler {
         provider.add("enchantment.disjunction", "Disjunction");
 
         provider.add("fluid.empty", "Empty");
-         provider.add("item.generic.fluid_container.tooltip", "%d/%dL %s");
+        provider.add("item.generic.fluid_container.tooltip", "%d/%dL %s");
         provider.add("item.generic.electric_item.tooltip", "%d/%d EU - Tier %s");
         provider.add("item.generic.electric_item.stored", "%d/%d EU (%s)");
         provider.add("item.electric.discharge_mode.enabled", "§eDischarge Mode Enabled");
@@ -78,7 +87,6 @@ public class LangHandler {
         provider.add("item.gtceu.tool.replace_tool_head", "Craft with a new Tool Head to replace it");
         provider.add("item.gtceu.tool.usable_as", "§8Usable as: §f%s");
 
-
         provider.add("item.gtceu.tool.aoe.rows", "Rows");
         provider.add("item.gtceu.tool.aoe.columns", "Columns");
         provider.add("item.gtceu.tool.aoe.layers", "Layers");
@@ -92,7 +100,6 @@ public class LangHandler {
         provider.add("item.tool.tooltip.rotor.efficiency", "Turbine Efficiency: §9%d%%");
         provider.add("item.tool.tooltip.rotor.power", "Turbine Power: §9%d%%");
 
-
         provider.add("item.record.sus.tooltip", "§7Leonz - Among Us Drip");
         provider.add("item.gtceu.nan_certificate.tooltip", "Challenge Accepted!");
         provider.add("item.gtceu.blacklight.tooltip", "Long-Wave §dUltraviolet§7 light source");
@@ -103,8 +110,6 @@ public class LangHandler {
                 "§7Left click to automatically input this recipe into the crafting grid\n§7Shift click to lock/unlock this recipe");
 
         replace(provider, "item.gtceu.bucket", "%s Bucket");
-
-
 
         provider.add("item.netherrack_nether_quartz", "Nether Quartz Ore");
         provider.add("block.surface_rock", "%s Surface Rock");
@@ -138,7 +143,6 @@ public class LangHandler {
         provider.add("item.plugin.proxy.tooltips.1", "(Please adjust to proxy mode in the screen)");
         provider.add("item.cover.digital.tooltip",
                 "Connects machines over §fPower Cables§7 to the §fCentral Monitor§7 as §fCover§7.");
-
 
         provider.add("gtceu.machine.drum.enable_output", "Will drain Fluid to downward adjacent Tanks");
         provider.add("gtceu.machine.drum.disable_output", "Will not drain Fluid");
@@ -180,7 +184,7 @@ public class LangHandler {
         provider.add("item.cover.digital.mode.fluid.disabled", "Click to enable Fluid Mode");
         provider.add("item.cover.digital.mode.fluid.enabled", "Fluid Mode enabled");
 
-        //todo: own method (gui/tooltip/???)
+        // todo: own method (gui/tooltip/???)
         provider.add("gtceu.part_sharing.disabled", "Multiblock Sharing §4Disabled");
         provider.add("gtceu.part_sharing.enabled", "Multiblock Sharing §aEnabled");
         provider.add("gtceu.universal.liters", "%s mB");
@@ -317,8 +321,6 @@ public class LangHandler {
         provider.add("gtceu.item_filter.empty_item", "Empty (No Item)");
         provider.add("gtceu.item_filter.footer", "§eClick with item to override");
 
-        provider.add("gtceu.chat.cape",
-                "§5Congrats: you just unlocked a new cape! See the Cape Selector terminal app to use it.§r");
         provider.add("gtceu.universal.clear_nbt_recipe.tooltip", "§cThis will destroy all contents!");
         provider.add("gtceu.cover.energy_detector.message_electricity_storage_normal",
                 "Monitoring Normal Electricity Storage");
@@ -475,14 +477,11 @@ public class LangHandler {
         provider.add("gtceu.tooltip.status.trinary.unknown", "Unknown");
     }
 
-
-    public static void generateTooltipKeys(RegistrateLangProvider provider){
+    public static void generateTooltipKeys(RegistrateLangProvider provider) {
         provider.add("gtceu.tooltip.hold_shift", "§7Hold SHIFT for more info");
         provider.add("gtceu.tooltip.hold_ctrl", "§7Hold CTRL for more info");
         provider.add("gtceu.tooltip.fluid_pipe_hold_shift", "§7Hold SHIFT to show Fluid Containment Info");
         provider.add("gtceu.tooltip.tool_fluid_hold_shift",
                 "§7Hold SHIFT to show Fluid Containment and Tool Info");
-
     }
-
 }

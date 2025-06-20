@@ -219,7 +219,8 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
             if (data.contains("hover")) {
                 String status = data.getBoolean("hover") ? "armor.gtceu.hud.status.enabled" :
                         "armor.gtceu.hud.status.disabled";
-                this.HUD.newString(Component.translatable("armor.gtceu.hud.hover_mode", Component.translatable(status)));
+                this.HUD.newString(
+                        Component.translatable("armor.gtceu.hud.hover_mode", Component.translatable(status)));
             }
         }
         this.HUD.draw(guiGraphics);

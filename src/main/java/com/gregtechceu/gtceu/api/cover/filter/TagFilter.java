@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.cover.filter;
 
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.gregtechceu.gtceu.data.lang.LangHandler;
+import com.gregtechceu.gtceu.data.lang.LangUtil;
 import com.gregtechceu.gtceu.utils.TagExprFilter;
 
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
@@ -59,7 +59,7 @@ public abstract class TagFilter<T, S extends Filter<T, S>> implements Filter<T, 
         WidgetGroup group = new WidgetGroup(x, y, 18 * 3 + 25, 18 * 3); // 80 55
         group.addWidget(new ImageWidget(0, 0, 20, 20, GuiTextures.INFO_ICON)
                 .setHoverTooltips(
-                        LangHandler.getMultiLang("cover.tag_filter.info").toArray(new MutableComponent[0])));
+                        LangUtil.getMultiLang("cover.tag_filter.info").toArray(new MutableComponent[0])));
         group.addWidget(new TextFieldWidget(0, 29, 18 * 3 + 25, 12, () -> oreDictFilterExpression, this::setOreDict)
                 .setMaxStringLength(64)
                 .setValidator(input -> {

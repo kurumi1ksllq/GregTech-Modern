@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.data.lang;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 import dev.toma.configuration.Configuration;
@@ -13,6 +12,8 @@ import dev.toma.configuration.config.value.ObjectValue;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 
 public class ConfigurationLang {
 

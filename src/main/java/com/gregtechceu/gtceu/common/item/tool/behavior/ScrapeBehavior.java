@@ -118,6 +118,6 @@ public class ScrapeBehavior implements IToolBehavior {
     @Override
     public void addInformation(@NotNull ItemStack stack, @Nullable Level Level, @NotNull List<Component> tooltip,
                                @NotNull TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.gtceu.tool.behavior.scrape"));
+        tooltip.add(Component.translatable("tool.gtceu.behavior.scrape"));
     }
 }

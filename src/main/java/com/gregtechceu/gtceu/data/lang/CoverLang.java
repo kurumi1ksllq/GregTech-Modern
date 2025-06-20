@@ -5,8 +5,12 @@ import com.tterrag.registrate.providers.RegistrateLangProvider;
 import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 
 public class CoverLang {
-    public static void generateCoverKeys(RegistrateLangProvider provider){
 
+    public static void init(RegistrateLangProvider provider) {
+        generateCoverKeys(provider);
+    }
+
+    private static void generateCoverKeys(RegistrateLangProvider provider) {
         provider.add("cover.filter.blacklist.disabled", "Whitelist");
         provider.add("cover.filter.blacklist.enabled", "Blacklist");
         provider.add("cover.tag_filter.title", "Tag Filter");
@@ -181,7 +185,5 @@ public class CoverLang {
         provider.add("cover.advanced_item_detector.min", "Min Items");
         provider.add("cover.shutter.message.enabled", "Closed shutter");
         provider.add("cover.shutter.message.disabled", "Opened shutter");
-
-
     }
 }

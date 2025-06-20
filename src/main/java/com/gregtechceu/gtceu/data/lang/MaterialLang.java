@@ -2,8 +2,8 @@ package com.gregtechceu.gtceu.data.lang;
 
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.registry.MaterialRegistry;
-
 import com.gregtechceu.gtceu.common.data.GTMaterials;
+
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 
 import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
@@ -15,8 +15,13 @@ public class MaterialLang {
         for (Material material : registry.getAllMaterials())
             provider.add(material.getUnlocalizedName(), toEnglishName(material.getName()));
     }
-    public static void generateCustomMaterialNames(RegistrateLangProvider provider ) {
 
+    public static void init(RegistrateLangProvider provider) {
+        generateCustomMaterialNames(provider);
+        generateFluidKeys(provider);
+    }
+
+    private static void generateCustomMaterialNames(RegistrateLangProvider provider) {
         replace(provider, GTMaterials.FullersEarth.getUnlocalizedName(), "Fuller's Earth");
         replace(provider, GTMaterials.Cooperite.getUnlocalizedName(), "Sheldonite"); // greg's humor is now on
         // 1.19...
@@ -90,16 +95,15 @@ public class MaterialLang {
         replace(provider, GTMaterials.IncoloyMA956.getUnlocalizedName(), "Incoloy MA-956");
         replace(provider, GTMaterials.Stellite100.getUnlocalizedName(), "Stellite-100");
         replace(provider, GTMaterials.HastelloyC276.getUnlocalizedName(), "Hastelloy C-276");
-
     }
-    public static void generateFluidKeys(RegistrateLangProvider provider){
+
+    private static void generateFluidKeys(RegistrateLangProvider provider) {
         provider.add("gtceu.fluid.click_to_fill",
                 "§7Click with a Fluid Container to §bfill §7the tank (Shift-click for a full stack).");
         provider.add("gtceu.fluid.click_combined",
                 "§7Click with a Fluid Container to §cempty §7or §bfill §7the tank (Shift-click for a full stack).");
         provider.add("gtceu.fluid.click_to_empty",
                 "§7Click with a Fluid Container to §cempty §7the tank (Shift-click for a full stack).");
-
 
         provider.add("gtceu.fluid.liquid_generic", "Liquid %s");
         provider.add("gtceu.fluid.generic", "%s");

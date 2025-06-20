@@ -1,12 +1,16 @@
 package com.gregtechceu.gtceu.data.lang;
 
 import com.tterrag.registrate.providers.RegistrateLangProvider;
+
 import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 
 public class SubtitleLang {
-    public static void generateSubtitleKeys(RegistrateLangProvider provider) {
 
+    public static void init(RegistrateLangProvider provider) {
+        generateSubtitleKeys(provider);
+    }
 
+    private static void generateSubtitleKeys(RegistrateLangProvider provider) {
         // Subtitles
         provider.add("gtceu.subtitle.boiler", "Boiler heating");
         provider.add("gtceu.subtitle.computation", "Computer beeps");
@@ -47,7 +51,5 @@ public class SubtitleLang {
         provider.add("gtceu.subtitle.sus", "Sus...");
         provider.add("gtceu.subtitle.science", "s c i e n c e");
         provider.add("gtceu.subtitle.metal_pipe", "Destruction_Metal_Pole_L_Wave_2_0_0.wav");
-
-
     }
 }

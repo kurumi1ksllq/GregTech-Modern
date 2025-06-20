@@ -1,12 +1,18 @@
 package com.gregtechceu.gtceu.data.lang;
 
 import com.tterrag.registrate.providers.RegistrateLangProvider;
+
 import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 
 public class RecipeLang {
 
-    public static void generateRecipeConditions(RegistrateLangProvider provider) {
+    public static void init(RegistrateLangProvider provider) {
+        generateRecipeConditions(provider);
+        generateRecipeDataKeys(provider);
+        generateMiscKeys(provider);
+    }
 
+    private static void generateRecipeConditions(RegistrateLangProvider provider) {
         provider.add("recipe.condition.thunder.tooltip", "Thunder Level: %d");
         provider.add("recipe.condition.rain.tooltip", "Rain Level: %d");
         provider.add("recipe.condition.dimension.tooltip", "Dimension: %s");
@@ -23,12 +29,9 @@ public class RecipeLang {
         provider.add("recipe.condition.gamestage.locked_stage", "Locked at stage: %s");
         provider.add("recipe.condition.quest.completed.tooltip", "Requires %s completed");
         provider.add("recipe.condition.quest.not_completed.tooltip", "Requires %s not completed");
-
-
-
     }
 
-    public static void generateRecipeDataKeys(RegistrateLangProvider provider) {
+    private static void generateRecipeDataKeys(RegistrateLangProvider provider) {
         provider.add("gtceu.recipe.total", "Total: %s EU");
         provider.add("gtceu.recipe.max_eu", "Max. EU: %s EU");
         provider.add("gtceu.recipe.eu", "Usage: %s EU/t");
@@ -51,10 +54,12 @@ public class RecipeLang {
         provider.add("gtceu.recipe.scan_for_research", "Scan for Assembly Line");
         provider.add("gtceu.recipe.computation_per_tick", "Min. Computation: %s CWU/t");
         provider.add("gtceu.recipe.total_computation", "Computation: %s CWU");
-
     }
-    public static void generateMiscKeys(RegistrateLangProvider provider) {
 
-
+    private static void generateMiscKeys(RegistrateLangProvider provider) {
+        provider.add("gtceu.io.import", "Import");
+        provider.add("gtceu.io.export", "Export");
+        provider.add("gtceu.io.both", "Both");
+        provider.add("gtceu.io.none", "None");
     }
 }

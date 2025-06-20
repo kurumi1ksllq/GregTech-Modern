@@ -7,7 +7,7 @@ import com.gregtechceu.gtceu.api.gui.fancy.IFancyCustomMouseWheelAction;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import com.gregtechceu.gtceu.data.lang.LangHandler;
+import com.gregtechceu.gtceu.data.lang.LangUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -166,7 +166,7 @@ public class CircuitFancyConfigurator implements IFancyConfigurator, IFancyCusto
     public List<Component> getTooltips() {
         var list = new ArrayList<>(IFancyConfigurator.super.getTooltips());
         list.addAll(Arrays.stream(
-                LangHandler.getMultiLang("gtceu.gui.configurator_slot.tooltip").toArray(new MutableComponent[0]))
+                LangUtil.getMultiLang("gtceu.gui.configurator_slot.tooltip").toArray(new MutableComponent[0]))
                 .toList());
         return list;
     }

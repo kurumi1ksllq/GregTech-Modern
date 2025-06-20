@@ -16,37 +16,37 @@ public class ArmorLang {
 
 
         // nanomuscle suit
-        provider.add("armor.gtceu.nms.nightvision.enabled", "§aNanoMuscle™ Suite: NightVision Enabled");
-        provider.add("armor.gtceu.nms.nightvision.disabled", " §cNanoMuscle™ Suite: NightVision Disabled");
-        provider.add("armor.gtceu.nms.boosted_jump.enabled", "§aNanoMuscle™ Suite: Jump Boost Enabled");
-        provider.add("armor.gtceu.nms.boosted_jump.disabled", " §cNanoMuscle™ Suite: Jump Boost Disabled");
+        provider.add("armor.gtceu.nms.nightvision.enabled", "NanoMuscle™ Suite: §aNightVision Enabled");
+        provider.add("armor.gtceu.nms.nightvision.disabled", " NanoMuscle™ Suite: §cNightVision Disabled");
+        provider.add("armor.gtceu.nms.boosted_jump.enabled", "NanoMuscle™ Suite: §aJump Boost Enabled");
+        provider.add("armor.gtceu.nms.boosted_jump.disabled", " NanoMuscle™ Suite: §cJump Boost Disabled");
         provider.add("armor.gtceu.nms.nightvision.error", "NanoMuscle™ Suite: §cNot enough power!");
-        provider.add("armor.gtceu.nms.charge.enabled", "§aNanoMuscle™ Suite: Charging Enabled");
-        provider.add("armor.gtceu.nms.charge.disable", " §cNanoMuscle™ Suite: Charging Disabled");
+        provider.add("armor.gtceu.nms.charge.enabled", "NanoMuscle™ Suite: §aCharging Enabled");
+        provider.add("armor.gtceu.nms.charge.disable", " NanoMuscle™ Suite: §cCharging Disabled");
         provider.add("armor.gtceu.nms.charge.error", "NanoMuscle™ Suite: §cNot enough power for charging!");
 
 
         // quantum suit
-        provider.add("armor.gtceu.qts.nightvision.enabled", "§a§aQuarkTech™ Suite: NightVision Enabled");
-        provider.add("armor.gtceu.qts.nightvision.disabled", " §cQuarkTech™ Suite: NightVision Disabled");
-        provider.add("armor.gtceu.qts.nightvision.error", " §cQuarkTech™ Suite: §cNot enough power!");
-        provider.add("armor.gtceu.qts.charge.enabled", "§aQuarkTech™ Suite: Charging Enabled");
-        provider.add("armor.gtceu.qts.charge.disable", " §cQuarkTech™ Suite: Charging Disabled");
-        provider.add("armor.gtceu.qts.charge.error", " §cQuarkTech™ Suite: §cNot enough power for charging!");
+        provider.add("armor.gtceu.qts.nightvision.enabled", "QuarkTech™ Suite: §aNightVision Enabled");
+        provider.add("armor.gtceu.qts.nightvision.disabled", "QuarkTech™ Suite: §cNightVision Disabled");
+        provider.add("armor.gtceu.qts.nightvision.error", "QuarkTech™ Suite: §cNot enough power!");
+        provider.add("armor.gtceu.qts.charge.enabled", "QuarkTech™ Suite: §aCharging Enabled");
+        provider.add("armor.gtceu.qts.charge.disable", "QuarkTech™ Suite: §cCharging Disabled");
+        provider.add("armor.gtceu.qts.charge.error", "QuarkTech™ Suite: §cNot enough power for charging!");
 
 
         //jetpacks
-        provider.add("armor.gtceu.jetpack.flight.enable", "§aJetpack: Flight Enabled");
-        provider.add("armor.gtceu.jetpack.flight.disable", " §cJetpack: Flight Disabled");
-        provider.add("armor.gtceu.jetpack.hover.enable", "§aJetpack: Hover Mode Enabled");
-        provider.add("armor.gtceu.jetpack.hover.disable", " §cJetpack: Hover Mode Disabled");
+        provider.add("armor.gtceu.jetpack.flight.enable", "Jetpack: Flight Enabled");
+        provider.add("armor.gtceu.jetpack.flight.disable", "Jetpack: Flight Disabled");
+        provider.add("armor.gtceu.jetpack.hover.enable", "Jetpack: Hover Mode Enabled");
+        provider.add("armor.gtceu.jetpack.hover.disable", "Jetpack: Hover Mode Disabled");
         provider.add("armor.gtceu.jetpack.emergency_hover_mode", "§aEmergency Hover Mode Enabled!");
 
 
         //action bar messages
-        provider.add("armor.gtceu.message.nightvision.enabled", "§aNightVision: §aOn");
-        provider.add("armor.gtceu.message.nightvision.disabled", " §cNightVision: §cOff");
-        provider.add("armor.gtceu.message.nightvision.error", "§cNot enough power!");
+        provider.add("armor.gtceu.message.nightvision.enabled", "NightVision: §aOn");
+        provider.add("armor.gtceu.message.nightvision.disabled", "NightVision: §cOff");
+        provider.add("armor.gtceu.message.nightvision.error", "Not enough power!");
 
 
      }

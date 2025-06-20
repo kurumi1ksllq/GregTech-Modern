@@ -12,14 +12,14 @@ public class LangHandler {
      * Items must be in gold - §6
      * Fluids must be in blue - §9
      * Directions must be in yellow - §e
-     * Disabled/Inactive must be in red - §c
+     * Disabled/Inactive/Errors must be in red - §c
      * Enabled/Active must be in green - §a
      * Potion effects must be in yellow - §e
      * Time must be in red - §c
      * Percentages must be in green - §a
      * Keys must be in all caps
      * Key combos must follow the format KEY1 + KEY2 (for example, SHIFT + R-CLICK)
-     * 
+     *
      * @param provider
      */
 

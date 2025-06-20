@@ -24,7 +24,8 @@ public class MaterialLang {
     private static void generateCustomMaterialNames(RegistrateLangProvider provider) {
         replace(provider, GTMaterials.FullersEarth.getUnlocalizedName(), "Fuller's Earth");
         replace(provider, GTMaterials.Cooperite.getUnlocalizedName(), "Sheldonite"); // greg's humor is now on
-        // 1.19...
+
+        //1.20.1...
         replace(provider, GTMaterials.HSSG.getUnlocalizedName(), "HSS-G");
         replace(provider, GTMaterials.HSSE.getUnlocalizedName(), "HSS-E");
         replace(provider, GTMaterials.HSSS.getUnlocalizedName(), "HSS-S");
@@ -97,27 +98,34 @@ public class MaterialLang {
         replace(provider, GTMaterials.HastelloyC276.getUnlocalizedName(), "Hastelloy C-276");
     }
 
-    private static void generateFluidKeys(RegistrateLangProvider provider) {
-        provider.add("gtceu.fluid.click_to_fill",
+    private static void generateFluidKeys(RegistrateLangProvider provider){
+
+
+
+        provider.add("fluid.gtceu.liquid_generic", "Liquid %s");
+        provider.add("fluid.gtceu.generic", "%s");
+        provider.add("fluid.gtceu.gas_generic", "%s Gas");
+        provider.add("fluid.gtceu.gas_vapor", "%s Vapor");
+        provider.add("fluid.gtceu.plasma", "%s Plasma");
+        provider.add("fluid.gtceu.molten", "Molten %s");
+
+        //ui
+        provider.add("fluid.gtceu.empty", "Empty");
+        provider.add("fluid.gtceu.amount", "§9Amount: %d/%d mB");
+        provider.add("fluid.gtceu.click_to_fill",
                 "§7Click with a Fluid Container to §bfill §7the tank (Shift-click for a full stack).");
-        provider.add("gtceu.fluid.click_combined",
+        provider.add("fluid.gtceu.click_combined",
                 "§7Click with a Fluid Container to §cempty §7or §bfill §7the tank (Shift-click for a full stack).");
-        provider.add("gtceu.fluid.click_to_empty",
+        provider.add("fluid.gtceu.click_to_empty",
                 "§7Click with a Fluid Container to §cempty §7the tank (Shift-click for a full stack).");
 
-        provider.add("gtceu.fluid.liquid_generic", "Liquid %s");
-        provider.add("gtceu.fluid.generic", "%s");
-        provider.add("gtceu.fluid.gas_generic", "%s Gas");
-        provider.add("gtceu.fluid.gas_vapor", "%s Vapor");
-        provider.add("gtceu.fluid.plasma", "%s Plasma");
-        provider.add("gtceu.fluid.molten", "Molten %s");
-        provider.add("gtceu.fluid.empty", "Empty");
-        provider.add("gtceu.fluid.amount", "§9Amount: %d/%d mB");
-        provider.add("gtceu.fluid.temperature", "§cTemperature: %d K");
-        provider.add("gtceu.fluid.temperature.cryogenic", "§bCryogenic! Handle with care!");
-        provider.add("gtceu.fluid.state_gas", "§aState: Gaseous");
-        provider.add("gtceu.fluid.state_liquid", "§aState: Liquid");
-        provider.add("gtceu.fluid.state_plasma", "§aState: Plasma");
-        provider.add("gtceu.fluid.type_acid.tooltip", "§6Acidic! Handle with care!");
+        //tooltips
+        provider.add("fluid.gtceu.tooltip.temperature", "§cTemperature: %d K");
+        provider.add("fluid.gtceu.tooltip.cryogenic", "§bCryogenic! Handle with care!");
+        provider.add("fluid.gtceu.tooltip.gas", "§aState: Gaseous");
+        provider.add("fluid.gtceu.tooltip.liquid", "§aState: Liquid");
+        provider.add("fluid.gtceu.tooltip.plasma", "§aState: Plasma");
+        provider.add("fluid.gtceu.tooltip.acid", "§6Acidic! Handle with care!");
     }
+
 }

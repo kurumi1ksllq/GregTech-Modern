@@ -21,7 +21,7 @@ public class ConfigurationLang {
         dfs(provider, new HashSet<>(),
                 Configuration.registerConfig(ConfigHolder.class, ConfigFormats.yaml()).getValueMap());
     }
-
+    //depth first search === dfs
     private static void dfs(RegistrateLangProvider provider, Set<String> added, Map<String, ConfigValue<?>> map) {
         for (var entry : map.entrySet()) {
             var id = entry.getValue().getId();

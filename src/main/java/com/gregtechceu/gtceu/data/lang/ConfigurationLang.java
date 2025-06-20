@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.data.lang;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 import dev.toma.configuration.Configuration;

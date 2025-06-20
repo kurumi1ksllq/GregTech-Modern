@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.data.lang;
 
 import com.tterrag.registrate.providers.RegistrateLangProvider;
+import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 
 public class HazardLang {
     public static void generateHazardKeys(RegistrateLangProvider provider){

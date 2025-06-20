@@ -2,8 +2,7 @@ package com.gregtechceu.gtceu.data.lang;
 
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 
-import static com.gregtechceu.gtceu.data.lang.LangHandler.multiLang;
-import static com.gregtechceu.gtceu.data.lang.LangHandler.multilineLang;
+import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 
 public class CoverLang {
     public static void generateCoverKeys(RegistrateLangProvider provider){

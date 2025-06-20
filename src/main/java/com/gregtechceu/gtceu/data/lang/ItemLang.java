@@ -6,8 +6,7 @@ import com.gregtechceu.gtceu.api.registry.GTRegistries;
 
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 
-import static com.gregtechceu.gtceu.data.lang.LangHandler.multilineLang;
-import static com.gregtechceu.gtceu.data.lang.LangHandler.replace;
+import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 import static com.gregtechceu.gtceu.utils.FormattingUtil.toEnglishName;
 
 public class ItemLang {

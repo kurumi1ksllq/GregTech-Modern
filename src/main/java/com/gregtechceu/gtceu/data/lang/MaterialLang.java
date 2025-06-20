@@ -6,7 +6,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.registry.MaterialRegistr
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 
-import static com.gregtechceu.gtceu.data.lang.LangHandler.replace;
+import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 import static com.gregtechceu.gtceu.utils.FormattingUtil.toEnglishName;
 
 public class MaterialLang {

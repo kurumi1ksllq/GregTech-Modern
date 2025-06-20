@@ -2,6 +2,8 @@ package com.gregtechceu.gtceu.data.lang;
 
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 
+import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
+
 public class AdvancementLang {
 
     public static void init(RegistrateLangProvider provider) {

@@ -3,8 +3,7 @@ package com.gregtechceu.gtceu.data.lang;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 
-import static com.gregtechceu.gtceu.data.lang.LangHandler.multiLang;
-import static com.gregtechceu.gtceu.data.lang.LangHandler.replace;
+import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 
 public class BlockLang {
 

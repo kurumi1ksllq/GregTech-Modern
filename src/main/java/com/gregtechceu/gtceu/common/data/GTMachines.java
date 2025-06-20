@@ -28,6 +28,7 @@ import com.gregtechceu.gtceu.common.pipelike.fluidpipe.longdistance.LDFluidEndpo
 import com.gregtechceu.gtceu.common.pipelike.item.longdistance.LDItemEndpointMachine;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
+import com.gregtechceu.gtceu.data.lang.LangUtil;
 import com.gregtechceu.gtceu.integration.kjs.GTRegistryInfo;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
@@ -300,7 +301,7 @@ public class GTMachines {
             .rotationState(RotationState.ALL)
             .tier(LV)
             .tieredHullRenderer(GTCEu.id("block/machine/ld_item_endpoint_machine"))
-            .tooltips(LangHandler.getMultiLang("gtceu.machine.endpoint.tooltip").toArray(Component[]::new))
+            .tooltips(LangUtil.getMultiLang("gtceu.machine.endpoint.tooltip").toArray(Component[]::new))
             .tooltipBuilder((stack, tooltip) -> {
                 if (ConfigHolder.INSTANCE.machines.ldItemPipeMinDistance > 0) {
                     tooltip.add(Component.translatable("gtceu.machine.endpoint.tooltip.min_length",
@@ -853,10 +854,10 @@ public class GTMachines {
                     .rotationState(RotationState.ALL)
                     .abilities(PartAbility.MUFFLER)
                     .overlayTieredHullRenderer("muffler_hatch")
-                    .tooltips(LangHandler.getFromMultiLang("gtceu.machine.muffler_hatch.tooltip", 0),
+                    .tooltips(LangUtil.getFromMultiLang("gtceu.machine.muffler_hatch.tooltip", 0),
                             Component.translatable("gtceu.muffler.recovery_tooltip", Math.max(1, tier * 10)),
                             Component.translatable("gtceu.part_sharing.enabled"),
-                            LangHandler.getFromMultiLang("gtceu.machine.muffler_hatch.tooltip", 1)
+                            LangUtil.getFromMultiLang("gtceu.machine.muffler_hatch.tooltip", 1)
                                     .withStyle(ChatFormatting.DARK_RED))
                     .register(),
             ELECTRIC_TIERS);
@@ -1056,8 +1057,8 @@ public class GTMachines {
                     .rotationState(RotationState.ALL)
                     .abilities(PartAbility.ROTOR_HOLDER)
                     .renderer(() -> new RotorHolderMachineRenderer(tier))
-                    .tooltips(LangHandler.getFromMultiLang("gtceu.machine.rotor_holder.tooltip", 0),
-                            LangHandler.getFromMultiLang("gtceu.machine.rotor_holder.tooltip", 1),
+                    .tooltips(LangUtil.getFromMultiLang("gtceu.machine.rotor_holder.tooltip", 0),
+                            LangUtil.getFromMultiLang("gtceu.machine.rotor_holder.tooltip", 1),
                             Component.translatable("gtceu.part_sharing.disabled"))
                     .register(),
             GTValues.tiersBetween(HV, GTCEuAPI.isHighTier() ? OpV : UV));

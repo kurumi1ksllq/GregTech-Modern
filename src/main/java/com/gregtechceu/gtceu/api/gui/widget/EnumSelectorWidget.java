@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 
+import com.gregtechceu.gtceu.data.lang.LangUtil;
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.CycleButtonWidget;
@@ -48,7 +49,7 @@ public class EnumSelectorWidget<T extends Enum<T> & EnumSelectorWidget.Selectabl
             GuiTextures.VANILLA_BUTTON, texture);
 
     private BiFunction<T, String, List<Component>> tooltipSupplier = (value, key) -> List
-            .copyOf(LangHandler.getSingleOrMultiLang(key));
+            .copyOf(LangUtil.getSingleOrMultiLang(key));
 
     public EnumSelectorWidget(int xPosition, int yPosition, int width, int height, T[] values, T initialValue,
                               Consumer<T> onChanged) {

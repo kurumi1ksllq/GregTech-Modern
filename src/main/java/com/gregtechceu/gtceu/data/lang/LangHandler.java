@@ -10,7 +10,7 @@ public class LangHandler {
      Items must be in gold - §6
      Fluids must be in blue - §9
      Directions must be in yellow - §e
-     Disabled/Inactive must be in red - §c
+     Disabled/Inactive/errors must be in red - §c
      Enabled/Active must be in green - §a
      Potion effects must be in yellow - §e
      Time must be in red - §c
@@ -29,6 +29,7 @@ public class LangHandler {
         MachineLang.init(provider);
         ToolLang.init(provider);
         ConfigurationLang.init(provider);
+        ArmorLang.init(provider);
 
         provider.add("gtceu.gui.editor.tips.citation", "Number of citations");
         provider.add("gtceu.gui.editor.group.recipe_type", "cap");

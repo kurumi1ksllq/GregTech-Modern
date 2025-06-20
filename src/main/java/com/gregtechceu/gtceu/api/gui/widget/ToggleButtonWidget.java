@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.gui.widget;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 
+import com.gregtechceu.gtceu.data.lang.LangUtil;
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
@@ -68,7 +69,7 @@ public class ToggleButtonWidget extends SwitchWidget {
                 setHoverTooltips(tooltipText + (isPressed ? ".enabled" : ".disabled"));
             } else {
                 setHoverTooltips(
-                        List.copyOf(LangHandler.getMultiLang(tooltipText + (isPressed ? ".enabled" : ".disabled"))));
+                        List.copyOf(LangUtil.getMultiLang(tooltipText + (isPressed ? ".enabled" : ".disabled"))));
             }
         }
     }

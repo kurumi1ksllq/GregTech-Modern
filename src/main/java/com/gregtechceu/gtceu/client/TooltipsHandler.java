@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.common.data.GTFluids;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.fluid.potion.PotionFluidHelper;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
+import com.gregtechceu.gtceu.data.lang.LangUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
@@ -30,6 +31,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
+import org.apache.http.util.LangUtils;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -65,7 +67,7 @@ public class TooltipsHandler {
             if (Language.getInstance().has(tooltipKey)) {
                 tooltips.add(1, Component.translatable(tooltipKey));
             } else {
-                List<MutableComponent> multiLang = LangHandler.getMultiLang(tooltipKey);
+                List<MutableComponent> multiLang = LangUtil.getMultiLang(tooltipKey);
                 if (multiLang != null && !multiLang.isEmpty()) {
                     tooltips.addAll(1, multiLang);
                 }

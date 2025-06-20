@@ -75,10 +75,10 @@ public class AdvancedQuarkTechSuite extends QuarkTechSuite implements IJetpack {
             } else if (KeyBind.ARMOR_CHARGING.isKeyDown(player)) {
                 canShare = !canShare;
                 if (canShare && cont.getCharge() == 0) { // Only allow for charging to be enabled if charge is nonzero
-                    messageKey = "armor.gtceu.qts.share.error";
+                    messageKey = "armor.gtceu.qts.charge.error";
                     canShare = false;
                 } else {
-                    messageKey = "armor.gtceu.qts.share." + (canShare ? "enable" : "disable");
+                    messageKey = "armor.gtceu.qts.charge." + (canShare ? "enable" : "disable");
                 }
                 data.putBoolean("canShare", canShare);
             }

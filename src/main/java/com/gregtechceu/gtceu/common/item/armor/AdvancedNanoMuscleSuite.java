@@ -75,10 +75,10 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
             } else if (KeyBind.ARMOR_CHARGING.isKeyDown(player)) {
                 canShare = !canShare;
                 if (canShare && cont.getCharge() == 0) { // Only allow for charging to be enabled if charge is nonzero
-                    messageKey = "armor.gtceu.nms.share.error";
+                    messageKey = "armor.gtceu.nms.charge.error";
                     canShare = false;
                 } else {
-                    messageKey = "armor.gtceu.nms.share." + (canShare ? "enable" : "disable");
+                    messageKey = "armor.gtceu.nms.charge." + (canShare ? "enable" : "disable");
                 }
                 data.putBoolean("canShare", canShare);
             }

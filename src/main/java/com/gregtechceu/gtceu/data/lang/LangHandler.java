@@ -1,29 +1,25 @@
 package com.gregtechceu.gtceu.data.lang;
-
-import com.gregtechceu.gtceu.common.data.GTBlocks;
-
-
-import net.minecraft.locale.Language;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraftforge.common.data.LanguageProvider;
-
 import com.tterrag.registrate.providers.RegistrateLangProvider;
-
-
-import org.jetbrains.annotations.NotNull;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 
 public class LangHandler {
+
+    /**
+     *
+     Unformatted text must be in light gray - §7
+     Items must be in gold - §6
+     Fluids must be in blue - §9
+     Directions must be in yellow - §e
+     Disabled/Inactive must be in red - §c
+     Enabled/Active must be in green - §a
+     Potion effects must be in yellow - §e
+     Time must be in red - §c
+     Percentages must be in green - §a
+     Keys must be in all caps
+     Key combos must follow the format KEY1 + KEY2 (for example, SHIFT + R-CLICK)
+
+     * @param provider
+     */
 
     public static void init(RegistrateLangProvider provider) {
         AdvancementLang.init(provider);

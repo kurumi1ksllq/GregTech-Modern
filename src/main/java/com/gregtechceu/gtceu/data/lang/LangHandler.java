@@ -30,6 +30,7 @@ public class LangHandler {
         ToolLang.init(provider);
         ConfigurationLang.init(provider);
         ArmorLang.init(provider);
+        CommandLang.init(provider);
 
         provider.add("gtceu.gui.editor.tips.citation", "Number of citations");
         provider.add("gtceu.gui.editor.group.recipe_type", "cap");

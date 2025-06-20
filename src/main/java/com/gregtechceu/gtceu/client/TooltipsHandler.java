@@ -118,9 +118,9 @@ public class TooltipsHandler {
         if (fluid instanceof GTFluid attributedFluid) {
             FluidState state = attributedFluid.getState();
             switch (state) {
-                case LIQUID -> tooltips.accept(Component.translatable("gtceu.fluid.state_liquid"));
-                case GAS -> tooltips.accept(Component.translatable("gtceu.fluid.state_gas"));
-                case PLASMA -> tooltips.accept(Component.translatable("gtceu.fluid.state_plasma"));
+                case LIQUID -> tooltips.accept(Component.translatable("fluid.gtceu.tooltip.liquid"));
+                case GAS -> tooltips.accept(Component.translatable("fluid.gtceu.tooltip.gas"));
+                case PLASMA -> tooltips.accept(Component.translatable("fluid.gtceu.tooltip.plasma"));
             }
             attributedFluid.getAttributes().forEach(a -> a.appendFluidTooltips(tooltips));
         } else {
@@ -128,9 +128,9 @@ public class TooltipsHandler {
             tooltips.accept(Component.translatable(key));
         }
 
-        tooltips.accept(Component.translatable("gtceu.fluid.temperature", fluidType.getTemperature()));
+        tooltips.accept(Component.translatable("fluid.gtceu.tooltip.temperature", fluidType.getTemperature()));
         if (fluidType.getTemperature() < FluidConstants.CRYOGENIC_FLUID_THRESHOLD) {
-            tooltips.accept(Component.translatable("gtceu.fluid.temperature.cryogenic"));
+            tooltips.accept(Component.translatable("fluid.gtceu.tooltip.cryogenic"));
         }
     }
 }

@@ -88,7 +88,7 @@ public class ElectricStats implements IInteractionItem, ISubItemHandler, IAddInf
         if (electricItem != null && electricItem.canProvideChargeExternally() && player.isShiftKeyDown()) {
             if (!level.isClientSide) {
                 boolean isInDischargeMode = isInDischargeMode(itemStack);
-                String locale = "metaitem.electric.discharge_mode." + (isInDischargeMode ? "disabled" : "enabled");
+                String locale = "item.electric.discharge_mode." + (isInDischargeMode ? "disabled" : "enabled");
                 player.displayClientMessage(Component.translatable(locale), true);
                 setInDischargeMode(itemStack, !isInDischargeMode);
             }
@@ -186,7 +186,7 @@ public class ElectricStats implements IInteractionItem, ISubItemHandler, IAddInf
         addCurrentChargeTooltip(tooltipComponents, electricItem.getCharge(), electricItem.getMaxCharge(),
                 electricItem.getTier(), electricItem.canProvideChargeExternally());
         if (electricItem.canProvideChargeExternally()) {
-            tooltipComponents.add(Component.translatable("metaitem.electric.discharge_mode.tooltip"));
+            tooltipComponents.add(Component.translatable("item.electric.discharge_mode.tooltip"));
         }
     }
 
@@ -231,7 +231,7 @@ public class ElectricStats implements IInteractionItem, ISubItemHandler, IAddInf
                     unit)
                     .withStyle(color));
         } else {
-            tooltip.add(Component.translatable("metaitem.generic.electric_item.tooltip",
+            tooltip.add(Component.translatable("item.generic.electric_item.tooltip",
                     FormattingUtil.formatNumbers(currentCharge), FormattingUtil.formatNumbers(maxCharge),
                     GTValues.VNF[tier]).withStyle(color));
         }

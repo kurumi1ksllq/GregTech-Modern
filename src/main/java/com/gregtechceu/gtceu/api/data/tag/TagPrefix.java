@@ -249,7 +249,7 @@ public class TagPrefix {
             .unificationEnabled(true)
             .generateItem(true)
             .generationCondition(hasOreProperty)
-            .tooltip((mat, tooltips) -> tooltips.add(Component.translatable("metaitem.crushed.tooltip.purify")));
+            .tooltip((mat, tooltips) -> tooltips.add(Component.translatable("item.crushed.tooltip.purify")));
 
     // A hot Ingot, which has to be cooled down by a Vacuum Freezer.
     public static final TagPrefix ingotHot = new TagPrefix("hotIngot")
@@ -376,7 +376,7 @@ public class TagPrefix {
             .unificationEnabled(true)
             .generateItem(true)
             .generationCondition(hasOreProperty)
-            .tooltip((mat, tooltips) -> tooltips.add(Component.translatable("metaitem.dust.tooltip.purify")));
+            .tooltip((mat, tooltips) -> tooltips.add(Component.translatable("item.dust.tooltip.purify")));
 
     // Pure Dust worth of one Ingot or Gem.
     public static final TagPrefix dustPure = new TagPrefix("pureDust")
@@ -389,7 +389,7 @@ public class TagPrefix {
             .unificationEnabled(true)
             .generateItem(true)
             .generationCondition(hasOreProperty)
-            .tooltip((mat, tooltips) -> tooltips.add(Component.translatable("metaitem.dust.tooltip.purify")));
+            .tooltip((mat, tooltips) -> tooltips.add(Component.translatable("item.dust.tooltip.purify")));
 
     public static final TagPrefix dust = new TagPrefix("dust")
             .defaultTagPath("dusts/%s")

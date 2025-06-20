@@ -16,6 +16,8 @@ public class ItemLang {
         initGeneratedNames(provider);
         initItemNames(provider);
         initItemTooltips(provider);
+        provider.add("item.invalid.name", "Invalid item");
+
     }
 
     private static void initGeneratedNames(RegistrateLangProvider provider) {
@@ -484,5 +486,134 @@ public class ItemLang {
                 "Shift + R-Click on a controller to automatically build the multi-block");
 
         provider.add("item.gtceu.sus_record.desc", "§7sussy!");
+
+        provider.add("item.gtceu.ulv_voltage_coil.tooltip", "Primitive Coil");
+        provider.add("item.gtceu.lv_voltage_coil.tooltip", "Basic Coil");
+        provider.add("item.gtceu.mv_voltage_coil.tooltip", "Good Coil");
+        provider.add("item.gtceu.hv_voltage_coil.tooltip", "Advanced Coil");
+        provider.add("item.gtceu.ev_voltage_coil.tooltip", "Extreme Coil");
+        provider.add("item.gtceu.iv_voltage_coil.tooltip", "Elite Coil");
+        provider.add("item.gtceu.luv_voltage_coil.tooltip", "Master Coil");
+        provider.add("item.gtceu.zpm_voltage_coil.tooltip", "Super Coil");
+        provider.add("item.gtceu.uv_voltage_coil.tooltip", "Ultimate Coil");
+        provider.add("item.gtceu.uhv_voltage_coil.tooltip", "Ultra Coil");
+        provider.add("item.gtceu.uev_voltage_coil.tooltip", "Unreal Coil");
+        provider.add("item.gtceu.uiv_voltage_coil.tooltip", "Insane Coil");
+        provider.add("item.gtceu.uxv_voltage_coil.tooltip", "Epic Coil");
+        provider.add("item.gtceu.opv_voltage_coil.tooltip", "Legendary Coil");
+        provider.add("item.gtceu.max_voltage_coil.tooltip", "Maximum Coil");
+
+
+
+    }
+
+    public static void generateBehaviorKeys(RegistrateLangProvider provider){
+        provider.add("behaviour.hoe", "Can till dirt");
+        provider.add("behaviour.soft_hammer", "Activates and Deactivates Machines");
+        provider.add("behaviour.soft_hammer.enabled", "Working Enabled");
+        provider.add("behaviour.soft_hammer.disabled", "Working Disabled");
+        provider.add("behaviour.soft_hammer.idle_after_cycle", "Pause machine after current cycle");
+        provider.add("behaviour.lighter.tooltip.description", "Can light things on fire");
+        provider.add("behaviour.lighter.tooltip.usage", "Shift-right click to open/close");
+        provider.add("behaviour.lighter.fluid.tooltip", "Can light things on fire with Butane or Propane");
+        provider.add("behaviour.lighter.uses", "Remaining uses: %d");
+        provider.add("behavior.toggle_energy_consumer.tooltip", "Use to toggle mode");
+        provider.add("behaviour.hammer", "Turns on and off Muffling for Machines (by hitting them)");
+        provider.add("behaviour.wrench", "Rotates Blocks on Rightclick");
+        provider.add("behaviour.boor.by", "by %s");
+        provider.add("behaviour.paintspray.solvent.tooltip", "Can remove color from things");
+        provider.add("behaviour.paintspray.white.tooltip", "Can paint things in White");
+        provider.add("behaviour.paintspray.orange.tooltip", "Can paint things in Orange");
+        provider.add("behaviour.paintspray.magenta.tooltip", "Can paint things in Magenta");
+        provider.add("behaviour.paintspray.light_blue.tooltip", "Can paint things in Light Blue");
+        provider.add("behaviour.paintspray.yellow.tooltip", "Can paint things in Yellow");
+        provider.add("behaviour.paintspray.lime.tooltip", "Can paint things in Lime");
+        provider.add("behaviour.paintspray.pink.tooltip", "Can paint things in Pink");
+        provider.add("behaviour.paintspray.gray.tooltip", "Can paint things in Gray");
+        provider.add("behaviour.paintspray.light_gray.tooltip", "Can paint things in Light Gray");
+        provider.add("behaviour.paintspray.cyan.tooltip", "Can paint things in Cyan");
+        provider.add("behaviour.paintspray.purple.tooltip", "Can paint things in Purple");
+        provider.add("behaviour.paintspray.blue.tooltip", "Can paint things in Blue");
+        provider.add("behaviour.paintspray.brown.tooltip", "Can paint things in Brown");
+        provider.add("behaviour.paintspray.green.tooltip", "Can paint things in Green");
+        provider.add("behaviour.paintspray.red.tooltip", "Can paint things in Red");
+        provider.add("behaviour.paintspray.black.tooltip", "Can paint things in Black");
+        provider.add("behaviour.paintspray.uses", "Remaining Uses: %d");
+        provider.add("behaviour.prospecting", "Usable for Prospecting");
+        provider.add("behaviour.meta.machine.config.copy.tooltip", "§7Sneak + R-Click to copy machine configuration");
+        provider.add("behaviour.meta.machine.config.paste.tooltip", "§7R-Click to paste machine configuration");
+        provider.add("behaviour.setting.allow.input.from.output.tooltip", "%s input from output side is %s");
+        provider.add("behaviour.setting.output.direction.tooltip", "%s output direction: %s");
+        provider.add("behaviour.setting.item_auto_output.tooltip", "%s auto-output is %s");
+        provider.add("behaviour.setting.muffled.tooltip", "Muffling %s");
+        provider.add("item.toggle.advanced.info.tooltip", "§8<Sneak to view stored configuration>");
+
+        provider.add("item.prospector.mode.ores", "§aOre Prospection Mode§r");
+        provider.add("item.prospector.mode.fluid", "§bFluid Prospection Mode§r");
+        provider.add("item.prospector.mode.bedrock_ore", "§bBedrock Ore Prospection Mode§r");
+        provider.add("item.prospector.tooltip.radius", "Scans range in a %s Chunk Radius");
+        provider.add("item.prospector.tooltip.modes", "Available Modes:");
+        provider.add("behavior.prospector.not_enough_energy", "Not Enough Energy!");
+        provider.add("behavior.prospector.added_waypoint", "Created waypoint named %s!");
+        provider.add("item.tricorder_scanner.tooltip", "Tricorder");
+        provider.add("item.debug_scanner.tooltip", "Tricorder");
+        provider.add("behavior.portable_scanner.bedrock_fluid.amount", "Fluid In Deposit: %s %s - %s%%");
+        provider.add("behavior.portable_scanner.bedrock_fluid.amount_unknown", "Fluid In Deposit: %s%%");
+        provider.add("behavior.portable_scanner.bedrock_fluid.nothing", "Fluid In Deposit: §6Nothing§r");
+        provider.add("behavior.portable_scanner.environmental_hazard", "Environmental Hazard In Chunk: %s§r - %s ppm");
+        provider.add("behavior.portable_scanner.environmental_hazard.nothing",
+                "Environmental Hazard In Chunk: §6Nothing§r");
+        provider.add("behavior.portable_scanner.local_hazard", "Local Hazard In Area: %s§r - %s ppm");
+        provider.add("behavior.portable_scanner.local_hazard.nothing", "Local Hazard In Area: §6Nothing§r");
+        provider.add("behavior.portable_scanner.block_hardness", "Hardness: %s Blast Resistance: %s");
+        provider.add("behavior.portable_scanner.block_name", "Name: %s MetaData: %s");
+        provider.add("behavior.portable_scanner.debug_cpu_load",
+                "Average CPU load of ~%sns over %s ticks with worst time of %sns.");
+        provider.add("behavior.portable_scanner.debug_cpu_load_seconds", "This is %s seconds.");
+        provider.add("behavior.portable_scanner.debug_lag_count",
+                "Caused %s Lag Spike Warnings (anything taking longer than %sms) on the Server.");
+        provider.add("behavior.portable_scanner.debug_machine", "Meta-ID: %s");
+        provider.add("behavior.portable_scanner.debug_machine_invalid", " invalid!");
+        provider.add("behavior.portable_scanner.debug_machine_invalid_null=invalid! MetaTileEntity =",
+                " null!");
+        provider.add("behavior.portable_scanner.debug_machine_valid", " valid");
+        provider.add("behavior.portable_scanner.divider", "=========================");
+        provider.add("behavior.portable_scanner.energy_container_in", "Max IN: %s (%s) EU at %s A");
+        provider.add("behavior.portable_scanner.energy_container_out", "Max OUT: %s (%s) EU at %s A");
+        provider.add("behavior.portable_scanner.energy_container_storage", "Energy: %s EU / %s EU");
+        provider.add("behavior.portable_scanner.eu_per_sec", "Average (last second): %s EU/t");
+        provider.add("behavior.portable_scanner.amp_per_sec", "Average (last second): %s A");
+        provider.add("behavior.portable_scanner.machine_disabled", "Disabled.");
+        provider.add("behavior.portable_scanner.machine_front_facing", "Front Facing: %s");
+        provider.add("behavior.portable_scanner.machine_ownership", "§2Machine Owner Type: %s§r");
+        provider.add("behavior.portable_scanner.guild_name", "§2Guild Name: %s§r");
+        provider.add("behavior.portable_scanner.team_name", "§2Team Name: %s§r");
+        provider.add("behavior.portable_scanner.player_name", "§2Player Name: %s§r, §7Player Online: %s§r");
+        provider.add("behavior.portable_scanner.machine_power_loss", "Shut down due to power loss.");
+        provider.add("behavior.portable_scanner.machine_progress", "Progress/Load: %s / %s");
+        provider.add("behavior.portable_scanner.machine_upwards_facing", "Upwards Facing: %s");
+        provider.add("behavior.portable_scanner.muffled", "Muffled.");
+        provider.add("behavior.portable_scanner.multiblock_energy_input",
+                "Max Energy Income: %s EU/t Tier: %s");
+        provider.add("behavior.portable_scanner.multiblock_energy_output",
+                "Max Energy Output: %s EU/t Tier: %s");
+        provider.add("behavior.portable_scanner.multiblock_maintenance", "Problems: %s");
+        provider.add("behavior.portable_scanner.multiblock_parallel", "Multi Processing: %s");
+        provider.add("behavior.portable_scanner.position", "----- X: %s Y: %s Z: %s D: %s -----");
+        provider.add("behavior.portable_scanner.state", "%s: %s");
+        provider.add("behavior.portable_scanner.tank", "Tank %s: %s mB / %s mB %s");
+        provider.add("behavior.portable_scanner.tanks_empty", "All Tanks Empty");
+        provider.add("behavior.portable_scanner.workable_consumption", "Probably Uses: %s EU/t at %s A");
+        provider.add("behavior.portable_scanner.workable_production", "Probably Produces: %s EU/t at %s A");
+        provider.add("behavior.portable_scanner.workable_progress", "Progress: %s s / %s s");
+        provider.add("behavior.portable_scanner.workable_stored_energy", "Stored Energy: %s EU / %s EU");
+        provider.add("behavior.portable_scanner.mode.caption", "Display mode: %s");
+        provider.add("behavior.portable_scanner.mode.show_all_info", "Show all info");
+        provider.add("behavior.portable_scanner.mode.show_block_info", "Show block info");
+        provider.add("behavior.portable_scanner.mode.show_machine_info", "Show machine info");
+        provider.add("behavior.portable_scanner.mode.show_electrical_info", "Show electrical info");
+        provider.add("behavior.portable_scanner.mode.show_recipe_info", "Show recipe info");
+        provider.add("behavior.portable_scanner.mode.show_environmental_info", "Show environmental info");
+
     }
 }

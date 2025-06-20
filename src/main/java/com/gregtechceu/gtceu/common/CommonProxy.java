@@ -36,7 +36,7 @@ import com.gregtechceu.gtceu.common.unification.material.MaterialRegistryManager
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.AbstractRegistrateAccessor;
 import com.gregtechceu.gtceu.data.GregTechDatagen;
-import com.gregtechceu.gtceu.data.lang.MaterialLangGenerator;
+import com.gregtechceu.gtceu.data.lang.MaterialLang;
 import com.gregtechceu.gtceu.data.loot.ChestGenHooks;
 import com.gregtechceu.gtceu.data.loot.DungeonLootLoader;
 import com.gregtechceu.gtceu.data.pack.GTDynamicDataPack;
@@ -152,10 +152,10 @@ public class CommonProxy {
                         .get(ProviderType.LANG);
                 if (providers.isEmpty()) {
                     providers.add(
-                            (provider) -> MaterialLangGenerator.generate((RegistrateLangProvider) provider, registry));
+                            (provider) -> MaterialLang.generate((RegistrateLangProvider) provider, registry));
                 } else {
                     providers.add(0,
-                            (provider) -> MaterialLangGenerator.generate((RegistrateLangProvider) provider, registry));
+                            (provider) -> MaterialLang.generate((RegistrateLangProvider) provider, registry));
                 }
             }
 

@@ -16,6 +16,7 @@ public class ItemLang {
         initItemNames(provider);
         initItemTooltips(provider);
         generateBehaviorKeys(provider);
+
         provider.add("item.invalid.name", "Invalid item");
     }
 
@@ -484,8 +485,11 @@ public class ItemLang {
         provider.add("item.gtceu.terminal.tooltip",
                 "Shift + R-Click on a controller to automatically build the multi-block");
 
+        // Records
         provider.add("item.gtceu.sus_record.desc", "§7sussy!");
+        provider.add("item.record.sus.tooltip", "§7Leonz - Among Us Drip");
 
+        // Voltage Coils
         provider.add("item.gtceu.ulv_voltage_coil.tooltip", "Primitive Coil");
         provider.add("item.gtceu.lv_voltage_coil.tooltip", "Basic Coil");
         provider.add("item.gtceu.mv_voltage_coil.tooltip", "Good Coil");
@@ -501,6 +505,30 @@ public class ItemLang {
         provider.add("item.gtceu.uxv_voltage_coil.tooltip", "Epic Coil");
         provider.add("item.gtceu.opv_voltage_coil.tooltip", "Legendary Coil");
         provider.add("item.gtceu.max_voltage_coil.tooltip", "Maximum Coil");
+
+        provider.add("item.int_circuit.configuration", "Configuration: %d");
+
+        provider.add("item.gtceu.nan_certificate.tooltip", "Challenge Accepted!");
+        provider.add("item.gtceu.blacklight.tooltip", "Long-Wave §dUltraviolet§7 light source");
+
+        provider.add("item.clipboard.tooltip",
+                "Can be written on (without any writing Instrument). Right-click on Wall to place, and Shift-Right-Click to remove");
+
+        provider.add("item.gtceu.turbine_rotor.tooltip", "Turbine Rotors for your power station");
+
+        // Terminal
+        provider.add("item.terminal.tooltip", "Sharp tools make good work");
+        provider.add("item.terminal.tooltip.creative", "§bCreative Mode");
+        provider.add("item.terminal.tooltip.hardware", "§aHardware: %d");
+
+        provider.add("item.generic.fluid_container.tooltip", "%d/%dL %s");
+
+        // General Electric Tools
+        provider.add("item.generic.electric_item.tooltip", "%d/%d EU - Tier %s");
+        provider.add("item.generic.electric_item.stored", "%d/%d EU (%s)");
+        provider.add("item.electric.discharge_mode.enabled", "§eDischarge Mode Enabled");
+        provider.add("item.electric.discharge_mode.disabled", "§eDischarge Mode Disabled");
+        provider.add("item.electric.discharge_mode.tooltip", "Use while sneaking to toggle discharge mode");
     }
 
     public static void generateBehaviorKeys(RegistrateLangProvider provider) {
@@ -517,6 +545,16 @@ public class ItemLang {
         provider.add("behaviour.hammer", "Turns on and off Muffling for Machines (by hitting them)");
         provider.add("behaviour.wrench", "Rotates Blocks on Rightclick");
         provider.add("behaviour.boor.by", "by %s");
+        provider.add("behavior.item_magnet.enabled", "§aMagnetic Field Enabled");
+        provider.add("behavior.item_magnet.disabled", "§cMagnetic Field Disabled");
+
+        // Wrench configuration
+        provider.add("item.machine_configuration.mode", "§aConfiguration Mode:§r %s");
+        provider.add("gtceu.mode.fluid", "§9Fluid§r");
+        provider.add("gtceu.mode.item", "§6Item§r");
+        provider.add("gtceu.mode.both", "§dBoth (Fluid And Item)§r");
+
+        // Spray can
         provider.add("behaviour.paintspray.solvent.tooltip", "Can remove color from things");
         provider.add("behaviour.paintspray.white.tooltip", "Can paint things in White");
         provider.add("behaviour.paintspray.orange.tooltip", "Can paint things in Orange");
@@ -535,7 +573,7 @@ public class ItemLang {
         provider.add("behaviour.paintspray.red.tooltip", "Can paint things in Red");
         provider.add("behaviour.paintspray.black.tooltip", "Can paint things in Black");
         provider.add("behaviour.paintspray.uses", "Remaining Uses: %d");
-        provider.add("behaviour.prospecting", "Usable for Prospecting");
+
         provider.add("behaviour.meta.machine.config.copy.tooltip", "§7Sneak + R-Click to copy machine configuration");
         provider.add("behaviour.meta.machine.config.paste.tooltip", "§7R-Click to paste machine configuration");
         provider.add("behaviour.setting.allow.input.from.output.tooltip", "%s input from output side is %s");
@@ -544,6 +582,8 @@ public class ItemLang {
         provider.add("behaviour.setting.muffled.tooltip", "Muffling %s");
         provider.add("item.toggle.advanced.info.tooltip", "§8<Sneak to view stored configuration>");
 
+        // Prospector
+        provider.add("behaviour.prospecting", "Usable for Prospecting");
         provider.add("item.prospector.mode.ores", "§aOre Prospection Mode§r");
         provider.add("item.prospector.mode.fluid", "§bFluid Prospection Mode§r");
         provider.add("item.prospector.mode.bedrock_ore", "§bBedrock Ore Prospection Mode§r");
@@ -551,6 +591,8 @@ public class ItemLang {
         provider.add("item.prospector.tooltip.modes", "Available Modes:");
         provider.add("behavior.prospector.not_enough_energy", "Not Enough Energy!");
         provider.add("behavior.prospector.added_waypoint", "Created waypoint named %s!");
+
+        // Portable scanner
         provider.add("item.tricorder_scanner.tooltip", "Tricorder");
         provider.add("item.debug_scanner.tooltip", "Tricorder");
         provider.add("behavior.portable_scanner.bedrock_fluid.amount", "Fluid In Deposit: %s %s - %s%%");
@@ -610,5 +652,9 @@ public class ItemLang {
         provider.add("behavior.portable_scanner.mode.show_electrical_info", "Show electrical info");
         provider.add("behavior.portable_scanner.mode.show_recipe_info", "Show recipe info");
         provider.add("behavior.portable_scanner.mode.show_environmental_info", "Show environmental info");
+
+        // Data Stick
+        provider.add("behavior.data_item.assemblyline.title", "§nAssembly Line Construction Data:");
+        provider.add("behavior.data_item.assemblyline.data", "- §a%s");
     }
 }

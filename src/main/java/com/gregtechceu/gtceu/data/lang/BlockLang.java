@@ -32,7 +32,7 @@ public class BlockLang {
         replace(provider, "block.gtceu.wire_coil.tooltip_cracking", "§8Cracking Unit:");
         replace(provider, "block.gtceu.wire_coil.tooltip_energy_cracking", "  §aEnergy Usage: §f%s%%");
 
-        // Substation capacitors
+        // Substation Capacitors
         provider.add("block.gtceu.substation_capacitor.tooltip_empty", "§7For filling space in your Power Substation");
         provider.add("block.gtceu.substation_capacitor.tooltip_filled", "§cEnergy Capacity: §f%d EU");
 
@@ -110,6 +110,25 @@ public class BlockLang {
         replace(provider, GTBlocks.BATTERY_EMPTY_TIER_III.get().getDescriptionId(), "Empty Tier III Capacitor");
         replace(provider, GTBlocks.BATTERY_LAPOTRONIC_UV.get().getDescriptionId(), "UV Lapotronic Capacitor");
         replace(provider, GTBlocks.BATTERY_ULTIMATE_UHV.get().getDescriptionId(), "UHV Ultimate Capacitor");
+
+        // Decor Stuff
+        replace(provider, "block.gtceu.yellow_stripes_block.a", "Yellow Stripes Block");
+        replace(provider, "block.gtceu.yellow_stripes_block.b", "Yellow Stripes Block");
+        replace(provider, "block.gtceu.yellow_stripes_block.c", "Yellow Stripes Block");
+        replace(provider, "block.gtceu.yellow_stripes_block.d", "Yellow Stripes Block");
+
+        // Extra stone blocks
+        provider.add("tile.gtceu.seal.name", "Sealed Block");
+        provider.add("tile.gtceu.foam.name", "Foam");
+        provider.add("tile.gtceu.reinforced_foam.name", "Reinforced Foam");
+        provider.add("tile.gtceu.petrified_foam.name", "Petrified Foam");
+        provider.add("tile.gtceu.reinforced_stone.name", "Reinforced Stone");
+        provider.add("tile.gtceu.brittle_charcoal.name", "Brittle Charcoal");
+        multilineLang(provider, "tile.gtceu.brittle_charcoal.tooltip",
+                "Produced by the Charcoal Pile Igniter.\nMine this to get Charcoal.");
+
+        // Surface Rocks
+        provider.add("block.surface_rock", "%s Surface Rock");
     }
 
     private static void generatePipeKeys(RegistrateLangProvider provider) {

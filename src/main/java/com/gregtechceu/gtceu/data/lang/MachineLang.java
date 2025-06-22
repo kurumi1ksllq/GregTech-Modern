@@ -351,6 +351,7 @@ public class MachineLang {
         provider.add("gtceu.machine.quantum_tank.tooltip", "§7Compact place to store all your fluids");
 
         provider.add("gtceu.machine.buffer.tooltip", "A Small Buffer to store Items and Fluids");
+
         // Gas Collector
         provider.add("gtceu.machine.lv_gas_collector.tooltip",
                 "§7Collects Gas from the air depending on the dimension");
@@ -378,6 +379,7 @@ public class MachineLang {
                 "§7Collects Gas from the solar system depending on the dimension");
         provider.add("gtceu.machine.opv_gas_collector.tooltip",
                 "§7Collects Gas from the universe depending on the dimension");
+
         // Rock Breaker
         provider.add("gtceu.machine.lv_rock_crusher.tooltip", "§7Place Water and Lava horizontally adjacent");
         provider.add("gtceu.machine.mv_rock_crusher.tooltip", "§7Place Water and Lava horizontally adjacent");
@@ -392,11 +394,13 @@ public class MachineLang {
         provider.add("gtceu.machine.uiv_rock_crusher.tooltip", "§7Volcanic Formation Chamber");
         provider.add("gtceu.machine.uxv_rock_crusher.tooltip", "§7Volcanic Formation Chamber");
         provider.add("gtceu.machine.opv_rock_crusher.tooltip", "§7Volcanic Formation Chamber");
+
         // Fisher
         provider.add("gtceu.machine.fisher.tooltip", "Costs string to fish. Consumes one string each time.");
         provider.add("gtceu.machine.fisher.speed", "Catches something every %d ticks");
         provider.add("gtceu.machine.fisher.requirement",
                 "Requires a %dx%d centered square of water directly below.");
+
         // World Accelerator
         provider.add("gtceu.machine.world_accelerator.description",
                 "Tick accelerates nearby blocks in one of 2 modes: §fTile Entity§7 or §fRandom Tick§7. Use Screwdriver to change mode.");
@@ -962,6 +966,26 @@ public class MachineLang {
         provider.add("gtceu.multiblock.hpca.info_bridging_enabled", "Bridging Enabled");
         provider.add("gtceu.multiblock.hpca.info_bridging_disabled", "Bridging Disabled");
 
+        provider.add("gtceu.multiblock.dimension", "§eDimensions: §r%sx%sx%s");
+
+        // General Machine Behavior
+        provider.add("gtceu.machine.parallel_hatch.display", "Adjust the maximum parallel of the multiblock");
+        provider.add("gtceu.machine.basic.input_from_output_side.allow", "Allow Input from Output Side: ");
+        provider.add("gtceu.machine.basic.input_from_output_side.disallow",
+                "Disallow Input from Output Side: ");
+        provider.add("gtceu.machine.muffle.on", "Sound Muffling: Enabled");
+        provider.add("gtceu.machine.muffle.off", "Sound Muffling: Disabled");
+        provider.add("gtceu.machine.perfect_oc", "Does not lose energy efficiency when overclocked.");
+        provider.add("gtceu.machine.parallel_limit", "Can run up to §b%d§r§7 Recipes at once.");
+
+        // Recipe Maps
+        provider.add("gtceu.gui.machinemode.title", "Active Machine Mode");
+        provider.add("gtceu.gui.machinemode", "Active Machine Mode: %s");
+        provider.add("gtceu.machine.available_recipe_map_1.tooltip", "Available Recipe Types: %s");
+        provider.add("gtceu.machine.available_recipe_map_2.tooltip", "Available Recipe Types: %s, %s");
+        provider.add("gtceu.machine.available_recipe_map_3.tooltip", "Available Recipe Types: %s, %s, %s");
+        provider.add("gtceu.machine.available_recipe_map_4.tooltip", "Available Recipe Types: %s, %s, %s, %s");
+
         provider.add("gtceu.creative.chest.item", "Item");
         provider.add("gtceu.creative.chest.ipc", "Items per Cycle");
         provider.add("gtceu.creative.chest.tpc", "Ticks per Cycle");
@@ -975,6 +999,33 @@ public class MachineLang {
         provider.add("gtceu.creative.computation.average", "Average Requested CWUt");
         provider.add("gtceu.creative.activity.on", "Active");
         provider.add("gtceu.creative.activity.off", "Not active");
+
+        // Multiblock Tanks
+        provider.add("gtceu.machine.multiblock.tank.tooltip",
+                "Fill and drain through the controller or tank valves.");
+        provider.add("gtceu.machine.tank_valve.tooltip",
+                "Use to fill and drain multiblock tanks. Auto outputs when facing down.");
+
+        // Workbench
+        multilineLang(provider, "gtceu.machine.workbench.tooltip",
+                "Better than Forestry\nHas Item Storage, Tool Storage, pulls from adjacent Inventories, and saves Recipes.");
+        provider.add("gtceu.machine.workbench.tab.workbench", "Crafting");
+        provider.add("gtceu.machine.workbench.tab.item_list", "Storage");
+        multilineLang(provider, "gtceu.machine.workbench.storage_note",
+                "(Available items from connected\ninventories usable for crafting)");
+        provider.add("gtceu.item_list.item_stored", "§7Stored: %d");
+        provider.add("gtceu.machine.workbench.tab.crafting", "Crafting");
+        provider.add("gtceu.machine.workbench.tab.container", "Container");
+        multilineLang(provider, "gtceu.recipe_memory_widget.tooltip",
+                "§7Left click to automatically input this recipe into the crafting grid\n§7Shift click to lock/unlock this recipe");
+
+        // Safe
+        provider.add("gtceu.machine.locked_safe.malfunctioning", "§cMalfunctioning!");
+        provider.add("gtceu.machine.locked_safe.requirements", "§7Replacements required:");
+
+        // Drums
+        provider.add("gtceu.machine.drum.enable_output", "Will drain Fluid to downward adjacent Tanks");
+        provider.add("gtceu.machine.drum.disable_output", "Will not drain Fluid");
     }
 
     public static void standardTooltips(RegistrateLangProvider provider, String root, String machine,

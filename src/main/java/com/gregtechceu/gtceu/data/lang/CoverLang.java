@@ -11,21 +11,17 @@ public class CoverLang {
     }
 
     private static void generateCoverKeys(RegistrateLangProvider provider) {
-
-        //todo uses
+        // todo uses
         provider.add("cover.filter.blacklist.disabled", "Whitelist");
         provider.add("cover.filter.blacklist.enabled", "Blacklist");
 
-
-        //filter
+        // Filter IO
         provider.add("cover.gtceu.filter.mode.filter_insert", "Filter Insert");
         provider.add("cover.gtceu.filter.mode.filter_extract", "Filter Extract");
         provider.add("cover.gtceu.filter.mode.filter_both", "Filter Insert/Extract");
 
-
-
-        //tag filter
-        //todo: use these???
+        // Tag filter
+        // todo: use these???
         provider.add("cover.tag_filter.title", "Tag Filter");
         multilineLang(provider, "cover.gtceu.tag_filter.info",
                 """
@@ -46,7 +42,7 @@ public class CoverLang {
         provider.add("cover.tag_filter.matches", "Item matches");
         provider.add("cover.tag_filter.matches_not", "Item does not match");
 
-        //fluid filter
+        // Fluid filter
         provider.add("cover.fluid_filter.title", "Fluid Filter");
         multilineLang(provider, "cover.fluid_filter.config_amount",
                 "Scroll wheel up increases amount, down decreases.\nShift[§6x10§r],Ctrl[§ex100§r],Shift+Ctrl[§ax1000§r]\nRight click increases amount, left click decreases.\nHold shift to double/halve.\nMiddle click to clear");
@@ -54,14 +50,16 @@ public class CoverLang {
         provider.add("cover.fluid_filter.mode.filter_drain", "Filter Drain");
         provider.add("cover.fluid_filter.mode.filter_both", "Filter Fill & Drain");
 
-        //item filter
+        // Item filter
         provider.add("cover.item_filter.title", "Item Filter");
         provider.add("cover.item_filter.ignore_damage.disabled", "Respect Damage");
         provider.add("cover.item_filter.ignore_nbt.enabled", "Ignore NBT");
         provider.add("cover.item_filter.ignore_nbt.disabled", "Respect NBT");
         provider.add("cover.item_filter.ignore_damage.enabled", "Ignore Damage");
+        provider.add("gtceu.item_filter.empty_item", "Empty (No Item)");
+        provider.add("gtceu.item_filter.footer", "§eClick with item to override");
 
-        // smart filter
+        // Smart filter
         provider.add("cover.item_smart_filter.title", "Smart Item Filter");
         provider.add("cover.item_smart_filter.filtering_mode.electrolyzer", "Electrolyzer");
         provider.add("cover.item_smart_filter.filtering_mode.centrifuge", "Centrifuge");
@@ -69,10 +67,10 @@ public class CoverLang {
         multilineLang(provider, "cover.item_smart_filter.filtering_mode.description",
                 "Select Machine this Smart Filter will use for filtering.\nIt will automatically pick right portions of items for robotic arm.");
 
-
+        // Storage Cover
         provider.add("cover.storage.title", "Storage Cover");
 
-        //voiding
+        // Voiding
         provider.add("cover.voiding.voiding_mode.void_any", "Void Matching");
         provider.add("cover.voiding.voiding_mode.void_overflow", "Void Overflow");
         multilineLang(provider, "cover.voiding.voiding_mode.description",
@@ -88,7 +86,7 @@ public class CoverLang {
         provider.add("cover.voiding.message.disabled", "Voiding Cover Disabled");
         provider.add("cover.voiding.message.enabled", "Voiding Cover Enabled");
 
-        // conveyors
+        // Conveyors
         provider.add("cover.conveyor.title", "Conveyor Cover Settings (%s)");
         provider.add("cover.conveyor.transfer_rate", "§7items/sec");
         provider.add("cover.conveyor.mode", "Mode: %s");
@@ -105,7 +103,7 @@ public class CoverLang {
         multilineLang(provider, "cover.conveyor.blocks_input.disabled",
                 "If enabled, items will not be inserted when cover is set to pull items from the inventory into pipe.\n§cDisabled");
 
-        //cover universal whatever that is
+        // Common cover key entries
         provider.add("cover.universal.manual_import_export.mode.disabled",
                 "Manual I/O: §bDisabled\n§7Items / Fluids will only move as specified by the cover and its filter.");
         provider.add("cover.universal.manual_import_export.mode.filtered",
@@ -118,7 +116,7 @@ public class CoverLang {
         multiLang(provider, "cover.conveyor.tag.title", "Tag Name",
                 "(use * for wildcard)");
 
-        // robot arm
+        // Robot arm
         provider.add("cover.robotic_arm.title", "Robotic Arm Settings (%s)");
         provider.add("cover.robotic_arm.transfer_mode.transfer_any", "Transfer Any");
         provider.add("cover.robotic_arm.transfer_mode.transfer_exact", "Supply Exact");
@@ -126,7 +124,7 @@ public class CoverLang {
         multilineLang(provider, "cover.robotic_arm.transfer_mode.description",
                 "§eTransfer Any§r - in this mode, cover will transfer as many items matching its filter as possible.\n§eSupply Exact§r - in this mode, cover will supply items in portions specified in item filter slots (or variable under this button for tag filter). If amount of items is less than portion size, items won't be moved.\n§eKeep Exact§r - in this mode, cover will keep specified amount of items in the destination inventory, supplying additional amount of items if required.\n§7Tip: left/right click on filter slots to change item amount,  use shift clicking to change amount faster.");
 
-        //pump
+        // Pump
         provider.add("cover.pump.title", "Pump Cover Settings (%s)");
         provider.add("cover.pump.transfer_rate", "%s");
         provider.add("cover.pump.mode.export", "Mode: Export");
@@ -135,14 +133,14 @@ public class CoverLang {
         provider.add("cover.bucket.mode.bucket", "B");
         provider.add("cover.bucket.mode.milli_bucket", "mB");
 
-        //fluid regulator
+        // Fluid regulator
         provider.add("cover.fluid_regulator.title", "Fluid Regulator Settings (%s)");
         multilineLang(provider, "cover.fluid_regulator.transfer_mode.description",
                 "§eTransfer Any§r - in this mode, cover will transfer as many fluids matching its filter as possible.\n§eSupply Exact§r - in this mode, cover will supply fluids in portions specified in the window underneath this button. If amount of fluids is less than portion size, fluids won't be moved.\n§eKeep Exact§r - in this mode, cover will keep specified amount of fluids in the destination inventory, supplying additional amount of fluids if required.\n§7Tip: shift click will multiply increase/decrease amounts by 10 and ctrl click will multiply by 100.");
         provider.add("cover.fluid_regulator.supply_exact", "Supply Exact: %s");
         provider.add("cover.fluid_regulator.keep_exact", "Keep Exact: %s");
 
-        //machine controller
+        // Machine controller
         provider.add("cover.machine_controller.title", "Machine Controller Settings");
         provider.add("cover.machine_controller.normal", "Normal");
         provider.add("cover.machine_controller.inverted", "Inverted");
@@ -160,7 +158,7 @@ public class CoverLang {
         provider.add("cover.machine_controller.mode.cover_west", "Control Cover (West)");
         provider.add("cover.machine_controller.mode.null", "Control Nothing");
 
-        //ender fluid
+        // Ender fluid
         provider.add("cover.ender_fluid_link.title", "Ender Fluid Link");
         provider.add("cover.ender_fluid_link.iomode.enabled", "I/O Enabled");
         provider.add("cover.ender_fluid_link.iomode.disabled", "I/O Disabled");
@@ -174,7 +172,7 @@ public class CoverLang {
         multilineLang(provider, "cover.ender_fluid_link.incomplete_hex",
                 "Inputted color is incomplete!\nIt will be applied once complete (all 8 hex digits)\nClosing the gui will lose edits!");
 
-       // detector
+        // Detector
         provider.add("cover.detector_base.message_normal_state", "Monitoring Status: Normal");
         provider.add("cover.detector_base.message_inverted_state", "Monitoring Status: Inverted");
 
@@ -187,7 +185,13 @@ public class CoverLang {
         multilineLang(provider, "cover.advanced_detector.latch.disabled",
                 "Behavior: Continuous\n\n" + detectorLatchDescription);
 
-        // advanced energy detector
+        // Energy Detector
+        provider.add("gtceu.cover.energy_detector.message_electricity_storage_normal",
+                "Monitoring Normal Electricity Storage");
+        provider.add("gtceu.cover.energy_detector.message_electricity_storage_inverted",
+                "Monitoring Inverted Electricity Storage");
+
+        // Advanced energy detector
         provider.add("cover.advanced_energy_detector.label", "Advanced Energy Detector");
         provider.add("cover.advanced_energy_detector.min", "Min");
         provider.add("cover.advanced_energy_detector.max", "Max");
@@ -203,7 +207,13 @@ public class CoverLang {
         multilineLang(provider, "cover.advanced_energy_detector.use_percent.disabled",
                 "Mode: Discrete EU\n\n" + advancedEnergyDetectorModeDescription);
 
-        // advanced fluid cover
+        // Fluid detector
+        provider.add("gtceu.cover.fluid_detector.message_fluid_storage_normal",
+                "Monitoring Normal Fluid Storage");
+        provider.add("gtceu.cover.fluid_detector.message_fluid_storage_inverted",
+                "Monitoring Inverted Fluid Storage");
+
+        // Advanced fluid detector
         provider.add("cover.advanced_fluid_detector.label", "Advanced Fluid Detector");
         var advancedFluidDetectorInvertDescription = "Toggle to invert the redstone logic\nBy default, redstone stops emitting when less than the minimum mB of fluid, and starts emitting when greater than the min mB of fluid up to the set maximum";
         multilineLang(provider, "cover.advanced_fluid_detector.invert.enabled",
@@ -213,7 +223,12 @@ public class CoverLang {
         provider.add("cover.advanced_fluid_detector.max", "Max Fluid (mB)");
         provider.add("cover.advanced_fluid_detector.min", "Min Fluid (mB)");
 
-        // advanced item detector
+        // Item detector
+        provider.add("gtceu.cover.item_detector.message_item_storage_normal", "Monitoring Normal Item Storage");
+        provider.add("gtceu.cover.item_detector.message_item_storage_inverted",
+                "Monitoring Inverted Item Storage");
+
+        // Advanced item detector
         provider.add("cover.advanced_item_detector.label", "Advanced Item Detector");
         var advancedItemDetectorInvertDescription = "Toggle to invert the redstone logic\nBy default, redstone stops emitting when less than the minimum amount of items, and starts emitting when greater than the min amount of items up to the set maximum";
         multilineLang(provider, "cover.advanced_item_detector.invert.enabled",
@@ -223,8 +238,51 @@ public class CoverLang {
         provider.add("cover.advanced_item_detector.max", "Max Items");
         provider.add("cover.advanced_item_detector.min", "Min Items");
 
-        //shutter
+        // Activity detector
+        provider.add("gtceu.cover.activity_detector.message_activity_normal",
+                "Monitoring Normal Activity Status");
+        provider.add("gtceu.cover.activity_detector.message_activity_inverted",
+                "Monitoring Inverted Activity Status");
+        provider.add("gtceu.cover.activity_detector_advanced.message_activity_normal",
+                "Monitoring Normal Progress Status");
+        provider.add("gtceu.cover.activity_detector_advanced.message_activity_inverted",
+                "Monitoring Inverted Progress Status");
+
+        // Shutter
         provider.add("cover.shutter.message.enabled", "Closed shutter");
         provider.add("cover.shutter.message.disabled", "Opened shutter");
+
+        // Proxy cover
+        provider.add("item.cover.digital.mode.proxy.disabled", "Click to enable Proxy Mode");
+        provider.add("item.cover.digital.mode.proxy.enabled", "Proxy Mode enabled");
+        provider.add("item.cover.digital.mode.machine.disabled", "Click to enable Machine Mode");
+        provider.add("item.cover.digital.mode.machine.enabled", "Machine Mode enabled");
+        provider.add("item.cover.digital.mode.energy.disabled", "Click to enable Energy Mode");
+        provider.add("item.cover.digital.mode.energy.enabled", "Energy Mode enabled");
+        provider.add("item.cover.digital.mode.item.disabled", "Click to enable Item Mode");
+        provider.add("item.cover.digital.mode.item.enabled", "Item Mode enabled");
+        provider.add("item.cover.digital.mode.fluid.disabled", "Click to enable Fluid Mode");
+        provider.add("item.cover.digital.mode.fluid.enabled", "Fluid Mode enabled");
+
+        // Digital wireless cover
+        multiLang(provider, "item.cover.digital.wireless.tooltip",
+                "§fWirelessly§7 connects machines to the §fCentral Monitor§7 as §fCover§7.",
+                "§fRight Click§7 on the §fCentral Monitor§7 to remotely bind to it.",
+                "§fSneak Right Click§7 to remove the current binding.",
+                "§aBinding: §f%s");
+
+        // Central Monitor
+        provider.add("monitor.gui.title.back", "Back");
+        provider.add("monitor.gui.title.scale", "Scale:");
+        provider.add("monitor.gui.title.argb", "ARGB:");
+        provider.add("monitor.gui.title.slot", "Slot:");
+        provider.add("monitor.gui.title.plugin", "Plugin:");
+        provider.add("monitor.gui.title.config", "Config");
+
+        provider.add("item.plugin.tooltips.1",
+                "Plugins can be added to the screen for more functionality.");
+        provider.add("item.plugin.proxy.tooltips.1", "(Please adjust to proxy mode in the screen)");
+        provider.add("item.cover.digital.tooltip",
+                "Connects machines over §fPower Cables§7 to the §fCentral Monitor§7 as §fCover§7.");
     }
 }

@@ -26,18 +26,24 @@ public class HazardLang {
         provider.add("gtceu.medical_condition.methanol_poisoning", "§6Methanol Poisoning");
         provider.add("gtceu.medical_condition.carbon_monoxide_poisoning", "§7Carbon Monoxide Poisoning");
         provider.add("gtceu.medical_condition.none", "§2Not Dangerous");
+
         provider.add("gtceu.hazard_trigger.description", "Caused by:");
         provider.add("gtceu.hazard_trigger.protection.description", "Protects from:");
         provider.add("gtceu.hazard_trigger.inhalation", "Inhalation");
         provider.add("gtceu.hazard_trigger.any", "Any contact");
-
         provider.add("gtceu.hazard_trigger.skin_contact", "Skin contact");
         provider.add("gtceu.hazard_trigger.none", "Nothing");
+
         provider.add("gtceu.medical_condition.antidote.description", "§aAntidote §7Hold Shift to show details");
         provider.add("gtceu.medical_condition.antidote.description_shift", "§aCures these conditions:");
         provider.add("gtceu.medical_condition.antidote.description.effect_removed",
                 "Removes %s%% of current conditions' effects");
         provider.add("gtceu.medical_condition.antidote.description.effect_removed.all",
                 "Removes all of current conditions' effects");
+
+        provider.add("gtceu.tooltip.potion.header", "§6Contains effects:");
+        provider.add("gtceu.tooltip.potion.each", "%s %s §7for§r %s §7ticks with a§r %s%% §7chance of happening§r");
+
+        provider.add("effect.gtceu.weak_poison", "Weak Poison");
     }
 }

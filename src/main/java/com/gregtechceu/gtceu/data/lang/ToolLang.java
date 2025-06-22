@@ -8,12 +8,13 @@ public class ToolLang {
 
     public static void init(RegistrateLangProvider provider) {
         initDeathMessages(provider);
-        generateToolClassKey(provider);
+        generateToolClassKeys(provider);
         generateToolKeys(provider);
         generateTooltips(provider);
-        generateBehaviorKey(provider);
+        generateBehaviorKeys(provider);
         generateActionKeys(provider);
-        initToolInfo(provider);
+        generateToolInfoKeys(provider);
+        generateEnchantKeys(provider);
     }
 
     private static void initDeathMessages(RegistrateLangProvider provider) {
@@ -73,7 +74,7 @@ public class ToolLang {
         provider.add("death.attack.gtceu.medical_condition.carbon_monoxide_poisoning", "%s left the stove on");
     }
 
-    public static void generateToolClassKey(RegistrateLangProvider provider) {
+    public static void generateToolClassKeys(RegistrateLangProvider provider) {
         provider.add("tool.gtceu.class.sword", "Sword");
         provider.add("tool.gtceu.class.pickaxe", "Pickaxe");
         provider.add("tool.gtceu.class.shovel", "Shovel");
@@ -99,7 +100,7 @@ public class ToolLang {
         provider.add("tool.gtceu.class.drill", "Drill");
     }
 
-    public static void generateBehaviorKey(RegistrateLangProvider provider) {
+    public static void generateBehaviorKeys(RegistrateLangProvider provider) {
         provider.add("tool.gtceu.behavior.silk_ice", "§bIce Cutter: §fSilk Harvests Ice");
         provider.add("tool.gtceu.behavior.torch_place", "§eSpelunker: §fPlaces Torches on Right-Click");
         provider.add("tool.gtceu.behavior.tree_felling", "§4Lumberjack: §fTree Felling");
@@ -117,6 +118,11 @@ public class ToolLang {
         provider.add("tool.gtceu.behavior.block_rotation", "§2Mechanic: §fRotates Blocks");
         provider.add("tool.gtceu.behavior.damage_boost", "§4Damage Boost: §fExtra damage against %s");
 
+        // AOE
+        provider.add("item.gtceu.tool.aoe.rows", "Rows");
+        provider.add("item.gtceu.tool.aoe.columns", "Columns");
+        provider.add("item.gtceu.tool.aoe.layers", "Layers");
+
         // mode switching
         provider.add("item.behavior.mode_switch.tooltip", "Use while sneaking to switch mode");
         provider.add("item.behavior.mode_switch.mode_switched", "§eMode Set to: %s");
@@ -131,6 +137,7 @@ public class ToolLang {
         replace(provider, "item.gtceu.tool.axe", "%s Axe");
         replace(provider, "item.gtceu.tool.hoe", "%s Hoe");
         replace(provider, "item.gtceu.tool.saw", "%s Saw");
+        replace(provider, "item.gtceu.bucket", "%s Bucket");
 
         replace(provider, "item.gtceu.tool.hammer", "%s Hammer");
         replace(provider, "item.gtceu.tool.mallet", "%s Soft Mallet");
@@ -196,8 +203,6 @@ public class ToolLang {
         multiLang(provider, "item.gtceu.tool.harvest_level",
                 "§8Wood", "§7Stone", "§aIron", "§bDiamond",
                 "§dNetherite", "§9Duranium", "§cNeutronium");
-        provider.add("tool.gtceu.repair_info.tooltip", "§8Hold SHIFT to show Repair Info");
-        provider.add("tool.gtceu.repair_material.tooltip", "§8Repair with: §f§a%s");
     }
 
     public static void generateActionKeys(RegistrateLangProvider provider) {
@@ -222,5 +227,26 @@ public class ToolLang {
         provider.add("gtceu.tool_action.tape", "§8Use Tape to fix Maintenance Problems");
     }
 
-    private static void initToolInfo(RegistrateLangProvider provider) {}
+    private static void generateToolInfoKeys(RegistrateLangProvider provider) {
+        provider.add("item.tool.tooltip.primary_material", "§fMaterial: §e%s");
+        provider.add("item.tool.tooltip.durability", "§fDurability: §a%d / %d");
+        provider.add("item.tool.tooltip.rotor.efficiency", "Turbine Efficiency: §9%d%%");
+        provider.add("item.tool.tooltip.rotor.power", "Turbine Power: §9%d%%");
+
+        provider.add("tool.gtceu.repair_info.tooltip", "§8Hold SHIFT to show Repair Info");
+        provider.add("tool.gtceu.repair_material.tooltip", "§8Repair with: §f§a%s");
+
+        provider.add("item.gtceu.tool.replace_tool_head", "Craft with a new Tool Head to replace it");
+        provider.add("item.gtceu.tool.usable_as", "§8Usable as: §f%s");
+    }
+
+    private static void generateEnchantKeys(RegistrateLangProvider provider) {
+        provider.add("enchantment.disjunction", "Disjunction");
+        provider.add("enchantment.damage.disjunction", "Disjunction");
+        provider.add("enchantment.gtceu.disjunction.description",
+                "Applies Weakness and Slowness to Ender-related mobs.");
+        provider.add("enchantment.hard_hammer", "Hammering");
+        provider.add("enchantment.gtceu.hard_hammer.description",
+                "Breaks blocks as if they were mined with a GregTech Hammer.");
+    }
 }

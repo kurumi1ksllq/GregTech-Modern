@@ -65,5 +65,17 @@ public class CommandLang {
         // old cape provider
         provider.add("gtceu.chat.cape",
                 "§5Congrats: you just unlocked a new cape! See the Cape Selector terminal app to use it.§r");
+
+        // New Cape Command
+        provider.add("command.gtceu.cape.give.failed", "No new capes were unlocked");
+        provider.add("command.gtceu.cape.give.success.multiple", "Unlocked %s capes for %s players");
+        provider.add("command.gtceu.cape.give.success.single", "Unlocked %s capes for %s");
+        provider.add("command.gtceu.cape.take.failed", "No capes could be removed");
+        provider.add("command.gtceu.cape.take.success.multiple", "Took %s capes from %s players");
+        provider.add("command.gtceu.cape.take.success.single", "Took %s capes from %s");
+        provider.add("command.gtceu.cape.use.failed",
+                "%s can't use cape %s because they don't have it (or it doesn't exist)!");
+        provider.add("command.gtceu.cape.use.success", "%s is now using cape %s");
+        provider.add("command.gtceu.cape.use.success.none", "%s is no longer using a cape");
     }
 }

@@ -35,7 +35,9 @@ public class HazardCleanerInfoProvider extends CapabilityInfoProvider<IEnvironme
     protected void addProbeInfo(IEnvironmentalHazardCleaner capability, IProbeInfo probeInfo, Player player,
                                 BlockEntity blockEntity, IProbeHitData data) {
         float cleaned = capability.getRemovedLastSecond();
-        probeInfo.element(new ElementText(Component.translatable("gtceu.jade.cleaned_this_second", cleaned),
-                probeInfo.defaultTextStyle()));
+        if (cleaned > 0) {
+            probeInfo.element(new ElementText(Component.translatable("gtceu.jade.cleaned_this_second", cleaned),
+                    probeInfo.defaultTextStyle()));
+        }
     }
 }

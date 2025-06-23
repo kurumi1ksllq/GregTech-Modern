@@ -26,6 +26,7 @@ public class MaterialLang {
         replace(provider, FullersEarth.getUnlocalizedName(), "Fuller's Earth");
         // greg's humor is now on 1.20.1...
         replace(provider, Cooperite.getUnlocalizedName(), "Sheldonite");
+
         replace(provider, HSSG.getUnlocalizedName(), "HSS-G");
         replace(provider, HSSE.getUnlocalizedName(), "HSS-E");
         replace(provider, HSSS.getUnlocalizedName(), "HSS-S");
@@ -35,8 +36,10 @@ public class MaterialLang {
         replace(provider, UUMatter.getUnlocalizedName(), "UU-Matter");
         replace(provider, PCBCoolant.getUnlocalizedName(), "PCB Coolant");
         replace(provider, TungstenSteel.getUnlocalizedName(), "Tungstensteel");
+
         replace(provider, Iron3Chloride.getUnlocalizedName(), "Iron III Chloride");
         replace(provider, Iron2Chloride.getUnlocalizedName(), "Iron II Chloride");
+
         replace(provider, OilHeavy.getUnlocalizedName(), "Heavy Oil");
         replace(provider, "block.gtceu.oil_heavy", "Heavy Oil");
         replace(provider, OilLight.getUnlocalizedName(), "Light Oil");
@@ -52,6 +55,7 @@ public class MaterialLang {
         replace(provider, HydroCrackedEthylene.getUnlocalizedName(), "Hydro-Cracked Ethylene");
         replace(provider, HydroCrackedPropane.getUnlocalizedName(), "Hydro-Cracked Propane");
         replace(provider, HydroCrackedPropene.getUnlocalizedName(), "Hydro-Cracked Propene");
+
         replace(provider, SteamCrackedButadiene.getUnlocalizedName(), "Steam-Cracked Butadiene");
         replace(provider, SteamCrackedButane.getUnlocalizedName(), "Steam-Cracked Butane");
         replace(provider, SteamCrackedButene.getUnlocalizedName(), "Steam-Cracked Butene");
@@ -60,6 +64,7 @@ public class MaterialLang {
         replace(provider, SteamCrackedEthylene.getUnlocalizedName(), "Steam-Cracked Ethylene");
         replace(provider, SteamCrackedPropane.getUnlocalizedName(), "Steam-Cracked Propane");
         replace(provider, SteamCrackedPropene.getUnlocalizedName(), "Steam-Cracked Propene");
+
         replace(provider, LightlyHydroCrackedGas.getUnlocalizedName(), "Lightly Hydro-Cracked Gas");
         replace(provider, LightlyHydroCrackedHeavyFuel.getUnlocalizedName(),
                 "Lightly Hydro-Cracked Heavy Fuel");
@@ -74,6 +79,7 @@ public class MaterialLang {
                 "Lightly Steam-Cracked Light Fuel");
         replace(provider, LightlySteamCrackedNaphtha.getUnlocalizedName(),
                 "Lightly Steam-Cracked Naphtha");
+
         replace(provider, SeverelyHydroCrackedGas.getUnlocalizedName(),
                 "Severely Hydro-Cracked Gas");
         replace(provider, SeverelyHydroCrackedHeavyFuel.getUnlocalizedName(),
@@ -97,14 +103,13 @@ public class MaterialLang {
         replace(provider, Stellite100.getUnlocalizedName(), "Stellite-100");
         replace(provider, HastelloyC276.getUnlocalizedName(), "Hastelloy C-276");
 
-        provider.add("item.netherrack_nether_quartz", "Nether Quartz Ore");
-
-        provider.add("fluid.empty", "Empty");
-        provider.add("fluid.tile.lava", "Lava");
-        provider.add("fluid.tile.water", "Water");
+        // replace(provider, GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.oreNetherrack,
+        // NetherQuartz).get().getDescriptionId(), "Nether Quartz Ore");
+        replace(provider, "item.gtceu.nether_quartz_netherrack", "Nether Quartz Ore");
     }
 
     private static void generateFluidKeys(RegistrateLangProvider provider) {
+        // Fluid Types
         provider.add("fluid.gtceu.liquid_generic", "Liquid %s");
         provider.add("fluid.gtceu.generic", "%s");
         provider.add("fluid.gtceu.gas_generic", "%s Gas");
@@ -112,7 +117,7 @@ public class MaterialLang {
         provider.add("fluid.gtceu.plasma", "%s Plasma");
         provider.add("fluid.gtceu.molten", "Molten %s");
 
-        // ui
+        // Fluid Widgets
         provider.add("fluid.gtceu.empty", "Empty");
         provider.add("fluid.gtceu.amount", "§9Amount: %d/%d mB");
         provider.add("fluid.gtceu.click_to_fill",
@@ -122,20 +127,27 @@ public class MaterialLang {
         provider.add("fluid.gtceu.click_to_empty",
                 "§7Click with a Fluid Container to §cempty §7the tank (Shift-click for a full stack).");
 
-        // tooltips
+        // Fluid Tooltips
         provider.add("fluid.gtceu.tooltip.temperature", "§cTemperature: %d K");
         provider.add("fluid.gtceu.tooltip.cryogenic", "§bCryogenic! Handle with care!");
         provider.add("fluid.gtceu.tooltip.gas", "§aState: Gaseous");
         provider.add("fluid.gtceu.tooltip.liquid", "§aState: Liquid");
         provider.add("fluid.gtceu.tooltip.plasma", "§aState: Plasma");
         provider.add("fluid.gtceu.tooltip.acid", "§6Acidic! Handle with care!");
+
+        // Fluid Tiles?
+        provider.add("fluid.empty", "Empty");
+        provider.add("fluid.tile.lava", "Lava");
+        provider.add("fluid.tile.water", "Water");
     }
 
     private static void generateMaterialKeys(RegistrateLangProvider provider) {
+        // Material Page
         provider.add("gtceu.jei.materials.average_mass", "Average mass: %d");
         provider.add("gtceu.jei.materials.average_protons", "Average protons: %d");
         provider.add("gtceu.jei.materials.average_neutrons", "Average neutrons: %d");
 
+        // Cauldron Washing
         provider.add("item.dust.tooltip.purify", "Right click a Cauldron to get clean Dust");
         provider.add("item.crushed.tooltip.purify", "Right click a Cauldron to get Purified Ore");
     }

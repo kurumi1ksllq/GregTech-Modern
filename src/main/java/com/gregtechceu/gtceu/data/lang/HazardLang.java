@@ -11,6 +11,7 @@ public class HazardLang {
     }
 
     private static void generateHazardKeys(RegistrateLangProvider provider) {
+        // Medical Conditions
         provider.add("gtceu.medical_condition.description", "§l§cHAZARDOUS §7Hold Shift to show details");
         provider.add("gtceu.medical_condition.description_shift", "§l§cHAZARDOUS:");
         provider.add("gtceu.medical_condition.chemical_burns", "§5Chemical burns");
@@ -27,6 +28,7 @@ public class HazardLang {
         provider.add("gtceu.medical_condition.carbon_monoxide_poisoning", "§7Carbon Monoxide Poisoning");
         provider.add("gtceu.medical_condition.none", "§2Not Dangerous");
 
+        // Hazard Triggers
         provider.add("gtceu.hazard_trigger.description", "Caused by:");
         provider.add("gtceu.hazard_trigger.protection.description", "Protects from:");
         provider.add("gtceu.hazard_trigger.inhalation", "Inhalation");
@@ -34,6 +36,7 @@ public class HazardLang {
         provider.add("gtceu.hazard_trigger.skin_contact", "Skin contact");
         provider.add("gtceu.hazard_trigger.none", "Nothing");
 
+        // Antidote
         provider.add("gtceu.medical_condition.antidote.description", "§aAntidote §7Hold Shift to show details");
         provider.add("gtceu.medical_condition.antidote.description_shift", "§aCures these conditions:");
         provider.add("gtceu.medical_condition.antidote.description.effect_removed",
@@ -41,9 +44,11 @@ public class HazardLang {
         provider.add("gtceu.medical_condition.antidote.description.effect_removed.all",
                 "Removes all of current conditions' effects");
 
+        // Potion
         provider.add("gtceu.tooltip.potion.header", "§6Contains effects:");
         provider.add("gtceu.tooltip.potion.each", "%s %s §7for§r %s §7ticks with a§r %s%% §7chance of happening§r");
 
+        // Poison
         provider.add("effect.gtceu.weak_poison", "Weak Poison");
     }
 }

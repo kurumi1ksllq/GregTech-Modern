@@ -34,35 +34,45 @@ public class IntegrationLang {
         provider.add("gtceu.jei.bedrock_fluid_diagram", "Bedrock Fluid Diagram");
         provider.add("gtceu.jei.bedrock_ore_diagram", "Bedrock Ore Diagram");
 
-        // Ore vein
+        // Ore Veins
         provider.add("ore.spawnlocation.name", "Ore Spawn Information");
+
         provider.add("gtceu.jei.ore_vein_diagram.chance", "§eChance: %s§r");
         provider.add("gtceu.jei.ore_vein_diagram.spawn_range", "Spawn Range:");
         provider.add("gtceu.jei.ore_vein_diagram.weight", "Weight: %s");
         provider.add("gtceu.jei.ore_vein_diagram.dimensions", "Dimensions:");
-        multiLang(provider, "gtceu.jei.ore.primary", "Top Ore", "Spawns in the top %d layers of the vein");
+
+        multiLang(provider, "gtceu.jei.ore.primary", "Top Ore",
+                "Spawns in the top %d layers of the vein");
         multiLang(provider, "gtceu.jei.ore.secondary", "Bottom Ore",
                 "Spawns in the bottom %d layers of the vein");
         multiLang(provider, "gtceu.jei.ore.between", "Between Ore",
                 "Spawns in the middle %d layers of the vein, with other ores");
-        multiLang(provider, "gtceu.jei.ore.sporadic", "Sporadic Ore", "Spawns anywhere in the vein");
+        multiLang(provider, "gtceu.jei.ore.sporadic", "Sporadic Ore",
+                "Spawns anywhere in the vein");
+
         provider.add("gtceu.jei.ore.biome_weighting_title", "§dModified Biome Total Weights:");
         provider.add("gtceu.jei.ore.biome_weighting", "§d%s Weight: §3%d");
         provider.add("gtceu.jei.ore.biome_weighting_no_spawn", "§d%s Weight: §cCannot Spawn");
         provider.add("gtceu.jei.ore.ore_weight", "Weight in vein: %d%%");
+
+        // Surface Rock
         multiLang(provider, "gtceu.jei.ore.surface_rock",
                 "Surface Rocks with this material denote vein spawn locations.",
                 "They can be broken for 3 Tiny Piles of the dust, with Fortune giving a bonus.");
 
         // Fluid vein
         provider.add("fluid.spawnlocation.name", "Fluid Vein Information");
+
         provider.add("gtceu.jei.fluid.vein_weight", "Vein Weight: %d");
         provider.add("gtceu.jei.fluid.min_yield", "Minimum Yield: %d");
         provider.add("gtceu.jei.fluid.max_yield", "Maximum Yield: %d");
         provider.add("gtceu.jei.fluid.depletion_chance", "Depletion Chance: %d%%");
         provider.add("gtceu.jei.fluid.depletion_amount", "Depletion Amount: %d");
         provider.add("gtceu.jei.fluid.depleted_rate", "Depleted Yield: %d");
+
         provider.add("gtceu.jei.fluid.dimension", "Dimensions:");
+
         provider.add("gtceu.jei.fluid.weight_hover",
                 "The Weight of the vein. Hover over the fluid to see any possible biome modifications");
         provider.add("gtceu.jei.fluid.min_hover",
@@ -75,6 +85,7 @@ public class IntegrationLang {
         provider.add("gtceu.jei.fluid.dep_yield_hover",
                 "The maximum yield of the vein when it is fully depleted");
 
+        // Vein Names
         GTRegistries.ORE_VEINS.unfreeze();
         GTOres.init();
         for (GTOreDefinition oreDefinition : GTRegistries.ORE_VEINS) {
@@ -88,6 +99,7 @@ public class IntegrationLang {
             provider.add("gtceu.jei.bedrock_fluid." + name, RegistrateLangProvider.toEnglishName(name));
         }
 
+        // Potion
         provider.add("gtceu.rei.group.potion_fluids", "Potion Fluids");
     }
 
@@ -96,17 +108,25 @@ public class IntegrationLang {
         provider.add("gtceu.top.working_disabled", "Working Disabled");
         provider.add("gtceu.top.energy_consumption", "Using");
         provider.add("gtceu.top.energy_production", "Producing");
+
+        // Transformers
         provider.add("gtceu.top.transform_up", "§cStep Up§r %s");
         provider.add("gtceu.top.transform_down", "§aStep Down§r %s");
         provider.add("gtceu.top.transform_input", "§6Input:§r %s");
         provider.add("gtceu.top.transform_output", "§9Output:§r %s");
         provider.add("gtceu.top.convert_eu", "Converting §eEU§r -> §cFE§r");
         provider.add("gtceu.top.convert_fe", "Converting §cFE§r -> §eEU§r");
+
+        // Generators
         provider.add("gtceu.top.fuel_min_consume", "Needs");
         provider.add("gtceu.top.fuel_none", "No fuel");
+
+        // Multiblock Structures
         provider.add("gtceu.top.invalid_structure", "Structure Incomplete");
         provider.add("gtceu.top.valid_structure", "Structure Formed");
         provider.add("gtceu.top.obstructed_structure", "Structure Obstructed");
+
+        // Maintenance
         provider.add("gtceu.top.maintenance_fixed", "Maintenance Fine");
         provider.add("gtceu.top.maintenance_broken", "Needs Maintenance");
         provider.add("gtceu.top.maintenance.wrench", "Pipe is loose");
@@ -115,25 +135,45 @@ public class IntegrationLang {
         provider.add("gtceu.top.maintenance.hard_hammer", "Plating is dented");
         provider.add("gtceu.top.maintenance.wire_cutter", "Wires burned out");
         provider.add("gtceu.top.maintenance.crowbar", "That doesn't belong there");
+
+        // Steam Venting
+        provider.add("gtceu.top.exhaust_vent_direction", "Exhaust Vent: %s");
+        provider.add("gtceu.top.exhaust_vent_blocked", "Blocked");
+
+        // Primitive Pump
         provider.add("gtceu.top.primitive_pump_production", "Production: %s mB/s");
+
+        // Ender Link Cover??
         provider.add("gtceu.top.filter.label", "Filter:");
         provider.add("gtceu.top.link_cover.color", "Color:");
         provider.add("gtceu.top.mode.export", "Exporting");
         provider.add("gtceu.top.mode.import", "Importing");
+
+        // Extra Cover Provider
         provider.add("gtceu.top.unit.items", "Items");
         provider.add("gtceu.top.unit.fluid_milibuckets", "L");
         provider.add("gtceu.top.unit.fluid_buckets", "kL");
+
+        // Recipe Provider
         provider.add("gtceu.top.recipe_output", "Recipe Outputs:");
         provider.add("gtceu.top.item_auto_output", "Item Output: %s");
         provider.add("gtceu.top.fluid_auto_output", "Fluid Output: %s");
+
+        // IO Provider
         provider.add("gtceu.top.auto_output", "Auto Output");
         provider.add("gtceu.top.allow_output_input", "Allow Input");
+
+        // Cable Provider
         provider.add("gtceu.top.cable_voltage", "Voltage: ");
         provider.add("gtceu.top.cable_amperage", "Amperage: ");
-        provider.add("gtceu.top.exhaust_vent_direction", "Exhaust Vent: %s");
-        provider.add("gtceu.top.exhaust_vent_blocked", "Blocked");
+
+        // Machine Mode Provider
         provider.add("gtceu.top.machine_mode", "Machine Mode: ");
+
+        // Color Provider
         provider.add("gtceu.top.stained", "Colored: %s");
+
+        // Proxy/Buffers
         provider.add("gtceu.top.buffer_not_bound", "Buffer Not Currently Bound");
         provider.add("gtceu.top.buffer_bound_pos", "Bound To - X: %s, Y: %s, Z: %s");
         provider.add("gtceu.top.proxies_bound", "Buffer Proxies Bound: %s");
@@ -147,8 +187,11 @@ public class IntegrationLang {
         provider.add("gtceu.jade.progress_computation", "%s / %s CWU");
         provider.add("gtceu.jade.progress_sec", "%s / %s s");
         provider.add("gtceu.jade.progress_tick", "%s / %s t");
+
+        // Hazard Provider
         provider.add("gtceu.jade.cleaned_this_second", "Cleaned hazard: %s/s");
 
+        // Plugin Names
         provider.add("config.jade.plugin_gtceu.controllable_provider", "[GTCEu] Controllable");
         provider.add("config.jade.plugin_gtceu.workable_provider", "[GTCEu] Workable");
         provider.add("config.jade.plugin_gtceu.electric_container_provider", "[GTCEu] Electric Container");
@@ -172,18 +215,22 @@ public class IntegrationLang {
     }
 
     private static void initMinimapLang(RegistrateLangProvider provider) {
+        // Tooltip/Name
         provider.add("gtceu.minimap.ore_vein.depleted", "Depleted");
 
+        // Chat Messages
         provider.add("message.gtceu.new_veins.amount", "Prospected %d new veins!");
         provider.add("message.gtceu.new_veins.name", "Prospected %s!");
-        provider.add("button.gtceu.mark_as_depleted.name", "Mark as Depleted");
-        provider.add("button.gtceu.toggle_waypoint.name", "Toggle Waypoint");
 
+        // Options
         provider.add("gtceu.journeymap.options.layers", "Prospection layers");
         provider.add("gtceu.journeymap.options.layers.ore_veins", "Show Ore Veins");
         provider.add("gtceu.journeymap.options.layers.bedrock_fluids", "Show Bedrock Fluid Veins");
         provider.add("gtceu.journeymap.options.layers.hide_depleted", "Hide Depleted Veins");
 
+        // Buttons
+        provider.add("button.gtceu.mark_as_depleted.name", "Mark as Depleted");
+        provider.add("button.gtceu.toggle_waypoint.name", "Toggle Waypoint");
         provider.add("gtceu.button.ore_veins", "Show GT Ore Veins");
         provider.add("gtceu.button.bedrock_fluids", "Show Bedrock Fluid Veins");
         provider.add("gtceu.button.hide_depleted", "Hide Depleted Veins");
@@ -191,6 +238,7 @@ public class IntegrationLang {
     }
 
     private static void initOwnershipLang(RegistrateLangProvider provider) {
+        // Team Names
         provider.add("gtceu.ownership.name.player", "Player");
         provider.add("gtceu.ownership.name.ftb", "FTB Teams");
         provider.add("gtceu.ownership.name.argonauts", "Argonauts Guild");

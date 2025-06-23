@@ -18,6 +18,7 @@ public class ToolLang {
     }
 
     private static void initDeathMessages(RegistrateLangProvider provider) {
+        // Death Messages
         provider.add("death.attack.gtceu.heat", "%s was boiled alive");
         provider.add("death.attack.gtceu.frost", "%s explored cryogenics");
         provider.add("death.attack.gtceu.chemical", "%s had a chemical accident");
@@ -44,6 +45,7 @@ public class ToolLang {
         provider.add("death.attack.gtceu.scythe", "%s had their soul taken by %s");
         provider.add("death.attack.gtceu.knife", "%s was gently poked by %s");
         provider.add("death.attack.gtceu.butchery_knife", "%s was butchered by %s");
+
         provider.add("death.attack.gtceu.drill_lv", "%s was drilled with 32V by %s");
         provider.add("death.attack.gtceu.drill_mv", "%s was drilled with 128V by %s");
         provider.add("death.attack.gtceu.drill_hv", "%s was drilled with 512V by %s");
@@ -56,6 +58,7 @@ public class ToolLang {
         provider.add("death.attack.gtceu.buzzsaw", "%s got buzzed by %s");
         provider.add("death.attack.gtceu.screwdriver_lv", "%s had their screws removed by %s");
 
+        // Medical Deaths
         provider.add("death.attack.gtceu.medical_condition.asbestosis", "%s got mesothelioma");
         provider.add("death.attack.gtceu.medical_condition.chemical_burns", "%s had a chemical accident");
         provider.add("death.attack.gtceu.medical_condition.poison",
@@ -75,6 +78,7 @@ public class ToolLang {
     }
 
     public static void generateToolClassKeys(RegistrateLangProvider provider) {
+        // Tool Names
         provider.add("tool.gtceu.class.sword", "Sword");
         provider.add("tool.gtceu.class.pickaxe", "Pickaxe");
         provider.add("tool.gtceu.class.shovel", "Shovel");
@@ -101,6 +105,7 @@ public class ToolLang {
     }
 
     public static void generateBehaviorKeys(RegistrateLangProvider provider) {
+        // Generic Tool Behaviors
         provider.add("tool.gtceu.behavior.silk_ice", "§bIce Cutter: §fSilk Harvests Ice");
         provider.add("tool.gtceu.behavior.torch_place", "§eSpelunker: §fPlaces Torches on Right-Click");
         provider.add("tool.gtceu.behavior.tree_felling", "§4Lumberjack: §fTree Felling");
@@ -123,14 +128,14 @@ public class ToolLang {
         provider.add("item.gtceu.tool.aoe.columns", "Columns");
         provider.add("item.gtceu.tool.aoe.layers", "Layers");
 
-        // mode switching
+        // Wrench Mode Switch
         provider.add("item.behavior.mode_switch.tooltip", "Use while sneaking to switch mode");
         provider.add("item.behavior.mode_switch.mode_switched", "§eMode Set to: %s");
         provider.add("item.behavior.mode_switch.current_mode", "Mode: %s");
     }
 
     public static void generateToolKeys(RegistrateLangProvider provider) {
-        // tool names
+        // Tool Names
         replace(provider, "item.gtceu.tool.sword", "%s Sword");
         replace(provider, "item.gtceu.tool.pickaxe", "%s Pickaxe");
         replace(provider, "item.gtceu.tool.shovel", "%s Shovel");
@@ -151,27 +156,36 @@ public class ToolLang {
         replace(provider, "item.gtceu.tool.butchery_knife", "%s Butchery Knife");
         replace(provider, "item.gtceu.tool.scythe", "%s Scythe");
         replace(provider, "item.gtceu.tool.rolling_pin", "%s Rolling Pin");
+
         replace(provider, "item.gtceu.tool.lv_drill", "%s Drill (LV)");
         replace(provider, "item.gtceu.tool.mv_drill", "%s Drill (MV)");
         replace(provider, "item.gtceu.tool.hv_drill", "%s Drill (HV)");
         replace(provider, "item.gtceu.tool.ev_drill", "%s Drill (EV)");
         replace(provider, "item.gtceu.tool.iv_drill", "%s Drill (IV)");
+
         replace(provider, "item.gtceu.tool.lv_wirecutter", "%s Wire Cutter (LV)");
         replace(provider, "item.gtceu.tool.hv_wirecutter", "%s Wire Cutter (HV)");
         replace(provider, "item.gtceu.tool.iv_wirecutter", "%s Wire Cutter (IV)");
+
         replace(provider, "item.gtceu.tool.mining_hammer", "%s Mining Hammer");
         replace(provider, "item.gtceu.tool.spade", "%s Spade");
+
         replace(provider, "item.gtceu.tool.lv_chainsaw", "%s Chainsaw (LV)");
         replace(provider, "item.gtceu.tool.mv_chainsaw", "%s Chainsaw (MV)");
         replace(provider, "item.gtceu.tool.hv_chainsaw", "%s Chainsaw (HV)");
+
         replace(provider, "item.gtceu.tool.lv_wrench", "%s Wrench (LV)");
         replace(provider, "item.gtceu.tool.hv_wrench", "%s Wrench (HV)");
         replace(provider, "item.gtceu.tool.iv_wrench", "%s Wrench (IV)");
+
         replace(provider, "item.gtceu.tool.buzzsaw", "%s Buzzsaw (LV)");
         replace(provider, "item.gtceu.tool.lv_screwdriver", "%s Screwdriver (LV)");
         replace(provider, "item.gtceu.tool.plunger", "%s Plunger");
         replace(provider, "item.gtceu.tool.shears", "%s Shears");
+    }
 
+    public static void generateTooltips(RegistrateLangProvider provider) {
+        // Tool Tooltips
         provider.add("item.gtceu.tool.hammer.tooltip", "§8Crushes Blocks when harvesting them");
         multilineLang(provider, "item.gtceu.tool.mallet.tooltip",
                 "§8Sneak to Pause Machine After Current Recipe.\n§8Stops/Starts Machines");
@@ -189,9 +203,8 @@ public class ToolLang {
         provider.add("item.gtceu.tool.buzzsaw.tooltip", "§8Not suitable for harvesting Blocks");
         provider.add("item.gtceu.tool.lv_screwdriver.tooltip", "§8Adjusts Covers and Machines");
         provider.add("item.gtceu.tool.plunger.tooltip", "§8Removes Fluids from Machines");
-    }
 
-    public static void generateTooltips(RegistrateLangProvider provider) {
+        // Tool Stats Tooltips
         provider.add("tool.gtceu.crafting_uses.tooltip", "%s §aCrafting Uses");
         provider.add("tool.gtceu.max_uses.tooltip", "%s §eTotal Durability");
         provider.add("tool.gtceu.general_uses.tooltip", "%s §bDurability");
@@ -206,7 +219,9 @@ public class ToolLang {
     }
 
     public static void generateActionKeys(RegistrateLangProvider provider) {
+        // Tool Actions?
         provider.add("gtceu.tool_action.show_tooltips", "Hold SHIFT to show Tool Info");
+
         provider.add("gtceu.tool_action.screwdriver.auto_output_covers",
                 "§8Use Screwdriver to Allow Input from Output Side or access Covers");
         provider.add("gtceu.tool_action.screwdriver.toggle_mode_covers",
@@ -216,18 +231,24 @@ public class ToolLang {
                 "§8Use Screwdriver to toggle Item collapsing");
         provider.add("gtceu.tool_action.screwdriver.auto_output", "§8Use Screwdriver to toggle Auto-Output");
         provider.add("gtceu.tool_action.screwdriver.toggle_mode", "§8Use Screwdriver to toggle Modes");
+
         provider.add("gtceu.tool_action.wrench.set_facing", "§8Use Wrench to set Facing");
         provider.add("gtceu.tool_action.wrench.connect",
                 "§8Use Wrench to set Connections, sneak to block Connections");
+
         provider.add("gtceu.tool_action.wire_cutter.connect", "§8Use Wire Cutters to set Connections");
+
         provider.add("gtceu.tool_action.soft_mallet.reset", "§8Use Soft Mallet to toggle Working");
         provider.add("gtceu.tool_action.soft_mallet.toggle_mode", "§8Use Soft Mallet to toggle Modes");
+
         provider.add("gtceu.tool_action.hammer", "§8Use Hard Hammer to muffle Sounds");
         provider.add("gtceu.tool_action.crowbar", "§8Use Crowbar to remove Covers");
+
         provider.add("gtceu.tool_action.tape", "§8Use Tape to fix Maintenance Problems");
     }
 
     private static void generateToolInfoKeys(RegistrateLangProvider provider) {
+        // Tool Material Information
         provider.add("item.tool.tooltip.primary_material", "§fMaterial: §e%s");
         provider.add("item.tool.tooltip.durability", "§fDurability: §a%d / %d");
         provider.add("item.tool.tooltip.rotor.efficiency", "Turbine Efficiency: §9%d%%");
@@ -241,10 +262,12 @@ public class ToolLang {
     }
 
     private static void generateEnchantKeys(RegistrateLangProvider provider) {
+        // Enchantments
         provider.add("enchantment.disjunction", "Disjunction");
         provider.add("enchantment.damage.disjunction", "Disjunction");
         provider.add("enchantment.gtceu.disjunction.description",
                 "Applies Weakness and Slowness to Ender-related mobs.");
+
         provider.add("enchantment.hard_hammer", "Hammering");
         provider.add("enchantment.gtceu.hard_hammer.description",
                 "Breaks blocks as if they were mined with a GregTech Hammer.");

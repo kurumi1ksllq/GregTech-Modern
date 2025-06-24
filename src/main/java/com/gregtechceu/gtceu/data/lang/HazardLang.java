@@ -14,19 +14,19 @@ public class HazardLang {
         // Medical Conditions
         provider.add("gtceu.medical_condition.description", "§l§cHAZARDOUS §7Hold Shift to show details");
         provider.add("gtceu.medical_condition.description_shift", "§l§cHAZARDOUS:");
-        provider.add("gtceu.medical_condition.chemical_burns", "§5Chemical burns");
-        provider.add("gtceu.medical_condition.poison", "§2Poisonous");
-        provider.add("gtceu.medical_condition.weak_poison", "§aWeakly poisonous");
-        provider.add("gtceu.medical_condition.irritant", "§6Irritant");
-        provider.add("gtceu.medical_condition.nausea", "§3Nauseating");
-        provider.add("gtceu.medical_condition.carcinogen", "§eCarcinogenic");
-        provider.add("gtceu.medical_condition.asbestosis", "§dAsbestosis");
-        provider.add("gtceu.medical_condition.arsenicosis", "§bArsenicosis");
-        provider.add("gtceu.medical_condition.silicosis", "§1Silicosis");
-        provider.add("gtceu.medical_condition.berylliosis", "§5Berylliosis");
-        provider.add("gtceu.medical_condition.methanol_poisoning", "§6Methanol Poisoning");
-        provider.add("gtceu.medical_condition.carbon_monoxide_poisoning", "§7Carbon Monoxide Poisoning");
-        provider.add("gtceu.medical_condition.none", "§2Not Dangerous");
+        provider.add("gtceu.medical_condition/chemical_burns", "§5Chemical burns");
+        provider.add("gtceu.medical_condition/poison", "§2Poisonous");
+        provider.add("gtceu.medical_condition/weak_poison", "§aWeakly poisonous");
+        provider.add("gtceu.medical_condition/irritant", "§6Irritant");
+        provider.add("gtceu.medical_condition/nausea", "§3Nauseating");
+        provider.add("gtceu.medical_condition/carcinogen", "§eCarcinogenic");
+        provider.add("gtceu.medical_condition/asbestosis", "§dAsbestosis");
+        provider.add("gtceu.medical_condition/arsenicosis", "§bArsenicosis");
+        provider.add("gtceu.medical_condition/silicosis", "§1Silicosis");
+        provider.add("gtceu.medical_condition/berylliosis", "§5Berylliosis");
+        provider.add("gtceu.medical_condition/methanol_poisoning", "§6Methanol Poisoning");
+        provider.add("gtceu.medical_condition/carbon_monoxide_poisoning", "§7Carbon Monoxide Poisoning");
+        provider.add("gtceu.medical_condition/none", "§2Not Dangerous");
 
         // Hazard Triggers
         provider.add("gtceu.hazard_trigger.description", "Caused by:");

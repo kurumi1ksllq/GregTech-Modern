@@ -39,10 +39,15 @@ public class GUILang {
     }
 
     private static void generateTooltipKeys(RegistrateLangProvider provider) {
+        // Part Sharing
         provider.add("gtceu.part_sharing.disabled", "Multiblock Sharing §4Disabled");
         provider.add("gtceu.part_sharing.enabled", "Multiblock Sharing §aEnabled");
+
+        // GUI Units
         provider.add("gtceu.universal.liters", "%s mB");
         provider.add("gtceu.universal.kiloliters", "%s B");
+
+        // EU Tooltip
         provider.add("gtceu.universal.tooltip.voltage_in", "§aVoltage IN: §f%d EU/t (%s§f)");
         provider.add("gtceu.universal.tooltip.max_voltage_in", "§aMax Voltage IN: §f%d (%s§f)");
         provider.add("gtceu.universal.tooltip.voltage_out", "§aVoltage OUT: §f%d EU/t (%s§f)");
@@ -55,40 +60,61 @@ public class GUILang {
         provider.add("gtceu.universal.tooltip.amperage_out_till", "§eAmperage OUT up to: §f%dA");
         provider.add("gtceu.universal.tooltip.amperage_in_out", "§eAmperage IN/OUT: §f%dA");
         provider.add("gtceu.universal.tooltip.amperage_in_out_till", "§eAmperage IN/OUT up to: §f%dA");
+
+        // EU Storage
         provider.add("gtceu.universal.tooltip.energy_storage_capacity", "§cEnergy Capacity: §r%d EU");
         provider.add("gtceu.universal.tooltip.energy_tier_range", "§aAllowed Voltage Tiers: §f%s §f- %s");
+
+        // Item Storage/Transfer
         provider.add("gtceu.universal.tooltip.item_storage_capacity", "§6Item Slots: §f%d");
         provider.add("gtceu.universal.tooltip.item_storage_total", "§6Item Capacity: §f%d items");
         provider.add("gtceu.universal.tooltip.item_stored", "§dItem Stored: §f%s, %d items");
         provider.add("gtceu.universal.tooltip.item_transfer_rate", "§bTransfer Rate: §f%d items/s");
         provider.add("gtceu.universal.tooltip.item_transfer_rate_stacks", "§bTransfer Rate: §f%d stacks/s");
+
+        // Fluid Storage/Transfer
         provider.add("gtceu.universal.tooltip.fluid_storage_capacity", "§9Fluid Capacity: §f%d mB");
         provider.add("gtceu.universal.tooltip.fluid_storage_capacity_mult",
                 "§9Fluid Capacity: §f%d §7Tanks, §f%d mB §7each");
         provider.add("gtceu.universal.tooltip.fluid_stored", "§2Fluid Stored: §f%s, %d mB");
         provider.add("gtceu.universal.tooltip.fluid_transfer_rate", "§bTransfer Rate: §f%d mB/t");
+
+        // Parallel
         provider.add("gtceu.universal.tooltip.parallel", "§dMax Parallel: §f%d");
+
+        // Miner GUI
         provider.add("gtceu.universal.tooltip.working_area", "§bWorking Area: §f%dx%d");
         provider.add("gtceu.universal.tooltip.chunk_mode", "Chunk Mode: ");
         provider.add("gtceu.universal.tooltip.silk_touch", "Silk Touch: ");
         provider.add("gtceu.universal.tooltip.working_area_chunks", "§bWorking Area: §f%dx%d Chunks");
         provider.add("gtceu.universal.tooltip.working_area_max", "§bMax Working Area: §f%dx%d");
         provider.add("gtceu.universal.tooltip.working_area_chunks_max", "§bMax Working Area: §f%dx%d Chunks");
+
+        // General Consumption
         provider.add("gtceu.universal.tooltip.uses_per_tick", "Uses §f%d EU/t §7while working");
         provider.add("gtceu.universal.tooltip.uses_per_tick_steam", "Uses §f%d mB/t §7of §fSteam §7while working");
         provider.add("gtceu.universal.tooltip.uses_per_hour_lubricant",
                 "Uses §f%d mB/hr §7of §6Lubricant §7while working");
         provider.add("gtceu.universal.tooltip.uses_per_second", "Uses §f%d EU/s §7while working");
         provider.add("gtceu.universal.tooltip.uses_per_op", "Uses §f%d EU/operation");
+
+        // General Production
         provider.add("gtceu.universal.tooltip.base_production_eut", "§eBase Production: §f%d EU/t");
         provider.add("gtceu.universal.tooltip.base_production_fluid", "§eBase Production: §f%d mB/t");
         provider.add("gtceu.universal.tooltip.produces_fluid", "§eProduces: §f%d mB/t");
+
+        // Explosion
         provider.add("gtceu.universal.tooltip.terrain_resist",
                 "This Machine will not explode when exposed to the Elements");
+
+        // Redstone
         provider.add("gtceu.universal.tooltip.requires_redstone", "§4Requires Redstone power");
+
+        // DEPRECATED
         provider.add("gtceu.universal.tooltip.deprecated",
                 "§4§lWARNING:§r§4 DEPRECATED. WILL BE REMOVED IN A FUTURE VERSION.§r");
 
+        // Tooltip Keybinds
         provider.add("gtceu.tooltip.hold_shift", "§7Hold SHIFT for more info");
         provider.add("gtceu.tooltip.hold_ctrl", "§7Hold CTRL for more info");
         provider.add("gtceu.tooltip.fluid_pipe_hold_shift", "§7Hold SHIFT to show Fluid Containment Info");
@@ -113,36 +139,49 @@ public class GUILang {
         // General UI Keys
         provider.add("gtceu.gui.title_bar.back", "Back");
         provider.add("gtceu.gui.title_bar.page_switcher", "Pages");
+
         provider.add("gtceu.gui.fuel_amount", "Fuel Amount:");
         provider.add("gtceu.gui.fluid_amount", "Fluid Amount:");
+
         provider.add("gtceu.gui.toggle_view.disabled", "Toggle View (Fluids)");
         provider.add("gtceu.gui.toggle_view.enabled", "Toggle View (Items)");
+
         multilineLang(provider, "gtceu.gui.overclock.enabled", "Overclocking Enabled.\nClick to Disable");
         multilineLang(provider, "gtceu.gui.overclock.disabled", "Overclocking Disabled.\nClick to Enable");
         multilineLang(provider, "gtceu.gui.overclock.description",
                 "Overclock Button\n§7Recipes can overclock up to the set tier");
         provider.add("gtceu.gui.overclock.off", "X");
+
         provider.add("gtceu.gui.sort", "Sort");
+
         provider.add("gtceu.gui.fluid_auto_output.tooltip.enabled", "Fluid Auto-Output Enabled");
         provider.add("gtceu.gui.fluid_auto_output.tooltip.disabled", "Fluid Auto-Output Disabled");
         provider.add("gtceu.gui.fluid_auto_input.tooltip.enabled", "Fluid Auto-Input Enabled");
         provider.add("gtceu.gui.fluid_auto_input.tooltip.disabled", "Fluid Auto-Input Disabled");
+
         provider.add("gtceu.gui.item_auto_output.tooltip.enabled", "Item Auto-Output Enabled");
         provider.add("gtceu.gui.item_auto_output.tooltip.disabled", "Item Auto-Output Disabled");
         provider.add("gtceu.gui.item_auto_input.tooltip.enabled", "Item Auto-Input Enabled");
         provider.add("gtceu.gui.item_auto_input.tooltip.disabled", "Item Auto-Input Disabled");
+
         multilineLang(provider, "gtceu.gui.charger_slot.tooltip",
                 "§fCharger Slot§r\n§7Draws power from %s batteries§r\n§7Charges %s tools and batteries");
         multilineLang(provider, "gtceu.gui.configurator_slot.tooltip",
                 "§fConfigurator Slot§r\n§7Place a §6Programmed Circuit§7 in this slot to\n§7change its configured value.\n§7Hold §6Shift§7 when clicking buttons to change by §65.\n§aA Programmed Circuit in this slot is also valid for recipe inputs.§r");
+
         provider.add("gtceu.gui.fluid_lock.tooltip.enabled", "Fluid Locking Enabled");
         provider.add("gtceu.gui.fluid_lock.tooltip.disabled", "Fluid Locking Disabled");
+
         provider.add("gtceu.gui.fluid_voiding_partial.tooltip.enabled", "Fluid Voiding Enabled");
         provider.add("gtceu.gui.fluid_voiding_partial.tooltip.disabled", "Fluid Voiding Disabled");
+
         provider.add("gtceu.gui.item_lock.tooltip.enabled", "Item Locking Enabled");
         provider.add("gtceu.gui.item_lock.tooltip.disabled", "Item Locking Disabled");
+
         provider.add("gtceu.gui.item_voiding_partial.tooltip.enabled", "Item Voiding Enabled");
         provider.add("gtceu.gui.item_voiding_partial.tooltip.disabled", "Item Voiding Disabled");
+
+        // Miner GUI
         multilineLang(provider, "gtceu.gui.silktouch.enabled",
                 "Silk Touch Enabled: Click to Disable.\n§7Switching requires an idle machine.");
         multilineLang(provider, "gtceu.gui.silktouch.disabled",
@@ -151,11 +190,15 @@ public class GUILang {
                 "Chunk Mode Enabled: Click to Disable.\n§7Switching requires an idle machine.");
         multilineLang(provider, "gtceu.gui.chunkmode.disabled",
                 "Chunk Mode Disabled: Click to Enable.\n§7Switching requires an idle machine.");
+
+        // Recipe Capability Voiding
         multilineLang(provider, "gtceu.gui.multiblock_item_voiding", "Voiding Mode\n§7Voiding §6Items");
         multilineLang(provider, "gtceu.gui.multiblock_fluid_voiding", "Voiding Mode\n§7Voiding §9Fluids");
         multilineLang(provider, "gtceu.gui.multiblock_item_fluid_voiding",
                 "Voiding Mode\n§7Voiding §6Items §7and §9Fluids");
         multilineLang(provider, "gtceu.gui.multiblock_no_voiding", "Voiding Mode\n§7Voiding Nothing");
+
+        // Fisher
         multilineLang(provider, "gtceu.gui.fisher_mode.tooltip",
                 "Toggle junk items\nOff costs 2 string per operation");
 
@@ -187,6 +230,8 @@ public class GUILang {
         provider.add("gtceu.gui.fluid_auto_output.allow_input.disabled",
                 "disable fluids input from the output side");
         provider.add("gtceu.gui.auto_output.name", "auto");
+
+        // Overclocking Widget
         provider.add("gtceu.gui.overclock.title", "Overclock Tier");
         provider.add("gtceu.gui.overclock.range", "Available Tiers [%s, %s]");
 

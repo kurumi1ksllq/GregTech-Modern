@@ -21,15 +21,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 
-/**
- * @author KilaBash
- * @date 2023/3/3
- * @implNote IControllerComponent
- */
 public interface IMultiController extends IMachineFeature, IInteractedMachine {
 
     @Override
@@ -57,9 +53,11 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
     default boolean checkPatternWithLock() {
         var lock = getPatternLock();
         lock.lock();
-        var result = checkPattern();
-        lock.unlock();
-        return result;
+        try {
+            return checkPattern();
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -70,9 +68,11 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
     default boolean checkPatternWithTryLock() {
         var lock = getPatternLock();
         if (lock.tryLock()) {
-            var result = checkPattern();
-            lock.unlock();
-            return result;
+            try {
+                return checkPattern();
+            } finally {
+                lock.unlock();
+            }
         } else {
             return false;
         }
@@ -178,6 +178,10 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
         return null;
     }
 
+    default Comparator<IMultiPart> getPartSorter() {
+        return self().getDefinition().getPartSorter().apply(self());
+    }
+
     /**
      * Show the preview of structure.
      */
@@ -192,5 +196,9 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
             return InteractionResult.SUCCESS;
         }
         return IInteractedMachine.super.onUse(state, world, pos, player, hand, hit);
+    }
+
+    default boolean allowCircuitSlots() {
+        return true;
     }
 }

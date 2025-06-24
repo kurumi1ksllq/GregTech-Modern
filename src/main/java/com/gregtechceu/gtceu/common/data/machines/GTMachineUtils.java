@@ -72,7 +72,7 @@ import java.util.Locale;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.GTValues.UV;
@@ -154,7 +154,7 @@ public class GTMachineUtils {
                             .recipeType(recipeType)
                             .workableTieredHullRenderer(GTCEu.id("block/machines/" + name))
                             .tooltips(workableTiered(tier, GTValues.V[tier], GTValues.V[tier] * 64, recipeType,
-                                    tankScalingFunction.apply(tier), true))
+                                    tankScalingFunction.applyAsInt(tier), true))
                             .register();
                 },
                 tiers);
@@ -261,7 +261,7 @@ public class GTMachineUtils {
                         .addOutputLimit(FluidRecipeCapability.CAP, 0)
                         .renderer(() -> new SimpleGeneratorMachineRenderer(tier, GTCEu.id("block/generators/" + name)))
                         .tooltips(workableTiered(tier, GTValues.V[tier], GTValues.V[tier] * 64, recipeType,
-                                tankScalingFunction.apply(tier), false))
+                                tankScalingFunction.applyAsInt(tier), false))
                         .register(),
                 tiers);
     }
@@ -362,7 +362,7 @@ public class GTMachineUtils {
                                         FormattingUtil
                                                 .formatNumbers(
                                                         EnergyHatchPartMachine.getHatchEnergyCapacity(tier, amperage))),
-                                Component.translatable("gtceu.universal.disabled"))
+                                Component.translatable("gtceu.part_sharing.disabled"))
                         .abilities(ability)
                         .overlayTieredHullRenderer("laser_hatch." + name)
                         .register(),
@@ -448,7 +448,8 @@ public class GTMachineUtils {
         MachineBuilder<MachineDefinition> builder = REGISTRATE
                 .machine(name, holder -> new TankValvePartMachine(holder, isMetal))
                 .langValue(displayName)
-                .tooltips(Component.translatable("gtceu.machine.tank_valve.tooltip"))
+                .tooltips(Component.translatable("gtceu.machine.tank_valve.tooltip"),
+                        Component.translatable("gtceu.part_sharing.disabled"))
                 .rotationState(RotationState.ALL);
         rendererSetup.accept(builder, GTCEu.id("block/multiblock/tank_valve"));
         return builder.register();
@@ -474,16 +475,18 @@ public class GTMachineUtils {
                                                                   Supplier<? extends Block> fireBox,
                                                                   ResourceLocation texture, BoilerFireboxType firebox,
                                                                   int maxTemperature, int heatSpeed) {
+        // spotless:off
         return REGISTRATE
                 .multiblock("%s_large_boiler".formatted(name),
                         holder -> new LargeBoilerMachine(holder, maxTemperature, heatSpeed))
                 .langValue("Large %s Boiler".formatted(FormattingUtil.toEnglishName(name)))
-                .rotationState(RotationState.ALL)
+                .allowExtendedFacing(false)
+                .rotationState(RotationState.NON_Y_AXIS)
                 .recipeType(GTRecipeTypes.LARGE_BOILER_RECIPES)
                 .recipeModifier(LargeBoilerMachine::recipeModifier, true)
                 .appearanceBlock(casing)
-                .partAppearance((controller, part,
-                                 side) -> controller.self().getPos().below().getY() == part.self().getPos().getY() ?
+                .partAppearance((controller, part, side) ->
+                        controller.self().getPos().below().getY() == part.self().getPos().getY() ?
                                          fireBox.get().defaultBlockState() : casing.get().defaultBlockState())
                 .pattern((definition) -> {
                     TraceabilityPredicate fireboxPred = blocks(ALL_FIREBOXES.get(firebox).get()).setMinGlobalLimited(3)
@@ -522,6 +525,7 @@ public class GTMachineUtils {
                         Component.translatable("gtceu.multiblock.large_boiler.explosion_tooltip")
                                 .withStyle(ChatFormatting.DARK_RED))
                 .register();
+        // spotless:on
     }
 
     public static MultiblockMachineDefinition registerLargeCombustionEngine(String name, int tier,
@@ -548,8 +552,9 @@ public class GTMachineUtils {
                                 .or(autoAbilities(true, true, false)))
                         .where('D',
                                 ability(PartAbility.OUTPUT_ENERGY,
-                                        Stream.of(ULV, LV, MV, HV, EV, IV, LuV, ZPM, UV, UHV).filter(t -> t >= tier)
-                                                .mapToInt(Integer::intValue).toArray())
+                                        IntStream.of(ULV, LV, MV, HV, EV, IV, LuV, ZPM, UV, UHV)
+                                                .filter(t -> t >= tier)
+                                                .toArray())
                                         .addTooltips(Component.translatable("gtceu.multiblock.pattern.error.limited.1",
                                                 GTValues.VN[tier])))
                         .where('A',

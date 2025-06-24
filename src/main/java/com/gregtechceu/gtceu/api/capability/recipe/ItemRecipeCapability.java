@@ -49,7 +49,6 @@ import net.minecraftforge.common.crafting.StrictNBTIngredient;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
-import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,11 +58,6 @@ import java.util.*;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
-/**
- * @author KilaBash
- * @date 2023/2/20
- * @implNote ItemRecipeCapability
- */
 public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
 
     public final static ItemRecipeCapability CAP = new ItemRecipeCapability();
@@ -83,7 +77,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
             return SizedIngredient.create(sizedIngredient.getInner(),
                     modifier.apply(sizedIngredient.getAmount()));
         } else if (content instanceof IntProviderIngredient intProviderIngredient) {
-            return new IntProviderIngredient(intProviderIngredient.getInner(),
+            return IntProviderIngredient.of(intProviderIngredient.getInner(),
                     new FlooredInt(
                             new AddedFloat(
                                     new MultipliedFloat(
@@ -168,8 +162,8 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
                         PartialNBTIngredient.of(stack.getItem(), stack.getShareTag())));
             }
             TagPrefix prefix = ChemicalHelper.getPrefix(stack.getItem());
-            if (prefix != null && TagPrefix.ORES.containsKey(prefix)) {
-                Material material = ChemicalHelper.getMaterial(stack.getItem()).material();
+            if (!prefix.isEmpty() && TagPrefix.ORES.containsKey(prefix)) {
+                Material material = ChemicalHelper.getMaterialStack(stack.getItem()).material();
                 ingredients.add(new MapIntersectionIngredient((IntersectionIngredient) IntersectionIngredient.of(
                         Ingredient.of(prefix.getItemTags(material)[0]), Ingredient.of(prefix.getItemParentTags()[0]))));
             }
@@ -197,7 +191,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
                     }
                 }
                 if (isEqual) continue;
-                //@formatter:off
+                // spotless:off
                 if (ingredient instanceof IntCircuitIngredient) {
                     list.add(0, ingredient);
                 } else if (ingredient instanceof SizedIngredient sized &&
@@ -209,7 +203,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
                 } else {
                     list.add(ingredient);
                 }
-                //@formatter:on
+                // spotless:on
             } else if (item instanceof ItemStack stack) {
                 boolean isEqual = false;
                 for (Object obj : list) {
@@ -245,9 +239,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
         int maxMultiplier = multiplier;
 
         OverlayedItemHandler itemHandler = new OverlayedItemHandler(new CombinedInvWrapper(
-                Objects.requireNonNullElseGet(holder.getCapabilitiesProxy().get(IO.OUT, ItemRecipeCapability.CAP),
-                        Collections::emptyList)
-                        .stream()
+                holder.getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).stream()
                         .filter(IItemHandlerModifiable.class::isInstance)
                         .map(IItemHandlerModifiable.class::cast)
                         .toArray(IItemHandlerModifiable[]::new)));
@@ -382,11 +374,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
                 ItemStackHashStrategy.comparingAllButCount());
         Object2IntMap<ItemStack> result = new Object2IntOpenHashMap<>();
 
-        List<IRecipeHandler<?>> recipeHandlerList = Objects
-                .requireNonNullElseGet(holder.getCapabilitiesProxy().get(IO.IN, ItemRecipeCapability.CAP),
-                        Collections::<IRecipeHandler<?>>emptyList)
-                .stream()
-                .filter(handler -> !handler.isProxy()).toList();
+        var recipeHandlerList = holder.getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP);
 
         for (IRecipeHandler<?> container : recipeHandlerList) {
 
@@ -421,14 +409,14 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
         if (io == IO.OUT && recipe.recipeType.isScanner()) {
             scannerPossibilities = new ArrayList<>();
             // Scanner Output replacing, used for cycling research outputs
-            Pair<GTRecipeType, String> researchData = null;
+            ResearchManager.ResearchItem researchData = null;
             for (Content stack : recipe.getOutputContents(ItemRecipeCapability.CAP)) {
                 researchData = ResearchManager.readResearchId(ItemRecipeCapability.CAP.of(stack.content).getItems()[0]);
                 if (researchData != null) break;
             }
             if (researchData != null) {
-                Collection<GTRecipe> possibleRecipes = researchData.getFirst()
-                        .getDataStickEntry(researchData.getSecond());
+                Collection<GTRecipe> possibleRecipes = researchData.recipeType()
+                        .getDataStickEntry(researchData.researchId());
                 Set<ItemStack> cache = new ObjectOpenCustomHashSet<>(ItemStackHashStrategy.comparingItem());
                 if (possibleRecipes != null) {
                     for (GTRecipe r : possibleRecipes) {
@@ -522,7 +510,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
                     GTRecipeWidget.setConsumedChance(content,
                             recipe.getChanceLogicForCapability(this, io, isTickSlot(index, io, recipe)),
                             tooltips, recipeTier, chanceTier, recipeType.getChanceFunction());
-                    //@formatter:off
+                    // spotless:off
                     if (this.of(content.content) instanceof IntProviderIngredient ingredient) {
                         IntProvider countProvider = ingredient.getCountProvider();
                         tooltips.add(Component.translatable("gtceu.gui.content.count_range",
@@ -535,7 +523,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
                                 countProvider.getMinValue(), countProvider.getMaxValue())
                                 .withStyle(ChatFormatting.GOLD));
                     }
-                    //@formatter:on
+                    // spotless:on
                     if (isTickSlot(index, io, recipe)) {
                         tooltips.add(Component.translatable("gtceu.gui.content.per_tick"));
                     }

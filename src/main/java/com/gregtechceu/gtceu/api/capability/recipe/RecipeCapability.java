@@ -16,11 +16,13 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -98,8 +100,12 @@ public abstract class RecipeCapability<T> {
         return "%s_%s_%s".formatted(name, io.name().toLowerCase(Locale.ROOT), index);
     }
 
-    public Component getName() {
+    public MutableComponent getName() {
         return Component.translatable("recipe.capability.%s.name".formatted(name));
+    }
+
+    public MutableComponent getColoredName() {
+        return getName().withStyle(style -> style.withColor(this.color));
     }
 
     public boolean isRecipeSearchFilter() {
@@ -118,6 +124,14 @@ public abstract class RecipeCapability<T> {
 
     public List<Object> compressIngredients(Collection<Object> ingredients) {
         return new ArrayList<>(ingredients);
+    }
+
+    public List<List<AbstractMapIngredient>> convertCompressedIngredients(List<Object> ingredients) {
+        List<List<AbstractMapIngredient>> ret = new ObjectArrayList<>(ingredients.size());
+        for (var ingredient : ingredients) {
+            ret.add(convertToMapIngredient(ingredient));
+        }
+        return ret;
     }
 
     /**
@@ -180,6 +194,9 @@ public abstract class RecipeCapability<T> {
         return null;
     }
 
+    /**
+     * Return the class of the supported widget that should be used to display this capability.
+     */
     @Nullable
     public Class<? extends Widget> getWidgetClass() {
         return null;

@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.common.data.GTMedicalConditions;
 
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.*;
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet.*;
+import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 
 public class UnknownCompositionMaterials {
@@ -112,7 +113,6 @@ public class UnknownCompositionMaterials {
 
         SulfuricLightFuel = new Material.Builder(GTCEu.id("sulfuric_light_fuel"))
                 .liquid(new FluidBuilder()
-                        .temperature(775)
                         .customStill())
                 .flags(FLAMMABLE).buildAndRegister();
 
@@ -542,6 +542,7 @@ public class UnknownCompositionMaterials {
                 .gem()
                 .color(0x7497ea).secondaryColor(0x1c0b39).iconSet(DIAMOND)
                 .flags(NO_UNIFICATION)
+                .ignoredTagPrefixes(dustTiny, dustSmall)
                 .buildAndRegister();
 
         TreatedWood = new Material.Builder(GTCEu.id("treated_wood"))
@@ -571,6 +572,32 @@ public class UnknownCompositionMaterials {
                 .ingot().fluid()
                 .color(0xfabf29)
                 .flags(NO_SMELTING)
+                .buildAndRegister();
+
+        BauxiteSlurry = new Material.Builder(GTCEu.id("bauxite_slurry"))
+                .fluid()
+                .color(0x051650)
+                .buildAndRegister();
+
+        CrackedBauxiteSlurry = new Material.Builder(GTCEu.id("cracked_bauxite_slurry"))
+                .liquid(new FluidBuilder()
+                        .temperature(775))
+                .color(0x052C50)
+                .buildAndRegister();
+
+        BauxiteSludge = new Material.Builder(GTCEu.id("bauxite_sludge"))
+                .fluid()
+                .color(0x563D2D)
+                .buildAndRegister();
+
+        DecalcifiedBauxiteSludge = new Material.Builder(GTCEu.id("decalcified_bauxite_sludge"))
+                .fluid()
+                .color(0x6F2DA8)
+                .buildAndRegister();
+
+        BauxiteSlag = new Material.Builder(GTCEu.id("bauxite_slag"))
+                .dust()
+                .color(0x6F2DA8).iconSet(SAND)
                 .buildAndRegister();
     }
 }

@@ -10,13 +10,9 @@ import net.minecraftforge.fluids.FluidStack;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
-/**
- * @author KilaBash
- * @date 2023/3/13
- * @implNote TagFluidFilter
- */
 public class TagFluidFilter extends TagFilter<FluidStack, FluidFilter> implements FluidFilter {
 
     private final Object2BooleanMap<Fluid> cache = new Object2BooleanOpenHashMap<>();
@@ -24,7 +20,8 @@ public class TagFluidFilter extends TagFilter<FluidStack, FluidFilter> implement
     protected TagFluidFilter() {}
 
     public static TagFluidFilter loadFilter(ItemStack itemStack) {
-        return loadFilter(itemStack.getOrCreateTag(), filter -> itemStack.setTag(filter.saveFilter()));
+        return loadFilter(Objects.requireNonNullElseGet(itemStack.getTag(), CompoundTag::new),
+                filter -> itemStack.setTag(filter.saveFilter()));
     }
 
     private static TagFluidFilter loadFilter(CompoundTag tag, Consumer<FluidFilter> itemWriter) {

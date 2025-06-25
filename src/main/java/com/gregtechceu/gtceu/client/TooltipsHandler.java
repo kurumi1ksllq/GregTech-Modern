@@ -115,11 +115,7 @@ public class TooltipsHandler {
 
         if (fluid instanceof GTFluid attributedFluid) {
             FluidState state = attributedFluid.getState();
-            switch (state) {
-                case LIQUID -> tooltips.accept(Component.translatable("fluid.gtceu.tooltip.liquid"));
-                case GAS -> tooltips.accept(Component.translatable("fluid.gtceu.tooltip.gas"));
-                case PLASMA -> tooltips.accept(Component.translatable("fluid.gtceu.tooltip.plasma"));
-            }
+            tooltips.accept(Component.translatable(state.getTranslationKey()));
             attributedFluid.getAttributes().forEach(a -> a.appendFluidTooltips(tooltips));
         } else {
             String key = "gtceu.fluid.state_" + (fluidType.isLighterThanAir() ? "gas" : "liquid");

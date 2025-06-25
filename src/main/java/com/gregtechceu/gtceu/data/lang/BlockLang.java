@@ -101,11 +101,6 @@ public class BlockLang {
 
         // Extra stone blocks
         provider.add("block.gtceu.seal", "Sealed Block");
-        // provider.add("block.gtceu.foam", "Foam");
-        // provider.add("block.gtceu.reinforced_foam", "Reinforced Foam");
-        // provider.add("block.gtceu.petrified_foam", "Petrified Foam");
-        // provider.add("block.gtceu.reinforced_stone", "Reinforced Stone");
-        // provider.add("block.gtceu.brittle_charcoal", "Brittle Charcoal");
 
         // Surface Rocks
         provider.add("block.surface_rock", "%s Surface Rock");

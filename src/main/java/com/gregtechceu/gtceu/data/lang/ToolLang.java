@@ -13,7 +13,6 @@ public class ToolLang {
         generateTooltips(provider);
         generateBehaviorKeys(provider);
         generateActionKeys(provider);
-        generateToolInfoKeys(provider);
         generateEnchantKeys(provider);
     }
 
@@ -57,24 +56,6 @@ public class ToolLang {
         provider.add("death.attack.gtceu.wrench_iv", "%s had a Monkey Wrench thrown into their plans by %s");
         provider.add("death.attack.gtceu.buzzsaw", "%s got buzzed by %s");
         provider.add("death.attack.gtceu.screwdriver_lv", "%s had their screws removed by %s");
-
-        // Medical Deaths
-        provider.add("death.attack.gtceu.medical_condition.asbestosis", "%s got mesothelioma");
-        provider.add("death.attack.gtceu.medical_condition.chemical_burns", "%s had a chemical accident");
-        provider.add("death.attack.gtceu.medical_condition.poison",
-                "%s forgot that poisonous materials are, in fact, poisonous");
-        provider.add("death.attack.gtceu.medical_condition.silicosis",
-                "%s didn't die of tuberculosis. it was silicosis.");
-        provider.add("death.attack.gtceu.medical_condition.arsenicosis", "%s got arsenic poisoning");
-        provider.add("death.attack.gtceu.medical_condition.berylliosis", "%s mined emeralds a bit too greedily");
-        provider.add("death.attack.gtceu.medical_condition.carcinogen", "%s got leukemia");
-        provider.add("death.attack.gtceu.medical_condition.irritant", "%s got a §n§lREALLY§r bad rash");
-        provider.add("death.attack.gtceu.medical_condition.methanol_poisoning",
-                "%s tried to drink moonshine during the prohibition");
-        provider.add("death.attack.gtceu.medical_condition.nausea", "%s died of nausea");
-        provider.add("death.attack.gtceu.medical_condition.none", "%s died of... nothing?");
-        provider.add("death.attack.gtceu.medical_condition.weak_poison", "%s ate lead (or mercury!)");
-        provider.add("death.attack.gtceu.medical_condition.carbon_monoxide_poisoning", "%s left the stove on");
     }
 
     public static void generateToolClassKeys(RegistrateLangProvider provider) {
@@ -216,6 +197,16 @@ public class ToolLang {
         multiLang(provider, "item.gtceu.tool.harvest_level",
                 "§8Wood", "§7Stone", "§aIron", "§bDiamond",
                 "§dNetherite", "§9Duranium", "§cNeutronium");
+        provider.add("tool.gtceu.repair_info.tooltip", "§8Hold SHIFT to show Repair Info");
+        provider.add("tool.gtceu.repair_material.tooltip", "§8Repair with: §f§a%s");
+        provider.add("item.gtceu.tool.replace_tool_head", "Craft with a new Tool Head to replace it");
+        provider.add("item.gtceu.tool.usable_as", "§8Usable as: §f%s");
+
+        // Rotors
+        provider.add("item.tool.tooltip.primary_material", "§fMaterial: §e%s");
+        provider.add("item.tool.tooltip.durability", "§fDurability: §a%d / %d");
+        provider.add("item.tool.tooltip.rotor.efficiency", "Turbine Efficiency: §9%d%%");
+        provider.add("item.tool.tooltip.rotor.power", "Turbine Power: §9%d%%");
     }
 
     public static void generateActionKeys(RegistrateLangProvider provider) {
@@ -247,24 +238,9 @@ public class ToolLang {
         provider.add("gtceu.tool_action.tape", "§8Use Tape to fix Maintenance Problems");
     }
 
-    private static void generateToolInfoKeys(RegistrateLangProvider provider) {
-        // Tool Material Information
-        provider.add("item.tool.tooltip.primary_material", "§fMaterial: §e%s");
-        provider.add("item.tool.tooltip.durability", "§fDurability: §a%d / %d");
-        provider.add("item.tool.tooltip.rotor.efficiency", "Turbine Efficiency: §9%d%%");
-        provider.add("item.tool.tooltip.rotor.power", "Turbine Power: §9%d%%");
-
-        provider.add("tool.gtceu.repair_info.tooltip", "§8Hold SHIFT to show Repair Info");
-        provider.add("tool.gtceu.repair_material.tooltip", "§8Repair with: §f§a%s");
-
-        provider.add("item.gtceu.tool.replace_tool_head", "Craft with a new Tool Head to replace it");
-        provider.add("item.gtceu.tool.usable_as", "§8Usable as: §f%s");
-    }
-
     private static void generateEnchantKeys(RegistrateLangProvider provider) {
         // Enchantments
         provider.add("enchantment.disjunction", "Disjunction");
-        provider.add("enchantment.damage.disjunction", "Disjunction");
         provider.add("enchantment.gtceu.disjunction.description",
                 "Applies Weakness and Slowness to Ender-related mobs.");
 

@@ -103,8 +103,6 @@ public class MaterialLang {
         replace(provider, Stellite100.getUnlocalizedName(), "Stellite-100");
         replace(provider, HastelloyC276.getUnlocalizedName(), "Hastelloy C-276");
 
-        // replace(provider, GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.oreNetherrack,
-        // NetherQuartz).get().getDescriptionId(), "Nether Quartz Ore");
         replace(provider, "item.gtceu.nether_quartz_netherrack", "Nether Quartz Ore");
     }
 

@@ -222,7 +222,7 @@ public class IntegrationLang {
         provider.add("message.gtceu.new_veins.amount", "Prospected %d new veins!");
         provider.add("message.gtceu.new_veins.name", "Prospected %s!");
 
-        // Options
+        // JourneyMap button names
         provider.add("gtceu.journeymap.options.layers", "Prospection layers");
         provider.add("gtceu.journeymap.options.layers.ore_veins", "Show Ore Veins");
         provider.add("gtceu.journeymap.options.layers.bedrock_fluids", "Show Bedrock Fluid Veins");

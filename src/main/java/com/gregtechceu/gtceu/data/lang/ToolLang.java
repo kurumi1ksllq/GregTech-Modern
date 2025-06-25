@@ -211,31 +211,31 @@ public class ToolLang {
 
     public static void generateActionKeys(RegistrateLangProvider provider) {
         // Tool Actions?
-        provider.add("gtceu.tool_action.show_tooltips", "Hold SHIFT to show Tool Info");
+        provider.add("tool_action.gtceu.show_tooltips", "Hold SHIFT to show Tool Info");
 
-        provider.add("gtceu.tool_action.screwdriver.auto_output_covers",
+        provider.add("tool_action.gtceu.screwdriver.auto_output_covers",
                 "§8Use Screwdriver to Allow Input from Output Side or access Covers");
-        provider.add("gtceu.tool_action.screwdriver.toggle_mode_covers",
+        provider.add("tool_action.gtceu.screwdriver.toggle_mode_covers",
                 "§8Use Screwdriver to toggle Modes or access Covers");
-        provider.add("gtceu.tool_action.screwdriver.access_covers", "§8Use Screwdriver to access Covers");
-        provider.add("gtceu.tool_action.screwdriver.auto_collapse",
+        provider.add("tool_action.gtceu.screwdriver.access_covers", "§8Use Screwdriver to access Covers");
+        provider.add("tool_action.gtceu.screwdriver.auto_collapse",
                 "§8Use Screwdriver to toggle Item collapsing");
-        provider.add("gtceu.tool_action.screwdriver.auto_output", "§8Use Screwdriver to toggle Auto-Output");
-        provider.add("gtceu.tool_action.screwdriver.toggle_mode", "§8Use Screwdriver to toggle Modes");
+        provider.add("tool_action.gtceu.screwdriver.auto_output", "§8Use Screwdriver to toggle Auto-Output");
+        provider.add("tool_action.gtceu.screwdriver.toggle_mode", "§8Use Screwdriver to toggle Modes");
 
-        provider.add("gtceu.tool_action.wrench.set_facing", "§8Use Wrench to set Facing");
-        provider.add("gtceu.tool_action.wrench.connect",
+        provider.add("tool_action.gtceu.wrench.set_facing", "§8Use Wrench to set Facing");
+        provider.add("tool_action.gtceu.wrench.connect",
                 "§8Use Wrench to set Connections, sneak to block Connections");
 
-        provider.add("gtceu.tool_action.wire_cutter.connect", "§8Use Wire Cutters to set Connections");
+        provider.add("tool_action.gtceu.wire_cutter.connect", "§8Use Wire Cutters to set Connections");
 
-        provider.add("gtceu.tool_action.soft_mallet.reset", "§8Use Soft Mallet to toggle Working");
-        provider.add("gtceu.tool_action.soft_mallet.toggle_mode", "§8Use Soft Mallet to toggle Modes");
+        provider.add("tool_action.gtceu.soft_mallet.reset", "§8Use Soft Mallet to toggle Working");
+        provider.add("tool_action.gtceu.soft_mallet.toggle_mode", "§8Use Soft Mallet to toggle Modes");
 
-        provider.add("gtceu.tool_action.hammer", "§8Use Hard Hammer to muffle Sounds");
-        provider.add("gtceu.tool_action.crowbar", "§8Use Crowbar to remove Covers");
+        provider.add("tool_action.gtceu.hammer", "§8Use Hard Hammer to muffle Sounds");
+        provider.add("tool_action.gtceu.crowbar", "§8Use Crowbar to remove Covers");
 
-        provider.add("gtceu.tool_action.tape", "§8Use Tape to fix Maintenance Problems");
+        provider.add("tool_action.gtceu.tape", "§8Use Tape to fix Maintenance Problems");
     }
 
     private static void generateEnchantKeys(RegistrateLangProvider provider) {

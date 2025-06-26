@@ -46,6 +46,7 @@ public class BlockLang {
         replace(provider, "block.gtceu.casing_grate", "Grate Machine Casing");
         replace(provider, "block.gtceu.assembly_line_unit", "Assembly Control Casing");
         replace(provider, "block.gtceu.ptfe_pipe_casing", "PTFE Pipe Casing");
+        replace(provider, "block.gtceu.palladium_substation", "Palladium Substation Casing");
 
         // Gearboxes
         replace(provider, "block.gtceu.bronze_gearbox", "Bronze Gearbox Casing");
@@ -65,7 +66,6 @@ public class BlockLang {
         replace(provider, "block.gtceu.steel_pipe_casing", "Steel Pipe Casing");
         replace(provider, "block.gtceu.titanium_pipe_casing", "Titanium Pipe Casing");
         replace(provider, "block.gtceu.tungstensteel_pipe_casing", "Tungstensteel Pipe Casing");
-        replace(provider, "block.gtceu.palladium_substation", "Palladium Substation Casing");
 
         // Bricked Casings
         replace(provider, "block.gtceu.steam_casing_bronze", "Bronze Hull");
@@ -108,19 +108,19 @@ public class BlockLang {
 
     private static void generateBlockTooltips(RegistrateLangProvider provider) {
         // Coil Tooltip
-        replace(provider, "block.gtceu.wire_coil.tooltip_extended_info", "§7Hold SHIFT to show Coil Bonus Info");
-        replace(provider, "block.gtceu.wire_coil.tooltip_heat", "§cBase Heat Capacity: §f%d K");
-        replace(provider, "block.gtceu.wire_coil.tooltip_smelter", "§8Multi Smelter:");
-        replace(provider, "block.gtceu.wire_coil.tooltip_parallel_smelter", "  §5Max Parallel: §f%s");
-        replace(provider, "block.gtceu.wire_coil.tooltip_energy_smelter", "  §aEnergy Usage: §f%s EU/t §8per recipe");
-        replace(provider, "block.gtceu.wire_coil.tooltip_pyro", "§8Pyrolyse Oven:");
-        replace(provider, "block.gtceu.wire_coil.tooltip_speed_pyro", "  §bProcessing Speed: §f%s%%");
-        replace(provider, "block.gtceu.wire_coil.tooltip_cracking", "§8Cracking Unit:");
-        replace(provider, "block.gtceu.wire_coil.tooltip_energy_cracking", "  §aEnergy Usage: §f%s%%");
+        replace(provider, "block.gtceu.wire_coil.tooltip.extended_info", "§7Hold SHIFT to show Coil Bonus Info");
+        replace(provider, "block.gtceu.wire_coil.tooltip.heat", "§cBase Heat Capacity: §f%d K");
+        replace(provider, "block.gtceu.wire_coil.tooltip.smelter", "§8Multi Smelter:");
+        replace(provider, "block.gtceu.wire_coil.tooltip.parallel_smelter", "  §5Max Parallel: §f%s");
+        replace(provider, "block.gtceu.wire_coil.tooltip.energy_smelter", "  §aEnergy Usage: §f%s EU/t §8per recipe");
+        replace(provider, "block.gtceu.wire_coil.tooltip.pyro", "§8Pyrolyse Oven:");
+        replace(provider, "block.gtceu.wire_coil.tooltip.speed_pyro", "  §bProcessing Speed: §f%s%%");
+        replace(provider, "block.gtceu.wire_coil.tooltip.cracking", "§8Cracking Unit:");
+        replace(provider, "block.gtceu.wire_coil.tooltip.energy_cracking", "  §aEnergy Usage: §f%s%%");
 
         // Substation Capacitors
-        provider.add("block.gtceu.substation_capacitor.tooltip_empty", "§7For filling space in your Power Substation");
-        provider.add("block.gtceu.substation_capacitor.tooltip_filled", "§cEnergy Capacity: §f%d EU");
+        provider.add("block.gtceu.substation_capacitor.tooltip.empty", "§7For filling space in your Power Substation");
+        provider.add("block.gtceu.substation_capacitor.tooltip.filled", "§cEnergy Capacity: §f%d EU");
 
         // Bricked Casings
         provider.add("block.gtceu.steam_casing_bronze.tooltip", "§7For your first Steam Machines");

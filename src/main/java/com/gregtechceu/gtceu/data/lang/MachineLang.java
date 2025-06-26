@@ -24,10 +24,11 @@ public class MachineLang {
     public static void standardTooltips(RegistrateLangProvider provider, String root, String machine,
                                         String lowTier,
                                         String midTier, String highTier) {
-        makeElectricMachineTooltipLVtoUV(provider, root, machine,
-                lowTier, lowTier, lowTier,
+        makeElectricMachineTooltipULVtoMAX(provider, root, machine,
+                lowTier, lowTier, lowTier, lowTier,
                 lowTier, midTier, midTier, midTier,
-                highTier);
+                highTier, highTier, highTier, highTier,
+                highTier, highTier, highTier);
     }
 
     private static void generateSteamMachines(RegistrateLangProvider provider) {
@@ -80,9 +81,9 @@ public class MachineLang {
         provider.add("gtceu.machine.steam_boiler.heat_amount", "Heat Capacity: %s %%");
 
         // Generators
-        provider.add("gtceu.machine.combustion_generator.tooltip", "§7Requires flammable Liquids");
-        provider.add("gtceu.machine.steam_turbine.tooltip", "§7Converts Steam into EU");
-        provider.add("gtceu.machine.gas_turbine.tooltip", "§7Requires flammable Gases");
+        provider.add("recipe_type.gtceu.combustion_generator.tooltip", "§7Requires flammable Liquids");
+        provider.add("recipe_type.gtceu.steam_turbine.tooltip", "§7Converts Steam into EU");
+        provider.add("recipe_type.gtceu.gas_turbine.tooltip", "§7Requires flammable Gases");
 
         // Machine Hull
         provider.add("gtceu.machine.hull.tooltip",
@@ -95,7 +96,7 @@ public class MachineLang {
         // Transformer
         provider.add("gtceu.machine.transformer.description", "§7Transforms Energy between voltage tiers");
         provider.add("gtceu.machine.transformer.tooltip_tool_usage",
-                "Starts as §fTransform Down§7, use Screwdriver to change");
+                "§7Starts as §fTransform Down§7, use Screwdriver to change");
         provider.add("gtceu.machine.transformer.tooltip_transform_down",
                 "§aTransform Down: §f%dA %s EU (%s§f) -> %dA %s EU (%s§f)");
         provider.add("gtceu.machine.transformer.message_transform_down",
@@ -238,6 +239,11 @@ public class MachineLang {
         provider.add("gtceu.machine.luv_macerator.tooltip", "§7Blend-O-Matic 9002");
         provider.add("gtceu.machine.zpm_macerator.tooltip", "§7Blend-O-Matic 9003");
         provider.add("gtceu.machine.uv_macerator.tooltip", "§7Shape Eliminator");
+        provider.add("gtceu.machine.uhv_macerator.tooltip", "§7Shape Eliminator");
+        provider.add("gtceu.machine.uev_macerator.tooltip", "§7Shape Eliminator");
+        provider.add("gtceu.machine.uiv_macerator.tooltip", "§7Shape Eliminator");
+        provider.add("gtceu.machine.uxv_macerator.tooltip", "§7Shape Eliminator");
+        provider.add("gtceu.machine.opv_macerator.tooltip", "§7Shape Eliminator");
 
         // Centrifuge
         provider.add("gtceu.machine.lv_centrifuge.tooltip", "§7Separating Molecules");
@@ -248,6 +254,11 @@ public class MachineLang {
         provider.add("gtceu.machine.luv_centrifuge.tooltip", "§7Molecular Cyclone");
         provider.add("gtceu.machine.zpm_centrifuge.tooltip", "§7Molecular Cyclone");
         provider.add("gtceu.machine.uv_centrifuge.tooltip", "§7Molecular Tornado");
+        provider.add("gtceu.machine.uhv_centrifuge.tooltip", "§7Molecular Tornado");
+        provider.add("gtceu.machine.uev_centrifuge.tooltip", "§7Molecular Tornado");
+        provider.add("gtceu.machine.uiv_centrifuge.tooltip", "§7Molecular Tornado");
+        provider.add("gtceu.machine.uxv_centrifuge.tooltip", "§7Molecular Tornado");
+        provider.add("gtceu.machine.opv_centrifuge.tooltip", "§7Molecular Tornado");
 
         // Laser Engraver
         provider.add("gtceu.machine.lv_laser_engraver.tooltip", "§7Don't look directly at the Laser");
@@ -258,6 +269,11 @@ public class MachineLang {
         provider.add("gtceu.machine.luv_laser_engraver.tooltip", "§7With the Power of 8.16 MW");
         provider.add("gtceu.machine.zpm_laser_engraver.tooltip", "§7With the Power of 32.64 MW");
         provider.add("gtceu.machine.uv_laser_engraver.tooltip", "§7Exact Photon Cannon");
+        provider.add("gtceu.machine.uhv_laser_engraver.tooltip", "§7Exact Photon Cannon");
+        provider.add("gtceu.machine.uev_laser_engraver.tooltip", "§7Exact Photon Cannon");
+        provider.add("gtceu.machine.uiv_laser_engraver.tooltip", "§7Exact Photon Cannon");
+        provider.add("gtceu.machine.uxv_laser_engraver.tooltip", "§7Exact Photon Cannon");
+        provider.add("gtceu.machine.opv_laser_engraver.tooltip", "§7Exact Photon Cannon");
 
         // Thermal Centrifuge
         provider.add("gtceu.machine.lv_thermal_centrifuge.tooltip", "§7Separating Ores more precisely");
@@ -268,6 +284,11 @@ public class MachineLang {
         provider.add("gtceu.machine.luv_thermal_centrifuge.tooltip", "§7Blaze Sweatshop T-6351");
         provider.add("gtceu.machine.zpm_thermal_centrifuge.tooltip", "§7Blaze Sweatshop T-6352");
         provider.add("gtceu.machine.uv_thermal_centrifuge.tooltip", "§7Fire Cyclone");
+        provider.add("gtceu.machine.uhv_thermal_centrifuge.tooltip", "§7Fire Cyclone");
+        provider.add("gtceu.machine.uev_thermal_centrifuge.tooltip", "§7Fire Cyclone");
+        provider.add("gtceu.machine.uiv_thermal_centrifuge.tooltip", "§7Fire Cyclone");
+        provider.add("gtceu.machine.uxv_thermal_centrifuge.tooltip", "§7Fire Cyclone");
+        provider.add("gtceu.machine.opv_thermal_centrifuge.tooltip", "§7Fire Cyclone");
 
         // Electrolyzer
         provider.add("gtceu.machine.lv_electrolyzer.tooltip", "§7Electrolyzing Molecules");
@@ -278,6 +299,11 @@ public class MachineLang {
         provider.add("gtceu.machine.luv_electrolyzer.tooltip", "§7Molecular Disintegrator E-4907");
         provider.add("gtceu.machine.zpm_electrolyzer.tooltip", "§7Molecular Disintegrator E-4908");
         provider.add("gtceu.machine.uv_electrolyzer.tooltip", "§7Atomic Ionizer");
+        provider.add("gtceu.machine.uhv_electrolyzer.tooltip", "§7Atomic Ionizer");
+        provider.add("gtceu.machine.uev_electrolyzer.tooltip", "§7Atomic Ionizer");
+        provider.add("gtceu.machine.uiv_electrolyzer.tooltip", "§7Atomic Ionizer");
+        provider.add("gtceu.machine.uxv_electrolyzer.tooltip", "§7Atomic Ionizer");
+        provider.add("gtceu.machine.opv_electrolyzer.tooltip", "§7Atomic Ionizer");
 
         // Lathe
         provider.add("gtceu.machine.lv_lathe.tooltip", "§7Produces Rods more efficiently");
@@ -288,6 +314,11 @@ public class MachineLang {
         provider.add("gtceu.machine.luv_lathe.tooltip", "§7Turn-O-Matic L-5907");
         provider.add("gtceu.machine.zpm_lathe.tooltip", "§7Turn-O-Matic L-5908");
         provider.add("gtceu.machine.uv_lathe.tooltip", "§7Rotation Grinder");
+        provider.add("gtceu.machine.uhv_lathe.tooltip", "§7Rotation Grinder");
+        provider.add("gtceu.machine.uev_lathe.tooltip", "§7Rotation Grinder");
+        provider.add("gtceu.machine.uiv_lathe.tooltip", "§7Rotation Grinder");
+        provider.add("gtceu.machine.uxv_lathe.tooltip", "§7Rotation Grinder");
+        provider.add("gtceu.machine.opv_lathe.tooltip", "§7Rotation Grinder");
 
         // Ore Washer
         provider.add("gtceu.machine.lv_ore_washer.tooltip", "§7Getting more Byproducts from your Ores");
@@ -298,6 +329,11 @@ public class MachineLang {
         provider.add("gtceu.machine.luv_ore_washer.tooltip", "§7Repurposed Laundry-Washer I-361");
         provider.add("gtceu.machine.zpm_ore_washer.tooltip", "§7Repurposed Laundry-Washer I-362");
         provider.add("gtceu.machine.uv_ore_washer.tooltip", "§7Miniature Car Wash");
+        provider.add("gtceu.machine.uhv_ore_washer.tooltip", "§7Miniature Car Wash");
+        provider.add("gtceu.machine.uev_ore_washer.tooltip", "§7Miniature Car Wash");
+        provider.add("gtceu.machine.uiv_ore_washer.tooltip", "§7Miniature Car Wash");
+        provider.add("gtceu.machine.uxv_ore_washer.tooltip", "§7Miniature Car Wash");
+        provider.add("gtceu.machine.opv_ore_washer.tooltip", "§7Miniature Car Wash");
 
         // Electric Furnace
         standardTooltips(provider, "gtceu.machine",
@@ -1202,11 +1238,9 @@ public class MachineLang {
     private static void makeElectricMachineTooltipULVtoMAX(RegistrateLangProvider provider, String root,
                                                            String machineName,
                                                            String ulvTooltip, String lvTooltip, String mvTooltip,
-                                                           String hvTooltip,
-                                                           String evTooltip, String ivTooltip, String luvTooltip,
-                                                           String zpmTooltip,
-                                                           String uvTooltip, String uhvTooltip, String uevTooltip,
-                                                           String uivTooltip,
+                                                           String hvTooltip, String evTooltip, String ivTooltip,
+                                                           String luvTooltip, String zpmTooltip, String uvTooltip,
+                                                           String uhvTooltip, String uevTooltip, String uivTooltip,
                                                            String uxvTooltip, String opvTooltip, String maxTooltip) {
         if (ulvTooltip != null) {
             provider.add("%s.ulv_%s.tooltip".formatted(root, machineName), "§7%s".formatted(ulvTooltip));

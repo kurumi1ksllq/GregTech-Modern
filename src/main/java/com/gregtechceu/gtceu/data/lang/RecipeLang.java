@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.data.lang;
 
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
+
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 
 import static com.gregtechceu.gtceu.data.lang.LangUtil.*;

@@ -13,13 +13,16 @@ public class ArmorLang {
     private static void generateArmorMessageKeys(RegistrateLangProvider provider) {
         // NanoMuscle Suit
         provider.add("armor.gtceu.nano_muscle_suite.nightvision.enabled", "NanoMuscle™ Suite: §aNightVision Enabled");
-        provider.add("armor.gtceu.nano_muscle_suite.nightvision.disabled", " NanoMuscle™ Suite: §cNightVision Disabled");
+        provider.add("armor.gtceu.nano_muscle_suite.nightvision.disabled",
+                " NanoMuscle™ Suite: §cNightVision Disabled");
         provider.add("armor.gtceu.nano_muscle_suite.boosted_jump.enabled", "NanoMuscle™ Suite: §aJump Boost Enabled");
-        provider.add("armor.gtceu.nano_muscle_suite.boosted_jump.disabled", " NanoMuscle™ Suite: §cJump Boost Disabled");
+        provider.add("armor.gtceu.nano_muscle_suite.boosted_jump.disabled",
+                " NanoMuscle™ Suite: §cJump Boost Disabled");
         provider.add("armor.gtceu.nano_muscle_suite.nightvision.error", "NanoMuscle™ Suite: §cNot enough power!");
         provider.add("armor.gtceu.nano_muscle_suite.charge.enabled", "NanoMuscle™ Suite: §aCharging Enabled");
         provider.add("armor.gtceu.nano_muscle_suite.charge.disabled", " NanoMuscle™ Suite: §cCharging Disabled");
-        provider.add("armor.gtceu.nano_muscle_suite.charge.error", "NanoMuscle™ Suite: §cNot enough power for charging!");
+        provider.add("armor.gtceu.nano_muscle_suite.charge.error",
+                "NanoMuscle™ Suite: §cNot enough power for charging!");
 
         // Quantum Suit
         provider.add("armor.gtceu.quark_tech_suite.nightvision.enabled", "QuarkTech™ Suite: §aNightVision Enabled");
@@ -43,7 +46,11 @@ public class ArmorLang {
     }
 
     private static void generateTooltipKeys(RegistrateLangProvider provider) {
-        provider.add("item.gtceu.liquid_fuel_jetpack.tooltip", "§7Uses Combustion Generator Fuels for Thrust"); //move this to item lang?
+        provider.add("item.gtceu.liquid_fuel_jetpack.tooltip", "§7Uses Combustion Generator Fuels for Thrust"); // move
+                                                                                                                // this
+                                                                                                                // to
+                                                                                                                // item
+                                                                                                                // lang?
 
         // Armor Abilities
         provider.add("armor.gtceu.tooltip.stepassist", "§7Provides Step-Assist");
@@ -66,7 +73,7 @@ public class ArmorLang {
 
     private static void generateHudKeys(RegistrateLangProvider provider) {
         // HUD Information
-        provider.add("armor.gtceu.hud.status.enabled", "§aON"); //change this to generic tooltip?
+        provider.add("armor.gtceu.hud.status.enabled", "§aON"); // change this to generic tooltip?
         provider.add("armor.gtceu.hud.status.disabled", "§cOFF");
         provider.add("armor.gtceu.hud.energy_level", "Energy Level: %s");
         provider.add("armor.gtceu.hud.engine_enabled", "Engine: %s");

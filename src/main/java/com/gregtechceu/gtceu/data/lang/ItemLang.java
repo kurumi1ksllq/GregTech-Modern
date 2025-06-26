@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.data.lang;
 
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
-import com.gregtechceu.gtceu.api.registry.GTRegistries;
 
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 
@@ -21,8 +20,6 @@ public class ItemLang {
     }
 
     private static void initGeneratedNames(RegistrateLangProvider provider) {
-
-
         // All TagPrefixes
         for (TagPrefix tagPrefix : TagPrefix.values()) {
             provider.add(tagPrefix.getUnlocalizedName(), tagPrefix.langValue);

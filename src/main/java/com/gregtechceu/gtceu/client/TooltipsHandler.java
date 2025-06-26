@@ -118,7 +118,7 @@ public class TooltipsHandler {
             tooltips.accept(Component.translatable(state.getTranslationKey()));
             attributedFluid.getAttributes().forEach(a -> a.appendFluidTooltips(tooltips));
         } else {
-            String key = "gtceu.fluid.state_" + (fluidType.isLighterThanAir() ? "gas" : "liquid");
+            String key = "tooltip.gtceu.fluid_state." + (fluidType.isLighterThanAir() ? "gas" : "liquid");
             tooltips.accept(Component.translatable(key));
         }
 

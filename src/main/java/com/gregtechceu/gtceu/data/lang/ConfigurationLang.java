@@ -22,8 +22,8 @@ public class ConfigurationLang {
                 Configuration.registerConfig(ConfigHolder.class, ConfigFormats.yaml()).getValueMap(), "");
     }
 
-
-    private static void recurseGenerateConfigLang(RegistrateLangProvider provider, Set<String> added, Map<String, ConfigValue<?>> map, String parentKey) {
+    private static void recurseGenerateConfigLang(RegistrateLangProvider provider, Set<String> added,
+                                                  Map<String, ConfigValue<?>> map, String parentKey) {
         for (var entry : map.entrySet()) {
             var id = entry.getValue().getId();
             if (added.add(id)) {

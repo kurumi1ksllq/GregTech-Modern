@@ -60,6 +60,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 
+import com.google.common.collect.Streams;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
@@ -67,6 +68,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.BiConsumer;
@@ -244,10 +246,16 @@ public class GTMachineUtils {
     }
 
     public static MachineDefinition[] registerSimpleGenerator(String name,
-                                                              GTRecipeType recipeType,
+                                                              GTRecipeType recipeType, boolean addRecipeTooltip,
                                                               Int2IntFunction tankScalingFunction,
                                                               float hazardStrengthPerOperation,
                                                               int... tiers) {
+        List<Component> machineTooltips = new ArrayList<>();
+        if (addRecipeTooltip) {
+            var regName = recipeType.registryName;
+            machineTooltips.add(Component.translatable(regName.toLanguageKey("recipe_type", "tooltip")));
+        }
+
         return registerTieredMachines(name,
                 (holder, tier) -> new SimpleGeneratorMachine(holder, tier, hazardStrengthPerOperation * tier,
                         tankScalingFunction),
@@ -260,8 +268,11 @@ public class GTMachineUtils {
                         .addOutputLimit(ItemRecipeCapability.CAP, 0)
                         .addOutputLimit(FluidRecipeCapability.CAP, 0)
                         .renderer(() -> new SimpleGeneratorMachineRenderer(tier, GTCEu.id("block/generators/" + name)))
-                        .tooltips(workableTiered(tier, GTValues.V[tier], GTValues.V[tier] * 64, recipeType,
-                                tankScalingFunction.applyAsInt(tier), false))
+                        .tooltips(Streams
+                                .concat(machineTooltips.stream(),
+                                        Arrays.stream(workableTiered(tier, V[tier], V[tier] * 64, recipeType,
+                                                tankScalingFunction.applyAsInt(tier), false)))
+                                .toArray(Component[]::new))
                         .register(),
                 tiers);
     }

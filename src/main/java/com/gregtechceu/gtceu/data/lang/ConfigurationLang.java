@@ -18,19 +18,19 @@ import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 public class ConfigurationLang {
 
     public static void init(RegistrateLangProvider provider) {
-        dfs(provider, new HashSet<>(),
-                Configuration.registerConfig(ConfigHolder.class, ConfigFormats.yaml()).getValueMap());
+        recurseGenerateConfigLang(provider, new HashSet<>(),
+                Configuration.registerConfig(ConfigHolder.class, ConfigFormats.yaml()).getValueMap(), "");
     }
 
-    // depth first search === dfs
-    private static void dfs(RegistrateLangProvider provider, Set<String> added, Map<String, ConfigValue<?>> map) {
+
+    private static void recurseGenerateConfigLang(RegistrateLangProvider provider, Set<String> added, Map<String, ConfigValue<?>> map, String parentKey) {
         for (var entry : map.entrySet()) {
             var id = entry.getValue().getId();
             if (added.add(id)) {
-                provider.add(String.format("config.%s.option.%s", GTCEu.MOD_ID, id), id);
+                provider.add(String.format("config.%s.option%s.%s", GTCEu.MOD_ID, parentKey, id), id);
             }
             if (entry.getValue() instanceof ObjectValue objectValue) {
-                dfs(provider, added, objectValue.get());
+                recurseGenerateConfigLang(provider, added, objectValue.get(), "." + id);
             }
         }
     }

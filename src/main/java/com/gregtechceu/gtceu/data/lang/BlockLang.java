@@ -144,26 +144,26 @@ public class BlockLang {
 
     private static void generatePipeKeys(RegistrateLangProvider provider) {
         // Cables
-        provider.add("gtceu.cable.voltage", "§aMax Voltage:§r §a%d §a(%s§a)");
-        provider.add("gtceu.cable.amperage", "§eMax Amperage:§r §e%d");
-        provider.add("gtceu.cable.loss_per_block", "§cLoss/Meter/Ampere:§r §c%d§7 EU-Volt");
-        provider.add("gtceu.cable.superconductor", "%s §dSuperconductor");
+        provider.add("tooltip.gtceu.cable.voltage", "§aMax Voltage:§r §a%d §a(%s§a)");
+        provider.add("tooltip.gtceu.cable.amperage", "§eMax Amperage:§r §e%d");
+        provider.add("tooltip.gtceu.cable.loss_per_block", "§cLoss/Meter/Ampere:§r §c%d§7 EU-Volt");
+        provider.add("tooltip.gtceu.cable.superconductor", "%s §dSuperconductor");
 
         // Fluid Pipes
-        provider.add("gtceu.fluid_pipe.capacity", "§9Capacity: §f%d mB");
-        provider.add("gtceu.fluid_pipe.max_temperature", "§cTemperature Limit: §f%d K");
-        provider.add("gtceu.fluid_pipe.channels", "§eChannels: §f%d");
-        provider.add("gtceu.fluid_pipe.gas_proof", "§6Can handle Gases");
-        provider.add("gtceu.fluid_pipe.acid_proof", "§6Can handle Acids");
-        provider.add("gtceu.fluid_pipe.cryo_proof", "§6Can handle Cryogenics");
-        provider.add("gtceu.fluid_pipe.plasma_proof", "§6Can handle all Plasmas");
-        provider.add("gtceu.fluid_pipe.not_gas_proof", "§4Gases may leak!");
+        provider.add("tooltip.gtceu.fluid_pipe.capacity", "§9Capacity: §f%d mB");
+        provider.add("tooltip.gtceu.fluid_pipe.max_temperature", "§cTemperature Limit: §f%d K");
+        provider.add("tooltip.gtceu.fluid_pipe.channels", "§eChannels: §f%d");
+        provider.add("tooltip.gtceu.fluid_pipe.gas_proof", "§6Can handle Gases");
+        provider.add("tooltip.gtceu.fluid_pipe.not_gas_proof", "§4Gases may leak!");
+        provider.add("tooltip.gtceu.fluid_pipe.acid_proof", "§6Can handle Acids");
+        provider.add("tooltip.gtceu.fluid_pipe.cryo_proof", "§6Can handle Cryogenics");
+        provider.add("tooltip.gtceu.fluid_pipe.plasma_proof", "§6Can handle all Plasmas");
 
         // Item Pipes
-        provider.add("gtceu.item_pipe.priority", "§9Priority: §f%d");
+        provider.add("tooltip.gtceu.item_pipe.priority", "§9Priority: §f%d");
 
         // Duct Pipes
-        provider.add("gtceu.duct_pipe.transfer_rate", "§bAir transfer rate: %s");
+        provider.add("tooltip.gtceu.duct_pipe.transfer_rate", "§bAir transfer rate: %s");
 
         // Optical/Laser
         provider.add("block.gtceu.normal_laser_pipe.tooltip",

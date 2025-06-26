@@ -1,15 +1,36 @@
 package com.gregtechceu.gtceu.data.lang;
 
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 
 import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
+import static com.gregtechceu.gtceu.utils.FormattingUtil.toEnglishName;
 
 public class RecipeLang {
 
     public static void init(RegistrateLangProvider provider) {
+        generateRecipeTypes(provider);
         generateRecipeConditions(provider);
         generateRecipeDataKeys(provider);
         generateMiscKeys(provider);
+    }
+
+    private static void generateRecipeTypes(RegistrateLangProvider provider) {
+        // RecipeTypes
+        for (var recipeType : GTRegistries.RECIPE_TYPES) {
+            String key = "recipe_type." + recipeType.registryName.toLanguageKey();
+            provider.add(key, toEnglishName(recipeType.registryName.getPath()));
+        }
+
+        // Recipe Categories
+        provider.add("recipe_type.gtceu.category.arc_furnace_recycling", "Plasma Scrapping");
+        provider.add("recipe_type.gtceu.category.macerator_recycling", "Part Grinding");
+        provider.add("recipe_type.gtceu.category.extractor_recycling", "Scrap Remelting");
+        provider.add("recipe_type.gtceu.category.ore_crushing", "Ore Grinding");
+        provider.add("recipe_type.gtceu.category.ore_forging", "Ore Crushing");
+        provider.add("recipe_type.gtceu.category.ore_bathing", "Ore Treating");
+        provider.add("recipe_type.gtceu.category.chem_dyes", "Chemical Dyeing");
+        provider.add("recipe_type.gtceu.category.ingot_molding", "Metal Molding");
     }
 
     private static void generateRecipeConditions(RegistrateLangProvider provider) {

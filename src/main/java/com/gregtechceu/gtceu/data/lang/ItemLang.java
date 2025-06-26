@@ -21,20 +21,7 @@ public class ItemLang {
     }
 
     private static void initGeneratedNames(RegistrateLangProvider provider) {
-        // RecipeTypes
-        for (var recipeType : GTRegistries.RECIPE_TYPES) {
-            provider.add(recipeType.registryName.toLanguageKey(), toEnglishName(recipeType.registryName.getPath()));
-        }
 
-        // Recipe Categories
-        provider.add("gtceu.recipe.category.arc_furnace_recycling", "Plasma Scrapping");
-        provider.add("gtceu.recipe.category.macerator_recycling", "Part Grinding");
-        provider.add("gtceu.recipe.category.extractor_recycling", "Scrap Remelting");
-        provider.add("gtceu.recipe.category.ore_crushing", "Ore Grinding");
-        provider.add("gtceu.recipe.category.ore_forging", "Ore Crushing");
-        provider.add("gtceu.recipe.category.ore_bathing", "Ore Treating");
-        provider.add("gtceu.recipe.category.chem_dyes", "Chemical Dyeing");
-        provider.add("gtceu.recipe.category.ingot_molding", "Metal Molding");
 
         // All TagPrefixes
         for (TagPrefix tagPrefix : TagPrefix.values()) {

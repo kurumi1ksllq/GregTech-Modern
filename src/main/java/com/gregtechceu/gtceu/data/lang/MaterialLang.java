@@ -146,7 +146,7 @@ public class MaterialLang {
         provider.add("gtceu.jei.materials.average_neutrons", "Average neutrons: %d");
 
         // Cauldron Washing
-        provider.add("item.dust.tooltip.purify", "Right click a Cauldron to get clean Dust");
-        provider.add("item.crushed.tooltip.purify", "Right click a Cauldron to get Purified Ore");
+        provider.add("tagprefix.ore_dust.tooltip.purify", "Right click a Cauldron to get clean Dust");
+        provider.add("tagprefix.crushed.tooltip.purify", "Right click a Cauldron to get Purified Ore");
     }
 }

@@ -60,49 +60,49 @@ public class ToolLang {
 
     public static void generateToolClassKeys(RegistrateLangProvider provider) {
         // Tool Names
-        provider.add("tool.gtceu.class.sword", "Sword");
-        provider.add("tool.gtceu.class.pickaxe", "Pickaxe");
-        provider.add("tool.gtceu.class.shovel", "Shovel");
-        provider.add("tool.gtceu.class.axe", "Axe");
-        provider.add("tool.gtceu.class.hoe", "Hoe");
-        provider.add("tool.gtceu.class.mining_hammer", "Mining Hammer");
-        provider.add("tool.gtceu.class.spade", "Spade");
-        provider.add("tool.gtceu.class.saw", "Saw");
-        provider.add("tool.gtceu.class.hammer", "Hammer");
-        provider.add("tool.gtceu.class.mallet", "Soft Mallet");
-        provider.add("tool.gtceu.class.wrench", "Wrench");
-        provider.add("tool.gtceu.class.file", "File");
-        provider.add("tool.gtceu.class.crowbar", "Crowbar");
-        provider.add("tool.gtceu.class.screwdriver", "Screwdriver");
-        provider.add("tool.gtceu.class.mortar", "Mortar");
-        provider.add("tool.gtceu.class.wire_cutter", "Wire Cutter");
-        provider.add("tool.gtceu.class.knife", "Knife");
-        provider.add("tool.gtceu.class.butchery_knife", "Butchery Knife");
-        provider.add("tool.gtceu.class.scythe", "Scythe");
-        provider.add("tool.gtceu.class.rolling_pin", "Rolling Pin");
-        provider.add("tool.gtceu.class.plunger", "Plunger");
-        provider.add("tool.gtceu.class.shears", "Shears");
-        provider.add("tool.gtceu.class.drill", "Drill");
+        provider.add("item.gtceu.tool.class.sword", "Sword");
+        provider.add("item.gtceu.tool.class.pickaxe", "Pickaxe");
+        provider.add("item.gtceu.tool.class.shovel", "Shovel");
+        provider.add("item.gtceu.tool.class.axe", "Axe");
+        provider.add("item.gtceu.tool.class.hoe", "Hoe");
+        provider.add("item.gtceu.tool.class.mining_hammer", "Mining Hammer");
+        provider.add("item.gtceu.tool.class.spade", "Spade");
+        provider.add("item.gtceu.tool.class.saw", "Saw");
+        provider.add("item.gtceu.tool.class.hammer", "Hammer");
+        provider.add("item.gtceu.tool.class.mallet", "Soft Mallet");
+        provider.add("item.gtceu.tool.class.wrench", "Wrench");
+        provider.add("item.gtceu.tool.class.file", "File");
+        provider.add("item.gtceu.tool.class.crowbar", "Crowbar");
+        provider.add("item.gtceu.tool.class.screwdriver", "Screwdriver");
+        provider.add("item.gtceu.tool.class.mortar", "Mortar");
+        provider.add("item.gtceu.tool.class.wire_cutter", "Wire Cutter");
+        provider.add("item.gtceu.tool.class.knife", "Knife");
+        provider.add("item.gtceu.tool.class.butchery_knife", "Butchery Knife");
+        provider.add("item.gtceu.tool.class.scythe", "Scythe");
+        provider.add("item.gtceu.tool.class.rolling_pin", "Rolling Pin");
+        provider.add("item.gtceu.tool.class.plunger", "Plunger");
+        provider.add("item.gtceu.tool.class.shears", "Shears");
+        provider.add("item.gtceu.tool.class.drill", "Drill");
     }
 
     public static void generateBehaviorKeys(RegistrateLangProvider provider) {
         // Generic Tool Behaviors
-        provider.add("tool.gtceu.behavior.silk_ice", "§bIce Cutter: §fSilk Harvests Ice");
-        provider.add("tool.gtceu.behavior.torch_place", "§eSpelunker: §fPlaces Torches on Right-Click");
-        provider.add("tool.gtceu.behavior.tree_felling", "§4Lumberjack: §fTree Felling");
-        provider.add("tool.gtceu.behavior.strip_log", "§5Artisan: §fStrips Logs");
-        provider.add("tool.gtceu.behavior.scrape", "§bPolisher: §fRemoves Oxidation");
-        provider.add("tool.gtceu.behavior.remove_wax", "§6Cleaner: §fRemoves Wax");
-        provider.add("tool.gtceu.behavior.shield_disable", "§cBrute: §fDisables Shields");
-        provider.add("tool.gtceu.behavior.relocate_mining", "§2Magnetic: §fRelocates Mined Blocks and Mob Drops");
-        provider.add("tool.gtceu.behavior.aoe_mining", "§5Area-of-Effect: §f%sx%sx%s");
-        provider.add("tool.gtceu.behavior.ground_tilling", "§eFarmer: §fTills Ground");
-        provider.add("tool.gtceu.behavior.grass_path", "§eLandscaper: §fCreates Grass Paths");
-        provider.add("tool.gtceu.behavior.rail_rotation", "§eRailroad Engineer: §fRotates Rails");
-        provider.add("tool.gtceu.behavior.crop_harvesting", "§aHarvester: §fHarvests Crops");
-        provider.add("tool.gtceu.behavior.plunger", "§9Plumber: §fDrains Fluids");
-        provider.add("tool.gtceu.behavior.block_rotation", "§2Mechanic: §fRotates Blocks");
-        provider.add("tool.gtceu.behavior.damage_boost", "§4Damage Boost: §fExtra damage against %s");
+        provider.add("item.gtceu.tool.behavior.silk_ice", "§bIce Cutter: §fSilk Harvests Ice");
+        provider.add("item.gtceu.tool.behavior.torch_place", "§eSpelunker: §fPlaces Torches on Right-Click");
+        provider.add("item.gtceu.tool.behavior.tree_felling", "§4Lumberjack: §fTree Felling");
+        provider.add("item.gtceu.tool.behavior.strip_log", "§5Artisan: §fStrips Logs");
+        provider.add("item.gtceu.tool.behavior.scrape", "§bPolisher: §fRemoves Oxidation");
+        provider.add("item.gtceu.tool.behavior.remove_wax", "§6Cleaner: §fRemoves Wax");
+        provider.add("item.gtceu.tool.behavior.shield_disable", "§cBrute: §fDisables Shields");
+        provider.add("item.gtceu.tool.behavior.relocate_mining", "§2Magnetic: §fRelocates Mined Blocks and Mob Drops");
+        provider.add("item.gtceu.tool.behavior.aoe_mining", "§5Area-of-Effect: §f%sx%sx%s");
+        provider.add("item.gtceu.tool.behavior.ground_tilling", "§eFarmer: §fTills Ground");
+        provider.add("item.gtceu.tool.behavior.grass_path", "§eLandscaper: §fCreates Grass Paths");
+        provider.add("item.gtceu.tool.behavior.rail_rotation", "§eRailroad Engineer: §fRotates Rails");
+        provider.add("item.gtceu.tool.behavior.crop_harvesting", "§aHarvester: §fHarvests Crops");
+        provider.add("item.gtceu.tool.behavior.plunger", "§9Plumber: §fDrains Fluids");
+        provider.add("item.gtceu.tool.behavior.block_rotation", "§2Mechanic: §fRotates Blocks");
+        provider.add("item.gtceu.tool.behavior.damage_boost", "§4Damage Boost: §fExtra damage against %s");
 
         // AOE
         provider.add("item.gtceu.tool.aoe.rows", "Rows");
@@ -186,27 +186,29 @@ public class ToolLang {
         provider.add("item.gtceu.tool.plunger.tooltip", "§8Removes Fluids from Machines");
 
         // Tool Stats Tooltips
-        provider.add("tool.gtceu.crafting_uses.tooltip", "%s §aCrafting Uses");
-        provider.add("tool.gtceu.max_uses.tooltip", "%s §eTotal Durability");
-        provider.add("tool.gtceu.general_uses.tooltip", "%s §bDurability");
-        provider.add("tool.gtceu.attack_damage.tooltip", "%s §cAttack Damage");
-        provider.add("tool.gtceu.attack_speed.tooltip", "%s §9Attack Speed");
-        provider.add("tool.gtceu.mining_speed.tooltip", "%s §dMining Speed");
-        provider.add("tool.gtceu.harvest_level.tooltip", "§eHarvest Level %s");
-        provider.add("tool.gtceu.harvest_level_extra.tooltip", "§eHarvest Level %s §f(%s§f)");
-        multiLang(provider, "item.gtceu.tool.harvest_level",
+        provider.add("tool.gtceu.tooltip.crafting_uses", "%s §aCrafting Uses");
+        provider.add("tool.gtceu.tooltip.max_uses", "%s §eTotal Durability");
+        provider.add("tool.gtceu.tooltip.general_uses", "%s §bDurability");
+        provider.add("tool.gtceu.tooltip.attack_damage", "%s §cAttack Damage");
+        provider.add("tool.gtceu.tooltip.attack_speed", "%s §9Attack Speed");
+        provider.add("tool.gtceu.tooltip.mining_speed", "%s §dMining Speed");
+        provider.add("tool.gtceu.tooltip.harvest_level", "§eHarvest Level %s");
+        provider.add("tool.gtceu.tooltip.harvest_level_extra", "§eHarvest Level %s §f(%s§f)");
+        multiLang(provider, "tool.gtceu.tooltip.harvest_level_name",
                 "§8Wood", "§7Stone", "§aIron", "§bDiamond",
                 "§dNetherite", "§9Duranium", "§cNeutronium");
-        provider.add("tool.gtceu.repair_info.tooltip", "§8Hold SHIFT to show Repair Info");
-        provider.add("tool.gtceu.repair_material.tooltip", "§8Repair with: §f§a%s");
-        provider.add("item.gtceu.tool.replace_tool_head", "Craft with a new Tool Head to replace it");
-        provider.add("item.gtceu.tool.usable_as", "§8Usable as: §f%s");
+
+        // Repair Info
+        provider.add("tool.gtceu.tooltip.show_repair_info", "§8Hold SHIFT to show Repair Info");
+        provider.add("tool.gtceu.tooltip.repair_material", "§8Repair with: §f§a%s");
+        provider.add("tool.gtceu.tooltip.replace_tool_head", "Craft with a new Tool Head to replace it");
+        provider.add("tool.gtceu.tooltip.usable_as", "§8Usable as: §f%s");
 
         // Rotors
-        provider.add("item.tool.tooltip.primary_material", "§fMaterial: §e%s");
-        provider.add("item.tool.tooltip.durability", "§fDurability: §a%d / %d");
-        provider.add("item.tool.tooltip.rotor.efficiency", "Turbine Efficiency: §9%d%%");
-        provider.add("item.tool.tooltip.rotor.power", "Turbine Power: §9%d%%");
+        provider.add("item.gtceu.turbine_rotor.tooltip.primary_material", "§fMaterial: §e%s");
+        provider.add("item.gtceu.turbine_rotor.tooltip.durability", "§fDurability: §a%d / %d");
+        provider.add("item.gtceu.turbine_rotor.tooltip.efficiency", "Turbine Efficiency: §9%d%%");
+        provider.add("item.gtceu.turbine_rotor.tooltip.power", "Turbine Power: §9%d%%");
     }
 
     public static void generateActionKeys(RegistrateLangProvider provider) {
@@ -240,11 +242,11 @@ public class ToolLang {
 
     private static void generateEnchantKeys(RegistrateLangProvider provider) {
         // Enchantments
-        provider.add("enchantment.disjunction", "Disjunction");
+        provider.add("enchantment.gtceu.disjunction", "Disjunction");
         provider.add("enchantment.gtceu.disjunction.description",
                 "Applies Weakness and Slowness to Ender-related mobs.");
 
-        provider.add("enchantment.hard_hammer", "Hammering");
+        provider.add("enchantment.gtceu.hard_hammer", "Hammering");
         provider.add("enchantment.gtceu.hard_hammer.description",
                 "Breaks blocks as if they were mined with a GregTech Hammer.");
     }

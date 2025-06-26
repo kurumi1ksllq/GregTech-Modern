@@ -38,7 +38,7 @@ public class ConfigMixin {
         for (GTToolType type : GTToolType.getTypes().values()) {
             for (TagKey<Item> tag : type.itemTags) {
                 if (!tooltypeTagsSet.containsKey(tag.location())) tooltypeTagsSet.put(tag.location(),
-                        Component.translatable("tool.gtceu.class." + type.name).getString());
+                        Component.translatable("item.gtceu.tool.class." + type.name).getString());
             }
         }
     }

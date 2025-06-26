@@ -79,11 +79,11 @@ public class PowerlessJetpack implements IArmorLogic, IJetpack, IItemHUDProvider
         if (toggleTimer == 0) {
             if (KeyBind.JETPACK_ENABLE.isKeyDown(player)) {
                 jetpackEnabled = !jetpackEnabled;
-                messageKey = "armor.gtceu.jetpack.flight." + (jetpackEnabled ? "enable" : "disable");
+                messageKey = "armor.gtceu.jetpack.flight." + (jetpackEnabled ? "enabled" : "disabled");
                 data.putBoolean("enabled", jetpackEnabled);
             } else if (KeyBind.ARMOR_HOVER.isKeyDown(player)) {
                 hoverMode = !hoverMode;
-                messageKey = "armor.gtceu.jetpack.hover." + (hoverMode ? "enable" : "disable");
+                messageKey = "armor.gtceu.jetpack.hover." + (hoverMode ? "enabled" : "disabled");
                 data.putBoolean("hover", hoverMode);
             }
 
@@ -131,7 +131,7 @@ public class PowerlessJetpack implements IArmorLogic, IJetpack, IItemHUDProvider
             if (tank.getFluidInTank(0).getAmount() == 0) return;
             String formated = String.format("%.1f",
                     (tank.getFluidInTank(0).getAmount() * 100.0F / tank.getTankCapacity(0)));
-            this.HUD.newString(Component.translatable("armor.gtceu.hud.fuel_lvl", formated + "%"));
+            this.HUD.newString(Component.translatable("armor.gtceu.hud.fuel_level", formated + "%"));
             CompoundTag data = item.getTag();
 
             if (data != null) {

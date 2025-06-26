@@ -66,19 +66,19 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
         if (toggleTimer == 0) {
             if (KeyBind.JETPACK_ENABLE.isKeyDown(player)) {
                 jetpackEnabled = !jetpackEnabled;
-                messageKey = "armor.gtceu.jetpack.flight." + (jetpackEnabled ? "enable" : "disable");
+                messageKey = "armor.gtceu.jetpack.flight." + (jetpackEnabled ? "enabled" : "disabled");
                 data.putBoolean("enabled", jetpackEnabled);
             } else if (KeyBind.ARMOR_HOVER.isKeyDown(player)) {
                 hoverMode = !hoverMode;
-                messageKey = "armor.gtceu.jetpack.hover." + (hoverMode ? "enable" : "disable");
+                messageKey = "armor.gtceu.jetpack.hover." + (hoverMode ? "enabled" : "disabled");
                 data.putBoolean("hover", hoverMode);
             } else if (KeyBind.ARMOR_CHARGING.isKeyDown(player)) {
                 canShare = !canShare;
                 if (canShare && cont.getCharge() == 0) { // Only allow for charging to be enabled if charge is nonzero
-                    messageKey = "armor.gtceu.nms.charge.error";
+                    messageKey = "armor.gtceu.nano_muscle_suite.charge.error";
                     canShare = false;
                 } else {
-                    messageKey = "armor.gtceu.nms.charge." + (canShare ? "enable" : "disable");
+                    messageKey = "armor.gtceu.nano_muscle_suite.charge." + (canShare ? "enabled" : "disabled");
                 }
                 data.putBoolean("canShare", canShare);
             }
@@ -155,7 +155,7 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
         state = canShare ? Component.translatable("armor.gtceu.hud.status.enabled") :
                 Component.translatable("armor.gtceu.hud.status.disabled");
         lines.add(Component.translatable("armor.gtceu.energy_share.tooltip", state));
-        lines.add(Component.translatable("armor.gtceu.energy_share.tooltip.guide"));
+        lines.add(Component.translatable("armor.gtceu.energy_share.tooltip.info"));
 
         boolean hover = data.contains("hover") && data.getBoolean("hover");
         state = hover ? Component.translatable("armor.gtceu.hud.status.enabled") :
@@ -180,9 +180,9 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
                 if (canShare && cont.getCharge() == 0) {
                     player.sendSystemMessage(Component.translatable("armor.gtceu.energy_share.error"));
                 } else if (canShare) {
-                    player.sendSystemMessage(Component.translatable("armor.gtceu.energy_share.enable"));
+                    player.sendSystemMessage(Component.translatable("armor.gtceu.energy_share.enabledd"));
                 } else {
-                    player.sendSystemMessage(Component.translatable("armor.gtceu.energy_share.disable"));
+                    player.sendSystemMessage(Component.translatable("armor.gtceu.energy_share.disabledd"));
                 }
             }
 
@@ -213,7 +213,7 @@ public class AdvancedNanoMuscleSuite extends NanoMuscleSuite implements IJetpack
             if (data.contains("canShare")) {
                 String status = data.getBoolean("canShare") ? "armor.gtceu.hud.status.enabled" :
                         "armor.gtceu.hud.status.disabled";
-                this.HUD.newString(Component.translatable("mataarmor.hud.supply_mode", Component.translatable(status)));
+                this.HUD.newString(Component.translatable("armor.gtceu.hud.supply_mode", Component.translatable(status)));
             }
 
             if (data.contains("hover")) {

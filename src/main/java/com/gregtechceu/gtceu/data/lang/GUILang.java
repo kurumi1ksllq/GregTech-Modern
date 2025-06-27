@@ -1,20 +1,17 @@
 package com.gregtechceu.gtceu.data.lang;
 
-import com.tterrag.registrate.providers.RegistrateLangProvider;
-
-import static com.gregtechceu.gtceu.data.lang.LangUtil.multiLang;
-import static com.gregtechceu.gtceu.data.lang.LangUtil.multilineLang;
+import com.gregtechceu.gtceu.api.registry.registrate.provider.GTLangProvider;
 
 public class GUILang {
 
-    public static void init(RegistrateLangProvider provider) {
+    public static void init(GTLangProvider provider) {
         generateKeybindKeys(provider);
         generateWidgetKeys(provider);
         generateTooltipKeys(provider);
         generateLDLibKeys(provider);
     }
 
-    private static void generateLDLibKeys(RegistrateLangProvider provider) {
+    private static void generateLDLibKeys(GTLangProvider provider) {
         provider.add("gtceu.gui.editor.tips.citation", "Number of citations");
         provider.add("gtceu.gui.editor.group.recipe_type", "cap");
         provider.add("ldlib.gui.editor.register.editor.gtceu.rtui", "RecipeType UI Project");
@@ -27,7 +24,7 @@ public class GUILang {
         provider.add("ldlib.gui.editor.register.widget.container.gtm_phantom_fluid_slot", "GTM Phantom Fluid Slot");
     }
 
-    private static void generateKeybindKeys(RegistrateLangProvider provider) {
+    private static void generateKeybindKeys(GTLangProvider provider) {
         provider.add("gtceu.key.armor_mode_switch", "Armor Mode Switch");
         provider.add("gtceu.key.armor_hover", "Armor Hover Toggle");
         provider.add("gtceu.key.enable_jetpack", "Enable Jetpack");
@@ -38,7 +35,7 @@ public class GUILang {
                 "GregTech has modified the debug info! For Developers: enable the misc:debug config option in the GregTech config file to see more");
     }
 
-    private static void generateTooltipKeys(RegistrateLangProvider provider) {
+    private static void generateTooltipKeys(GTLangProvider provider) {
         // Part Sharing
         provider.add("gtceu.part_sharing.disabled", "Multiblock Sharing §4Disabled");
         provider.add("gtceu.part_sharing.enabled", "Multiblock Sharing §aEnabled");
@@ -64,6 +61,9 @@ public class GUILang {
         // EU Storage
         provider.add("gtceu.universal.tooltip.energy_storage_capacity", "§cEnergy Capacity: §r%d EU");
         provider.add("gtceu.universal.tooltip.energy_tier_range", "§aAllowed Voltage Tiers: §f%s §f- %s");
+
+        provider.add("gtceu.gui.seconds", "%s second(s)");
+        provider.add("gtceu.gui.years", "%s year(s)");
 
         // Item Storage/Transfer
         provider.add("gtceu.universal.tooltip.item_storage_capacity", "§6Item Slots: §f%d");
@@ -135,7 +135,7 @@ public class GUILang {
         provider.add("gtceu.direction.tooltip.front", "Front");
     }
 
-    private static void generateWidgetKeys(RegistrateLangProvider provider) {
+    private static void generateWidgetKeys(GTLangProvider provider) {
         // General UI Keys
         provider.add("gtceu.gui.title_bar.back", "Back");
         provider.add("gtceu.gui.title_bar.page_switcher", "Pages");
@@ -146,9 +146,9 @@ public class GUILang {
         provider.add("gtceu.gui.toggle_view.disabled", "Toggle View (Fluids)");
         provider.add("gtceu.gui.toggle_view.enabled", "Toggle View (Items)");
 
-        multilineLang(provider, "gtceu.gui.overclock.enabled", "Overclocking Enabled.\nClick to Disable");
-        multilineLang(provider, "gtceu.gui.overclock.disabled", "Overclocking Disabled.\nClick to Enable");
-        multilineLang(provider, "gtceu.gui.overclock.description",
+        provider.addMultiline("gtceu.gui.overclock.enabled", "Overclocking Enabled.\nClick to Disable");
+        provider.addMultiline("gtceu.gui.overclock.disabled", "Overclocking Disabled.\nClick to Enable");
+        provider.addMultiline("gtceu.gui.overclock.description",
                 "Overclock Button\n§7Recipes can overclock up to the set tier");
         provider.add("gtceu.gui.overclock.off", "X");
 
@@ -164,9 +164,9 @@ public class GUILang {
         provider.add("gtceu.gui.item_auto_input.tooltip.enabled", "Item Auto-Input Enabled");
         provider.add("gtceu.gui.item_auto_input.tooltip.disabled", "Item Auto-Input Disabled");
 
-        multilineLang(provider, "gtceu.gui.charger_slot.tooltip",
+        provider.addMultiline("gtceu.gui.charger_slot.tooltip",
                 "§fCharger Slot§r\n§7Draws power from %s batteries§r\n§7Charges %s tools and batteries");
-        multilineLang(provider, "gtceu.gui.configurator_slot.tooltip",
+        provider.addMultiline("gtceu.gui.configurator_slot.tooltip",
                 "§fConfigurator Slot§r\n§7Place a §6Programmed Circuit§7 in this slot to\n§7change its configured value.\n§7Hold §6Shift§7 when clicking buttons to change by §65.\n§aA Programmed Circuit in this slot is also valid for recipe inputs.§r");
 
         provider.add("gtceu.gui.fluid_lock.tooltip.enabled", "Fluid Locking Enabled");
@@ -182,24 +182,24 @@ public class GUILang {
         provider.add("gtceu.gui.item_voiding_partial.tooltip.disabled", "Item Voiding Disabled");
 
         // Miner GUI
-        multilineLang(provider, "gtceu.gui.silktouch.enabled",
+        provider.addMultiline("gtceu.gui.silktouch.enabled",
                 "Silk Touch Enabled: Click to Disable.\n§7Switching requires an idle machine.");
-        multilineLang(provider, "gtceu.gui.silktouch.disabled",
+        provider.addMultiline("gtceu.gui.silktouch.disabled",
                 "Silk Touch Disabled: Click to Enable.\n§7Switching requires an idle machine.");
-        multilineLang(provider, "gtceu.gui.chunkmode.enabled",
+        provider.addMultiline("gtceu.gui.chunkmode.enabled",
                 "Chunk Mode Enabled: Click to Disable.\n§7Switching requires an idle machine.");
-        multilineLang(provider, "gtceu.gui.chunkmode.disabled",
+        provider.addMultiline("gtceu.gui.chunkmode.disabled",
                 "Chunk Mode Disabled: Click to Enable.\n§7Switching requires an idle machine.");
 
         // Recipe Capability Voiding
-        multilineLang(provider, "gtceu.gui.multiblock_item_voiding", "Voiding Mode\n§7Voiding §6Items");
-        multilineLang(provider, "gtceu.gui.multiblock_fluid_voiding", "Voiding Mode\n§7Voiding §9Fluids");
-        multilineLang(provider, "gtceu.gui.multiblock_item_fluid_voiding",
+        provider.addMultiline("gtceu.gui.multiblock_item_voiding", "Voiding Mode\n§7Voiding §6Items");
+        provider.addMultiline("gtceu.gui.multiblock_fluid_voiding", "Voiding Mode\n§7Voiding §9Fluids");
+        provider.addMultiline("gtceu.gui.multiblock_item_fluid_voiding",
                 "Voiding Mode\n§7Voiding §6Items §7and §9Fluids");
-        multilineLang(provider, "gtceu.gui.multiblock_no_voiding", "Voiding Mode\n§7Voiding Nothing");
+        provider.addMultiline("gtceu.gui.multiblock_no_voiding", "Voiding Mode\n§7Voiding Nothing");
 
         // Fisher
-        multilineLang(provider, "gtceu.gui.fisher_mode.tooltip",
+        provider.addMultiline("gtceu.gui.fisher_mode.tooltip",
                 "Toggle junk items\nOff costs 2 string per operation");
 
         // Multiblock Page
@@ -219,7 +219,7 @@ public class GUILang {
         provider.add("gtceu.gui.cover_setting.title", "Cover Settings");
         provider.add("gtceu.gui.output_setting.title", "Output Settings");
         provider.add("gtceu.gui.circuit.title", "Circuit Settings");
-        multiLang(provider, "gtceu.gui.output_setting.tooltips", "left-click to tune the item auto output",
+        provider.addMultiLang("gtceu.gui.output_setting.tooltips", "left-click to tune the item auto output",
                 "right-click to tune the fluid auto output.");
         provider.add("gtceu.gui.item_auto_output.allow_input.enabled",
                 "allow items input from the output side");
@@ -244,7 +244,7 @@ public class GUILang {
         provider.add("gtceu.gui.content.units.per_second", "/s");
 
         // Recipe Logic
-        multiLang(provider, "gtceu.oc.tooltip", "Min: %s", "Left click to increase the OC",
+        provider.addMultiLang("gtceu.oc.tooltip", "Min: %s", "Left click to increase the OC",
                 "Right click to decrease the OC", "Middle click to reset the OC",
                 "Hold Shift to change by Perfect OC");
 

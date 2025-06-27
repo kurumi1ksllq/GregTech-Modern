@@ -1,90 +1,87 @@
 package com.gregtechceu.gtceu.data.lang;
 
+import com.gregtechceu.gtceu.api.registry.registrate.provider.GTLangProvider;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
-
-import com.tterrag.registrate.providers.RegistrateLangProvider;
-
-import static com.gregtechceu.gtceu.data.lang.LangUtil.*;
 
 public class BlockLang {
 
-    public static void init(RegistrateLangProvider provider) {
+    public static void init(GTLangProvider provider) {
         generateBlockKeys(provider);
         generateBlockTooltips(provider);
         generatePipeKeys(provider);
     }
 
-    private static void generateBlockKeys(RegistrateLangProvider provider) {
+    private static void generateBlockKeys(GTLangProvider provider) {
         // Coils
-        replace(provider, "block.gtceu.hssg_coil_block", "HSS-G Coil Block");
-        replace(provider, "block.gtceu.rtm_alloy_coil_block", "RTM Alloy Coil Block");
+        provider.add("block.gtceu.hssg_coil_block", "HSS-G Coil Block");
+        provider.add("block.gtceu.rtm_alloy_coil_block", "RTM Alloy Coil Block");
 
         // Substation Capacitors
-        replace(provider, GTBlocks.BATTERY_EMPTY_TIER_I.get().getDescriptionId(), "Empty Tier I Capacitor");
-        replace(provider, GTBlocks.BATTERY_EMPTY_TIER_II.get().getDescriptionId(), "Empty Tier II Capacitor");
-        replace(provider, GTBlocks.BATTERY_EMPTY_TIER_III.get().getDescriptionId(), "Empty Tier III Capacitor");
+        provider.add(GTBlocks.BATTERY_EMPTY_TIER_I.get().getDescriptionId(), "Empty Tier I Capacitor");
+        provider.add(GTBlocks.BATTERY_EMPTY_TIER_II.get().getDescriptionId(), "Empty Tier II Capacitor");
+        provider.add(GTBlocks.BATTERY_EMPTY_TIER_III.get().getDescriptionId(), "Empty Tier III Capacitor");
 
-        replace(provider, GTBlocks.BATTERY_LAPOTRONIC_EV.get().getDescriptionId(), "EV Lapotronic Capacitor");
-        replace(provider, GTBlocks.BATTERY_LAPOTRONIC_IV.get().getDescriptionId(), "IV Lapotronic Capacitor");
-        replace(provider, GTBlocks.BATTERY_LAPOTRONIC_LuV.get().getDescriptionId(), "LuV Lapotronic Capacitor");
-        replace(provider, GTBlocks.BATTERY_LAPOTRONIC_ZPM.get().getDescriptionId(), "ZPM Lapotronic Capacitor");
-        replace(provider, GTBlocks.BATTERY_LAPOTRONIC_UV.get().getDescriptionId(), "UV Lapotronic Capacitor");
-        replace(provider, GTBlocks.BATTERY_ULTIMATE_UHV.get().getDescriptionId(), "UHV Ultimate Capacitor");
+        provider.add(GTBlocks.BATTERY_LAPOTRONIC_EV.get().getDescriptionId(), "EV Lapotronic Capacitor");
+        provider.add(GTBlocks.BATTERY_LAPOTRONIC_IV.get().getDescriptionId(), "IV Lapotronic Capacitor");
+        provider.add(GTBlocks.BATTERY_LAPOTRONIC_LuV.get().getDescriptionId(), "LuV Lapotronic Capacitor");
+        provider.add(GTBlocks.BATTERY_LAPOTRONIC_ZPM.get().getDescriptionId(), "ZPM Lapotronic Capacitor");
+        provider.add(GTBlocks.BATTERY_LAPOTRONIC_UV.get().getDescriptionId(), "UV Lapotronic Capacitor");
+        provider.add(GTBlocks.BATTERY_ULTIMATE_UHV.get().getDescriptionId(), "UHV Ultimate Capacitor");
 
         // Casings
-        replace(provider, "block.gtceu.bronze_brick_casing", "Bricked Bronze Casing");
-        replace(provider, "block.gtceu.steel_brick_casing", "Bricked Wrought Iron Casing");
-        replace(provider, "block.gtceu.heatproof_machine_casing", "Heat Proof Invar Machine Casing");
-        replace(provider, "block.gtceu.frostproof_machine_casing", "Frost Proof Aluminium Machine Casing");
-        replace(provider, "block.gtceu.steel_machine_casing", "Solid Steel Machine Casing");
-        replace(provider, "block.gtceu.clean_machine_casing", "Clean Stainless Steel Casing");
-        replace(provider, "block.gtceu.stable_machine_casing", "Stable Titanium Machine Casing");
-        replace(provider, "block.gtceu.robust_machine_casing", "Robust Tungstensteel Machine Casing");
-        replace(provider, "block.gtceu.casing_coke_bricks", "Coke Oven Bricks");
-        replace(provider, "block.gtceu.inert_machine_casing", "Chemically Inert PTFE Machine Casing");
-        replace(provider, "block.gtceu.sturdy_machine_casing", "Sturdy HSS-E Machine Casing");
-        replace(provider, "block.gtceu.casing_grate", "Grate Machine Casing");
-        replace(provider, "block.gtceu.assembly_line_unit", "Assembly Control Casing");
-        replace(provider, "block.gtceu.ptfe_pipe_casing", "PTFE Pipe Casing");
-        replace(provider, "block.gtceu.palladium_substation", "Palladium Substation Casing");
+        provider.add("block.gtceu.bronze_brick_casing", "Bricked Bronze Casing");
+        provider.add("block.gtceu.steel_brick_casing", "Bricked Wrought Iron Casing");
+        provider.add("block.gtceu.heatproof_machine_casing", "Heat Proof Invar Machine Casing");
+        provider.add("block.gtceu.frostproof_machine_casing", "Frost Proof Aluminium Machine Casing");
+        provider.add("block.gtceu.steel_machine_casing", "Solid Steel Machine Casing");
+        provider.add("block.gtceu.clean_machine_casing", "Clean Stainless Steel Casing");
+        provider.add("block.gtceu.stable_machine_casing", "Stable Titanium Machine Casing");
+        provider.add("block.gtceu.robust_machine_casing", "Robust Tungstensteel Machine Casing");
+        provider.add("block.gtceu.casing_coke_bricks", "Coke Oven Bricks");
+        provider.add("block.gtceu.inert_machine_casing", "Chemically Inert PTFE Machine Casing");
+        provider.add("block.gtceu.sturdy_machine_casing", "Sturdy HSS-E Machine Casing");
+        provider.add("block.gtceu.casing_grate", "Grate Machine Casing");
+        provider.add("block.gtceu.assembly_line_unit", "Assembly Control Casing");
+        provider.add("block.gtceu.ptfe_pipe_casing", "PTFE Pipe Casing");
+        provider.add("block.gtceu.palladium_substation", "Palladium Substation Casing");
 
         // Gearboxes
-        replace(provider, "block.gtceu.bronze_gearbox", "Bronze Gearbox Casing");
-        replace(provider, "block.gtceu.steel_gearbox", "Steel Gearbox Casing");
-        replace(provider, "block.gtceu.stainless_steel_gearbox", "Stainless Steel Gearbox Casing");
-        replace(provider, "block.gtceu.titanium_gearbox", "Titanium Gearbox Casing");
-        replace(provider, "block.gtceu.tungstensteel_gearbox", "Tungstensteel Gearbox Casing");
+        provider.add("block.gtceu.bronze_gearbox", "Bronze Gearbox Casing");
+        provider.add("block.gtceu.steel_gearbox", "Steel Gearbox Casing");
+        provider.add("block.gtceu.stainless_steel_gearbox", "Stainless Steel Gearbox Casing");
+        provider.add("block.gtceu.titanium_gearbox", "Titanium Gearbox Casing");
+        provider.add("block.gtceu.tungstensteel_gearbox", "Tungstensteel Gearbox Casing");
 
         // Turbine Casing
-        replace(provider, "block.gtceu.steel_turbine_casing", "Magnalium Turbine Casing");
-        replace(provider, "block.gtceu.titanium_turbine_casing", "Titanium Turbine Casing");
-        replace(provider, "block.gtceu.stainless_steel_turbine_casing", "Stainless Turbine Casing");
-        replace(provider, "block.gtceu.tungstensteel_turbine_casing", "Tungstensteel Turbine Casing");
+        provider.add("block.gtceu.steel_turbine_casing", "Magnalium Turbine Casing");
+        provider.add("block.gtceu.titanium_turbine_casing", "Titanium Turbine Casing");
+        provider.add("block.gtceu.stainless_steel_turbine_casing", "Stainless Turbine Casing");
+        provider.add("block.gtceu.tungstensteel_turbine_casing", "Tungstensteel Turbine Casing");
 
         // Pipe Casing
-        replace(provider, "block.gtceu.bronze_pipe_casing", "Bronze Pipe Casing");
-        replace(provider, "block.gtceu.steel_pipe_casing", "Steel Pipe Casing");
-        replace(provider, "block.gtceu.titanium_pipe_casing", "Titanium Pipe Casing");
-        replace(provider, "block.gtceu.tungstensteel_pipe_casing", "Tungstensteel Pipe Casing");
+        provider.add("block.gtceu.bronze_pipe_casing", "Bronze Pipe Casing");
+        provider.add("block.gtceu.steel_pipe_casing", "Steel Pipe Casing");
+        provider.add("block.gtceu.titanium_pipe_casing", "Titanium Pipe Casing");
+        provider.add("block.gtceu.tungstensteel_pipe_casing", "Tungstensteel Pipe Casing");
 
         // Bricked Casings
-        replace(provider, "block.gtceu.steam_casing_bronze", "Bronze Hull");
-        replace(provider, "block.gtceu.steam_casing_bricked_bronze", "Bricked Bronze Hull");
-        replace(provider, "block.gtceu.steam_casing_steel", "Steel Hull");
-        replace(provider, "block.gtceu.steam_casing_bricked_steel", "Bricked Wrought Iron Hull");
+        provider.add("block.gtceu.steam_casing_bronze", "Bronze Hull");
+        provider.add("block.gtceu.steam_casing_bricked_bronze", "Bricked Bronze Hull");
+        provider.add("block.gtceu.steam_casing_steel", "Steel Hull");
+        provider.add("block.gtceu.steam_casing_bricked_steel", "Bricked Wrought Iron Hull");
 
         // GCYM Casings
-        replace(provider, "block.gtceu.laser_safe_engraving_casing", "Laser-Safe Engraving Casing");
-        replace(provider, "block.gtceu.large_scale_assembler_casing", "Large-Scale Assembler Casing");
-        replace(provider, "block.gtceu.reaction_safe_mixing_casing", "Reaction-Safe Mixing Casing");
-        replace(provider, "block.gtceu.vibration_safe_casing", "Vibration-Safe Casing");
+        provider.add("block.gtceu.laser_safe_engraving_casing", "Laser-Safe Engraving Casing");
+        provider.add("block.gtceu.large_scale_assembler_casing", "Large-Scale Assembler Casing");
+        provider.add("block.gtceu.reaction_safe_mixing_casing", "Reaction-Safe Mixing Casing");
+        provider.add("block.gtceu.vibration_safe_casing", "Vibration-Safe Casing");
 
         // Fusion Casings
-        replace(provider, "block.gtceu.superconducting_coil", "Superconducting Coil Block");
-        replace(provider, "block.gtceu.fusion_coil", "Fusion Coil Block");
-        replace(provider, "block.gtceu.fusion_casing", "Fusion Machine Casing");
-        replace(provider, "block.gtceu.fusion_casing_mk2", "Fusion Machine Casing MK II");
-        replace(provider, "block.gtceu.fusion_casing_mk3", "Fusion Machine Casing MK III");
+        provider.add("block.gtceu.superconducting_coil", "Superconducting Coil Block");
+        provider.add("block.gtceu.fusion_coil", "Fusion Coil Block");
+        provider.add("block.gtceu.fusion_casing", "Fusion Machine Casing");
+        provider.add("block.gtceu.fusion_casing_mk2", "Fusion Machine Casing MK II");
+        provider.add("block.gtceu.fusion_casing_mk3", "Fusion Machine Casing MK III");
 
         provider.add("block.gtceu.explosive.breaking_tooltip",
                 "Primes explosion when mined, sneak mine to pick back up");
@@ -94,10 +91,10 @@ public class BlockLang {
         provider.add("block.gtceu.itnt.drops_tooltip", "Much larger than TNT, drops all destroyed Blocks as Items");
 
         // Decor Stuff
-        replace(provider, "block.gtceu.yellow_stripes_block_a", "Yellow Stripes Block");
-        replace(provider, "block.gtceu.yellow_stripes_block_b", "Yellow Stripes Block");
-        replace(provider, "block.gtceu.yellow_stripes_block_c", "Yellow Stripes Block");
-        replace(provider, "block.gtceu.yellow_stripes_block_d", "Yellow Stripes Block");
+        provider.add("block.gtceu.yellow_stripes_block_a", "Yellow Stripes Block");
+        provider.add("block.gtceu.yellow_stripes_block_b", "Yellow Stripes Block");
+        provider.add("block.gtceu.yellow_stripes_block_c", "Yellow Stripes Block");
+        provider.add("block.gtceu.yellow_stripes_block_d", "Yellow Stripes Block");
 
         // Extra stone blocks
         provider.add("block.gtceu.seal", "Sealed Block");
@@ -106,17 +103,17 @@ public class BlockLang {
         provider.add("block.surface_rock", "%s Surface Rock");
     }
 
-    private static void generateBlockTooltips(RegistrateLangProvider provider) {
+    private static void generateBlockTooltips(GTLangProvider provider) {
         // Coil Tooltip
-        replace(provider, "block.gtceu.wire_coil.tooltip.extended_info", "§7Hold SHIFT to show Coil Bonus Info");
-        replace(provider, "block.gtceu.wire_coil.tooltip.heat", "§cBase Heat Capacity: §f%d K");
-        replace(provider, "block.gtceu.wire_coil.tooltip.smelter", "§8Multi Smelter:");
-        replace(provider, "block.gtceu.wire_coil.tooltip.parallel_smelter", "  §5Max Parallel: §f%s");
-        replace(provider, "block.gtceu.wire_coil.tooltip.energy_smelter", "  §aEnergy Usage: §f%s EU/t §8per recipe");
-        replace(provider, "block.gtceu.wire_coil.tooltip.pyro", "§8Pyrolyse Oven:");
-        replace(provider, "block.gtceu.wire_coil.tooltip.speed_pyro", "  §bProcessing Speed: §f%s%%");
-        replace(provider, "block.gtceu.wire_coil.tooltip.cracking", "§8Cracking Unit:");
-        replace(provider, "block.gtceu.wire_coil.tooltip.energy_cracking", "  §aEnergy Usage: §f%s%%");
+        provider.add("block.gtceu.wire_coil.tooltip.extended_info", "§7Hold SHIFT to show Coil Bonus Info");
+        provider.add("block.gtceu.wire_coil.tooltip.heat", "§cBase Heat Capacity: §f%d K");
+        provider.add("block.gtceu.wire_coil.tooltip.smelter", "§8Multi Smelter:");
+        provider.add("block.gtceu.wire_coil.tooltip.parallel_smelter", "  §5Max Parallel: §f%s");
+        provider.add("block.gtceu.wire_coil.tooltip.energy_smelter", "  §aEnergy Usage: §f%s EU/t §8per recipe");
+        provider.add("block.gtceu.wire_coil.tooltip.pyro", "§8Pyrolyse Oven:");
+        provider.add("block.gtceu.wire_coil.tooltip.speed_pyro", "  §bProcessing Speed: §f%s%%");
+        provider.add("block.gtceu.wire_coil.tooltip.cracking", "§8Cracking Unit:");
+        provider.add("block.gtceu.wire_coil.tooltip.energy_cracking", "  §aEnergy Usage: §f%s%%");
 
         // Substation Capacitors
         provider.add("block.gtceu.substation_capacitor.tooltip.empty", "§7For filling space in your Power Substation");
@@ -138,11 +135,11 @@ public class BlockLang {
         provider.add("block.gtceu.lamp.tooltip.no_light", "No Light");
 
         // Charcoal
-        multilineLang(provider, "block.gtceu.brittle_charcoal.tooltip",
+        provider.addMultiline("block.gtceu.brittle_charcoal.tooltip",
                 "Produced by the Charcoal Pile Igniter.\nMine this to get Charcoal.");
     }
 
-    private static void generatePipeKeys(RegistrateLangProvider provider) {
+    private static void generatePipeKeys(GTLangProvider provider) {
         // Cables
         provider.add("tooltip.gtceu.cable.voltage", "§aMax Voltage:§r §a%d §a(%s§a)");
         provider.add("tooltip.gtceu.cable.amperage", "§eMax Amperage:§r §e%d");

@@ -672,50 +672,50 @@ public class MachineLang {
         provider.add("gtceu.multiblock.multi_furnace.heating_coil_discount", "Heating Coil EU Boost: %sx");
 
         // Large Chemical Reactor
+        provider.add("machine.gtceu.large_chemical_reactor.tooltip", "Black Box Reactor");
         provider.add("gtceu.multiblock.large_chemical_reactor.description",
                 "The Large Chemical Reactor performs chemical reactions at 100%% energy efficiency. Overclocks multiply both speed and energy by 4. The multiblock requires exactly 1 Cupronickel Coil Block, which must be placed adjacent to the PTFE Pipe casing located in the center.");
-        provider.add("machine.gtceu.large_chemical_reactor.tooltip", "Black Box Reactor");
 
         // Vacuum Freezer
-        provider.add("gtceu.machine.vacuum_freezer.tooltip", "Aluminium Ice Box");
+        provider.add("machine.gtceu.vacuum_freezer.tooltip", "Aluminium Ice Box");
         provider.add("gtceu.multiblock.vacuum_freezer.description",
                 "The Vacuum Freezer is a multiblock structure mainly used for freezing Hot Ingots into regular Ingots. However, it can also freeze other substances, such as Water.");
 
         // Pyrolyse Oven
         provider.add("gtceu.multiblock.pyrolyse_oven.description",
                 "The Pyrolyse Oven is a multiblock structure used for turning Logs into Charcoal and Creosote Oil, or Ash and Heavy Oil.");
-        provider.add("gtceu.machine.pyrolyse_oven.tooltip", "Electric Coke Oven");
-        provider.add("gtceu.machine.pyrolyse_oven.tooltip.1",
+        provider.add("machine.gtceu.pyrolyse_oven.tooltip", "Electric Coke Oven");
+        provider.add("machine.gtceu.pyrolyse_oven.coil_tooltip",
                 "§6Cupronickel §7coils are §f25%%§7 slower. Every coil after §bKanthal§7 increases speed by §f50%%§7.");
         provider.add("gtceu.multiblock.pyrolyse_oven.speed", "Processing Speed: %s%%");
 
         // Implosion Compressor
-        provider.add("gtceu.machine.implosion_compressor.tooltip", "The only Machine you want to go Boom");
+        provider.add("machine.gtceu.implosion_compressor.tooltip", "The only Machine you want to go Boom");
         provider.add("gtceu.multiblock.implosion_compressor.description",
                 "The Implosion Compressor is a multiblock structure that uses explosives to turn gem dusts into their corresponding gems.");
 
         // Cracker
-        provider.add("gtceu.machine.cracker.tooltip", "Makes Oil useful");
-        provider.add("gtceu.machine.cracker.tooltip.1",
+        provider.add("machine.gtceu.cracker.tooltip", "Makes Oil useful");
+        provider.add("machine.gtceu.cracker.coil_tooltip",
                 "Every coil after §6Cupronickel§7 reduces energy usage by §f10%%§7.");
         provider.add("gtceu.multiblock.cracker.description",
                 "The Oil Cracking Unit is a multiblock structure used for turning Light and Heavy Fuel into their Cracked variants.");
         provider.add("gtceu.multiblock.cracking_unit.energy", "Energy Usage: %s%%");
 
         // Distillation Tower
-        provider.add("gtceu.machine.distillation_tower.tooltip", "Fluid Refinery");
+        provider.add("machine.gtceu.distillation_tower.tooltip", "Fluid Refinery");
         provider.add("gtceu.multiblock.distillation_tower.description",
                 "The Distillation Tower is a multiblock structure used for distilling the various types of Oil and some of their byproducts. Each layer must have exactly one output hatch, starting from the second one. The bottom layer can output items and insert fluids in any position.");
         provider.add("gtceu.multiblock.distillation_tower.distilling_fluid", "Distilling %s");
 
         // Assembly Line
+        provider.add("machine.gtceu.assembly_line.tooltip", "Not a multiblock Assembling Machine!");
         provider.add("gtceu.multiblock.assembly_line.description",
                 "The Assembly Line is a large multiblock structure consisting of 5 to 16 \"slices\". In theory, it's large Assembling Machine, used for creating advanced crafting components.");
-        provider.add("gtceu.machine.assembly_line.tooltip", "Not a multiblock Assembling Machine!");
 
         // Combustion Engine
-        provider.add("gtceu.machine.large_combustion_engine.tooltip", "Fuel Ignition Chamber");
-        provider.add("gtceu.machine.extreme_combustion_engine.tooltip", "Extreme Chemical Energy Releaser");
+        provider.add("machine.gtceu.large_combustion_engine.tooltip", "Fuel Ignition Chamber");
+        provider.add("machine.gtceu.extreme_combustion_engine.tooltip", "Extreme Chemical Energy Releaser");
         provider.add("gtceu.machine.large_combustion_engine.tooltip.boost_regular",
                 "Supply §f20 mB/s§7 of Oxygen to produce up to §f%s EU/t§7 at §f2x§7 fuel consumption.");
         provider.add("gtceu.machine.large_combustion_engine.tooltip.boost_extreme",
@@ -743,9 +743,9 @@ public class MachineLang {
         provider.add("block.gtceu.steam_large_turbine", "Large Steam Turbine");
         provider.add("block.gtceu.gas_large_turbine", "Large Gas Turbine");
         provider.add("block.gtceu.plasma_large_turbine", "Large Plasma Turbine");
-        provider.add("gtceu.machine.large_turbine.steam.tooltip", "Do not put your Head in it");
-        provider.add("gtceu.machine.large_turbine.gas.tooltip", "Not a Jet Engine");
-        provider.add("gtceu.machine.large_turbine.plasma.tooltip", "Plasma Energy Siphon");
+        provider.add("machine.gtceu.steam_large_turbine.tooltip", "Do not put your Head in it");
+        provider.add("machine.gtceu.gas_large_turbine.tooltip", "Not a Jet Engine");
+        provider.add("machine.gtceu.plasma_large_turbine.tooltip", "Plasma Energy Siphon");
         provider.add("gtceu.multiblock.turbine.fuel_amount", "Fuel Amount: %sL (%s)");
         provider.add("gtceu.multiblock.turbine.rotor_speed", "Rotor Speed: %s/%s RPM");
         provider.add("gtceu.multiblock.turbine.rotor_durability", "Rotor Durability: %s%%");
@@ -760,6 +760,9 @@ public class MachineLang {
                 "Large Turbines are multiblocks that generate power from steam, gases, and plasma by having them spin the turbine's rotor. Energy output is based on rotor efficiency and current speed of turbine. Gearbox casings are used in the center of the structure.");
 
         // Fusion Reactor
+        provider.add("machine.gtceu.luv_fusion_reactor.tooltip", "Atomic Alloy Smelter");
+        provider.add("machine.gtceu.zpm_fusion_reactor.tooltip", "A SUN DOWN ON EARTH");
+        provider.add("machine.gtceu.uv_fusion_reactor.tooltip", "A WHITE DWARF DOWN ON YOUR BASE");
         provider.add("gtceu.machine.fusion_reactor.capacity", "§7Maximum Energy Storage: §e%sM EU");
         provider.add("gtceu.machine.fusion_reactor.overclocking",
                 "Overclocks double energy and halve duration.");
@@ -771,14 +774,12 @@ public class MachineLang {
                 "The Fusion Reactor MK 3 is a large multiblock structure used for fusing elements into heavier ones. It can only use UV Energy Hatches. For every Hatch it has, its buffer increases by 40M EU, and has a maximum of 640M.");
         provider.add("gtceu.multiblock.fusion_reactor.energy", "EU: %d / %d");
         provider.add("gtceu.multiblock.fusion_reactor.heat", "Heat: %d");
-        provider.add("gtceu.machine.fusion_reactor.luv.tooltip", "Atomic Alloy Smelter");
-        provider.add("gtceu.machine.fusion_reactor.zpm.tooltip", "A SUN DOWN ON EARTH");
-        provider.add("gtceu.machine.fusion_reactor.uv.tooltip", "A WHITE DWARF DOWN ON YOUR BASE");
+
 
         // Large Miner
-        provider.add("gtceu.machine.large_miner.ev.tooltip", "Digging Ore instead of You");
-        provider.add("gtceu.machine.large_miner.iv.tooltip", "Biome Excavator");
-        provider.add("gtceu.machine.large_miner.luv.tooltip", "Terrestrial Harvester");
+        provider.add("machine.gtceu.ev_large_miner.tooltip", "Digging Ore instead of You");
+        provider.add("machine.gtceu.iv_large_miner.tooltip", "Biome Excavator");
+        provider.add("machine.gtceu.luv_large_miner.tooltip", "Terrestrial Harvester");
         provider.add("gtceu.machine.miner.multi.modes", "Has Silk Touch and Chunk Aligned Modes.");
         provider.add("gtceu.machine.miner.multi.production",
                 "Produces §f3x§7 more crushed ore than a §fMacerator§7.");
@@ -804,14 +805,14 @@ public class MachineLang {
         provider.add("gtceu.multiblock.large_miner.needsfluid", "Needs Drilling Fluid");
 
         // Fluid Drilling Rig
+        provider.add("machine.gtceu.mv_fluid_drilling_rig.tooltip", "Oil Extraction Pump");
+        provider.add("machine.gtceu.hv_fluid_drilling_rig.tooltip", "Does not perform Fracking");
+        provider.add("machine.gtceu.ev_fluid_drilling_rig.tooltip", "Well Drainer");
         provider.add("gtceu.machine.fluid_drilling_rig.description",
                 "§7Drills fluids from veins under bedrock.");
         provider.add("gtceu.machine.fluid_drilling_rig.production",
                 "§eProduction Multiplier: §f%dx, %fx overclocked");
         provider.add("gtceu.machine.fluid_drilling_rig.depletion", "§bDepletion Rate: §f%s%%");
-        provider.add("gtceu.machine.mv_fluid_drilling_rig.tooltip", "Oil Extraction Pump");
-        provider.add("gtceu.machine.hv_fluid_drilling_rig.tooltip", "Does not perform Fracking");
-        provider.add("gtceu.machine.ev_fluid_drilling_rig.tooltip", "Well Drainer");
         provider.add("gtceu.multiblock.fluid_rig.drilled_fluid", "Fluid: %s");
         provider.add("gtceu.multiblock.fluid_rig.no_fluid_in_area", "None in Area.");
         provider.add("gtceu.multiblock.fluid_rig.fluid_amount", "Pumping Rate: %s");
@@ -828,7 +829,7 @@ public class MachineLang {
         provider.add("gtceu.multiblock.ore_rig.ore_amount", "Drilling Rate: %s");
 
         // Cleanroom
-        provider.add("gtceu.machine.cleanroom.tooltip", "Keeping those pesky particles out");
+        provider.add("machine.gtceu.cleanroom.tooltip", "Keeping those pesky particles out");
         provider.addMultiLang("gtceu.machine.cleanroom.tooltip",
                 "Place machines inside to run cleanroom recipes.",
                 "Uses §f30 EU/t§7 when dirty, §f4 EU/t§7 when clean.",
@@ -887,7 +888,7 @@ public class MachineLang {
         provider.add("gtceu.multiblock.active_transformer.danger_enabled", "§c§bDANGER: Explosive");
 
         // Charcoal Pile Ignitor
-        provider.add("gtceu.machine.charcoal_pile.tooltip", "Underground fuel bakery");
+        provider.add("machine.gtceu.charcoal_pile_igniter.tooltip", "Underground fuel bakery");
         provider.addMultiLang("gtceu.machine.charcoal_pile.tooltip",
                 "Turns Logs into §aCharcoal§7 when §cignited§7.",
                 "Right Click with fire-starting items to start.",

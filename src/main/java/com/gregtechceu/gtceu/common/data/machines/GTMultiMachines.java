@@ -315,7 +315,7 @@ public class GTMultiMachines {
             })
             .workableCasingRenderer(GTCEu.id("block/casings/voltage/ulv/side"),
                     GTCEu.id("block/multiblock/pyrolyse_oven"))
-            .tooltips(Component.translatable("gtceu.machine.pyrolyse_oven.tooltip.1"))
+            .tooltips(Component.translatable("machine.gtceu.pyrolyse_oven.coil_tooltip"))
             .additionalDisplay((controller, components) -> {
                 if (controller instanceof CoilWorkableElectricMultiblockMachine coilMachine && controller.isFormed()) {
                     components.add(Component.translatable("gtceu.multiblock.pyrolyse_oven.speed",
@@ -418,7 +418,7 @@ public class GTMultiMachines {
             })
             .workableCasingRenderer(GTCEu.id("block/casings/solid/machine_casing_clean_stainless_steel"),
                     GTCEu.id("block/multiblock/cracking_unit"))
-            .tooltips(Component.translatable("gtceu.machine.cracker.tooltip.1"))
+            .tooltips(Component.translatable("machine.gtceu.cracker.coil_tooltip"))
             .additionalDisplay((controller, components) -> {
                 if (controller instanceof CoilWorkableElectricMultiblockMachine coilMachine && controller.isFormed()) {
                     components.add(Component.translatable("gtceu.multiblock.cracking_unit.energy",

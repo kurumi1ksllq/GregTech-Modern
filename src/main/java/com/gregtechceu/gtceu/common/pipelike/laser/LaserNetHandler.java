@@ -110,6 +110,6 @@ public class LaserNetHandler implements ILaserContainer {
 
     @Override
     public boolean isOneProbeHidden() {
-        return true;
+        return false;
     }
 }

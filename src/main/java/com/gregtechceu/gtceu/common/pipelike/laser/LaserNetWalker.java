@@ -70,10 +70,6 @@ public class LaserNetWalker extends PipeNetWalker<LaserPipeBlockEntity, LaserPip
     @Override
     protected void checkPipe(LaserPipeBlockEntity pipeTile, BlockPos pos) {}
 
-    private void findMirrors() {
-
-    }
-
     @Override
     protected Direction[] getSurroundingPipeSides() {
         if(mirrors.isEmpty()) {
@@ -89,15 +85,15 @@ public class LaserNetWalker extends PipeNetWalker<LaserPipeBlockEntity, LaserPip
 
     @Override
     protected void checkNeighbour(LaserPipeBlockEntity pipeNode, BlockPos pipePos, Direction faceToNeighbour,
-                                  @org.jetbrains.annotations.Nullable BlockEntity neighbourTile) {
+                                  @Nullable BlockEntity neighbourTile) {
         if (neighbourTile == null || (pipePos.equals(sourcePipe) && faceToNeighbour == facingToHandler)) {
             return;
         }
 
         if (((LaserNetWalker) root).routePath == null) {
-            ILaserContainer handler = neighbourTile
-                    .getCapability(GTCapability.CAPABILITY_LASER, faceToNeighbour.getOpposite()).resolve().orElse(null);
-            if (handler != null) {
+            var laserContainer = neighbourTile.getCapability(GTCapability.CAPABILITY_LASER,
+                    faceToNeighbour.getOpposite());
+            if (laserContainer.isPresent()) {
                 ((LaserNetWalker) root).routePath = new LaserRoutePath(pipePos.immutable(), faceToNeighbour,
                         getWalkedBlocks());
                 stop();

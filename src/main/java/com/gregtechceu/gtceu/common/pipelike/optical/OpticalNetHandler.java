@@ -17,11 +17,10 @@ import java.util.Collection;
 
 public class OpticalNetHandler implements IDataAccessHatch, IOpticalComputationProvider {
 
+    private OpticalPipeNet net;
     private final OpticalPipeBlockEntity pipe;
     private final Level world;
     private final Direction facing;
-
-    private OpticalPipeNet net;
 
     public OpticalNetHandler(OpticalPipeNet net, @NotNull OpticalPipeBlockEntity pipe, @Nullable Direction facing) {
         this.net = net;

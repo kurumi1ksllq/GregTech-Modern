@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class LaserPipeNet extends PipeNet<LaserPipeProperties> {
 
-    private final Map<BlockPos, LaserRoutePath> netData = new Object2ObjectOpenHashMap<>();
+    private final Map<BlockPos, LaserRoutePath> NET_DATA = new Object2ObjectOpenHashMap<>();
 
     public LaserPipeNet(LevelLaserPipeNet world) {
         super(world);
@@ -28,27 +28,27 @@ public class LaserPipeNet extends PipeNet<LaserPipeProperties> {
 
     @Nullable
     public LaserRoutePath getNetData(BlockPos pipePos, Direction facing) {
-        LaserRoutePath data = netData.get(pipePos);
-        if (data == null) {
-            data = LaserNetWalker.createNetData(this, pipePos, facing);
-            if (data == LaserNetWalker.FAILED_MARKER) {
-                // walker failed, don't cache, so it tries again on next insertion
-                return null;
-            }
-
-            netData.put(pipePos, data);
+        if (NET_DATA.containsKey(pipePos)) {
+            return NET_DATA.get(pipePos);
         }
+        LaserRoutePath data = LaserNetWalker.createNetData(this, pipePos, facing);
+        if (data == LaserNetWalker.FAILED_MARKER) {
+            // walker failed, don't cache, so it tries again on next insertion
+            return null;
+        }
+
+        NET_DATA.put(pipePos, data);
         return data;
     }
 
     @Override
     public void onNeighbourUpdate(BlockPos fromPos) {
-        netData.clear();
+        NET_DATA.clear();
     }
 
     @Override
     public void onPipeConnectionsUpdate() {
-        netData.clear();
+        NET_DATA.clear();
     }
 
     @Override

@@ -3,8 +3,7 @@ package com.gregtechceu.gtceu.data.lang;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
-import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
-
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.common.data.LanguageProvider;
@@ -20,11 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * @author KilaBash
- * @date 2023/3/19
- * @implNote LangHandler
- */
 public class LangHandler {
 
     public static void init(RegistrateLangProvider provider) {
@@ -41,6 +35,11 @@ public class LangHandler {
         provider.add("ldlib.gui.editor.register.editor.gtceu.rtui", "RecipeType UI Project");
         provider.add("ldlib.gui.editor.register.editor.gtceu.mui", "Machine UI Project");
         provider.add("ldlib.gui.editor.register.editor.gtceu.template_tab", "templates");
+        provider.add("ldlib.gui.editor.group.widget.gtm_container", "GTM Container Widgets");
+        provider.add("ldlib.gui.editor.register.widget.container.gtm_item_slot", "GTM Item Slot");
+        provider.add("ldlib.gui.editor.register.widget.container.gtm_fluid_slot", "GTM Fluid Slot");
+        provider.add("ldlib.gui.editor.register.widget.container.gtm_phantom_item_slot", "GTM Phantom Item Slot");
+        provider.add("ldlib.gui.editor.register.widget.container.gtm_phantom_fluid_slot", "GTM Phantom Fluid Slot");
 
         provider.add("curios.identifier.gtceu_magnet", "GTCEu Magnet");
         // capabilities
@@ -63,6 +62,10 @@ public class LangHandler {
         provider.add("recipe.condition.eu_to_start.tooltip", "EU to Start: %d%s");
         provider.add("recipe.condition.daytime.day.tooltip", "Requires day time to work");
         provider.add("recipe.condition.daytime.night.tooltip", "Requires night time to work");
+        provider.add("recipe.condition.gamestage.unlocked_stage", "Unlocked at stage: %s");
+        provider.add("recipe.condition.gamestage.locked_stage", "Locked at stage: %s");
+        provider.add("recipe.condition.quest.completed.tooltip", "Requires %s completed");
+        provider.add("recipe.condition.quest.not_completed.tooltip", "Requires %s not completed");
 
         provider.add("gtceu.io.import", "Import");
         provider.add("gtceu.io.export", "Export");
@@ -130,6 +133,16 @@ public class LangHandler {
         provider.add("command.gtceu.place_vein.failure", "Failed to place vein %s at position %s");
         provider.add("command.gtceu.place_vein.success", "Placed vein %s at position %s");
         provider.add("command.gtceu.share_prospection_data.notification", "%s is sharing prospecting data with you!");
+        provider.add("command.gtceu.cape.give.failed", "No new capes were unlocked");
+        provider.add("command.gtceu.cape.give.success.multiple", "Unlocked %s capes for %s players");
+        provider.add("command.gtceu.cape.give.success.single", "Unlocked %s capes for %s");
+        provider.add("command.gtceu.cape.take.failed", "No capes could be removed");
+        provider.add("command.gtceu.cape.take.success.multiple", "Took %s capes from %s players");
+        provider.add("command.gtceu.cape.take.success.single", "Took %s capes from %s");
+        provider.add("command.gtceu.cape.use.failed",
+                "%s can't use cape %s because they don't have it (or it doesn't exist)!");
+        provider.add("command.gtceu.cape.use.success", "%s is now using cape %s");
+        provider.add("command.gtceu.cape.use.success.none", "%s is no longer using a cape");
 
         provider.add("gtceu.medical_condition.description", "§l§cHAZARDOUS §7Hold Shift to show details");
         provider.add("gtceu.medical_condition.description_shift", "§l§cHAZARDOUS:");
@@ -159,6 +172,8 @@ public class LangHandler {
                 "Removes %s%% of current conditions' effects");
         provider.add("gtceu.medical_condition.antidote.description.effect_removed.all",
                 "Removes all of current conditions' effects");
+
+        provider.add("gtceu.multiblock.dimension", "§eDimensions: §r%sx%sx%s");
 
         provider.add("item.gtceu.tool.replace_tool_head", "Craft with a new Tool Head to replace it");
         provider.add("item.gtceu.tool.usable_as", "§8Usable as: §f%s");
@@ -249,6 +264,12 @@ public class LangHandler {
         provider.add("item.gtceu.tool.aoe.rows", "Rows");
         provider.add("item.gtceu.tool.aoe.columns", "Columns");
         provider.add("item.gtceu.tool.aoe.layers", "Layers");
+
+        provider.add("item.gtceu.armor.helmet", "%s Helmet");
+        provider.add("item.gtceu.armor.chestplate", "%s Chestplate");
+        provider.add("item.gtceu.armor.leggings", "%s Leggings");
+        provider.add("item.gtceu.armor.boots", "%s Boots");
+
         provider.add("item.gtceu.turbine_rotor.tooltip", "Turbine Rotors for your power station");
         provider.add("metaitem.clipboard.tooltip",
                 "Can be written on (without any writing Instrument). Right-click on Wall to place, and Shift-Right-Click to remove");
@@ -447,6 +468,10 @@ public class LangHandler {
         provider.add("cover.ender_fluid_link.title", "Ender Fluid Link");
         provider.add("cover.ender_fluid_link.iomode.enabled", "I/O Enabled");
         provider.add("cover.ender_fluid_link.iomode.disabled", "I/O Disabled");
+        provider.add("cover.ender_fluid_link.tooltip.channel_description", "Set channel description with input text");
+        provider.add("cover.ender_fluid_link.tooltip.channel_name", "Set channel name with input text");
+        provider.add("cover.ender_fluid_link.tooltip.list_button", "Show channel list");
+        provider.add("cover.ender_fluid_link.tooltip.clear_button", "Clear channel description");
         multilineLang(provider, "cover.ender_fluid_link.private.tooltip.disabled",
                 "Switch to private tank mode\nPrivate mode uses the player who originally placed the cover");
         provider.add("cover.ender_fluid_link.private.tooltip.enabled", "Switch to public tank mode");
@@ -896,8 +921,8 @@ public class LangHandler {
         provider.add("metaitem.cover.digital.mode.fluid.disabled", "Click to enable Fluid Mode");
         provider.add("metaitem.cover.digital.mode.fluid.enabled", "Fluid Mode enabled");
 
-        provider.add("gtceu.universal.disabled", "Multiblock Sharing §4Disabled");
-        provider.add("gtceu.universal.enabled", "Multiblock Sharing §aEnabled");
+        provider.add("gtceu.part_sharing.disabled", "Multiblock Sharing §4Disabled");
+        provider.add("gtceu.part_sharing.enabled", "Multiblock Sharing §aEnabled");
         provider.add("gtceu.universal.liters", "%s mB");
         provider.add("gtceu.universal.kiloliters", "%s B");
         provider.add("gtceu.universal.tooltip.voltage_in", "§aVoltage IN: §f%d EU/t (%s§f)");
@@ -1112,6 +1137,9 @@ public class LangHandler {
         provider.add("gtceu.multiblock.not_enough_energy", "WARNING: Machine needs more energy.");
         provider.add("gtceu.multiblock.not_enough_energy_output", "WARNING: Energy Dynamo Tier Too Low!");
         provider.add("gtceu.multiblock.waiting", "WARNING: Machine is waiting.");
+        provider.add("gtceu.multiblock.batch_enabled", "Batching Mode: Enabled (%sx)");
+        provider.add("gtceu.machine.batch_enabled", "Batching Enabled");
+        provider.add("gtceu.machine.batch_disabled", "Batching Disabled");
         provider.add("gtceu.multiblock.progress_percent", "Progress: %s%%");
         provider.add("gtceu.multiblock.progress", "Progress: %ss / %ss (%s%%)");
         provider.add("gtceu.multiblock.output_line.0", "%s x §e%s§r (%ss/ea)");
@@ -1273,6 +1301,7 @@ public class LangHandler {
         provider.add("config.jade.plugin_gtceu.stained_color", "[GTCEu] Stained Block Info");
         provider.add("config.jade.plugin_gtceu.me_pattern_buffer", "[GTCEu] Pattern Buffer Info");
         provider.add("config.jade.plugin_gtceu.me_pattern_buffer_proxy", "[GTCEu] Pattern Buffer Proxy Info");
+        provider.add("config.jade.plugin_gtceu.energy_converter_provider", "[GTCEu] Energy Converter Mode");
 
         // gui
         provider.add("gtceu.button.ore_veins", "Show GT Ore Veins");
@@ -1284,6 +1313,8 @@ public class LangHandler {
         provider.add("gtceu.recipe_logic.insufficient_in", "Insufficient Inputs");
         provider.add("gtceu.recipe_logic.insufficient_out", "Insufficient Outputs");
         provider.add("gtceu.recipe_logic.condition_fails", "Condition Fails");
+        provider.add("gtceu.recipe_logic.no_contents", "Recipe has no Contents");
+        provider.add("gtceu.recipe_logic.no_capabilities", "Machine has no Capabilities");
         provider.add("gtceu.gui.cover_setting.title", "Cover Settings");
         provider.add("gtceu.gui.output_setting.title", "Output Settings");
         provider.add("gtceu.gui.circuit.title", "Circuit Settings");
@@ -1321,6 +1352,7 @@ public class LangHandler {
         provider.add("gtceu.chance_logic.or", "OR");
         provider.add("gtceu.chance_logic.and", "AND");
         provider.add("gtceu.chance_logic.xor", "XOR");
+        provider.add("gtceu.chance_logic.first", "FIRST");
         provider.add("gtceu.chance_logic.none", "NONE");
 
         provider.add("gtceu.gui.content.per_tick", "§aConsumed/Produced Per Tick§r");
@@ -1399,6 +1431,10 @@ public class LangHandler {
         provider.add("gtceu.direction.tooltip.right", "Right");
         provider.add("gtceu.direction.tooltip.back", "Back");
         provider.add("gtceu.direction.tooltip.front", "Front");
+
+        provider.add("gtceu.tooltip.status.trinary.false", "False");
+        provider.add("gtceu.tooltip.status.trinary.true", "True");
+        provider.add("gtceu.tooltip.status.trinary.unknown", "Unknown");
     }
 
     /**
@@ -1497,7 +1533,7 @@ public class LangHandler {
         var outputKeys = new ArrayList<String>();
         var i = 0;
         var next = getSubKey(key, i);
-        while (LocalizationUtils.exist(next)) {
+        while (Language.getInstance().has(next)) {
             outputKeys.add(next);
             next = getSubKey(key, ++i);
         }
@@ -1537,7 +1573,7 @@ public class LangHandler {
         var outputKeys = new ArrayList<String>();
         var i = 0;
         var next = getSubKey(key, i);
-        while (LocalizationUtils.exist(next)) {
+        while (Language.getInstance().has(next)) {
             outputKeys.add(next);
             next = getSubKey(key, ++i);
         }

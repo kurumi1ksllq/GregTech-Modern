@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.registry.registrate;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.IMachineBlock;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.data.RotationState;
@@ -19,7 +18,7 @@ import com.gregtechceu.gtceu.api.pattern.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
-import com.gregtechceu.gtceu.utils.SupplierMemoizer;
+import com.gregtechceu.gtceu.utils.memoization.GTMemoizer;
 
 import com.lowdragmc.lowdraglib.client.renderer.IRenderer;
 
@@ -43,12 +42,12 @@ import com.tterrag.registrate.builders.BlockBuilder;
 import com.tterrag.registrate.builders.ItemBuilder;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
 import com.tterrag.registrate.util.nullness.NonNullUnaryOperator;
-import dev.latvian.mods.kubejs.client.LangEventJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.experimental.Tolerate;
 import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,11 +56,6 @@ import java.util.function.*;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/2/18
- * @implNote MachineBuilder
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @Accessors(chain = true, fluent = true)
@@ -73,18 +67,13 @@ public class MultiblockMachineBuilder extends MachineBuilder<MultiblockMachineDe
     private Function<MultiblockMachineDefinition, BlockPattern> pattern;
     private final List<Function<MultiblockMachineDefinition, List<MultiblockShapeInfo>>> shapeInfos = new ArrayList<>();
     /**
-     * Whether this multi can be rotated or face upwards.
-     */
-    @Setter
-    private boolean allowExtendedFacing = true;
-    /**
      * Set this to false only if your multiblock is set up such that it could have a wall-shared controller.
      */
     @Setter
     private boolean allowFlip = true;
     private final List<Supplier<ItemStack[]>> recoveryItems = new ArrayList<>();
     @Setter
-    private Comparator<IMultiPart> partSorter = (a, b) -> 0;
+    private Function<MultiblockControllerMachine, Comparator<IMultiPart>> partSorter = (c) -> (a, b) -> 0;
     @Setter
     private TriFunction<IMultiController, IMultiPart, Direction, BlockState> partAppearance;
     @Getter
@@ -98,6 +87,8 @@ public class MultiblockMachineBuilder extends MachineBuilder<MultiblockMachineDe
                                        TriFunction<BlockEntityType<?>, BlockPos, BlockState, IMachineBlockEntity> blockEntityFactory) {
         super(registrate, name, MultiblockMachineDefinition::createDefinition, metaMachine::apply, blockFactory,
                 itemFactory, blockEntityFactory);
+        allowExtendedFacing(true);
+        allowCoverOnFront(true);
     }
 
     public static MultiblockMachineBuilder createMulti(Registrate registrate, String name,
@@ -278,7 +269,7 @@ public class MultiblockMachineBuilder extends MachineBuilder<MultiblockMachineDe
     }
 
     @Override
-    public MultiblockMachineBuilder langValue(String langValue) {
+    public MultiblockMachineBuilder langValue(@Nullable String langValue) {
         return (MultiblockMachineBuilder) super.langValue(langValue);
     }
 
@@ -298,14 +289,18 @@ public class MultiblockMachineBuilder extends MachineBuilder<MultiblockMachineDe
     }
 
     @Override
-    public MultiblockMachineBuilder conditionalTooltip(Component component, Supplier<Boolean> condition) {
-        return conditionalTooltip(component, condition.get());
+    public MultiblockMachineBuilder conditionalTooltip(Component component, BooleanSupplier condition) {
+        return (MultiblockMachineBuilder) super.conditionalTooltip(component, condition);
     }
 
     @Override
     public MultiblockMachineBuilder conditionalTooltip(Component component, boolean condition) {
-        if (condition)
-            tooltips(component);
+        return (MultiblockMachineBuilder) super.conditionalTooltip(component, condition);
+    }
+
+    @Tolerate
+    public MultiblockMachineBuilder partSorter(Comparator<IMultiPart> sorter) {
+        this.partSorter = $ -> sorter;
         return this;
     }
 
@@ -369,8 +364,8 @@ public class MultiblockMachineBuilder extends MachineBuilder<MultiblockMachineDe
     }
 
     @Override
-    public MultiblockMachineBuilder regressWhenWaiting(boolean dampingWhenWaiting) {
-        return (MultiblockMachineBuilder) super.regressWhenWaiting(dampingWhenWaiting);
+    public MultiblockMachineBuilder regressWhenWaiting(boolean regressWhenWaiting) {
+        return (MultiblockMachineBuilder) super.regressWhenWaiting(regressWhenWaiting);
     }
 
     @Override
@@ -384,31 +379,32 @@ public class MultiblockMachineBuilder extends MachineBuilder<MultiblockMachineDe
     }
 
     @Override
-    public void generateLang(LangEventJS lang) {
-        super.generateLang(lang);
-        if (langValue() != null) {
-            lang.add(GTCEu.MOD_ID, value.getDescriptionId(), value.getLangValue());
-        }
+    public MultiblockMachineBuilder allowExtendedFacing(boolean allowExtendedFacing) {
+        return (MultiblockMachineBuilder) super.allowExtendedFacing(allowExtendedFacing);
+    }
+
+    @Override
+    public MultiblockMachineBuilder allowCoverOnFront(boolean allowCoverOnFront) {
+        return (MultiblockMachineBuilder) super.allowCoverOnFront(allowCoverOnFront);
     }
 
     @Override
     @HideFromJS
     public MultiblockMachineDefinition register() {
-        var definition = (MultiblockMachineDefinition) super.register();
+        var definition = super.register();
         definition.setGenerator(generator);
         if (pattern == null) {
             throw new IllegalStateException("missing pattern while creating multiblock " + name);
         }
-        definition.setPatternFactory(SupplierMemoizer.memoize(() -> pattern.apply(definition)));
+        definition.setPatternFactory(GTMemoizer.memoize(() -> pattern.apply(definition)));
         definition.setShapes(() -> shapeInfos.stream().map(factory -> factory.apply(definition))
                 .flatMap(Collection::stream).toList());
-        definition.setAllowExtendedFacing(allowExtendedFacing);
         definition.setAllowFlip(allowFlip);
         if (!recoveryItems.isEmpty()) {
             definition.setRecoveryItems(
                     () -> recoveryItems.stream().map(Supplier::get).flatMap(Arrays::stream).toArray(ItemStack[]::new));
         }
-        definition.setPartSorter(partSorter);
+        definition.setPartSorter(GTMemoizer.memoizeFunctionWeakIdent(partSorter));
         if (partAppearance == null) {
             partAppearance = (controller, part, side) -> definition.getAppearance().get();
         }

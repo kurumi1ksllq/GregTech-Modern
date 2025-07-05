@@ -98,6 +98,7 @@ public interface ModifierFunction {
     final class FunctionBuilder {
 
         private int parallels = 1;
+        private int batchParallels = 1;
         private int addOCs = 0;
         private ContentModifier eutModifier = ContentModifier.IDENTITY;
         private ContentModifier durationModifier = ContentModifier.IDENTITY;
@@ -156,9 +157,10 @@ public interface ModifierFunction {
                         new HashMap<>(recipe.inputChanceLogics), new HashMap<>(recipe.outputChanceLogics),
                         new HashMap<>(recipe.tickInputChanceLogics), new HashMap<>(recipe.tickOutputChanceLogics),
                         newConditions, new ArrayList<>(recipe.ingredientActions),
-                        recipe.data, recipe.duration, recipe.isFuel, recipe.recipeCategory);
+                        recipe.data, recipe.duration, recipe.recipeCategory);
                 copied.parallels = recipe.parallels * parallels;
                 copied.ocLevel = recipe.ocLevel + addOCs;
+                copied.batchParallels = recipe.batchParallels * batchParallels;
                 if (recipe.data.getBoolean("duration_is_total_cwu")) {
                     copied.duration = (int) Math.max(1, (recipe.duration * (1f - 0.025f * addOCs)));
                 } else {
@@ -175,6 +177,7 @@ public interface ModifierFunction {
 
         private static Map<RecipeCapability<?>, List<Content>> applyAllButEU(ContentModifier cm,
                                                                              Map<RecipeCapability<?>, List<Content>> contents) {
+            if (cm == ContentModifier.IDENTITY) return new HashMap<>(contents);
             Map<RecipeCapability<?>, List<Content>> copyContents = new HashMap<>();
             for (var entry : contents.entrySet()) {
                 var cap = entry.getKey();

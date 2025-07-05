@@ -11,15 +11,15 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.*;
 import com.gregtechceu.gtceu.common.data.GTItems;
-import com.gregtechceu.gtceu.common.machine.owner.IMachineOwner;
+import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.client.renderer.IRenderer;
-import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.locale.Language;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -57,11 +57,6 @@ import java.util.Set;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/2/17
- * @implNote GTBlock
- */
 @SuppressWarnings("deprecation")
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -79,7 +74,7 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
         if (rotationState != RotationState.NONE) {
             BlockState defaultState = this.defaultBlockState().setValue(rotationState.property,
                     rotationState.defaultDirection);
-            if (definition instanceof MultiblockMachineDefinition multi && multi.isAllowExtendedFacing()) {
+            if (definition.isAllowExtendedFacing()) {
                 defaultState = defaultState.setValue(IMachineBlock.UPWARDS_FACING_PROPERTY, Direction.NORTH);
             }
             registerDefaultState(defaultState);
@@ -88,12 +83,10 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(BlockProperties.SERVER_TICK);
         RotationState rotationState = RotationState.get();
         if (rotationState != RotationState.NONE) {
             pBuilder.add(rotationState.property);
-            if (MachineDefinition.getBuilt() instanceof MultiblockMachineDefinition multi &&
-                    multi.isAllowExtendedFacing()) {
+            if (MachineDefinition.getBuilt().isAllowExtendedFacing()) {
                 pBuilder.add(IMachineBlock.UPWARDS_FACING_PROPERTY);
             }
         }
@@ -132,7 +125,7 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
             var machine = getMachine(pLevel, pPos);
             if (machine != null) {
                 if (player instanceof ServerPlayer sPlayer) {
-                    setMachineOwner(machine, sPlayer);
+                    machine.setOwnerUUID(sPlayer.getUUID());
                     machine.markDirty();
                 }
             }
@@ -179,7 +172,7 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
                     state = state.setValue(rotationState.property, Direction.DOWN);
                 }
             }
-            if (getDefinition() instanceof MultiblockMachineDefinition multi && multi.isAllowExtendedFacing()) {
+            if (getDefinition().isAllowExtendedFacing()) {
                 Direction frontFacing = state.getValue(rotationState.property);
                 if (frontFacing == Direction.UP) {
                     state = state.setValue(IMachineBlock.UPWARDS_FACING_PROPERTY, player.getDirection());
@@ -210,7 +203,18 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
         definition.getTooltipBuilder().accept(stack, tooltip);
         String mainKey = String.format("%s.machine.%s.tooltip", definition.getId().getNamespace(),
                 definition.getId().getPath());
-        if (LocalizationUtils.exist(mainKey)) {
+        if (GTUtil.isShiftDown()) {
+            if (definition instanceof MultiblockMachineDefinition multiblockDefinition) {
+                var pattern = multiblockDefinition.getPatternFactory().get();
+                if (pattern != null) {
+                    var aisleDims = pattern.getDimensions();
+                    assert aisleDims.length == 3;
+                    tooltip.add(Component.translatable("gtceu.multiblock.dimension", aisleDims[0], aisleDims[1],
+                            aisleDims[2]));
+                }
+            }
+        }
+        if (Language.getInstance().has(mainKey)) {
             tooltip.add(1, Component.translatable(mainKey));
         }
     }
@@ -291,8 +295,8 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
         ItemStack itemStack = player.getItemInHand(hand);
         boolean shouldOpenUi = true;
 
-        if (machine != null && machine.holder.getOwner() == null && player instanceof ServerPlayer) {
-            setMachineOwner(machine, (ServerPlayer) player);
+        if (machine != null && machine.getOwnerUUID() == null && player instanceof ServerPlayer sPlayer) {
+            machine.setOwnerUUID(sPlayer.getUUID());
             machine.markDirty();
         }
 
@@ -323,7 +327,7 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
             if (result != InteractionResult.PASS) return result;
         }
         if (shouldOpenUi && machine instanceof IUIMachine uiMachine &&
-                IMachineOwner.canOpenOwnerMachine(player, machine.getHolder())) {
+                MachineOwner.canOpenOwnerMachine(player, machine)) {
             return uiMachine.tryToOpenUI(player, hand, hit);
         }
         return shouldOpenUi ? InteractionResult.PASS : InteractionResult.CONSUME;

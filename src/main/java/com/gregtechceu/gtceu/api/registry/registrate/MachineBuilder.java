@@ -49,6 +49,7 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
 import com.tterrag.registrate.util.nullness.NonNullUnaryOperator;
+import dev.latvian.mods.kubejs.client.LangEventJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -69,11 +70,6 @@ import java.util.function.*;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/2/18
- * @implNote MachineBuilder
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @Accessors(chain = true, fluent = true)
@@ -95,6 +91,11 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
     private VoxelShape shape = Shapes.block();
     @Setter
     private RotationState rotationState = RotationState.NON_Y_AXIS;
+    /**
+     * Whether this machine can be rotated or face upwards.
+     */
+    @Setter
+    private boolean allowExtendedFacing = false;
     @Setter
     private boolean hasTESR;
     @Setter
@@ -151,6 +152,8 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
     private boolean regressWhenWaiting = true;
 
     @Setter
+    private boolean allowCoverOnFront = false;
+    @Setter
     private Supplier<BlockState> appearance;
     @Getter // getter for KJS
     @Setter
@@ -158,6 +161,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
     private EditableMachineUI editableUI;
     @Getter // getter for KJS
     @Setter
+    @Nullable
     private String langValue = null;
 
     protected MachineBuilder(Registrate registrate, String name,
@@ -265,8 +269,8 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
         return this;
     }
 
-    public MachineBuilder<DEFINITION> conditionalTooltip(Component component, Supplier<Boolean> condition) {
-        return conditionalTooltip(component, condition.get());
+    public MachineBuilder<DEFINITION> conditionalTooltip(Component component, BooleanSupplier condition) {
+        return conditionalTooltip(component, condition.getAsBoolean());
     }
 
     public MachineBuilder<DEFINITION> conditionalTooltip(Component component, boolean condition) {
@@ -323,6 +327,14 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
         return definition.apply(new ResourceLocation(registrate.getModid(), name));
     }
 
+    @Override
+    public void generateLang(LangEventJS lang) {
+        super.generateLang(lang);
+        if (langValue() != null) {
+            lang.add(GTCEu.MOD_ID, value.getDescriptionId(), value.getLangValue());
+        }
+    }
+
     @HideFromJS
     public DEFINITION register() {
         var definition = createDefinition();
@@ -369,6 +381,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
         definition.setOnWaiting(this.onWaiting);
         definition.setAfterWorking(this.afterWorking);
         definition.setRegressWhenWaiting(this.regressWhenWaiting);
+        definition.setAllowCoverOnFront(this.allowCoverOnFront);
 
         if (renderer == null) {
             renderer = () -> new MachineRenderer(new ResourceLocation(registrate.getModid(), "block/machine/" + name));
@@ -387,6 +400,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
             definition.setEditableUI(editableUI);
         }
         definition.setAppearance(appearance);
+        definition.setAllowExtendedFacing(allowExtendedFacing);
         definition.setRenderer(GTCEu.isClientSide() ? renderer.get() : IRenderer.EMPTY);
         definition.setShape(shape);
         definition.setDefaultPaintingColor(paintingColor);
@@ -398,6 +412,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
 
     static class BlockBuilderWrapper {
 
+        @SuppressWarnings("removal")
         public static <
                 DEFINITION extends MachineDefinition> BlockBuilder<Block, Registrate> makeBlockBuilder(MachineBuilder<DEFINITION> builder,
                                                                                                        DEFINITION definition) {

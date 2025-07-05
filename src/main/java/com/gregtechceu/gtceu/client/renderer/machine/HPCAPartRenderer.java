@@ -29,20 +29,18 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class HPCAPartRenderer extends TieredHullMachineRenderer {
 
-    private final boolean isAdvanced;
     private final ResourceLocation texture, activeTexture, activeEmissiveTexture, damagedTexture, damagedActiveTexture,
             damagedActiveEmissiveTexture;
 
     public HPCAPartRenderer(boolean isAdvanced, ResourceLocation texture, ResourceLocation damagedTexture) {
         super(GTValues.ZPM,
                 isAdvanced ? GTCEu.id("block/computer_casing") : GTCEu.id("block/advanced_computer_casing"));
-        this.isAdvanced = isAdvanced;
         this.texture = texture;
         this.activeTexture = texture.withSuffix("_active");
-        this.activeEmissiveTexture = activeTexture.withSuffix("_emissive");
+        this.activeEmissiveTexture = this.activeTexture.withSuffix("_emissive");
         this.damagedTexture = damagedTexture;
         this.damagedActiveTexture = damagedTexture.withSuffix("_active");
-        this.damagedActiveEmissiveTexture = damagedActiveTexture.withSuffix("_emissive");
+        this.damagedActiveEmissiveTexture = this.damagedActiveTexture.withSuffix("_emissive");
     }
 
     public HPCAPartRenderer(boolean isAdvanced,
@@ -54,7 +52,6 @@ public class HPCAPartRenderer extends TieredHullMachineRenderer {
                             @Nullable ResourceLocation damagedActiveEmissiveTexture) {
         super(GTValues.ZPM,
                 isAdvanced ? GTCEu.id("block/computer_casing") : GTCEu.id("block/advanced_computer_casing"));
-        this.isAdvanced = isAdvanced;
         this.texture = texture;
         this.activeTexture = activeTexture;
         this.activeEmissiveTexture = activeEmissiveTexture;
@@ -73,11 +70,11 @@ public class HPCAPartRenderer extends TieredHullMachineRenderer {
             var controller = hpcaComponent.isFormed() ? hpcaComponent.getControllers().first() : null;
             if (controller != null && (controller instanceof IWorkable workable && workable.isActive())) {
                 if (hpcaComponent.isDamaged()) {
-                    texture = damagedActiveTexture;
-                    emissiveTexture = damagedActiveEmissiveTexture;
+                    texture = this.damagedActiveTexture;
+                    emissiveTexture = this.damagedActiveEmissiveTexture;
                 } else {
-                    texture = activeTexture;
-                    emissiveTexture = activeEmissiveTexture;
+                    texture = this.activeTexture;
+                    emissiveTexture = this.activeEmissiveTexture;
                 }
             } else {
                 if (hpcaComponent.isDamaged()) {
@@ -94,7 +91,7 @@ public class HPCAPartRenderer extends TieredHullMachineRenderer {
                 // Always render this outwards in the HPCA, in case it is not placed outwards in structure.
                 // Check for HPCA specifically since these components could potentially be used in other multiblocks.
                 if (controller instanceof HPCAMachine hpca) {
-                    facing = RelativeDirection.RIGHT.getRelativeFacing(hpca.getFrontFacing(), hpca.getUpwardsFacing(),
+                    facing = RelativeDirection.RIGHT.getRelative(hpca.getFrontFacing(), hpca.getUpwardsFacing(),
                             hpca.isFlipped());
                 }
                 facing = ModelFactory.modelFacing(frontFacing, facing);

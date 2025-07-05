@@ -14,12 +14,10 @@ import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.IDataInfoProvider;
 import com.gregtechceu.gtceu.api.machine.feature.IMufflableMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.common.blockentity.FluidPipeBlockEntity;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
 import com.gregtechceu.gtceu.common.capability.LocalizedHazardSavedData;
@@ -204,12 +202,11 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
 
             // General machine information
             if (mode == DisplayMode.SHOW_ALL || mode == DisplayMode.SHOW_MACHINE_INFO) {
-                if (machineBlockEntity.getOwner() != null) {
-                    machineBlockEntity.getOwner().displayInfo(list);
+                if (machine.getOwner() != null) {
+                    machine.getOwner().displayInfo(list);
                 }
 
-                if (machine.getDefinition() instanceof MultiblockMachineDefinition multi &&
-                        multi.isAllowExtendedFacing()) {
+                if (machine.getDefinition().isAllowExtendedFacing()) {
                     list.add(Component.translatable("behavior.portable_scanner.divider"));
 
                     list.add(Component.translatable("behavior.portable_scanner.machine_front_facing",
@@ -332,11 +329,11 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
                         list.addAll(recipeLogic.getFancyTooltip());
                     } else if (recipe != null) {
                         list.add(Component.translatable("behavior.portable_scanner.divider"));
-                        var EUt = RecipeHelper.getInputEUt(recipe);
-                        var isInput = true;
+                        long EUt = recipe.getInputEUt();
+                        boolean isInput = true;
                         if (EUt == 0) {
                             isInput = false;
-                            EUt = RecipeHelper.getOutputEUt(recipe);
+                            EUt = recipe.getOutputEUt();
                         }
 
                         list.add(Component.translatable(

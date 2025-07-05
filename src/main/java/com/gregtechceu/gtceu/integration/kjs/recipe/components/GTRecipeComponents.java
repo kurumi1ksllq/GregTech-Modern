@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
-import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderIngredient;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.data.GTRecipeCapabilities;
 
@@ -32,6 +31,7 @@ import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
+import lombok.Getter;
 
 import java.util.*;
 
@@ -313,10 +313,7 @@ public class GTRecipeComponents {
 
         @Override
         public ExtendedOutputItem read(RecipeJS recipe, Object from) {
-            if (from instanceof IntProviderIngredient intProvider) {
-                return new ExtendedOutputItem(intProvider, 1);
-            }
-            return ExtendedOutputItem.fromOutputItem(recipe.readOutputItem(from));
+            return ExtendedOutputItem.of(from, recipe);
         }
 
         @Override
@@ -358,9 +355,9 @@ public class GTRecipeComponents {
             false);
     public static final ContentJS<Long> EU_OUT = new ContentJS<>(NumberComponent.ANY_LONG, GTRecipeCapabilities.EU,
             true);
-    public static final ContentJS<Integer> CWU_IN = new ContentJS<>(NumberComponent.ANY_INT, GTRecipeCapabilities.CWU,
+    public static final ContentJS<Integer> CWU_IN = new ContentJS<>(NumberComponent.INT, GTRecipeCapabilities.CWU,
             false);
-    public static final ContentJS<Integer> CWU_OUT = new ContentJS<>(NumberComponent.ANY_INT, GTRecipeCapabilities.CWU,
+    public static final ContentJS<Integer> CWU_OUT = new ContentJS<>(NumberComponent.INT, GTRecipeCapabilities.CWU,
             true);
 
     public static final CapabilityMapComponent IN = new CapabilityMapComponent(false);
@@ -389,6 +386,7 @@ public class GTRecipeComponents {
 
     public static class FluidIngredientJS implements InputFluid, OutputFluid {
 
+        @Getter
         private final FluidIngredient ingredient;
 
         public FluidIngredientJS(FluidIngredient ingredient) {

@@ -21,7 +21,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.network.PacketDistributor;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -105,8 +104,7 @@ public class EnvironmentalHazardSavedData extends SavedData {
             hazardZones.remove(pos);
             if (this.serverLevel.hasChunk(pos.x, pos.z)) {
                 LevelChunk chunk = this.serverLevel.getChunk(pos.x, pos.z);
-                GTNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk),
-                        new SPacketRemoveHazardZone(pos));
+                GTNetwork.sendToAllPlayersTrackingChunk(chunk, new SPacketRemoveHazardZone(pos));
             }
         }
 
@@ -139,8 +137,7 @@ public class EnvironmentalHazardSavedData extends SavedData {
                 hazardZones.remove(pos);
                 if (this.serverLevel.hasChunk(pos.x, pos.z)) {
                     LevelChunk chunk = this.serverLevel.getChunk(pos.x, pos.z);
-                    GTNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk),
-                            new SPacketRemoveHazardZone(pos));
+                    GTNetwork.sendToAllPlayersTrackingChunk(chunk, new SPacketRemoveHazardZone(pos));
                 }
             }
             this.setDirty();
@@ -213,8 +210,7 @@ public class EnvironmentalHazardSavedData extends SavedData {
         this.hazardZones.remove(chunkPos);
         if (this.serverLevel.hasChunk(chunkPos.x, chunkPos.z)) {
             LevelChunk chunk = this.serverLevel.getChunk(chunkPos.x, chunkPos.z);
-            GTNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk),
-                    new SPacketRemoveHazardZone(chunkPos));
+            GTNetwork.sendToAllPlayersTrackingChunk(chunk, new SPacketRemoveHazardZone(chunkPos));
         }
     }
 
@@ -327,16 +323,14 @@ public class EnvironmentalHazardSavedData extends SavedData {
     public void sendAddZonePacket(ChunkPos pos, HazardZone zone) {
         if (this.serverLevel.hasChunk(pos.x, pos.z)) {
             LevelChunk chunk = this.serverLevel.getChunk(pos.x, pos.z);
-            GTNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk),
-                    new SPacketAddHazardZone(pos, zone));
+            GTNetwork.sendToAllPlayersTrackingChunk(chunk, new SPacketAddHazardZone(pos, zone));
         }
     }
 
     public void sendSyncZonePacket(ChunkPos pos, HazardZone zone) {
         if (this.serverLevel.hasChunk(pos.x, pos.z)) {
             LevelChunk chunk = this.serverLevel.getChunk(pos.x, pos.z);
-            GTNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk),
-                    new SPacketSyncHazardZoneStrength(pos, zone.strength()));
+            GTNetwork.sendToAllPlayersTrackingChunk(chunk, new SPacketSyncHazardZoneStrength(pos, zone.strength()));
         }
     }
 }

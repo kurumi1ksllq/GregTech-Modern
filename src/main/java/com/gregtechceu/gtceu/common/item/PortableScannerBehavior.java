@@ -49,7 +49,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.network.PacketDistributor;
 
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
@@ -399,7 +398,7 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
                     var fluidInfo = ProspectorMode.FluidInfo
                             .fromVeinWorldEntry(veinData.getFluidVeinWorldEntry(chunkX, chunkZ));
                     var packet = new SPacketProspectBedrockFluid(level.dimension(), pos, fluidInfo);
-                    GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), packet);
+                    GTNetwork.sendToPlayer((ServerPlayer) player, packet);
 
                     if (player.isCreative()) {
                         list.add(Component.translatable("behavior.portable_scanner.bedrock_fluid.amount",

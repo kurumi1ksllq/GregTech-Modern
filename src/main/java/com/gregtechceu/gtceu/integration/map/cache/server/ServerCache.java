@@ -16,7 +16,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.*;
 
@@ -83,7 +82,7 @@ public class ServerCache extends WorldCache {
             }
         }
 
-        GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new SPacketProspectOre(dim, foundVeins));
+        GTNetwork.sendToPlayer(player, new SPacketProspectOre(dim, foundVeins));
     }
 
     public void prospectByOreMaterial(ResourceKey<Level> dim, Material material, BlockPos origin, ServerPlayer player,
@@ -96,7 +95,7 @@ public class ServerCache extends WorldCache {
                 foundVeins.add(nearbyVein);
             }
         }
-        GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new SPacketProspectOre(dim, foundVeins));
+        GTNetwork.sendToPlayer(player, new SPacketProspectOre(dim, foundVeins));
     }
 
     public void prospectByDepositName(ResourceKey<Level> dim, String depositName, BlockPos origin, ServerPlayer player,
@@ -109,7 +108,7 @@ public class ServerCache extends WorldCache {
                 foundVeins.add(nearbyVein);
             }
         }
-        GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new SPacketProspectOre(dim, foundVeins));
+        GTNetwork.sendToPlayer(player, new SPacketProspectOre(dim, foundVeins));
     }
 
     public void prospectAllInChunk(ResourceKey<Level> dim, ChunkPos pos, ServerPlayer player) {
@@ -120,7 +119,7 @@ public class ServerCache extends WorldCache {
                 foundVeins.add(nearbyVein);
             }
         }
-        GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new SPacketProspectOre(dim, foundVeins));
+        GTNetwork.sendToPlayer(player, new SPacketProspectOre(dim, foundVeins));
     }
 
     public void removeAllInChunk(ResourceKey<Level> dim, ChunkPos pos) {

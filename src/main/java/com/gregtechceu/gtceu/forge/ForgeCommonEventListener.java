@@ -97,7 +97,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.MissingMappingsEvent;
 
 import com.tterrag.registrate.util.entry.BlockEntry;
@@ -316,15 +315,14 @@ public class ForgeCommonEventListener {
     public static void onPlayerJoinServer(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
         if (player instanceof ServerPlayer serverPlayer) {
-            GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SPacketSendWorldID());
+            GTNetwork.sendToPlayer(serverPlayer, new SPacketSendWorldID());
 
             if (!ConfigHolder.INSTANCE.gameplay.environmentalHazards)
                 return;
 
             ServerLevel level = serverPlayer.serverLevel();
             var data = EnvironmentalHazardSavedData.getOrCreate(level);
-            GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
-                    new SPacketSyncLevelHazards(data.getHazardZones()));
+            GTNetwork.sendToPlayer(serverPlayer, new SPacketSyncLevelHazards(data.getHazardZones()));
         }
         CapeRegistry.detectNewCapes(player);
         CapeRegistry.loadCurrentCapesOnLogin(player);
@@ -335,19 +333,15 @@ public class ForgeCommonEventListener {
         ServerPlayer player = event.getPlayer();
         if (player == null) {
             // if player == null, the /reload command was ran. sync to all players.
-            GTNetwork.INSTANCE.send(PacketDistributor.ALL.noArg(),
-                    new SPacketSyncOreVeins(GTRegistries.ORE_VEINS.registry()));
-            GTNetwork.INSTANCE.send(PacketDistributor.ALL.noArg(),
-                    new SPacketSyncFluidVeins(GTRegistries.BEDROCK_FLUID_DEFINITIONS.registry()));
-            GTNetwork.INSTANCE.send(PacketDistributor.ALL.noArg(),
-                    new SPacketSyncBedrockOreVeins(GTRegistries.BEDROCK_ORE_DEFINITIONS.registry()));
+            GTNetwork.sendToAll(new SPacketSyncOreVeins(GTRegistries.ORE_VEINS.registry()));
+            GTNetwork.sendToAll(new SPacketSyncFluidVeins(GTRegistries.BEDROCK_FLUID_DEFINITIONS.registry()));
+            GTNetwork.sendToAll(new SPacketSyncBedrockOreVeins(GTRegistries.BEDROCK_ORE_DEFINITIONS.registry()));
         } else {
             // else it's a player logging in. sync to only that player.
-            GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                    new SPacketSyncOreVeins(GTRegistries.ORE_VEINS.registry()));
-            GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
+            GTNetwork.sendToPlayer(player, new SPacketSyncOreVeins(GTRegistries.ORE_VEINS.registry()));
+            GTNetwork.sendToPlayer(player,
                     new SPacketSyncFluidVeins(GTRegistries.BEDROCK_FLUID_DEFINITIONS.registry()));
-            GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
+            GTNetwork.sendToPlayer(player,
                     new SPacketSyncBedrockOreVeins(GTRegistries.BEDROCK_ORE_DEFINITIONS.registry()));
         }
     }
@@ -425,8 +419,7 @@ public class ForgeCommonEventListener {
 
         ServerLevel newLevel = event.getEntity().getServer().getLevel(event.getTo());
         var data = EnvironmentalHazardSavedData.getOrCreate(newLevel);
-        GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()),
-                new SPacketSyncLevelHazards(data.getHazardZones()));
+        GTNetwork.sendToPlayer((ServerPlayer) event.getEntity(), new SPacketSyncLevelHazards(data.getHazardZones()));
     }
 
     @SubscribeEvent
@@ -437,7 +430,7 @@ public class ForgeCommonEventListener {
 
         var zone = data.getZoneByPos(pos);
         if (zone != null) {
-            GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new SPacketAddHazardZone(pos, zone));
+            GTNetwork.sendToPlayer(player, new SPacketAddHazardZone(pos, zone));
         }
     }
 
@@ -449,7 +442,7 @@ public class ForgeCommonEventListener {
 
         var zone = data.getZoneByPos(pos);
         if (zone != null) {
-            GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new SPacketRemoveHazardZone(pos));
+            GTNetwork.sendToPlayer(player, new SPacketRemoveHazardZone(pos));
         }
     }
 

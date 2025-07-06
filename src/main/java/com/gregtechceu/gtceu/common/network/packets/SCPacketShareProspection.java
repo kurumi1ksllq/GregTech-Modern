@@ -14,7 +14,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
 
 import lombok.AllArgsConstructor;
 
@@ -83,9 +82,7 @@ public class SCPacketShareProspection implements GTNetwork.INetPacket {
                     cacheName, key,
                     isDimCache, dimension,
                     data, first);
-            GTNetwork.INSTANCE.send(
-                    PacketDistributor.PLAYER.with(() -> GTCEu.getMinecraftServer().getPlayerList().getPlayer(receiver)),
-                    newPacket);
+            GTNetwork.sendToPlayer(GTCEu.getMinecraftServer().getPlayerList().getPlayer(receiver), newPacket);
         }
     }
 }

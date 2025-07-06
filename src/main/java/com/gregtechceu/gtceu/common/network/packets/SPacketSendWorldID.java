@@ -1,17 +1,16 @@
 package com.gregtechceu.gtceu.common.network.packets;
 
 import com.gregtechceu.gtceu.common.capability.WorldIDSaveData;
+import com.gregtechceu.gtceu.common.network.GTNetwork;
 import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
 
-import com.lowdragmc.lowdraglib.networking.IHandlerContext;
-import com.lowdragmc.lowdraglib.networking.IPacket;
-
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class SPacketSendWorldID implements IPacket {
+public class SPacketSendWorldID implements GTNetwork.INetPacket {
 
     private String worldId;
 
@@ -26,7 +25,7 @@ public class SPacketSendWorldID implements IPacket {
     }
 
     @Override
-    public void execute(IHandlerContext handler) {
+    public void execute(NetworkEvent.Context context) {
         ClientCacheManager.init(worldId);
     }
 }

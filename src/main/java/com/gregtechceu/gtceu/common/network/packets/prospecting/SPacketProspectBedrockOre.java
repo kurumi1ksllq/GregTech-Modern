@@ -2,12 +2,12 @@ package com.gregtechceu.gtceu.common.network.packets.prospecting;
 
 import com.gregtechceu.gtceu.api.gui.misc.ProspectorMode;
 
-import com.lowdragmc.lowdraglib.networking.IHandlerContext;
-
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 public class SPacketProspectBedrockOre extends SPacketProspect<ProspectorMode.OreInfo> {
 
+    @SuppressWarnings("unused")
     public SPacketProspectBedrockOre() {
         super();
     }
@@ -23,7 +23,7 @@ public class SPacketProspectBedrockOre extends SPacketProspect<ProspectorMode.Or
     }
 
     @Override
-    public void execute(IHandlerContext handler) {
+    public void execute(NetworkEvent.Context context) {
         // todo: add cache for bedrock ore veins
     }
 }

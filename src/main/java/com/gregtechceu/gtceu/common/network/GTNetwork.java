@@ -10,29 +10,65 @@ import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectB
 import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectBedrockOre;
 import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectOre;
 
-import com.lowdragmc.lowdraglib.networking.INetworking;
-import com.lowdragmc.lowdraglib.networking.forge.LDLNetworkingImpl;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
 
 public class GTNetwork {
 
-    public static final INetworking NETWORK = LDLNetworkingImpl.createNetworking(GTCEu.id("network"), "0.0.1");
+    private static final String PROTOCOL_VERSION = "1.0.0";
+    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(GTCEu.id("network"),
+            () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
+
+    private static int nextPacketId = 0;
+
+    public interface INetPacket {
+
+        void encode(FriendlyByteBuf buffer);
+
+        void decode(FriendlyByteBuf buffer);
+
+        void execute(NetworkEvent.Context context);
+    }
+
+    public static <T extends INetPacket> void register(Class<T> cls, NetworkDirection direction) {
+        INSTANCE.registerMessage(nextPacketId++, cls, INetPacket::encode, (buf) -> {
+            try {
+                var p = cls.getDeclaredConstructor().newInstance();
+                p.decode(buf);
+                return p;
+            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException |
+                     IllegalAccessException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }, (msg, ctx) -> {
+            ctx.get().enqueueWork(() -> msg.execute(ctx.get()));
+            ctx.get().setPacketHandled(true);
+        }, Optional.ofNullable(direction));
+    }
 
     public static void init() {
-        NETWORK.registerC2S(CPacketKeysPressed.class);
-        NETWORK.registerS2C(SPacketSyncOreVeins.class);
-        NETWORK.registerS2C(SPacketSyncFluidVeins.class);
-        NETWORK.registerS2C(SPacketSyncBedrockOreVeins.class);
+        register(CPacketKeysPressed.class, NetworkDirection.PLAY_TO_SERVER);
+        register(SPacketSyncOreVeins.class, NetworkDirection.PLAY_TO_CLIENT);
+        register(SPacketSyncFluidVeins.class, NetworkDirection.PLAY_TO_CLIENT);
+        register(SPacketSyncBedrockOreVeins.class, NetworkDirection.PLAY_TO_CLIENT);
 
-        NETWORK.registerS2C(SPacketAddHazardZone.class);
-        NETWORK.registerS2C(SPacketRemoveHazardZone.class);
-        NETWORK.registerS2C(SPacketSyncHazardZoneStrength.class);
-        NETWORK.registerS2C(SPacketSyncLevelHazards.class);
-        NETWORK.registerS2C(SPacketProspectOre.class);
-        NETWORK.registerS2C(SPacketProspectBedrockFluid.class);
-        NETWORK.registerS2C(SPacketProspectBedrockOre.class);
-        NETWORK.registerS2C(SPacketSendWorldID.class);
-        NETWORK.registerS2C(SPacketNotifyCapeChange.class);
+        register(SPacketAddHazardZone.class, NetworkDirection.PLAY_TO_CLIENT);
+        register(SPacketRemoveHazardZone.class, NetworkDirection.PLAY_TO_CLIENT);
+        register(SPacketSyncHazardZoneStrength.class, NetworkDirection.PLAY_TO_CLIENT);
+        register(SPacketSyncLevelHazards.class, NetworkDirection.PLAY_TO_CLIENT);
+        register(SPacketProspectOre.class, NetworkDirection.PLAY_TO_CLIENT);
+        register(SPacketProspectBedrockOre.class, NetworkDirection.PLAY_TO_CLIENT);
+        register(SPacketProspectBedrockFluid.class, NetworkDirection.PLAY_TO_CLIENT);
+        register(SPacketSendWorldID.class, NetworkDirection.PLAY_TO_CLIENT);
+        register(SPacketNotifyCapeChange.class, NetworkDirection.PLAY_TO_CLIENT);
 
-        NETWORK.registerBoth(SCPacketShareProspection.class);
+        register(SCPacketShareProspection.class, null);
     }
 }

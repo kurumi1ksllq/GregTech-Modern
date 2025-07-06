@@ -14,6 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.network.PacketDistributor;
 
 import dev.latvian.mods.kubejs.script.ScriptType;
 import org.jetbrains.annotations.ApiStatus;
@@ -248,7 +249,7 @@ public class CapeRegistry extends SavedData {
             return false;
         }
         CURRENT_CAPES.put(player, cape);
-        GTNetwork.NETWORK.sendToAll(new SPacketNotifyCapeChange(player, cape));
+        GTNetwork.INSTANCE.send(PacketDistributor.ALL.noArg(), new SPacketNotifyCapeChange(player, cape));
         save();
         return true;
     }
@@ -258,12 +259,13 @@ public class CapeRegistry extends SavedData {
         if (player instanceof ServerPlayer serverPlayer) {
             UUID uuid = player.getUUID();
             // sync to others
-            GTNetwork.NETWORK.sendToAll(new SPacketNotifyCapeChange(uuid, CURRENT_CAPES.get(uuid)));
+            GTNetwork.INSTANCE.send(PacketDistributor.ALL.noArg(),
+                    new SPacketNotifyCapeChange(uuid, CURRENT_CAPES.get(uuid)));
             // sync to the one who's logging in
             for (ServerPlayer otherPlayer : serverPlayer.getServer().getPlayerList().getPlayers()) {
                 uuid = otherPlayer.getUUID();
-                GTNetwork.NETWORK.sendToPlayer(new SPacketNotifyCapeChange(uuid, CURRENT_CAPES.get(uuid)),
-                        serverPlayer);
+                GTNetwork.INSTANCE.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
+                        new SPacketNotifyCapeChange(uuid, CURRENT_CAPES.get(uuid)));
             }
         }
     }

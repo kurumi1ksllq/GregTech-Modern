@@ -2,19 +2,19 @@ package com.gregtechceu.gtceu.common.network.packets.hazard;
 
 import com.gregtechceu.gtceu.client.EnvironmentalHazardClientHandler;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
-
-import com.lowdragmc.lowdraglib.networking.IHandlerContext;
-import com.lowdragmc.lowdraglib.networking.IPacket;
+import com.gregtechceu.gtceu.common.network.GTNetwork;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class SPacketAddHazardZone implements IPacket {
+public class SPacketAddHazardZone implements GTNetwork.INetPacket {
 
     private ChunkPos pos;
     private EnvironmentalHazardSavedData.HazardZone zone;
@@ -32,8 +32,8 @@ public class SPacketAddHazardZone implements IPacket {
     }
 
     @Override
-    public void execute(IHandlerContext handler) {
-        if (handler.isClient()) {
+    public void execute(NetworkEvent.Context context) {
+        if (context.getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
             EnvironmentalHazardClientHandler.INSTANCE.addHazardZone(pos, zone);
         }
     }

@@ -1,12 +1,12 @@
 package com.gregtechceu.gtceu.common.network.packets;
 
 import com.gregtechceu.gtceu.api.cosmetics.CapeRegistry;
-
-import com.lowdragmc.lowdraglib.networking.IHandlerContext;
-import com.lowdragmc.lowdraglib.networking.IPacket;
+import com.gregtechceu.gtceu.common.network.GTNetwork;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class SPacketNotifyCapeChange implements IPacket {
+public class SPacketNotifyCapeChange implements GTNetwork.INetPacket {
 
     public UUID uuid;
     public ResourceLocation cape;
@@ -36,8 +36,8 @@ public class SPacketNotifyCapeChange implements IPacket {
     }
 
     @Override
-    public void execute(IHandlerContext handler) {
-        if (handler.isClient()) {
+    public void execute(NetworkEvent.Context context) {
+        if (context.getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
             CapeRegistry.giveRawCape(uuid, cape);
         }
     }

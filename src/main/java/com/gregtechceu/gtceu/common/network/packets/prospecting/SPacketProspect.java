@@ -1,20 +1,20 @@
 package com.gregtechceu.gtceu.common.network.packets.prospecting;
 
-import com.lowdragmc.lowdraglib.networking.IHandlerContext;
-import com.lowdragmc.lowdraglib.networking.IPacket;
+import com.gregtechceu.gtceu.common.network.GTNetwork;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkEvent;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
 import java.util.Collection;
 
-public abstract class SPacketProspect<T> implements IPacket {
+public abstract class SPacketProspect<T> implements GTNetwork.INetPacket {
 
     protected final Table<ResourceKey<Level>, BlockPos, T> data;
 
@@ -83,5 +83,5 @@ public abstract class SPacketProspect<T> implements IPacket {
     }
 
     @Override
-    public abstract void execute(IHandlerContext handler);
+    public abstract void execute(NetworkEvent.Context context);
 }

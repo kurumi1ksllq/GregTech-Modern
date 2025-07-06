@@ -21,6 +21,15 @@ public class CPacketKeysPressed implements GTNetwork.INetPacket {
         this.updateKeys = updateKeys;
     }
 
+    public CPacketKeysPressed(FriendlyByteBuf buf) {
+        this.updateKeys = new BooleanBooleanPair[KeyBind.VALUES.length];
+        BooleanBooleanPair[] updateKeys = (BooleanBooleanPair[]) this.updateKeys;
+        int size = buf.readVarInt();
+        for (int i = 0; i < size; i++) {
+            updateKeys[buf.readVarInt()] = BooleanBooleanPair.of(buf.readBoolean(), buf.readBoolean());
+        }
+    }
+
     @Override
     public void encode(FriendlyByteBuf buf) {
         List<KeyBind> updateKeys = (List<KeyBind>) this.updateKeys;
@@ -29,16 +38,6 @@ public class CPacketKeysPressed implements GTNetwork.INetPacket {
             buf.writeVarInt(keyBind.ordinal());
             buf.writeBoolean(keyBind.isPressed());
             buf.writeBoolean(keyBind.isKeyDown());
-        }
-    }
-
-    @Override
-    public void decode(FriendlyByteBuf buf) {
-        this.updateKeys = new BooleanBooleanPair[KeyBind.VALUES.length];
-        BooleanBooleanPair[] updateKeys = (BooleanBooleanPair[]) this.updateKeys;
-        int size = buf.readVarInt();
-        for (int i = 0; i < size; i++) {
-            updateKeys[buf.readVarInt()] = BooleanBooleanPair.of(buf.readBoolean(), buf.readBoolean());
         }
     }
 

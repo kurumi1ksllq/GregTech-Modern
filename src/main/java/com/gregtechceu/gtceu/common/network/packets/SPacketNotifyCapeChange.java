@@ -20,6 +20,11 @@ public class SPacketNotifyCapeChange implements GTNetwork.INetPacket {
     public UUID uuid;
     public ResourceLocation cape;
 
+    public SPacketNotifyCapeChange(FriendlyByteBuf buf) {
+        uuid = buf.readUUID();
+        cape = buf.readBoolean() ? buf.readResourceLocation() : null;
+    }
+
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeUUID(this.uuid);
@@ -27,12 +32,6 @@ public class SPacketNotifyCapeChange implements GTNetwork.INetPacket {
         if (this.cape != null) {
             buf.writeResourceLocation(this.cape);
         }
-    }
-
-    @Override
-    public void decode(FriendlyByteBuf buf) {
-        this.uuid = buf.readUUID();
-        this.cape = buf.readBoolean() ? buf.readResourceLocation() : null;
     }
 
     @Override

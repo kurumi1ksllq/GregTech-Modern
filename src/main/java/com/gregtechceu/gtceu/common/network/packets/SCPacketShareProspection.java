@@ -35,6 +35,17 @@ public class SCPacketShareProspection implements GTNetwork.INetPacket {
     @SuppressWarnings("unused")
     public SCPacketShareProspection() {}
 
+    public SCPacketShareProspection(FriendlyByteBuf buf) {
+        sender = buf.readUUID();
+        receiver = buf.readUUID();
+        cacheName = buf.readUtf();
+        key = buf.readUtf();
+        isDimCache = buf.readBoolean();
+        dimension = buf.readResourceKey(Registries.DIMENSION);
+        data = buf.readNbt();
+        first = buf.readBoolean();
+    }
+
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeUUID(sender);
@@ -45,18 +56,6 @@ public class SCPacketShareProspection implements GTNetwork.INetPacket {
         buf.writeResourceKey(dimension);
         buf.writeNbt(data);
         buf.writeBoolean(first);
-    }
-
-    @Override
-    public void decode(FriendlyByteBuf buf) {
-        sender = buf.readUUID();
-        receiver = buf.readUUID();
-        cacheName = buf.readUtf();
-        key = buf.readUtf();
-        isDimCache = buf.readBoolean();
-        dimension = buf.readResourceKey(Registries.DIMENSION);
-        data = buf.readNbt();
-        first = buf.readBoolean();
     }
 
     @Override

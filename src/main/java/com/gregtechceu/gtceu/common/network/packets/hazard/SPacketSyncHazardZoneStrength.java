@@ -18,16 +18,15 @@ public class SPacketSyncHazardZoneStrength implements GTNetwork.INetPacket {
     public ChunkPos pos;
     public float newAmount;
 
+    public SPacketSyncHazardZoneStrength(FriendlyByteBuf buf) {
+        pos = buf.readChunkPos();
+        this.newAmount = buf.readFloat();
+    }
+
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeChunkPos(pos);
         buf.writeFloat(newAmount);
-    }
-
-    @Override
-    public void decode(FriendlyByteBuf buf) {
-        pos = buf.readChunkPos();
-        this.newAmount = buf.readFloat();
     }
 
     @Override

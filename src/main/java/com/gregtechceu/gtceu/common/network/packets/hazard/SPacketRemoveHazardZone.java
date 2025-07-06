@@ -17,14 +17,13 @@ public class SPacketRemoveHazardZone implements GTNetwork.INetPacket {
 
     public ChunkPos pos;
 
-    @Override
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeChunkPos(pos);
+    public SPacketRemoveHazardZone(FriendlyByteBuf buf) {
+        pos = buf.readChunkPos();
     }
 
     @Override
-    public void decode(FriendlyByteBuf buf) {
-        pos = buf.readChunkPos();
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeChunkPos(pos);
     }
 
     @Override

@@ -14,14 +14,13 @@ public class SPacketSendWorldID implements GTNetwork.INetPacket {
 
     private String worldId;
 
-    @Override
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(WorldIDSaveData.getWorldID());
+    public SPacketSendWorldID(FriendlyByteBuf buf) {
+        worldId = buf.readUtf();
     }
 
     @Override
-    public void decode(FriendlyByteBuf buf) {
-        this.worldId = buf.readUtf();
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeUtf(WorldIDSaveData.getWorldID());
     }
 
     @Override

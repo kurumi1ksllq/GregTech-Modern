@@ -18,6 +18,10 @@ public class SPacketProspectBedrockFluid extends SPacketProspect<ProspectorMode.
         super();
     }
 
+    public SPacketProspectBedrockFluid(FriendlyByteBuf buf) {
+        super(buf);
+    }
+
     @SuppressWarnings("unused")
     public SPacketProspectBedrockFluid(ResourceKey<Level> key, Collection<BlockPos> positions,
                                        Collection<ProspectorMode.FluidInfo> prospected) {

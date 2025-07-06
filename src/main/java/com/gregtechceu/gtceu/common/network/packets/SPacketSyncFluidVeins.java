@@ -30,6 +30,18 @@ public class SPacketSyncFluidVeins implements GTNetwork.INetPacket {
         this.veins = new HashMap<>();
     }
 
+    public SPacketSyncFluidVeins(FriendlyByteBuf buf) {
+        this();
+        RegistryOps<Tag> ops = RegistryOps.create(NbtOps.INSTANCE, GTRegistries.builtinRegistry());
+        Stream.generate(() -> {
+            ResourceLocation id = buf.readResourceLocation();
+            CompoundTag tag = buf.readAnySizeNbt();
+            BedrockFluidDefinition def = BedrockFluidDefinition.FULL_CODEC.parse(ops, tag).getOrThrow(false,
+                    GTCEu.LOGGER::error);
+            return Map.entry(id, def);
+        }).limit(buf.readVarInt()).forEach(entry -> veins.put(entry.getKey(), entry.getValue()));
+    }
+
     @Override
     public void encode(FriendlyByteBuf buf) {
         RegistryOps<Tag> ops = RegistryOps.create(NbtOps.INSTANCE, GTRegistries.builtinRegistry());
@@ -41,18 +53,6 @@ public class SPacketSyncFluidVeins implements GTNetwork.INetPacket {
                     .getOrThrow(false, GTCEu.LOGGER::error);
             buf.writeNbt(tag);
         }
-    }
-
-    @Override
-    public void decode(FriendlyByteBuf buf) {
-        RegistryOps<Tag> ops = RegistryOps.create(NbtOps.INSTANCE, GTRegistries.builtinRegistry());
-        Stream.generate(() -> {
-            ResourceLocation id = buf.readResourceLocation();
-            CompoundTag tag = buf.readAnySizeNbt();
-            BedrockFluidDefinition def = BedrockFluidDefinition.FULL_CODEC.parse(ops, tag).getOrThrow(false,
-                    GTCEu.LOGGER::error);
-            return Map.entry(id, def);
-        }).limit(buf.readVarInt()).forEach(entry -> veins.put(entry.getKey(), entry.getValue()));
     }
 
     @Override

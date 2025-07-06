@@ -51,6 +51,20 @@ public abstract class SPacketProspect<T> implements GTNetwork.INetPacket {
         data.put(key, position, prospected);
     }
 
+    public SPacketProspect(FriendlyByteBuf buf) {
+        this();
+        var rowCount = buf.readInt();
+        for (int i = 0; i < rowCount; i++) {
+            var rowKey = buf.readResourceKey(Registries.DIMENSION);
+            var entryCount = buf.readInt();
+            for (int j = 0; j < entryCount; j++) {
+                var blockPos = buf.readBlockPos();
+                var t = decodeData(buf);
+                data.put(rowKey, blockPos, t);
+            }
+        }
+    }
+
     public abstract void encodeData(FriendlyByteBuf buf, T data);
 
     public abstract T decodeData(FriendlyByteBuf buf);
@@ -66,20 +80,6 @@ public abstract class SPacketProspect<T> implements GTNetwork.INetPacket {
                 encodeData(buf, t);
             }));
         });
-    }
-
-    @Override
-    public void decode(FriendlyByteBuf buf) {
-        var rowCount = buf.readInt();
-        for (int i = 0; i < rowCount; i++) {
-            var rowKey = buf.readResourceKey(Registries.DIMENSION);
-            var entryCount = buf.readInt();
-            for (int j = 0; j < entryCount; j++) {
-                var blockPos = buf.readBlockPos();
-                var t = decodeData(buf);
-                data.put(rowKey, blockPos, t);
-            }
-        }
     }
 
     @Override

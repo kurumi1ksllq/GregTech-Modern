@@ -17,6 +17,10 @@ public class SPacketProspectOre extends SPacketProspect<GeneratedVeinMetadata> {
         super();
     }
 
+    public SPacketProspectOre(FriendlyByteBuf buf) {
+        super(buf);
+    }
+
     public SPacketProspectOre(ResourceKey<Level> key, Collection<GeneratedVeinMetadata> veins) {
         super(key, veins.stream().map(GeneratedVeinMetadata::center).toList(), veins);
     }

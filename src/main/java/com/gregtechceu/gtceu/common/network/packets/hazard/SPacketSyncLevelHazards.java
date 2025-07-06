@@ -22,6 +22,14 @@ public class SPacketSyncLevelHazards implements GTNetwork.INetPacket {
 
     private Map<ChunkPos, EnvironmentalHazardSavedData.HazardZone> map;
 
+    public SPacketSyncLevelHazards(FriendlyByteBuf buf) {
+        map = Stream.generate(() -> {
+            ChunkPos pos = buf.readChunkPos();
+            var zone = EnvironmentalHazardSavedData.HazardZone.fromNetwork(buf);
+            return Map.entry(pos, zone);
+        }).limit(buf.readVarInt()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeVarInt(map.size());
@@ -29,15 +37,6 @@ public class SPacketSyncLevelHazards implements GTNetwork.INetPacket {
             buf.writeChunkPos(entry.getKey());
             entry.getValue().toNetwork(buf);
         }
-    }
-
-    @Override
-    public void decode(FriendlyByteBuf buf) {
-        map = Stream.generate(() -> {
-            ChunkPos pos = buf.readChunkPos();
-            var zone = EnvironmentalHazardSavedData.HazardZone.fromNetwork(buf);
-            return Map.entry(pos, zone);
-        }).limit(buf.readVarInt()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @Override

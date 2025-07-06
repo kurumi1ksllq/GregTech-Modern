@@ -19,16 +19,15 @@ public class SPacketAddHazardZone implements GTNetwork.INetPacket {
     private ChunkPos pos;
     private EnvironmentalHazardSavedData.HazardZone zone;
 
+    public SPacketAddHazardZone(FriendlyByteBuf buf) {
+        pos = buf.readChunkPos();
+        zone = EnvironmentalHazardSavedData.HazardZone.fromNetwork(buf);
+    }
+
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeChunkPos(pos);
         zone.toNetwork(buf);
-    }
-
-    @Override
-    public void decode(FriendlyByteBuf buf) {
-        pos = buf.readChunkPos();
-        zone = EnvironmentalHazardSavedData.HazardZone.fromNetwork(buf);
     }
 
     @Override

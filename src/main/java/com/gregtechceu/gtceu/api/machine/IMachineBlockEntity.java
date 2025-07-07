@@ -6,13 +6,9 @@ import com.gregtechceu.gtceu.api.blockentity.IPaintable;
 import com.gregtechceu.gtceu.api.item.tool.IToolGridHighlight;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 
-import com.lowdragmc.lowdraglib.syncdata.blockentity.IAsyncAutoSyncBlockEntity;
-import com.lowdragmc.lowdraglib.syncdata.blockentity.IAutoPersistBlockEntity;
-import com.lowdragmc.lowdraglib.syncdata.blockentity.IRPCBlockEntity;
-import com.lowdragmc.lowdraglib.syncdata.managed.MultiManagedStorage;
+import com.gregtechceu.gtceu.sync_system.IManagedBlockEntity;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -28,8 +24,7 @@ import org.jetbrains.annotations.NotNull;
  * <p/>
  * Also delivers most of the Information about TileEntities.
  */
-public interface IMachineBlockEntity extends IToolGridHighlight, IAsyncAutoSyncBlockEntity, IRPCBlockEntity,
-                                     IAutoPersistBlockEntity, IPaintable, IForgeBlockEntity {
+public interface IMachineBlockEntity extends IToolGridHighlight, IManagedBlockEntity, IPaintable, IForgeBlockEntity {
 
     ModelProperty<BlockAndTintGetter> MODEL_DATA_LEVEL = new ModelProperty<>();
     ModelProperty<BlockPos> MODEL_DATA_POS = new ModelProperty<>();
@@ -100,20 +95,6 @@ public interface IMachineBlockEntity extends IToolGridHighlight, IAsyncAutoSyncB
     MetaMachine getMetaMachine();
 
     long getOffset();
-
-    MultiManagedStorage getRootStorage();
-
-    @Override
-    default void saveCustomPersistedData(CompoundTag tag, boolean forDrop) {
-        IAutoPersistBlockEntity.super.saveCustomPersistedData(tag, forDrop);
-        getMetaMachine().saveCustomPersistedData(tag, forDrop);
-    }
-
-    @Override
-    default void loadCustomPersistedData(CompoundTag tag) {
-        IAutoPersistBlockEntity.super.loadCustomPersistedData(tag);
-        getMetaMachine().loadCustomPersistedData(tag);
-    }
 
     @Override
     default int getPaintingColor() {

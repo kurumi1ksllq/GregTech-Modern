@@ -476,8 +476,8 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
     }
 
     @Override
-    public void saveExtendedNBTData(CompoundTag tag, boolean forDrop) {
-        super.saveExtendedNBTData(tag, forDrop);
+    public void saveCustomPersistedData(CompoundTag tag, boolean forDrop) {
+        super.saveCustomPersistedData(tag, forDrop);
         ListTag list = new ListTag();
         for (int i = 0; i < getFluidTanks().length; i++) {
             FluidStack stack1 = getContainedFluid(i);
@@ -492,8 +492,8 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
     }
 
     @Override
-    public void loadExtendedNBTData(CompoundTag nbt) {
-        super.loadExtendedNBTData(nbt);
+    public void loadCustomPersistedData(CompoundTag nbt) {
+        super.loadCustomPersistedData(nbt);
         ListTag list = nbt.getList("Fluids", Tag.TAG_COMPOUND);
         createTanksList();
         for (int i = 0; i < list.size(); i++) {

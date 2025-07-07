@@ -1,6 +1,11 @@
 package com.gregtechceu.gtceu.sync_system;
 
-import com.gregtechceu.gtceu.sync_system.annotations.*;
+import com.gregtechceu.gtceu.sync_system.annotations.ClientFieldChangeListener;
+
+import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
+import com.lowdragmc.lowdraglib.syncdata.annotation.DropSaved;
+import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -44,10 +49,11 @@ public final class ClassSyncData {
 
         for (var field : clazz.getDeclaredFields()) {
             if (Modifier.isStatic(field.getModifiers())) continue;
-            SaveField saveF = field.getAnnotation(SaveField.class);
-            boolean hasClientSync = field.isAnnotationPresent(SyncToClient.class);
-            boolean hasTriggerClientRerender = field.isAnnotationPresent(RerenderOnChanged.class);
-            boolean hasSaveToStack = field.isAnnotationPresent(SaveToItemStack.class);
+            /// Currently using ldlib annotations
+            Persisted saveF = field.getAnnotation(Persisted.class);
+            boolean hasClientSync = field.isAnnotationPresent(DescSynced.class);
+            boolean hasTriggerClientRerender = field.isAnnotationPresent(RequireRerender.class);
+            boolean hasSaveToStack = field.isAnnotationPresent(DropSaved.class);
             if (saveF != null || hasClientSync || hasTriggerClientRerender || hasSaveToStack) {
                 VarHandle handle;
                 try {
@@ -57,10 +63,10 @@ public final class ClassSyncData {
                     continue;
                 }
                 if (hasClientSync) foundSyncFields.add(new FieldSyncData(field.getName(), handle,
-                        (saveF != null && !saveF.nbtKey().isBlank()) ? saveF.nbtKey() : "", hasTriggerClientRerender,
+                        (saveF != null && !saveF.key().isBlank()) ? saveF.key() : "", hasTriggerClientRerender,
                         hasSaveToStack));
                 if (saveF != null) foundSaveFields.add(new FieldSyncData(field.getName(), handle,
-                        (!saveF.nbtKey().isBlank()) ? saveF.nbtKey() : "", hasTriggerClientRerender, hasSaveToStack));
+                        (!saveF.key().isBlank()) ? saveF.key() : "", hasTriggerClientRerender, hasSaveToStack));
             }
         }
         for (var method : clazz.getDeclaredMethods()) {

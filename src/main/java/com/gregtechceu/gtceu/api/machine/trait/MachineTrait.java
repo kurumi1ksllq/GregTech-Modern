@@ -6,12 +6,10 @@ import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.client.model.data.ModelData;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -58,17 +56,6 @@ public abstract class MachineTrait implements ISyncManaged {
     public void setRenderState(MachineRenderState state) {
         getMachine().setRenderState(state);
     }
-
-    /**
-     * Use for data not able to be saved with the SyncData system, like optional mod compatiblity in internal machines.
-     *
-     * @param tag     the CompoundTag to load data from
-     * @param forDrop if the save is done for dropping the machine as an item.
-     */
-    @Override
-    public void serializeCustomNBTData(@NotNull CompoundTag tag, boolean forDrop) {}
-
-    public void deserializeCustomNBTData(@NotNull CompoundTag tag) {}
 
     public void scheduleRenderUpdate() {
         machine.scheduleRenderUpdate();

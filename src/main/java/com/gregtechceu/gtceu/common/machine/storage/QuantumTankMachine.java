@@ -15,6 +15,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveToItemStack;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -88,13 +89,18 @@ public class QuantumTankMachine extends TieredMachine implements IAutoOutputFlui
     private final long maxAmount;
     protected final FluidCache cache;
     @DescSynced
+    @Persisted
     private final CustomFluidTank lockedFluid;
 
     @Getter
     @DescSynced
+    @Persisted
+    @SaveToItemStack
     protected FluidStack stored = FluidStack.EMPTY;
     @Getter
     @DescSynced
+    @Persisted
+    @SaveToItemStack
     protected long storedAmount = 0;
 
     @Nullable
@@ -138,29 +144,6 @@ public class QuantumTankMachine extends TieredMachine implements IAutoOutputFlui
     @Override
     public boolean saveBreak() {
         return !stored.isEmpty();
-    }
-
-    @Override
-    public void serializeCustomNBTData(@NotNull CompoundTag tag, boolean forDrop) {
-        super.serializeCustomNBTData(tag, forDrop);
-        if (!forDrop) tag.put("lockedFluid", lockedFluid.writeToNBT(new CompoundTag()));
-        tag.put("stored", stored.writeToNBT(new CompoundTag()));
-        tag.putLong("storedAmount", storedAmount);
-    }
-
-    @Override
-    public void deserializeCustomNBTData(@NotNull CompoundTag tag) {
-        super.deserializeCustomNBTData(tag);
-
-        var from = tag.contains("cache") ? tag.getCompound("cache") : tag;
-        this.lockedFluid.readFromNBT(from.getCompound("lockedFluid"));
-
-        var stored = FluidStack.loadFluidStackFromNBT(tag.getCompound("stored"));
-        this.stored = new FluidStack(stored, 1000);
-
-        if (!tag.contains("storedAmount")) this.storedAmount = stored.getAmount();
-        else this.storedAmount = tag.getLong("storedAmount");
-        if (storedAmount == 0 && !stored.isEmpty()) this.storedAmount = stored.getAmount();
     }
 
     //////////////////////////////////////

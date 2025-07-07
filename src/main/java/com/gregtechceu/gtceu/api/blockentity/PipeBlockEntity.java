@@ -15,9 +15,7 @@ import com.gregtechceu.gtceu.api.pipenet.*;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.datafixers.TagFixer;
-import com.gregtechceu.gtceu.syncdata.IManagedBlockEntity;
-import com.gregtechceu.gtceu.syncdata.ISyncManaged;
-import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
+import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
@@ -57,11 +55,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeType<NodeDataType>, NodeDataType>
-                                     extends BlockEntity implements IPipeNode<PipeType, NodeDataType>, ISyncManaged,
-                                     IManagedBlockEntity, IToolGridHighlight, IToolable {
+        extends ManagedSyncBlockEntity implements IPipeNode<PipeType, NodeDataType>, IToolGridHighlight, IToolable {
 
-    @Getter
-    private final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
     private final long offset = GTValues.RNG.nextInt(20);
 
     @Getter
@@ -103,8 +98,6 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
         this.coverContainer = new PipeCoverContainer(this);
         this.serverTicks = new ArrayList<>();
         this.waitingToAdd = new ArrayList<>();
-
-        attachDataHolder(getSyncDataHolder());
     }
 
     //////////////////////////////////////
@@ -112,14 +105,6 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     //////////////////////////////////////
     public void scheduleRenderUpdate() {
         IPipeNode.super.scheduleRenderUpdate();
-    }
-
-    @Override
-    public void onChanged() {
-        var level = getLevel();
-        if (level != null && !level.isClientSide && level.getServer() != null) {
-            level.getServer().execute(this::setChanged);
-        }
     }
 
     @Override

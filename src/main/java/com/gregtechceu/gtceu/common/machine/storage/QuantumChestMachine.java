@@ -18,6 +18,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveToItemStack;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -95,13 +96,18 @@ public class QuantumChestMachine extends TieredMachine implements IAutoOutputIte
     private final long maxAmount;
     protected final ItemCache cache;
     @DescSynced
+    @Persisted
     private final CustomItemStackHandler lockedItem;
 
     @Getter
     @DescSynced
+    @Persisted
+    @SaveToItemStack
     protected ItemStack stored = ItemStack.EMPTY;
     @Getter
     @DescSynced
+    @Persisted
+    @SaveToItemStack
     protected long storedAmount = 0;
 
     @Nullable
@@ -145,22 +151,6 @@ public class QuantumChestMachine extends TieredMachine implements IAutoOutputIte
     @Override
     public boolean saveBreak() {
         return !stored.isEmpty();
-    }
-
-    @Override
-    public void serializeCustomNBTData(@NotNull CompoundTag tag, boolean forDrop) {
-        super.serializeCustomNBTData(tag, forDrop);
-        if (!forDrop) tag.put("lockedItem", lockedItem.serializeNBT());
-        tag.put("stored", stored.serializeNBT());
-        tag.putLong("storedAmount", storedAmount);
-    }
-
-    @Override
-    public void deserializeCustomNBTData(@NotNull CompoundTag tag) {
-        super.deserializeCustomNBTData(tag);
-        lockedItem.deserializeNBT(tag.getCompound("lockedItem"));
-        stored = ItemStack.of(tag.getCompound("stored"));
-        storedAmount = tag.getLong("storedAmount");
     }
 
     //////////////////////////////////////

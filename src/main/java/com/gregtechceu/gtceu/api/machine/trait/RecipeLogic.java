@@ -538,7 +538,6 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
 
     @Override
     public void serializeCustomNBTData(@NotNull CompoundTag tag, boolean forDrop) {
-        super.serializeCustomNBTData(tag, forDrop);
         CompoundTag chanceCache = new CompoundTag();
         this.chanceCaches.forEach((cap, cache) -> {
             ListTag cacheTag = new ListTag();
@@ -556,7 +555,6 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
 
     @Override
     public void deserializeCustomNBTData(@NotNull CompoundTag tag) {
-        super.deserializeCustomNBTData(tag);
         CompoundTag chanceCache = tag.getCompound("chance_cache");
         for (String key : chanceCache.getAllKeys()) {
             RecipeCapability<?> cap = GTRegistries.RECIPE_CAPABILITIES.get(key);

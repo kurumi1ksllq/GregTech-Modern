@@ -73,7 +73,6 @@ public class HullMachine extends TieredPartMachine {
 
     @Override
     public void serializeCustomNBTData(@NotNull CompoundTag tag, boolean forDrop) {
-        super.serializeCustomNBTData(tag, forDrop);
         if (GTCEu.Mods.isAE2Loaded() && gridNodeHost instanceof IGridConnectedBlockEntity connectedBlockEntity) {
             CompoundTag nbt = new CompoundTag();
             connectedBlockEntity.getMainNode().saveToNBT(nbt);
@@ -83,7 +82,6 @@ public class HullMachine extends TieredPartMachine {
 
     @Override
     public void deserializeCustomNBTData(@NotNull CompoundTag tag) {
-        super.deserializeCustomNBTData(tag);
         if (GTCEu.Mods.isAE2Loaded() && gridNodeHost instanceof IGridConnectedBlockEntity connectedBlockEntity) {
             connectedBlockEntity.getMainNode().loadFromNBT(tag.getCompound("grid_node"));
         }

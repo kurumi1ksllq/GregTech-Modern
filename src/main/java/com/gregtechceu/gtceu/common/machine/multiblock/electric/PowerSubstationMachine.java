@@ -26,6 +26,7 @@ import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.*;
 
+import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -38,6 +39,7 @@ import com.google.common.annotations.VisibleForTesting;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import lombok.Getter;
+import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -67,7 +69,9 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
 
     private IMaintenanceMachine maintenance;
 
+    @Persisted
     private PowerStationEnergyBank energyBank;
+
     private EnergyContainerList inputHatches;
     private EnergyContainerList outputHatches;
     private long passiveDrain;
@@ -368,20 +372,7 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
         }
     }
 
-    @Override
-    public void serializeCustomNBTData(@NotNull CompoundTag tag, boolean forDrop) {
-        super.serializeCustomNBTData(tag, forDrop);
-        CompoundTag bankTag = energyBank.writeToNBT(new CompoundTag());
-        tag.put("energyBank", bankTag);
-    }
-
-    @Override
-    public void deserializeCustomNBTData(@NotNull CompoundTag tag) {
-        super.deserializeCustomNBTData(tag);
-        energyBank.readFromNBT(tag.getCompound("energyBank"));
-    }
-
-    public static class PowerStationEnergyBank extends MachineTrait {
+    public static class PowerStationEnergyBank extends MachineTrait implements INBTSerializable<CompoundTag> {
 
         private static final String NBT_SIZE = "Size";
         private static final String NBT_STORED = "Stored";
@@ -405,7 +396,7 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
             capacity = summarize(maximums);
         }
 
-        public void readFromNBT(CompoundTag storageTag) {
+        public void deserializeNBT(CompoundTag storageTag) {
             int size = storageTag.getInt(NBT_SIZE);
             storage = new long[size];
             maximums = new long[size];
@@ -419,7 +410,8 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
             capacity = summarize(maximums);
         }
 
-        public CompoundTag writeToNBT(CompoundTag compound) {
+        public CompoundTag serializeNBT() {
+            var compound = new CompoundTag();
             compound.putInt(NBT_SIZE, storage.length);
             for (int i = 0; i < storage.length; i++) {
                 CompoundTag subtag = new CompoundTag();

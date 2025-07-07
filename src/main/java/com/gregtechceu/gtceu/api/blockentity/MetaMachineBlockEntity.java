@@ -16,8 +16,7 @@ import com.gregtechceu.gtceu.api.misc.LaserContainerList;
 import com.gregtechceu.gtceu.client.model.IBlockEntityRendererBakedModel;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.common.datafixers.TagFixer;
-import com.gregtechceu.gtceu.syncdata.ISyncManaged;
-import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
+import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
@@ -32,7 +31,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -51,10 +49,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class MetaMachineBlockEntity extends BlockEntity implements IMachineBlockEntity, ISyncManaged {
-
-    @Getter
-    protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
+public class MetaMachineBlockEntity extends ManagedSyncBlockEntity implements IMachineBlockEntity {
 
     @Getter
     public final MetaMachine metaMachine;
@@ -70,16 +65,6 @@ public class MetaMachineBlockEntity extends BlockEntity implements IMachineBlock
         this.renderState = getDefinition().defaultRenderState();
         this.metaMachine = getDefinition().createMetaMachine(this);
 
-        attachDataHolder(syncDataHolder);
-        attachDataHolder(metaMachine.getSyncDataHolder());
-    }
-
-    @Override
-    public void onChanged() {
-        var level = getLevel();
-        if (level != null && !level.isClientSide && level.getServer() != null) {
-            level.getServer().execute(this::setChanged);
-        }
     }
 
     @Override

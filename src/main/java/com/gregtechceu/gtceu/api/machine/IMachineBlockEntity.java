@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.block.IMachineBlock;
 import com.gregtechceu.gtceu.api.blockentity.IPaintable;
 import com.gregtechceu.gtceu.api.item.tool.IToolGridHighlight;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
-import com.gregtechceu.gtceu.syncdata.IManagedBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -23,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
  * <p/>
  * Also delivers most of the Information about TileEntities.
  */
-public interface IMachineBlockEntity extends IToolGridHighlight, IManagedBlockEntity, IPaintable, IForgeBlockEntity {
+public interface IMachineBlockEntity extends IToolGridHighlight, IPaintable, IForgeBlockEntity {
 
     ModelProperty<BlockAndTintGetter> MODEL_DATA_LEVEL = new ModelProperty<>();
     ModelProperty<BlockPos> MODEL_DATA_POS = new ModelProperty<>();

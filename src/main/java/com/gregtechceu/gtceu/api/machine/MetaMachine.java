@@ -122,9 +122,6 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
         this.traits = new ArrayList<>();
         this.serverTicks = new ArrayList<>();
         this.waitingToAdd = new ArrayList<>();
-
-        // bind sync storage
-        holder.attachDataHolder(getSyncDataHolder());
     }
 
     //////////////////////////////////////
@@ -465,7 +462,6 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
      */
     public void attachTraits(MachineTrait trait) {
         traits.add(trait);
-        getHolder().attachDataHolder(trait.getSyncDataHolder());
     }
 
     public void clearInventory(IItemHandlerModifiable inventory) {

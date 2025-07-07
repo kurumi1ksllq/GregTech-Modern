@@ -30,7 +30,6 @@ import com.lowdragmc.lowdraglib.syncdata.ISubscription;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.lowdragmc.lowdraglib.utils.Position;
 
 import net.minecraft.Util;
@@ -64,9 +63,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class SimpleTieredMachine extends WorkableTieredMachine
                                  implements IAutoOutputBoth, IFancyUIMachine, IHasCircuitSlot {
-
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(SimpleTieredMachine.class,
-            WorkableTieredMachine.MANAGED_FIELD_HOLDER);
 
     @Persisted
     @DescSynced
@@ -117,10 +113,6 @@ public class SimpleTieredMachine extends WorkableTieredMachine
     //////////////////////////////////////
     // ***** Initialization ******//
     //////////////////////////////////////
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
 
     protected CustomItemStackHandler createChargerItemHandler(Object... args) {
         var handler = new CustomItemStackHandler() {

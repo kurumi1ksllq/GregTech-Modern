@@ -6,16 +6,14 @@ import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
+import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.syncdata.IEnhancedManaged;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.annotation.ReadOnlyManaged;
 import com.lowdragmc.lowdraglib.syncdata.annotation.UpdateListener;
-import com.lowdragmc.lowdraglib.syncdata.field.FieldManagedStorage;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
-import com.lowdragmc.lowdraglib.syncdata.managed.IRef;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -30,11 +28,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class MachineCoverContainer implements ICoverable, IEnhancedManaged {
+public class MachineCoverContainer implements ICoverable, ISyncManaged {
 
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MachineCoverContainer.class);
     @Getter
-    private final FieldManagedStorage syncStorage = new FieldManagedStorage(this);
+    private final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
     @Getter
     private final MetaMachine machine;
     @DescSynced
@@ -54,11 +51,6 @@ public class MachineCoverContainer implements ICoverable, IEnhancedManaged {
         if (newValue != oldValue && (newValue == null || oldValue == null)) {
             scheduleRenderUpdate();
         }
-    }
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 
     @Override
@@ -171,7 +163,7 @@ public class MachineCoverContainer implements ICoverable, IEnhancedManaged {
             case NORTH -> north = coverBehavior;
         }
         if (coverBehavior != null) {
-            coverBehavior.getSyncStorage().markAllDirty();
+            coverBehavior.getSyncDataHolder().setSaveDirty(true);
         }
     }
 
@@ -183,18 +175,6 @@ public class MachineCoverContainer implements ICoverable, IEnhancedManaged {
     @Override
     public IFluidHandlerModifiable getFluidHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
         return machine.getFluidHandlerCap(side, useCoverCapability);
-    }
-
-    @SuppressWarnings("unused")
-    private boolean onCoverDirty(CoverBehavior coverBehavior) {
-        if (coverBehavior != null) {
-            for (IRef ref : coverBehavior.getSyncStorage().getNonLazyFields()) {
-                ref.update();
-            }
-            return coverBehavior.getSyncStorage().hasDirtySyncFields() ||
-                    coverBehavior.getSyncStorage().hasDirtyPersistedFields();
-        }
-        return false;
     }
 
     @SuppressWarnings("unused")

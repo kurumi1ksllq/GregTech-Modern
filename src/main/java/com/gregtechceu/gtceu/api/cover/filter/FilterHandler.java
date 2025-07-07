@@ -7,15 +7,14 @@ import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.MachineCoverContainer;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
+import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.IEnhancedManaged;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.FieldManagedStorage;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.item.ItemStack;
@@ -30,9 +29,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public abstract class FilterHandler<T, F extends Filter<T, F>> implements IEnhancedManaged {
+public abstract class FilterHandler<T, F extends Filter<T, F>> implements ISyncManaged {
 
-    private final IEnhancedManaged container;
+    @Getter
+    private final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
+
+    private final ISyncManaged container;
 
     @Persisted
     @DescSynced
@@ -47,7 +49,7 @@ public abstract class FilterHandler<T, F extends Filter<T, F>> implements IEnhan
     private @NotNull Consumer<F> onFilterRemoved = (filter) -> {};
     private @NotNull Consumer<F> onFilterUpdated = (filter) -> {};
 
-    public FilterHandler(IEnhancedManaged container) {
+    public FilterHandler(ISyncManaged container) {
         this.container = container;
     }
 
@@ -178,27 +180,8 @@ public abstract class FilterHandler<T, F extends Filter<T, F>> implements IEnhan
         }
     }
 
-    //////////////////////////////////////
-    // ***** LDLib SyncData ******//
-    //////////////////////////////////////
-
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(FilterHandler.class);
-
-    @Getter
-    private final FieldManagedStorage syncStorage = new FieldManagedStorage(this);
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
-
     @Override
     public void onChanged() {
         this.container.onChanged();
-    }
-
-    @Override
-    public void scheduleRenderUpdate() {
-        this.container.scheduleRenderUpdate();
     }
 }

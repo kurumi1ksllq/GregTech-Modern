@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.sync_system.annotations;
+package com.gregtechceu.gtceu.syncdata.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

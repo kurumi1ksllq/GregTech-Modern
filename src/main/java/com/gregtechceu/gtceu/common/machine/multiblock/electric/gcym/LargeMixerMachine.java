@@ -7,7 +7,6 @@ import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -24,9 +23,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class LargeMixerMachine extends WorkableElectricMultiblockMachine implements IFluidRenderMulti {
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            LargeMixerMachine.class, WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
-
     @Getter
     @DescSynced
     @RequireRerender
@@ -34,11 +30,6 @@ public class LargeMixerMachine extends WorkableElectricMultiblockMachine impleme
 
     public LargeMixerMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
-    }
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 
     @Override

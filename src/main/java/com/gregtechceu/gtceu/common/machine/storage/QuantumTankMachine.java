@@ -28,7 +28,6 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -65,9 +64,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class QuantumTankMachine extends TieredMachine implements IAutoOutputFluid, IInteractedMachine, IControllable,
                                 IDropSaveMachine, IFancyUIMachine {
-
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(QuantumTankMachine.class,
-            MetaMachine.MANAGED_FIELD_HOLDER);
 
     public static Object2LongMap<MachineDefinition> TANK_CAPACITY = new Object2LongArrayMap<>();
 
@@ -116,11 +112,6 @@ public class QuantumTankMachine extends TieredMachine implements IAutoOutputFlui
     // ***** Initialization ******//
     //////////////////////////////////////
 
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
-
     protected FluidCache createCacheFluidHandler(Object... args) {
         return new FluidCache(this);
     }
@@ -150,16 +141,16 @@ public class QuantumTankMachine extends TieredMachine implements IAutoOutputFlui
     }
 
     @Override
-    public void saveCustomPersistedData(@NotNull CompoundTag tag, boolean forDrop) {
-        super.saveCustomPersistedData(tag, forDrop);
+    public void serializeCustomNBTData(@NotNull CompoundTag tag, boolean forDrop) {
+        super.serializeCustomNBTData(tag, forDrop);
         if (!forDrop) tag.put("lockedFluid", lockedFluid.writeToNBT(new CompoundTag()));
         tag.put("stored", stored.writeToNBT(new CompoundTag()));
         tag.putLong("storedAmount", storedAmount);
     }
 
     @Override
-    public void loadCustomPersistedData(@NotNull CompoundTag tag) {
-        super.loadCustomPersistedData(tag);
+    public void deserializeCustomNBTData(@NotNull CompoundTag tag) {
+        super.deserializeCustomNBTData(tag);
 
         var from = tag.contains("cache") ? tag.getCompound("cache") : tag;
         this.lockedFluid.readFromNBT(from.getCompound("lockedFluid"));
@@ -454,11 +445,6 @@ public class QuantumTankMachine extends TieredMachine implements IAutoOutputFlui
                 GTTransferUtils.getAdjacentFluidHandler(level, pos, facing)
                         .ifPresent(adj -> GTTransferUtils.transferFluidsFiltered(this, adj, filter));
             }
-        }
-
-        @Override
-        public ManagedFieldHolder getFieldHolder() {
-            return MANAGED_FIELD_HOLDER;
         }
     }
 }

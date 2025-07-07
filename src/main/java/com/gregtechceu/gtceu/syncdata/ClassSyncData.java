@@ -1,6 +1,6 @@
-package com.gregtechceu.gtceu.sync_system;
+package com.gregtechceu.gtceu.syncdata;
 
-import com.gregtechceu.gtceu.sync_system.annotations.ClientFieldChangeListener;
+import com.gregtechceu.gtceu.syncdata.annotations.ClientFieldChangeListener;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DropSaved;

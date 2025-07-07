@@ -2,9 +2,8 @@ package com.gregtechceu.gtceu.api.machine.trait;
 
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
-
-import com.lowdragmc.lowdraglib.syncdata.IEnhancedManaged;
-import com.lowdragmc.lowdraglib.syncdata.field.FieldManagedStorage;
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
+import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -21,10 +20,10 @@ import java.util.function.Predicate;
  * represents an abstract capability held by machine. Such as item, fluid, energy, etc.
  * All trait should be added while MetaMachine is creating. you cannot modify it on the fly。
  */
-public abstract class MachineTrait implements IEnhancedManaged {
+public abstract class MachineTrait implements ISyncManaged {
 
     @Getter
-    private final FieldManagedStorage syncStorage = new FieldManagedStorage(this);
+    protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
 
     @Getter
     protected final MetaMachine machine;
@@ -66,11 +65,11 @@ public abstract class MachineTrait implements IEnhancedManaged {
      * @param tag     the CompoundTag to load data from
      * @param forDrop if the save is done for dropping the machine as an item.
      */
-    public void saveCustomPersistedData(@NotNull CompoundTag tag, boolean forDrop) {}
-
-    public void loadCustomPersistedData(@NotNull CompoundTag tag) {}
-
     @Override
+    public void serializeCustomNBTData(@NotNull CompoundTag tag, boolean forDrop) {}
+
+    public void deserializeCustomNBTData(@NotNull CompoundTag tag) {}
+
     public void scheduleRenderUpdate() {
         machine.scheduleRenderUpdate();
     }

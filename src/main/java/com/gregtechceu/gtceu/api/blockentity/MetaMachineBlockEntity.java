@@ -16,15 +16,13 @@ import com.gregtechceu.gtceu.api.misc.LaserContainerList;
 import com.gregtechceu.gtceu.client.model.IBlockEntityRendererBakedModel;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.common.datafixers.TagFixer;
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
+import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.syncdata.IManaged;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
-import com.lowdragmc.lowdraglib.syncdata.field.FieldManagedStorage;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
-import com.lowdragmc.lowdraglib.syncdata.managed.MultiManagedStorage;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -53,14 +51,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class MetaMachineBlockEntity extends BlockEntity implements IMachineBlockEntity, IManaged {
+public class MetaMachineBlockEntity extends BlockEntity implements IMachineBlockEntity, ISyncManaged {
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            MetaMachineBlockEntity.class);
-
-    public final MultiManagedStorage managedStorage = new MultiManagedStorage();
     @Getter
-    private final FieldManagedStorage syncStorage = new FieldManagedStorage(this);
+    protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
+
     @Getter
     public final MetaMachine metaMachine;
     @Getter
@@ -75,17 +70,8 @@ public class MetaMachineBlockEntity extends BlockEntity implements IMachineBlock
         this.renderState = getDefinition().defaultRenderState();
         this.metaMachine = getDefinition().createMetaMachine(this);
 
-        this.getRootStorage().attach(getSyncStorage());
-    }
-
-    @Override
-    public MultiManagedStorage getRootStorage() {
-        return managedStorage;
-    }
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
+        attachDataHolder(syncDataHolder);
+        attachDataHolder(metaMachine.getSyncDataHolder());
     }
 
     @Override
@@ -313,7 +299,7 @@ public class MetaMachineBlockEntity extends BlockEntity implements IMachineBlock
     }
 
     @Override
-    public void load(CompoundTag tag) {
+    public void load(@NotNull CompoundTag tag) {
         TagFixer.fixFluidTags(tag);
         super.load(tag);
     }

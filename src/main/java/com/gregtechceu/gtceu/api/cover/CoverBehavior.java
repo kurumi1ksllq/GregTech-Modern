@@ -9,13 +9,12 @@ import com.gregtechceu.gtceu.api.item.tool.IToolGridHighlight;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.cover.ICoverRenderer;
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
+import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.syncdata.IEnhancedManaged;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.FieldManagedStorage;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -47,12 +46,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighlight {
-
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(CoverBehavior.class);
+public abstract class CoverBehavior implements ISyncManaged, IToolGridHighlight {
 
     @Getter
-    private final FieldManagedStorage syncStorage = new FieldManagedStorage(this);
+    private final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
+
     public final CoverDefinition coverDefinition;
     public final ICoverable coverHolder;
     public final Direction attachedSide;
@@ -73,14 +71,8 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
     //////////////////////////////////////
     // ***** Initialization ******//
     //////////////////////////////////////
-    @Override
     public void scheduleRenderUpdate() {
         coverHolder.scheduleRenderUpdate();
-    }
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 
     @Override

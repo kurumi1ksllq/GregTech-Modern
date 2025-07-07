@@ -30,22 +30,20 @@ import com.gregtechceu.gtceu.common.cover.ItemFilterCover;
 import com.gregtechceu.gtceu.common.item.tool.behavior.ToolModeSwitchBehavior;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.common.machine.owner.PlayerOwner;
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
+import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.syncdata.IEnhancedManaged;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
-import com.lowdragmc.lowdraglib.syncdata.field.FieldManagedStorage;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.lowdragmc.lowdraglib.utils.DummyWorld;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.locale.Language;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -90,12 +88,12 @@ import static com.gregtechceu.gtceu.api.item.tool.ToolHelper.getBehaviorsTag;
  */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscription, IAppearance, IToolGridHighlight,
+public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, IAppearance, IToolGridHighlight,
                          IFancyTooltip, IPaintable, IRedstoneSignalMachine {
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MetaMachine.class);
     @Getter
-    private final FieldManagedStorage syncStorage = new FieldManagedStorage(this);
+    protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
+
     @Setter
     @Getter
     @Persisted
@@ -124,20 +122,14 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
         this.traits = new ArrayList<>();
         this.serverTicks = new ArrayList<>();
         this.waitingToAdd = new ArrayList<>();
+
         // bind sync storage
-        if (holder.getRootStorage() != null) {
-            this.holder.getRootStorage().attach(getSyncStorage());
-        }
+        holder.attachDataHolder(getSyncDataHolder());
     }
 
     //////////////////////////////////////
     // ***** Initialization ******//
     //////////////////////////////////////
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
 
     @Override
     public void onChanged() {
@@ -156,7 +148,7 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
     }
 
     public BlockState getBlockState() {
-        return holder.getSelf().getBlockState();
+        return holder.self().getBlockState();
     }
 
     public boolean isRemote() {
@@ -167,7 +159,6 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
         holder.notifyBlockUpdate();
     }
 
-    @Override
     public void scheduleRenderUpdate() {
         holder.scheduleRenderUpdate();
     }
@@ -200,11 +191,11 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
     }
 
     public void markDirty() {
-        holder.getSelf().setChanged();
+        holder.self().setChanged();
     }
 
     public boolean isInValid() {
-        return holder.getSelf().isRemoved();
+        return holder.self().isRemoved();
     }
 
     public void onUnload() {
@@ -219,24 +210,6 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
     public void onLoad() {
         traits.forEach(MachineTrait::onMachineLoad);
         coverContainer.onLoad();
-    }
-
-    /**
-     * Use for data not able to be saved with the SyncData system, like optional mod compatiblity in internal machines.
-     * 
-     * @param tag     the CompoundTag to load data from
-     * @param forDrop if the save is done for dropping the machine as an item.
-     */
-    public void saveCustomPersistedData(@NotNull CompoundTag tag, boolean forDrop) {
-        for (MachineTrait trait : this.getTraits()) {
-            trait.saveCustomPersistedData(tag, forDrop);
-        }
-    }
-
-    public void loadCustomPersistedData(@NotNull CompoundTag tag) {
-        for (MachineTrait trait : this.getTraits()) {
-            trait.loadCustomPersistedData(tag);
-        }
     }
 
     //////////////////////////////////////
@@ -492,6 +465,7 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
      */
     public void attachTraits(MachineTrait trait) {
         traits.add(trait);
+        getHolder().attachDataHolder(trait.getSyncDataHolder());
     }
 
     public void clearInventory(IItemHandlerModifiable inventory) {

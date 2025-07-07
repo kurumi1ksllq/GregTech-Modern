@@ -17,11 +17,9 @@ import com.gregtechceu.gtceu.api.sound.AutoReleasedSound;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.syncdata.IEnhancedManaged;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.annotation.UpdateListener;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -42,7 +40,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.*;
 
-public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWorkable, IFancyTooltip {
+public class RecipeLogic extends MachineTrait implements IWorkable, IFancyTooltip {
 
     public enum Status implements StringRepresentable {
 
@@ -59,7 +57,6 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
 
     public static final EnumProperty<RecipeLogic.Status> STATUS_PROPERTY = EnumProperty.create("recipe_logic_status",
             RecipeLogic.Status.class);
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(RecipeLogic.class);
 
     public final IRecipeLogicMachine machine;
     public List<GTRecipe> lastFailedMatches;
@@ -483,11 +480,6 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
     // Remains for legacy + for subclasses
     public void inValid() {}
 
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
-
     //////////////////////////////////////
     // ******** MISC *********//
     //////////////////////////////////////
@@ -545,8 +537,8 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
     }
 
     @Override
-    public void saveCustomPersistedData(@NotNull CompoundTag tag, boolean forDrop) {
-        super.saveCustomPersistedData(tag, forDrop);
+    public void serializeCustomNBTData(@NotNull CompoundTag tag, boolean forDrop) {
+        super.serializeCustomNBTData(tag, forDrop);
         CompoundTag chanceCache = new CompoundTag();
         this.chanceCaches.forEach((cap, cache) -> {
             ListTag cacheTag = new ListTag();
@@ -563,8 +555,8 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
     }
 
     @Override
-    public void loadCustomPersistedData(@NotNull CompoundTag tag) {
-        super.loadCustomPersistedData(tag);
+    public void deserializeCustomNBTData(@NotNull CompoundTag tag) {
+        super.deserializeCustomNBTData(tag);
         CompoundTag chanceCache = tag.getCompound("chance_cache");
         for (String key : chanceCache.getAllKeys()) {
             RecipeCapability<?> cap = GTRegistries.RECIPE_CAPABILITIES.get(key);

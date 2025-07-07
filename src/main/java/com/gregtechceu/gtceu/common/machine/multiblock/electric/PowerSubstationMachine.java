@@ -25,7 +25,6 @@ import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.*;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -50,9 +49,6 @@ import java.util.Map;
 
 public class PowerSubstationMachine extends WorkableMultiblockMachine
                                     implements IEnergyInfoProvider, IFancyUIMachine, IDisplayUIMachine {
-
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            PowerSubstationMachine.class, WorkableMultiblockMachine.MANAGED_FIELD_HOLDER);
 
     // Structure Constants
     public static final int MAX_BATTERY_LAYERS = 18;
@@ -343,11 +339,6 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
     }
 
     @Override
-    public @NotNull ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
-
-    @Override
     public Widget createUIWidget() {
         var group = new WidgetGroup(0, 0, 182 + 8, 117 + 8);
         group.addWidget(new DraggableScrollableWidgetGroup(4, 4, 182, 117).setBackground(getScreenTexture())
@@ -378,22 +369,20 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
     }
 
     @Override
-    public void saveCustomPersistedData(@NotNull CompoundTag tag, boolean forDrop) {
-        super.saveCustomPersistedData(tag, forDrop);
+    public void serializeCustomNBTData(@NotNull CompoundTag tag, boolean forDrop) {
+        super.serializeCustomNBTData(tag, forDrop);
         CompoundTag bankTag = energyBank.writeToNBT(new CompoundTag());
         tag.put("energyBank", bankTag);
     }
 
     @Override
-    public void loadCustomPersistedData(@NotNull CompoundTag tag) {
-        super.loadCustomPersistedData(tag);
+    public void deserializeCustomNBTData(@NotNull CompoundTag tag) {
+        super.deserializeCustomNBTData(tag);
         energyBank.readFromNBT(tag.getCompound("energyBank"));
     }
 
     public static class PowerStationEnergyBank extends MachineTrait {
 
-        protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-                PowerSubstationMachine.PowerStationEnergyBank.class);
         private static final String NBT_SIZE = "Size";
         private static final String NBT_STORED = "Stored";
         private static final String NBT_MAX = "Max";
@@ -566,11 +555,6 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
             return capacityExcl.divide(BigInteger.valueOf(PASSIVE_DRAIN_DIVISOR))
                     .add(BigInteger.valueOf(PASSIVE_DRAIN_MAX_PER_STORAGE * numExcl))
                     .longValue();
-        }
-
-        @Override
-        public ManagedFieldHolder getFieldHolder() {
-            return MANAGED_FIELD_HOLDER;
         }
     }
 

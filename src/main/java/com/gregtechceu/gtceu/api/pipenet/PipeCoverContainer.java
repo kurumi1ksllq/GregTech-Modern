@@ -9,15 +9,14 @@ import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.common.blockentity.FluidPipeBlockEntity;
 import com.gregtechceu.gtceu.common.blockentity.ItemPipeBlockEntity;
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
+import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.syncdata.IEnhancedManaged;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.annotation.ReadOnlyManaged;
 import com.lowdragmc.lowdraglib.syncdata.annotation.UpdateListener;
-import com.lowdragmc.lowdraglib.syncdata.field.FieldManagedStorage;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,11 +30,11 @@ import net.minecraftforge.items.wrapper.EmptyHandler;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
-public class PipeCoverContainer implements ICoverable, IEnhancedManaged {
+public class PipeCoverContainer implements ICoverable, ISyncManaged {
 
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(PipeCoverContainer.class);
     @Getter
-    private final FieldManagedStorage syncStorage = new FieldManagedStorage(this);
+    private final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
+
     private final IPipeNode<?, ?> pipeTile;
 
     @DescSynced
@@ -55,11 +54,6 @@ public class PipeCoverContainer implements ICoverable, IEnhancedManaged {
         if (newValue != oldValue && (newValue == null || oldValue == null)) {
             scheduleRenderUpdate();
         }
-    }
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 
     @Override
@@ -190,19 +184,13 @@ public class PipeCoverContainer implements ICoverable, IEnhancedManaged {
             case NORTH -> north = coverBehavior;
         }
         if (coverBehavior != null) {
-            coverBehavior.getSyncStorage().markAllDirty();
+            coverBehavior.getSyncDataHolder().setSaveDirty(true);
             if (coverBehavior.canPipePassThrough()) {
                 pipeTile.setConnection(side, true, false);
             }
         } else if (previousCover != null && previousCover.canPipePassThrough()) {
             pipeTile.setConnection(side, false, false);
         }
-    }
-
-    @SuppressWarnings("unused")
-    private boolean onCoverDirty(CoverBehavior coverBehavior) {
-        return coverBehavior != null && (coverBehavior.getSyncStorage().hasDirtySyncFields() ||
-                coverBehavior.getSyncStorage().hasDirtyPersistedFields());
     }
 
     @SuppressWarnings("unused")

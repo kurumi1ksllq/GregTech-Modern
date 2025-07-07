@@ -15,7 +15,6 @@ import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.SwitchWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.entity.player.Player;
@@ -32,9 +31,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class CreativeComputationProviderMachine extends MetaMachine
                                                 implements IUIMachine, IOpticalComputationProvider {
-
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            CreativeComputationProviderMachine.class, MetaMachine.MANAGED_FIELD_HOLDER);
 
     @Persisted
     private int maxCWUt;
@@ -117,10 +113,5 @@ public class CreativeComputationProviderMachine extends MetaMachine
                                 new TextTexture("gtceu.creative.activity.off")),
                                 new GuiTextureGroup(ResourceBorderTexture.BUTTON_COMMON,
                                         new TextTexture("gtceu.creative.activity.on"))));
-    }
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 }

@@ -3,13 +3,11 @@ package com.gregtechceu.gtceu.common.machine.electric;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.GridNodeHostTrait;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
@@ -25,9 +23,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class HullMachine extends TieredPartMachine {
-
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(HullMachine.class,
-            MultiblockPartMachine.MANAGED_FIELD_HOLDER);
 
     private final Object gridNodeHost;
     @Persisted
@@ -77,13 +72,8 @@ public class HullMachine extends TieredPartMachine {
     }
 
     @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
-
-    @Override
-    public void saveCustomPersistedData(@NotNull CompoundTag tag, boolean forDrop) {
-        super.saveCustomPersistedData(tag, forDrop);
+    public void serializeCustomNBTData(@NotNull CompoundTag tag, boolean forDrop) {
+        super.serializeCustomNBTData(tag, forDrop);
         if (GTCEu.Mods.isAE2Loaded() && gridNodeHost instanceof IGridConnectedBlockEntity connectedBlockEntity) {
             CompoundTag nbt = new CompoundTag();
             connectedBlockEntity.getMainNode().saveToNBT(nbt);
@@ -92,8 +82,8 @@ public class HullMachine extends TieredPartMachine {
     }
 
     @Override
-    public void loadCustomPersistedData(@NotNull CompoundTag tag) {
-        super.loadCustomPersistedData(tag);
+    public void deserializeCustomNBTData(@NotNull CompoundTag tag) {
+        super.deserializeCustomNBTData(tag);
         if (GTCEu.Mods.isAE2Loaded() && gridNodeHost instanceof IGridConnectedBlockEntity connectedBlockEntity) {
             connectedBlockEntity.getMainNode().loadFromNBT(tag.getCompound("grid_node"));
         }

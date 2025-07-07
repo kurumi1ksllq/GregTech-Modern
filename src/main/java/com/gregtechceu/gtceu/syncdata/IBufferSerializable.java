@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.sync_system;
+package com.gregtechceu.gtceu.syncdata;
 
 import net.minecraft.network.FriendlyByteBuf;
 

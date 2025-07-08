@@ -10,8 +10,6 @@ import java.lang.annotation.Target;
 public @interface FieldDataModifier {
 
     enum ModifyTarget {
-        SYNC_BUFFER_SAVE,
-        SYNC_BUFFER_LOAD,
         SAVE_NBT,
         LOAD_NBT
     }

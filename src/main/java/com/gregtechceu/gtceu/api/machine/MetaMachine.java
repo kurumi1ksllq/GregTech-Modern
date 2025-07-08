@@ -25,6 +25,7 @@ import com.gregtechceu.gtceu.api.misc.IOFluidHandlerList;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
+import com.gregtechceu.gtceu.client.util.ModelUtils;
 import com.gregtechceu.gtceu.common.cover.FluidFilterCover;
 import com.gregtechceu.gtceu.common.cover.ItemFilterCover;
 import com.gregtechceu.gtceu.common.item.tool.behavior.ToolModeSwitchBehavior;
@@ -40,6 +41,7 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.utils.DummyWorld;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -74,6 +76,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -171,14 +174,15 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
     }
 
     public void setPaintingColor(int color) {
-        if (color != this.paintingColor) {
-            MachineRenderState renderState = getRenderState();
-            if (renderState.hasProperty(IS_PAINTED_PROPERTY)) {
-                setRenderState(renderState.setValue(IS_PAINTED_PROPERTY, color != -1));
-            }
-        }
+        if (color == this.paintingColor) return;
+
         this.paintingColor = color;
         this.onPaintingColorChanged(color);
+
+        MachineRenderState renderState = getRenderState();
+        if (renderState.hasProperty(IS_PAINTED_PROPERTY)) {
+            setRenderState(renderState.setValue(IS_PAINTED_PROPERTY, this.isPainted()));
+        }
     }
 
     public void onPaintingColorChanged(int color) {}
@@ -207,6 +211,14 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
     public void onLoad() {
         traits.forEach(MachineTrait::onMachineLoad);
         coverContainer.onLoad();
+
+        // update the painted model property if the machine is painted
+        if (this.isPainted()) {
+            MachineRenderState renderState = getRenderState();
+            if (renderState.hasProperty(IS_PAINTED_PROPERTY) && !renderState.getValue(IS_PAINTED_PROPERTY)) {
+                setRenderState(renderState.setValue(IS_PAINTED_PROPERTY, true));
+            }
+        }
     }
 
     //////////////////////////////////////
@@ -512,6 +524,17 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
             }
         }
         return null;
+    }
+
+    public void addDebugOverlayText(Consumer<String> lines) {
+        lines.accept(ChatFormatting.UNDERLINE + "Targeted Machine: ");
+        lines.accept(this.getDefinition().getId().toString());
+
+        // add render state info
+        MachineRenderState renderState = this.getRenderState();
+        for (var property : renderState.getValues().entrySet()) {
+            lines.accept(ModelUtils.getPropertyValueString(property));
+        }
     }
 
     public MachineDefinition getDefinition() {

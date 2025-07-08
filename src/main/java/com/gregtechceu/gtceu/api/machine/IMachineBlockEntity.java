@@ -60,10 +60,7 @@ public interface IMachineBlockEntity extends IToolGridHighlight, IPaintable, IFo
 
     @Override
     default @NotNull ModelData getModelData() {
-        ModelData.Builder data = IForgeBlockEntity.super.getModelData()
-                .derive()
-                .with(MODEL_DATA_LEVEL, level())
-                .with(MODEL_DATA_POS, pos());
+        ModelData.Builder data = IForgeBlockEntity.super.getModelData().derive();
         getMetaMachine().updateModelData(data);
         return data.build();
     }

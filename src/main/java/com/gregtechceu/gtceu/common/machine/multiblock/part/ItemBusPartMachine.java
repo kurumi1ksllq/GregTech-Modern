@@ -18,6 +18,7 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.syncdata.annotations.FieldDataModifier;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -31,6 +32,7 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -44,7 +46,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -178,16 +179,13 @@ public class ItemBusPartMachine extends TieredIOPartMachine
         return -1;
     }
 
-    @Override
-    public void deserializeCustomNBTData(@NotNull CompoundTag tag) {
-        super.deserializeCustomNBTData(tag);
-        // todo: delete for 1.8
-        // fix to preserve distinctness from pre 1.7 versions
-        if (tag.contains("inventory")) {
-            var invTag = tag.getCompound("inventory");
-            if (invTag.contains("isDistinct")) {
-                this.isDistinct = invTag.getBoolean("isDistinct");
-            }
+    @FieldDataModifier(fieldName = "inventory", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
+    private void checkInventoryNBTCompat(Tag tag) {
+        if (tag instanceof CompoundTag compound) {
+            // todo: delete for 1.8
+            // fix to preserve distinctness from pre 1.7 versions
+            isDistinct = compound.getBoolean("isDistinct");
+
         }
     }
 

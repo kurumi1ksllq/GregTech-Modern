@@ -51,11 +51,14 @@ public class CustomFluidTank extends FluidTank
 
     @Override
     public CompoundTag serializeNBT() {
-        return writeToNBT(new CompoundTag());
+        var tag = new CompoundTag();
+        if (isEmpty() || getFluidAmount() <= 0) tag.putBoolean("isNull", true);
+        return writeToNBT(tag);
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
+        if (nbt.getBoolean("isNull")) return;
         readFromNBT(nbt);
     }
 }

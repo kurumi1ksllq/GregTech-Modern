@@ -15,11 +15,11 @@ import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDisplayUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.*;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
@@ -42,7 +42,7 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
     protected EnergyContainerList energyContainer;
     @Getter
     protected int tier;
-    @Persisted
+    @SaveField
     @Getter
     protected boolean batchEnabled;
 

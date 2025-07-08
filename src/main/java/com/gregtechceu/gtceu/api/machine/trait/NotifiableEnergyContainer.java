@@ -15,10 +15,9 @@ import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTUtil;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.core.Direction;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -38,8 +37,8 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Ener
     @Getter
     protected IO handlerIO;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected long energyStored;
     @Getter
     private long energyCapacity, inputVoltage, inputAmperage, outputVoltage, outputAmperage;

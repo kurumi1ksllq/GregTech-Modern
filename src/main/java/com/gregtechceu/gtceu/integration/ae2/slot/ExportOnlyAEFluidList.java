@@ -4,8 +4,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 
 import net.minecraftforge.fluids.FluidStack;
 
@@ -17,7 +16,7 @@ import java.util.function.Supplier;
 public class ExportOnlyAEFluidList extends NotifiableFluidTank implements IConfigurableSlotList {
 
     @Getter
-    @Persisted
+    @SaveField
     protected ExportOnlyAEFluidSlot[] inventory;
 
     public ExportOnlyAEFluidList(MetaMachine machine, int slots) {

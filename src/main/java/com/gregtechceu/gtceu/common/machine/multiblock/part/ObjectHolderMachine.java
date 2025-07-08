@@ -13,12 +13,12 @@ import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.utils.Position;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -36,12 +36,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class ObjectHolderMachine extends MultiblockPartMachine implements IObjectHolder, IMachineLife {
 
     // purposefully not exposed to automation or capabilities
-    @Persisted
+    @SaveField
     private final ObjectHolderHandler heldItems;
     @Getter
     @Setter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private boolean isLocked;
 
     public ObjectHolderMachine(IMachineBlockEntity holder) {

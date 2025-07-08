@@ -20,13 +20,13 @@ import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.common.block.FusionCasingBlock;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -71,12 +71,12 @@ public class FusionReactorMachine extends WorkableElectricMultiblockMachine impl
     private final int tier;
     @Nullable
     protected EnergyContainerList inputEnergyContainers;
-    @Persisted
+    @SaveField
     protected long heat = 0;
-    @Persisted
+    @SaveField
     protected final NotifiableEnergyContainer energyContainer;
     @Getter
-    @DescSynced
+    @SyncToClient
     private Integer color = -1;
     @Nullable
     protected TickableSubscription preHeatSubs;

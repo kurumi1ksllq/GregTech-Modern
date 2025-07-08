@@ -12,9 +12,8 @@ import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemList;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemSlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAESlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlotList;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
@@ -47,8 +46,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class MEStockingBusPartMachine extends MEInputBusPartMachine implements IMEStockingPart {
 
-    @DescSynced
-    @Persisted
+    @SyncToClient
+    @SaveField
     @Getter
     private boolean autoPull;
 

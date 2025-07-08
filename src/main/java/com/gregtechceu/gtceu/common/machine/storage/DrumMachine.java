@@ -12,14 +12,14 @@ import com.gregtechceu.gtceu.api.machine.feature.IAutoOutputFluid;
 import com.gregtechceu.gtceu.api.machine.feature.IDropSaveMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveToItemStack;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DropSaved;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -50,22 +50,22 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class DrumMachine extends MetaMachine implements IAutoOutputFluid, IDropSaveMachine, IInteractedMachine {
 
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputFluids;
     @Getter
     private final int maxStoredFluids;
-    @Persisted
+    @SaveField
     protected final NotifiableFluidTank cache;
     @Nullable
     protected TickableSubscription autoOutputSubs;
     @Nullable
     protected ISubscription exportFluidSubs;
-    @Persisted(key = "Fluid")
-    @DescSynced
+    @SaveField(nbtKey = "Fluid")
+    @SyncToClient
     @Getter
-    @DropSaved // rename "Fluid" for Item capability
+    @SaveToItemStack
     protected FluidStack stored = FluidStack.EMPTY;
     @Getter
     protected final Material material;

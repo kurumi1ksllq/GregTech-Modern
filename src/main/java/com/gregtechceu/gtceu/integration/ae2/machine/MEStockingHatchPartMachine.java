@@ -13,9 +13,8 @@ import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidSlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAESlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlotList;
 import com.gregtechceu.gtceu.integration.ae2.utils.AEUtil;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
@@ -50,8 +49,8 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine implemen
 
     private static final int CONFIG_SIZE = 16;
 
-    @DescSynced
-    @Persisted
+    @SyncToClient
+    @SaveField
     @Getter
     private boolean autoPull;
 

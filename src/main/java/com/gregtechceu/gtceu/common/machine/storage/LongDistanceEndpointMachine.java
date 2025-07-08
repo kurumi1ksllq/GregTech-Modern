@@ -9,9 +9,8 @@ import com.gregtechceu.gtceu.api.pipenet.longdistance.ILDEndpoint;
 import com.gregtechceu.gtceu.api.pipenet.longdistance.LongDistanceNetwork;
 import com.gregtechceu.gtceu.api.pipenet.longdistance.LongDistancePipeType;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -39,7 +38,7 @@ public abstract class LongDistanceEndpointMachine extends MetaMachine implements
     @NotNull
     @Getter
     private final LongDistancePipeType pipeType;
-    @Persisted
+    @SaveField
     @Getter
     @Setter
     private IO ioType = IO.NONE;

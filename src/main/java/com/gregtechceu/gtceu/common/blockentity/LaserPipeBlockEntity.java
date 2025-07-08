@@ -7,11 +7,10 @@ import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
 import com.gregtechceu.gtceu.common.pipelike.laser.*;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.TaskHandler;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,8 +41,8 @@ public class LaserPipeBlockEntity extends PipeBlockEntity<LaserPipeType, LaserPi
     private int ticksActive = 0;
     private int activeDuration = 0;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private boolean active = false;
 
     protected LaserPipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {

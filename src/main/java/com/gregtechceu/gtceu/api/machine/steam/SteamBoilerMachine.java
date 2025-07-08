@@ -18,17 +18,17 @@ import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ProgressWidget;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.resources.language.I18n;
@@ -64,13 +64,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public abstract class SteamBoilerMachine extends SteamWorkableMachine
                                          implements IUIMachine, IExplosionMachine, IDataInfoProvider {
 
-    @Persisted
+    @SaveField
     public final NotifiableFluidTank waterTank;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     private int currentTemperature;
-    @Persisted
+    @SaveField
     @Getter
     private int timeBeforeCoolingDown;
     @Getter

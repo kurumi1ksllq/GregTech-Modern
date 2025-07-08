@@ -9,10 +9,10 @@ import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
 import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.common.cover.data.TransferMode;
 import com.gregtechceu.gtceu.common.pipelike.item.ItemNetHandler;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
@@ -31,12 +31,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class RobotArmCover extends ConveyorCover {
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected TransferMode transferMode;
 
-    @Persisted
+    @SaveField
     @Getter
     protected int globalTransferLimit;
     protected int itemsTransferBuffered;

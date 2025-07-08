@@ -1,10 +1,9 @@
 package com.gregtechceu.gtceu.api.machine.trait;
 
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +15,8 @@ public abstract class NotifiableRecipeHandlerTrait<T> extends MachineTrait imple
 
     protected List<Runnable> listeners = new ArrayList<>();
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     @Setter
     protected boolean isDistinct;

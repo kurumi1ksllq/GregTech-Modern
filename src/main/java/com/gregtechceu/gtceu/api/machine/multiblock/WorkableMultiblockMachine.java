@@ -16,10 +16,9 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
-
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -48,14 +47,14 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
     @Setter
     private ICleanroomProvider cleanroom;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     public final RecipeLogic recipeLogic;
     @Getter
     private final GTRecipeType[] recipeTypes;
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     private int activeRecipeType;
     @Getter
     protected final Map<IO, List<RecipeHandlerList>> capabilitiesProxy;
@@ -64,8 +63,8 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
     protected final List<ISubscription> traitSubscriptions;
     @Getter
     @Setter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected boolean isMuffled;
     protected boolean previouslyMuffled = true;
     @Nullable

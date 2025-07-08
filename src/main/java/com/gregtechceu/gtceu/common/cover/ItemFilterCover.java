@@ -12,12 +12,12 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.transfer.item.ItemHandlerDelegate;
 import com.gregtechceu.gtceu.common.cover.data.FilterMode;
 import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
@@ -37,8 +37,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class ItemFilterCover extends CoverBehavior implements IUICover {
 
     protected ItemFilter itemFilter;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected FilterMode filterMode = FilterMode.FILTER_INSERT;
     private FilteredItemHandlerWrapper itemFilterWrapper;

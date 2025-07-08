@@ -22,7 +22,6 @@
         "ftbchunks.FTBChunksClientMixin",
         "ftbchunks.LargeMapScreenMixin",
         "ftbchunks.RegionMapPanelMixin",
-        "ldlib.CustomBakedModelAccessor",
         "rei.FluidEntryRendererMixin",
         "xaerominimap.HighlighterRegistryMixin",
         "xaerominimap.MinimapFBORendererMixin",
@@ -72,7 +71,6 @@
         "forge.ModelBuilderAccessor",
         "jei.FluidHelperMixin",
         "ldlib.ModularWrapperWidgetMixin",
-        "ldlib.SyncUtilsMixin",
         "rei.InputSlotCrafterMixin",
         "rei.RecipeFinderMixin",
         "top.ConfigMixin"

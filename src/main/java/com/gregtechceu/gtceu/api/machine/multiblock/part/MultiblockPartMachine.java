@@ -9,9 +9,8 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.trait.IRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.UpdateListener;
+import com.gregtechceu.gtceu.syncdata.annotations.ClientFieldChangeListener;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -34,8 +33,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class MultiblockPartMachine extends MetaMachine implements IMultiPart {
 
-    @DescSynced
-    @UpdateListener(methodName = "onControllersUpdated")
+    @SyncToClient
     protected final Set<BlockPos> controllerPositions = new ObjectOpenHashSet<>(8);
     protected final SortedSet<IMultiController> controllers = new ReferenceLinkedOpenHashSet<>(8);
 
@@ -61,6 +59,7 @@ public class MultiblockPartMachine extends MetaMachine implements IMultiPart {
 
     // Not sure if necessary, but added to match the Controller class
     @SuppressWarnings("unused")
+    @ClientFieldChangeListener(fieldName = "controllerPositions")
     public void onControllersUpdated(Set<BlockPos> newPositions, Set<BlockPos> old) {
         controllers.clear();
         for (BlockPos blockPos : newPositions) {

@@ -6,13 +6,13 @@ import com.gregtechceu.gtceu.api.gui.widget.PhantomFluidWidget;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveToItemStack;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceBorderTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.*;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DropSaved;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -32,12 +32,12 @@ import org.jetbrains.annotations.NotNull;
 public class CreativeTankMachine extends QuantumTankMachine {
 
     @Getter
-    @Persisted
-    @DropSaved
+    @SaveField
+    @SaveToItemStack
     private int mBPerCycle = 1000;
     @Getter
-    @Persisted
-    @DropSaved
+    @SaveField
+    @SaveToItemStack
     private int ticksPerCycle = 1;
 
     public CreativeTankMachine(IMachineBlockEntity holder) {

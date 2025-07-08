@@ -17,9 +17,8 @@ import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.modifier.ParallelLogic;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
@@ -172,8 +171,8 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
     public static class DistillationTowerLogic extends RecipeLogic {
 
         @Nullable
-        @Persisted
-        @DescSynced
+        @SaveField
+        @SyncToClient
         GTRecipe workingRecipe = null;
 
         public DistillationTowerLogic(IRecipeLogicMachine machine) {

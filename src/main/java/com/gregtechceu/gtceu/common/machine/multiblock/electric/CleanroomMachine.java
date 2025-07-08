@@ -38,9 +38,9 @@ import com.gregtechceu.gtceu.common.machine.multiblock.primitive.PrimitivePumpMa
 import com.gregtechceu.gtceu.common.machine.trait.CleanroomLogic;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
 import net.minecraft.ChatFormatting;
@@ -84,11 +84,11 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
     public static final int MIN_RADIUS = 2;
     public static final int MIN_DEPTH = 4;
 
-    @Persisted
+    @SaveField
     private int lDist = 0, rDist = 0, bDist = 0, fDist = 0, hDist = 0;
     @Nullable
     private CleanroomType cleanroomType = null;
-    @Persisted
+    @SaveField
     private int cleanAmount;
     // runtime
     @Getter

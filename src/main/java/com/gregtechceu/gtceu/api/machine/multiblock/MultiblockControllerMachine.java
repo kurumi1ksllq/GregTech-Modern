@@ -12,11 +12,10 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.pattern.MultiblockWorldSavedData;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
-import com.lowdragmc.lowdraglib.syncdata.annotation.UpdateListener;
+import com.gregtechceu.gtceu.syncdata.annotations.ClientFieldChangeListener;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -51,18 +50,17 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     private final List<IMultiPart> parts = new ArrayList<>();
     private @Nullable IParallelHatch parallelHatch = null;
     @Getter
-    @DescSynced
-    @UpdateListener(methodName = "onPartsUpdated")
+    @SyncToClient
     private BlockPos[] partPositions = new BlockPos[0];
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean isFormed;
     @Getter
     @Setter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected boolean isFlipped;
 
     public MultiblockControllerMachine(IMachineBlockEntity holder) {
@@ -104,6 +102,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     }
 
     @SuppressWarnings("unused")
+    @ClientFieldChangeListener(fieldName = "partPositions")
     protected void onPartsUpdated(BlockPos[] newValue, BlockPos[] oldValue) {
         parts.clear();
         for (var pos : newValue) {

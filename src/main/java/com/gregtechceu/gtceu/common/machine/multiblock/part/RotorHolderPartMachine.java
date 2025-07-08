@@ -16,12 +16,12 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTDamageTypes;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.item.TurbineRotorBehaviour;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -45,17 +45,17 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class RotorHolderPartMachine extends TieredPartMachine
                                     implements IMachineLife, IRotorHolderMachine, IInteractedMachine {
 
-    @Persisted
+    @SaveField
     public final NotifiableItemStackHandler inventory;
     @Getter
     public final int maxRotorHolderSpeed;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     public int rotorSpeed;
     @Setter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @NotNull
     public Material rotorMaterial = GTMaterials.NULL; // 0 - no rotor
     @Nullable

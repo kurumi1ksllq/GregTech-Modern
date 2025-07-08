@@ -13,15 +13,15 @@ import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -47,39 +47,39 @@ public class BufferMachine extends TieredMachine implements IMachineLife, IAutoO
     public static final int TANK_SIZE = 64000;
 
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected Direction outputFacingItems;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected Direction outputFacingFluids;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputItems;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputFluids;
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     protected boolean allowInputFromOutputSideItems;
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     protected boolean allowInputFromOutputSideFluids;
 
-    @Persisted
+    @SaveField
     @Getter
     protected final NotifiableItemStackHandler inventory;
 
-    @Persisted
+    @SaveField
     @Getter
     protected final NotifiableFluidTank tank;
 

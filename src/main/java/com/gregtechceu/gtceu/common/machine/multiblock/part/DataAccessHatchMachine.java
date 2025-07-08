@@ -16,12 +16,12 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.research.DataBankMachine;
 import com.gregtechceu.gtceu.common.recipe.condition.ResearchCondition;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
 import com.gregtechceu.gtceu.utils.ResearchManager;
 
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
@@ -47,7 +47,7 @@ public class DataAccessHatchMachine extends TieredPartMachine
     private final Set<GTRecipe> recipes;
     @Getter
     private final boolean isCreative;
-    @Persisted
+    @SaveField
     public final NotifiableItemStackHandler importItems;
 
     public DataAccessHatchMachine(IMachineBlockEntity holder, int tier, boolean isCreative) {

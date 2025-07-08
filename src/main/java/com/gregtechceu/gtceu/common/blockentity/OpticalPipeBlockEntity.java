@@ -8,12 +8,11 @@ import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.pipelike.optical.*;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.TaskHandler;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,9 +41,9 @@ public class OpticalPipeBlockEntity extends PipeBlockEntity<OpticalPipeType, Opt
     private OpticalNetHandler defaultHandler;
 
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     private boolean isActive;
 
     public OpticalPipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {

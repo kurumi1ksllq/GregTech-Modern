@@ -10,11 +10,11 @@ import com.gregtechceu.gtceu.api.gui.widget.NumberInputWidget;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.common.cover.data.BucketMode;
 import com.gregtechceu.gtceu.common.cover.data.VoidingMode;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
@@ -31,17 +31,17 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class AdvancedFluidVoidingCover extends FluidVoidingCover {
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     private VoidingMode voidingMode = VoidingMode.VOID_ANY;
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected int globalTransferSizeMillibuckets = 1;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     private BucketMode transferBucketMode = BucketMode.MILLI_BUCKET;
 

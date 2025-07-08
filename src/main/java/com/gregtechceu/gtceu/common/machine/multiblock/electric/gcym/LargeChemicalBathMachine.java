@@ -4,9 +4,8 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IFluidRenderMulti;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -24,8 +23,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class LargeChemicalBathMachine extends WorkableElectricMultiblockMachine implements IFluidRenderMulti {
 
     @Getter
-    @DescSynced
-    @RequireRerender
+    @SyncToClient
+    @RerenderOnChanged
     private final Set<BlockPos> fluidBlockOffsets = new HashSet<>();
 
     public LargeChemicalBathMachine(IMachineBlockEntity holder, Object... args) {

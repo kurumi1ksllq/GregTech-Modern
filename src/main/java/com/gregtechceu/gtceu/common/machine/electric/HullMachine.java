@@ -10,8 +10,6 @@ import com.gregtechceu.gtceu.syncdata.annotations.CustomDataField;
 import com.gregtechceu.gtceu.syncdata.annotations.FieldDataModifier;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -31,7 +29,7 @@ public class HullMachine extends TieredPartMachine {
     @SaveField(nbtKey = "grid_node")
     private final Object gridNodeHost;
 
-    @Persisted
+    @SaveField
     protected NotifiableEnergyContainer energyContainer;
 
     public HullMachine(IMachineBlockEntity holder, int tier) {

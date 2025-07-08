@@ -11,10 +11,10 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMufflerMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.entity.player.Player;
@@ -36,7 +36,7 @@ public class MufflerPartMachine extends TieredPartMachine implements IMufflerMac
     @Getter
     private final int recoveryChance;
     @Getter
-    @Persisted
+    @SaveField
     private final CustomItemStackHandler inventory;
 
     public MufflerPartMachine(IMachineBlockEntity holder, int tier) {

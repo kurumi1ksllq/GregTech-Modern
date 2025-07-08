@@ -21,10 +21,10 @@ import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.common.recipe.condition.VentCondition;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.utils.Position;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -46,13 +46,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class SimpleSteamMachine extends SteamWorkableMachine implements IExhaustVentMachine, IUIMachine {
 
-    @Persisted
+    @SaveField
     public final NotifiableItemStackHandler importItems;
-    @Persisted
+    @SaveField
     public final NotifiableItemStackHandler exportItems;
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     private boolean needsVenting;
 
     public SimpleSteamMachine(IMachineBlockEntity holder, boolean isHighPressure, Object... args) {

@@ -20,14 +20,14 @@ import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.api.transfer.fluid.ModifiableFluidHandlerWrapper;
 import com.gregtechceu.gtceu.common.cover.data.BucketMode;
 import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -59,32 +59,32 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
 
     public final int tier;
     public final int maxFluidTransferRate;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected int transferRate;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
-    @RequireRerender
+    @RerenderOnChanged
     protected IO io = IO.OUT;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected BucketMode bucketMode = BucketMode.MILLI_BUCKET;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected ManualIOMode manualIOMode = ManualIOMode.DISABLED;
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected boolean isWorkingEnabled = true;
     protected int mBLeftToTransferLastSecond;
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected final FilterHandler<FluidStack, FluidFilter> filterHandler;
     protected final ConditionalSubscriptionHandler subscriptionHandler;
     private NumberInputWidget<Integer> transferRateWidget;

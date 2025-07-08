@@ -21,15 +21,15 @@ import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.utils.Position;
 
 import net.minecraft.Util;
@@ -64,37 +64,37 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class SimpleTieredMachine extends WorkableTieredMachine
                                  implements IAutoOutputBoth, IFancyUIMachine, IHasCircuitSlot {
 
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected Direction outputFacingItems;
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected Direction outputFacingFluids;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputItems;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputFluids;
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     protected boolean allowInputFromOutputSideItems;
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     protected boolean allowInputFromOutputSideFluids;
     @Getter
-    @Persisted
+    @SaveField
     protected final CustomItemStackHandler chargerInventory;
     @Getter
-    @Persisted
+    @SaveField
     protected final NotifiableItemStackHandler circuitInventory;
     @Nullable
     protected TickableSubscription autoOutputSubs, batterySubs;

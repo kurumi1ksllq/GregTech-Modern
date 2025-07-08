@@ -8,13 +8,13 @@ import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.LongInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextBoxWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -37,12 +37,12 @@ public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements 
     private static final int DEFAULT_MIN_PERCENT = 33;
     private static final int DEFAULT_MAX_PERCENT = 66;
 
-    @Persisted
+    @SaveField
     @Getter
     @Setter
     public long minValue, maxValue;
 
-    @Persisted
+    @SaveField
     @Getter
     private boolean usePercent;
 

@@ -16,12 +16,12 @@ import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.datafixers.TagFixer;
 import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -55,38 +55,39 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeType<NodeDataType>, NodeDataType>
-        extends ManagedSyncBlockEntity implements IPipeNode<PipeType, NodeDataType>, IToolGridHighlight, IToolable {
+                                     extends ManagedSyncBlockEntity
+                                     implements IPipeNode<PipeType, NodeDataType>, IToolGridHighlight, IToolable {
 
     private final long offset = GTValues.RNG.nextInt(20);
 
     @Getter
-    @DescSynced
-    @Persisted(key = "cover")
+    @SyncToClient
+    @SaveField(nbtKey = "cover")
     protected final PipeCoverContainer coverContainer;
 
     @Getter
     @Setter
-    @DescSynced
-    @Persisted
-    @RequireRerender
+    @SyncToClient
+    @SaveField
+    @RerenderOnChanged
     protected int connections = Node.ALL_CLOSED;
     @Setter
-    @DescSynced
-    @Persisted
-    @RequireRerender
+    @SyncToClient
+    @SaveField
+    @RerenderOnChanged
     private int blockedConnections = Node.ALL_CLOSED;
     private NodeDataType cachedNodeData;
 
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     @Getter
     @Setter
     private int paintingColor = -1;
 
-    @RequireRerender
-    @DescSynced
-    @Persisted
+    @RerenderOnChanged
+    @SyncToClient
+    @SaveField
     @Setter
     @NotNull
     private Material frameMaterial = GTMaterials.NULL;

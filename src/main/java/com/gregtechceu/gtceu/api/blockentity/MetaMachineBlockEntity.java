@@ -17,11 +17,11 @@ import com.gregtechceu.gtceu.client.model.IBlockEntityRendererBakedModel;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.common.datafixers.TagFixer;
 import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -54,9 +54,9 @@ public class MetaMachineBlockEntity extends ManagedSyncBlockEntity implements IM
     @Getter
     public final MetaMachine metaMachine;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     private MachineRenderState renderState;
     private final long offset = GTValues.RNG.nextInt(20);
 
@@ -64,7 +64,6 @@ public class MetaMachineBlockEntity extends ManagedSyncBlockEntity implements IM
         super(type, pos, blockState);
         this.renderState = getDefinition().defaultRenderState();
         this.metaMachine = getDefinition().createMetaMachine(this);
-
     }
 
     @Override

@@ -18,7 +18,10 @@ import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveToItemStack;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -28,13 +31,9 @@ import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceBorderTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.*;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
@@ -77,36 +76,36 @@ public class QuantumChestMachine extends TieredMachine implements IAutoOutputIte
     public static final Object2LongOpenHashMap<UUID> INTERACTION_LOGGER = new Object2LongOpenHashMap<>();
 
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected Direction outputFacingItems;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputItems;
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     protected boolean allowInputFromOutputSideItems;
-    @Persisted
+    @SaveField
     private boolean isVoiding;
 
     private final long maxAmount;
     protected final ItemCache cache;
-    @DescSynced
-    @Persisted
+    @SyncToClient
+    @SaveField
     private final CustomItemStackHandler lockedItem;
 
     @Getter
-    @DescSynced
-    @Persisted
+    @SyncToClient
+    @SaveField
     @SaveToItemStack
     protected ItemStack stored = ItemStack.EMPTY;
     @Getter
-    @DescSynced
-    @Persisted
+    @SyncToClient
+    @SaveField
     @SaveToItemStack
     protected long storedAmount = 0;
 

@@ -10,10 +10,10 @@ import com.gregtechceu.gtceu.api.gui.widget.NumberInputWidget;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.common.cover.data.BucketMode;
 import com.gregtechceu.gtceu.common.cover.data.TransferMode;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
@@ -32,17 +32,17 @@ public class FluidRegulatorCover extends PumpCover {
 
     private static final int MAX_STACK_SIZE = 2_048_000_000; // Capacity of quantum tank IX
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     private TransferMode transferMode = TransferMode.TRANSFER_ANY;
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     private BucketMode transferBucketMode = BucketMode.MILLI_BUCKET;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected int globalTransferLimit;
     protected int fluidTransferBuffered = 0;

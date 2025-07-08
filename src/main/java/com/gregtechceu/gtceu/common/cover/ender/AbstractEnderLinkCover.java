@@ -19,15 +19,15 @@ import com.gregtechceu.gtceu.api.misc.virtualregistry.VirtualEnderRegistry;
 import com.gregtechceu.gtceu.api.misc.virtualregistry.VirtualEntry;
 import com.gregtechceu.gtceu.api.misc.virtualregistry.entries.VirtualTank;
 import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.editor.ColorPattern;
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.*;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
@@ -52,27 +52,27 @@ public abstract class AbstractEnderLinkCover<T extends VirtualEntry> extends Cov
 
     protected final ConditionalSubscriptionHandler subscriptionHandler;
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected String colorStr = VirtualEntry.DEFAULT_COLOR;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected Permissions permission = Permissions.PUBLIC;
-    @Persisted
+    @SaveField
     @Getter
     protected boolean isWorkingEnabled = true;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected ManualIOMode manualIOMode = ManualIOMode.DISABLED;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected IO io = IO.OUT;
     protected VirtualEntryWidget virtualEntryWidget;
-    @DescSynced
+    @SyncToClient
     boolean isAnyChanged = false;
 
     public AbstractEnderLinkCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {

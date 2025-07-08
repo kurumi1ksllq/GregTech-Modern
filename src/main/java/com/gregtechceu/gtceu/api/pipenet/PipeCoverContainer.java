@@ -11,12 +11,10 @@ import com.gregtechceu.gtceu.common.blockentity.FluidPipeBlockEntity;
 import com.gregtechceu.gtceu.common.blockentity.ItemPipeBlockEntity;
 import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTUtil;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.ReadOnlyManaged;
-import com.lowdragmc.lowdraglib.syncdata.annotation.UpdateListener;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -37,23 +35,13 @@ public class PipeCoverContainer implements ICoverable, ISyncManaged {
 
     private final IPipeNode<?, ?> pipeTile;
 
-    @DescSynced
-    @Persisted
-    @UpdateListener(methodName = "onCoverSet")
-    @ReadOnlyManaged(onDirtyMethod = "onCoverDirty",
-                     serializeMethod = "serializeCoverUid",
-                     deserializeMethod = "deserializeCoverUid")
+    @SyncToClient
+    @SaveField
+    @RerenderOnChanged
     private CoverBehavior up, down, north, south, west, east;
 
     public PipeCoverContainer(IPipeNode<?, ?> pipeTile) {
         this.pipeTile = pipeTile;
-    }
-
-    @SuppressWarnings("unused")
-    private void onCoverSet(CoverBehavior newValue, CoverBehavior oldValue) {
-        if (newValue != oldValue && (newValue == null || oldValue == null)) {
-            scheduleRenderUpdate();
-        }
     }
 
     @Override

@@ -23,14 +23,14 @@ import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.utils.Position;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -76,22 +76,22 @@ public class ItemCollectorMachine extends TieredEnergyMachine
 
     @Nullable
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected Direction outputFacingItems;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputItems;
-    @Persisted
+    @SaveField
     protected final NotifiableItemStackHandler output;
 
     @Getter
-    @Persisted
+    @SaveField
     protected final CustomItemStackHandler chargerInventory;
-    @Persisted
+    @SaveField
     protected final CustomItemStackHandler filterInventory;
 
     @Nullable
@@ -104,9 +104,9 @@ public class ItemCollectorMachine extends TieredEnergyMachine
 
     private AABB aabb;
 
-    @Persisted
+    @SaveField
     @Getter
-    @DescSynced
+    @SyncToClient
     private int range;
 
     private boolean rangeDirty = false;
@@ -114,14 +114,14 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     private final int maxRange;
 
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private boolean isWorkingEnabled = true;
 
-    @DescSynced
-    @Persisted
+    @SyncToClient
+    @SaveField
     @Getter
-    @RequireRerender
+    @RerenderOnChanged
     private boolean active = false;
 
     public ItemCollectorMachine(IMachineBlockEntity holder, int tier, Object... ignoredArgs) {

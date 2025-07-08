@@ -21,12 +21,12 @@ import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.*;
 
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -34,12 +34,12 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import com.google.common.annotations.VisibleForTesting;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import lombok.Getter;
-import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -69,7 +69,7 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
 
     private IMaintenanceMachine maintenance;
 
-    @Persisted
+    @SaveField
     private PowerStationEnergyBank energyBank;
 
     private EnergyContainerList inputHatches;

@@ -15,7 +15,10 @@ import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveToItemStack;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -26,13 +29,9 @@ import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
@@ -69,37 +68,37 @@ public class QuantumTankMachine extends TieredMachine implements IAutoOutputFlui
     public static Object2LongMap<MachineDefinition> TANK_CAPACITY = new Object2LongArrayMap<>();
 
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected Direction outputFacingFluids;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputFluids;
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     protected boolean allowInputFromOutputSideFluids;
-    @Persisted
+    @SaveField
     private boolean isVoiding;
 
     @Getter
     private final long maxAmount;
     protected final FluidCache cache;
-    @DescSynced
-    @Persisted
+    @SyncToClient
+    @SaveField
     private final CustomFluidTank lockedFluid;
 
     @Getter
-    @DescSynced
-    @Persisted
+    @SyncToClient
+    @SaveField
     @SaveToItemStack
     protected FluidStack stored = FluidStack.EMPTY;
     @Getter
-    @DescSynced
-    @Persisted
+    @SyncToClient
+    @SaveField
     @SaveToItemStack
     protected long storedAmount = 0;
 

@@ -9,14 +9,14 @@ import com.gregtechceu.gtceu.api.cover.filter.ItemFilter;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.RedstoneUtil;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextBoxWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -38,17 +38,17 @@ public class AdvancedItemDetectorCover extends ItemDetectorCover implements IUIC
 
     private static final int DEFAULT_MIN = 64;
     private static final int DEFAULT_MAX = 512;
-    @Persisted
+    @SaveField
     @Getter
     private int minValue, maxValue;
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     @Setter
     private boolean isLatched;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected final FilterHandler<ItemStack, ItemFilter> filterHandler;
 

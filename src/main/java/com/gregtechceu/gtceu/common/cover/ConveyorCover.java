@@ -19,6 +19,9 @@ import com.gregtechceu.gtceu.api.transfer.item.ItemHandlerDelegate;
 import com.gregtechceu.gtceu.common.blockentity.ItemPipeBlockEntity;
 import com.gregtechceu.gtceu.common.cover.data.DistributionMode;
 import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
 
@@ -27,9 +30,6 @@ import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.SwitchWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -65,31 +65,31 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
 
     public final int tier;
     public final int maxItemTransferRate;
-    @Persisted
+    @SaveField
     @Getter
     protected int transferRate;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
-    @RequireRerender
+    @RerenderOnChanged
     protected IO io;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected DistributionMode distributionMode;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected ManualIOMode manualIOMode = ManualIOMode.DISABLED;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected boolean isWorkingEnabled = true;
     protected int itemsLeftToTransferLastSecond;
     private Widget ioModeSwitch;
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected final FilterHandler<ItemStack, ItemFilter> filterHandler;
     protected final ConditionalSubscriptionHandler subscriptionHandler;

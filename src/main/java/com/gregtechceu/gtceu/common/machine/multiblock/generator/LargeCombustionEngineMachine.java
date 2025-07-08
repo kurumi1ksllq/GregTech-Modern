@@ -21,10 +21,9 @@ import com.gregtechceu.gtceu.api.recipe.modifier.ParallelLogic;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -52,7 +51,7 @@ public class LargeCombustionEngineMachine extends WorkableElectricMultiblockMach
     @Getter
     private final int tier;
     // runtime
-    @DescSynced
+    @SyncToClient
     private boolean isOxygenBoosted = false;
     private int runningTimer = 0;
 

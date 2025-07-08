@@ -8,10 +8,10 @@ import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.util.Mth;
 
@@ -23,7 +23,7 @@ public class ParallelHatchPartMachine extends TieredPartMachine implements IFanc
 
     private final int maxParallel;
 
-    @Persisted
+    @SaveField
     @Getter
     private int currentParallel = 1;
 

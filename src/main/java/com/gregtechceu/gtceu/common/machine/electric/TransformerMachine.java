@@ -5,10 +5,9 @@ import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.UpdateListener;
+import com.gregtechceu.gtceu.syncdata.annotations.ClientFieldChangeListener;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
@@ -30,12 +29,11 @@ public class TransformerMachine extends TieredEnergyMachine implements IControll
 
     public static final BooleanProperty TRANSFORM_UP_PROPERTY = BooleanProperty.create("transform_up");
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
-    @UpdateListener(methodName = "onTransformUpdated")
     private boolean isTransformUp;
-    @Persisted
+    @SaveField
     @Getter
     @Setter
     private boolean isWorkingEnabled;
@@ -53,6 +51,7 @@ public class TransformerMachine extends TieredEnergyMachine implements IControll
     //////////////////////////////////////
 
     @SuppressWarnings("unused")
+    @ClientFieldChangeListener(fieldName = "isTransformUp")
     private void onTransformUpdated(boolean newValue, boolean oldValue) {
         updateEnergyContainer(newValue);
     }

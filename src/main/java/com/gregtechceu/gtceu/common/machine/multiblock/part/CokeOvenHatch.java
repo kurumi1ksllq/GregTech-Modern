@@ -9,8 +9,7 @@ import com.gregtechceu.gtceu.api.machine.trait.FluidTankProxyTrait;
 import com.gregtechceu.gtceu.api.machine.trait.ItemHandlerProxyTrait;
 import com.gregtechceu.gtceu.common.machine.multiblock.primitive.CokeOvenMachine;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
-
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;

@@ -8,10 +8,9 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IWorkableMultiContro
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.InteractionHand;
@@ -28,9 +27,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public abstract class HPCAComponentPartMachine extends MultiblockPartMachine
                                                implements IHPCAComponentHatch, IMachineModifyDrops {
 
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     private boolean damaged;
 
     public HPCAComponentPartMachine(IMachineBlockEntity holder) {

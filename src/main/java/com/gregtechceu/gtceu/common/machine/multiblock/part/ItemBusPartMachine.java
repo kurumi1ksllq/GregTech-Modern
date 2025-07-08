@@ -19,14 +19,14 @@ import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.syncdata.annotations.FieldDataModifier;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.jei.IngredientIO;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -56,7 +56,7 @@ public class ItemBusPartMachine extends TieredIOPartMachine
                                 implements IDistinctPart, IMachineLife, IHasCircuitSlot, IPaintable {
 
     @Getter
-    @Persisted
+    @SaveField
     private final NotifiableItemStackHandler inventory;
     @Nullable
     protected TickableSubscription autoIOSubs;
@@ -66,15 +66,15 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     private boolean hasCircuitSlot = true;
     @Getter
     @Setter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected boolean circuitSlotEnabled;
     @Getter
-    @Persisted
+    @SaveField
     protected final NotifiableItemStackHandler circuitInventory;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private boolean isDistinct = false;
 
     public ItemBusPartMachine(IMachineBlockEntity holder, int tier, IO io, Object... args) {

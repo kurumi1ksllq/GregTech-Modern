@@ -13,13 +13,13 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IFluidRenderMulti;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ProgressWidget;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -47,8 +47,8 @@ public class PrimitiveBlastFurnaceMachine extends PrimitiveWorkableMachine imple
     private TickableSubscription hurtSubscription;
 
     @Getter
-    @DescSynced
-    @RequireRerender
+    @SyncToClient
+    @RerenderOnChanged
     private final Set<BlockPos> fluidBlockOffsets = new HashSet<>();
 
     public PrimitiveBlastFurnaceMachine(IMachineBlockEntity holder, Object... args) {

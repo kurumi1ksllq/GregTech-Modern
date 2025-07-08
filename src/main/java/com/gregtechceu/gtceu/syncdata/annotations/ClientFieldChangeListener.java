@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface ClientFieldChangeListener {
 
-    String fieldName() default "";
+    String fieldName();
 }

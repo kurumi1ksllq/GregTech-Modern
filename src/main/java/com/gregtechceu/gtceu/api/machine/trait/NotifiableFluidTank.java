@@ -9,10 +9,9 @@ import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderFluidIngredient;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.core.Direction;
 import net.minecraftforge.fluids.FluidStack;
@@ -31,7 +30,7 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
     public final IO handlerIO;
     @Getter
     public final IO capabilityIO;
-    @Persisted
+    @SaveField
     @Getter
     protected final CustomFluidTank[] storages;
     @Getter
@@ -39,8 +38,8 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
                                        // while creating tanks.
     private Boolean isEmpty;
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Getter
     protected final CustomFluidTank lockedFluid = new CustomFluidTank(FluidType.BUCKET_VOLUME);
     @Getter

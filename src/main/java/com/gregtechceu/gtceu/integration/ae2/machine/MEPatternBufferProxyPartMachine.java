@@ -9,10 +9,10 @@ import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.ProxySlotRecipeHandler;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -40,9 +40,9 @@ public class MEPatternBufferProxyPartMachine extends TieredIOPartMachine
     @Getter
     private final ProxySlotRecipeHandler proxySlotRecipeHandler;
 
-    @Persisted
+    @SaveField
     @Getter
-    @DescSynced
+    @SyncToClient
     private @Nullable BlockPos bufferPos;
 
     private @Nullable MEPatternBufferPartMachine buffer = null;

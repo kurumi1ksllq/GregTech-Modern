@@ -23,6 +23,8 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -33,8 +35,6 @@ import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -74,13 +74,13 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
     private IMaintenanceMachine maintenance;
     private IEnergyContainer energyContainer;
     private IFluidHandler coolantHandler;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private final HPCAGridHandler hpcaHandler;
 
     private boolean hasNotEnoughEnergy;
 
-    @Persisted
+    @SaveField
     private double temperature = IDLE_TEMPERATURE; // start at idle temperature
 
     private final TimedProgressSupplier progressSupplier;
@@ -387,9 +387,9 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
 
         // cached gui info
         // holding these values past the computation clear because GUI is too "late" to read the state in time
-        @DescSynced
+        @SyncToClient
         private long cachedEUt;
-        @DescSynced
+        @SyncToClient
         private int cachedCWUt;
 
         public HPCAGridHandler(@Nullable HPCAMachine controller) {

@@ -9,8 +9,7 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.CleanroomMachine;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -34,7 +33,7 @@ public class CleanroomLogic extends RecipeLogic implements IWorkable {
      */
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     private boolean isActiveAndNeedsUpdate;
 
     public CleanroomLogic(CleanroomMachine machine) {

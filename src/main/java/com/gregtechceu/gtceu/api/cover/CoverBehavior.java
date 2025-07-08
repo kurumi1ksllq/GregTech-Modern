@@ -11,10 +11,10 @@ import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.cover.ICoverRenderer;
 import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -55,11 +55,11 @@ public abstract class CoverBehavior implements ISyncManaged, IToolGridHighlight 
     public final ICoverable coverHolder;
     public final Direction attachedSide;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected ItemStack attachItem = ItemStack.EMPTY;
     @Getter
-    @Persisted
+    @SaveField
     protected int redstoneSignalOutput = 0;
 
     public CoverBehavior(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {

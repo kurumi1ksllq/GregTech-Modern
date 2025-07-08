@@ -10,10 +10,9 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -39,8 +38,8 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
     public final IO handlerIO;
     @Getter
     public final IO capabilityIO;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     public final CustomItemStackHandler storage;
     // Deprecated since circuits and other slots
     // need to be passed to parallel checking.

@@ -15,14 +15,10 @@ import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.sound.AutoReleasedSound;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import com.gregtechceu.gtceu.syncdata.annotations.CustomDataField;
-import com.gregtechceu.gtceu.syncdata.annotations.FieldDataModifier;
+import com.gregtechceu.gtceu.syncdata.annotations.*;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.UpdateListener;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -65,31 +61,29 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
     public List<GTRecipe> lastFailedMatches;
 
     @Getter
-    @Persisted
-    @DescSynced
-    @UpdateListener(methodName = "onStatusSynced")
+    @SaveField
+    @SyncToClient
     private Status status = Status.IDLE;
 
-    @Persisted
-    @DescSynced
-    @UpdateListener(methodName = "onActiveSynced")
+    @SaveField
+    @SyncToClient
     protected boolean isActive;
 
     @Nullable
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private Component waitingReason = null;
     /**
      * unsafe, it may not be found from {@link RecipeManager}. Do not index it.
      */
     @Nullable
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected GTRecipe lastRecipe;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected int consecutiveRecipes = 0; // Consecutive recipes that have been run
     /**
      * safe, it is the origin recipe before {@link IRecipeLogicMachine#fullModifyRecipe(GTRecipe)}'
@@ -98,21 +92,21 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
      */
     @Nullable
     @Getter
-    @Persisted
+    @SaveField
     protected GTRecipe lastOriginRecipe;
-    @Persisted
+    @SaveField
     @Getter
     @Setter
     protected int progress;
     @Getter
-    @Persisted
+    @SaveField
     protected int duration;
     @Getter(onMethod_ = @VisibleForTesting)
     protected boolean recipeDirty;
-    @Persisted
+    @SaveField
     @Getter
     protected long totalContinuousRunningTime;
-    @Persisted
+    @SaveField
     @Setter
     protected boolean suspendAfterFinish = false;
     @Getter
@@ -128,12 +122,14 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
     }
 
     @SuppressWarnings("unused")
+    @ClientFieldChangeListener(fieldName = "status")
     protected void onStatusSynced(Status newValue, Status oldValue) {
         scheduleRenderUpdate();
         updateSound();
     }
 
     @SuppressWarnings("unused")
+    @ClientFieldChangeListener(fieldName = "isActive")
     protected void onActiveSynced(boolean newActive, boolean oldActive) {
         scheduleRenderUpdate();
     }

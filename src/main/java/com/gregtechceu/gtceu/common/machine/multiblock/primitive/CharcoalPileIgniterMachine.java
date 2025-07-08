@@ -14,8 +14,8 @@ import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.item.tool.behavior.LighterBehavior;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
 import net.minecraft.core.BlockPos;
@@ -55,15 +55,15 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
 
     private final Collection<BlockPos> logPos = new ObjectOpenHashSet<>();
 
-    @DescSynced
+    @SyncToClient
     private int lDist = 0;
-    @DescSynced
+    @SyncToClient
     private int rDist = 0;
-    @DescSynced
+    @SyncToClient
     private int bDist = 0;
-    @DescSynced
+    @SyncToClient
     private int fDist = 0;
-    @DescSynced
+    @SyncToClient
     private int hDist = 0;
 
     private boolean hasAir = false;

@@ -4,10 +4,9 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.common.item.FacadeItemBehaviour;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -29,9 +28,9 @@ public class FacadeCover extends CoverBehavior {
 
     @Setter
     @Getter
-    @DescSynced
-    @Persisted
-    @RequireRerender
+    @SyncToClient
+    @SaveField
+    @RerenderOnChanged
     private BlockState facadeState = Blocks.STONE.defaultBlockState();
 
     public FacadeCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {

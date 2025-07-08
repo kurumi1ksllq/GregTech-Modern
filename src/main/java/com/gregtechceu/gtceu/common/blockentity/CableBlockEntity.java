@@ -14,13 +14,13 @@ import com.gregtechceu.gtceu.common.block.CableBlock;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
 import com.gregtechceu.gtceu.common.pipelike.cable.*;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -61,8 +61,8 @@ public class CableBlockEntity extends PipeBlockEntity<Insulation, WireProperties
     private EnergyNetHandler defaultHandler;
     private int heatQueue;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private int temperature = getDefaultTemp();
     private TickableSubscription heatSubs;
 

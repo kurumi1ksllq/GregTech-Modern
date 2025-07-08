@@ -6,9 +6,8 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
@@ -68,12 +67,12 @@ public class DiodePartMachine extends TieredIOPartMachine {
 
     public static int MAX_AMPS = 16;
 
-    @Persisted
+    @SaveField
     protected NotifiableEnergyContainer energyContainer;
 
     @Getter
-    @DescSynced
-    @Persisted(key = "amp_mode")
+    @SyncToClient
+    @SaveField(nbtKey = "amp_mode")
     private int amps;
 
     public DiodePartMachine(IMachineBlockEntity holder, int tier) {

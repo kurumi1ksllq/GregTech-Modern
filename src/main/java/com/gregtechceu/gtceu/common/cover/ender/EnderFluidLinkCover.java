@@ -12,11 +12,11 @@ import com.gregtechceu.gtceu.api.misc.virtualregistry.VirtualEnderRegistry;
 import com.gregtechceu.gtceu.api.misc.virtualregistry.VirtualEntry;
 import com.gregtechceu.gtceu.api.misc.virtualregistry.entries.VirtualTank;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
 import com.lowdragmc.lowdraglib.gui.widget.*;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.core.Direction;
 import net.minecraftforge.fluids.FluidStack;
@@ -33,13 +33,13 @@ public class EnderFluidLinkCover extends AbstractEnderLinkCover<VirtualTank> {
 
     public static final int TRANSFER_RATE = 8000; // mB/t
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected VirtualTank visualTank;
 
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected final FilterHandler<FluidStack, FluidFilter> filterHandler;
     protected int mBLeftToTransferLastSecond;
 

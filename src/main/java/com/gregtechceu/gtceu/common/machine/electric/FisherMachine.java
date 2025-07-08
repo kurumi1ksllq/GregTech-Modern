@@ -21,15 +21,15 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.utils.Position;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -74,26 +74,26 @@ public class FisherMachine extends TieredEnergyMachine
                            implements IAutoOutputItem, IFancyUIMachine, IMachineLife, IWorkable {
 
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected Direction outputFacingItems;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputItems;
-    @Persisted
+    @SaveField
     protected final NotifiableItemStackHandler cache;
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     protected boolean allowInputFromOutputSideItems;
-    @Persisted
+    @SaveField
     protected final NotifiableItemStackHandler baitHandler;
 
     @Getter
-    @Persisted
+    @SaveField
     protected final CustomItemStackHandler chargerInventory;
     @Nullable
     protected TickableSubscription autoOutputSubs, batterySubs, fishingSubs;
@@ -107,17 +107,17 @@ public class FisherMachine extends TieredEnergyMachine
     public final int maxProgress;
 
     @Getter
-    @Persisted
+    @SaveField
     private int progress = 0;
 
     @Getter
-    @Persisted
+    @SaveField
     @Setter
-    @DescSynced
+    @SyncToClient
     private boolean isWorkingEnabled = true;
 
     @Getter
-    @Persisted
+    @SaveField
     private boolean active = false;
     public static final int WATER_CHECK_SIZE = 5;
     private static final ItemStack fishingRod = new ItemStack(Items.FISHING_ROD);
@@ -125,8 +125,8 @@ public class FisherMachine extends TieredEnergyMachine
 
     @Getter
     @Setter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected boolean junkEnabled = true;
 
     public FisherMachine(IMachineBlockEntity holder, int tier, Object... ignoredArgs) {

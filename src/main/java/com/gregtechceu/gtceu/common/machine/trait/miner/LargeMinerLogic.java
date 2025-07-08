@@ -3,8 +3,7 @@ package com.gregtechceu.gtceu.common.machine.trait.miner;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,10 +41,10 @@ public class LargeMinerLogic extends MinerLogic {
     private int overclockAmount = 0;
 
     @Getter
-    @Persisted
+    @SaveField
     private boolean isChunkMode;
     @Getter
-    @Persisted
+    @SaveField
     private boolean isSilkTouchMode;
 
     /**

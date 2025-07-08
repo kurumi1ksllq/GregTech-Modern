@@ -17,7 +17,6 @@ import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
 import com.gregtechceu.gtceu.client.util.ModelUtils;
 import com.gregtechceu.gtceu.client.util.StaticFaceBakery;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
-import com.gregtechceu.gtceu.core.mixins.ldlib.CustomBakedModelAccessor;
 
 import com.lowdragmc.lowdraglib.client.model.custommodel.CustomBakedModel;
 

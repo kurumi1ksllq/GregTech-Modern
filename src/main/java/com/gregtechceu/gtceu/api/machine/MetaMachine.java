@@ -32,12 +32,12 @@ import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.common.machine.owner.PlayerOwner;
 import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.utils.DummyWorld;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -96,20 +96,20 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
 
     @Setter
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     @Nullable
     private UUID ownerUUID;
     @Getter
     public final IMachineBlockEntity holder;
     @Getter
-    @DescSynced
-    @Persisted(key = "cover")
+    @SyncToClient
+    @SaveField(nbtKey = "cover")
     protected final MachineCoverContainer coverContainer;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     private int paintingColor = -1;
     @Getter
     protected final List<MachineTrait> traits;

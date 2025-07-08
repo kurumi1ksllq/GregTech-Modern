@@ -14,12 +14,12 @@ import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -68,17 +68,17 @@ public class WorldAcceleratorMachine extends TieredEnergyMachine implements ICon
     private final int successLimit;
     private final int randRange;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private boolean isWorkingEnabled = true;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private boolean isRandomTickMode = true;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     private boolean active = false;
     private TickableSubscription tickSubs;
 

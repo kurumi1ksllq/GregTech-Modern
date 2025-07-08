@@ -14,12 +14,12 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTItems;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.widget.*;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -62,22 +62,22 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
 
     @Getter
     private final boolean isConfigurable;
-    @Persisted
+    @SaveField
     private final NotifiableItemStackHandler itemStackHandler;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private boolean isTaped;
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     protected int timeActive;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected byte maintenanceProblems = startProblems();
     @Getter
-    @Persisted
+    @SaveField
     private float durationMultiplier = 1f;
     @Nullable
     protected TickableSubscription maintenanceSubs;

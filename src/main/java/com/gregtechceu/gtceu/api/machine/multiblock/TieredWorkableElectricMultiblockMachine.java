@@ -4,8 +4,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 
@@ -19,7 +18,7 @@ public class TieredWorkableElectricMultiblockMachine extends WorkableElectricMul
                                                      implements ITieredMachine, IOverclockMachine {
 
     private final int tier;
-    @Persisted
+    @SaveField
     @Getter
     protected int overclockTier;
 

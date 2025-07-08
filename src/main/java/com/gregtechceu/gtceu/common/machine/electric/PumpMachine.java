@@ -14,15 +14,15 @@ import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
 import com.gregtechceu.gtceu.api.machine.feature.IUIMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveToItemStack;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DropSaved;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.Util;
@@ -67,16 +67,16 @@ public class PumpMachine extends TieredEnergyMachine implements IAutoOutputFluid
     private final Set<BlockPos> forbiddenBlocks = new ObjectOpenHashSet<>();
     private PumpQueue pumpQueue = null;
     @Getter
-    @Persisted
+    @SaveField
     private int pumpHeadY;
     @Getter
     @Setter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputFluids;
-    @Persisted
-    @DropSaved
+    @SaveField
+    @SaveToItemStack
     protected final NotifiableFluidTank cache;
 
     public PumpMachine(IMachineBlockEntity holder, int tier, Object... args) {

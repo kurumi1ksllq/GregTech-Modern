@@ -5,8 +5,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -19,7 +18,7 @@ import java.util.function.Supplier;
 
 public class ExportOnlyAEItemList extends NotifiableItemStackHandler implements IConfigurableSlotList {
 
-    @Persisted
+    @SaveField
     @Getter
     protected ExportOnlyAEItemSlot[] inventory;
 

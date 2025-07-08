@@ -20,14 +20,14 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.utils.Position;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -64,34 +64,34 @@ public class BlockBreakerMachine extends TieredEnergyMachine
                                  implements IAutoOutputItem, IFancyUIMachine, IMachineLife, IControllable {
 
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected Direction outputFacingItems;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputItems;
-    @Persisted
+    @SaveField
     protected final NotifiableItemStackHandler cache;
     @Getter
-    @Persisted
+    @SaveField
     protected final CustomItemStackHandler chargerInventory;
     @Nullable
     protected TickableSubscription autoOutputSubs, batterySubs, breakerSubs;
     @Nullable
     protected ISubscription exportItemSubs, energySubs;
     private final int inventorySize;
-    @DescSynced
+    @SyncToClient
     private int blockBreakProgress = 0;
     private float currentHardness;
     private final long energyPerTick;
     public final float efficiencyMultiplier;
 
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private boolean isWorkingEnabled = true;
 
     public BlockBreakerMachine(IMachineBlockEntity holder, int tier, Object... ignoredArgs) {

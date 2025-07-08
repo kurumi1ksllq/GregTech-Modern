@@ -5,13 +5,13 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.PhantomSlotWidget;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveToItemStack;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceBorderTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.*;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DropSaved;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -34,12 +34,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class CreativeChestMachine extends QuantumChestMachine {
 
     @Getter
-    @Persisted
-    @DropSaved
+    @SaveField
+    @SaveToItemStack
     private int itemsPerCycle = 1;
     @Getter
-    @Persisted
-    @DropSaved
+    @SaveField
+    @SaveToItemStack
     private int ticksPerCycle = 1;
 
     public CreativeChestMachine(IMachineBlockEntity holder) {

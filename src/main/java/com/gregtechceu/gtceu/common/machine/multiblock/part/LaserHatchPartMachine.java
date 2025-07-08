@@ -7,8 +7,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IDataInfoProvider;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableLaserContainer;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -26,7 +25,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class LaserHatchPartMachine extends TieredIOPartMachine implements IDataInfoProvider {
 
-    @Persisted
+    @SaveField
     private NotifiableLaserContainer buffer;
 
     public LaserHatchPartMachine(IMachineBlockEntity holder, IO io, int tier, int amperage) {

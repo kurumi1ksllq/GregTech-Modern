@@ -6,9 +6,8 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.machine.feature.IGridConnectedMachine;
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.GridNodeHolder;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
@@ -28,10 +27,10 @@ public abstract class MEHatchPartMachine extends FluidHatchPartMachine implement
 
     protected final static int CONFIG_SIZE = 16;
 
-    @Persisted
+    @SaveField
     protected final GridNodeHolder nodeHolder;
 
-    @DescSynced
+    @SyncToClient
     @Getter
     @Setter
     protected boolean isOnline;

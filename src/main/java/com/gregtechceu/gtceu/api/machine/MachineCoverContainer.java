@@ -8,12 +8,10 @@ import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
+import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTUtil;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.ReadOnlyManaged;
-import com.lowdragmc.lowdraglib.syncdata.annotation.UpdateListener;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,12 +32,9 @@ public class MachineCoverContainer implements ICoverable, ISyncManaged {
     private final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
     @Getter
     private final MetaMachine machine;
-    @DescSynced
-    @Persisted
-    @UpdateListener(methodName = "onCoverSet")
-    @ReadOnlyManaged(onDirtyMethod = "onCoverDirty",
-                     serializeMethod = "serializeCoverUid",
-                     deserializeMethod = "deserializeCoverUid")
+    @SyncToClient
+    @SaveField
+    @RerenderOnChanged
     private CoverBehavior up, down, north, south, west, east;
 
     public MachineCoverContainer(MetaMachine machine) {

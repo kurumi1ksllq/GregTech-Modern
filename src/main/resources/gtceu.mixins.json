@@ -56,7 +56,6 @@
         "RecipeManagerMixin",
         "RegistrateDataProviderAccessor",
         "RepairItemRecipeMixin",
-        "ServerChunkProviderMixin",
         "ServerGamePacketListenerImplAccessor",
         "ShapedRecipeAccessor",
         "SidedRedstoneConnectivityMixin",

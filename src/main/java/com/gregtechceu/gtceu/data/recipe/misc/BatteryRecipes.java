@@ -442,6 +442,7 @@ public class BatteryRecipes {
                 .inputItems(plate, Ultimet, 6)
                 .inputItems(screw, Ultimet, 24)
                 .outputItems(GTBlocks.BATTERY_EMPTY_TIER_I)
+                .addMaterialInfo(true)
                 .duration(400).EUt(VA[HV]).save(provider);
 
         // Lapotronic EV
@@ -478,6 +479,7 @@ public class BatteryRecipes {
                 .inputItems(plate, Ruridit, 6)
                 .inputItems(screw, Ruridit, 24)
                 .outputItems(GTBlocks.BATTERY_EMPTY_TIER_II)
+                .addMaterialInfo(true)
                 .duration(400).EUt(VA[IV]).save(provider);
 
         // Lapotronic LuV
@@ -514,6 +516,7 @@ public class BatteryRecipes {
                 .inputItems(plate, Neutronium, 6)
                 .inputItems(screw, Neutronium, 24)
                 .outputItems(GTBlocks.BATTERY_EMPTY_TIER_III)
+                .addMaterialInfo(true)
                 .duration(400).EUt(VA[ZPM]).save(provider);
 
         // Lapotronic UV

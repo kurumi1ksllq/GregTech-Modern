@@ -1,6 +1,8 @@
 package com.gregtechceu.gtceu.syncdata;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.syncdata.annotations.*;
+import com.gregtechceu.gtceu.syncdata.data_transformers.ValueTransformers;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +39,8 @@ public final class ClassSyncData {
             return;
         }
 
+        GTCEu.LOGGER.info("ClassSyncData: Registering class {}", clazz.getName());
+
         ArrayList<FieldSyncData> foundSyncFields = new ArrayList<>();
         ArrayList<FieldSyncData> foundSaveFields = new ArrayList<>();
 
@@ -72,37 +76,39 @@ public final class ClassSyncData {
         }
 
         for (var field : clazz.getDeclaredFields()) {
+            boolean hasSaveField = field.isAnnotationPresent(SaveField.class);
+            boolean hasClientSync = field.isAnnotationPresent(SyncToClient.class);
+            if (!hasSaveField && !hasClientSync) continue;
             if (Modifier.isStatic(field.getModifiers()))
                 throw new IllegalArgumentException("Cannot apply syncdata annotations to static field: %s.%s"
                         .formatted(clazz.getCanonicalName(), field.getName()));
 
-            boolean hasSaveField = field.isAnnotationPresent(SaveField.class);
-            boolean hasClientSync = field.isAnnotationPresent(SyncToClient.class);
-            if (hasSaveField || hasClientSync) {
-                VarHandle handle;
-                try {
-                    handle = privateLookup.unreflectVarHandle(field);
-                } catch (IllegalAccessException e) {
-                    // noinspection CallToPrintStackTrace
-                    e.printStackTrace();
-                    continue;
-                }
-
-                var syncData = new FieldSyncData(field, handle, annotatedMethods.get(field.getName()));
-                if (hasClientSync) foundSyncFields.add(syncData);
-                if (hasSaveField) foundSaveFields.add(syncData);
+            VarHandle handle;
+            try {
+                handle = privateLookup.unreflectVarHandle(field);
+            } catch (IllegalAccessException e) {
+                // noinspection CallToPrintStackTrace
+                e.printStackTrace();
+                continue;
             }
+
+            var syncData = new FieldSyncData(field, handle, annotatedMethods.get(field.getName()));
+            if (hasClientSync) foundSyncFields.add(syncData);
+            if (hasSaveField) foundSaveFields.add(syncData);
         }
 
         Class<?> parent = clazz.getSuperclass();
-        if (parent != null) {
+        if (parent != Object.class) {
             var parentHandles = CACHE.get(parent);
             foundSyncFields.addAll(List.of(parentHandles.clientSyncFields));
             foundSaveFields.addAll(List.of(parentHandles.serverSaveFields));
+            GTCEu.LOGGER.info("Inheriting {} sync fields, {} save fields from parent {}",
+                    parentHandles.clientSyncFields.length, parentHandles.serverSaveFields.length, parent.getName());
         }
 
         serverSaveFields = foundSaveFields.toArray(FieldSyncData[]::new);
         clientSyncFields = foundSyncFields.toArray(FieldSyncData[]::new);
+        GTCEu.LOGGER.info("Done. {} sync fields, {} save fields", clientSyncFields.length, serverSaveFields.length);
     }
 
     public static final class FieldSyncData {
@@ -110,11 +116,13 @@ public final class ClassSyncData {
         public final String fieldName, nbtSaveKey;
         public final VarHandle handle;
         public final boolean triggerClientRerender, saveToStack, isCustomData;
+        public final Class<?> fieldType;
         public final MethodHandle[] changeListenerHandles, nbtSaveModifiers, nbtLoadModifiers;
 
-        public FieldSyncData(Field field, VarHandle handle, MethodInfo appliedMethods) {
+        public FieldSyncData(@NotNull Field field, @NotNull VarHandle handle, MethodInfo appliedMethods) {
             this.fieldName = field.getName();
             this.handle = handle;
+            fieldType = field.getType();
             var savedField = field.getAnnotation(SaveField.class);
             this.nbtSaveKey = (savedField != null && !savedField.nbtKey().isBlank()) ? savedField.nbtKey() : fieldName;
             triggerClientRerender = field.isAnnotationPresent(RerenderOnChanged.class);
@@ -126,9 +134,24 @@ public final class ClassSyncData {
                         "Fields marked with @CustomDataField must have exactly one SAVE_NBT FieldDataModifier and one LOAD_NBT FieldDataModifier: %s.%s"
                                 .formatted(field.getClass().getCanonicalName(), fieldName));
 
-            changeListenerHandles = appliedMethods.listeners.toArray(MethodHandle[]::new);
-            nbtSaveModifiers = appliedMethods.listeners.toArray(MethodHandle[]::new);
-            nbtLoadModifiers = appliedMethods.nbtLoaders.toArray(MethodHandle[]::new);
+            try {
+                ValueTransformers.get(field.getType());
+            } catch (IllegalArgumentException e) {
+                GTCEu.LOGGER.warn("No type compatibility for field: {} {}", fieldName, field.getType());
+            }
+
+            if (appliedMethods != null) {
+                GTCEu.LOGGER.info("Field {} has: {} listeners, {} nbtSavers, {} nbtLoaders", field.getName(),
+                        appliedMethods.listeners.size(), appliedMethods.nbtSavers.size(),
+                        appliedMethods.nbtLoaders.size());
+                changeListenerHandles = appliedMethods.listeners.toArray(MethodHandle[]::new);
+                nbtSaveModifiers = appliedMethods.nbtSavers.toArray(MethodHandle[]::new);
+                nbtLoadModifiers = appliedMethods.nbtLoaders.toArray(MethodHandle[]::new);
+            } else {
+                changeListenerHandles = new MethodHandle[0];
+                nbtSaveModifiers = new MethodHandle[0];
+                nbtLoadModifiers = new MethodHandle[0];
+            }
         }
     }
 

@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.syncdata;
 
-import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -8,11 +7,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import lombok.Getter;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * A BlockEntity that manages sync and save data via the {@code ISyncManaged} syncdata system.
+ * 
  * @see ISyncManaged
  */
 @ParametersAreNonnullByDefault
@@ -21,7 +22,6 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
 
     @Getter
     protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
-
 
     public ManagedSyncBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);

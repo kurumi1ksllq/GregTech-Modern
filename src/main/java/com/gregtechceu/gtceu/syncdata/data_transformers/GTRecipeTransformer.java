@@ -1,0 +1,95 @@
+package com.gregtechceu.gtceu.syncdata.data_transformers;
+
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.api.recipe.GTRecipeSerializer;
+import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
+import com.gregtechceu.gtceu.syncdata.IValueTransformer;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.*;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraftforge.server.ServerLifecycleHooks;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
+import java.util.Objects;
+
+public class GTRecipeTransformer implements IValueTransformer<GTRecipe> {
+
+    private static RecipeManager getRecipeManager() {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server != null && Thread.currentThread() == server.getRunningThread()) {
+            return server.getRecipeManager();
+        } else {
+            return Objects.requireNonNull(Minecraft.getInstance().getConnection()).getRecipeManager();
+        }
+    }
+
+    @Override
+    public void writeBufferPayload(FriendlyByteBuf buf, GTRecipe value) {
+        buf.writeResourceLocation(value.id);
+        GTRecipeSerializer.SERIALIZER.toNetwork(buf, value);
+        buf.writeInt(value.parallels);
+        buf.writeInt(value.ocLevel);
+    }
+
+    @Override
+    public GTRecipe readBufferPayload(FriendlyByteBuf buf, GTRecipe currentValue) {
+        var id = buf.readResourceLocation();
+        if (buf.isReadable()) {
+            var newValue = GTRecipeSerializer.SERIALIZER.fromNetwork(id, buf);
+            if (buf.isReadable()) {
+                newValue.parallels = buf.readInt();
+                newValue.ocLevel = buf.readInt();
+            }
+            return newValue;
+        } else { // Backwards Compatibility
+            RecipeManager recipeManager = getRecipeManager();
+            return (GTRecipe) recipeManager.byKey(id).orElse(null);
+        }
+    }
+
+    @Override
+    public Tag serializeNBT(GTRecipe value) {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("id", value.id.toString());
+        tag.put("recipe",
+                GTRecipeSerializer.CODEC.encodeStart(NbtOps.INSTANCE, value).result().orElse(new CompoundTag()));
+        tag.putInt("parallels", value.parallels);
+        tag.putInt("ocLevel", value.ocLevel);
+        return tag;
+    }
+
+    @Override
+    public GTRecipe deserializeNBT(Tag tag, GTRecipe currentVal) {
+        RecipeManager recipeManager = getRecipeManager();
+        GTRecipe result = null;
+        if (tag instanceof CompoundTag compoundTag) {
+            result = GTRecipeSerializer.CODEC.parse(NbtOps.INSTANCE, compoundTag.get("recipe")).result().orElse(null);
+            if (result != null) {
+                result.id = new ResourceLocation(compoundTag.getString("id"));
+                result.parallels = compoundTag.contains("parallels") ? compoundTag.getInt("parallels") : 1;
+                result.ocLevel = compoundTag.getInt("ocLevel");
+            }
+        } else if (tag instanceof StringTag stringTag) { // Backwards Compatibility
+            var recipe = recipeManager.byKey(new ResourceLocation(stringTag.getAsString())).orElse(null);
+            if (recipe instanceof GTRecipe gtRecipe) {
+                result = gtRecipe;
+            } else if (recipe instanceof SmeltingRecipe smeltingRecipe) {
+                result = GTRecipeTypes.FURNACE_RECIPES.toGTrecipe(new ResourceLocation(stringTag.getAsString()),
+                        smeltingRecipe);
+            }
+        } else if (tag instanceof ByteArrayTag byteArray) { // Backwards Compatibility
+            ByteBuf copiedDataBuffer = Unpooled.copiedBuffer(byteArray.getAsByteArray());
+            FriendlyByteBuf buf = new FriendlyByteBuf(copiedDataBuffer);
+            result = (GTRecipe) recipeManager.byKey(buf.readResourceLocation()).orElse(null);
+            buf.release();
+        }
+        return result;
+    }
+}

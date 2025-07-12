@@ -34,7 +34,7 @@ public class LargeMixerMachine extends WorkableElectricMultiblockMachine impleme
     @Override
     public void onStructureFormed() {
         super.onStructureFormed();
-        IFluidRenderMulti.super.onStructureInvalid();
+        IFluidRenderMulti.super.onStructureFormed();
     }
 
     @Override

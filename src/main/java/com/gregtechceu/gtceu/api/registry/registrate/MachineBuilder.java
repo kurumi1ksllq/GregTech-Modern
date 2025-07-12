@@ -91,7 +91,8 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
     protected final TriFunction<BlockEntityType<?>, BlockPos, BlockState, IMachineBlockEntity> blockEntityFactory;
 
     protected final Function<ResourceLocation, DEFINITION> definition;
-    protected final Function<IMachineBlockEntity, MetaMachine> machine;
+    @Setter
+    protected Function<IMachineBlockEntity, MetaMachine> machine;
     @Nullable
     @Getter
     @Setter
@@ -539,7 +540,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
         definition.setRenderXEIPreview(renderMultiblockXEIPreview);
         definition.setRenderWorldPreview(renderMultiblockWorldPreview);
         GTRegistries.MACHINES.register(definition.getId(), definition);
-        return definition;
+        return value = definition;
     }
 
     @FunctionalInterface

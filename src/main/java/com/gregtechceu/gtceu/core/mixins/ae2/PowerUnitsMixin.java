@@ -20,13 +20,13 @@ public class PowerUnitsMixin {
     @Unique
     private static PowerUnits gtceu$EU_UNIT;
 
-    @Invoker(value = "<init>", remap = false)
+    @Invoker(value = "<init>")
     private static PowerUnits gtceu$invokeConstructor(String internalName, int ordinal, String unlocalizedName,
                                                       String textRepresentation) {
         throw new AssertionError();
     }
 
-    @ModifyReturnValue(method = "values", at = @At("RETURN"), remap = false)
+    @ModifyReturnValue(method = "values", at = @At("RETURN"))
     private static PowerUnits[] gtceu$addEUToValues(PowerUnits[] original) {
         if (gtceu$EU_UNIT == null) {
             gtceu$EU_UNIT = gtceu$invokeConstructor("EU", original.length, "gui.ae2.units.eu", "EU");

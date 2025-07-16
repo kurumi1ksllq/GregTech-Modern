@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 // the EU power unit so that it appears
 // correctly in controller and network tool UI.
 @Mixin(value = SettingToggleButton.class, remap = false)
-public abstract class EUAddAppearanceMixin<T extends Enum<T>> {
+public abstract class SettingToggleButtonMixin<T extends Enum<T>> {
 
     @Invoker("registerApp")
     private static <E extends Enum<E>> void invokeRegisterApp(Icon icon, Setting<E> setting, E val,

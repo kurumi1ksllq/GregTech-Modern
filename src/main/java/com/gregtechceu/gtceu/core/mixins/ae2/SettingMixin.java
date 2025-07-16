@@ -17,7 +17,7 @@ import java.util.EnumSet;
 // loop through (which is why the deprecated RF, which is a valid Power Unit,
 // isn't an option when you click the button). We want to add EU to this list.
 @Mixin(value = Setting.class, remap = false)
-public abstract class EUAddSettingMixin<T extends Enum<T>> {
+public abstract class SettingMixin<T extends Enum<T>> {
 
     @Shadow
     @Final

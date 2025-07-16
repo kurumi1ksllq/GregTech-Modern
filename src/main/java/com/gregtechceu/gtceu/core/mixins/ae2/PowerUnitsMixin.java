@@ -15,7 +15,7 @@ import java.util.Arrays;
 // factors in AE2. We want to add EU to this.
 @Debug(export = true)
 @Mixin(value = PowerUnits.class, remap = false)
-public class EUAddPowerUnitMixin {
+public class PowerUnitsMixin {
 
     @Unique
     private static PowerUnits gtceu$EU_UNIT;

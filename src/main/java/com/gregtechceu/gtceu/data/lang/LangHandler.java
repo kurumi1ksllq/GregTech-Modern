@@ -1440,6 +1440,9 @@ public class LangHandler {
         provider.add("gtceu.tooltip.status.trinary.false", "False");
         provider.add("gtceu.tooltip.status.trinary.true", "True");
         provider.add("gtceu.tooltip.status.trinary.unknown", "Unknown");
+
+        // AE2 power unit compat
+        provider.add("gui.ae2.units.eu", "EU");
     }
 
     /**

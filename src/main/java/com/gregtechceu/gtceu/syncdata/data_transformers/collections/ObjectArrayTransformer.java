@@ -6,16 +6,17 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 
-import java.util.function.IntFunction;
-
 public class ObjectArrayTransformer<T> implements IValueTransformer<T[]> {
 
     private final IValueTransformer<T> elementTransformer;
-    private final IntFunction<Object[]> arrayFactory;
 
-    public ObjectArrayTransformer(IValueTransformer<T> elementTransformer, IntFunction<Object[]> arrayFactory) {
+    @Override
+    public boolean mustProvideObject() {
+        return true;
+    }
+
+    public ObjectArrayTransformer(IValueTransformer<T> elementTransformer) {
         this.elementTransformer = elementTransformer;
-        this.arrayFactory = arrayFactory;
     }
 
     @Override
@@ -29,12 +30,13 @@ public class ObjectArrayTransformer<T> implements IValueTransformer<T[]> {
     @Override
     public T[] readBufferPayload(FriendlyByteBuf buffer, T[] currentVal) {
         int length = buffer.readVarInt();
-        @SuppressWarnings("unchecked")
-        T[] array = (T[]) arrayFactory.apply(length);
+        if (currentVal == null) return null;
+
         for (int i = 0; i < length; i++) {
-            array[i] = elementTransformer.readBufferPayload(buffer, null);
+            if (elementTransformer.mustProvideObject()) elementTransformer.readBufferPayload(buffer, currentVal[i]);
+            else currentVal[i] = elementTransformer.readBufferPayload(buffer, null);
         }
-        return array;
+        return currentVal;
     }
 
     @Override
@@ -49,11 +51,12 @@ public class ObjectArrayTransformer<T> implements IValueTransformer<T[]> {
     @Override
     public T[] deserializeNBT(Tag tag, T[] currentVal) {
         if (!(tag instanceof ListTag listTag)) throw new IllegalArgumentException("Expected ListTag");
-        @SuppressWarnings("unchecked")
-        T[] array = (T[]) arrayFactory.apply(listTag.size());
+
         for (int i = 0; i < listTag.size(); i++) {
-            array[i] = elementTransformer.deserializeNBT(listTag.get(i), null);
+            if (elementTransformer.mustProvideObject())
+                elementTransformer.deserializeNBT(listTag.get(i), currentVal[i]);
+            else currentVal[i] = elementTransformer.deserializeNBT(listTag.get(i), null);
         }
-        return array;
+        return currentVal;
     }
 }

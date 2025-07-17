@@ -28,7 +28,7 @@ public class EnumTransformer<E extends Enum<E>> implements IValueTransformer<E> 
 
     @Override
     public Tag serializeNBT(E value) {
-        return StringTag.valueOf(value.toString());
+        return StringTag.valueOf(value.name());
     }
 
     @Override

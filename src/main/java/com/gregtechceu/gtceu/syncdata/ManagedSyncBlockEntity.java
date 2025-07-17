@@ -8,6 +8,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -27,16 +30,22 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
         super(type, pos, blockState);
     }
 
+    protected ISyncManaged @NotNull [] getSyncObjects() {
+        return new ISyncManaged[] { this };
+    }
+
     // Called when this BlockEntity is saved or loaded
 
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
+        Arrays.stream(getSyncObjects()).map(obj -> obj.getSyncDataHolder().saveNBT()).forEach(tag::merge);
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
+        Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadFromNBT(tag));
     }
 
     // Called to init clientside BlockEntities on chunk load

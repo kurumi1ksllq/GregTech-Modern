@@ -16,7 +16,9 @@ import com.gregtechceu.gtceu.api.misc.LaserContainerList;
 import com.gregtechceu.gtceu.client.model.IBlockEntityRendererBakedModel;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.common.datafixers.TagFixer;
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
+import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
@@ -49,7 +51,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class MetaMachineBlockEntity extends ManagedSyncBlockEntity implements IMachineBlockEntity {
+public class MetaMachineBlockEntity extends ManagedSyncBlockEntity implements IMachineBlockEntity, ISyncManaged {
+
+    @Getter
+    protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
 
     @Getter
     public final MetaMachine metaMachine;
@@ -64,6 +69,11 @@ public class MetaMachineBlockEntity extends ManagedSyncBlockEntity implements IM
         super(type, pos, blockState);
         this.renderState = getDefinition().defaultRenderState();
         this.metaMachine = getDefinition().createMetaMachine(this);
+    }
+
+    @Override
+    protected ISyncManaged @NotNull [] getSyncObjects() {
+        return new ISyncManaged[] { this, metaMachine };
     }
 
     @Override

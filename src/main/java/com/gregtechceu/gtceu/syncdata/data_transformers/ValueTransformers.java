@@ -19,7 +19,6 @@ import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -71,8 +70,7 @@ public final class ValueTransformers {
             if (type.isArray()) {
                 Class<?> componentType = type.getComponentType();
                 IValueTransformer<?> componentTx = get(componentType);
-                if (componentTx != null) return new ObjectArrayTransformer<>(componentTx,
-                        length -> (Object[]) Array.newInstance(componentType, length));
+                if (componentTx != null) return new ObjectArrayTransformer<>(componentTx);
             }
 
             for (var ifaceEntry : REGISTERED_INTERFACES.entrySet()) {

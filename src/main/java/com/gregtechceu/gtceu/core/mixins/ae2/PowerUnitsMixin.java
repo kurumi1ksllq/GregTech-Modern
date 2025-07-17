@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.core.mixins.ae2;
 
+import com.gregtechceu.gtceu.api.capability.compat.FeCompat;
+
 import appeng.api.config.PowerUnits;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import org.spongepowered.asm.mixin.Debug;
@@ -31,8 +33,8 @@ public class PowerUnitsMixin {
         if (gtceu$EU_UNIT == null) {
             gtceu$EU_UNIT = gtceu$invokeConstructor("EU", original.length, "gui.ae2.units.eu", "EU");
             // Conversion ratio of EU to AE = EU to FE * FE to AE;
-            float FEtoAE = 0.5f;
-            float EUtoFE = 4f;
+            double FEtoAE = PowerUnits.RF.conversionRatio;
+            double EUtoFE = FeCompat.ratio(false);
             gtceu$EU_UNIT.conversionRatio = EUtoFE * FEtoAE;
         }
 

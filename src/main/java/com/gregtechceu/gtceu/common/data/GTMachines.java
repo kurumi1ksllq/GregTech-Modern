@@ -607,7 +607,6 @@ public class GTMachines {
                     .tooltips(Component.translatable("gtceu.machine.item_bus.import.tooltip"),
                             Component.translatable("gtceu.universal.tooltip.item_storage_capacity",
                                     (1 + Math.min(9, tier)) * (1 + Math.min(9, tier))))
-                    .allowCoverOnFront(true)
                     .register(),
             ALL_TIERS);
 
@@ -621,7 +620,6 @@ public class GTMachines {
                     .tooltips(Component.translatable("gtceu.machine.item_bus.export.tooltip"),
                             Component.translatable("gtceu.universal.tooltip.item_storage_capacity",
                                     (1 + Math.min(9, tier)) * (1 + Math.min(9, tier))))
-                    .allowCoverOnFront(true)
                     .register(),
             ALL_TIERS);
 
@@ -823,7 +821,6 @@ public class GTMachines {
             .tooltips(Component.translatable("gtceu.machine.item_bus.import.tooltip"),
                     Component.translatable("gtceu.machine.steam_bus.tooltip"),
                     Component.translatable("gtceu.universal.tooltip.item_storage_capacity", 4))
-            .allowCoverOnFront(true)
             .register();
 
     public static final MachineDefinition STEAM_EXPORT_BUS = REGISTRATE
@@ -835,7 +832,6 @@ public class GTMachines {
             .tooltips(Component.translatable("gtceu.machine.item_bus.export.tooltip"),
                     Component.translatable("gtceu.machine.steam_bus.tooltip"),
                     Component.translatable("gtceu.universal.tooltip.item_storage_capacity", 4))
-            .allowCoverOnFront(true)
             .register();
 
     public static final MachineDefinition STEAM_HATCH = REGISTRATE
@@ -846,7 +842,6 @@ public class GTMachines {
             .tooltips(Component.translatable("gtceu.universal.tooltip.fluid_storage_capacity",
                     SteamHatchPartMachine.INITIAL_TANK_CAPACITY),
                     Component.translatable("gtceu.machine.steam.steam_hatch.tooltip"))
-            .allowCoverOnFront(true)
             .register();
 
     public static final MachineDefinition COKE_OVEN_HATCH = REGISTRATE.machine("coke_oven_hatch", CokeOvenHatch::new)

@@ -302,7 +302,7 @@ public class GTMachineModels {
                 RecipeLogic.Status status = state.getValue(RecipeLogic.STATUS_PROPERTY);
 
                 BlockModelBuilder model = prov.models().nested()
-                        .parent(prov.models().getExistingFile(GTCEu.id("block/overlay/2_layer/tinted/front")))
+                        .parent(prov.models().getExistingFile(SIDED_SIDED_OVERLAY_MODEL))
                         .texture("overlay", ENERGY_OUT_1A.getIoPart())
                         .texture("overlay_tinted", ENERGY_OUT_1A.getTintedPart());
                 tieredHullTextures(model, builder.getOwner().getTier());

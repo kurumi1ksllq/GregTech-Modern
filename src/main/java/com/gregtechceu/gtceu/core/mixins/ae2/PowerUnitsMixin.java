@@ -1,7 +1,5 @@
 package com.gregtechceu.gtceu.core.mixins.ae2;
 
-import com.gregtechceu.gtceu.api.capability.compat.FeCompat;
-
 import appeng.api.config.PowerUnits;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import org.spongepowered.asm.mixin.Debug;

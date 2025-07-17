@@ -1,12 +1,14 @@
 package com.gregtechceu.gtceu.integration.ae2;
 
-import appeng.api.config.PowerUnits;
 import com.gregtechceu.gtceu.api.capability.compat.FeCompat;
+
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+import appeng.api.config.PowerUnits;
 
 public class AE2Compat {
 

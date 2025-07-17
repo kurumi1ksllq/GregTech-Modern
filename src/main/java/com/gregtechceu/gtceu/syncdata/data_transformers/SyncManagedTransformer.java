@@ -12,6 +12,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import lombok.SneakyThrows;
 
 import java.lang.invoke.MethodHandle;
+import java.util.Arrays;
 
 public class SyncManagedTransformer<T extends ISyncManaged> implements IValueTransformer<T> {
 
@@ -21,11 +22,35 @@ public class SyncManagedTransformer<T extends ISyncManaged> implements IValueTra
     }
 
     @Override
-    public void writeBufferPayload(FriendlyByteBuf buffer, T value) {}
+    @SuppressWarnings("unchecked")
+    public void writeBufferPayload(FriendlyByteBuf buffer, T value) {
+        // Not very efficient
+        buffer.writeInt(value.getSyncDataHolder().syncData.clientSyncFields.length);
+        for (ClassSyncData.FieldSyncData field : value.getSyncDataHolder().syncData.clientSyncFields) {
+            IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
+            if (transformer == null) continue;
+            buffer.writeUtf(field.fieldName);
+            transformer.writeBufferPayload(buffer, field.handle.get(value));
+        }
+    }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T readBufferPayload(FriendlyByteBuf buffer, T currentVal) {
-        return null;
+        // Not very efficient
+        var fieldCount = buffer.readInt();
+        for (int i=0; i<fieldCount; i++) {
+            var fieldName = buffer.readUtf();
+            var field = Arrays.stream(currentVal.getSyncDataHolder().syncData.clientSyncFields).filter(f -> f.fieldName.equals(fieldName)).findFirst();
+            if (field.isEmpty()) continue;
+            var fieldVal = field.get();
+            IValueTransformer<Object> transformer = (IValueTransformer<Object>) fieldVal.transformer;
+            if (transformer == null) continue;
+            if (transformer.mustProvideObject()) transformer.readBufferPayload(buffer, fieldVal.handle.get(currentVal));
+            else fieldVal.handle.set(currentVal, transformer.readBufferPayload(buffer, null));
+        }
+
+        return currentVal;
     }
 
     @SneakyThrows
@@ -46,10 +71,7 @@ public class SyncManagedTransformer<T extends ISyncManaged> implements IValueTra
             }
             IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
             Object result = field.handle.get(value);
-            if (result == null) {
-                tag.put(field.nbtSaveKey, new CompoundTag());
-                continue;
-            }
+            if (result == null) continue;
             var nbtValue = transformer.serializeNBT(result);
             for (MethodHandle modifier : field.nbtSaveModifiers) {
                 nbtValue = (Tag) modifier.invoke(value, nbtValue);
@@ -74,6 +96,7 @@ public class SyncManagedTransformer<T extends ISyncManaged> implements IValueTra
                 GTCEu.LOGGER.error("no value transformer for field {} {}", field.fieldName, field.fieldType);
                 return currentVal;
             }
+
             Tag savedValue = compound.get(field.nbtSaveKey);
             if (savedValue == null) continue;
             IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;

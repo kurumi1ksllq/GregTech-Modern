@@ -48,6 +48,7 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
         Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadFromNBT(tag));
     }
 
+
     // Called to init clientside BlockEntities on chunk load
 
     @Override

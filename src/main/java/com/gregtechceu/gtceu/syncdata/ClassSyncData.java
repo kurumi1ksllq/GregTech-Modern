@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.syncdata;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.syncdata.annotations.*;
 import com.gregtechceu.gtceu.syncdata.data_transformers.ValueTransformers;
 
@@ -39,11 +38,8 @@ public final class ClassSyncData {
             return;
         }
 
-        GTCEu.LOGGER.info("ClassSyncData: Registering class {}", clazz.getName());
-
         ArrayList<FieldSyncData> foundSyncFields = new ArrayList<>();
         ArrayList<FieldSyncData> foundSaveFields = new ArrayList<>();
-
         Map<String, MethodInfo> annotatedMethods = new HashMap<>();
 
         for (var method : clazz.getDeclaredMethods()) {
@@ -102,13 +98,10 @@ public final class ClassSyncData {
             var parentHandles = CACHE.get(parent);
             foundSyncFields.addAll(List.of(parentHandles.clientSyncFields));
             foundSaveFields.addAll(List.of(parentHandles.serverSaveFields));
-            GTCEu.LOGGER.info("Inheriting {} sync fields, {} save fields from parent {}",
-                    parentHandles.clientSyncFields.length, parentHandles.serverSaveFields.length, parent.getName());
         }
 
         serverSaveFields = foundSaveFields.toArray(FieldSyncData[]::new);
         clientSyncFields = foundSyncFields.toArray(FieldSyncData[]::new);
-        GTCEu.LOGGER.info("Done. {} sync fields, {} save fields", clientSyncFields.length, serverSaveFields.length);
     }
 
     public static final class FieldSyncData {
@@ -117,6 +110,7 @@ public final class ClassSyncData {
         public final VarHandle handle;
         public final boolean triggerClientRerender, saveToStack, isCustomData;
         public final Class<?> fieldType;
+        public final IValueTransformer<?> transformer;
         public final MethodHandle[] changeListenerHandles, nbtSaveModifiers, nbtLoadModifiers;
 
         public FieldSyncData(@NotNull Field field, @NotNull VarHandle handle, MethodInfo appliedMethods) {
@@ -134,16 +128,16 @@ public final class ClassSyncData {
                         "Fields marked with @CustomDataField must have exactly one SAVE_NBT FieldDataModifier and one LOAD_NBT FieldDataModifier: %s.%s"
                                 .formatted(field.getClass().getCanonicalName(), fieldName));
 
-            try {
-                ValueTransformers.get(field.getType());
-            } catch (IllegalArgumentException e) {
-                GTCEu.LOGGER.warn("No type compatibility for field: {} {}", fieldName, field.getType());
-            }
+            if (!isCustomData) {
+                var collectionTransformer = ValueTransformers.getCollectionTransformer(field);
+                if (collectionTransformer == null) {
+                    transformer = ValueTransformers.get(field.getType());
+                } else {
+                    transformer = collectionTransformer;
+                }
+            } else transformer = null;
 
             if (appliedMethods != null) {
-                GTCEu.LOGGER.info("Field {} has: {} listeners, {} nbtSavers, {} nbtLoaders", field.getName(),
-                        appliedMethods.listeners.size(), appliedMethods.nbtSavers.size(),
-                        appliedMethods.nbtLoaders.size());
                 changeListenerHandles = appliedMethods.listeners.toArray(MethodHandle[]::new);
                 nbtSaveModifiers = appliedMethods.nbtSavers.toArray(MethodHandle[]::new);
                 nbtLoadModifiers = appliedMethods.nbtLoaders.toArray(MethodHandle[]::new);

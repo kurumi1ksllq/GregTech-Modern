@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.syncdata.data_transformers;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
+import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 import com.gregtechceu.gtceu.syncdata.data_transformers.collections.*;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -32,14 +34,34 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public final class ValueTransformers {
 
     private static final Map<Class<?>, IValueTransformer<?>> REGISTERED = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, IValueTransformer<?>> REGISTERED_INTERFACES = new ConcurrentHashMap<>();
+
+    private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_BOXED = Map.of(
+            boolean.class, Boolean.class,
+            byte.class, Byte.class,
+            char.class, Character.class,
+            short.class, Short.class,
+            int.class, Integer.class,
+            long.class, Long.class,
+            float.class, Float.class,
+            double.class, Double.class,
+            void.class, Void.class
+    );
+
+    public static Class<?> boxIfPrimitive(Class<?> cls) {
+        return cls.isPrimitive() ? PRIMITIVE_TO_BOXED.get(cls) : cls;
+    }
 
     // Logic for determining which IValueTransformer should be used to serialise a value
     private static final ClassValue<IValueTransformer<?>> TRANSFORMERS = new ClassValue<>() {
 
         @Override
         protected IValueTransformer<?> computeValue(@NotNull Class<?> type) {
+            type = boxIfPrimitive(type);
             IValueTransformer<?> tx = REGISTERED.get(type);
             if (tx != null) return tx;
+            IValueTransformer<?> ifaceTx = REGISTERED_INTERFACES.get(type);
+            if (ifaceTx != null) return ifaceTx;
 
             if (type.isEnum()) {
                 @SuppressWarnings("unchecked")
@@ -54,34 +76,51 @@ public final class ValueTransformers {
                         length -> (Object[]) Array.newInstance(componentType, length));
             }
 
-            if (List.class.isAssignableFrom(type)) {
-                IValueTransformer<?> elementTx = findTypeArgumentTransformer(type, 0);
-                if (elementTx != null) return new ListTransformer<>(elementTx);
-            } else if (Set.class.isAssignableFrom(type)) {
-                IValueTransformer<?> elementTx = findTypeArgumentTransformer(type, 0);
-                if (elementTx != null) return new SetTransformer<>(elementTx);
-            } else if (Map.class.isAssignableFrom(type)) {
-                IValueTransformer<?> keyTx = findTypeArgumentTransformer(type, 0);
-                IValueTransformer<?> valTx = findTypeArgumentTransformer(type, 1);
-                if (keyTx != null && valTx != null) return new MapTransformer<>(keyTx, valTx);
-            }
-
-            for (Class<?> iface : type.getInterfaces()) {
-                IValueTransformer<?> ifaceTx = REGISTERED.get(iface);
-                if (ifaceTx != null) return ifaceTx;
+            for (var ifaceEntry : REGISTERED_INTERFACES.entrySet()) {
+                if (ifaceEntry.getKey().isAssignableFrom(type)) return ifaceEntry.getValue();
             }
 
             throw new IllegalStateException("No transformer registered for type: " + type);
         }
     };
 
+
+    public static IValueTransformer<?> getCollectionTransformer(Field type) {
+        var collectionType = type.getType();
+
+        if (type.getGenericType() instanceof ParameterizedType ptype) {
+            var actualTypes = ptype.getActualTypeArguments();
+            Type keyType = actualTypes[0];
+            Type valueType = actualTypes.length > 1 ? actualTypes[1] : null;
+
+            if (List.class.isAssignableFrom(collectionType)) {
+                if (keyType instanceof Class<?> keyClass) {
+                    return new ListTransformer<>(ValueTransformers.get(keyClass));
+                }
+            } else if (Set.class.isAssignableFrom(collectionType)) {
+                if (keyType instanceof Class<?> keyClass) {
+                    return new SetTransformer<>(ValueTransformers.get(keyClass));
+                }
+            } else if (Map.class.isAssignableFrom(collectionType)) {
+                if (keyType instanceof Class<?> keyClass && valueType instanceof Class<?> valueClass) {
+                    return new MapTransformer<>(ValueTransformers.get(keyClass), ValueTransformers.get(valueClass));
+                }
+            }
+        }
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> IValueTransformer<T> get(Class<T> type) {
-        return (IValueTransformer<T>) TRANSFORMERS.get(type);
+        return (IValueTransformer<T>) TRANSFORMERS.get(boxIfPrimitive(type));
     }
 
     public static void registerClassTransformer(Class<?> type, IValueTransformer<?> transformer) {
         REGISTERED.putIfAbsent(type, transformer);
+    }
+
+    public static void registerInterfaceTransformer(Class<?> type, IValueTransformer<?> transformer) {
+        REGISTERED_INTERFACES.put(type, transformer);
     }
 
     @SuppressWarnings("unchecked")
@@ -116,66 +155,35 @@ public final class ValueTransformers {
         };
     }
 
-    private static IValueTransformer<?> findTypeArgumentTransformer(Class<?> clazz, int index) {
-        Type genericSuperclass = clazz.getGenericSuperclass();
-        if (genericSuperclass instanceof ParameterizedType pt) {
-            Type[] args = pt.getActualTypeArguments();
-            if (args.length > index && args[index] instanceof Class<?> actualClass) {
-                return TRANSFORMERS.get(actualClass);
-            }
-        }
-        return null;
-    }
-
     static {
 
-        // Primitives
+        registerClassTransformer(Integer.class, createSimpleTransformer(FriendlyByteBuf::writeInt,
+                FriendlyByteBuf::readInt, IntTag::valueOf, castTag(0, NumericTag.class, NumericTag::getAsInt)));
 
-        IValueTransformer<Integer> intTransformer = createSimpleTransformer(FriendlyByteBuf::writeInt,
-                FriendlyByteBuf::readInt, IntTag::valueOf, castTag(0, NumericTag.class, NumericTag::getAsInt));
-        IValueTransformer<Long> longTransformer = createSimpleTransformer(FriendlyByteBuf::writeLong,
-                FriendlyByteBuf::readLong, LongTag::valueOf, castTag(0L, NumericTag.class, NumericTag::getAsLong));
-        IValueTransformer<Float> floatTransformer = createSimpleTransformer(FriendlyByteBuf::writeFloat,
-                FriendlyByteBuf::readFloat, FloatTag::valueOf, castTag(0f, NumericTag.class, NumericTag::getAsFloat));
-        IValueTransformer<Double> doubleTransformer = createSimpleTransformer(FriendlyByteBuf::writeDouble,
+        registerClassTransformer(Long.class, createSimpleTransformer(FriendlyByteBuf::writeLong,
+                FriendlyByteBuf::readLong, LongTag::valueOf, castTag(0L, NumericTag.class, NumericTag::getAsLong)));
+
+        registerClassTransformer(Float.class, createSimpleTransformer(FriendlyByteBuf::writeFloat,
+                FriendlyByteBuf::readFloat, FloatTag::valueOf, castTag(0f, NumericTag.class, NumericTag::getAsFloat)));
+
+        registerClassTransformer(Double.class, createSimpleTransformer(FriendlyByteBuf::writeDouble,
                 FriendlyByteBuf::readDouble, DoubleTag::valueOf,
-                castTag(0.0, NumericTag.class, NumericTag::getAsDouble));
-        IValueTransformer<Short> shortTransformer = createSimpleTransformer((buf, s) -> buf.writeShort(s),
+                castTag(0.0, NumericTag.class, NumericTag::getAsDouble)));
+
+        registerClassTransformer(Short.class, createSimpleTransformer((buf, s) -> buf.writeShort(s),
                 FriendlyByteBuf::readShort, ShortTag::valueOf,
-                castTag((short) 0, NumericTag.class, NumericTag::getAsShort));
-        IValueTransformer<Byte> byteTransformer = createSimpleTransformer((buf, b) -> buf.writeByte(b),
+                castTag((short) 0, NumericTag.class, NumericTag::getAsShort)));
+
+        registerClassTransformer(Byte.class, createSimpleTransformer((buf, b) -> buf.writeByte(b),
                 FriendlyByteBuf::readByte, ByteTag::valueOf,
-                castTag((byte) 0, NumericTag.class, NumericTag::getAsByte));
-        IValueTransformer<Character> charTransformer = createSimpleTransformer((buf, c) -> buf.writeChar(c),
+                castTag((byte) 0, NumericTag.class, NumericTag::getAsByte)));
+
+        registerClassTransformer(Character.class, createSimpleTransformer((buf, c) -> buf.writeChar(c),
                 FriendlyByteBuf::readChar,
-                (c) -> IntTag.valueOf((int) c), castTag((char) 0, NumericTag.class, (tag) -> (char) tag.getAsInt()));
-        IValueTransformer<Boolean> boolTransformer = createSimpleTransformer(FriendlyByteBuf::writeBoolean,
+                (c) -> IntTag.valueOf((int) c), castTag((char) 0, NumericTag.class, (tag) -> (char) tag.getAsInt())));
+        registerClassTransformer(Boolean.class, createSimpleTransformer(FriendlyByteBuf::writeBoolean,
                 FriendlyByteBuf::readBoolean, ByteTag::valueOf,
-                (t) -> t instanceof NumericTag num && num.getAsByte() != 0);
-
-        registerClassTransformer(Integer.class, intTransformer);
-        registerClassTransformer(int.class, intTransformer);
-
-        registerClassTransformer(Long.class, longTransformer);
-        registerClassTransformer(long.class, longTransformer);
-
-        registerClassTransformer(Float.class, floatTransformer);
-        registerClassTransformer(float.class, floatTransformer);
-
-        registerClassTransformer(Double.class, doubleTransformer);
-        registerClassTransformer(double.class, doubleTransformer);
-
-        registerClassTransformer(Short.class, shortTransformer);
-        registerClassTransformer(short.class, shortTransformer);
-
-        registerClassTransformer(Byte.class, byteTransformer);
-        registerClassTransformer(byte.class, byteTransformer);
-
-        registerClassTransformer(Character.class, charTransformer);
-        registerClassTransformer(char.class, charTransformer);
-
-        registerClassTransformer(Boolean.class, boolTransformer);
-        registerClassTransformer(boolean.class, boolTransformer);
+                (t) -> t instanceof NumericTag num && num.getAsByte() != 0));
 
         // Primtive arrays
         registerClassTransformer(int[].class, new PrimitiveArrayTransformers.IntArrayTransformer());
@@ -206,20 +214,21 @@ public final class ValueTransformers {
         registerClassTransformer(CompoundTag.class, createSimpleTransformer(FriendlyByteBuf::writeNbt,
                 FriendlyByteBuf::readNbt, (v) -> v, castTag(new CompoundTag(), CompoundTag.class, (v) -> v)));
 
-        registerClassTransformer(Component.class,
+        registerClassTransformer(GTRecipe.class, new GTRecipeTransformer());
+        registerClassTransformer(GTRecipeType.class, new GTRecipeTypeTransformer());
+        registerClassTransformer(MachineRenderState.class, new MachineRenderStateTransformer());
+        registerClassTransformer(Material.class, new MaterialTransformer());
+
+        // Interfaces
+
+        registerInterfaceTransformer(ISyncManaged.class, new SyncManagedTransformer<>());
+        registerInterfaceTransformer(INBTSerializable.class, new NBTSerialisableTransformer());
+
+        registerInterfaceTransformer(Component.class,
                 createSimpleTransformer(FriendlyByteBuf::writeComponent, FriendlyByteBuf::readComponent,
                         (c) -> StringTag.valueOf(Component.Serializer.toJson(c)),
                         castTag(Component.literal(""), StringTag.class,
                                 (s) -> Component.Serializer.fromJson(s.getAsString()))));
 
-        registerClassTransformer(GTRecipe.class, new GTRecipeTransformer());
-        registerClassTransformer(GTRecipeType.class, new GTRecipeTypeTransformer());
-        registerClassTransformer(MachineRenderStateTransformer.class, new MachineRenderStateTransformer());
-        registerClassTransformer(Material.class, new MaterialTransformer());
-
-        // Interfaces
-
-        registerClassTransformer(INBTSerializable.class, new NBTSerialisableTransformer());
-        registerClassTransformer(ISyncManaged.class, new SyncManagedTransformer<>());
     }
 }

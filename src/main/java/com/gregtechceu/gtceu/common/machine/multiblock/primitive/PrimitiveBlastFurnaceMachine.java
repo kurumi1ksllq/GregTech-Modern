@@ -34,7 +34,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import lombok.Getter;
+import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,7 +52,7 @@ public class PrimitiveBlastFurnaceMachine extends PrimitiveWorkableMachine imple
     @Getter
     @SyncToClient
     @RerenderOnChanged
-    private final Set<BlockPos> fluidBlockOffsets = new HashSet<>();
+    private @NotNull Set<BlockPos> fluidBlockOffsets = new HashSet<>();
 
     public PrimitiveBlastFurnaceMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
@@ -71,13 +74,14 @@ public class PrimitiveBlastFurnaceMachine extends PrimitiveWorkableMachine imple
     public void onUnload() {
         super.onUnload();
         unsubscribe(hurtSubscription);
+        hurtSubscription = null;
     }
 
     @Override
     public void onStructureFormed() {
         super.onStructureFormed();
         IFluidRenderMulti.super.onStructureFormed();
-        this.hurtSubscription = subscribeServerTick(this::hurtEntities);
+        this.hurtSubscription = subscribeServerTick(this.hurtSubscription, this::hurtEntities);
     }
 
     @Override
@@ -85,11 +89,12 @@ public class PrimitiveBlastFurnaceMachine extends PrimitiveWorkableMachine imple
         super.onStructureInvalid();
         IFluidRenderMulti.super.onStructureInvalid();
         unsubscribe(hurtSubscription);
+        hurtSubscription = null;
     }
 
     @Override
-    public void saveOffsets() {
-        fluidBlockOffsets.add(getPos().relative(getFrontFacing().getOpposite()));
+    public @NotNull Set<BlockPos> saveOffsets() {
+        return Collections.singleton(new BlockPos(getFrontFacing().getOpposite().getNormal()));
     }
 
     @Override

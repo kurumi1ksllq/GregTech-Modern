@@ -11,6 +11,7 @@ import appeng.client.gui.widgets.SettingToggleButton.IHandler;
 import appeng.core.localization.ButtonToolTips;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,8 +23,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = SettingToggleButton.class, remap = false)
 public abstract class SettingToggleButtonMixin<T extends Enum<T>> {
 
-    @Shadow(prefix = "gtceu$")
-    private static <E extends Enum<E>> void gtceu$registerApp(Icon icon, Setting<E> setting, E val,
+    @Invoker("registerApp")
+    private static <E extends Enum<E>> void invokeRegisterApp(Icon icon, Setting<E> setting, E val,
                                                               ButtonToolTips title, Component... tooltipLines) {
         throw new AssertionError();
     }
@@ -33,7 +34,7 @@ public abstract class SettingToggleButtonMixin<T extends Enum<T>> {
                                            IHandler<SettingToggleButton<T>> onPress, CallbackInfo ci) {
         if (setting == Settings.POWER_UNITS) {
             PowerUnits eu = PowerUnits.valueOf("EU");
-            gtceu$registerApp(Icon.POWER_UNIT_EU, Settings.POWER_UNITS, eu, ButtonToolTips.PowerUnits,
+            invokeRegisterApp(Icon.POWER_UNIT_EU, Settings.POWER_UNITS, eu, ButtonToolTips.PowerUnits,
                     eu.textComponent());
         }
     }

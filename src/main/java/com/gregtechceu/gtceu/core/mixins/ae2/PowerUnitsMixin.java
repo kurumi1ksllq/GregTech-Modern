@@ -32,10 +32,6 @@ public class PowerUnitsMixin {
     private static PowerUnits[] gtceu$addEUToValues(PowerUnits[] original) {
         if (gtceu$EU_UNIT == null) {
             gtceu$EU_UNIT = gtceu$invokeConstructor("EU", original.length, "gui.ae2.units.eu", "EU");
-            // Conversion ratio of EU to AE = EU to FE * FE to AE;
-            double FEtoAE = PowerUnits.RF.conversionRatio;
-            double EUtoFE = FeCompat.ratio(false);
-            gtceu$EU_UNIT.conversionRatio = EUtoFE * FEtoAE;
         }
 
         for (PowerUnits unit : original) {

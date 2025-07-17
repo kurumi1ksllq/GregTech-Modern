@@ -45,6 +45,7 @@ import com.gregtechceu.gtceu.data.pack.GTDynamicResourcePack;
 import com.gregtechceu.gtceu.data.pack.GTPackSource;
 import com.gregtechceu.gtceu.data.recipe.GTCraftingComponents;
 import com.gregtechceu.gtceu.forge.AlloyBlastPropertyAddition;
+import com.gregtechceu.gtceu.integration.ae2.AE2Compat;
 import com.gregtechceu.gtceu.integration.cctweaked.CCTweakedPlugin;
 import com.gregtechceu.gtceu.integration.kjs.GTCEuStartupEvents;
 import com.gregtechceu.gtceu.integration.kjs.GTRegistryInfo;
@@ -278,6 +279,11 @@ public class CommonProxy {
             if (GTCEu.Mods.isCCTweakedLoaded()) {
                 GTCEu.LOGGER.info("CC: Tweaked found. Enabling integration...");
                 CCTweakedPlugin.init();
+            }
+
+            if (GTCEu.Mods.isAE2Loaded()) {
+                GTCEu.LOGGER.info("AE2 found. Enabling integration...");
+                AE2Compat.init();
             }
         });
     }

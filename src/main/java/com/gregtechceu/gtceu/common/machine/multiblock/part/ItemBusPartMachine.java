@@ -84,7 +84,7 @@ public class ItemBusPartMachine extends TieredIOPartMachine
         super(holder, tier, io);
         this.inventory = createInventory(args);
         this.circuitSlotEnabled = true;
-        this.circuitInventory = createCircuitItemHandler(io);
+        this.circuitInventory = createCircuitItemHandler(io).shouldSearchContent(false);
     }
 
     //////////////////////////////////////

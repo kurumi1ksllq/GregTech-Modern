@@ -45,8 +45,7 @@ public final class ValueTransformers {
             long.class, Long.class,
             float.class, Float.class,
             double.class, Double.class,
-            void.class, Void.class
-    );
+            void.class, Void.class);
 
     public static Class<?> boxIfPrimitive(Class<?> cls) {
         return cls.isPrimitive() ? PRIMITIVE_TO_BOXED.get(cls) : cls;
@@ -84,12 +83,11 @@ public final class ValueTransformers {
         }
     };
 
-
     public static IValueTransformer<?> getCollectionTransformer(Field type) {
-        var collectionType = type.getType();
+        Class<?> collectionType = type.getType();
 
         if (type.getGenericType() instanceof ParameterizedType ptype) {
-            var actualTypes = ptype.getActualTypeArguments();
+            Type[] actualTypes = ptype.getActualTypeArguments();
             Type keyType = actualTypes[0];
             Type valueType = actualTypes.length > 1 ? actualTypes[1] : null;
 

@@ -9,6 +9,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
@@ -42,7 +43,7 @@ public final class ClassSyncData {
         ArrayList<FieldSyncData> foundSaveFields = new ArrayList<>();
         Map<String, MethodInfo> annotatedMethods = new HashMap<>();
 
-        for (var method : clazz.getDeclaredMethods()) {
+        for (Method method : clazz.getDeclaredMethods()) {
             ClientFieldChangeListener listener = method.getAnnotation(ClientFieldChangeListener.class);
             FieldDataModifier modifier = method.getAnnotation(FieldDataModifier.class);
             if (listener == null && modifier == null) continue;
@@ -62,7 +63,7 @@ public final class ClassSyncData {
                 continue;
             }
 
-            var fieldName = listener != null ? listener.fieldName() : modifier.fieldName();
+            String fieldName = listener != null ? listener.fieldName() : modifier.fieldName();
             annotatedMethods.putIfAbsent(fieldName,
                     new MethodInfo(new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
             if (listener != null) annotatedMethods.get(fieldName).listeners.add(handle);
@@ -71,7 +72,7 @@ public final class ClassSyncData {
             else annotatedMethods.get(fieldName).nbtSavers.add(handle);
         }
 
-        for (var field : clazz.getDeclaredFields()) {
+        for (Field field : clazz.getDeclaredFields()) {
             boolean hasSaveField = field.isAnnotationPresent(SaveField.class);
             boolean hasClientSync = field.isAnnotationPresent(SyncToClient.class);
             if (!hasSaveField && !hasClientSync) continue;
@@ -88,14 +89,14 @@ public final class ClassSyncData {
                 continue;
             }
 
-            var syncData = new FieldSyncData(field, handle, annotatedMethods.get(field.getName()));
+            FieldSyncData syncData = new FieldSyncData(field, handle, annotatedMethods.get(field.getName()));
             if (hasClientSync) foundSyncFields.add(syncData);
             if (hasSaveField) foundSaveFields.add(syncData);
         }
 
         Class<?> parent = clazz.getSuperclass();
         if (parent != Object.class) {
-            var parentHandles = CACHE.get(parent);
+            ClassSyncData parentHandles = CACHE.get(parent);
             foundSyncFields.addAll(List.of(parentHandles.clientSyncFields));
             foundSaveFields.addAll(List.of(parentHandles.serverSaveFields));
         }
@@ -117,7 +118,7 @@ public final class ClassSyncData {
             this.fieldName = field.getName();
             this.handle = handle;
             fieldType = field.getType();
-            var savedField = field.getAnnotation(SaveField.class);
+            SaveField savedField = field.getAnnotation(SaveField.class);
             this.nbtSaveKey = (savedField != null && !savedField.nbtKey().isBlank()) ? savedField.nbtKey() : fieldName;
             triggerClientRerender = field.isAnnotationPresent(RerenderOnChanged.class);
             saveToStack = field.isAnnotationPresent(SaveToItemStack.class);
@@ -129,7 +130,7 @@ public final class ClassSyncData {
                                 .formatted(field.getClass().getCanonicalName(), fieldName));
 
             if (!isCustomData) {
-                var collectionTransformer = ValueTransformers.getCollectionTransformer(field);
+                IValueTransformer<?> collectionTransformer = ValueTransformers.getCollectionTransformer(field);
                 if (collectionTransformer == null) {
                     transformer = ValueTransformers.get(field.getType());
                 } else {

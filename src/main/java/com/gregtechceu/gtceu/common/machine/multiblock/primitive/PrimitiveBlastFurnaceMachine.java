@@ -50,6 +50,7 @@ public class PrimitiveBlastFurnaceMachine extends PrimitiveWorkableMachine imple
     private TickableSubscription hurtSubscription;
 
     @Getter
+    @Setter
     @SyncToClient
     @RerenderOnChanged
     private @NotNull Set<BlockPos> fluidBlockOffsets = new HashSet<>();

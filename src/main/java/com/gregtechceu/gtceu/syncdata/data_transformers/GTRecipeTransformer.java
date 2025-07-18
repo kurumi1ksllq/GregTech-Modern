@@ -29,32 +29,7 @@ public class GTRecipeTransformer implements IValueTransformer<GTRecipe> {
             return Objects.requireNonNull(Minecraft.getInstance().getConnection()).getRecipeManager();
         }
     }
-
-    @Override
-    public void writeBufferPayload(FriendlyByteBuf buf, GTRecipe value) {
-        buf.writeResourceLocation(value.id);
-        GTRecipeSerializer.SERIALIZER.toNetwork(buf, value);
-        buf.writeInt(value.parallels);
-        buf.writeInt(value.ocLevel);
-    }
-
-    @Override
-    public GTRecipe readBufferPayload(FriendlyByteBuf buf, GTRecipe currentValue) {
-        var id = buf.readResourceLocation();
-        if (buf.isReadable()) {
-            var newValue = GTRecipeSerializer.SERIALIZER.fromNetwork(id, buf);
-            if (buf.isReadable()) {
-                newValue.parallels = buf.readInt();
-                newValue.ocLevel = buf.readInt();
-            }
-            return newValue;
-        } else { // Backwards Compatibility
-            RecipeManager recipeManager = getRecipeManager();
-            return (GTRecipe) recipeManager.byKey(id).orElse(null);
-        }
-    }
-
-    @Override
+        @Override
     public Tag serializeNBT(GTRecipe value) {
         CompoundTag tag = new CompoundTag();
         tag.putString("id", value.id.toString());

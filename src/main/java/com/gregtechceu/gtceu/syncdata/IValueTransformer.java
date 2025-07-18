@@ -14,10 +14,6 @@ public interface IValueTransformer<T> {
         return false;
     }
 
-    void writeBufferPayload(FriendlyByteBuf buffer, T value);
-
-    T readBufferPayload(FriendlyByteBuf buffer, @Nullable T currentVal);
-
     default Tag getClientSyncNBT(T value, boolean fullSync) {
         return serializeNBT(value);
     }

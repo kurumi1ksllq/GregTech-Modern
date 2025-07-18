@@ -10,16 +10,6 @@ public class PrimitiveArrayTransformers {
     public static class IntArrayTransformer implements IValueTransformer<int[]> {
 
         @Override
-        public int[] readBufferPayload(FriendlyByteBuf buffer, int[] currentVal) {
-            return buffer.readVarIntArray();
-        }
-
-        @Override
-        public void writeBufferPayload(FriendlyByteBuf buffer, int[] value) {
-            buffer.writeVarIntArray(value);
-        }
-
-        @Override
         public Tag serializeNBT(int[] value) {
             return new IntArrayTag(value);
         }
@@ -34,16 +24,6 @@ public class PrimitiveArrayTransformers {
     public static class LongArrayTransformer implements IValueTransformer<long[]> {
 
         @Override
-        public long[] readBufferPayload(FriendlyByteBuf buffer, long[] currentVal) {
-            return buffer.readLongArray();
-        }
-
-        @Override
-        public void writeBufferPayload(FriendlyByteBuf buffer, long[] value) {
-            buffer.writeLongArray(value);
-        }
-
-        @Override
         public Tag serializeNBT(long[] value) {
             return new LongArrayTag(value);
         }
@@ -56,16 +36,6 @@ public class PrimitiveArrayTransformers {
     }
 
     public static class ByteArrayTransformer implements IValueTransformer<byte[]> {
-
-        @Override
-        public byte[] readBufferPayload(FriendlyByteBuf buffer, byte[] currentVal) {
-            return buffer.readByteArray();
-        }
-
-        @Override
-        public void writeBufferPayload(FriendlyByteBuf buffer, byte[] value) {
-            buffer.writeByteArray(value);
-        }
 
         @Override
         public Tag serializeNBT(byte[] value) {

@@ -16,17 +16,6 @@ public class EnumTransformer<E extends Enum<E>> implements IValueTransformer<E> 
     }
 
     @Override
-    public void writeBufferPayload(FriendlyByteBuf buffer, E value) {
-        buffer.writeVarInt(value.ordinal());
-    }
-
-    @Override
-    public E readBufferPayload(FriendlyByteBuf buffer, E currentVal) {
-        int ordinal = buffer.readVarInt();
-        return enumClass.getEnumConstants()[ordinal];
-    }
-
-    @Override
     public Tag serializeNBT(E value) {
         return StringTag.valueOf(value.name());
     }

@@ -21,27 +21,6 @@ public class MapTransformer<K, V> implements IValueTransformer<Map<K, V>> {
     }
 
     @Override
-    public void writeBufferPayload(FriendlyByteBuf buffer, Map<K, V> map) {
-        buffer.writeVarInt(map.size());
-        for (var entry : map.entrySet()) {
-            keyTransformer.writeBufferPayload(buffer, entry.getKey());
-            valueTransformer.writeBufferPayload(buffer, entry.getValue());
-        }
-    }
-
-    @Override
-    public Map<K, V> readBufferPayload(FriendlyByteBuf buffer, Map<K, V> current) {
-        int size = buffer.readVarInt();
-        Map<K, V> map = new HashMap<>(size);
-        for (int i = 0; i < size; i++) {
-            K key = keyTransformer.readBufferPayload(buffer, null);
-            V value = valueTransformer.readBufferPayload(buffer, null);
-            map.put(key, value);
-        }
-        return map;
-    }
-
-    @Override
     public Tag serializeNBT(Map<K, V> value) {
         ListTag entries = new ListTag();
         for (var entry : value.entrySet()) {

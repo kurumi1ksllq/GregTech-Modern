@@ -15,16 +15,6 @@ import org.jetbrains.annotations.Nullable;
 public class GTRecipeTypeTransformer implements IValueTransformer<GTRecipeType> {
 
     @Override
-    public void writeBufferPayload(FriendlyByteBuf buffer, GTRecipeType value) {
-        buffer.writeResourceLocation(value.registryName);
-    }
-
-    @Override
-    public GTRecipeType readBufferPayload(FriendlyByteBuf buffer, @Nullable GTRecipeType currentVal) {
-        return GTRegistries.RECIPE_TYPES.get(buffer.readResourceLocation());
-    }
-
-    @Override
     public Tag serializeNBT(GTRecipeType value) {
         var tag = new CompoundTag();
         tag.putString("namespace", value.registryName.getNamespace());

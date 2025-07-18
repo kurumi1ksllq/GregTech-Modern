@@ -20,26 +20,6 @@ public class ObjectArrayTransformer<T> implements IValueTransformer<T[]> {
     }
 
     @Override
-    public void writeBufferPayload(FriendlyByteBuf buffer, T[] value) {
-        buffer.writeVarInt(value.length);
-        for (T element : value) {
-            elementTransformer.writeBufferPayload(buffer, element);
-        }
-    }
-
-    @Override
-    public T[] readBufferPayload(FriendlyByteBuf buffer, T[] currentVal) {
-        int length = buffer.readVarInt();
-        if (currentVal == null) return null;
-
-        for (int i = 0; i < length; i++) {
-            if (elementTransformer.mustProvideObject()) elementTransformer.readBufferPayload(buffer, currentVal[i]);
-            else currentVal[i] = elementTransformer.readBufferPayload(buffer, null);
-        }
-        return currentVal;
-    }
-
-    @Override
     public Tag serializeNBT(T[] value) {
         ListTag listTag = new ListTag();
         for (T element : value) {

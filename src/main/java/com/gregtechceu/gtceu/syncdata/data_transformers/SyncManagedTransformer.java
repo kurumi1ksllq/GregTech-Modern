@@ -23,38 +23,6 @@ public class SyncManagedTransformer<T extends ISyncManaged> implements IValueTra
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void writeBufferPayload(FriendlyByteBuf buffer, T value) {
-        // Not very efficient
-        buffer.writeInt(value.getSyncDataHolder().syncData.clientSyncFields.length);
-        for (ClassSyncData.FieldSyncData field : value.getSyncDataHolder().syncData.clientSyncFields) {
-            IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
-            if (transformer == null) continue;
-            buffer.writeUtf(field.fieldName);
-            transformer.writeBufferPayload(buffer, field.handle.get(value));
-        }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public T readBufferPayload(FriendlyByteBuf buffer, T currentVal) {
-        // Not very efficient
-        var fieldCount = buffer.readInt();
-        for (int i=0; i<fieldCount; i++) {
-            var fieldName = buffer.readUtf();
-            var field = Arrays.stream(currentVal.getSyncDataHolder().syncData.clientSyncFields).filter(f -> f.fieldName.equals(fieldName)).findFirst();
-            if (field.isEmpty()) continue;
-            var fieldVal = field.get();
-            IValueTransformer<Object> transformer = (IValueTransformer<Object>) fieldVal.transformer;
-            if (transformer == null) continue;
-            if (transformer.mustProvideObject()) transformer.readBufferPayload(buffer, fieldVal.handle.get(currentVal));
-            else fieldVal.handle.set(currentVal, transformer.readBufferPayload(buffer, null));
-        }
-
-        return currentVal;
-    }
-
-    @Override
     public Tag getClientSyncNBT(T value, boolean fullSync) {
         return serialize(value, true, fullSync);
     }
@@ -138,7 +106,7 @@ public class SyncManagedTransformer<T extends ISyncManaged> implements IValueTra
                 if (isSync) transformer.loadClientSyncNBT(savedValue, field.handle.get(currentVal));
                 else transformer.deserializeNBT(savedValue, field.handle.get(currentVal));
             } else {
-                field.handle.set(currentVal, transformer.deserializeNBT(savedValue, null));
+                field.handle.set(currentVal, isSync ? transformer.loadClientSyncNBT(savedValue, null) : transformer.deserializeNBT(savedValue, null));
             }
         }
         return null;

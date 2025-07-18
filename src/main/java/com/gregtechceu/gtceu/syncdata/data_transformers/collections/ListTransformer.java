@@ -18,24 +18,6 @@ public class ListTransformer<T> implements IValueTransformer<List<T>> {
     }
 
     @Override
-    public void writeBufferPayload(FriendlyByteBuf buffer, List<T> value) {
-        buffer.writeInt(value.size());
-        for (var obj : value) {
-            elementTransformer.writeBufferPayload(buffer, obj);
-        }
-    }
-
-    @Override
-    public List<T> readBufferPayload(FriendlyByteBuf buffer, List<T> current) {
-        var count = buffer.readInt();
-        List<T> list = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            list.add(elementTransformer.readBufferPayload(buffer, null));
-        }
-        return list;
-    }
-
-    @Override
     public Tag serializeNBT(List<T> value) {
         ListTag list = new ListTag();
         for (var obj : value) {

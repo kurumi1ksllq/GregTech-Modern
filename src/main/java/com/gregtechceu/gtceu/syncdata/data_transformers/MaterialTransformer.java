@@ -11,16 +11,6 @@ import net.minecraft.network.FriendlyByteBuf;
 public class MaterialTransformer implements IValueTransformer<Material> {
 
     @Override
-    public void writeBufferPayload(FriendlyByteBuf buf, Material value) {
-        buf.writeUtf(value.getResourceLocation().toString());
-    }
-
-    @Override
-    public Material readBufferPayload(FriendlyByteBuf buf, Material currentVal) {
-        return GTCEuAPI.materialManager.getMaterial(buf.readUtf());
-    }
-
-    @Override
     public Tag serializeNBT(Material currentValue) {
         return StringTag.valueOf(currentValue.getResourceLocation().toString());
     }

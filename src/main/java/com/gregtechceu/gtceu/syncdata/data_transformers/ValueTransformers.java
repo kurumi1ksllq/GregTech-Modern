@@ -124,20 +124,8 @@ public final class ValueTransformers {
         return (tag) -> cls.isInstance(tag) ? func.apply((T) tag) : defaultV;
     }
 
-    public static <T> IValueTransformer<T> createSimpleTransformer(BiConsumer<FriendlyByteBuf, T> bufWrite,
-                                                                   Function<FriendlyByteBuf, T> bufRead,
-                                                                   Function<T, Tag> nbtSave, Function<Tag, T> nbtLoad) {
+    public static <T> IValueTransformer<T> createSimpleTransformer(Function<T, Tag> nbtSave, Function<Tag, T> nbtLoad) {
         return new IValueTransformer<>() {
-
-            @Override
-            public void writeBufferPayload(FriendlyByteBuf buffer, T value) {
-                bufWrite.accept(buffer, value);
-            }
-
-            @Override
-            public T readBufferPayload(FriendlyByteBuf buffer, @Nullable T current) {
-                return bufRead.apply(buffer);
-            }
 
             @Override
             public Tag serializeNBT(T value) {
@@ -153,32 +141,20 @@ public final class ValueTransformers {
 
     static {
 
-        registerClassTransformer(Integer.class, createSimpleTransformer(FriendlyByteBuf::writeInt,
-                FriendlyByteBuf::readInt, IntTag::valueOf, castTag(0, NumericTag.class, NumericTag::getAsInt)));
+        registerClassTransformer(Integer.class, createSimpleTransformer(IntTag::valueOf, castTag(0, NumericTag.class, NumericTag::getAsInt)));
 
-        registerClassTransformer(Long.class, createSimpleTransformer(FriendlyByteBuf::writeLong,
-                FriendlyByteBuf::readLong, LongTag::valueOf, castTag(0L, NumericTag.class, NumericTag::getAsLong)));
+        registerClassTransformer(Long.class, createSimpleTransformer(LongTag::valueOf, castTag(0L, NumericTag.class, NumericTag::getAsLong)));
 
-        registerClassTransformer(Float.class, createSimpleTransformer(FriendlyByteBuf::writeFloat,
-                FriendlyByteBuf::readFloat, FloatTag::valueOf, castTag(0f, NumericTag.class, NumericTag::getAsFloat)));
+        registerClassTransformer(Float.class, createSimpleTransformer(FloatTag::valueOf, castTag(0f, NumericTag.class, NumericTag::getAsFloat)));
 
-        registerClassTransformer(Double.class, createSimpleTransformer(FriendlyByteBuf::writeDouble,
-                FriendlyByteBuf::readDouble, DoubleTag::valueOf,
-                castTag(0.0, NumericTag.class, NumericTag::getAsDouble)));
+        registerClassTransformer(Double.class, createSimpleTransformer(DoubleTag::valueOf, castTag(0.0, NumericTag.class, NumericTag::getAsDouble)));
 
-        registerClassTransformer(Short.class, createSimpleTransformer((buf, s) -> buf.writeShort(s),
-                FriendlyByteBuf::readShort, ShortTag::valueOf,
-                castTag((short) 0, NumericTag.class, NumericTag::getAsShort)));
+        registerClassTransformer(Short.class, createSimpleTransformer(ShortTag::valueOf, castTag((short) 0, NumericTag.class, NumericTag::getAsShort)));
 
-        registerClassTransformer(Byte.class, createSimpleTransformer((buf, b) -> buf.writeByte(b),
-                FriendlyByteBuf::readByte, ByteTag::valueOf,
-                castTag((byte) 0, NumericTag.class, NumericTag::getAsByte)));
+        registerClassTransformer(Byte.class, createSimpleTransformer(ByteTag::valueOf, castTag((byte) 0, NumericTag.class, NumericTag::getAsByte)));
 
-        registerClassTransformer(Character.class, createSimpleTransformer((buf, c) -> buf.writeChar(c),
-                FriendlyByteBuf::readChar,
-                (c) -> IntTag.valueOf((int) c), castTag((char) 0, NumericTag.class, (tag) -> (char) tag.getAsInt())));
-        registerClassTransformer(Boolean.class, createSimpleTransformer(FriendlyByteBuf::writeBoolean,
-                FriendlyByteBuf::readBoolean, ByteTag::valueOf,
+        registerClassTransformer(Character.class, createSimpleTransformer((c) -> IntTag.valueOf((int) c), castTag((char) 0, NumericTag.class, (tag) -> (char) tag.getAsInt())));
+        registerClassTransformer(Boolean.class, createSimpleTransformer(ByteTag::valueOf,
                 (t) -> t instanceof NumericTag num && num.getAsByte() != 0));
 
         // Primtive arrays
@@ -188,27 +164,16 @@ public final class ValueTransformers {
 
         // Classes
 
-        registerClassTransformer(String.class, createSimpleTransformer(FriendlyByteBuf::writeUtf,
-                FriendlyByteBuf::readUtf, StringTag::valueOf, castTag("", StringTag.class, StringTag::getAsString)));
+        registerClassTransformer(String.class, createSimpleTransformer(StringTag::valueOf, castTag("", StringTag.class, StringTag::getAsString)));
 
-        registerClassTransformer(ItemStack.class,
-                createSimpleTransformer(FriendlyByteBuf::writeItem, FriendlyByteBuf::readItem, ItemStack::serializeNBT,
-                        castTag(ItemStack.EMPTY, CompoundTag.class, ItemStack::of)));
+        registerClassTransformer(ItemStack.class, createSimpleTransformer(ItemStack::serializeNBT, castTag(ItemStack.EMPTY, CompoundTag.class, ItemStack::of)));
+        registerClassTransformer(FluidStack.class, createSimpleTransformer((f) -> f.writeToNBT(new CompoundTag()), castTag(FluidStack.EMPTY, CompoundTag.class, FluidStack::loadFluidStackFromNBT)));
 
-        registerClassTransformer(FluidStack.class,
-                createSimpleTransformer((b, f) -> f.writeToPacket(b), FluidStack::readFromPacket,
-                        (f) -> f.writeToNBT(new CompoundTag()),
-                        castTag(FluidStack.EMPTY, CompoundTag.class, FluidStack::loadFluidStackFromNBT)));
+        registerClassTransformer(UUID.class, createSimpleTransformer(NbtUtils::createUUID, NbtUtils::loadUUID));
 
-        registerClassTransformer(UUID.class, createSimpleTransformer(FriendlyByteBuf::writeUUID,
-                FriendlyByteBuf::readUUID, NbtUtils::createUUID, NbtUtils::loadUUID));
+        registerClassTransformer(BlockPos.class, createSimpleTransformer(NbtUtils::writeBlockPos, castTag(BlockPos.ZERO, CompoundTag.class, NbtUtils::readBlockPos)));
 
-        registerClassTransformer(BlockPos.class,
-                createSimpleTransformer(FriendlyByteBuf::writeBlockPos, FriendlyByteBuf::readBlockPos,
-                        NbtUtils::writeBlockPos, castTag(BlockPos.ZERO, CompoundTag.class, NbtUtils::readBlockPos)));
-
-        registerClassTransformer(CompoundTag.class, createSimpleTransformer(FriendlyByteBuf::writeNbt,
-                FriendlyByteBuf::readNbt, (v) -> v, castTag(new CompoundTag(), CompoundTag.class, (v) -> v)));
+        registerClassTransformer(CompoundTag.class, createSimpleTransformer((v) -> v, castTag(new CompoundTag(), CompoundTag.class, (v) -> v)));
 
         registerClassTransformer(GTRecipe.class, new GTRecipeTransformer());
         registerClassTransformer(GTRecipeType.class, new GTRecipeTypeTransformer());
@@ -221,8 +186,7 @@ public final class ValueTransformers {
         registerInterfaceTransformer(INBTSerializable.class, new NBTSerialisableTransformer());
 
         registerInterfaceTransformer(Component.class,
-                createSimpleTransformer(FriendlyByteBuf::writeComponent, FriendlyByteBuf::readComponent,
-                        (c) -> StringTag.valueOf(Component.Serializer.toJson(c)),
+                createSimpleTransformer((c) -> StringTag.valueOf(Component.Serializer.toJson(c)),
                         castTag(Component.literal(""), StringTag.class,
                                 (s) -> Component.Serializer.fromJson(s.getAsString()))));
 

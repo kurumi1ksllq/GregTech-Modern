@@ -15,21 +15,6 @@ public class NBTSerialisableTransformer implements IValueTransformer<INBTSeriali
     }
 
     @Override
-    public void writeBufferPayload(FriendlyByteBuf buffer, INBTSerializable<Tag> value) {
-        var tag = new CompoundTag();
-        tag.put("v", value.serializeNBT());
-        buffer.writeNbt(tag);
-    }
-
-    @Override
-    public INBTSerializable<Tag> readBufferPayload(FriendlyByteBuf buffer, INBTSerializable<Tag> currentVal) {
-        if (currentVal == null) return null;
-        var val = buffer.readNbt();
-        if (val != null) currentVal.deserializeNBT(val.get("v"));
-        return currentVal;
-    }
-
-    @Override
     public Tag serializeNBT(INBTSerializable<Tag> value) {
         return value.serializeNBT();
     }

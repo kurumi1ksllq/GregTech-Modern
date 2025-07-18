@@ -18,20 +18,6 @@ public class SetTransformer<T> implements IValueTransformer<Set<T>> {
     }
 
     @Override
-    public void writeBufferPayload(FriendlyByteBuf buffer, Set<T> value) {
-        buffer.writeVarInt(value.size());
-        for (T element : value) {
-            elementTransformer.writeBufferPayload(buffer, element);
-        }
-    }
-
-    @Override
-    public Set<T> readBufferPayload(FriendlyByteBuf buffer, Set<T> currentVal) {
-        int size = buffer.readVarInt();
-        return new HashSet<>(size);
-    }
-
-    @Override
     public Tag serializeNBT(Set<T> value) {
         ListTag tag = new ListTag();
         for (T element : value) {

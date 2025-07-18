@@ -14,14 +14,6 @@ public interface IValueTransformer<T> {
         return false;
     }
 
-    default Tag getClientSyncNBT(T value, boolean fullSync) {
-        return serializeNBT(value);
-    }
-
-    default T loadClientSyncNBT(Tag tag, @Nullable T currentVal) {
-        return deserializeNBT(tag, currentVal);
-    }
-
     Tag serializeNBT(T value);
 
     T deserializeNBT(Tag tag, @Nullable T currentVal);

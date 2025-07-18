@@ -14,7 +14,7 @@ import net.minecraftforge.common.util.INBTSerializable;
  * <li>{@code T} is a {@link ISyncManaged} class
  * </ul>
  *
- * @see ManagedSyncBlockEntity
+ * @see SyncDataHolder
  */
 public interface ISyncManaged {
 

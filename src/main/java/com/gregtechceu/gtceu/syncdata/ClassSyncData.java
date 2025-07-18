@@ -109,27 +109,26 @@ public final class ClassSyncData {
 
         public final String fieldName, nbtSaveKey;
         public final VarHandle handle;
-        public final boolean triggerClientRerender, saveToStack, isCustomData;
-        public final Class<?> fieldType;
+        public final boolean triggerClientRerender, saveToStack, isCustomData, isComplex;
         public final IValueTransformer<?> transformer;
         public final MethodHandle[] changeListenerHandles, nbtSaveModifiers, nbtLoadModifiers;
 
         public FieldSyncData(@NotNull Field field, @NotNull VarHandle handle, MethodInfo appliedMethods) {
             this.fieldName = field.getName();
             this.handle = handle;
-            fieldType = field.getType();
             SaveField savedField = field.getAnnotation(SaveField.class);
             this.nbtSaveKey = (savedField != null && !savedField.nbtKey().isBlank()) ? savedField.nbtKey() : fieldName;
             triggerClientRerender = field.isAnnotationPresent(RerenderOnChanged.class);
             saveToStack = field.isAnnotationPresent(SaveToItemStack.class);
             isCustomData = field.isAnnotationPresent(CustomDataField.class);
+            isComplex = ISyncManaged.class.isAssignableFrom(field.getType());
 
             if (isCustomData && (appliedMethods.nbtSavers.size() != 1 || appliedMethods.nbtLoaders.size() != 1))
                 throw new IllegalArgumentException(
                         "Fields marked with @CustomDataField must have exactly one SAVE_NBT FieldDataModifier and one LOAD_NBT FieldDataModifier: %s.%s"
                                 .formatted(field.getClass().getCanonicalName(), fieldName));
 
-            if (!isCustomData) {
+            if (!isCustomData && !isComplex) {
                 IValueTransformer<?> collectionTransformer = ValueTransformers.getCollectionTransformer(field);
                 if (collectionTransformer == null) {
                     transformer = ValueTransformers.get(field.getType());

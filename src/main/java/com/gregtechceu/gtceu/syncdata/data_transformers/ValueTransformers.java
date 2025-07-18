@@ -182,7 +182,6 @@ public final class ValueTransformers {
 
         // Interfaces
 
-        registerInterfaceTransformer(ISyncManaged.class, new SyncManagedTransformer<>());
         registerInterfaceTransformer(INBTSerializable.class, new NBTSerialisableTransformer());
 
         registerInterfaceTransformer(Component.class,

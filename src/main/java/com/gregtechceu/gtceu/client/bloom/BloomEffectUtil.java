@@ -13,12 +13,14 @@ import com.gregtechceu.gtceu.core.mixins.client.VertexBufferAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EffectInstance;
 import net.minecraft.client.renderer.PostPass;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -80,7 +82,7 @@ public class BloomEffectUtil {
 
                     @Override
                     public boolean shouldRenderBloomEffect(@NotNull EffectRenderContext context) {
-                        return blockEntity.getLevel() == context.renderViewEntity().level() &&
+                        return blockEntity.getLevel() == context.getRenderViewEntity().level() &&
                                 render.shouldRenderBloomEffect(context);
                     }
                 },
@@ -215,11 +217,8 @@ public class BloomEffectUtil {
 
     public static final AtomicBoolean isDrawingBlockBloom = new AtomicBoolean(false);
 
-    public static void renderBloom(double camX, double camY, double camZ,
-                                   PoseStack poseStack, Matrix4f projectionMatrix,
-                                   Frustum frustum,
-                                   float partialTicks,
-                                   @NotNull Entity entity) {
+    public static void renderBloom(Vec3 camPos, @NotNull Entity entity, PoseStack poseStack,
+                                   Matrix4f projectionMatrix, Frustum frustum, float partialTicks) {
         if (!GTShaders.allowedShader()) {
             return;
         }
@@ -232,7 +231,7 @@ public class BloomEffectUtil {
             GTShaders.BLOOM_TARGET.bindWrite(false);
 
             EffectRenderContext context = EffectRenderContext.getInstance()
-                    .update(entity, camX, camY, camZ, frustum, partialTicks);
+                    .update(entity, camPos, frustum, partialTicks);
 
             GTRenderTypes.getBloom().setupRenderState();
 
@@ -248,7 +247,7 @@ public class BloomEffectUtil {
                 postDraw();
                 RenderSystem.depthMask(false);
 
-                render(partialTicks, poseStack, projectionMatrix, camX, camY, camZ);
+                render(partialTicks, poseStack, projectionMatrix, camPos);
                 return;
             }
 
@@ -271,7 +270,7 @@ public class BloomEffectUtil {
             RenderSystem.depthMask(false);
 
             isDrawingBlockBloom.set(true);
-            render(partialTicks, poseStack, projectionMatrix, camX, camY, camZ);
+            render(partialTicks, poseStack, projectionMatrix, camPos);
             isDrawingBlockBloom.set(false);
 
             postDraw();
@@ -290,9 +289,8 @@ public class BloomEffectUtil {
         SCHEDULED_BLOOM_RENDERS.clear();
     }
 
-    private static void draw(@NotNull PoseStack poseStack,
-                             @NotNull BufferBuilder buffer, @NotNull EffectRenderContext context,
-                             @NotNull List<BloomRenderTicket> tickets) {
+    private static void draw(@NotNull PoseStack poseStack, @NotNull BufferBuilder buffer,
+                             @NotNull EffectRenderContext context, @NotNull List<BloomRenderTicket> tickets) {
         boolean initialized = false;
         @Nullable
         IRenderSetup renderSetup = null;
@@ -306,7 +304,11 @@ public class BloomEffectUtil {
                     renderSetup.preDraw(buffer);
                 }
             }
+
+            poseStack.pushPose();
+            poseStack.translate(-context.camPos().x(), -context.camPos().y(), -context.camPos().z());
             ticket.render.renderBloomEffect(poseStack, buffer, context);
+            poseStack.popPose();
         }
         if (initialized && renderSetup != null) {
             renderSetup.postDraw(buffer);
@@ -395,28 +397,26 @@ public class BloomEffectUtil {
     private static final String BLOOM_THRESHOLD_DOWN_UNIFORM = "BloomThresholdDown";
     private static final String BLUR_DIR_UNIFORM = "BlurDir";
 
-    private static void render(float partialTicks, PoseStack poseStack, Matrix4f projectionMatrix, double camX,
-                               double camY, double camZ) {
+    private static void render(float partialTicks, PoseStack poseStack, Matrix4f projectionMatrix, Vec3 camPos) {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         // Forcefully insert config values to shader
         List<PostPass> passes = ((PostChainAccessor) GTShaders.BLOOM_CHAIN).getPasses();
         for (PostPass pass : passes) {
             EffectInstance shader = pass.getEffect();
+            String name = shader.getName();
+
             shader.safeGetUniform("iTime").set(GTShaders.getITime(partialTicks));
             shader.safeGetUniform("EnableFilter").set(BloomEffectUtil.isDrawingBlockBloom.get() ? 1 : 0);
 
-            if (GTShaders.BLOOM_TYPE == BloomType.UNREAL) {
-                if (shader.getName().equals(SEPERABLE_BLUR_SHADER_NAME)) {
-                    int index = passes.indexOf(pass);
-                    switch (index) {
-                        case 1, 3, 5, 7 -> shader.safeGetUniform(BLUR_DIR_UNIFORM).set(BloomEffect.step, 0.0f);
-                        case 2, 4, 6, 8 -> shader.safeGetUniform(BLUR_DIR_UNIFORM).set(0.0f, BloomEffect.step);
-                    }
+            if (GTShaders.BLOOM_TYPE == BloomType.UNREAL && name.equals(SEPERABLE_BLUR_SHADER_NAME)) {
+                int index = passes.indexOf(pass);
+                switch (index) {
+                    case 1, 3, 5, 7 -> shader.safeGetUniform(BLUR_DIR_UNIFORM).set(BloomEffect.step, 0.0f);
+                    case 2, 4, 6, 8 -> shader.safeGetUniform(BLUR_DIR_UNIFORM).set(0.0f, BloomEffect.step);
                 }
             }
-            if (shader.getName().equals(UNITY_COMPOSITE_SHADER_NAME) ||
-                    shader.getName().equals(UNREAL_COMPOSITE_SHADER_NAME)) {
+            if (name.equals(UNITY_COMPOSITE_SHADER_NAME) || name.equals(UNREAL_COMPOSITE_SHADER_NAME)) {
                 shader.safeGetUniform(BLOOM_INTENSIVE_UNIFORM).set(BloomEffect.strength);
                 shader.safeGetUniform(BLOOM_BASE_UNIFORM).set(BloomEffect.baseBrightness);
                 shader.safeGetUniform(BLOOM_THRESHOLD_UP_UNIFORM).set(BloomEffect.highBrightnessThreshold);
@@ -433,7 +433,7 @@ public class BloomEffectUtil {
             entry.getValue().bind();
             poseStack.pushPose();
             poseStack.translate(entry.getKey().getX(), entry.getKey().getY(), entry.getKey().getZ());
-            poseStack.translate(-camX, -camY, -camZ);
+            poseStack.translate(-camPos.x(), -camPos.y(), -camPos.z());
             entry.getValue().drawWithShader(poseStack.last().pose(), projectionMatrix, RenderSystem.getShader());
             poseStack.popPose();
         }

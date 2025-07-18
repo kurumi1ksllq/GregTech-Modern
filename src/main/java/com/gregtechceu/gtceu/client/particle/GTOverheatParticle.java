@@ -275,7 +275,7 @@ public class GTOverheatParticle extends GTBloomParticle {
         float blue = (color & 0xFF) / 255f;
 
         poseStack.pushPose();
-        poseStack.translate(posX - context.cameraX(), posY - context.cameraY(), posZ - context.cameraZ());
+        poseStack.translate(posX, posY, posZ);
         for (AABB cuboid : pipeBoxes.toAabbs()) {
             RenderBufferHelper.renderCubeFace(poseStack, buffer, cuboid, red, green, blue, alpha, true);
         }
@@ -295,7 +295,7 @@ public class GTOverheatParticle extends GTBloomParticle {
         @Override
         @OnlyIn(Dist.CLIENT)
         public void postDraw(@NotNull BufferBuilder buffer) {
-            Tesselator.getInstance().end();
+            BufferUploader.drawWithShader(buffer.end());
             RenderSystem.disableBlend();
         }
     };

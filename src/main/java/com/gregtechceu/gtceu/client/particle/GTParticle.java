@@ -49,7 +49,7 @@ public abstract class GTParticle {
 
     public boolean shouldRender(@NotNull EffectRenderContext context) {
         if (squaredRenderRange < 0) return true;
-        return context.renderViewEntity().getEyePosition(context.partialTicks())
+        return context.getRenderViewEntity().getEyePosition(context.partialTicks())
                 .distanceToSqr(posX, posY, posZ) <= squaredRenderRange;
     }
 

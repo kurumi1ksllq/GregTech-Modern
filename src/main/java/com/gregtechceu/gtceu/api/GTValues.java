@@ -106,12 +106,11 @@ public class GTValues {
             MODID_KUBEJS = "kubejs",
             MODID_IRIS = "iris",
             MODID_OCULUS = "oculus",
+            MODID_SODIUM = "sodium",
             MODID_EMBEDDIUM = "embeddium",
             MODID_OPTIFINE = "optifine",
-            MODID_CREATE = "create",
             MODID_CURIOS = "curios",
             MODID_AE2WTLIB = "ae2wtlib",
-            MODID_SHIMMER = "shimmer",
             MODID_MODERNFIX = "modernfix",
             MODID_JOURNEYMAP = "journeymap",
             MODID_XAEROS_MINIMAP = "xaerominimap",
@@ -255,6 +254,7 @@ public class GTValues {
             0x7EC3C4, 0x7EB07E, 0xBF74C0, 0x0B5CFE, 0x914E91, 0x488748, 0x8C0000, 0x2828F5 };
 
     // Main colour for each tier
+    @SuppressWarnings("DataFlowIssue")
     public static final int[] VCM = new int[] {
             DARK_GRAY.getColor(),
             GRAY.getColor(),

@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -32,11 +33,7 @@ public final class EffectRenderContext {
     @Getter
     private float partialTicks;
     @Getter
-    private double cameraX;
-    @Getter
-    private double cameraY;
-    @Getter
-    private double cameraZ;
+    private Vec3 camPos;
     @Getter
     private float rotationX;
     @Getter
@@ -49,17 +46,13 @@ public final class EffectRenderContext {
     private float rotationXZ;
 
     @NotNull
-    public EffectRenderContext update(@NotNull Entity renderViewEntity,
-                                      double camX, double camY, double camZ,
+    public EffectRenderContext update(@NotNull Entity renderViewEntity, Vec3 camPos,
                                       Frustum frustum, float partialTicks) {
         this.renderViewEntity = renderViewEntity;
+        this.camPos = camPos;
         this.partialTicks = partialTicks;
 
-        this.cameraX = camX;
-        this.cameraY = camY;
-        this.cameraZ = camZ;
-
-        float i = 1 - (Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0 : 2);
+        float i = Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 1 : -1;
         float pitch = renderViewEntity.getYRot();
         float yaw = renderViewEntity.getXRot();
         this.rotationX = Mth.cos(yaw * Mth.DEG_TO_RAD) * i;
@@ -77,7 +70,7 @@ public final class EffectRenderContext {
      * @return render view entity
      */
     @NotNull
-    public Entity renderViewEntity() {
+    public Entity getRenderViewEntity() {
         return Objects.requireNonNull(renderViewEntity, "renderViewEntity not available yet");
     }
 }

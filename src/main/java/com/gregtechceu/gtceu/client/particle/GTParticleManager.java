@@ -124,8 +124,7 @@ public class GTParticleManager {
         if (depthEnabledParticles.isEmpty() && depthDisabledParticles.isEmpty()) return;
 
         EffectRenderContext instance = EffectRenderContext.getInstance()
-                .update(renderViewEntity, camera.getPosition().x, camera.getPosition().y, camera.getPosition().z,
-                        frustum, partialTicks);
+                .update(renderViewEntity, camera.getPosition(), frustum, partialTicks);
 
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);

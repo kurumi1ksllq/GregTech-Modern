@@ -21,4 +21,6 @@ public interface ISyncManaged {
     SyncDataHolder getSyncDataHolder();
 
     void onChanged();
+
+    default void onSaveDataLoaded() {}
 }

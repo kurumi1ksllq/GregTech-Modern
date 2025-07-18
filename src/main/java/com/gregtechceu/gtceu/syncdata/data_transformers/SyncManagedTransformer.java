@@ -10,6 +10,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.invoke.MethodHandle;
 import java.util.Arrays;
@@ -53,12 +54,44 @@ public class SyncManagedTransformer<T extends ISyncManaged> implements IValueTra
         return currentVal;
     }
 
-    @SneakyThrows
     @Override
-    @SuppressWarnings("unchecked")
+    public Tag getClientSyncNBT(T value, boolean fullSync) {
+        return serialize(value, true, fullSync);
+    }
+
+    @Override
+    public T loadClientSyncNBT(Tag tag, @Nullable T currentVal) {
+        if (currentVal == null || !(tag instanceof CompoundTag compound)) return null;
+        return deserialize(compound, currentVal, true);
+    }
+
+    @Override
     public Tag serializeNBT(T value) {
+        return serialize(value, false, false);
+    }
+
+    @Override
+    public T deserializeNBT(Tag tag, T currentVal) {
+        if (currentVal == null || !(tag instanceof CompoundTag compound)) return null;
+        return deserialize(compound, currentVal, false);
+    }
+
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    private CompoundTag serialize(T value, boolean isSync, boolean fullSync) {
         CompoundTag tag = new CompoundTag();
-        for (ClassSyncData.FieldSyncData field : value.getSyncDataHolder().syncData.serverSaveFields) {
+
+        ClassSyncData.FieldSyncData[] fieldsToSerialize;
+
+        if (isSync && fullSync) {
+            fieldsToSerialize = value.getSyncDataHolder().syncData.clientSyncFields;
+        } else if (isSync) {
+            fieldsToSerialize = value.getSyncDataHolder().getDirtySyncFields();
+        } else {
+            fieldsToSerialize = value.getSyncDataHolder().syncData.serverSaveFields;
+        }
+
+        for (ClassSyncData.FieldSyncData field : fieldsToSerialize) {
             if (field.isCustomData) {
                 var result = field.nbtSaveModifiers[0].invoke(value, new CompoundTag());
                 tag.put(field.nbtSaveKey, (Tag) result);
@@ -72,7 +105,7 @@ public class SyncManagedTransformer<T extends ISyncManaged> implements IValueTra
             IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
             Object result = field.handle.get(value);
             if (result == null) continue;
-            var nbtValue = transformer.serializeNBT(result);
+            var nbtValue = (isSync) ? transformer.getClientSyncNBT(result, fullSync) : transformer.serializeNBT(result);
             for (MethodHandle modifier : field.nbtSaveModifiers) {
                 nbtValue = (Tag) modifier.invoke(value, nbtValue);
             }
@@ -82,13 +115,13 @@ public class SyncManagedTransformer<T extends ISyncManaged> implements IValueTra
     }
 
     @SneakyThrows
-    @Override
     @SuppressWarnings("unchecked")
-    public T deserializeNBT(Tag tag, T currentVal) {
-        if (!(tag instanceof CompoundTag compound) || currentVal == null) return currentVal;
-        for (ClassSyncData.FieldSyncData field : currentVal.getSyncDataHolder().syncData.serverSaveFields) {
+    private T deserialize(CompoundTag tag, T currentVal, boolean isSync) {
+
+        ClassSyncData.FieldSyncData[] fieldsToCheck = (isSync) ? currentVal.getSyncDataHolder().syncData.clientSyncFields : currentVal.getSyncDataHolder().syncData.serverSaveFields;
+        for (ClassSyncData.FieldSyncData field : fieldsToCheck) {
             if (field.isCustomData) {
-                field.nbtLoadModifiers[0].invoke(currentVal, compound);
+                field.nbtLoadModifiers[0].invoke(currentVal, tag);
                 continue;
             }
 
@@ -97,12 +130,13 @@ public class SyncManagedTransformer<T extends ISyncManaged> implements IValueTra
                 return currentVal;
             }
 
-            Tag savedValue = compound.get(field.nbtSaveKey);
+            Tag savedValue = tag.get(field.nbtSaveKey);
             if (savedValue == null) continue;
             IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
 
             if (transformer.mustProvideObject()) {
-                transformer.deserializeNBT(savedValue, field.handle.get(currentVal));
+                if (isSync) transformer.loadClientSyncNBT(savedValue, field.handle.get(currentVal));
+                else transformer.deserializeNBT(savedValue, field.handle.get(currentVal));
             } else {
                 field.handle.set(currentVal, transformer.deserializeNBT(savedValue, null));
             }

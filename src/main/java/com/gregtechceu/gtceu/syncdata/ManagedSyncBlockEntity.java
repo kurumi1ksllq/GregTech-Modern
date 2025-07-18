@@ -1,14 +1,20 @@
 package com.gregtechceu.gtceu.syncdata;
 
+import com.gregtechceu.gtceu.GTCEu;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -48,28 +54,44 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
         Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadFromNBT(tag));
     }
 
-
-    // Called to init clientside BlockEntities on chunk load
+    // Called when a client loads this BlockEntity
 
     @Override
     public CompoundTag getUpdateTag() {
-        return super.getUpdateTag();
+        GTCEu.LOGGER.info("getUpdateTag: {}", getBlockPos());
+        CompoundTag tag = new CompoundTag();
+        Arrays.stream(getSyncObjects()).map(obj -> obj.getSyncDataHolder().syncNBT(true)).forEach(tag::merge);
+        return tag;
     }
 
     @Override
     public void handleUpdateTag(CompoundTag tag) {
-        super.handleUpdateTag(tag);
+        GTCEu.LOGGER.info("handleUpdateTag: {}", getBlockPos());
+        Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadSyncNBT(tag));
+    }
+
+    // Called when this BlockEntity has changed and must send changes to client.
+
+    @Override
+    public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
+        GTCEu.LOGGER.info("getUpdatePacket: {}", getBlockPos());
+        return ClientboundBlockEntityDataPacket.create(this, (entity) -> {
+            if (!(entity instanceof ManagedSyncBlockEntity syncEntity)) return new CompoundTag();
+            var tag = new CompoundTag();
+            Arrays.stream(syncEntity.getSyncObjects()).map(obj -> obj.getSyncDataHolder().syncNBT(false)).forEach(tag::merge);
+            return tag;
+        });
     }
 
     @Override
-    public void setRemoved() {
-        super.setRemoved();
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        GTCEu.LOGGER.info("onDataPacket: {}", getBlockPos());
+        CompoundTag compound = pkt.getTag();
+        if (compound != null) {
+            Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadSyncNBT(compound));
+        }
     }
 
-    @Override
-    public void clearRemoved() {
-        super.clearRemoved();
-    }
 
     @Override
     public void onChanged() {

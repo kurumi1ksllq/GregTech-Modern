@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
 import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
 import com.gregtechceu.gtceu.client.bloom.EffectRenderContext;
 import com.gregtechceu.gtceu.client.util.RenderBufferHelper;
+import com.gregtechceu.gtceu.client.util.RenderUtil;
 import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
@@ -141,7 +142,7 @@ public class GTOverheatParticle extends GTBloomParticle {
         if (index >= blackBodyColors.length - 1)
             return blackBodyColors[blackBodyColors.length - 1];
         int color = blackBodyColors[index];
-        return DrawUtil.interpolateColor(color, blackBodyColors[index + 1], temperature % 200 / 200f);
+        return RenderUtil.interpolateColor(color, blackBodyColors[index + 1], temperature % 200 / 200f);
     }
 
     private final CableBlockEntity tileEntity;
@@ -277,7 +278,7 @@ public class GTOverheatParticle extends GTBloomParticle {
         poseStack.pushPose();
         poseStack.translate(posX, posY, posZ);
         for (AABB cuboid : pipeBoxes.toAabbs()) {
-            RenderBufferHelper.renderCubeFace(poseStack, buffer, cuboid, red, green, blue, alpha, true);
+            RenderBufferHelper.renderColorCube(poseStack, buffer, cuboid, red, green, blue, alpha, true);
         }
         poseStack.popPose();
     }

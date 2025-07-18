@@ -9,13 +9,13 @@ import net.minecraft.world.level.lighting.LightEngine;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Data;
 import lombok.Getter;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -52,7 +52,7 @@ public class FluidBlockRenderer {
         return newVertices;
     }
 
-    public void drawBlocks(Set<BlockPos> offsets, Matrix4f pose, VertexConsumer consumer,
+    public void drawBlocks(Set<BlockPos> offsets, PoseStack poseStack, VertexConsumer consumer,
                            Fluid fluid,
                            RenderUtil.FluidTextureType texture, int combinedOverlay, int combinedLight) {
         var fluidClientInfo = IClientFluidTypeExtensions.of(fluid);
@@ -62,32 +62,34 @@ public class FluidBlockRenderer {
         int r = red(color), g = green(color), b = blue(color), a = alpha(color);
 
         for (var pos : offsets) {
-            pose.translate(pos.getX(), pos.getY(), pos.getZ());
+            poseStack.pushPose();
+            poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
+
             for (var direction : Direction.values()) {
                 if (offsets.contains(pos.relative(direction))) continue;
                 if (direction != Direction.UP && direction != Direction.DOWN) direction = direction.getOpposite();
-                drawFace(pose, consumer,
+                drawFace(poseStack.last(), consumer,
                         transformVertices(getVertices(direction), direction),
                         getNormal(direction),
                         u0, u1, v0, v1,
                         r, g, b, a,
                         combinedOverlay, combinedLight);
             }
-            pose.translate(-pos.getX(), -pos.getY(), -pos.getZ());
+            poseStack.popPose();
         }
     }
 
-    public void drawPlanes(Direction[] faces, Map<Direction, Collection<BlockPos>> directionalOffsets, Matrix4f pose,
+    public void drawPlanes(Direction[] faces, Map<Direction, Collection<BlockPos>> directionalOffsets, PoseStack poseStack,
                            VertexConsumer consumer, Fluid fluid, RenderUtil.FluidTextureType texture,
                            int combinedOverlay, int combinedLight) {
         for (var face : faces) {
             if (!directionalOffsets.containsKey(face)) continue;
-            drawPlane(face, directionalOffsets.get(face), pose, consumer, fluid, texture, combinedOverlay,
+            drawPlane(face, directionalOffsets.get(face), poseStack, consumer, fluid, texture, combinedOverlay,
                     combinedLight);
         }
     }
 
-    public void drawPlane(Direction face, Collection<BlockPos> offsets, Matrix4f pose, VertexConsumer consumer,
+    public void drawPlane(Direction face, Collection<BlockPos> offsets, PoseStack poseStack, VertexConsumer consumer,
                           Fluid fluid, RenderUtil.FluidTextureType texture, int combinedOverlay, BlockPos origin) {
         var fluidClientInfo = IClientFluidTypeExtensions.of(fluid);
         var sprite = texture.map(fluidClientInfo);
@@ -97,17 +99,16 @@ public class FluidBlockRenderer {
         var normal = getNormal(face);
         var vertices = transformVertices(getVertices(face), face);
 
-        BlockPos prevOffset = null;
         for (var offset : offsets) {
-            BlockPos currOffset = prevOffset == null ? offset : offset.subtract(prevOffset);
-            pose.translate(currOffset.getX(), currOffset.getY(), currOffset.getZ());
-            drawFace(pose, consumer, vertices, normal, u0, u1, v0, v1, r, g, b, a, combinedOverlay,
-                    RenderUtil.getFluidLight(fluid, origin.offset(currOffset)));
-            prevOffset = offset;
+            poseStack.pushPose();
+            poseStack.translate(offset.getX(), offset.getY(), offset.getZ());
+            drawFace(poseStack.last(), consumer, vertices, normal, u0, u1, v0, v1, r, g, b, a, combinedOverlay,
+                    RenderUtil.getFluidLight(fluid, origin.offset(offset)));
+            poseStack.popPose();
         }
     }
 
-    public void drawPlane(Direction face, Collection<BlockPos> offsets, Matrix4f pose, VertexConsumer consumer,
+    public void drawPlane(Direction face, Collection<BlockPos> offsets, PoseStack poseStack, VertexConsumer consumer,
                           Fluid fluid, RenderUtil.FluidTextureType texture, int combinedOverlay, int combinedLight) {
         var fluidClientInfo = IClientFluidTypeExtensions.of(fluid);
         var sprite = texture.map(fluidClientInfo);
@@ -117,16 +118,15 @@ public class FluidBlockRenderer {
         var normal = getNormal(face);
         var vertices = transformVertices(getVertices(face), face);
 
-        BlockPos prevOffset = null;
         for (var offset : offsets) {
-            BlockPos currOffset = prevOffset == null ? offset : offset.subtract(prevOffset);
-            pose.translate(currOffset.getX(), currOffset.getY(), currOffset.getZ());
-            drawFace(pose, consumer, vertices, normal, u0, u1, v0, v1, r, g, b, a, combinedOverlay, combinedLight);
-            prevOffset = offset;
+            poseStack.pushPose();
+            poseStack.translate(offset.getX(), offset.getY(), offset.getZ());
+            drawFace(poseStack.last(), consumer, vertices, normal, u0, u1, v0, v1, r, g, b, a, combinedOverlay, combinedLight);
+            poseStack.popPose();
         }
     }
 
-    public void drawFace(Direction face, Matrix4f pose, VertexConsumer consumer, Fluid fluid,
+    public void drawFace(Direction face, PoseStack.Pose pose, VertexConsumer consumer, Fluid fluid,
                          RenderUtil.FluidTextureType texture, int combinedOverlay, int combinedLight) {
         var fluidClientInfo = IClientFluidTypeExtensions.of(fluid);
         var sprite = texture.map(fluidClientInfo);
@@ -138,7 +138,7 @@ public class FluidBlockRenderer {
         drawFace(pose, consumer, vertices, normal, u0, u1, v0, v1, r, g, b, a, combinedOverlay, combinedLight);
     }
 
-    public void drawFace(Matrix4f pose, VertexConsumer consumer, Vector3f[] vertices, Vector3fc normal,
+    public void drawFace(PoseStack.Pose pose, VertexConsumer consumer, Vector3f[] vertices, Vector3fc normal,
                          float u0, float u1, float v0, float v1,
                          int r, int g, int b, int a,
                          int combinedOverlay, int combinedLight) {

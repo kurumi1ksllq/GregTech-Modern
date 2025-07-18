@@ -15,6 +15,8 @@ import org.joml.Vector3f;
 import java.util.EnumSet;
 import java.util.Set;
 
+import static net.minecraft.util.FastColor.ARGB32.*;
+
 @OnlyIn(Dist.CLIENT)
 public class RenderBufferHelper {
 
@@ -151,6 +153,80 @@ public class RenderBufferHelper {
                     maxX, minY, maxZ, uMin, vMin);
     }
 
+    public static void renderColorCube(PoseStack poseStack, VertexConsumer buffer, AABB cuboid,
+                                       float r, float g, float b, float a, boolean shade) {
+        renderColorCube(poseStack, buffer,
+                (float) cuboid.minX, (float) cuboid.minY, (float) cuboid.minZ,
+                (float) cuboid.maxX, (float) cuboid.maxY, (float) cuboid.maxZ,
+                r, g, b, a, shade);
+    }
+
+    public static void renderColorCube(PoseStack poseStack, VertexConsumer buffer,
+                                       float minX, float minY, float minZ,
+                                       float maxX, float maxY, float maxZ,
+                                       float red, float green, float blue, float alpha) {
+        renderColorCube(poseStack, buffer, minX, minY, minZ, maxX, maxY, maxZ, red, green, blue, alpha, false);
+    }
+
+    public static void renderColorCube(PoseStack poseStack, VertexConsumer buffer,
+                                       float minX, float minY, float minZ,
+                                       float maxX, float maxY, float maxZ,
+                                       float red, float green, float blue, float a,
+                                       boolean shade) {
+        Matrix4f pose = poseStack.last().pose();
+        float r = red, g = green, b = blue;
+
+        if (shade) {
+            r *= 0.6f;
+            g *= 0.6f;
+            b *= 0.6f;
+        }
+        buffer.vertex(pose, minX, minY, minZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, minX, minY, maxZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, minX, maxY, maxZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, minX, maxY, minZ).color(r, g, b, a).endVertex();
+
+        buffer.vertex(pose, maxX, minY, minZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, maxX, maxY, minZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, maxX, maxY, maxZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, maxX, minY, maxZ).color(r, g, b, a).endVertex();
+
+        if (shade) {
+            r = red * 0.5f;
+            g = green * 0.5f;
+            b = blue * 0.5f;
+        }
+        buffer.vertex(pose, minX, minY, minZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, maxX, minY, minZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, maxX, minY, maxZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, minX, minY, maxZ).color(r, g, b, a).endVertex();
+
+        if (shade) {
+            r = red;
+            g = green;
+            b = blue;
+        }
+        buffer.vertex(pose, minX, maxY, minZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, minX, maxY, maxZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, maxX, maxY, maxZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, maxX, maxY, minZ).color(r, g, b, a).endVertex();
+
+        if (shade) {
+            r = red * 0.8f;
+            g = green * 0.8f;
+            b = blue * 0.8f;
+        }
+        buffer.vertex(pose, minX, minY, minZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, minX, maxY, minZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, maxX, maxY, minZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, maxX, minY, minZ).color(r, g, b, a).endVertex();
+
+        buffer.vertex(pose, minX, minY, maxZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, maxX, minY, maxZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, maxX, maxY, maxZ).color(r, g, b, a).endVertex();
+        buffer.vertex(pose, minX, maxY, maxZ).color(r, g, b, a).endVertex();
+    }
+
     public static void renderCubeFace(VertexConsumer buffer, PoseStack.Pose pose,
                                       int color, int combinedLight, Direction normalDir,
                                       float x1, float y1, float z1, float u1, float v1,
@@ -158,32 +234,15 @@ public class RenderBufferHelper {
                                       float x3, float y3, float z3, float u3, float v3,
                                       float x4, float y4, float z4, float u4, float v4) {
         Vector3f normal = normalDir.step();
+        int r = red(color), g = green(color), b = blue(color), a = alpha(color);
 
-        vertex(buffer, pose, x1, y1, z1, color, u1, v1, combinedLight, normal.x(), normal.y(), normal.z());
-        vertex(buffer, pose, x2, y2, z2, color, u2, v2, combinedLight, normal.x(), normal.y(), normal.z());
-        vertex(buffer, pose, x3, y3, z3, color, u3, v3, combinedLight, normal.x(), normal.y(), normal.z());
-        vertex(buffer, pose, x4, y4, z4, color, u4, v4, combinedLight, normal.x(), normal.y(), normal.z());
-    }
-
-    public static void vertex(VertexConsumer buffer, PoseStack.Pose pose,
-                              float x, float y, float z,
-                              int color, float texU, float texV, int lightmapUV,
-                              float normalX, float normalY, float normalZ) {
-        vertex(buffer, pose, x, y, z, color,
-                texU, texV, OverlayTexture.NO_OVERLAY, lightmapUV,
-                normalX, normalY, normalZ);
-    }
-
-    public static void vertex(VertexConsumer buffer, PoseStack.Pose pose,
-                              float x, float y, float z, int color,
-                              float texU, float texV, int overlayUV, int lightmapUV,
-                              float normalX, float normalY, float normalZ) {
-        buffer.vertex(pose.pose(), x, y, z);
-        buffer.color(color);
-        buffer.uv(texU, texV);
-        buffer.overlayCoords(overlayUV);
-        buffer.uv2(lightmapUV);
-        buffer.normal(pose.normal(), normalX, normalY, normalZ);
-        buffer.endVertex();
+        RenderUtil.vertex(pose, buffer, x1, y1, z1, r, g, b, a, u1, v1,
+                OverlayTexture.NO_OVERLAY, combinedLight, normal.x(), normal.y(), normal.z());
+        RenderUtil.vertex(pose, buffer, x2, y2, z2, r, g, b, a, u2, v2,
+                OverlayTexture.NO_OVERLAY, combinedLight, normal.x(), normal.y(), normal.z());
+        RenderUtil.vertex(pose, buffer, x3, y3, z3, r, g, b, a, u3, v3,
+                OverlayTexture.NO_OVERLAY, combinedLight, normal.x(), normal.y(), normal.z());
+        RenderUtil.vertex(pose, buffer, x4, y4, z4, r, g, b, a, u4, v4,
+                OverlayTexture.NO_OVERLAY, combinedLight, normal.x(), normal.y(), normal.z());
     }
 }

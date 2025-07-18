@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.client.renderer.machine.impl;
 
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IFluidRenderMulti;
+import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.client.renderer.block.FluidBlockRenderer;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
@@ -10,6 +11,7 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +19,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.RenderTypeHelper;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
@@ -80,12 +83,13 @@ public class FluidAreaRender extends DynamicRender<IFluidRenderMulti, FluidAreaR
         if (!machine.isFormed() || machine.getFluidOffsets() == null) {
             return;
         }
+        MultiblockControllerMachine full = machine.self();
         if (!fixedFluid) {
             var lastRecipe = machine.getRecipeLogic().getLastRecipe();
             if (lastRecipe == null) {
                 cachedRecipe = null;
                 cachedFluid = null;
-            } else if (machine.self().getOffsetTimer() % 20 == 0 || lastRecipe.id != cachedRecipe) {
+            } else if (full.getOffsetTimer() % 20 == 0 || lastRecipe.id != cachedRecipe) {
                 cachedRecipe = lastRecipe.id;
                 if (machine.isActive()) {
                     cachedFluid = RenderUtil.getRecipeFluidToRender(lastRecipe);
@@ -98,22 +102,16 @@ public class FluidAreaRender extends DynamicRender<IFluidRenderMulti, FluidAreaR
             return;
         }
 
-        poseStack.pushPose();
-        var pose = poseStack.last().pose();
-
-        var fluidRenderType = ItemBlockRenderTypes.getRenderLayer(cachedFluid.defaultFluidState());
-        var consumer = buffer.getBuffer(RenderTypeHelper.getEntityRenderType(fluidRenderType, false));
+        RenderType fluidRenderType = ItemBlockRenderTypes.getRenderLayer(cachedFluid.defaultFluidState());
+        VertexConsumer consumer = buffer.getBuffer(RenderTypeHelper.getEntityRenderType(fluidRenderType, false));
 
         for (RelativeDirection face : this.drawFaces) {
-            var dir = face.getRelative(machine.self().getFrontFacing(), machine.self().getUpwardsFacing(),
-                    machine.self().isFlipped());
+            Direction dir = face.getRelative(full.getFrontFacing(), full.getUpwardsFacing(), full.isFlipped());
             if (dir.getAxis() != Direction.Axis.Y) dir = dir.getOpposite();
 
-            fluidBlockRenderer.drawPlane(dir, machine.getFluidOffsets(), pose, consumer, cachedFluid,
-                    RenderUtil.FluidTextureType.STILL, packedOverlay, machine.self().getPos());
+            fluidBlockRenderer.drawPlane(dir, machine.getFluidOffsets(), poseStack, consumer, cachedFluid,
+                    RenderUtil.FluidTextureType.STILL, packedOverlay, full.getPos());
         }
-
-        poseStack.popPose();
     }
 
     private Optional<Fluid> getFixedFluid() {

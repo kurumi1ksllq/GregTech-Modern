@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.client.particle;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.client.bloom.particle.GTBloomParticle;
 import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomEffect;
 import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
 import com.gregtechceu.gtceu.client.bloom.EffectRenderContext;
 import com.gregtechceu.gtceu.client.util.RenderBufferHelper;
@@ -265,8 +266,8 @@ public class GTOverheatParticle extends GTBloomParticle {
     @NotNull
     @Override
     protected BloomType getBloomType() {
-        ConfigHolder.ClientConfigs.ShaderOptions.HeatEffectBloom heatEffectBloom = ConfigHolder.INSTANCE.client.shader.heatEffectBloom;
-        return BloomType.fromValue(heatEffectBloom.useShader ? heatEffectBloom.bloomStyle : -1);
+        var config = ConfigHolder.INSTANCE.client.shader.heatEffectBloom;
+        return config.useShader ? config.bloomAlgorithm : BloomType.DISABLED;
     }
 
     public void renderBloomEffect(@NotNull PoseStack poseStack, @NotNull BufferBuilder buffer,
@@ -288,6 +289,14 @@ public class GTOverheatParticle extends GTBloomParticle {
         @Override
         @OnlyIn(Dist.CLIENT)
         public void preDraw(@NotNull BufferBuilder buffer) {
+            var config = ConfigHolder.INSTANCE.client.shader.heatEffectBloom;
+
+            BloomEffect.strength = config.strength;
+            BloomEffect.baseBrightness = config.baseBrightness;
+            BloomEffect.highBrightnessThreshold = config.highBrightnessThreshold;
+            BloomEffect.lowBrightnessThreshold = config.lowBrightnessThreshold;
+            BloomEffect.step = 1;
+
             RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.enableBlend();
             buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);

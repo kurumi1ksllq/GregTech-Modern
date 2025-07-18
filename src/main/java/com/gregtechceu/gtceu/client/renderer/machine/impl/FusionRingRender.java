@@ -112,18 +112,13 @@ public class FusionRingRender extends DynamicRender<FusionReactorMachine, Fusion
     }
 
     @Override
-    public int getViewDistance() {
-        return 32;
-    }
-
-    @Override
     public AABB getRenderBoundingBox(FusionReactorMachine machine) {
         return new AABB(machine.getPos()).inflate(getViewDistance() / 2.0D);
     }
 
     private static BloomType getBloomType() {
         var config = ConfigHolder.INSTANCE.client.shader.fusionBloom;
-        return BloomType.fromValue(config.useShader ? config.bloomStyle : -1);
+        return config.useShader ? config.bloomAlgorithm : BloomType.DISABLED;
     }
 
     @RequiredArgsConstructor

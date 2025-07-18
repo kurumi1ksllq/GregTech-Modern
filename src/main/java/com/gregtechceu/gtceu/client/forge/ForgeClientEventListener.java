@@ -91,6 +91,10 @@ public class ForgeClientEventListener {
     @SubscribeEvent
     public static void onRenderTick(TickEvent.RenderTickEvent event) {
         if (event.phase == TickEvent.Phase.START && Minecraft.getInstance().level != null) {
+            if (!GTShaders.allowedShader()) {
+                return;
+            }
+
             GTShaders.BLOOM_TARGET.clear(Minecraft.ON_OSX);
             Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
         }

@@ -1,7 +1,5 @@
 package com.gregtechceu.gtceu.client.bloom.shader;
 
-import org.jetbrains.annotations.NotNull;
-
 public enum BloomType {
 
     /**
@@ -17,26 +15,7 @@ public enum BloomType {
      */
     UNREAL,
     /**
-     * No bloom at all :O
+     * No bloom at all
      */
-    DISABLED;
-
-    public int getValue() {
-        return switch (this) {
-            case GAUSSIAN -> 0;
-            case UNITY -> 1;
-            case UNREAL -> 2;
-            case DISABLED -> -1;
-        };
-    }
-
-    @NotNull
-    public static BloomType fromValue(int value) {
-        return switch (value) {
-            case 0 -> GAUSSIAN;
-            case 1 -> UNITY;
-            case 2 -> UNREAL;
-            default -> DISABLED;
-        };
-    }
+    DISABLED
 }

@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.client.model;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
+import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -47,7 +48,7 @@ public record BloomMetadataSection(boolean bloom) {
         if (hasBloom(quad.getSprite())) {
             return true;
         }
-        return isEmissive(quad, ambientPackedLights);
+        return ConfigHolder.INSTANCE.client.shader.emissiveTexturesBloom && isEmissive(quad, ambientPackedLights);
     }
 
     public static boolean isEmissive(BakedQuad quad, int[] ambientPackedLights) {

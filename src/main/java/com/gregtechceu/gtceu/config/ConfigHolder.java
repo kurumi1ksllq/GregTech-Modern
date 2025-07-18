@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.config;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
 
 import net.minecraft.commands.Commands;
 
@@ -248,11 +249,11 @@ public class ConfigHolder {
             public String borderColor = "#00000000";
 
             @Configurable
-            @Configurable.Comment({ "Which part of the screen to anchor buttons to", "Default: \"BOTTOM_LEFT\"" })
+            @Configurable.Comment({ "Which part of the screen to anchor buttons to", "Default: BOTTOM_LEFT" })
             public Anchor buttonAnchor = Anchor.BOTTOM_LEFT;
 
             @Configurable
-            @Configurable.Comment({ "Which direction the buttons will go", "Default: \"VERTICAL\"" })
+            @Configurable.Comment({ "Which direction the buttons will go", "Default: VERTICAL" })
             public Direction direction = Direction.VERTICAL;
 
             @Configurable
@@ -747,23 +748,12 @@ public class ConfigHolder {
         public int animationTime = 300;
         @Configurable
         public ArmorHud armorHud = new ArmorHud();
+
         @Configurable
-        public RendererConfigs renderer = new RendererConfigs();
-
-        public int getDefaultPaintingColor() {
-            // OR with full alpha to differentiate from a machine that's painted white (map color 0xffffff)
-            return Long.decode(defaultPaintingColor).intValue() | 0xff000000;
-        }
-
+        public RendererOptions renderer = new RendererOptions();
         @Configurable
         @Configurable.Comment("Config options for Shaders and Post-processing Effects")
         public ShaderOptions shader = new ShaderOptions();
-
-        @Configurable
-        @Configurable.Comment({
-                "Whether to hook depth texture. Has no effect on performance, but if there is a problem with rendering, try disabling it.",
-                "Default: true" })
-        public boolean hookDepthTexture = true;
 
         public static class ArmorHud {
 
@@ -785,35 +775,28 @@ public class ConfigHolder {
         public static class ShaderOptions {
 
             @Configurable
-            @Configurable.Comment("Bloom config options for the fusion reactor.")
-            public FusionBloom fusionBloom = new FusionBloom();
-
-            @Configurable
             @Configurable.Comment("Particle config option for the Assembly Line")
             public boolean assemblyLineParticles = true;
 
             @Configurable
-            @Configurable.Comment("Bloom config options for the heat effect (cable burning).")
-            public HeatEffectBloom heatEffectBloom = new HeatEffectBloom();
-
-            @Configurable
-            @Configurable.Comment({ "Whether to use shader programs.", "Default: true" })
+            @Configurable.Comment({ "Whether to use custom shaders for bloom", "Default: true" })
             public boolean useShader = true;
 
             @Configurable
-            @Configurable.Comment({ "Whether or not to enable Emissive Textures with bloom effect.", "Default: true" })
+            @Configurable.Comment({ "Whether or not to add bloom to emissive textures", "Default: true" })
             public boolean emissiveTexturesBloom = true;
 
             @Configurable
-            @Configurable.Comment({ "Bloom Algorithm", "0 - Simple Gaussian Blur Bloom (Fast) NYI: WILL ERROR",
-                    "1 - Unity Bloom", "2 - Unreal Bloom", "Default: 2" })
-            @Configurable.Range(min = 0, max = 2)
-            public int bloomStyle = 2;
+            @Configurable.Comment({ "Bloom Algorithm",
+                    "GAUSSIAN - Simple Gaussian Blur Bloom (Fast) NYI: WILL ERROR",
+                    "UNITY - Unity-like Bloom",
+                    "UNREAL - Unreal-like Bloom",
+                    "Default: UNREAL" })
+            public BloomType bloomAlgorithm = BloomType.UNREAL;
 
             @Configurable
             @Configurable.Comment({
-                    "The brightness after bloom should not exceed this value. It can be used to limit the brightness of highlights " +
-                            "(e.g., daytime).",
+                    "The brightness after bloom should not exceed this value. It can be used to limit the brightness of highlights (e.g., daytime)",
                     "OUTPUT = BACKGROUND + BLOOM * strength * (base + LT + (1 - BACKGROUND_BRIGHTNESS)*({HT}-LT)))",
                     "This value should be greater than lowBrightnessThreshold.", "Default: 0.5" })
             @Configurable.DecimalRange(min = 0)
@@ -821,8 +804,7 @@ public class ConfigHolder {
 
             @Configurable
             @Configurable.Comment({
-                    "The brightness after bloom should not smaller than this value. It can be used to limit the brightness of dusky parts " +
-                            "(e.g., night/caves).",
+                    "The brightness after bloom should not smaller than this value. It can be used to limit the brightness of dusky parts (e.g., night/caves)",
                     "OUTPUT = BACKGROUND + BLOOM * strength * (base + {LT} + (1 - BACKGROUND_BRIGHTNESS)*(HT-{LT})))",
                     "This value should be smaller than highBrightnessThreshold.", "Default: 0.2" })
             @Configurable.DecimalRange(min = 0)
@@ -839,7 +821,7 @@ public class ConfigHolder {
             @Configurable
             @Configurable.Comment({ "Bloom Strength",
                     "OUTPUT = BACKGROUND + BLOOM * {strength} * (base + LT + (1 - BACKGROUND_BRIGHTNESS)*(HT-LT)))",
-                    "Default: 2" })
+                    "Default: 1.5" })
             @Configurable.DecimalRange(min = 0)
             public float strength = 1.5f;
 
@@ -848,40 +830,48 @@ public class ConfigHolder {
             @Configurable.DecimalRange(min = 0)
             public float step = 1.0f;
 
+            @Configurable
+            @Configurable.Comment("Bloom config options for the fusion reactor.")
+            public FusionBloom fusionBloom = new FusionBloom();
+
+            @Configurable
+            @Configurable.Comment("Bloom config options for the cable burning effect")
+            public HeatEffectBloom heatEffectBloom = new HeatEffectBloom();
+
             public static class FusionBloom {
 
                 @Configurable
-                @Configurable.Comment({ "Whether to use shader programs.", "Default: true" })
+                @Configurable.Comment({ "Whether to use custom shaders for bloom", "Default: true" })
                 public boolean useShader = true;
 
                 @Configurable
                 @Configurable.Comment({ "Bloom Strength",
                         "OUTPUT = BACKGROUND + BLOOM * {strength} * (base + LT + (1 - BACKGROUND_BRIGHTNESS)*(HT-LT)))",
-                        "Default: 2" })
+                        "Default: 1.5" })
                 @Configurable.DecimalRange(min = 0)
                 public float strength = 1.5f;
 
                 @Configurable
-                @Configurable.Comment({ "Bloom Algorithm", "0 - Simple Gaussian Blur Bloom (Fast) NYI: WILL ERROR",
-                        "1 - Unity Bloom", "2 - Unreal Bloom", "Default: 2" })
-                @Configurable.Range(min = 0, max = 2)
-                public int bloomStyle = 1;
+                @Configurable.Comment({ "Bloom Algorithm",
+                        "GAUSSIAN - Simple Gaussian Blur Bloom (Fast) NYI: WILL ERROR",
+                        "UNITY - Unity-like Bloom",
+                        "UNREAL - Unreal-like Bloom",
+                        "Default: UNREAL" })
+                public BloomType bloomAlgorithm = BloomType.UNREAL;
 
                 @Configurable
                 @Configurable.Comment({
-                        "The brightness after bloom should not exceed this value. It can be used to limit the brightness of highlights " +
-                                "(e.g., daytime).",
+                        "The brightness after bloom should not exceed this value. It can be used to limit the brightness of highlights (e.g., daytime)",
                         "OUTPUT = BACKGROUND + BLOOM * strength * (base + LT + (1 - BACKGROUND_BRIGHTNESS)*({HT}-LT)))",
-                        "This value should be greater than lowBrightnessThreshold.", "Default: 0.5" })
+                        "This value should be greater than lowBrightnessThreshold.", "Default: 1.3" })
                 @Configurable.DecimalRange(min = 0)
                 public float highBrightnessThreshold = 1.3f;
 
                 @Configurable
                 @Configurable.Comment({
-                        "The brightness after bloom should not smaller than this value. It can be used to limit the brightness of dusky parts " +
-                                "(e.g., night/caves).",
+                        "The brightness after bloom should not smaller than this value. It can be used to limit the brightness of dusky parts (e.g., night/caves)",
                         "OUTPUT = BACKGROUND + BLOOM * strength * (base + {LT} + (1 - BACKGROUND_BRIGHTNESS)*(HT-{LT})))",
-                        "This value should be smaller than highBrightnessThreshold.", "Default: 0.2" })
+                        "This value should be smaller than highBrightnessThreshold.", "Default: 0.3" })
                 @Configurable.DecimalRange(min = 0)
                 public float lowBrightnessThreshold = 0.3f;
 
@@ -891,13 +881,13 @@ public class ConfigHolder {
                         "OUTPUT = BACKGROUND + BLOOM * strength * ({base} + LT + (1 - BACKGROUND_BRIGHTNESS)*(HT-LT)))",
                         "Default: 0.1" })
                 @Configurable.DecimalRange(min = 0)
-                public float baseBrightness = 0.0f;
+                public float baseBrightness = 0.1f;
             }
 
             public static class HeatEffectBloom {
 
                 @Configurable
-                @Configurable.Comment({ "Whether to use shader programs.", "Default: true" })
+                @Configurable.Comment({ "Whether to use custom shaders for bloom", "Default: true" })
                 public boolean useShader = true;
 
                 @Configurable
@@ -905,32 +895,31 @@ public class ConfigHolder {
                         "OUTPUT = BACKGROUND + BLOOM * {strength} * (base + LT + (1 - BACKGROUND_BRIGHTNESS)*(HT-LT)))",
                         "Default: 2" })
                 @Configurable.DecimalRange(min = 0)
-                public double strength = 1.1;
+                public float strength = 2.0f;
 
                 @Configurable
-                @Configurable.Comment({ "Bloom Algorithm", "0 - Simple Gaussian Blur Bloom (Fast) NYI: WILL ERROR",
-                        "1 - Unity Bloom",
-                        "2 - Unreal Bloom", "Default: 2" })
-                @Configurable.Range(min = 0, max = 2)
-                public int bloomStyle = 2;
+                @Configurable.Comment({ "Bloom Algorithm",
+                        "GAUSSIAN - Simple Gaussian Blur Bloom (Fast) NYI: WILL ERROR",
+                        "UNITY - Unity-like Bloom",
+                        "UNREAL - Unreal-like Bloom",
+                        "Default: UNREAL" })
+                public BloomType bloomAlgorithm = BloomType.UNREAL;
 
                 @Configurable
                 @Configurable.Comment({
-                        "The brightness after bloom should not exceed this value. It can be used to limit the brightness of highlights " +
-                                "(e.g., daytime).",
+                        "The brightness after bloom should not exceed this value. It can be used to limit the brightness of highlights (e.g., daytime)",
                         "OUTPUT = BACKGROUND + BLOOM * strength * (base + LT + (1 - BACKGROUND_BRIGHTNESS)*({HT}-LT)))",
-                        "This value should be greater than lowBrightnessThreshold.", "Default: 0.5" })
+                        "This value should be greater than lowBrightnessThreshold.", "Default: 1.4" })
                 @Configurable.DecimalRange(min = 0)
-                public double highBrightnessThreshold = 1.4;
+                public float highBrightnessThreshold = 1.4f;
 
                 @Configurable
                 @Configurable.Comment({
-                        "The brightness after bloom should not smaller than this value. It can be used to limit the brightness of dusky parts " +
-                                "(e.g., night/caves).",
+                        "The brightness after bloom should not smaller than this value. It can be used to limit the brightness of dusky parts (e.g., night/caves)",
                         "OUTPUT = BACKGROUND + BLOOM * strength * (base + {LT} + (1 - BACKGROUND_BRIGHTNESS)*(HT-{LT})))",
-                        "This value should be smaller than highBrightnessThreshold.", "Default: 0.2" })
+                        "This value should be smaller than highBrightnessThreshold.", "Default: 0.6" })
                 @Configurable.DecimalRange(min = 0)
-                public double lowBrightnessThreshold = 0.6;
+                public float lowBrightnessThreshold = 0.6f;
 
                 @Configurable
                 @Configurable.Comment({ "The base brightness of the bloom.", "It is similar to strength",
@@ -938,8 +927,30 @@ public class ConfigHolder {
                         "OUTPUT = BACKGROUND + BLOOM * strength * ({base} + LT + (1 - BACKGROUND_BRIGHTNESS)*(HT-LT)))",
                         "Default: 0.1" })
                 @Configurable.DecimalRange(min = 0)
-                public double baseBrightness = 0;
+                public float baseBrightness = 0.1f;
             }
+        }
+
+        public static class RendererOptions {
+
+            @Configurable
+            @Configurable.Comment({ "Render fluids in multiblocks that support them?", "Default: true" })
+            public boolean renderFluids = true;
+
+            @Configurable
+            @Configurable.Comment({ "Whether or not to color tiered machine highlights in the tier color",
+                    "Default: true" })
+            public boolean coloredTieredMachineOutline = true;
+
+            @Configurable
+            @Configurable.Comment({ "Whether or not to color wire/cable highlights based on voltage tier",
+                    "Default: true" })
+            public boolean coloredWireOutline = true;
+        }
+
+        public int getDefaultPaintingColor() {
+            // OR with full alpha to differentiate from a machine that's painted white (map color 0xffffff)
+            return Long.decode(defaultPaintingColor).intValue() | 0xff000000;
         }
     }
 
@@ -964,20 +975,4 @@ public class ConfigHolder {
         public boolean dumpAssets = false;
     }
 
-    public static class RendererConfigs {
-
-        @Configurable
-        @Configurable.Comment({ "Render fluids in multiblocks that support them?", "Default: true" })
-        public boolean renderFluids = true;
-
-        @Configurable
-        @Configurable.Comment({ "Whether or not to color tiered machine highlights in the tier color",
-                "Default: true" })
-        public boolean coloredTieredMachineOutline = true;
-
-        @Configurable
-        @Configurable.Comment({ "Whether or not to color wire/cable highlights based on voltage tier",
-                "Default: true" })
-        public boolean coloredWireOutline = true;
-    }
 }

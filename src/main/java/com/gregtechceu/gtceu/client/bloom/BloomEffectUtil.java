@@ -176,6 +176,7 @@ public class BloomEffectUtil {
                                                         @Nullable Predicate<BloomRenderTicket> validityChecker,
                                                         @Nullable Supplier<Level> worldContext) {
         if (!GTShaders.allowedShader()) return BloomRenderTicket.INVALID;
+        if (bloomType == BloomType.DISABLED) return BloomRenderTicket.INVALID;
         BloomRenderTicket ticket = new BloomRenderTicket(setup, bloomType, render, validityChecker, worldContext);
         BLOOM_RENDER_LOCK.lock();
         try {
@@ -201,7 +202,7 @@ public class BloomEffectUtil {
                 }
             }
 
-            for (Map.Entry<BloomRenderKey, List<BloomRenderTicket>> e : BLOOM_RENDERS.entrySet()) {
+            for (var e : BLOOM_RENDERS.entrySet()) {
                 for (BloomRenderTicket ticket : e.getValue()) {
                     if (ticket.isValid() && ticket.worldContext != null && ticket.worldContext.get() == level) {
                         ticket.invalidate();
@@ -244,8 +245,9 @@ public class BloomEffectUtil {
                         draw(poseStack, buffer, context, list);
                     }
                 }
-                postDraw();
+
                 RenderSystem.depthMask(false);
+                postDraw();
 
                 render(partialTicks, poseStack, projectionMatrix, camPos);
                 return;
@@ -406,7 +408,6 @@ public class BloomEffectUtil {
             EffectInstance shader = pass.getEffect();
             String name = shader.getName();
 
-            shader.safeGetUniform("iTime").set(GTShaders.getITime(partialTicks));
             shader.safeGetUniform("EnableFilter").set(BloomEffectUtil.isDrawingBlockBloom.get() ? 1 : 0);
 
             if (GTShaders.BLOOM_TYPE == BloomType.UNREAL && name.equals(SEPERABLE_BLUR_SHADER_NAME)) {
@@ -450,7 +451,7 @@ public class BloomEffectUtil {
                                          int[] combinedLights, int combinedOverlay, boolean mulColor,
                                          Operation<Void> original) {
         BlockPos chunkOrigin = BloomEffectUtil.CURRENT_RENDERING_CHUNK_POS.get();
-        if (GTShaders.allowedShader() && chunkOrigin != null || BloomMetadataSection.hasBloom(quad, combinedLights)) {
+        if (GTShaders.allowedShader() && chunkOrigin != null && BloomMetadataSection.hasBloom(quad, combinedLights)) {
             original.call(BloomEffectUtil.getOrStartBloomBuffer(chunkOrigin), pose, quad,
                     colorMuls, red, green, blue,
                     combinedLights, combinedOverlay, mulColor);

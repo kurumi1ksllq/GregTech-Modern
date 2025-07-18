@@ -29,7 +29,7 @@ public class GTShaders {
     public static final Minecraft mc = Minecraft.getInstance();
 
     public static PostChain BLOOM_CHAIN;
-    public static BloomType BLOOM_TYPE;
+    public static BloomType BLOOM_TYPE = ConfigHolder.INSTANCE.client.shader.bloomAlgorithm;
     public static RenderTarget BLOOM_TARGET;
 
     public static Map<BlockPos, VertexBuffer> BLOOM_BUFFERS = new HashMap<>();
@@ -51,21 +51,18 @@ public class GTShaders {
 
         ResourceLocation id;
 
-        switch (ConfigHolder.INSTANCE.client.shader.bloomStyle) {
-            case 0 -> {
+        switch (BLOOM_TYPE) {
+            case GAUSSIAN -> {
                 id = GTCEu.id("shaders/post/bloom_gaussian.json");
-                BLOOM_TYPE = BloomType.GAUSSIAN;
             }
-            case 1 -> {
+            case UNITY -> {
                 id = GTCEu.id("shaders/post/bloom_unity.json");
-                BLOOM_TYPE = BloomType.UNITY;
             }
-            case 2 -> {
+            case UNREAL -> {
                 id = GTCEu.id("shaders/post/bloom_unreal.json");
-                BLOOM_TYPE = BloomType.UNREAL;
             }
             default -> {
-                GTCEu.LOGGER.error("Invalid bloom style {}", ConfigHolder.INSTANCE.client.shader.bloomStyle);
+                GTCEu.LOGGER.error("Invalid bloom style {}", ConfigHolder.INSTANCE.client.shader.bloomAlgorithm);
                 BLOOM_TYPE = BloomType.DISABLED;
                 BLOOM_CHAIN = null;
                 BLOOM_TARGET = null;

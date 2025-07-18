@@ -41,9 +41,6 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
     @SaveField
     @SyncToClient
     public final CustomItemStackHandler storage;
-    // Deprecated since circuits and other slots
-    // need to be passed to parallel checking.
-    @Deprecated(since = "7.0.0")
     @Accessors(fluent = true)
     @Getter
     @Setter

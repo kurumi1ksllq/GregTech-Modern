@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.client.particle;
 
-import com.gregtechceu.gtceu.client.renderer.IRenderSetup;
-import com.gregtechceu.gtceu.client.util.EffectRenderContext;
+import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
+import com.gregtechceu.gtceu.client.bloom.EffectRenderContext;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

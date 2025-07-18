@@ -1,7 +1,6 @@
-package com.gregtechceu.gtceu.client.util;
+package com.gregtechceu.gtceu.client.bloom;
 
-import com.gregtechceu.gtceu.client.renderer.IRenderSetup;
-import com.gregtechceu.gtceu.client.shader.post.BloomType;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;

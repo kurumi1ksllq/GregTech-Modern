@@ -1,10 +1,10 @@
 package com.gregtechceu.gtceu.client.particle;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.client.renderer.IRenderSetup;
-import com.gregtechceu.gtceu.client.shader.post.BloomType;
-import com.gregtechceu.gtceu.client.util.DrawUtil;
-import com.gregtechceu.gtceu.client.util.EffectRenderContext;
+import com.gregtechceu.gtceu.client.bloom.particle.GTBloomParticle;
+import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
+import com.gregtechceu.gtceu.client.bloom.EffectRenderContext;
 import com.gregtechceu.gtceu.client.util.RenderBufferHelper;
 import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
 import com.gregtechceu.gtceu.config.ConfigHolder;

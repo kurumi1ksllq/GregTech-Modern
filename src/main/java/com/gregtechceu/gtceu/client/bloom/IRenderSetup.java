@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.client.renderer;
+package com.gregtechceu.gtceu.client.bloom;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import org.jetbrains.annotations.NotNull;

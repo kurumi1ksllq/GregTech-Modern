@@ -173,7 +173,7 @@ public class GTCEu {
             return isModLoaded(GTValues.MODID_IRIS) || isModLoaded(GTValues.MODID_OCULUS);
         }
 
-        public static boolean isSodiumRubidiumEmbeddiumLoaded() {
+        public static boolean isSodiumEmbeddiumLoaded() {
             return isModLoaded(GTValues.MODID_SODIUM) || isModLoaded(GTValues.MODID_EMBEDDIUM);
         }
 

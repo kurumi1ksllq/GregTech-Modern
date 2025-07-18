@@ -1,9 +1,10 @@
-package com.gregtechceu.gtceu.client.particle;
+package com.gregtechceu.gtceu.client.bloom.particle;
 
-import com.gregtechceu.gtceu.client.renderer.IRenderSetup;
-import com.gregtechceu.gtceu.client.shader.post.BloomType;
-import com.gregtechceu.gtceu.client.util.BloomEffectUtil;
-import com.gregtechceu.gtceu.client.util.IBloomEffect;
+import com.gregtechceu.gtceu.client.particle.GTParticle;
+import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
+import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
+import com.gregtechceu.gtceu.client.bloom.IBloomEffect;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

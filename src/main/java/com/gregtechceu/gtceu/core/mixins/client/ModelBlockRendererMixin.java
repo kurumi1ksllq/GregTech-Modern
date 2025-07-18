@@ -1,8 +1,6 @@
 package com.gregtechceu.gtceu.core.mixins.client;
 
-import com.gregtechceu.gtceu.client.model.GTMetadataSection;
-import com.gregtechceu.gtceu.client.shader.GTShaders;
-import com.gregtechceu.gtceu.client.util.BloomEffectUtil;
+import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
 
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.block.model.BakedQuad;

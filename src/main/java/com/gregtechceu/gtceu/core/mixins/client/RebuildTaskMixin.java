@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.core.mixins.client;
 
-import com.gregtechceu.gtceu.client.util.BloomEffectUtil;
+import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
 
 import net.minecraft.client.renderer.ChunkBufferBuilderPack;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(targets = "net.minecraft.client.renderer.chunk.ChunkRenderDispatcher$RenderChunk$RebuildTask")
 public class RebuildTaskMixin {
 
-    @Shadow
+    @Shadow(aliases = { "this$1", "f_290687_", "f" })
     @Final
     ChunkRenderDispatcher.RenderChunk this$1;
 

@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.client.shader.post;
+package com.gregtechceu.gtceu.client.bloom.shader;
 
 import com.gregtechceu.gtceu.config.ConfigHolder;
 

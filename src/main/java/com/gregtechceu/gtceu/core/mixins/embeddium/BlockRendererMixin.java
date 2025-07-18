@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.core.mixins.embeddium;
 
 import com.gregtechceu.gtceu.client.model.GTMetadataSection;
 import com.gregtechceu.gtceu.client.shader.GTShaders;
-import com.gregtechceu.gtceu.client.util.BloomEffectUtil;
+import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
 
 import net.caffeinemc.mods.sodium.api.util.ColorARGB;
 import net.caffeinemc.mods.sodium.api.util.NormI8;

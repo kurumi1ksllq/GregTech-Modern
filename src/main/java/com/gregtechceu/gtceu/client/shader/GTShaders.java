@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.client.shader;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.client.shader.post.BloomType;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.irisshaders.iris.api.v0.IrisApi;
@@ -89,7 +89,7 @@ public class GTShaders {
 
     public static boolean allowedShader() {
         return ConfigHolder.INSTANCE.client.shader.useShader &&
-                !(GTCEu.isIrisOculusLoaded() && IrisApi.getInstance().isShaderPackInUse());
+                !(GTCEu.Mods.isIrisOculusLoaded() && IrisApi.getInstance().isShaderPackInUse());
     }
 
     public static float getITime(float pPartialTicks) {

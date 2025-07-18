@@ -1,11 +1,11 @@
-package com.gregtechceu.gtceu.client.util;
+package com.gregtechceu.gtceu.client.bloom;
 
 import com.gregtechceu.gtceu.client.particle.GTParticle;
 import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
-import com.gregtechceu.gtceu.client.renderer.IRenderSetup;
 import com.gregtechceu.gtceu.client.shader.GTShaders;
-import com.gregtechceu.gtceu.client.shader.post.BloomEffect;
-import com.gregtechceu.gtceu.client.shader.post.BloomType;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomEffect;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
+import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.client.PostChainAccessor;
 import com.gregtechceu.gtceu.core.mixins.client.VertexBufferAccessor;
@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -442,6 +443,21 @@ public class BloomEffectUtil {
         RenderSystem.defaultBlendFunc();
         VertexBuffer.unbind();
         Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+    }
+
+    public static void copyToBloomBuffer(VertexConsumer consumer, PoseStack.Pose pose, BakedQuad quad,
+                                         float[] colorMuls, float red, float green, float blue,
+                                         int[] combinedLights, int combinedOverlay, boolean mulColor,
+                                         Operation<Void> original) {
+        BlockPos chunkOrigin = BloomEffectUtil.CURRENT_RENDERING_CHUNK_POS.get();
+        if (GTShaders.allowedShader() && chunkOrigin != null && GTQuadTransformers.isEmissive(quad, combinedLights)) {
+            original.call(BloomEffectUtil.getOrStartBloomBuffer(chunkOrigin), pose, quad,
+                    colorMuls, red, green, blue,
+                    combinedLights, combinedOverlay, mulColor);
+        }
+        original.call(consumer, pose, quad,
+                colorMuls, red, green, blue,
+                combinedLights, combinedOverlay, mulColor);
     }
 
     private record BloomRenderKey(@Nullable IRenderSetup renderSetup, @NotNull BloomType bloomType) {

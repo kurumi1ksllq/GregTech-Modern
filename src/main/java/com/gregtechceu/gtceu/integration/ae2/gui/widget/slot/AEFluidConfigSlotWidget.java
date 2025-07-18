@@ -7,9 +7,10 @@ import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidSlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAESlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlot;
 import com.gregtechceu.gtceu.integration.ae2.utils.AEUtil;
+import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
-import com.lowdragmc.lowdraglib.gui.util.TextFormattingUtil;
 import com.lowdragmc.lowdraglib.side.fluid.forge.FluidHelperImpl;
 import com.lowdragmc.lowdraglib.utils.Position;
 import com.lowdragmc.lowdraglib.utils.Size;
@@ -37,11 +38,6 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.lowdragmc.lowdraglib.gui.util.DrawerHelper.drawStringFixedCorner;
 
-/**
- * @Author GlodBlock
- * @Description A configurable slot for {@link FluidStack}
- * @Date 2023/4/21-0:50
- */
 public class AEFluidConfigSlotWidget extends AEConfigSlotWidget implements IGhostFluidTarget {
 
     public AEFluidConfigSlotWidget(int x, int y, ConfigWidget widget, int index) {
@@ -69,7 +65,8 @@ public class AEFluidConfigSlotWidget extends AEConfigSlotWidget implements IGhos
                 DrawerHelper.drawFluidForGui(graphics, FluidHelperImpl.toFluidStack(stack), config.amount(), stackX,
                         stackY, 16, 16);
                 if (!parentWidget.isStocking()) {
-                    String amountStr = TextFormattingUtil.formatLongToCompactString(config.amount(), 4) + "mB";
+                    String amountStr = FormattingUtil.formatNumberReadable(config.amount(), true,
+                            FormattingUtil.DECIMAL_FORMAT_0F, "B");
                     drawStringFixedCorner(graphics, amountStr, stackX + 17, stackY + 17, 16777215, true, 0.5f);
                 }
             }
@@ -80,7 +77,8 @@ public class AEFluidConfigSlotWidget extends AEConfigSlotWidget implements IGhos
                 DrawerHelper.drawFluidForGui(graphics, FluidHelperImpl.toFluidStack(stack), stock.amount(), stackX,
                         stackY + 18, 16,
                         16);
-                String amountStr = TextFormattingUtil.formatLongToCompactString(stock.amount(), 4) + "mB";
+                String amountStr = FormattingUtil.formatNumberReadable(stock.amount(), true,
+                        FormattingUtil.DECIMAL_FORMAT_0F, "B");
                 drawStringFixedCorner(graphics, amountStr, stackX + 17, stackY + 18 + 17, 16777215, true, 0.5f);
             }
         }
@@ -118,7 +116,7 @@ public class AEFluidConfigSlotWidget extends AEConfigSlotWidget implements IGhos
                 writeClientAction(REMOVE_ID, buf -> {});
 
                 if (!parentWidget.isStocking()) {
-                    this.parentWidget.disableAmount();
+                    this.parentWidget.disableAmountClient();
                 }
             } else if (button == 0) {
                 // Left click to set/select
@@ -126,7 +124,7 @@ public class AEFluidConfigSlotWidget extends AEConfigSlotWidget implements IGhos
                 FluidUtil.getFluidContained(hold).ifPresent(f -> writeClientAction(UPDATE_ID, f::writeToPacket));
 
                 if (!parentWidget.isStocking()) {
-                    this.parentWidget.enableAmount(this.index);
+                    this.parentWidget.enableAmountClient(this.index);
                     this.select = true;
                 }
             }
@@ -210,7 +208,7 @@ public class AEFluidConfigSlotWidget extends AEConfigSlotWidget implements IGhos
                 currentStack.setCount(newStackSize);
                 gui.getModularUIContainer().setCarried(currentStack);
 
-                FluidStack stack = new FluidStack(key.getFluid(), (int) slot.getStock().amount());
+                FluidStack stack = new FluidStack(key.getFluid(), GTMath.saturatedCast(slot.getStock().amount()));
                 if (key.hasTag()) {
                     stack.setTag(key.getTag().copy());
                 }
@@ -253,7 +251,8 @@ public class AEFluidConfigSlotWidget extends AEConfigSlotWidget implements IGhos
             return false;
         }
         FluidStack fluid = slot.getConfig().what() instanceof AEFluidKey fluidKey ?
-                new FluidStack(fluidKey.getFluid(), (int) slot.getConfig().amount(), fluidKey.getTag()) :
+                new FluidStack(fluidKey.getFluid(), GTMath.saturatedCast(slot.getConfig().amount()),
+                        fluidKey.getTag()) :
                 FluidStack.EMPTY;
         long amt;
         if (isCtrlDown()) {

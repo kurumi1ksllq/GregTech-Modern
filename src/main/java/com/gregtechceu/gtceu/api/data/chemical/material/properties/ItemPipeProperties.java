@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.api.data.chemical.material.properties;
 
-import java.util.Objects;
+import com.gregtechceu.gtceu.utils.GTMath;
 
-public class ItemPipeProperties implements IMaterialProperty<ItemPipeProperties> {
+public class ItemPipeProperties implements IMaterialProperty {
 
     /**
      * Items will try to take the path with the lowest priority
@@ -83,7 +83,7 @@ public class ItemPipeProperties implements IMaterialProperty<ItemPipeProperties>
 
     @Override
     public int hashCode() {
-        return Objects.hash(priority, transferRate);
+        return GTMath.hashInts(priority, Float.hashCode(transferRate));
     }
 
     @Override

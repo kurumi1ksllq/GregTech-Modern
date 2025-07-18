@@ -41,73 +41,6 @@ import java.util.*;
 @OnlyIn(Dist.CLIENT)
 public abstract class LevelRendererMixin {
 
-    @Shadow
-    @Final
-    private Minecraft minecraft;
-
-    @Shadow
-    @Final
-    private Long2ObjectMap<SortedSet<BlockDestructionProgress>> destructionProgress;
-
-    @Shadow
-    @Final
-    private RenderBuffers renderBuffers;
-
-    @Shadow
-    private @Nullable ClientLevel level;
-
-    @Inject(
-            method = { "renderLevel" },
-            at = { @At("HEAD") })
-    private void gtceu$renderAOEBreakAnimation(PoseStack poseStack,
-                                               float partialTick, long finishNanoTime, boolean renderBlockOutline,
-                                               Camera camera, GameRenderer gameRenderer, LightTexture lightTexture,
-                                               Matrix4f projectionMatrix, CallbackInfo ci) {
-        if (minecraft.player == null || minecraft.level == null) return;
-
-        ItemStack mainHandItem = minecraft.player.getMainHandItem();
-        if (!ToolHelper.hasBehaviorsTag(mainHandItem) ||
-                ToolHelper.getAoEDefinition(mainHandItem) == AoESymmetrical.none() ||
-                !(minecraft.hitResult instanceof BlockHitResult result) || minecraft.player.isShiftKeyDown())
-            return;
-
-        BlockPos hitResultPos = result.getBlockPos();
-        BlockState hitResultState = minecraft.level.getBlockState(hitResultPos);
-
-        SortedSet<BlockDestructionProgress> progresses = destructionProgress.get(hitResultPos.asLong());
-        if (progresses == null || progresses.isEmpty() || !mainHandItem.isCorrectToolForDrops(hitResultState)) return;
-        BlockDestructionProgress progress = progresses.last();
-
-        Set<BlockPos> positions = ToolHelper.getHarvestableBlocks(mainHandItem,
-                ToolHelper.getAoEDefinition(mainHandItem), level, minecraft.player, result);
-
-        Vec3 vec3 = camera.getPosition();
-        double camX = vec3.x();
-        double camY = vec3.y();
-        double camZ = vec3.z();
-
-        for (BlockPos pos : positions) {
-            poseStack.pushPose();
-            poseStack.translate((double) pos.getX() - camX, (double) pos.getY() - camY, (double) pos.getZ() - camZ);
-            PoseStack.Pose last = poseStack.last();
-            VertexConsumer breakProgressDecal = new SheetedDecalTextureGenerator(
-                    this.renderBuffers.crumblingBufferSource()
-                            .getBuffer(ModelBakery.DESTROY_TYPES.get(progress.getProgress())),
-                    last.pose(),
-                    last.normal(),
-                    1.0f);
-            this.minecraft.getBlockRenderer().renderBreakingTexture(minecraft.level.getBlockState(pos), pos,
-                    minecraft.level, poseStack, breakProgressDecal);
-            poseStack.popPose();
-        }
-    }
-
-    @Shadow
-    private static void renderShape(PoseStack poseStack, VertexConsumer consumer, VoxelShape shape, double x, double y,
-                                    double z, float red, float green, float blue, float alpha) {
-        throw new AssertionError();
-    }
-
     @WrapOperation(method = "applyFrustum",
                    at = @At(value = "INVOKE",
                             target = "Lit/unimi/dsi/fastutil/objects/ObjectArrayList;add(Ljava/lang/Object;)Z",
@@ -125,44 +58,5 @@ public abstract class LevelRendererMixin {
         if (GTShaders.BLOOM_CHAIN != null) {
             GTShaders.BLOOM_CHAIN.resize(width, height);
         }
-    }
-
-    @Inject(method = "renderHitOutline", at = @At("HEAD"))
-    private void gtceu$renderAOEHitOutline(PoseStack poseStack, VertexConsumer consumer, Entity entity, double camX,
-                                           double camY,
-                                           double camZ, BlockPos pos, BlockState state, CallbackInfo ci) {
-        if (minecraft.player == null || minecraft.level == null) return;
-
-        ItemStack mainHandItem = minecraft.player.getMainHandItem();
-
-        if (state.isAir() || !minecraft.level.isInWorldBounds(pos) || !mainHandItem.isCorrectToolForDrops(state) ||
-                minecraft.player.isShiftKeyDown() || !ToolHelper.hasBehaviorsTag(mainHandItem))
-            return;
-
-        Set<BlockPos> blockPositions = ToolHelper.getHarvestableBlocks(mainHandItem,
-                ToolHelper.getAoEDefinition(mainHandItem), level, minecraft.player, minecraft.hitResult);
-        Set<VoxelShape> outlineShapes = new HashSet<>();
-
-        for (BlockPos position : blockPositions) {
-            BlockPos diffPos = position.subtract(pos);
-            BlockState offsetState = minecraft.level.getBlockState(position);
-
-            outlineShapes.add(offsetState.getShape(minecraft.level, position).move(diffPos.getX(), diffPos.getY(),
-                    diffPos.getZ()));
-        }
-
-        outlineShapes.forEach(shape -> {
-            renderShape(
-                    poseStack,
-                    consumer,
-                    shape,
-                    (double) pos.getX() - camX,
-                    (double) pos.getY() - camY,
-                    (double) pos.getZ() - camZ,
-                    0.0F,
-                    0.0F,
-                    0.0F,
-                    0.4F);
-        });
     }
 }

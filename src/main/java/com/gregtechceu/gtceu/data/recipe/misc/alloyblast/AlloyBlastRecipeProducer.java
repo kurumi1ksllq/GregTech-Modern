@@ -9,11 +9,10 @@ import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialStack;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
-import com.gregtechceu.gtceu.common.data.GCyMRecipeTypes;
+import com.gregtechceu.gtceu.common.data.GCYMRecipeTypes;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
-import com.gregtechceu.gtceu.data.recipe.CraftingComponent;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -75,7 +74,7 @@ public class AlloyBlastRecipeProducer {
     @SuppressWarnings("MethodMayBeStatic")
     @NotNull
     protected GTRecipeBuilder createBuilder(@NotNull BlastProperty property, @NotNull Material material) {
-        GTRecipeBuilder builder = GCyMRecipeTypes.ALLOY_BLAST_RECIPES.recipeBuilder(material.getName());
+        GTRecipeBuilder builder = GCYMRecipeTypes.ALLOY_BLAST_RECIPES.recipeBuilder(material.getName());
         // apply the duration override
         int duration = property.getDurationOverride();
         if (duration < 0) duration = Math.max(1, (int) (material.getMass() * property.getBlastTemperature() / 100L));
@@ -136,7 +135,7 @@ public class AlloyBlastRecipeProducer {
         // build the gas recipe if it exists
         if (property.getGasTier() != null) {
             GTRecipeBuilder builderGas = builder.copy(builder.id.getPath() + "_gas");
-            FluidIngredient gas = CraftingComponent.EBF_GASES.get(property.getGasTier()).copy();
+            FluidIngredient gas = property.getGasTier().getFluid();
             gas.setAmount(gas.getAmount() * outputAmount);
             builderGas.circuitMeta(getGasCircuitNum(componentAmount))
                     .inputFluids(gas)

@@ -1,11 +1,10 @@
 package com.gregtechceu.gtceu.api.item.tool;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.item.IGTTool;
 import com.gregtechceu.gtceu.api.sound.SoundEntry;
 import com.gregtechceu.gtceu.client.renderer.item.ToolItemRenderer;
-
-import com.lowdragmc.lowdraglib.Platform;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -37,11 +36,6 @@ import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/2/23
- * @implNote GTToolItem
- */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class GTToolItem extends DiggerItem implements IGTTool {
@@ -62,7 +56,7 @@ public class GTToolItem extends DiggerItem implements IGTTool {
         this.material = material;
         this.electricTier = toolType.electricTier;
         this.toolStats = definition;
-        if (Platform.isClient()) {
+        if (GTCEu.isClientSide()) {
             ToolItemRenderer.create(this, toolType);
         }
         definition$init();

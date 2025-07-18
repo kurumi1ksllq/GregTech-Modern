@@ -9,6 +9,7 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 
@@ -17,10 +18,10 @@ public class CustomFluidTank extends FluidTank
 
     @Getter
     @Setter
-    protected Runnable onContentsChanged = () -> {};
+    protected @NotNull Runnable onContentsChanged = () -> {};
 
     public CustomFluidTank(int capacity) {
-        this(capacity, e -> true);
+        super(capacity, e -> true);
     }
 
     public CustomFluidTank(int capacity, Predicate<FluidStack> validator) {
@@ -37,25 +38,15 @@ public class CustomFluidTank extends FluidTank
         onContentsChanged.run();
     }
 
-    public CustomFluidTank copy() {
-        FluidStack copiedStack = this.fluid.copy();
-        CustomFluidTank copied = new CustomFluidTank(this.capacity, this.validator);
-        copied.setFluid(copiedStack);
-        return copied;
+    @Override
+    public void setFluidInTank(int tank, FluidStack stack) {
+        setFluid(stack);
     }
 
     @Override
-    public void setFluidInTank(int tank, FluidStack stack) {
-        this.setFluid(stack);
+    public void setFluid(FluidStack stack) {
+        super.setFluid(stack);
         this.onContentsChanged();
-    }
-
-    public int fill(int tank, FluidStack resource, FluidAction action) {
-        return this.fill(resource, action);
-    }
-
-    public FluidStack drain(int tank, FluidStack resource, FluidAction action) {
-        return this.drain(resource, action);
     }
 
     @Override

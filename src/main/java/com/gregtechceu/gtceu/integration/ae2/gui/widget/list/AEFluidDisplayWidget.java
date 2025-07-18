@@ -2,8 +2,8 @@ package com.gregtechceu.gtceu.integration.ae2.gui.widget.list;
 
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.client.TooltipsHandler;
+import com.gregtechceu.gtceu.utils.GTMath;
 
-import com.lowdragmc.lowdraglib.Platform;
 import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.side.fluid.forge.FluidHelperImpl;
@@ -28,9 +28,7 @@ import static com.gregtechceu.gtceu.integration.ae2.gui.widget.slot.AEConfigSlot
 import static com.lowdragmc.lowdraglib.gui.util.DrawerHelper.drawText;
 
 /**
- * @author GlodBlock
- * @ Display a certain {@link FluidStack} element.
- * @date 2023/4/19-0:30
+ * Display a certain {@link FluidStack} element.
  */
 public class AEFluidDisplayWidget extends Widget {
 
@@ -54,7 +52,8 @@ public class AEFluidDisplayWidget extends Widget {
         int stackY = position.y + 1;
         if (fluid != null) {
             FluidStack fluidStack = fluid.what() instanceof AEFluidKey key ?
-                    new FluidStack(key.getFluid(), (int) fluid.amount(), key.getTag()) : FluidStack.EMPTY;
+                    new FluidStack(key.getFluid(), GTMath.saturatedCast(fluid.amount()), key.getTag()) :
+                    FluidStack.EMPTY;
             DrawerHelper.drawFluidForGui(graphics, FluidHelperImpl.toFluidStack(fluidStack), fluid.amount(), stackX,
                     stackY, 16, 16);
             String amountStr = String.format("x%,d", fluid.amount());
@@ -71,16 +70,12 @@ public class AEFluidDisplayWidget extends Widget {
             GenericStack fluid = this.gridWidget.getAt(this.index);
             if (fluid != null) {
                 FluidStack fluidStack = fluid.what() instanceof AEFluidKey key ?
-                        new FluidStack(key.getFluid(), (int) fluid.amount(), key.getTag()) : FluidStack.EMPTY;
+                        new FluidStack(key.getFluid(), GTMath.saturatedCast(fluid.amount()), key.getTag()) :
+                        FluidStack.EMPTY;
                 List<Component> tooltips = new ArrayList<>();
                 tooltips.add(fluidStack.getDisplayName());
                 tooltips.add(Component.literal(String.format("%,d mB", fluid.amount())));
-                if (!Platform.isForge()) {
-                    tooltips.add(Component.literal(
-                            "§6mB:§r %d mB".formatted(fluidStack.getAmount())));
-                }
-                TooltipsHandler.appendFluidTooltips(fluidStack.getFluid(), fluidStack.getAmount(), tooltips::add,
-                        TooltipFlag.NORMAL);
+                TooltipsHandler.appendFluidTooltips(fluidStack, tooltips::add, TooltipFlag.NORMAL);
                 graphics.renderTooltip(Minecraft.getInstance().font, tooltips, Optional.empty(), mouseX, mouseY);
             }
         }

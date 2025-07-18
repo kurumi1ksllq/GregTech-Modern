@@ -53,6 +53,7 @@ public class BlockLang {
         replace(provider, "block.gtceu.stainless_steel_gearbox", "Stainless Steel Gearbox Casing");
         replace(provider, "block.gtceu.titanium_gearbox", "Titanium Gearbox Casing");
         replace(provider, "block.gtceu.tungstensteel_gearbox", "Tungstensteel Gearbox Casing");
+        replace(provider, "block.gtceu.steel_turbine_casing", "Magnalium Turbine Casing");
         replace(provider, "block.gtceu.titanium_turbine_casing", "Titanium Turbine Casing");
         replace(provider, "block.gtceu.stainless_steel_turbine_casing", "Stainless Turbine Casing");
         replace(provider, "block.gtceu.tungstensteel_turbine_casing", "Tungstensteel Turbine Casing");
@@ -60,6 +61,7 @@ public class BlockLang {
         replace(provider, "block.gtceu.steel_pipe_casing", "Steel Pipe Casing");
         replace(provider, "block.gtceu.titanium_pipe_casing", "Titanium Pipe Casing");
         replace(provider, "block.gtceu.tungstensteel_pipe_casing", "Tungstensteel Pipe Casing");
+        replace(provider, "block.gtceu.palladium_substation", "Palladium Substation Casing");
 
         replace(provider, "block.gtceu.steam_casing_bronze", "Bronze Hull");
         provider.add("block.gtceu.steam_casing_bronze.tooltip", "§7For your first Steam Machines");
@@ -70,7 +72,7 @@ public class BlockLang {
         replace(provider, "block.gtceu.steam_casing_bricked_steel", "Bricked Wrought Iron Hull");
         provider.add("block.gtceu.steam_casing_bricked_steel.tooltip", "§7For improved Steam Machines");
 
-        // GCyM Casings
+        // GCYM Casings
         replace(provider, "block.gtceu.laser_safe_engraving_casing", "Laser-Safe Engraving Casing");
         replace(provider, "block.gtceu.large_scale_assembler_casing", "Large-Scale Assembler Casing");
         replace(provider, "block.gtceu.reaction_safe_mixing_casing", "Reaction-Safe Mixing Casing");

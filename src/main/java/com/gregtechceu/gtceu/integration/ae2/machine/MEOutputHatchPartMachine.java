@@ -5,9 +5,12 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.list.AEListGridWidget;
 import com.gregtechceu.gtceu.integration.ae2.utils.KeyStorage;
+import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -20,9 +23,10 @@ import net.minecraftforge.fluids.FluidStack;
 
 import appeng.api.config.Actionable;
 import appeng.api.stacks.AEFluidKey;
-import com.google.common.primitives.Ints;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -38,7 +42,7 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine implements IMac
     private KeyStorage internalBuffer; // Do not use KeyCounter, use our simple implementation
 
     public MEOutputHatchPartMachine(IMachineBlockEntity holder, Object... args) {
-        super(holder, IO.IN, args);
+        super(holder, IO.OUT, args);
     }
 
     /////////////////////////////////
@@ -114,12 +118,13 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine implements IMac
 
     private class InaccessibleInfiniteTank extends NotifiableFluidTank {
 
-        CustomFluidTank storage;
+        FluidStorageDelegate storage;
 
         public InaccessibleInfiniteTank(MetaMachine holder) {
             super(holder, List.of(new FluidStorageDelegate()), IO.OUT, IO.NONE);
             internalBuffer.setOnContentsChanged(this::onContentsChanged);
-            storage = getStorages()[0];
+            storage = (FluidStorageDelegate) getStorages()[0];
+            allowSameFluids = true;
         }
 
         @Override
@@ -128,9 +133,27 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine implements IMac
         }
 
         @Override
-        public @NotNull FluidStack getFluidInTank(int tank) {
-            return storage.getFluid();
+        public @NotNull List<Object> getContents() {
+            return Collections.emptyList();
         }
+
+        @Override
+        public double getTotalContentAmount() {
+            return 0;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public @NotNull FluidStack getFluidInTank(int tank) {
+            return FluidStack.EMPTY;
+        }
+
+        @Override
+        public void setFluidInTank(int tank, @NotNull FluidStack fluidStack) {}
 
         @Override
         public int getTankCapacity(int tank) {
@@ -139,7 +162,33 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine implements IMac
 
         @Override
         public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-            return storage.isFluidValid(stack);
+            return true;
+        }
+
+        @Override
+        @Nullable
+        public List<FluidIngredient> handleRecipeInner(IO io, GTRecipe recipe, List<FluidIngredient> left,
+                                                       boolean simulate) {
+            if (io != IO.OUT) return left;
+            FluidAction action = simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE;
+            for (var it = left.iterator(); it.hasNext();) {
+                var ingredient = it.next();
+                if (ingredient.isEmpty()) {
+                    it.remove();
+                    continue;
+                }
+
+                var fluids = ingredient.getStacks();
+                if (fluids.length == 0 || fluids[0].isEmpty()) {
+                    it.remove();
+                    continue;
+                }
+
+                FluidStack output = fluids[0];
+                ingredient.shrink(storage.fill(output, action));
+                if (ingredient.getAmount() <= 0) it.remove();
+            }
+            return left.isEmpty() ? null : left;
         }
     }
 
@@ -163,7 +212,7 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine implements IMac
         public int fill(FluidStack resource, FluidAction action) {
             var key = AEFluidKey.of(resource.getFluid(), resource.getTag());
             int amount = resource.getAmount();
-            int oldValue = Ints.saturatedCast(internalBuffer.storage.getOrDefault(key, 0));
+            int oldValue = GTMath.saturatedCast(internalBuffer.storage.getOrDefault(key, 0));
             int changeValue = Math.min(Integer.MAX_VALUE - oldValue, amount);
             if (changeValue > 0 && action.execute()) {
                 internalBuffer.storage.put(key, oldValue + changeValue);
@@ -180,18 +229,6 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine implements IMac
         @Override
         public boolean supportsDrain(int tank) {
             return false;
-        }
-
-        @Override
-        public CustomFluidTank copy() {
-            // because recipe testing uses copy transfer instead of simulated operations
-            return new FluidStorageDelegate() {
-
-                @Override
-                public int fill(FluidStack resource, FluidAction action) {
-                    return super.fill(resource, action);
-                }
-            };
         }
     }
 }

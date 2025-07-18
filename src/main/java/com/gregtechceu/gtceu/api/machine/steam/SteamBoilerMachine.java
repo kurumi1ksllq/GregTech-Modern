@@ -13,8 +13,8 @@ import com.gregtechceu.gtceu.api.machine.feature.IExplosionMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IUIMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.api.recipe.logic.OCParams;
-import com.gregtechceu.gtceu.api.recipe.logic.OCResult;
+import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
+import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
 import com.gregtechceu.gtceu.config.ConfigHolder;
@@ -60,11 +60,6 @@ import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/3/14
- * @implNote SteamBoilerMachine
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public abstract class SteamBoilerMachine extends SteamWorkableMachine
@@ -77,8 +72,10 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
     public final NotifiableFluidTank waterTank;
     @Persisted
     @DescSynced
+    @Getter
     private int currentTemperature;
     @Persisted
+    @Getter
     private int timeBeforeCoolingDown;
     @Getter
     private boolean hasNoWater;
@@ -130,8 +127,8 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
     }
 
     @Override
-    public void setOutputFacing(@NotNull Direction outputFacing) {
-        // no op - boilers do not have output facings
+    public boolean hasOutputFacing() {
+        return false;
     }
 
     //////////////////////////////////////
@@ -196,10 +193,8 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
 
         if (getOffsetTimer() % 10 == 0) {
             if (currentTemperature >= 100) {
-                int fillAmount = (int) (getBaseSteamOutput() * ((float) currentTemperature / getMaxTemperature()) /
-                        2);
-                boolean hasDrainedWater = !waterTank.drainInternal(1, FluidAction.EXECUTE)
-                        .isEmpty();
+                int fillAmount = (int) (getBaseSteamOutput() * ((float) currentTemperature / getMaxTemperature()) / 2);
+                boolean hasDrainedWater = !waterTank.drainInternal(1, FluidAction.EXECUTE).isEmpty();
                 var filledSteam = 0L;
                 if (hasDrainedWater) {
                     filledSteam = steamTank.fillInternal(
@@ -255,18 +250,24 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
 
     protected abstract long getBaseSteamOutput();
 
-    @Nullable
-    public static GTRecipe recipeModifier(MetaMachine machine, @NotNull GTRecipe recipe, @NotNull OCParams params,
-                                          @NotNull OCResult result) {
-        if (machine instanceof SteamBoilerMachine boilerMachine) {
-            recipe = recipe.copy();
-            result.init(0, recipe.duration, params.getOcAmount());
-            if (boilerMachine.isHighPressure)
-                result.setDuration(result.getDuration() / 2);
-            // recipe.duration *= 12; // maybe?
-            return recipe;
+    /**
+     * Recipe Modifier for <b>Steam Boiler Machines</b> - can be used as a valid {@link RecipeModifier}
+     * <p>
+     * Duration is multiplied by {@code 0.5} if the machine is high pressure
+     * 
+     * @param machine a {@link SteamBoilerMachine}
+     * @param recipe  recipe
+     * @return A {@link ModifierFunction} for the given Steam Boiler
+     */
+    public static ModifierFunction recipeModifier(@NotNull MetaMachine machine, @NotNull GTRecipe recipe) {
+        if (!(machine instanceof SteamBoilerMachine boilerMachine)) {
+            return RecipeModifier.nullWrongType(SteamBoilerMachine.class, machine);
         }
-        return null;
+        if (!boilerMachine.isHighPressure) return ModifierFunction.IDENTITY;
+
+        return ModifierFunction.builder()
+                .durationMultiplier(0.5)
+                .build();
     }
 
     @Override
@@ -309,7 +310,7 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
                                 GuiTextures.PROGRESS_BAR_BOILER_HEAT)
                         .setFillDirection(ProgressTexture.FillDirection.DOWN_TO_UP)
                         .setDynamicHoverTips(pct -> I18n.get("gtceu.multiblock.large_boiler.temperature",
-                                (int) (currentTemperature + 274.15), (int) (getMaxTemperature() + 274.15))))
+                                currentTemperature + 274, getMaxTemperature() + 274)))
                 .widget(new TankWidget(waterTank.getStorages()[0], 83, 26, 10, 54, false, true)
                         .setShowAmount(false)
                         .setFillDirection(ProgressTexture.FillDirection.DOWN_TO_UP)

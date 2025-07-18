@@ -6,19 +6,19 @@ import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.capability.compat.FeCompat;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
+import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
+import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
-import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.misc.ItemStackTransfer;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.lowdragmc.lowdraglib.utils.Position;
@@ -28,7 +28,6 @@ import net.minecraft.core.Direction;
 import net.minecraftforge.energy.IEnergyStorage;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -36,11 +35,6 @@ import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/3/10
- * @implNote BatteryBufferMachine
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class BatteryBufferMachine extends TieredEnergyMachine
@@ -53,13 +47,12 @@ public class BatteryBufferMachine extends TieredEnergyMachine
 
     @Persisted
     @Getter
-    @Setter
     private boolean isWorkingEnabled;
     @Getter
     private final int inventorySize;
     @Getter
     @Persisted
-    protected final ItemStackTransfer batteryInventory;
+    protected final CustomItemStackHandler batteryInventory;
 
     public BatteryBufferMachine(IMachineBlockEntity holder, int tier, int inventorySize, Object... args) {
         super(holder, tier, inventorySize);
@@ -82,18 +75,18 @@ public class BatteryBufferMachine extends TieredEnergyMachine
         return new EnergyBatteryTrait((int) args[0]);
     }
 
-    protected ItemStackTransfer createBatteryInventory(Object... ignoredArgs) {
-        var itemTransfer = new ItemStackTransfer(this.inventorySize) {
+    protected CustomItemStackHandler createBatteryInventory(Object... ignoredArgs) {
+        var handler = new CustomItemStackHandler(this.inventorySize) {
 
             @Override
             public int getSlotLimit(int slot) {
                 return 1;
             }
         };
-        itemTransfer.setFilter(item -> GTCapabilityHelper.getElectricItem(item) != null ||
-                (ConfigHolder.INSTANCE.compat.energy.nativeEUToPlatformNative &&
+        handler.setFilter(item -> GTCapabilityHelper.getElectricItem(item) != null ||
+                (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE &&
                         GTCapabilityHelper.getForgeEnergyItem(item) != null));
-        return itemTransfer;
+        return handler;
     }
 
     @Override
@@ -148,6 +141,12 @@ public class BatteryBufferMachine extends TieredEnergyMachine
     // ****** Battery Logic ******//
     //////////////////////////////////////
 
+    @Override
+    public void setWorkingEnabled(boolean workingEnabled) {
+        isWorkingEnabled = workingEnabled;
+        energyContainer.checkOutputSubscription();
+    }
+
     private List<Object> getNonFullBatteries() {
         List<Object> batteries = new ArrayList<>();
         for (int i = 0; i < batteryInventory.getSlots(); i++) {
@@ -157,7 +156,7 @@ public class BatteryBufferMachine extends TieredEnergyMachine
                 if (electricItem.getCharge() < electricItem.getMaxCharge()) {
                     batteries.add(electricItem);
                 }
-            } else if (ConfigHolder.INSTANCE.compat.energy.nativeEUToPlatformNative) {
+            } else if (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE) {
                 IEnergyStorage energyStorage = GTCapabilityHelper.getForgeEnergyItem(batteryStack);
                 if (energyStorage != null) {
                     if (energyStorage.getEnergyStored() < energyStorage.getMaxEnergyStored()) {
@@ -190,7 +189,7 @@ public class BatteryBufferMachine extends TieredEnergyMachine
             var electricItem = GTCapabilityHelper.getElectricItem(batteryStack);
             if (electricItem != null) {
                 batteries.add(electricItem);
-            } else if (ConfigHolder.INSTANCE.compat.energy.nativeEUToPlatformNative) {
+            } else if (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE) {
                 IEnergyStorage energyStorage = GTCapabilityHelper.getForgeEnergyItem(batteryStack);
                 if (energyStorage != null) {
                     batteries.add(energyStorage);
@@ -212,6 +211,16 @@ public class BatteryBufferMachine extends TieredEnergyMachine
                     inventorySize * AMPS_PER_BATTERY, GTValues.V[tier], inventorySize);
             this.setSideInputCondition(side -> side != getFrontFacing() && isWorkingEnabled());
             this.setSideOutputCondition(side -> side == getFrontFacing() && isWorkingEnabled());
+        }
+
+        @Override
+        public void checkOutputSubscription() {
+            if (isWorkingEnabled()) {
+                super.checkOutputSubscription();
+            } else if (outputSubs != null) {
+                outputSubs.unsubscribe();
+                outputSubs = null;
+            }
         }
 
         @Override
@@ -247,6 +256,7 @@ public class BatteryBufferMachine extends TieredEnergyMachine
                         changed = true;
                     }
                     energy -= charged;
+                    energyOutputPerSec += charged;
                 }
 
                 if (changed) {
@@ -305,6 +315,7 @@ public class BatteryBufferMachine extends TieredEnergyMachine
                         changed = true;
                     }
                     energy -= charged;
+                    energyInputPerSec += charged;
                 }
 
                 if (changed) {

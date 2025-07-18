@@ -34,11 +34,6 @@ import static com.gregtechceu.gtceu.api.data.worldgen.generator.veins.DikeVeinGe
 import static com.gregtechceu.gtceu.api.data.worldgen.generator.veins.VeinedVeinGenerator.VeinBlockDefinition;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 
-/**
- * @author KilaBash
- * @date 2023/3/20
- * @implNote GTOres
- */
 @SuppressWarnings("unused")
 public class GTOres {
 
@@ -182,7 +177,7 @@ public class GTOres {
             .dikeVeinGenerator(generator -> generator
                     .withBlock(new DikeBlockDefinition(Beryllium, 3, 5, 30))
                     .withBlock(new DikeBlockDefinition(Emerald, 2, 5, 19))
-                    .withBlock(new DikeBlockDefinition(Emerald, 2, 16, 30)))
+                    .withBlock(new DikeBlockDefinition(Thorium, 1, 16, 30)))
             .surfaceIndicatorGenerator(indicator -> indicator
                     .surfaceRock(Beryllium)
                     .placement(SurfaceIndicatorGenerator.IndicatorPlacement.ABOVE)));
@@ -407,7 +402,7 @@ public class GTOres {
                     .oreBlock(new VeinBlockDefinition(Zeolite, 2))
                     .oreBlock(new VeinBlockDefinition(Cassiterite, 2))
                     .rareBlock(new VeinBlockDefinition(Realgar, 1))
-                    .rareBlockChance(0.05f)
+                    .rareBlockChance(0.1f)
                     .veininessThreshold(0.01f)
                     .maxRichnessThreshold(0.175f)
                     .minRichness(0.7f)
@@ -664,7 +659,7 @@ public class GTOres {
             .layeredVeinGenerator(generator -> generator
                     .withLayerPattern(() -> GTLayerPattern.builder(OVERWORLD_RULES)
                             .layer(l -> l.weight(3).mat(Bentonite).size(2, 4))
-                            .layer(l -> l.weight(2).mat(Magnetite).size(1, 1))
+                            .layer(l -> l.weight(2).mat(Magnesite).size(1, 1))
                             .layer(l -> l.weight(2).mat(Olivine).size(1, 1))
                             .layer(l -> l.weight(1).mat(GlauconiteSand).size(1, 1))
                             .build()))
@@ -720,7 +715,7 @@ public class GTOres {
     }
 
     private static Supplier<? extends Block> ore(TagPrefix oreTag, Material material) {
-        var block = GTBlocks.MATERIAL_BLOCKS.get(oreTag, material);
+        var block = GTMaterialBlocks.MATERIAL_BLOCKS.get(oreTag, material);
         if (block == null) {
             ResourceLocation oreKey;
             if (oreTag == ore) {

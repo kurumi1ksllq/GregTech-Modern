@@ -13,8 +13,8 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDisplayUIMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
-import com.gregtechceu.gtceu.api.recipe.logic.OCParams;
-import com.gregtechceu.gtceu.api.recipe.logic.OCResult;
+import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
+import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
@@ -34,7 +34,6 @@ import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidType;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -42,15 +41,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/3/16
- * @implNote LargeBoilerMachine
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class LargeBoilerMachine extends WorkableMultiblockMachine implements IExplosionMachine, IDisplayUIMachine {
@@ -64,8 +57,6 @@ public class LargeBoilerMachine extends WorkableMultiblockMachine implements IEx
     @Persisted
     @Getter
     private int currentTemperature, throttle;
-    @Getter
-    private boolean hasNoWater;
     @Nullable
     protected TickableSubscription temperatureSubs;
     private int steamGenerated;
@@ -87,12 +78,28 @@ public class LargeBoilerMachine extends WorkableMultiblockMachine implements IEx
     //////////////////////////////////////
 
     @Override
-    public void onLoad() {
-        super.onLoad();
-
+    public void onStructureFormed() {
+        super.onStructureFormed();
         if (getLevel() instanceof ServerLevel serverLevel) {
             serverLevel.getServer().tell(new TickTask(0, this::updateSteamSubscription));
         }
+    }
+
+    @Override
+    public void onStructureInvalid() {
+        super.onStructureInvalid();
+        if (getLevel() instanceof ServerLevel serverLevel) {
+            serverLevel.getServer().tell(new TickTask(0, this::updateSteamSubscription));
+        }
+    }
+
+    @Override
+    public void onUnload() {
+        if (temperatureSubs != null) {
+            temperatureSubs.unsubscribe();
+            temperatureSubs = null;
+        }
+        super.onUnload();
     }
 
     protected void updateSteamSubscription() {
@@ -115,69 +122,56 @@ public class LargeBoilerMachine extends WorkableMultiblockMachine implements IEx
             currentTemperature -= getCoolDownRate();
         }
 
-        if (currentTemperature >= 100 && getOffsetTimer() % TICKS_PER_STEAM_GENERATION == 0) {
-            // drain water
-            var maxDrain = currentTemperature * throttle * TICKS_PER_STEAM_GENERATION * FluidType.BUCKET_VOLUME /
-                    (ConfigHolder.INSTANCE.machines.largeBoilers.steamPerWater * 100000);
-            var drainWater = List.of(FluidIngredient.of(maxDrain, Fluids.WATER));
-            List<IRecipeHandler<?>> inputTanks = new ArrayList<>();
-            if (getCapabilitiesProxy().contains(IO.IN, FluidRecipeCapability.CAP)) {
-                inputTanks.addAll(Objects.requireNonNull(getCapabilitiesProxy().get(IO.IN, FluidRecipeCapability.CAP)));
-            }
-            if (getCapabilitiesProxy().contains(IO.BOTH, FluidRecipeCapability.CAP)) {
-                inputTanks
-                        .addAll(Objects.requireNonNull(getCapabilitiesProxy().get(IO.BOTH, FluidRecipeCapability.CAP)));
-            }
-            for (IRecipeHandler<?> tank : inputTanks) {
-                drainWater = (List<FluidIngredient>) tank.handleRecipe(IO.IN, null, drainWater, null, false);
-                if (drainWater == null) break;
-            }
-            var drained = (drainWater == null || drainWater.isEmpty()) ? maxDrain :
-                    maxDrain - drainWater.get(0).getAmount();
+        if (isFormed() && getOffsetTimer() % TICKS_PER_STEAM_GENERATION == 0) {
+            var maxDrain = currentTemperature * throttle * TICKS_PER_STEAM_GENERATION /
+                    (ConfigHolder.INSTANCE.machines.largeBoilers.steamPerWater * 100);
+            if (currentTemperature < 100) {
+                steamGenerated = 0;
+            } else if (maxDrain > 0) { // if maxDrain is 0 because throttle is too low, skip trying to make steam
+                // drain water
+                var drainWater = List.of(FluidIngredient.of(Fluids.WATER, maxDrain));
+                List<IRecipeHandler<?>> inputTanks = new ArrayList<>();
+                inputTanks.addAll(getCapabilitiesFlat(IO.IN, FluidRecipeCapability.CAP));
+                inputTanks.addAll(getCapabilitiesFlat(IO.BOTH, FluidRecipeCapability.CAP));
+                for (IRecipeHandler<?> tank : inputTanks) {
+                    drainWater = (List<FluidIngredient>) tank.handleRecipe(IO.IN, null, drainWater, false);
+                    if (drainWater == null || drainWater.isEmpty()) {
+                        break;
+                    }
+                }
+                var drained = (drainWater == null || drainWater.isEmpty()) ? maxDrain :
+                        maxDrain - drainWater.get(0).getAmount();
 
-            boolean hasDrainedWater = drained > 0;
-            steamGenerated = drained * ConfigHolder.INSTANCE.machines.largeBoilers.steamPerWater;
+                steamGenerated = drained * ConfigHolder.INSTANCE.machines.largeBoilers.steamPerWater;
 
-            if (hasDrainedWater) {
-                // fill steam
-                var fillSteam = List.of(FluidIngredient.of(GTMaterials.Steam.getFluid(steamGenerated)));
-                List<IRecipeHandler<?>> outputTanks = new ArrayList<>();
-                if (getCapabilitiesProxy().contains(IO.OUT, FluidRecipeCapability.CAP)) {
-                    outputTanks.addAll(
-                            Objects.requireNonNull(getCapabilitiesProxy().get(IO.OUT, FluidRecipeCapability.CAP)));
+                if (drained > 0) {
+                    // fill steam
+                    var fillSteam = List.of(FluidIngredient.of(GTMaterials.Steam.getFluid(steamGenerated)));
+                    List<IRecipeHandler<?>> outputTanks = new ArrayList<>();
+                    outputTanks.addAll(getCapabilitiesFlat(IO.OUT, FluidRecipeCapability.CAP));
+                    outputTanks.addAll(getCapabilitiesFlat(IO.BOTH, FluidRecipeCapability.CAP));
+                    for (IRecipeHandler<?> tank : outputTanks) {
+                        fillSteam = (List<FluidIngredient>) tank.handleRecipe(IO.OUT, null, fillSteam, false);
+                        if (fillSteam == null) break;
+                    }
                 }
-                if (getCapabilitiesProxy().contains(IO.BOTH, FluidRecipeCapability.CAP)) {
-                    outputTanks.addAll(
-                            Objects.requireNonNull(getCapabilitiesProxy().get(IO.BOTH, FluidRecipeCapability.CAP)));
-                }
-                for (IRecipeHandler<?> tank : outputTanks) {
-                    fillSteam = (List<FluidIngredient>) tank.handleRecipe(IO.OUT, null, fillSteam, null, false);
-                    if (fillSteam == null) break;
-                }
-            }
 
-            // check explosion
-            if (this.hasNoWater && hasDrainedWater) {
-                doExplosion(2f);
-                var center = getPos().below().relative(getFrontFacing().getOpposite());
-                if (GTValues.RNG.nextInt(100) > 80) {
-                    doExplosion(center, 2f);
-                }
-                for (Direction x : Direction.Plane.HORIZONTAL) {
-                    for (Direction y : Direction.Plane.HORIZONTAL) {
-                        if (GTValues.RNG.nextInt(100) > 80) {
-                            doExplosion(center.relative(x).relative(y), 2f);
+                // check explosion
+                if (drained < maxDrain) {
+                    doExplosion(2f);
+                    var center = getPos().below().relative(getFrontFacing().getOpposite());
+                    if (GTValues.RNG.nextInt(100) > 80) {
+                        doExplosion(center, 2f);
+                    }
+                    for (Direction x : Direction.Plane.HORIZONTAL) {
+                        for (Direction y : Direction.Plane.HORIZONTAL) {
+                            if (GTValues.RNG.nextInt(100) > 80) {
+                                doExplosion(center.relative(x).relative(y), 2f);
+                            }
                         }
                     }
                 }
-            } else {
-                this.hasNoWater = !hasDrainedWater;
             }
-        } else {
-            if (currentTemperature < 100) {
-                steamGenerated = 0;
-            }
-            this.hasNoWater = false;
         }
         updateSteamSubscription();
     }
@@ -196,25 +190,31 @@ public class LargeBoilerMachine extends WorkableMultiblockMachine implements IEx
         return value;
     }
 
-    @Nullable
-    public static GTRecipe recipeModifier(MetaMachine machine, @NotNull GTRecipe recipe, @NotNull OCParams params,
-                                          @NotNull OCResult result) {
-        if (machine instanceof LargeBoilerMachine largeBoilerMachine) {
-            if (largeBoilerMachine.throttle < 100) {
-                var copied = recipe.copy();
-                result.setDuration(recipe.duration * 100 / largeBoilerMachine.throttle);
-                return copied;
-            }
-            return recipe;
+    /**
+     * Recipe Modifier for <b>Large Boiler Machines</b> - can be used as a valid {@link RecipeModifier}
+     * <p>
+     * Duration is multiplied by {@code 100 / throttle} if throttle is less than 100
+     * </p>
+     * 
+     * @param machine a {@link LargeBoilerMachine}
+     * @param recipe  recipe
+     * @return A {@link ModifierFunction} for the given Large Boiler and recipe
+     */
+    public static ModifierFunction recipeModifier(@NotNull MetaMachine machine, @NotNull GTRecipe recipe) {
+        if (!(machine instanceof LargeBoilerMachine largeBoilerMachine)) {
+            return RecipeModifier.nullWrongType(LargeBoilerMachine.class, machine);
         }
-        return null;
+        if (largeBoilerMachine.throttle == 100) return ModifierFunction.IDENTITY;
+        return ModifierFunction.builder()
+                .durationMultiplier(100.0 / largeBoilerMachine.throttle)
+                .build();
     }
 
     public void addDisplayText(List<Component> textList) {
         IDisplayUIMachine.super.addDisplayText(textList);
         if (isFormed()) {
             textList.add(Component.translatable("gtceu.multiblock.large_boiler.temperature",
-                    (int) (currentTemperature + 274.15), (int) (maxTemperature + 274.15)));
+                    currentTemperature + 274, maxTemperature + 274));
             textList.add(Component.translatable("gtceu.multiblock.large_boiler.steam_output",
                     steamGenerated / TICKS_PER_STEAM_GENERATION));
 

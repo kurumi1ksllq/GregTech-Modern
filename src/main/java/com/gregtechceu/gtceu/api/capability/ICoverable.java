@@ -1,14 +1,12 @@
 package com.gregtechceu.gtceu.api.capability;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.IAppearance;
 import com.gregtechceu.gtceu.api.blockentity.ITickSubscription;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.utils.GTUtil;
-
-import com.lowdragmc.lowdraglib.LDLib;
-import com.lowdragmc.lowdraglib.side.item.IItemTransfer;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,6 +22,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -59,7 +58,7 @@ public interface ICoverable extends ITickSubscription, IAppearance {
 
     boolean shouldRenderBackSide();
 
-    IItemTransfer getItemTransferCap(@Nullable Direction side, boolean useCoverCapability);
+    IItemHandlerModifiable getItemHandlerCap(@Nullable Direction side, boolean useCoverCapability);
 
     IFluidHandlerModifiable getFluidHandlerCap(@Nullable Direction side, boolean useCoverCapability);
 
@@ -169,7 +168,7 @@ public interface ICoverable extends ITickSubscription, IAppearance {
     }
 
     default boolean isRemote() {
-        return getLevel() == null ? LDLib.isRemote() : getLevel().isClientSide;
+        return getLevel() == null ? GTCEu.isClientThread() : getLevel().isClientSide;
     }
 
     default VoxelShape[] addCoverCollisionBoundingBox() {

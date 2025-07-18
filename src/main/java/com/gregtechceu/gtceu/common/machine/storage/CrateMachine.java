@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.UITemplate;
+import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.*;
@@ -12,7 +13,6 @@ import com.gregtechceu.gtceu.common.data.GTItems;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
@@ -28,6 +28,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
 import lombok.Getter;
@@ -35,11 +36,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author h3tR
- * @date 2023/3/27
- * @implNote CrateMachine
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLife,
@@ -47,6 +43,8 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(CrateMachine.class,
             MetaMachine.MANAGED_FIELD_HOLDER);
+
+    public static final BooleanProperty TAPED_PROPERTY = BooleanProperty.create("taped");
 
     @Override
     public ManagedFieldHolder getFieldHolder() {
@@ -108,7 +106,8 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
                     stack.shrink(1);
                 }
                 isTaped = true;
-                return InteractionResult.SUCCESS;
+                setRenderState(getRenderState().setValue(TAPED_PROPERTY, isTaped));
+                return InteractionResult.sidedSuccess(world.isClientSide);
             }
         }
         return IInteractedMachine.super.onUse(state, world, pos, player, hand, hit);
@@ -126,6 +125,7 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
 
             tag.remove("taped");
             this.isTaped = false;
+            setRenderState(getRenderState().setValue(TAPED_PROPERTY, isTaped));
         }
         stack.setTag(null);
     }
@@ -137,6 +137,11 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
             tag.putBoolean("taped", isTaped);
             tag.put("inventory", inventory.storage.serializeNBT());
         }
+    }
+
+    @Override
+    public boolean saveBreak() {
+        return isTaped;
     }
 
     @Override

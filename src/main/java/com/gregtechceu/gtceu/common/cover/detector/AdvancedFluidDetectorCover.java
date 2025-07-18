@@ -9,9 +9,6 @@ import com.gregtechceu.gtceu.api.cover.filter.FluidFilter;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
-import com.gregtechceu.gtceu.data.lang.LangHandler;
-import com.gregtechceu.gtceu.utils.GTMath;
-import com.gregtechceu.gtceu.utils.RedstoneUtil;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextBoxWidget;
@@ -24,15 +21,20 @@ import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import static com.gregtechceu.gtceu.utils.RedstoneUtil.computeLatchedRedstoneBetweenValues;
+import static com.gregtechceu.gtceu.utils.RedstoneUtil.computeRedstoneBetweenValues;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -48,11 +50,15 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IU
 
     private static final int DEFAULT_MIN = 64;
     private static final int DEFAULT_MAX = 512;
-
     @Persisted
     @Getter
     private int minValue, maxValue;
 
+    @Persisted
+    @DescSynced
+    @Getter
+    @Setter
+    private boolean isLatched;
     @Persisted
     @DescSynced
     @Getter
@@ -95,12 +101,16 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IU
                 storedFluid += content.getAmount();
         }
 
-        setRedstoneSignalOutput(
-                RedstoneUtil.computeRedstoneBetweenValues(storedFluid, maxValue, minValue, this.isInverted()));
+        if (isLatched) {
+            setRedstoneSignalOutput(computeLatchedRedstoneBetweenValues(storedFluid, maxValue, minValue,
+                    isInverted(), redstoneSignalOutput));
+        } else {
+            setRedstoneSignalOutput(computeRedstoneBetweenValues(storedFluid, maxValue, minValue, isInverted()));
+        }
     }
 
     public void setMinValue(int minValue) {
-        this.minValue = GTMath.clamp(minValue, 0, maxValue - 1);
+        this.minValue = Mth.clamp(minValue, 0, maxValue - 1);
     }
 
     public void setMaxValue(int maxValue) {
@@ -128,15 +138,15 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IU
         // Invert Redstone Output Toggle:
         group.addWidget(new ToggleButtonWidget(
                 9, 20, 20, 20,
-                GuiTextures.INVERT_REDSTONE_BUTTON, this::isInverted, this::setInverted) {
+                GuiTextures.INVERT_REDSTONE_BUTTON, this::isInverted, this::setInverted)
+                .isMultiLang()
+                .setTooltipText("cover.advanced_fluid_detector.invert"));
 
-            @Override
-            public void updateScreen() {
-                super.updateScreen();
-                setHoverTooltips(List.copyOf(LangHandler.getMultiLang(
-                        "cover.advanced_fluid_detector.invert." + (isPressed ? "enabled" : "disabled"))));
-            }
-        });
+        group.addWidget(
+                new ToggleButtonWidget(31, 21, 18, 18, GuiTextures.BUTTON_LOCK, this::isLatched, this::setLatched)
+                        .setShouldUseBaseBackground()
+                        .isMultiLang()
+                        .setTooltipText("cover.advanced_detector.latch"));
 
         group.addWidget(filterHandler.createFilterSlotUI(148, 100));
         group.addWidget(filterHandler.createFilterConfigUI(10, 100, 156, 60));

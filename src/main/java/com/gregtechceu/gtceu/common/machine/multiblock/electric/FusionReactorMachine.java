@@ -82,7 +82,7 @@ public class FusionReactorMachine extends WorkableElectricMultiblockMachine impl
     protected final NotifiableEnergyContainer energyContainer;
     @Getter
     @DescSynced
-    private Integer color = -1;
+    private int color = -1;
     @Nullable
     protected TickableSubscription preHeatSubs;
 

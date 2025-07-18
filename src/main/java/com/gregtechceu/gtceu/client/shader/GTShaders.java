@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.client.shader;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
@@ -89,7 +90,8 @@ public class GTShaders {
 
     public static boolean allowedShader() {
         return ConfigHolder.INSTANCE.client.shader.useShader &&
-                !(GTCEu.Mods.isIrisOculusLoaded() && IrisApi.getInstance().isShaderPackInUse());
+                GTCEu.isModLoaded(GTValues.MODID_OPTIFINE) &&
+                !(GTCEu.Mods.isIrisOculusLoaded() && IrisCallWrapper.isShaderActive());
     }
 
     public static float getITime(float pPartialTicks) {
@@ -97,6 +99,13 @@ public class GTShaders {
             return System.currentTimeMillis() % 1200000 / 1000f;
         } else {
             return ((mc.level.getGameTime() % 24000) + pPartialTicks) / 20f;
+        }
+    }
+
+    private static class IrisCallWrapper {
+
+        private static boolean isShaderActive() {
+            return IrisApi.getInstance().isShaderPackInUse();
         }
     }
 }

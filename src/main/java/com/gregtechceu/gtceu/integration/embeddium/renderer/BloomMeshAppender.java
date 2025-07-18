@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.integration.embeddium.renderer;
 
-import com.gregtechceu.gtceu.client.util.BloomEffectUtil;
+import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
+import com.gregtechceu.gtceu.client.shader.GTShaders;
 
 import net.minecraft.core.BlockPos;
 
@@ -12,7 +13,12 @@ public class BloomMeshAppender implements MeshAppender {
 
     @Override
     public void render(Context context) {
+        if (!GTShaders.allowedShader()) {
+            return;
+        }
+
         BlockPos chunkOrigin = context.sectionOrigin().origin();
+        BloomEffectUtil.CURRENT_RENDERING_CHUNK_POS.set(chunkOrigin);
         BloomEffectUtil.bakeBloomChunkBuffers(chunkOrigin);
     }
 }

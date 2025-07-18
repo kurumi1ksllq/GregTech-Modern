@@ -21,10 +21,13 @@ import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.client.Camera;
@@ -34,6 +37,7 @@ import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -62,8 +66,25 @@ public class ForgeClientEventListener {
             // transparent blocks.
             MultiblockInWorldPreviewRenderer.renderInWorldPreview(poseStack, camera, partialTick);
 
-            BloomEffectUtil.renderBloom(camera.getPosition().x, camera.getPosition().y, camera.getPosition().z,
-                    poseStack, event.getProjectionMatrix(), event.getFrustum(), partialTick, camera.getEntity());
+            BloomEffectUtil.renderBloom(camera.getPosition(), camera.getEntity(), poseStack,
+                    event.getProjectionMatrix(), event.getFrustum(), partialTick);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onChunkUnloadEvent(ChunkEvent.Unload event) {
+        if (!GTShaders.allowedShader() || GTCEu.Mods.isSodiumEmbeddiumLoaded()) {
+            return;
+        }
+        ChunkAccess chunk = event.getChunk();
+        LevelAccessor level = chunk.getWorldForge();
+        if (level == null) {
+            return;
+        }
+
+        BlockPos.MutableBlockPos chunkPos = chunk.getPos().getWorldPosition().mutable();
+        for (int y = level.getMinSection(); y < level.getMaxSection(); y++) {
+            BloomEffectUtil.removeBloomChunk(chunkPos.setY(SectionPos.sectionToBlockCoord(y)));
         }
     }
 

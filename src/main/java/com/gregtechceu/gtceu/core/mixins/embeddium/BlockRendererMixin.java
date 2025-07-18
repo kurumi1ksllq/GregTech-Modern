@@ -1,11 +1,12 @@
 package com.gregtechceu.gtceu.core.mixins.embeddium;
 
-import com.gregtechceu.gtceu.client.model.GTMetadataSection;
+import com.gregtechceu.gtceu.client.model.BloomMetadataSection;
 import com.gregtechceu.gtceu.client.shader.GTShaders;
 import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
 
 import net.caffeinemc.mods.sodium.api.util.ColorARGB;
 import net.caffeinemc.mods.sodium.api.util.NormI8;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
@@ -26,6 +27,7 @@ import org.embeddedt.embeddium.render.chunk.ChunkColorWriter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(value = BlockRenderer.class, remap = false)
@@ -51,7 +53,7 @@ public class BlockRendererMixin {
         BlockPos chunkOrigin = SectionPos.of(ctx.pos()).origin();
         // Check if quad is full brightness OR we have bloom enabled for the quad
         // TODO improve, don't mixin to embeddium, maybe ask for an API? doubt we'll get it though
-        if (GTShaders.allowedShader() && (!quad.hasShade() || GTMetadataSection.hasBloom(quad.getSprite()))) {
+        if (GTShaders.allowedShader() && gtceu$isEmissive(quad, light)) {
             ModelQuadOrientation orientation = this.useReorienting ?
                     ModelQuadOrientation.orientByBrightness(light.br, light.lm) : ModelQuadOrientation.NORMAL;
             for (int dstIndex = 0; dstIndex < 4; ++dstIndex) {
@@ -67,10 +69,10 @@ public class BlockRendererMixin {
                         .vertex(ctx.origin().x() + quad.getX(srcIndex) + (float) offset.x(),
                                 ctx.origin().y() + quad.getY(srcIndex) + (float) offset.y(),
                                 ctx.origin().z() + quad.getZ(srcIndex) + (float) offset.z(),
-                                ColorARGB.unpackRed(color) * 255.0f,
-                                ColorARGB.unpackGreen(color) * 255.0f,
-                                ColorARGB.unpackBlue(color) * 255.0f,
-                                ColorARGB.unpackAlpha(color) * 255.0f,
+                                ColorARGB.unpackRed(color) / 255.0f,
+                                ColorARGB.unpackGreen(color) / 255.0f,
+                                ColorARGB.unpackBlue(color) / 255.0f,
+                                ColorARGB.unpackAlpha(color) / 255.0f,
                                 u, v,
                                 OverlayTexture.NO_OVERLAY,
                                 lightUv,
@@ -80,5 +82,28 @@ public class BlockRendererMixin {
             }
         }
         original.call(instance, ctx, builder, offset, material, quad, colors, light);
+    }
+
+    @Unique
+    private static boolean gtceu$isEmissive(BakedQuadView quad, QuadLightData light) {
+        if (!quad.hasShade() || !quad.hasAmbientOcclusion()) {
+            return true;
+        }
+        if (BloomMetadataSection.hasBloom(quad.getSprite())) {
+            return true;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            int quadLight = quad.getLight(i);
+            int qBlock = LightTexture.block(quadLight), qSky = LightTexture.sky(quadLight);
+
+            int ambientLight = light.lm[i];
+            int aBlock = LightTexture.block(ambientLight), aSky = LightTexture.sky(ambientLight);
+
+            if (qBlock > aBlock || qSky > aSky) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,11 +1,11 @@
 package com.gregtechceu.gtceu.client.bloom;
 
+import com.gregtechceu.gtceu.client.model.BloomMetadataSection;
 import com.gregtechceu.gtceu.client.particle.GTParticle;
 import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
 import com.gregtechceu.gtceu.client.shader.GTShaders;
 import com.gregtechceu.gtceu.client.bloom.shader.BloomEffect;
 import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
-import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.client.PostChainAccessor;
 import com.gregtechceu.gtceu.core.mixins.client.VertexBufferAccessor;
@@ -450,7 +450,7 @@ public class BloomEffectUtil {
                                          int[] combinedLights, int combinedOverlay, boolean mulColor,
                                          Operation<Void> original) {
         BlockPos chunkOrigin = BloomEffectUtil.CURRENT_RENDERING_CHUNK_POS.get();
-        if (GTShaders.allowedShader() && chunkOrigin != null && GTQuadTransformers.isEmissive(quad, combinedLights)) {
+        if (GTShaders.allowedShader() && chunkOrigin != null || BloomMetadataSection.hasBloom(quad, combinedLights)) {
             original.call(BloomEffectUtil.getOrStartBloomBuffer(chunkOrigin), pose, quad,
                     colorMuls, red, green, blue,
                     combinedLights, combinedOverlay, mulColor);

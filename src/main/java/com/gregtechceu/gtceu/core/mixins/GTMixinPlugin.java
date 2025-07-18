@@ -30,6 +30,7 @@ public class GTMixinPlugin implements IMixinConfigPlugin {
         addModCompatMixin("emi");
         addModCompatMixin("jei");
         addModCompatMixin("top");
+        addModCompatMixin("embeddium");
         addModCompatMixin("ftbchunks");
         addModCompatMixin("xaerominimap");
         addModCompatMixin("xaeroworldmap");

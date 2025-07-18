@@ -7,8 +7,8 @@ import com.gregtechceu.gtceu.client.shader.GTShaders;
 import com.gregtechceu.gtceu.client.shader.post.BloomEffect;
 import com.gregtechceu.gtceu.client.shader.post.BloomType;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import com.gregtechceu.gtceu.core.mixins.PostChainAccessor;
-import com.gregtechceu.gtceu.core.mixins.VertexBufferAccessor;
+import com.gregtechceu.gtceu.core.mixins.client.PostChainAccessor;
+import com.gregtechceu.gtceu.core.mixins.client.VertexBufferAccessor;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EffectInstance;

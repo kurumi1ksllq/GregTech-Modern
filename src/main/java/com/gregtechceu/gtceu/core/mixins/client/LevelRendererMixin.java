@@ -10,6 +10,8 @@ import com.gregtechceu.gtceu.api.item.tool.aoe.AoESymmetrical;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
 import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
+import com.gregtechceu.gtceu.client.shader.GTShaders;
+import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
 import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -18,6 +20,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.core.BlockPos;
@@ -39,6 +42,7 @@ import net.minecraftforge.client.model.data.ModelData;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.SheetedDecalTextureGenerator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -77,6 +81,22 @@ public abstract class LevelRendererMixin {
 
     @Unique
     private final RandomSource gtceu$modelRandom = RandomSource.create();
+
+    @Inject(method = "applyFrustum",
+            at = @At(value = "INVOKE",
+                    target = "Lit/unimi/dsi/fastutil/objects/ObjectArrayList;add(Ljava/lang/Object;)Z",
+                    remap = false))
+    private void gtceu$compileBloomBuffers(Frustum frustum, CallbackInfo ci,
+                                           @Local LevelRenderer.RenderChunkInfo chunkInfo) {
+        BloomEffectUtil.bakeBloomChunkBuffers(chunkInfo.chunk.getOrigin());
+    }
+
+    @Inject(method = "resize", at = @At("TAIL"))
+    private void gtceu$resize(int width, int height, CallbackInfo ci) {
+        if (GTShaders.BLOOM_CHAIN != null) {
+            GTShaders.BLOOM_CHAIN.resize(width, height);
+        }
+    }
 
     @Inject(method = "renderLevel", at = @At("HEAD"))
     private void renderLevel(PoseStack poseStack, float partialTick, long finishNanoTime, boolean renderBlockOutline,

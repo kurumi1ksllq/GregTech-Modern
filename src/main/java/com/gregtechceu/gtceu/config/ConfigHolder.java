@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.config;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
 
 import net.minecraft.commands.Commands;
 
@@ -792,7 +792,7 @@ public class ConfigHolder {
                     "UNITY - Unity-like Bloom",
                     "UNREAL - Unreal-like Bloom",
                     "Default: UNREAL" })
-            public BloomType bloomAlgorithm = BloomType.UNREAL;
+            public BloomAlgorithm bloomAlgorithm = BloomAlgorithm.UNREAL;
 
             @Configurable
             @Configurable.Comment({
@@ -857,7 +857,7 @@ public class ConfigHolder {
                         "UNITY - Unity-like Bloom",
                         "UNREAL - Unreal-like Bloom",
                         "Default: UNREAL" })
-                public BloomType bloomAlgorithm = BloomType.UNREAL;
+                public BloomAlgorithm bloomAlgorithm = BloomAlgorithm.UNREAL;
 
                 @Configurable
                 @Configurable.Comment({
@@ -903,7 +903,7 @@ public class ConfigHolder {
                         "UNITY - Unity-like Bloom",
                         "UNREAL - Unreal-like Bloom",
                         "Default: UNREAL" })
-                public BloomType bloomAlgorithm = BloomType.UNREAL;
+                public BloomAlgorithm bloomAlgorithm = BloomAlgorithm.UNREAL;
 
                 @Configurable
                 @Configurable.Comment({

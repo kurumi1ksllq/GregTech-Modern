@@ -5,7 +5,7 @@ import com.gregtechceu.gtceu.client.particle.GTParticle;
 import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
 import com.gregtechceu.gtceu.client.shader.GTShaders;
 import com.gregtechceu.gtceu.client.bloom.shader.BloomEffect;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.client.PostChainAccessor;
 import com.gregtechceu.gtceu.core.mixins.client.VertexBufferAccessor;
@@ -59,7 +59,7 @@ public class BloomEffectUtil {
      * </p>
      *
      * @param setup       Render setup, if exists
-     * @param bloomType   Type of the bloom
+     * @param algorithm   Type of the bloom
      * @param render      Rendering callback
      * @param blockEntity Meta tile entity instance
      * @return Ticket for the registered bloom render callback
@@ -67,11 +67,11 @@ public class BloomEffectUtil {
      */
     @NotNull
     public static BloomRenderTicket registerBloomRender(@Nullable IRenderSetup setup,
-                                                        @NotNull BloomType bloomType,
+                                                        @NotNull BloomAlgorithm algorithm,
                                                         @NotNull IBloomEffect render,
                                                         @NotNull BlockEntity blockEntity) {
         Objects.requireNonNull(blockEntity, "blockEntity == null");
-        return registerBloomRender(setup, bloomType,
+        return registerBloomRender(setup, algorithm,
                 new IBloomEffect() {
 
                     @Override
@@ -102,7 +102,7 @@ public class BloomEffectUtil {
      * </p>
      *
      * @param setup     Render setup, if exists
-     * @param bloomType Type of the bloom
+     * @param algorithm Type of the bloom
      * @param render    Rendering callback
      * @param particle  Particle instance
      * @return Ticket for the registered bloom render callback
@@ -110,11 +110,11 @@ public class BloomEffectUtil {
      */
     @NotNull
     public static BloomRenderTicket registerBloomRender(@Nullable IRenderSetup setup,
-                                                        @NotNull BloomType bloomType,
+                                                        @NotNull BloomAlgorithm algorithm,
                                                         @NotNull IBloomEffect render,
                                                         @NotNull GTParticle particle) {
         Objects.requireNonNull(particle, "particle == null");
-        return registerBloomRender(setup, bloomType, render, t -> particle.isAlive());
+        return registerBloomRender(setup, algorithm, render, t -> particle.isAlive());
     }
 
     /**
@@ -128,22 +128,22 @@ public class BloomEffectUtil {
      * </p>
      *
      * @param setup           Render setup, if exists
-     * @param bloomType       Type of the bloom
+     * @param algorithm       Type of the bloom
      * @param render          Rendering callback
      * @param validityChecker Optional validity checker; returning {@code false} causes the ticket to be invalidated.
      *                        Checked on both pre-/post-render each frame.
      * @return Ticket for the registered bloom render callback
      * @throws NullPointerException if {@code bloomType == null || render == null}
-     * @see #registerBloomRender(IRenderSetup, BloomType, IBloomEffect, BlockEntity)
-     * @see #registerBloomRender(IRenderSetup, BloomType, IBloomEffect, GTParticle)
-     * @see #registerBloomRender(IRenderSetup, BloomType, IBloomEffect, Predicate, Supplier)
+     * @see #registerBloomRender(IRenderSetup, BloomAlgorithm, IBloomEffect, BlockEntity)
+     * @see #registerBloomRender(IRenderSetup, BloomAlgorithm, IBloomEffect, GTParticle)
+     * @see #registerBloomRender(IRenderSetup, BloomAlgorithm, IBloomEffect, Predicate, Supplier)
      */
     @NotNull
     public static BloomRenderTicket registerBloomRender(@Nullable IRenderSetup setup,
-                                                        @NotNull BloomType bloomType,
+                                                        @NotNull BloomAlgorithm algorithm,
                                                         @NotNull IBloomEffect render,
                                                         @Nullable Predicate<BloomRenderTicket> validityChecker) {
-        return registerBloomRender(setup, bloomType, render, validityChecker, null);
+        return registerBloomRender(setup, algorithm, render, validityChecker, null);
     }
 
     /**
@@ -157,7 +157,7 @@ public class BloomEffectUtil {
      * </p>
      *
      * @param setup           Render setup, if exists
-     * @param bloomType       Type of the bloom
+     * @param algorithm       Type of the bloom
      * @param render          Rendering callback
      * @param validityChecker Optional validity checker; returning {@code false} causes the ticket to be invalidated.
      *                        Checked on both pre/post render each frame.
@@ -166,18 +166,18 @@ public class BloomEffectUtil {
      *                        it will not be affected by aforementioned automatic invalidation.
      * @return Ticket for the registered bloom render callback
      * @throws NullPointerException if {@code bloomType == null || render == null}
-     * @see #registerBloomRender(IRenderSetup, BloomType, IBloomEffect, BlockEntity)
-     * @see #registerBloomRender(IRenderSetup, BloomType, IBloomEffect, GTParticle)
+     * @see #registerBloomRender(IRenderSetup, BloomAlgorithm, IBloomEffect, BlockEntity)
+     * @see #registerBloomRender(IRenderSetup, BloomAlgorithm, IBloomEffect, GTParticle)
      */
     @NotNull
     public static BloomRenderTicket registerBloomRender(@Nullable IRenderSetup setup,
-                                                        @NotNull BloomType bloomType,
+                                                        @NotNull BloomAlgorithm algorithm,
                                                         @NotNull IBloomEffect render,
                                                         @Nullable Predicate<BloomRenderTicket> validityChecker,
                                                         @Nullable Supplier<Level> worldContext) {
         if (!GTShaders.allowedShader()) return BloomRenderTicket.INVALID;
-        if (bloomType == BloomType.DISABLED) return BloomRenderTicket.INVALID;
-        BloomRenderTicket ticket = new BloomRenderTicket(setup, bloomType, render, validityChecker, worldContext);
+        if (algorithm == BloomAlgorithm.DISABLED) return BloomRenderTicket.INVALID;
+        BloomRenderTicket ticket = new BloomRenderTicket(setup, algorithm, render, validityChecker, worldContext);
         BLOOM_RENDER_LOCK.lock();
         try {
             SCHEDULED_BLOOM_RENDERS.add(ticket);
@@ -285,7 +285,7 @@ public class BloomEffectUtil {
     private static void preDraw() {
         for (BloomRenderTicket ticket : SCHEDULED_BLOOM_RENDERS) {
             if (!ticket.isValid()) continue;
-            BLOOM_RENDERS.computeIfAbsent(new BloomRenderKey(ticket.renderSetup, ticket.bloomType),
+            BLOOM_RENDERS.computeIfAbsent(new BloomRenderKey(ticket.renderSetup, ticket.algorithm),
                     k -> new ArrayList<>()).add(ticket);
         }
         SCHEDULED_BLOOM_RENDERS.clear();
@@ -410,7 +410,7 @@ public class BloomEffectUtil {
 
             shader.safeGetUniform("EnableFilter").set(BloomEffectUtil.isDrawingBlockBloom.get() ? 1 : 0);
 
-            if (GTShaders.BLOOM_TYPE == BloomType.UNREAL && name.equals(SEPERABLE_BLUR_SHADER_NAME)) {
+            if (GTShaders.BLOOM_TYPE == BloomAlgorithm.UNREAL && name.equals(SEPERABLE_BLUR_SHADER_NAME)) {
                 int index = passes.indexOf(pass);
                 switch (index) {
                     case 1, 3, 5, 7 -> shader.safeGetUniform(BLUR_DIR_UNIFORM).set(BloomEffect.step, 0.0f);
@@ -461,7 +461,7 @@ public class BloomEffectUtil {
                 combinedLights, combinedOverlay, mulColor);
     }
 
-    private record BloomRenderKey(@Nullable IRenderSetup renderSetup, @NotNull BloomType bloomType) {
+    private record BloomRenderKey(@Nullable IRenderSetup renderSetup, @NotNull BloomAlgorithm algorithm) {
 
     }
 
@@ -471,7 +471,7 @@ public class BloomEffectUtil {
 
         @Nullable
         private final IRenderSetup renderSetup;
-        private final BloomType bloomType;
+        private final BloomAlgorithm algorithm;
         private final IBloomEffect render;
         @Nullable
         private final Predicate<BloomRenderTicket> validityChecker;
@@ -481,15 +481,15 @@ public class BloomEffectUtil {
         private boolean invalidated;
 
         BloomRenderTicket() {
-            this(null, BloomType.DISABLED, (p, b, c) -> {}, null, null);
+            this(null, BloomAlgorithm.DISABLED, (p, b, c) -> {}, null, null);
             this.invalidated = true;
         }
 
-        BloomRenderTicket(@Nullable IRenderSetup renderSetup, @NotNull BloomType bloomType,
+        BloomRenderTicket(@Nullable IRenderSetup renderSetup, @NotNull BloomAlgorithm algorithm,
                           @NotNull IBloomEffect render, @Nullable Predicate<BloomRenderTicket> validityChecker,
                           @Nullable Supplier<Level> worldContext) {
             this.renderSetup = renderSetup;
-            this.bloomType = Objects.requireNonNull(bloomType, "bloomType == null");
+            this.algorithm = Objects.requireNonNull(algorithm, "algorithm == null");
             this.render = Objects.requireNonNull(render, "render == null");
             this.validityChecker = validityChecker;
             this.worldContext = worldContext;

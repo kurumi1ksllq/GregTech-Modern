@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.client.bloom;
 
-import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Render callback interface for
- * {@link BloomEffectUtil#registerBloomRender(IRenderSetup, BloomType, IBloomEffect, BlockEntity)}.
+ * {@link BloomEffectUtil#registerBloomRender(IRenderSetup, BloomAlgorithm, IBloomEffect, BlockEntity)}.
  */
 @FunctionalInterface
 public interface IBloomEffect {

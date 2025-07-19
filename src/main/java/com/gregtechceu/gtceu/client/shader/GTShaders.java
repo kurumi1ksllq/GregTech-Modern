@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.client.shader;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.irisshaders.iris.api.v0.IrisApi;
@@ -28,13 +28,13 @@ public class GTShaders {
 
     public static final Minecraft mc = Minecraft.getInstance();
 
-    public static PostChain BLOOM_CHAIN;
-    public static BloomType BLOOM_TYPE = ConfigHolder.INSTANCE.client.shader.bloomAlgorithm;
-    public static RenderTarget BLOOM_TARGET;
+    public static PostChain BLOOM_CHAIN = null;
+    public static BloomAlgorithm BLOOM_TYPE = ConfigHolder.INSTANCE.client.shader.bloomAlgorithm;
+    public static RenderTarget BLOOM_TARGET = null;
 
     public static Map<BlockPos, VertexBuffer> BLOOM_BUFFERS = new HashMap<>();
     public static Map<BlockPos, BufferBuilder> BLOOM_BUFFER_BUILDERS = new HashMap<>();
-    public static Map<BlockPos, BufferBuilder.RenderedBuffer> RENDERED_BLOOM_BUFFERS = new HashMap<>();
+    public static Map<BlockPos, BufferBuilder.SortState> BLOOM_BUFFER_SORT_STATES = new HashMap<>();
 
     public static void onRegisterShaders(RegisterShadersEvent event) {
         if (!allowedShader()) {
@@ -61,11 +61,13 @@ public class GTShaders {
             case UNREAL -> {
                 id = GTCEu.id("shaders/post/bloom_unreal.json");
             }
+            case DISABLED -> {
+                return;
+            }
             default -> {
                 GTCEu.LOGGER.error("Invalid bloom style {}", ConfigHolder.INSTANCE.client.shader.bloomAlgorithm);
-                BLOOM_TYPE = BloomType.DISABLED;
-                BLOOM_CHAIN = null;
-                BLOOM_TARGET = null;
+                ConfigHolder.INSTANCE.client.shader.bloomAlgorithm = BloomAlgorithm.DISABLED;
+                BLOOM_TYPE = BloomAlgorithm.DISABLED;
                 return;
             }
         }

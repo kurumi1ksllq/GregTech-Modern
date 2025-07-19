@@ -4,7 +4,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.client.bloom.particle.GTBloomParticle;
 import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
 import com.gregtechceu.gtceu.client.bloom.shader.BloomEffect;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
 import com.gregtechceu.gtceu.client.bloom.EffectRenderContext;
 import com.gregtechceu.gtceu.client.util.RenderBufferHelper;
 import com.gregtechceu.gtceu.client.util.RenderUtil;
@@ -265,9 +265,9 @@ public class GTOverheatParticle extends GTBloomParticle {
 
     @NotNull
     @Override
-    protected BloomType getBloomType() {
+    protected BloomAlgorithm getBloomType() {
         var config = ConfigHolder.INSTANCE.client.shader.heatEffectBloom;
-        return config.useShader ? config.bloomAlgorithm : BloomType.DISABLED;
+        return config.useShader ? config.bloomAlgorithm : BloomAlgorithm.DISABLED;
     }
 
     public void renderBloomEffect(@NotNull PoseStack poseStack, @NotNull BufferBuilder buffer,

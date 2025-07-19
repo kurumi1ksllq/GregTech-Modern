@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.client.bloom.particle;
 
 import com.gregtechceu.gtceu.client.particle.GTParticle;
 import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
 import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
 import com.gregtechceu.gtceu.client.bloom.IBloomEffect;
 
@@ -20,5 +20,5 @@ public abstract class GTBloomParticle extends GTParticle implements IBloomEffect
     protected abstract IRenderSetup getBloomRenderSetup();
 
     @NotNull
-    protected abstract BloomType getBloomType();
+    protected abstract BloomAlgorithm getBloomType();
 }

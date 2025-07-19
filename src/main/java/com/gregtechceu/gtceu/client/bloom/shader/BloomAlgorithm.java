@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.client.bloom.shader;
 
-public enum BloomType {
+public enum BloomAlgorithm {
 
     /**
      * Simple Gaussian Blur

@@ -6,7 +6,7 @@ import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
 import com.gregtechceu.gtceu.client.bloom.shader.BloomEffect;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomType;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
 import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
 import com.gregtechceu.gtceu.client.bloom.EffectRenderContext;
 import com.gregtechceu.gtceu.client.bloom.IBloomEffect;
@@ -116,9 +116,9 @@ public class FusionRingRender extends DynamicRender<FusionReactorMachine, Fusion
         return new AABB(machine.getPos()).inflate(getViewDistance() / 2.0D);
     }
 
-    private static BloomType getBloomType() {
+    private static BloomAlgorithm getBloomType() {
         var config = ConfigHolder.INSTANCE.client.shader.fusionBloom;
-        return config.useShader ? config.bloomAlgorithm : BloomType.DISABLED;
+        return config.useShader ? config.bloomAlgorithm : BloomAlgorithm.DISABLED;
     }
 
     @RequiredArgsConstructor

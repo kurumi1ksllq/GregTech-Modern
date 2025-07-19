@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.gui.widget.PhantomSlotWidget;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveToItemStack;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceBorderTexture;
@@ -15,6 +14,7 @@ import com.lowdragmc.lowdraglib.gui.widget.*;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -35,12 +35,7 @@ public class CreativeChestMachine extends QuantumChestMachine {
 
     @Getter
     @SaveField
-    @SaveToItemStack
-    private int itemsPerCycle = 1;
-    @Getter
-    @SaveField
-    @SaveToItemStack
-    private int ticksPerCycle = 1;
+    private int itemsPerCycle, ticksPerCycle = 1;
 
     public CreativeChestMachine(IMachineBlockEntity holder) {
         super(holder, GTValues.MAX, -1);
@@ -76,6 +71,18 @@ public class CreativeChestMachine extends QuantumChestMachine {
         if (value.isEmpty()) return;
         itemsPerCycle = Integer.parseInt(value);
         onItemChanged();
+    }
+
+    @Override
+    public void saveToItem(CompoundTag tag) {
+        tag.putInt("itemsPerCycle", itemsPerCycle);
+        tag.putInt("ticksPerCycle", ticksPerCycle);
+    }
+
+    @Override
+    public void loadFromItem(CompoundTag tag) {
+        itemsPerCycle = tag.getInt("itemsPerCycle");
+        ticksPerCycle = tag.getInt("ticksPerCycle");
     }
 
     @Override

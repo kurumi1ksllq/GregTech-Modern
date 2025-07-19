@@ -16,7 +16,6 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveToItemStack;
 import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
@@ -74,7 +73,6 @@ public class PumpMachine extends TieredEnergyMachine implements IAutoOutputFluid
     @RerenderOnChanged
     protected boolean autoOutputFluids;
     @SaveField
-    @SaveToItemStack
     protected final NotifiableFluidTank cache;
 
     public PumpMachine(IMachineBlockEntity holder, int tier, Object... args) {

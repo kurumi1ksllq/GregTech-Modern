@@ -17,7 +17,6 @@ import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveToItemStack;
 import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
@@ -32,6 +31,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
@@ -94,12 +94,10 @@ public class QuantumTankMachine extends TieredMachine implements IAutoOutputFlui
     @Getter
     @SyncToClient
     @SaveField
-    @SaveToItemStack
     protected FluidStack stored = FluidStack.EMPTY;
     @Getter
     @SyncToClient
     @SaveField
-    @SaveToItemStack
     protected long storedAmount = 0;
 
     @Nullable
@@ -305,6 +303,18 @@ public class QuantumTankMachine extends TieredMachine implements IAutoOutputFlui
 
     public FluidStack getLockedFluid() {
         return lockedFluid.getFluid();
+    }
+
+    @Override
+    public void saveToItem(CompoundTag tag) {
+        tag.put("stored", stored.writeToNBT(new CompoundTag()));
+        tag.putLong("storedAmount", storedAmount);
+    }
+
+    @Override
+    public void loadFromItem(CompoundTag tag) {
+        stored = FluidStack.loadFluidStackFromNBT(tag.getCompound("stored"));
+        storedAmount = tag.getLong("storedAmount");
     }
 
     //////////////////////////////////////

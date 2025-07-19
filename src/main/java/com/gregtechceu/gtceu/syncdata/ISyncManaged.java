@@ -21,8 +21,8 @@ public interface ISyncManaged {
     SyncDataHolder getSyncDataHolder();
 
     /**
-    * Function called when a synced field requests a rerender
-    * */
+     * Function called when a synced field requests a rerender
+     */
     void scheduleRenderUpdate();
 
     /**

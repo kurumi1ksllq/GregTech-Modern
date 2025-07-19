@@ -7,7 +7,6 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveToItemStack;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceBorderTexture;
@@ -15,6 +14,7 @@ import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.*;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -33,11 +33,9 @@ public class CreativeTankMachine extends QuantumTankMachine {
 
     @Getter
     @SaveField
-    @SaveToItemStack
     private int mBPerCycle = 1000;
     @Getter
     @SaveField
-    @SaveToItemStack
     private int ticksPerCycle = 1;
 
     public CreativeTankMachine(IMachineBlockEntity holder) {
@@ -78,6 +76,18 @@ public class CreativeTankMachine extends QuantumTankMachine {
         if (value.isEmpty()) return;
         mBPerCycle = Integer.parseInt(value);
         onFluidChanged();
+    }
+
+    @Override
+    public void saveToItem(@NotNull CompoundTag tag) {
+        tag.putInt("mBPerCycle", mBPerCycle);
+        tag.putInt("ticksPerCycle", ticksPerCycle);
+    }
+
+    @Override
+    public void loadFromItem(@NotNull CompoundTag tag) {
+        mBPerCycle = tag.getInt("mBPerCycle");
+        ticksPerCycle = tag.getInt("ticksPerCycle");
     }
 
     @Override

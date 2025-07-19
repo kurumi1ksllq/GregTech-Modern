@@ -125,11 +125,12 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
 
     @Override
     public void saveToItem(CompoundTag tag) {
-        if (isTaped) {
-            IDropSaveMachine.super.saveToItem(tag);
-            tag.putBoolean("taped", isTaped);
-            tag.put("inventory", inventory.storage.serializeNBT());
-        }
+        if (isTaped) tag.put("inventory", inventory.storage.serializeNBT());
+    }
+
+    @Override
+    public void loadFromItem(CompoundTag tag) {
+        inventory.storage.deserializeNBT(tag.getCompound("inventory"));
     }
 
     @Override

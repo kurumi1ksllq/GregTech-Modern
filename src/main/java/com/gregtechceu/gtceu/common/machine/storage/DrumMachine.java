@@ -14,7 +14,6 @@ import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveToItemStack;
 import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
@@ -65,7 +64,6 @@ public class DrumMachine extends MetaMachine implements IAutoOutputFluid, IDropS
     @SaveField(nbtKey = "Fluid")
     @SyncToClient
     @Getter
-    @SaveToItemStack
     protected FluidStack stored = FluidStack.EMPTY;
     @Getter
     protected final Material material;
@@ -123,8 +121,12 @@ public class DrumMachine extends MetaMachine implements IAutoOutputFluid, IDropS
     //////////////////////////////////////
 
     @Override
+    public void saveToItem(CompoundTag tag) {
+        tag.put("Fluid", stored.writeToNBT(new CompoundTag()));
+    }
+
+    @Override
     public void loadFromItem(CompoundTag tag) {
-        IDropSaveMachine.super.loadFromItem(tag);
         if (!tag.contains("Fluid")) {
             stored = FluidStack.EMPTY;
         }

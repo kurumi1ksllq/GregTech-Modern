@@ -110,7 +110,7 @@ public final class ClassSyncData {
 
         public final String fieldName, nbtSaveKey;
         public final VarHandle handle;
-        public final boolean triggerClientRerender, saveToStack, isCustomData, isComplex;
+        public final boolean triggerClientRerender, isCustomData, isComplex;
         public final IValueTransformer<?> transformer;
         public final MethodHandle[] changeListenerHandles, nbtSaveModifiers, nbtLoadModifiers;
 
@@ -120,7 +120,6 @@ public final class ClassSyncData {
             SaveField savedField = field.getAnnotation(SaveField.class);
             this.nbtSaveKey = (savedField != null && !savedField.nbtKey().isBlank()) ? savedField.nbtKey() : fieldName;
             triggerClientRerender = field.isAnnotationPresent(RerenderOnChanged.class);
-            saveToStack = field.isAnnotationPresent(SaveToItemStack.class);
             isCustomData = field.isAnnotationPresent(CustomDataField.class);
             isComplex = ISyncManaged.class.isAssignableFrom(field.getType());
 

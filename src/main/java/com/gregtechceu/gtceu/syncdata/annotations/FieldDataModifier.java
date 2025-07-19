@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Instructs the sync system to apply this method when saving or loading a field.
- * */
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface FieldDataModifier {
@@ -19,11 +19,11 @@ public @interface FieldDataModifier {
 
     /**
      * The field that this function applies to.
-     * */
+     */
     String fieldName();
 
     /**
      * If this function is called when saving or loading NBT
-     * */
+     */
     ModifyTarget target();
 }

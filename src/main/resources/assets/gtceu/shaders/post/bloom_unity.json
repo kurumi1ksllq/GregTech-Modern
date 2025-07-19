@@ -84,7 +84,7 @@
       "intarget": "swap16a",
       "outtarget": "swap8b",
       "auxtargets": [
-        {"id":"swap8a", "name":"DownTexture"}
+        { "id":"swap8a", "name":"DownTexture" }
       ]
     },
     {
@@ -92,7 +92,7 @@
       "intarget": "swap8b",
       "outtarget": "swap4b",
       "auxtargets": [
-        {"id":"swap4a", "name":"DownTexture"}
+        { "id":"swap4a", "name":"DownTexture" }
       ]
     },
     {
@@ -100,7 +100,7 @@
       "intarget": "swap4b",
       "outtarget": "swap2b",
       "auxtargets": [
-        {"id":"swap2a", "name":"DownTexture"}
+        { "id":"swap2a", "name":"DownTexture" }
       ]
     },
     {
@@ -108,8 +108,8 @@
       "intarget": "swap2b",
       "outtarget": "final",
       "auxtargets": [
-        {"id":"minecraft:main", "name":"DownTexture"},
-        {"id":"minecraft:main", "name":"Background"}
+        { "id":"minecraft:main", "name":"DownTexture" },
+        { "id":"minecraft:main", "name":"Background" }
       ]
     },
     {

@@ -208,11 +208,11 @@
       "intarget": "minecraft:main",
       "outtarget": "final",
       "auxtargets": [
-        {"id":"gtceu:filter_temp", "name":"HighLight"},
-        {"id":"swap2b", "name":"BlurTexture1"},
-        {"id":"swap4b", "name":"BlurTexture2"},
-        {"id":"swap8b", "name":"BlurTexture3"},
-        {"id":"swap16b", "name":"BlurTexture4"}
+        { "id":"gtceu:filter_temp", "name":"HighLight" },
+        { "id":"swap2b", "name":"BlurTexture1" },
+        { "id":"swap4b", "name":"BlurTexture2" },
+        { "id":"swap8b", "name":"BlurTexture3" },
+        { "id":"swap16b", "name":"BlurTexture4" }
       ],
       "uniforms": [
         {

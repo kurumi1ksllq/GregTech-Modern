@@ -12,7 +12,7 @@ float gaussianPdf(in float x, in float sigma) {
     return 0.39894 * exp( -0.5 * x * x/( sigma * sigma))/sigma;
 }
 
-void main(){
+void main() {
     vec2 invSize = 1.0 / OutSize;
     float fSigma = Radius;
     float weightSum = gaussianPdf(0.0, fSigma);

@@ -29,7 +29,7 @@ vec3 aces(vec3 x) {
     return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
 }
 
-vec3 aces_tonemap(vec3 color){
+vec3 aces_tonemap(vec3 color) {
     mat3 m1 = mat3(
     0.59719, 0.07600, 0.02840,
     0.35458, 0.90834, 0.13383,
@@ -46,7 +46,7 @@ vec3 aces_tonemap(vec3 color){
     return pow(clamp(m2 * (a / b), 0.0, 1.0), vec3(1.0 / 2.2));
 }
 
-vec3 jodieReinhardTonemap(vec3 c){
+vec3 jodieReinhardTonemap(vec3 c) {
     float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
     vec3 tc = c / (c + 1.0);
 

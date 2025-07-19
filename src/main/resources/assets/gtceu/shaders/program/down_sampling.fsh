@@ -14,7 +14,7 @@ vec4 four_k(vec3 textel, vec2 uv) {
     + texture(DiffuseSampler, uv + textel.yy)) * 0.25; // -1 -1
 }
 
-void main(){
+void main() {
     vec3 textel1 = vec3(1., -1., 0.) / InSize.xyx;
     vec3 textel2 = vec3(1., -1., 0.) / OutSize.xyx;
 

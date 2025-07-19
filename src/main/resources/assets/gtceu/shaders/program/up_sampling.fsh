@@ -18,7 +18,7 @@ vec4 up_sampling(vec3 textel, vec2 uv) {
     return vec4(four_k(textel, uv).rgb + texture(DownTexture, uv).rgb, 1.);
 }
 
-void main(){
+void main() {
     vec3 textel = vec3(1., -1., 0.) / OutSize.xyx;
     //    out_colour = up_sampling(textel, texCoord);
 

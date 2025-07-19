@@ -758,6 +758,7 @@ public class MachineLang {
                 "Shares inserted fluids/gasses/etc. with all patterns within buffer!");
         provider.add("gui.gtceu.rename.desc", "Rename Pattern Buffer");
         provider.add("gui.gtceu.refund_all.desc", "Return Stored Contents to AE2");
+        provider.add("gui.gtceu.ae.amount", "Amount");
 
         provider.add("gtceu.machine.dual_hatch.import.tooltip", "Item and Fluid Input for Multiblocks");
         provider.add("gtceu.machine.dual_hatch.export.tooltip", "Item and Fluid Output for Multiblocks");

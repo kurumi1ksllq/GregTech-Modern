@@ -1,8 +1,11 @@
 package com.gregtechceu.gtceu.integration.ae2.gui.widget;
 
+import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.slot.AEConfigSlotWidget;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlot;
 
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.utils.Position;
@@ -17,6 +20,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 
+import java.awt.*;
+
 public abstract class ConfigWidget extends WidgetGroup {
 
     protected final IConfigurableSlot[] config;
@@ -24,6 +29,8 @@ public abstract class ConfigWidget extends WidgetGroup {
     protected Int2ObjectMap<IConfigurableSlot> changeMap = new Int2ObjectOpenHashMap<>();
     protected IConfigurableSlot[] displayList;
     protected AmountSetWidget amountSetWidget;
+    protected LabelWidget titleWidget;
+    protected ImageWidget backgroundImage;
     protected final static int UPDATE_ID = 1000;
 
     @Getter
@@ -33,45 +40,60 @@ public abstract class ConfigWidget extends WidgetGroup {
         super(new Position(x, y), new Size(config.length / 2 * 18, 18 * 4 + 2));
         this.isStocking = isStocking;
         this.config = config;
-        this.init();
-        this.amountSetWidget = new AmountSetWidget(31, -50, this);
-        this.addWidget(this.amountSetWidget);
-        this.addWidget(this.amountSetWidget.getAmountText());
-        this.amountSetWidget.setVisible(false);
-        this.amountSetWidget.getAmountText().setVisible(false);
+        init();
+        var asw = new AmountSetWidget(15, -53, this);
+        titleWidget = new LabelWidget(15, -65, "gui.gtceu.ae.amount").setTextColor(0x404040).setDropShadow(false);
+        backgroundImage = new ImageWidget(12, -68, 112, 40, GuiTextures.BACKGROUND);
+        addWidget(backgroundImage);
+        addWidget(titleWidget);
+        addWidget(asw);
+        addWidget(asw.getAmountText());
+        asw.setVisible(false);
+        asw.getAmountText().setVisible(false);
+        titleWidget.setVisible(false);
+        backgroundImage.setVisible(false);
+        amountSetWidget = asw;
     }
 
     @OnlyIn(Dist.CLIENT)
     public void enableAmountClient(int slotIndex) {
-        this.amountSetWidget.setSlotIndexClient(slotIndex);
-        this.amountSetWidget.setVisible(true);
-        this.amountSetWidget.getAmountText().setVisible(true);
+        amountSetWidget.setSlotIndexClient(slotIndex);
+        amountSetWidget.setVisible(true);
+        amountSetWidget.getAmountText().setVisible(true);
+        titleWidget.setVisible(true);
+        backgroundImage.setVisible(true);
     }
 
     @OnlyIn(Dist.CLIENT)
     public void disableAmountClient() {
-        this.amountSetWidget.setSlotIndexClient(-1);
-        this.amountSetWidget.setVisible(false);
-        this.amountSetWidget.getAmountText().setVisible(false);
+        amountSetWidget.setSlotIndexClient(-1);
+        amountSetWidget.setVisible(false);
+        amountSetWidget.getAmountText().setVisible(false);
+        titleWidget.setVisible(false);
+        backgroundImage.setVisible(false);
     }
 
     public void enableAmount(int slotIndex) {
-        this.amountSetWidget.setSlotIndex(slotIndex);
-        this.amountSetWidget.setVisible(true);
-        this.amountSetWidget.getAmountText().setVisible(true);
+        amountSetWidget.setSlotIndex(slotIndex);
+        amountSetWidget.setVisible(true);
+        amountSetWidget.getAmountText().setVisible(true);
+        titleWidget.setVisible(true);
+        backgroundImage.setVisible(true);
     }
 
     public void disableAmount() {
-        this.amountSetWidget.setSlotIndex(-1);
-        this.amountSetWidget.setVisible(false);
-        this.amountSetWidget.getAmountText().setVisible(false);
+        amountSetWidget.setSlotIndex(-1);
+        amountSetWidget.setVisible(false);
+        amountSetWidget.getAmountText().setVisible(false);
+        titleWidget.setVisible(false);
+        backgroundImage.setVisible(false);
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.amountSetWidget.isVisible()) {
-            if (this.amountSetWidget.getAmountText().mouseClicked(mouseX, mouseY, button)) {
+        if (amountSetWidget.isVisible()) {
+            if (amountSetWidget.getAmountText().mouseClicked(mouseX, mouseY, button)) {
                 return true;
             }
         }

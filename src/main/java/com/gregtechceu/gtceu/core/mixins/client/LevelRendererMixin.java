@@ -20,6 +20,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBakery;
@@ -82,13 +83,15 @@ public abstract class LevelRendererMixin {
     @Unique
     private final RandomSource gtceu$modelRandom = RandomSource.create();
 
+    @Shadow public abstract ChunkRenderDispatcher getChunkRenderDispatcher();
+
     @Inject(method = "applyFrustum",
             at = @At(value = "INVOKE",
                     target = "Lit/unimi/dsi/fastutil/objects/ObjectArrayList;add(Ljava/lang/Object;)Z",
                     remap = false))
     private void gtceu$compileBloomBuffers(Frustum frustum, CallbackInfo ci,
                                            @Local LevelRenderer.RenderChunkInfo chunkInfo) {
-        BloomEffectUtil.bakeBloomChunkBuffers(chunkInfo.chunk.getOrigin());
+        BloomEffectUtil.bakeBloomChunkBuffers(chunkInfo.chunk.getOrigin(), this.getChunkRenderDispatcher().getCameraPosition());
     }
 
     @Inject(method = "resize", at = @At("TAIL"))

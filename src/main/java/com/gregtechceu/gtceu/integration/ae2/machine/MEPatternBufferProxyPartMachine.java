@@ -79,6 +79,7 @@ public class MEPatternBufferProxyPartMachine extends TieredIOPartMachine
         } else {
             buffer = null;
         }
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("bufferPos");
     }
 
     @Nullable

@@ -31,11 +31,11 @@ public class SyncDataHolder {
         fieldData.ifPresent(dirtySyncFields::add);
     }
 
-    public CompoundTag syncNBT(boolean fullClientSync) {
+    public CompoundTag getClientSyncNBT(boolean fullClientSync) {
         return serialize(true, fullClientSync);
     }
 
-    public void loadSyncNBT(CompoundTag tag) {
+    public void loadClientSyncNBT(CompoundTag tag) {
         deserialize(tag, true);
     }
 

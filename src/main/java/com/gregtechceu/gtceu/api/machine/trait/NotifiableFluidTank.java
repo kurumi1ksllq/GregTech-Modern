@@ -248,6 +248,7 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
             this.lockedFluid.setFluid(FluidStack.EMPTY);
             setFilter(stack -> true);
         }
+        getSyncDataHolder().markClientSyncFieldDirty("lockedFluid");
         onContentsChanged();
     }
 

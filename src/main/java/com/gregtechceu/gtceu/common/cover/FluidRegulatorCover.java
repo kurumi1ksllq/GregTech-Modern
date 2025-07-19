@@ -156,7 +156,7 @@ public class FluidRegulatorCover extends PumpCover {
         var newMultiplier = transferBucketMode.multiplier;
 
         this.transferBucketMode = transferBucketMode;
-
+        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("transferBucketMode");
         if (transferSizeInput == null) return;
 
         if (oldMultiplier > newMultiplier) {
@@ -174,6 +174,7 @@ public class FluidRegulatorCover extends PumpCover {
         configureTransferSizeInput();
 
         if (!this.isRemote()) {
+            getSyncDataHolder().markClientSyncFieldDirty("transferMode");
             configureFilter();
         }
     }
@@ -227,6 +228,7 @@ public class FluidRegulatorCover extends PumpCover {
     private void setCurrentBucketModeTransferSize(int transferSize) {
         this.globalTransferLimit = Math.min(Math.max(transferSize * this.transferBucketMode.multiplier, 0),
                 MAX_STACK_SIZE);
+        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("globalTransferLimit");
     }
 
     private void configureTransferSizeInput() {

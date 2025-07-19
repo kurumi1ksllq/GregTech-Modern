@@ -228,6 +228,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
             }
         }
 
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("blockBreakProgress");
         updateBreakerSubscription();
     }
 
@@ -274,6 +275,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
     @Override
     public void setAutoOutputItems(boolean allow) {
         this.autoOutputItems = allow;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("autoOutputItems");
         updateAutoOutputSubscription();
     }
 
@@ -288,6 +290,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
     @Override
     public void setOutputFacingItems(@Nullable Direction outputFacing) {
         this.outputFacingItems = outputFacing;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("outputFacingItems");
         updateAutoOutputSubscription();
     }
 
@@ -339,6 +342,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
 
     public void setWorkingEnabled(boolean workingEnabled) {
         isWorkingEnabled = workingEnabled;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isWorkingEnabled");
         updateBreakerSubscription();
     }
 

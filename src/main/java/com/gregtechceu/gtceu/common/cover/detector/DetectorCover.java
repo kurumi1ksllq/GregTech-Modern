@@ -34,7 +34,6 @@ public abstract class DetectorCover extends CoverBehavior implements IControllab
     @SaveField
     @SyncToClient
     @Getter
-    @Setter
     private boolean isInverted;
 
     public DetectorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
@@ -53,6 +52,11 @@ public abstract class DetectorCover extends CoverBehavior implements IControllab
         if (subscription != null) {
             subscription.unsubscribe();
         }
+    }
+
+    public void setInverted(boolean inverted) {
+        isInverted = inverted;
+        if (!coverHolder.isRemote()) getSyncDataHolder().markClientSyncFieldDirty("isInverted");
     }
 
     protected abstract void update();

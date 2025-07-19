@@ -70,7 +70,6 @@ public class PumpMachine extends TieredEnergyMachine implements IAutoOutputFluid
     @SaveField
     private int pumpHeadY;
     @Getter
-    @Setter
     @SaveField
     @SyncToClient
     @RerenderOnChanged
@@ -103,6 +102,11 @@ public class PumpMachine extends TieredEnergyMachine implements IAutoOutputFluid
     @Override
     public Direction getOutputFacingFluids() {
         return getFrontFacing();
+    }
+
+    public void setAutoOutputFluids(boolean autoOutputFluids) {
+        this.autoOutputFluids = autoOutputFluids;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("autoOutputFluids");
     }
 
     @Override

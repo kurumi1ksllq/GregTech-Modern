@@ -25,13 +25,17 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class LargeMixerMachine extends WorkableElectricMultiblockMachine implements IFluidRenderMulti {
 
     @Getter
-    @Setter
     @SyncToClient
     @RerenderOnChanged
     private @NotNull Set<BlockPos> fluidBlockOffsets = new HashSet<>();
 
     public LargeMixerMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
+    }
+
+    public void setFluidBlockOffsets(Set<BlockPos> offsets) {
+        fluidBlockOffsets = offsets;
+        syncDataHolder.markClientSyncFieldDirty("fluidBlockOffsets");
     }
 
     @Override

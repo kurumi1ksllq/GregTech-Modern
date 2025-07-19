@@ -359,6 +359,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
             }
             machine.notifyStatusChanged(this.status, status);
             this.status = status;
+            getSyncDataHolder().markClientSyncFieldDirty("status");
             setRenderState(getRenderState().setValue(STATUS_PROPERTY, status));
             updateTickSubscription();
             if (this.status != Status.WAITING) {

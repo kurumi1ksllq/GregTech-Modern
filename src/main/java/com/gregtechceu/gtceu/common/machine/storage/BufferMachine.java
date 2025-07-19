@@ -146,24 +146,28 @@ public class BufferMachine extends TieredMachine implements IMachineLife, IAutoO
     @Override
     public void setAutoOutputFluids(boolean allow) {
         this.autoOutputFluids = allow;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("autoOutputFluids");
         updateAutoOutputSubscription();
     }
 
     @Override
     public void setOutputFacingFluids(@Nullable Direction outputFacing) {
         this.outputFacingFluids = outputFacing;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("outputFacingFluids");
         updateAutoOutputSubscription();
     }
 
     @Override
     public void setAutoOutputItems(boolean allow) {
         this.autoOutputItems = allow;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("autoOutputItems");
         updateAutoOutputSubscription();
     }
 
     @Override
     public void setOutputFacingItems(@Nullable Direction outputFacing) {
         this.outputFacingItems = outputFacing;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("outputFacingItems");
         updateAutoOutputSubscription();
     }
 

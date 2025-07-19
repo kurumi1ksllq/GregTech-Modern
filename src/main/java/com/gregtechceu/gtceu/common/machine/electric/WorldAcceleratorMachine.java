@@ -98,12 +98,18 @@ public class WorldAcceleratorMachine extends TieredEnergyMachine implements ICon
     public void updateSubscription() {
         if (isWorkingEnabled && drainEnergy(true)) {
             tickSubs = subscribeServerTick(tickSubs, this::update);
-            active = true;
+            if (!active) {
+                active = true;
+                syncDataHolder.markClientSyncFieldDirty("active");
+            }
             setRenderState(getRenderState().setValue(IWorkable.ACTIVE_PROPERTY, true));
         } else if (tickSubs != null) {
             tickSubs.unsubscribe();
             tickSubs = null;
-            active = false;
+            if (active) {
+                active = false;
+                syncDataHolder.markClientSyncFieldDirty("active");
+            }
             setRenderState(getRenderState().setValue(IWorkable.ACTIVE_PROPERTY, false));
         }
     }
@@ -210,6 +216,7 @@ public class WorldAcceleratorMachine extends TieredEnergyMachine implements ICon
     public void setWorkingEnabled(boolean workingEnabled) {
         isWorkingEnabled = workingEnabled;
         setRenderState(getRenderState().setValue(WORKING_ENABLED_PROPERTY, isWorkingEnabled));
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isWorkingEnabled");
         updateSubscription();
     }
 
@@ -242,6 +249,7 @@ public class WorldAcceleratorMachine extends TieredEnergyMachine implements ICon
         if (!isRemote()) {
             isRandomTickMode = !isRandomTickMode;
             setRenderState(getRenderState().setValue(RANDOM_TICK_PROPERTY, isRandomTickMode));
+            if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isRandomTickMode");
             playerIn.sendSystemMessage(Component.translatable(isRandomTickMode ?
                     "gtceu.machine.world_accelerator.mode_entity" : "gtceu.machine.world_accelerator.mode_tile"));
             scheduleRenderUpdate();

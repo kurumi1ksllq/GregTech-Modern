@@ -261,6 +261,14 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         this.fDist = fDist;
         this.bDist = bDist;
         this.hDist = hDist;
+
+        if (!isRemote()) {
+            syncDataHolder.markClientSyncFieldDirty("lDist");
+            syncDataHolder.markClientSyncFieldDirty("rDist");
+            syncDataHolder.markClientSyncFieldDirty("fDist");
+            syncDataHolder.markClientSyncFieldDirty("bDist");
+            syncDataHolder.markClientSyncFieldDirty("hDist");
+        }
     }
 
     private static boolean isBlockWall(Level level, BlockPos.MutableBlockPos pos, Direction direction) {

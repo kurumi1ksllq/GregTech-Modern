@@ -60,14 +60,14 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
     public CompoundTag getUpdateTag() {
         GTCEu.LOGGER.info("getUpdateTag: {}", getBlockPos());
         CompoundTag tag = new CompoundTag();
-        Arrays.stream(getSyncObjects()).map(obj -> obj.getSyncDataHolder().syncNBT(true)).forEach(tag::merge);
+        Arrays.stream(getSyncObjects()).map(obj -> obj.getSyncDataHolder().getClientSyncNBT(true)).forEach(tag::merge);
         return tag;
     }
 
     @Override
     public void handleUpdateTag(CompoundTag tag) {
         GTCEu.LOGGER.info("handleUpdateTag: {}", getBlockPos());
-        Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadSyncNBT(tag));
+        Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadClientSyncNBT(tag));
     }
 
     // Called when this BlockEntity has changed and must send changes to client.
@@ -78,7 +78,7 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
         return ClientboundBlockEntityDataPacket.create(this, (entity) -> {
             if (!(entity instanceof ManagedSyncBlockEntity syncEntity)) return new CompoundTag();
             var tag = new CompoundTag();
-            Arrays.stream(syncEntity.getSyncObjects()).map(obj -> obj.getSyncDataHolder().syncNBT(false)).forEach(tag::merge);
+            Arrays.stream(syncEntity.getSyncObjects()).map(obj -> obj.getSyncDataHolder().getClientSyncNBT(false)).forEach(tag::merge);
             return tag;
         });
     }
@@ -88,7 +88,7 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
         GTCEu.LOGGER.info("onDataPacket: {}", getBlockPos());
         CompoundTag compound = pkt.getTag();
         if (compound != null) {
-            Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadSyncNBT(compound));
+            Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadClientSyncNBT(compound));
         }
     }
 

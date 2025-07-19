@@ -110,6 +110,7 @@ public class TransformerMachine extends TieredEnergyMachine implements IControll
     public void setTransformUp(boolean isTransformUp) {
         if (this.isTransformUp != isTransformUp && !isRemote()) {
             this.isTransformUp = isTransformUp;
+            syncDataHolder.markClientSyncFieldDirty("isTransformUp");
             updateEnergyContainer(isTransformUp);
             setRenderState(getRenderState().setValue(TRANSFORM_UP_PROPERTY, isTransformUp));
         }

@@ -124,6 +124,7 @@ public class LaserPipeBlockEntity extends PipeBlockEntity<LaserPipeType, LaserPi
     public void setActive(boolean active, int duration) {
         if (this.active != active) {
             this.active = active;
+            if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("active");
             notifyBlockUpdate();
             setChanged();
             if (active && duration != this.activeDuration) {

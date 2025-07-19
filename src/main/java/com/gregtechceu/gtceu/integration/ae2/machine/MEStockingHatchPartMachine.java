@@ -147,6 +147,7 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine implemen
     public void setAutoPull(boolean autoPull) {
         this.autoPull = autoPull;
         if (!isRemote()) {
+            syncDataHolder.markClientSyncFieldDirty("autoPull");
             if (!this.autoPull) {
                 this.aeFluidHandler.clearInventory(0);
             } else if (updateMEStatus()) {

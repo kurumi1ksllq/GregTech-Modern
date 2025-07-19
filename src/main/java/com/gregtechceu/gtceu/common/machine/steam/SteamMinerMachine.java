@@ -55,7 +55,6 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
                                IUIMachine, IMachineLife, IDataInfoProvider {
 
     @Getter
-    @Setter
     @SaveField
     @SyncToClient
     private boolean needsVenting;
@@ -161,6 +160,11 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
             exportItems.exportToNearby(getFrontFacing());
         }
         updateAutoOutputSubscription();
+    }
+
+    public void setNeedsVenting(boolean venting) {
+        this.needsVenting = venting;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("needsVenting");
     }
 
     //////////////////////////////////////

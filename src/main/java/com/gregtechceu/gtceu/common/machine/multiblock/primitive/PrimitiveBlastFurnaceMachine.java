@@ -50,7 +50,6 @@ public class PrimitiveBlastFurnaceMachine extends PrimitiveWorkableMachine imple
     private TickableSubscription hurtSubscription;
 
     @Getter
-    @Setter
     @SyncToClient
     @RerenderOnChanged
     private @NotNull Set<BlockPos> fluidBlockOffsets = new HashSet<>();
@@ -69,6 +68,11 @@ public class PrimitiveBlastFurnaceMachine extends PrimitiveWorkableMachine imple
     protected NotifiableItemStackHandler createExportItemHandler(Object... args) {
         return new NotifiableItemStackHandler(this, getRecipeType().getMaxOutputs(ItemRecipeCapability.CAP), IO.OUT,
                 IO.NONE);
+    }
+
+    public void setFluidBlockOffsets(Set<BlockPos> offsets) {
+        fluidBlockOffsets = offsets;
+        syncDataHolder.markClientSyncFieldDirty("fluidBlockOffsets");
     }
 
     @Override

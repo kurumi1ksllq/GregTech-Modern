@@ -25,7 +25,6 @@ public class TieredIOPartMachine extends TieredPartMachine implements IControlla
      * AUTO IO working?
      */
     @Getter
-    @Setter
     @SaveField
     @SyncToClient
     @RerenderOnChanged
@@ -35,6 +34,12 @@ public class TieredIOPartMachine extends TieredPartMachine implements IControlla
         super(holder, tier);
         this.io = io;
         this.workingEnabled = true;
+    }
+
+    @Override
+    public void setWorkingEnabled(boolean workingEnabled) {
+        this.workingEnabled = workingEnabled;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("workingEnabled");
     }
 
     //////////////////////////////////////

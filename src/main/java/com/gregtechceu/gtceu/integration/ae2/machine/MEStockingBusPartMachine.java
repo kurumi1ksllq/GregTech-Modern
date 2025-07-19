@@ -160,6 +160,7 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     public void setAutoPull(boolean autoPull) {
         this.autoPull = autoPull;
         if (!isRemote()) {
+            syncDataHolder.markClientSyncFieldDirty("autoPull");
             if (!this.autoPull) {
                 this.aeItemHandler.clearInventory(0);
             } else if (updateMEStatus()) {

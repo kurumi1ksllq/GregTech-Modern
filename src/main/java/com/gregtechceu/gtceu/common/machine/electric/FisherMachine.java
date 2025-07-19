@@ -112,7 +112,6 @@ public class FisherMachine extends TieredEnergyMachine
 
     @Getter
     @SaveField
-    @Setter
     @SyncToClient
     private boolean isWorkingEnabled = true;
 
@@ -124,7 +123,6 @@ public class FisherMachine extends TieredEnergyMachine
     private boolean hasWater = false;
 
     @Getter
-    @Setter
     @SaveField
     @SyncToClient
     protected boolean junkEnabled = true;
@@ -160,6 +158,16 @@ public class FisherMachine extends TieredEnergyMachine
         var handler = new NotifiableItemStackHandler(this, 1, IO.BOTH, IO.IN);
         handler.setFilter(item -> item.is(Items.STRING));
         return handler;
+    }
+
+    public void setWorkingEnabled(boolean enabled) {
+        isWorkingEnabled = enabled;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isWorkingEnabled");
+    }
+
+    public void setJunkEnabled(boolean enabled) {
+        junkEnabled = enabled;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("junkEnabled");
     }
 
     @Override
@@ -311,12 +319,14 @@ public class FisherMachine extends TieredEnergyMachine
     @Override
     public void setAutoOutputItems(boolean allow) {
         this.autoOutputItems = allow;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("autoOutputItems");
         updateAutoOutputSubscription();
     }
 
     @Override
     public void setOutputFacingItems(@Nullable Direction outputFacing) {
         this.outputFacingItems = outputFacing;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("outputFacingItems");
         updateAutoOutputSubscription();
     }
 

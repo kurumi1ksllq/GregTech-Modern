@@ -179,6 +179,7 @@ public class RobotArmCover extends ConveyorCover {
         configureStackSizeInput();
 
         if (!this.isRemote()) {
+            getSyncDataHolder().markClientSyncFieldDirty("transferMode");
             configureFilter();
         }
     }

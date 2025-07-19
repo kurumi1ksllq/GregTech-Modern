@@ -44,6 +44,10 @@ public class StorageCover extends CoverBehavior implements IUICover {
                 return 1;
             }
         };
+
+        inventory.setOnContentsChanged(() -> {
+            if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("inventory");
+        });
     }
 
     @Override

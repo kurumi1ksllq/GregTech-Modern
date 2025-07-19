@@ -88,7 +88,8 @@ public class DiodePartMachine extends TieredIOPartMachine {
 
     private void cycleAmpMode() {
         amps = amps == getMaxAmperage() ? 1 : amps << 1;
-        if (!getLevel().isClientSide) {
+        if (!isRemote()) {
+            syncDataHolder.markClientSyncFieldDirty("amps");
             reinitializeEnergyContainer();
             notifyBlockUpdate();
             markDirty();

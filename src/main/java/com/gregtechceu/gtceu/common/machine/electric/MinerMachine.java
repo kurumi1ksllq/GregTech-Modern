@@ -219,6 +219,7 @@ public class MinerMachine extends WorkableTieredMachine
     @Override
     public void setAutoOutputItems(boolean allow) {
         this.autoOutputItems = allow;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("autoOutputItems");
         updateAutoOutputSubscription();
     }
 
@@ -226,6 +227,7 @@ public class MinerMachine extends WorkableTieredMachine
     public void setOutputFacingItems(@Nullable Direction outputFacing) {
         if (outputFacing != Direction.DOWN) {
             this.outputFacingItems = outputFacing;
+            if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("outputFacingItems");
             updateAutoOutputSubscription();
         }
     }

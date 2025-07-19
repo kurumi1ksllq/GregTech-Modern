@@ -65,7 +65,6 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     @Getter(AccessLevel.PROTECTED)
     private boolean hasCircuitSlot = true;
     @Getter
-    @Setter
     @SaveField
     @SyncToClient
     protected boolean circuitSlotEnabled;
@@ -145,6 +144,7 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     @Override
     public void setDistinct(boolean distinct) {
         isDistinct = (io != IO.OUT && distinct);
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isDistinct");
         getHandlerList().setDistinctAndNotify(isDistinct);
     }
 
@@ -187,6 +187,11 @@ public class ItemBusPartMachine extends TieredIOPartMachine
             isDistinct = compound.getBoolean("isDistinct");
 
         }
+    }
+
+    public void setCircuitSlotEnabled(boolean enabled) {
+        circuitSlotEnabled = enabled;
+        syncDataHolder.markClientSyncFieldDirty("circuitSlotEnabled");
     }
 
     //////////////////////////////////////

@@ -230,6 +230,7 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
         private void updateWorkingRecipe(GTRecipe recipe) {
             if (recipe.recipeType == GTRecipeTypes.DISTILLERY_RECIPES) {
                 this.workingRecipe = recipe;
+                if (!getMachine().isRemote()) syncDataHolder.markClientSyncFieldDirty("workingRecipe");
                 return;
             }
 
@@ -241,6 +242,7 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
                 if (!(outputs.get(i) instanceof VoidFluidHandler)) trimmed.add(contents.get(i));
             }
             this.workingRecipe.outputs.put(FluidRecipeCapability.CAP, trimmed);
+            if (!getMachine().isRemote()) syncDataHolder.markClientSyncFieldDirty("workingRecipe");
         }
 
         @Override

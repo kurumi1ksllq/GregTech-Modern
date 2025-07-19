@@ -68,7 +68,6 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IMachi
     @Nullable
     protected ISubscription tankSubs;
     @Getter
-    @Setter
     @SaveField
     @SyncToClient
     protected boolean circuitSlotEnabled;
@@ -167,6 +166,11 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IMachi
     public int tintColor(int index) {
         if (index == 9) return getRealColor();
         return -1;
+    }
+
+    public void setCircuitSlotEnabled(boolean enabled) {
+        circuitSlotEnabled = enabled;
+        syncDataHolder.markClientSyncFieldDirty("circuitSlotEnabled");
     }
 
     //////////////////////////////////////

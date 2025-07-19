@@ -39,7 +39,6 @@ public class ObjectHolderMachine extends MultiblockPartMachine implements IObjec
     @SaveField
     private final ObjectHolderHandler heldItems;
     @Getter
-    @Setter
     @SaveField
     @SyncToClient
     private boolean isLocked;
@@ -47,6 +46,11 @@ public class ObjectHolderMachine extends MultiblockPartMachine implements IObjec
     public ObjectHolderMachine(IMachineBlockEntity holder) {
         super(holder);
         heldItems = new ObjectHolderHandler(this);
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isLocked");
     }
 
     @Override

@@ -306,6 +306,7 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     @Override
     public void setAutoOutputItems(boolean allow) {
         this.autoOutputItems = allow;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("autoOutputItems");
         updateAutoOutputSubscription();
     }
 
@@ -320,6 +321,7 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     @Override
     public void setOutputFacingItems(@Nullable Direction outputFacing) {
         this.outputFacingItems = outputFacing;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("outputFacingItems");
         updateAutoOutputSubscription();
     }
 
@@ -383,12 +385,14 @@ public class ItemCollectorMachine extends TieredEnergyMachine
 
     public void setRange(int range) {
         this.range = range;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("range");
         rangeDirty = true;
     }
 
     @Override
     public void setWorkingEnabled(boolean workingEnabled) {
         isWorkingEnabled = workingEnabled;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isWorkingEnabled");
         updateCollectionSubscription();
     }
 

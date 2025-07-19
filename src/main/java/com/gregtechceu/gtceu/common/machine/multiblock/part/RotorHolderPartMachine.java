@@ -141,6 +141,7 @@ public class RotorHolderPartMachine extends TieredPartMachine
                     .setValue(HAS_ROTOR_PROPERTY, false)
                     .setValue(EMISSIVE_ROTOR_PROPERTY, false));
         }
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("rotorMaterial");
     }
 
     @Override
@@ -174,6 +175,7 @@ public class RotorHolderPartMachine extends TieredPartMachine
             setRenderState(getRenderState().setValue(ROTOR_SPINNING_PROPERTY, rotorSpeed > 0));
         }
         this.rotorSpeed = rotorSpeed;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("rotorSpeed");
     }
 
     @Override

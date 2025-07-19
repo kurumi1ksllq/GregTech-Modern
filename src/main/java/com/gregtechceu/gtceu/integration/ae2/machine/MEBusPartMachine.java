@@ -31,7 +31,6 @@ public abstract class MEBusPartMachine extends ItemBusPartMachine implements IGr
 
     @SyncToClient
     @Getter
-    @Setter
     protected boolean isOnline;
 
     protected final IActionSource actionSource;
@@ -40,6 +39,11 @@ public abstract class MEBusPartMachine extends ItemBusPartMachine implements IGr
         super(holder, GTValues.LuV, io, args);
         this.nodeHolder = createNodeHolder();
         this.actionSource = IActionSource.ofMachine(nodeHolder.getMainNode()::getNode);
+    }
+
+    public void setOnline(boolean online) {
+        isOnline = online;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isOnline");
     }
 
     protected GridNodeHolder createNodeHolder() {

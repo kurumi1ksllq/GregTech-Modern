@@ -32,7 +32,6 @@ public abstract class MEHatchPartMachine extends FluidHatchPartMachine implement
 
     @SyncToClient
     @Getter
-    @Setter
     protected boolean isOnline;
 
     protected final IActionSource actionSource;
@@ -41,6 +40,11 @@ public abstract class MEHatchPartMachine extends FluidHatchPartMachine implement
         super(holder, GTValues.UHV, io, FluidHatchPartMachine.INITIAL_TANK_CAPACITY_1X, CONFIG_SIZE, args);
         this.nodeHolder = createNodeHolder();
         this.actionSource = IActionSource.ofMachine(nodeHolder.getMainNode()::getNode);
+    }
+
+    public void setOnline(boolean online) {
+        isOnline = online;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isOnline");
     }
 
     protected GridNodeHolder createNodeHolder() {

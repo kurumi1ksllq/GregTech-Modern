@@ -129,7 +129,6 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
 
     @SyncToClient
     @SaveField
-    @Setter
     private String customName = "";
 
     private boolean needPatternSync;
@@ -146,6 +145,9 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
 
     public MEPatternBufferPartMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, IO.IN, args);
+        patternInventory.setOnContentsChanged(() -> {
+            if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("patternInventory");
+        });
         this.patternInventory.setFilter(stack -> stack.getItem() instanceof ProcessingPatternItem);
         for (int i = 0; i < this.internalInventory.length; i++) {
             this.internalInventory[i] = new InternalSlot();
@@ -180,6 +182,12 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
     @Override
     public boolean isWorkingEnabled() {
         return true;
+    }
+
+    public void setCustomName(String newName) {
+        customName = newName;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("customName");
+        markAsDirty();
     }
 
     @Override

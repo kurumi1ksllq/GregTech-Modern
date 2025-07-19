@@ -48,7 +48,6 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IU
     @SaveField
     @SyncToClient
     @Getter
-    @Setter
     private boolean isLatched;
     @SaveField
     @SyncToClient
@@ -62,6 +61,11 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IU
         this.maxValue = DEFAULT_MAX;
 
         filterHandler = FilterHandlers.fluid(this);
+    }
+
+    public void setLatched(boolean latched) {
+        isLatched = latched;
+        if (!coverHolder.isRemote()) getSyncDataHolder().markClientSyncFieldDirty("isLatched");
     }
 
     @Override

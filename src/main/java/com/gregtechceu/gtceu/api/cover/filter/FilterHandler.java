@@ -143,6 +143,7 @@ public abstract class FilterHandler<T, F extends Filter<T, F>> implements ISyncM
         }
 
         this.filterItem = filterContainer.getStackInSlot(0);
+        getSyncDataHolder().markClientSyncFieldDirty("filterItem");
 
         if (this.filter != null) {
             this.filter = null;

@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -26,7 +25,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class FacadeCover extends CoverBehavior {
 
-    @Setter
     @Getter
     @SyncToClient
     @SaveField
@@ -46,6 +44,11 @@ public class FacadeCover extends CoverBehavior {
     @Override
     public boolean shouldRenderPlate() {
         return facadeState.canOcclude();
+    }
+
+    public void setFacadeState(BlockState state) {
+        facadeState = state;
+        if (!coverHolder.isRemote()) getSyncDataHolder().markClientSyncFieldDirty("facadeState");
     }
 
     /**

@@ -203,6 +203,7 @@ public class SimpleTieredMachine extends WorkableTieredMachine
     public void setAutoOutputItems(boolean allow) {
         if (hasAutoOutputItem()) {
             this.autoOutputItems = allow;
+            if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("autoOutputItems");
             updateAutoOutputSubscription();
         }
     }
@@ -211,6 +212,7 @@ public class SimpleTieredMachine extends WorkableTieredMachine
     public void setAutoOutputFluids(boolean allow) {
         if (hasAutoOutputFluid()) {
             this.autoOutputFluids = allow;
+            if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("autoOutputFluids");
             updateAutoOutputSubscription();
         }
     }
@@ -219,6 +221,7 @@ public class SimpleTieredMachine extends WorkableTieredMachine
     public void setOutputFacingFluids(@Nullable Direction outputFacing) {
         if (hasAutoOutputFluid()) {
             this.outputFacingFluids = outputFacing;
+            if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("outputFacingFluids");
             updateAutoOutputSubscription();
         }
     }
@@ -227,6 +230,7 @@ public class SimpleTieredMachine extends WorkableTieredMachine
     public void setOutputFacingItems(@Nullable Direction outputFacing) {
         if (hasAutoOutputItem()) {
             this.outputFacingItems = outputFacing;
+            if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("outputFacingItems");
             updateAutoOutputSubscription();
         }
     }

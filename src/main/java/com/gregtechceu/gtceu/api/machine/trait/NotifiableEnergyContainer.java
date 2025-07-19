@@ -138,6 +138,7 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Ener
             energyOutputPerSec += this.energyStored - energyStored;
         }
         this.energyStored = energyStored;
+        getSyncDataHolder().markClientSyncFieldDirty("energyStored");
         checkOutputSubscription();
         notifyListeners();
     }

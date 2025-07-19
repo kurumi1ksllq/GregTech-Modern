@@ -18,11 +18,15 @@ public abstract class NotifiableRecipeHandlerTrait<T> extends MachineTrait imple
     @SaveField
     @SyncToClient
     @Getter
-    @Setter
     protected boolean isDistinct;
 
     public NotifiableRecipeHandlerTrait(MetaMachine machine) {
         super(machine);
+    }
+
+    public void setDistinct(boolean distinct) {
+        isDistinct = distinct;
+        if (!machine.isRemote()) syncDataHolder.markClientSyncFieldDirty("isDistinct");
     }
 
     @Override

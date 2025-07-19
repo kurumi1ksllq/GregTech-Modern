@@ -62,7 +62,6 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
     protected final Map<IO, Map<RecipeCapability<?>, List<IRecipeHandler<?>>>> capabilitiesFlat;
     protected final List<ISubscription> traitSubscriptions;
     @Getter
-    @Setter
     @SaveField
     @SyncToClient
     protected boolean isMuffled;
@@ -79,6 +78,11 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
         this.capabilitiesProxy = new EnumMap<>(IO.class);
         this.capabilitiesFlat = new EnumMap<>(IO.class);
         this.traitSubscriptions = new ArrayList<>();
+    }
+
+    public void setMuffled(boolean muffled) {
+        isMuffled = muffled;
+        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("isMuffled");
     }
 
     //////////////////////////////////////

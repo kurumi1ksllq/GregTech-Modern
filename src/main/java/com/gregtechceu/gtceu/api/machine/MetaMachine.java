@@ -98,7 +98,6 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
     protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
 
     @Setter
-    @Getter
     @SaveField
     @SyncToClient
     @Nullable
@@ -151,6 +150,11 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
         return holder.self().getBlockState();
     }
 
+    public void setOwnerUUID(UUID uuid) {
+        ownerUUID = uuid;
+        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("ownerUUID");
+    }
+
     public boolean isRemote() {
         return getLevel() == null ? GTCEu.isClientThread() : getLevel().isClientSide;
     }
@@ -177,6 +181,7 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
         if (color == this.paintingColor) return;
 
         this.paintingColor = color;
+        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("paintingColor");
         this.onPaintingColorChanged(color);
 
         MachineRenderState renderState = getRenderState();

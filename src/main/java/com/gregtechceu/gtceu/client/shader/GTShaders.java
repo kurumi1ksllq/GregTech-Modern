@@ -37,7 +37,7 @@ public class GTShaders {
     public static Map<BlockPos, BufferBuilder.SortState> BLOOM_BUFFER_SORT_STATES = new HashMap<>();
 
     public static void onRegisterShaders(RegisterShadersEvent event) {
-        if (!allowedShader()) {
+        if (!innerAllowedShader()) {
             return;
         }
 
@@ -88,17 +88,13 @@ public class GTShaders {
     }
 
     public static boolean allowedShader() {
-        return ConfigHolder.INSTANCE.client.shader.useShader &&
-                GTCEu.isModLoaded(GTValues.MODID_OPTIFINE) &&
-                !(GTCEu.Mods.isIrisOculusLoaded() && IrisCallWrapper.isShaderActive());
+        return BLOOM_CHAIN != null && innerAllowedShader();
     }
 
-    public static float getITime(float pPartialTicks) {
-        if (mc.level == null) {
-            return System.currentTimeMillis() % 1200000 / 1000f;
-        } else {
-            return ((mc.level.getGameTime() % 24000) + pPartialTicks) / 20f;
-        }
+    private static boolean innerAllowedShader() {
+        return ConfigHolder.INSTANCE.client.shader.useShader &&
+                !GTCEu.isModLoaded(GTValues.MODID_OPTIFINE) &&
+                !(GTCEu.Mods.isIrisOculusLoaded() && IrisCallWrapper.isShaderActive());
     }
 
     private static class IrisCallWrapper {

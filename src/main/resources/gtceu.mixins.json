@@ -27,7 +27,6 @@
         "client.VariantDeserializerMixin",
         "client.VertexBufferAccessor",
         "embeddium.BlockRendererMixin",
-        "embeddium.DefaultTerrainRenderPassesMixin",
         "forge.QuadLighterMixin",
         "ftbchunks.FTBChunksClientMixin",
         "ftbchunks.LargeMapScreenMixin",

@@ -2,73 +2,108 @@ package com.gregtechceu.gtceu.core.mixins.embeddium;
 
 import com.gregtechceu.gtceu.client.model.BloomMetadataSection;
 import com.gregtechceu.gtceu.client.shader.GTShaders;
-import com.gregtechceu.gtceu.integration.embeddium.GTEmbeddiumCompat;
+import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
 
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.state.BlockState;
+import net.caffeinemc.mods.sodium.api.util.ColorARGB;
+import net.caffeinemc.mods.sodium.api.util.NormI8;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.world.phys.Vec3;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import me.jellysquid.mods.sodium.client.model.color.ColorProvider;
-import me.jellysquid.mods.sodium.client.model.light.LightMode;
-import me.jellysquid.mods.sodium.client.model.light.LightPipeline;
-import me.jellysquid.mods.sodium.client.model.light.LightPipelineProvider;
 import me.jellysquid.mods.sodium.client.model.light.data.QuadLightData;
 import me.jellysquid.mods.sodium.client.model.quad.BakedQuadView;
-import me.jellysquid.mods.sodium.client.render.chunk.compile.ChunkBuildBuffers;
+import me.jellysquid.mods.sodium.client.model.quad.properties.ModelQuadOrientation;
 import me.jellysquid.mods.sodium.client.render.chunk.compile.buffers.ChunkModelBuilder;
 import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderContext;
 import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderer;
 import me.jellysquid.mods.sodium.client.render.chunk.terrain.material.Material;
+import me.jellysquid.mods.sodium.client.render.chunk.vertex.format.ChunkVertexEncoder;
+import me.jellysquid.mods.sodium.client.util.ModelQuadUtil;
+import org.embeddedt.embeddium.render.chunk.ChunkColorWriter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
-import java.util.LinkedList;
-import java.util.List;
-
 @Mixin(value = BlockRenderer.class, remap = false)
-public abstract class BlockRendererMixin {
+public class BlockRendererMixin {
 
-    @Shadow protected abstract QuadLightData getVertexLight(BlockRenderContext ctx, LightPipeline lighter,
-                                                            Direction cullFace, BakedQuadView quad);
+    @Shadow
+    private boolean useReorienting;
 
-    @Shadow @Final private LightPipelineProvider lighters;
+    @Shadow
+    @Final
+    private ChunkVertexEncoder.Vertex[] vertices;
 
-    @WrapOperation(method = "renderModel",
-            at = @At(value = "INVOKE",
-                    target = "Lme/jellysquid/mods/sodium/client/render/chunk/compile/pipeline/BlockRenderer;renderQuadList(Lme/jellysquid/mods/sodium/client/render/chunk/compile/pipeline/BlockRenderContext;Lme/jellysquid/mods/sodium/client/render/chunk/terrain/material/Material;Lme/jellysquid/mods/sodium/client/model/light/LightPipeline;Lme/jellysquid/mods/sodium/client/model/color/ColorProvider;Lnet/minecraft/world/phys/Vec3;Lme/jellysquid/mods/sodium/client/render/chunk/compile/buffers/ChunkModelBuilder;Ljava/util/List;Lnet/minecraft/core/Direction;)V"))
-    private void gtceu$copyBloomQuads(BlockRenderer instance, BlockRenderContext ctx, Material material,
-                                      LightPipeline lighter, ColorProvider<BlockState> colorizer,
-                                      Vec3 offset, ChunkModelBuilder meshBuilder,
-                                      List<BakedQuad> quads, Direction cullFace,
-                                      Operation<Void> original,
-                                      BlockRenderContext _ctx, ChunkBuildBuffers buffers) {
-        original.call(instance, ctx, material, lighter, colorizer, offset, meshBuilder, quads, cullFace);
-        if (!GTShaders.allowedShader()) {
-            return;
-        }
+    @Shadow
+    @Final
+    private ChunkColorWriter colorEncoder;
 
+    @WrapOperation(method = "renderQuadList",
+                   at = @At(value = "INVOKE",
+                            target = "Lme/jellysquid/mods/sodium/client/render/chunk/compile/pipeline/BlockRenderer;writeGeometry(Lme/jellysquid/mods/sodium/client/render/chunk/compile/pipeline/BlockRenderContext;Lme/jellysquid/mods/sodium/client/render/chunk/compile/buffers/ChunkModelBuilder;Lnet/minecraft/world/phys/Vec3;Lme/jellysquid/mods/sodium/client/render/chunk/terrain/material/Material;Lme/jellysquid/mods/sodium/client/model/quad/BakedQuadView;[ILme/jellysquid/mods/sodium/client/model/light/data/QuadLightData;)V"))
+    private void gtceu$captureBloomQuads(BlockRenderer instance, BlockRenderContext ctx, ChunkModelBuilder builder,
+                                         Vec3 offset, Material material, BakedQuadView quad,
+                                         int[] colors, QuadLightData light, Operation<Void> original) {
+        BlockPos chunkOrigin = SectionPos.of(ctx.pos()).origin();
         // Check if quad is full brightness OR we have bloom enabled for the quad
-        List<BakedQuad> emissiveQuads = new LinkedList<>();
-        //noinspection ForLoopReplaceableByForEach
-        for (int i = 0; i < quads.size(); i++) {
-            BakedQuad quad = quads.get(i);
-            QuadLightData light = this.getVertexLight(ctx,
-                    quad.hasAmbientOcclusion() ? lighter : this.lighters.getLighter(LightMode.FLAT),
-                    cullFace, (BakedQuadView) quad);
-            if (BloomMetadataSection.isEmissive(quad, light.lm)) {
-                emissiveQuads.add(quad);
+        // TODO improve, don't mixin to embeddium, maybe ask for an API? doubt we'll get it though
+        if (GTShaders.allowedShader() && gtceu$isEmissive(quad, light)) {
+            ModelQuadOrientation orientation = this.useReorienting ?
+                    ModelQuadOrientation.orientByBrightness(light.br, light.lm) : ModelQuadOrientation.NORMAL;
+            for (int dstIndex = 0; dstIndex < 4; ++dstIndex) {
+                int srcIndex = orientation.getVertexIndex(dstIndex);
+                int color = this.colorEncoder.writeColor(
+                        ModelQuadUtil.mixARGBColors(colors[srcIndex], quad.getColor(srcIndex)), light.br[srcIndex]);
+                float u = quad.getTexU(srcIndex);
+                float v = quad.getTexV(srcIndex);
+                int lightUv = ModelQuadUtil.mergeBakedLight(quad.getLight(srcIndex), light.lm[srcIndex]);
+                int normal = quad.getForgeNormal(dstIndex);
+
+                BloomEffectUtil.getOrStartBloomBuffer(chunkOrigin)
+                        .vertex(ctx.origin().x() + quad.getX(srcIndex) + (float) offset.x(),
+                                ctx.origin().y() + quad.getY(srcIndex) + (float) offset.y(),
+                                ctx.origin().z() + quad.getZ(srcIndex) + (float) offset.z(),
+                                ColorARGB.unpackRed(color) / 255.0f,
+                                ColorARGB.unpackGreen(color) / 255.0f,
+                                ColorARGB.unpackBlue(color) / 255.0f,
+                                ColorARGB.unpackAlpha(color) / 255.0f,
+                                u, v,
+                                OverlayTexture.NO_OVERLAY,
+                                lightUv,
+                                NormI8.unpackX(normal),
+                                NormI8.unpackY(normal),
+                                NormI8.unpackZ(normal));
             }
         }
+        original.call(instance, ctx, builder, offset, material, quad, colors, light);
+    }
 
-        if (!emissiveQuads.isEmpty()) {
-            // copy the emissive quads' vertex data to the bloom buffer
-            ChunkModelBuilder bloomBuilder = buffers.get(GTEmbeddiumCompat.BLOOM_PASS);
-            original.call(instance, ctx, material, lighter, colorizer, offset, bloomBuilder, emissiveQuads, cullFace);
+    @Unique
+    private static boolean gtceu$isEmissive(BakedQuadView quad, QuadLightData light) {
+        if (!quad.hasShade() || !quad.hasAmbientOcclusion()) {
+            return true;
         }
+        if (BloomMetadataSection.hasBloom(quad.getSprite())) {
+            return true;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            int quadLight = quad.getLight(i);
+            int qBlock = LightTexture.block(quadLight), qSky = LightTexture.sky(quadLight);
+
+            int ambientLight = light.lm[i];
+            int aBlock = LightTexture.block(ambientLight), aSky = LightTexture.sky(ambientLight);
+
+            if (qBlock > aBlock || qSky > aSky) {
+                return true;
+            }
+        }
+        return false;
     }
 }

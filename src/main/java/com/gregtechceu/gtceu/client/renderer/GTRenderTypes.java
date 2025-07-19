@@ -37,7 +37,7 @@ public class GTRenderTypes extends RenderType {
 
     private static final RenderType BLOOM = RenderType.create("gtceu_bloom", DefaultVertexFormat.BLOCK,
             VertexFormat.Mode.QUADS,
-            2097152, false, false,
+            2097152, false, true,
             RenderType.CompositeState.builder()
                     .setLightmapState(RenderStateShard.LIGHTMAP)
                     .setShaderState(RenderStateShard.RENDERTYPE_TRANSLUCENT_SHADER)

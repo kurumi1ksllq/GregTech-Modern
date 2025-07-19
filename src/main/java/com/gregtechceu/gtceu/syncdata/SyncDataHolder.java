@@ -14,9 +14,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Class that holds all sync info for an {@link ISyncManaged} object.
+ * */
 public class SyncDataHolder {
 
-    public final ClassSyncData syncData;
+    private final ClassSyncData syncData;
     private final ISyncManaged holder;
 
     private final List<ClassSyncData.FieldSyncData> dirtySyncFields = new ArrayList<>();
@@ -26,6 +29,10 @@ public class SyncDataHolder {
         syncData = ClassSyncData.CACHE.get(o.getClass());
     }
 
+    /**
+     * Instructs the sync system that this field has been updated and must be synced with clients.
+     * @param fieldName The field that has changed.
+     * */
     public void markClientSyncFieldDirty(String fieldName) {
         var fieldData = Arrays.stream(syncData.clientSyncFields).filter(f -> Objects.equals(f.fieldName, fieldName))
                 .findFirst();

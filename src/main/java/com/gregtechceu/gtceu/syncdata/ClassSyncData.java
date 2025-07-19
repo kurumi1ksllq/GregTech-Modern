@@ -13,8 +13,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-/// Static data for synced classes
-
+/**
+ * Static data for {@link ISyncManaged} classes.
+ */
 public final class ClassSyncData {
 
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();

@@ -40,8 +40,8 @@ public class RenderBufferHelper {
      * @param alpha      transparency
      * @param axis       The axial direction of the "ring pipe" determines which axis the "ring pipe" rotates around.
      */
-    public static void renderRing(PoseStack poseStack, VertexConsumer buffer, float x, float y, float z, float r,
-                                  float tubeRadius,
+    public static void renderRing(PoseStack poseStack, VertexConsumer buffer, float x, float y, float z,
+                                  float r, float tubeRadius,
                                   int sides, int segments, float red, float green, float blue, float alpha,
                                   Direction.Axis axis) {
         Matrix4f mat = poseStack.last().pose();

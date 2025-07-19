@@ -20,6 +20,7 @@ import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceLocation;
@@ -58,16 +59,20 @@ public class ForgeClientEventListener {
 
     @SubscribeEvent
     public static void onRenderLevelStageEvent(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
-            Camera camera = event.getCamera();
-            PoseStack poseStack = event.getPoseStack();
-            float partialTick = event.getPartialTick();
-            // to render the preview after block entities, before the translucent. so it can be seen through the
-            // transparent blocks.
+        LevelRenderer levelRenderer = event.getLevelRenderer();
+        Camera camera = event.getCamera();
+        PoseStack poseStack = event.getPoseStack();
+        float partialTick = event.getPartialTick();
+        
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
+            BloomEffectUtil.resortBloomTransparency(camera.getPosition(), levelRenderer);
+        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
+            // to render the preview after block entities, before the translucent.
+            // so it can be seen through the transparent blocks.
             MultiblockInWorldPreviewRenderer.renderInWorldPreview(poseStack, camera, partialTick);
-
-            BloomEffectUtil.renderBloom(camera.getPosition(), camera.getEntity(), poseStack,
-                    event.getProjectionMatrix(), event.getFrustum(), partialTick);
+        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
+            BloomEffectUtil.renderBloom(camera, camera.getEntity(), levelRenderer,
+                    poseStack, event.getProjectionMatrix(), event.getFrustum(), partialTick);
         }
     }
 

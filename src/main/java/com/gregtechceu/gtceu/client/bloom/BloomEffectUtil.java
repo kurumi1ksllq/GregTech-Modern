@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.client.LevelRendererAccessor;
 import com.gregtechceu.gtceu.core.mixins.client.PostChainAccessor;
 import com.gregtechceu.gtceu.core.mixins.client.VertexBufferAccessor;
+import com.gregtechceu.gtceu.integration.embeddium.GTEmbeddiumCompat;
 
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
@@ -34,6 +35,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -359,6 +361,9 @@ public class BloomEffectUtil {
     public static void finishBloomBuffer(BlockPos pos, BufferBuilder builder) {
         BufferBuilder.RenderedBuffer buffer = builder.endOrDiscardIfEmpty();
         if (buffer != null) {
+            GTShaders.BLOOM_BUFFER_BUILDERS.remove(pos, builder);
+            GTShaders.BLOOM_BUFFER_SORT_STATES.put(pos, builder.getSortState());
+
             if (RenderSystem.isOnRenderThread()) {
                 VertexBuffer vertexBuffer = GTShaders.BLOOM_BUFFERS.computeIfAbsent(pos,
                         $ -> new VertexBuffer(VertexBuffer.Usage.STATIC));
@@ -403,7 +408,7 @@ public class BloomEffectUtil {
     }
 
     public static void bakeBloomChunkBuffers(BlockPos pos, Vec3 camPos) {
-        if (!GTShaders.allowedShader() || GTCEu.Mods.isSodiumEmbeddiumLoaded()) {
+        if (!GTShaders.allowedShader()) {
             return;
         }
 
@@ -411,10 +416,8 @@ public class BloomEffectUtil {
         if (builder == null || !builder.building()) {
             return;
         }
-        GTShaders.BLOOM_BUFFER_BUILDERS.remove(pos, builder);
         builder.setQuadSorting(VertexSorting.byDistance((float) camPos.x() - pos.getX(), (float) camPos.y() - pos.getY(), (float) camPos.z() - pos.getZ()));
 
-        GTShaders.BLOOM_BUFFER_SORT_STATES.put(pos, builder.getSortState());
         finishBloomBuffer(pos, builder);
     }
 
@@ -487,43 +490,10 @@ public class BloomEffectUtil {
     private static double zBloomOld;
 
     public static void resortBloomTransparency(Vec3 camPos, LevelRenderer renderer) {
-        if (GTCEu.Mods.isSodiumEmbeddiumLoaded()) {
-            return;
-        }
-
         Minecraft.getInstance().getProfiler().push("translucent_sort");
 
-        double camX = camPos.x;
-        double camY = camPos.y;
-        double camZ = camPos.z;
-
-        double distX = camX - xBloomOld;
-        double distY = camY - yBloomOld;
-        double distZ = camZ - zBloomOld;
-        if (distX * distX + distY * distY + distZ * distZ > 1.0D) {
-            int sectionX = SectionPos.posToSectionCoord(camX);
-            int sectionZ = SectionPos.posToSectionCoord(camY);
-            int sectionY = SectionPos.posToSectionCoord(camZ);
-            boolean posChanged = sectionX != SectionPos.posToSectionCoord(xBloomOld) ||
-                    sectionY != SectionPos.posToSectionCoord(zBloomOld) ||
-                    sectionZ != SectionPos.posToSectionCoord(yBloomOld);
-            xBloomOld = camX;
-            yBloomOld = camY;
-            zBloomOld = camZ;
-            int amount = 0;
-
-            LevelRendererAccessor accessor = (LevelRendererAccessor) renderer;
-            for(LevelRenderer.RenderChunkInfo info : accessor.gtceu$getRenderChunksInFrustum()) {
-                BlockPos pos = SectionPos.of(sectionX, sectionY, sectionZ).origin();
-                if (!GTShaders.BLOOM_BUFFERS.containsKey(pos) || !GTShaders.BLOOM_BUFFER_SORT_STATES.containsKey(pos)) {
-                    continue;
-                }
-
-                if (amount < 15 && (posChanged || info.isAxisAlignedWith(sectionX, sectionY, sectionZ))) {
-                    Util.backgroundExecutor().submit(() -> BloomEffectUtil.resortTransparencyInner(pos, camPos));
-                    ++amount;
-                }
-            }
+        for(BlockPos pos : getVisibleRenderRegions(camPos, renderer)) {
+            Util.backgroundExecutor().submit(() -> BloomEffectUtil.resortTransparencyInner(pos, camPos));
         }
 
         Minecraft.getInstance().getProfiler().pop();
@@ -534,6 +504,49 @@ public class BloomEffectUtil {
         builder.restoreSortState(GTShaders.BLOOM_BUFFER_SORT_STATES.get(pos));
         builder.setQuadSorting(VertexSorting.byDistance((float) camPos.x() - pos.getX(), (float) camPos.y() - pos.getY(), (float) camPos.z() - pos.getZ()));
         finishBloomBuffer(pos, builder);
+    }
+
+    private static List<BlockPos> getVisibleRenderRegions(Vec3 camPos, LevelRenderer renderer) {
+        if (GTCEu.Mods.isSodiumEmbeddiumLoaded()) {
+            return GTEmbeddiumCompat.getVisibleRenderSections(camPos);
+        } else {
+            List<BlockPos> result = new ArrayList<>();
+
+            for (var chunkInfo : ((LevelRendererAccessor) renderer).gtceu$getRenderChunksInFrustum()) {
+                double dx = camPos.x - xBloomOld;
+                double dy = camPos.y - yBloomOld;
+                double dz = camPos.z - zBloomOld;
+
+                double camDelta = (dx * dx) + (dy * dy) + (dz * dz);
+
+                if (camDelta < 1) {
+                    // Didn't move enough, ignore
+                    continue;
+                }
+
+                int camSectionX = SectionPos.posToSectionCoord(camPos.x);
+                int camSectionY = SectionPos.posToSectionCoord(camPos.y);
+                int camSectionZ = SectionPos.posToSectionCoord(camPos.z);
+
+                boolean posChanged = camSectionX != SectionPos.posToSectionCoord(xBloomOld) ||
+                        camSectionY != SectionPos.posToSectionCoord(yBloomOld) ||
+                        camSectionZ != SectionPos.posToSectionCoord(zBloomOld);
+                xBloomOld = camPos.x;
+                yBloomOld = camPos.y;
+                zBloomOld = camPos.z;
+
+                BlockPos pos = SectionPos.of(camSectionX, camSectionY, camSectionZ).origin();
+                if (!GTShaders.BLOOM_BUFFERS.containsKey(pos) || !GTShaders.BLOOM_BUFFER_SORT_STATES.containsKey(pos)) {
+                    continue;
+                }
+
+                if (posChanged || chunkInfo.isAxisAlignedWith(camSectionX, camSectionY, camSectionZ)) {
+                    result.add(pos);
+                }
+            }
+
+            return result;
+        }
     }
 
     public static void copyToBloomBuffer(VertexConsumer consumer, PoseStack.Pose pose, BakedQuad quad,
@@ -602,5 +615,12 @@ public class BloomEffectUtil {
                 invalidate();
             }
         }
+    }
+
+    @ApiStatus.Internal
+    @FunctionalInterface
+    public interface RegionVisibilityTest {
+
+        boolean isAxisAlignedWith(int x, int y, int z);
     }
 }

@@ -5,17 +5,15 @@ import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
-
 import net.minecraft.resources.ResourceLocation;
+
 import org.jetbrains.annotations.Nullable;
 
 public class GTRecipeTypeTransformer implements IValueTransformer<GTRecipeType> {
 
     @Override
-    public Tag serializeNBT(GTRecipeType value) {
+    public Tag serializeNBT(GTRecipeType value, boolean isSync, boolean fullSync) {
         var tag = new CompoundTag();
         tag.putString("namespace", value.registryName.getNamespace());
         tag.putString("path", value.registryName.getPath());
@@ -23,7 +21,7 @@ public class GTRecipeTypeTransformer implements IValueTransformer<GTRecipeType> 
     }
 
     @Override
-    public GTRecipeType deserializeNBT(Tag tag, @Nullable GTRecipeType currentVal) {
+    public GTRecipeType deserializeNBT(Tag tag, @Nullable GTRecipeType currentVal, boolean isSync) {
         if (!(tag instanceof CompoundTag compound)) return null;
         String namespace = compound.getString("namespace");
         String path = compound.getString("path");

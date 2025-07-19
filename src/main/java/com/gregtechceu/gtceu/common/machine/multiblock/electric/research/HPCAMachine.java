@@ -742,8 +742,13 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
         }
 
         @Override
-        public void onChanged() {
-            controller.onChanged();
+        public void markAsChanged() {
+            controller.markAsChanged();
+        }
+
+        @Override
+        public void scheduleRenderUpdate() {
+            controller.scheduleRenderUpdate();
         }
     }
 }

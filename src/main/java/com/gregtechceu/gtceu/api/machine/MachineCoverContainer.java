@@ -18,6 +18,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -49,11 +50,13 @@ public class MachineCoverContainer implements ICoverable, ISyncManaged {
     }
 
     @Override
-    public void onChanged() {
-        var level = getLevel();
-        if (level != null && !level.isClientSide && level.getServer() != null) {
-            level.getServer().execute(this::markDirty);
-        }
+    public void markAsChanged() {
+        machine.markAsChanged();
+    }
+
+    @Override
+    public BlockState getState() {
+        return machine.getBlockState();
     }
 
     @Override
@@ -69,11 +72,6 @@ public class MachineCoverContainer implements ICoverable, ISyncManaged {
     @Override
     public long getOffsetTimer() {
         return machine.getOffsetTimer();
-    }
-
-    @Override
-    public void markDirty() {
-        machine.markDirty();
     }
 
     @Override
@@ -156,9 +154,6 @@ public class MachineCoverContainer implements ICoverable, ISyncManaged {
             case DOWN -> down = coverBehavior;
             case EAST -> east = coverBehavior;
             case NORTH -> north = coverBehavior;
-        }
-        if (coverBehavior != null) {
-            coverBehavior.getSyncDataHolder().setSaveDirty(true);
         }
     }
 

@@ -48,6 +48,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,6 +74,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
     @Getter
     @RerenderOnChanged
     protected IO io;
+    @Setter
     @SaveField
     @SyncToClient
     @Getter
@@ -148,17 +150,10 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
             this.io = io;
         }
         subscriptionHandler.updateSubscription();
-        coverHolder.markDirty();
-    }
-
-    public void setDistributionMode(DistributionMode distributionMode) {
-        this.distributionMode = distributionMode;
-        coverHolder.markDirty();
     }
 
     protected void setManualIOMode(ManualIOMode manualIOMode) {
         this.manualIOMode = manualIOMode;
-        coverHolder.markDirty();
     }
 
     @Override

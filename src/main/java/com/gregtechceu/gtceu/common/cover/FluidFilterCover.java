@@ -48,7 +48,6 @@ public class FluidFilterCover extends CoverBehavior implements IUICover {
     public void setFilterMode(FilterMode filterMode) {
         this.filterMode = filterMode;
         getSyncDataHolder().markClientSyncFieldDirty("filterMode");
-        coverHolder.markDirty();
     }
 
     @Override

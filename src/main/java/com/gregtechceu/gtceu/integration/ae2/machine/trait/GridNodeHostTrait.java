@@ -32,9 +32,7 @@ public class GridNodeHostTrait extends MachineTrait implements IGridConnectedBlo
     }
 
     @Override
-    public void saveChanges() {
-        machine.onChanged();
-    }
+    public void saveChanges() {}
 
     @Override
     public AECableType getCableConnectionType(Direction dir) {

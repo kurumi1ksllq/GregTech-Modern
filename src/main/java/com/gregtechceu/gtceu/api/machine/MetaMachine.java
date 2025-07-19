@@ -47,6 +47,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -70,7 +71,6 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 
 import com.mojang.datafixers.util.Pair;
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -97,7 +97,7 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
     @Getter
     protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
 
-    @Setter
+    @Getter
     @SaveField
     @SyncToClient
     @Nullable
@@ -131,10 +131,10 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
     //////////////////////////////////////
 
     @Override
-    public void onChanged() {
+    public void markAsChanged() {
         var level = getLevel();
-        if (level != null && !level.isClientSide && level.getServer() != null) {
-            level.getServer().execute(this::markDirty);
+        if (level instanceof ServerLevel sLvl) {
+            sLvl.sendBlockUpdated(getPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
         }
     }
 
@@ -194,10 +194,6 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
 
     public long getOffsetTimer() {
         return holder.getOffsetTimer();
-    }
-
-    public void markDirty() {
-        holder.self().setChanged();
     }
 
     public boolean isInValid() {
@@ -604,7 +600,6 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
 
         if (getLevel() != null && !getLevel().isClientSide) {
             notifyBlockUpdate();
-            markDirty();
         }
     }
 
@@ -633,7 +628,6 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
                     blockState.setValue(GTBlockStateProperties.UPWARDS_FACING, upwardsFacing));
             if (getLevel() != null && !getLevel().isClientSide) {
                 notifyBlockUpdate();
-                markDirty();
             }
         }
     }

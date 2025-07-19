@@ -26,7 +26,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;

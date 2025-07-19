@@ -15,7 +15,6 @@ import net.minecraft.core.Direction;
 import appeng.api.networking.*;
 import appeng.api.networking.security.IActionSource;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.EnumSet;
 

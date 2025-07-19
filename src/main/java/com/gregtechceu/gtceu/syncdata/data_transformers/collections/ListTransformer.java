@@ -4,9 +4,7 @@ import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ListTransformer<T> implements IValueTransformer<List<T>> {
@@ -18,17 +16,17 @@ public class ListTransformer<T> implements IValueTransformer<List<T>> {
     }
 
     @Override
-    public Tag serializeNBT(List<T> value) {
+    public Tag serializeNBT(List<T> value, boolean isSync, boolean isFullSync) {
         ListTag list = new ListTag();
         for (var obj : value) {
-            list.add(elementTransformer.serializeNBT(obj));
+            list.add(elementTransformer.serializeNBT(obj, isSync, isFullSync));
         }
         return list;
     }
 
     @Override
-    public List<T> deserializeNBT(Tag tag, List<T> current) {
+    public List<T> deserializeNBT(Tag tag, List<T> current, boolean isSync) {
         if (!(tag instanceof ListTag listTag)) return List.of();
-        return listTag.stream().map((t) -> elementTransformer.deserializeNBT(t, null)).toList();
+        return listTag.stream().map((t) -> elementTransformer.deserializeNBT(t, null, isSync)).toList();
     }
 }

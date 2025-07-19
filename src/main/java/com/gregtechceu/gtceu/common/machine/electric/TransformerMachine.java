@@ -52,8 +52,8 @@ public class TransformerMachine extends TieredEnergyMachine implements IControll
 
     @SuppressWarnings("unused")
     @ClientFieldChangeListener(fieldName = "isTransformUp")
-    private void onTransformUpdated(boolean newValue, boolean oldValue) {
-        updateEnergyContainer(newValue);
+    private void onTransformUpdated() {
+        updateEnergyContainer(isTransformUp);
     }
 
     @Override

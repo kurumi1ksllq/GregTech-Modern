@@ -92,7 +92,6 @@ public class DiodePartMachine extends TieredIOPartMachine {
             syncDataHolder.markClientSyncFieldDirty("amps");
             reinitializeEnergyContainer();
             notifyBlockUpdate();
-            markDirty();
         }
     }
 

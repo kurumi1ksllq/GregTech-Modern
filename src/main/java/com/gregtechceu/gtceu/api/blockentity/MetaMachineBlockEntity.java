@@ -33,6 +33,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -286,6 +287,20 @@ public class MetaMachineBlockEntity extends ManagedSyncBlockEntity implements IM
     public void load(@NotNull CompoundTag tag) {
         TagFixer.fixFluidTags(tag);
         super.load(tag);
+    }
+
+    @Override
+    public void scheduleRenderUpdate() {
+        var pos = getBlockPos();
+        var level = getLevel();
+        if (level != null) {
+            var state = level.getBlockState(pos);
+            if (level.isClientSide) {
+                level.sendBlockUpdated(pos, state, state, Block.UPDATE_IMMEDIATE);
+            } else {
+                level.blockEvent(pos, state.getBlock(), 1, 0);
+            }
+        }
     }
 
     public static class AE2CallWrapper {

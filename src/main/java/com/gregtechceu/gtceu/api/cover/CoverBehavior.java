@@ -19,6 +19,7 @@ import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -76,10 +77,11 @@ public abstract class CoverBehavior implements ISyncManaged, IToolGridHighlight 
     }
 
     @Override
-    public void onChanged() {
+    public void markAsChanged() {
         var level = coverHolder.getLevel();
-        if (level != null && !level.isClientSide && level.getServer() != null) {
-            level.getServer().execute(coverHolder::markDirty);
+        if (level instanceof ServerLevel sLvl) {
+            sLvl.sendBlockUpdated(coverHolder.getPos(), coverHolder.getState(), coverHolder.getState(),
+                    Block.UPDATE_CLIENTS);
         }
     }
 
@@ -139,7 +141,6 @@ public abstract class CoverBehavior implements ISyncManaged, IToolGridHighlight 
         if (this.redstoneSignalOutput == redstoneSignalOutput) return;
         this.redstoneSignalOutput = redstoneSignalOutput;
         coverHolder.notifyBlockUpdate();
-        coverHolder.markDirty();
     }
 
     public boolean canConnectRedstone() {

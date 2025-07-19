@@ -45,7 +45,6 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;

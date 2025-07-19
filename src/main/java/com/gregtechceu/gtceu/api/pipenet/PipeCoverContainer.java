@@ -22,6 +22,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.EmptyHandler;
 
@@ -45,10 +47,10 @@ public class PipeCoverContainer implements ICoverable, ISyncManaged {
     }
 
     @Override
-    public void onChanged() {
+    public void markAsChanged() {
         var level = getLevel();
-        if (level != null && !level.isClientSide && level.getServer() != null) {
-            level.getServer().execute(this::markDirty);
+        if (level instanceof ServerLevel sLvl) {
+            sLvl.sendBlockUpdated(getPos(), pipeTile.getState(), pipeTile.getState(), Block.UPDATE_CLIENTS);
         }
     }
 
@@ -63,13 +65,13 @@ public class PipeCoverContainer implements ICoverable, ISyncManaged {
     }
 
     @Override
-    public long getOffsetTimer() {
-        return pipeTile.getOffsetTimer();
+    public BlockState getState() {
+        return pipeTile.getState();
     }
 
     @Override
-    public void markDirty() {
-        pipeTile.markAsDirty();
+    public long getOffsetTimer() {
+        return pipeTile.getOffsetTimer();
     }
 
     @Override
@@ -172,7 +174,6 @@ public class PipeCoverContainer implements ICoverable, ISyncManaged {
             case NORTH -> north = coverBehavior;
         }
         if (coverBehavior != null) {
-            coverBehavior.getSyncDataHolder().setSaveDirty(true);
             if (coverBehavior.canPipePassThrough()) {
                 pipeTile.setConnection(side, true, false);
             }

@@ -39,8 +39,8 @@ public abstract class MachineTrait implements ISyncManaged {
     }
 
     @Override
-    public void onChanged() {
-        machine.onChanged();
+    public void markAsChanged() {
+        machine.markAsChanged();
     }
 
     public void onMachineLoad() {}

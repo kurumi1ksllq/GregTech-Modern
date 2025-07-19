@@ -29,8 +29,9 @@ public class GTRecipeTransformer implements IValueTransformer<GTRecipe> {
             return Objects.requireNonNull(Minecraft.getInstance().getConnection()).getRecipeManager();
         }
     }
-        @Override
-    public Tag serializeNBT(GTRecipe value) {
+
+    @Override
+    public Tag serializeNBT(GTRecipe value, boolean isSync, boolean isFullSync) {
         CompoundTag tag = new CompoundTag();
         tag.putString("id", value.id.toString());
         tag.put("recipe",
@@ -41,7 +42,7 @@ public class GTRecipeTransformer implements IValueTransformer<GTRecipe> {
     }
 
     @Override
-    public GTRecipe deserializeNBT(Tag tag, GTRecipe currentVal) {
+    public GTRecipe deserializeNBT(Tag tag, GTRecipe currentVal, boolean isSync) {
         RecipeManager recipeManager = getRecipeManager();
         GTRecipe result = null;
         if (tag instanceof CompoundTag compoundTag) {

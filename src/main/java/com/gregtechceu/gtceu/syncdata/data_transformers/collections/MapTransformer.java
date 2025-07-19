@@ -5,9 +5,7 @@ import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class MapTransformer<K, V> implements IValueTransformer<Map<K, V>> {
@@ -21,27 +19,32 @@ public class MapTransformer<K, V> implements IValueTransformer<Map<K, V>> {
     }
 
     @Override
-    public Tag serializeNBT(Map<K, V> value) {
+    public boolean mustProvideObject() {
+        return true;
+    }
+
+    @Override
+    public Tag serializeNBT(Map<K, V> value, boolean isSync, boolean isFullSync) {
         ListTag entries = new ListTag();
         for (var entry : value.entrySet()) {
             CompoundTag compound = new CompoundTag();
-            compound.put("k", keyTransformer.serializeNBT(entry.getKey()));
-            compound.put("v", valueTransformer.serializeNBT(entry.getValue()));
+            compound.put("k", keyTransformer.serializeNBT(entry.getKey(), isSync, isFullSync));
+            compound.put("v", valueTransformer.serializeNBT(entry.getValue(), isSync, isFullSync));
             entries.add(compound);
         }
         return entries;
     }
 
     @Override
-    public Map<K, V> deserializeNBT(Tag tag, Map<K, V> current) {
-        if (!(tag instanceof ListTag listTag)) return Map.of();
-        Map<K, V> map = new HashMap<>();
+    public Map<K, V> deserializeNBT(Tag tag, Map<K, V> current, boolean isSync) {
+        if (!(tag instanceof ListTag listTag)) return current;
+        current.clear();
         for (Tag entryTag : listTag) {
             CompoundTag compound = (CompoundTag) entryTag;
-            K key = keyTransformer.deserializeNBT(compound.get("k"), null);
-            V value = valueTransformer.deserializeNBT(compound.get("v"), null);
-            map.put(key, value);
+            K key = keyTransformer.deserializeNBT(compound.get("k"), null, isSync);
+            V value = valueTransformer.deserializeNBT(compound.get("v"), null, isSync);
+            current.put(key, value);
         }
-        return map;
+        return current;
     }
 }

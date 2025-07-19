@@ -182,7 +182,12 @@ public abstract class FilterHandler<T, F extends Filter<T, F>> implements ISyncM
     }
 
     @Override
-    public void onChanged() {
-        this.container.onChanged();
+    public void markAsChanged() {
+        container.markAsChanged();
+    }
+
+    @Override
+    public void scheduleRenderUpdate() {
+        container.scheduleRenderUpdate();
     }
 }

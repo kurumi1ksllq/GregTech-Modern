@@ -20,7 +20,9 @@ public interface ISyncManaged {
 
     SyncDataHolder getSyncDataHolder();
 
-    void onChanged();
+    void scheduleRenderUpdate();
+
+    void markAsChanged();
 
     default void onSaveDataLoaded() {}
 }

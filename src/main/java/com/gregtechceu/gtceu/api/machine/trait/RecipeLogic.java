@@ -125,14 +125,14 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
 
     @SuppressWarnings("unused")
     @ClientFieldChangeListener(fieldName = "status")
-    protected void onStatusSynced(Status newValue, Status oldValue) {
+    protected void onStatusSynced() {
         scheduleRenderUpdate();
         updateSound();
     }
 
     @SuppressWarnings("unused")
     @ClientFieldChangeListener(fieldName = "isActive")
-    protected void onActiveSynced(boolean newActive, boolean oldActive) {
+    protected void onActiveSynced() {
         scheduleRenderUpdate();
     }
 

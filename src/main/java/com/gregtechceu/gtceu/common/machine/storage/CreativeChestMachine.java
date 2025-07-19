@@ -105,8 +105,7 @@ public class CreativeChestMachine extends QuantumChestMachine {
         group.addWidget(new PhantomSlotWidget(cache, 0, 36, 6)
                 .setClearSlotOnRightClick(true)
                 .setMaxStackSize(1)
-                .setBackgroundTexture(GuiTextures.SLOT)
-                .setChangeListener(this::markDirty));
+                .setBackgroundTexture(GuiTextures.SLOT));
         group.addWidget(new LabelWidget(7, 9, "gtceu.creative.chest.item"));
         group.addWidget(new ImageWidget(7, 48, 154, 14, GuiTextures.DISPLAY));
         group.addWidget(new TextFieldWidget(9, 50, 152, 10, () -> String.valueOf(itemsPerCycle), this::setItemsPerCycle)

@@ -203,7 +203,6 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
     protected void setManualIOMode(ManualIOMode manualIOMode) {
         this.manualIOMode = manualIOMode;
         if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("manualIOMode");
-        coverHolder.markDirty();
     }
 
     protected void update() {

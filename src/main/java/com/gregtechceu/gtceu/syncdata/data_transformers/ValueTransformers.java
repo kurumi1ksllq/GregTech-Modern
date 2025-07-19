@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.syncdata.data_transformers;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
@@ -10,7 +11,6 @@ import com.gregtechceu.gtceu.syncdata.data_transformers.collections.*;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.*;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -24,7 +24,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -68,6 +67,7 @@ public final class ValueTransformers {
             }
 
             if (type.isArray()) {
+                GTCEu.LOGGER.info("Array: {}", type);
                 Class<?> componentType = type.getComponentType();
                 IValueTransformer<?> componentTx = get(componentType);
                 if (componentTx != null) return new ObjectArrayTransformer<>(componentTx);
@@ -83,12 +83,11 @@ public final class ValueTransformers {
 
     public static IValueTransformer<?> getCollectionTransformer(Field type) {
         Class<?> collectionType = type.getType();
-
+        if (!Collection.class.isAssignableFrom(collectionType)) return null;
         if (type.getGenericType() instanceof ParameterizedType ptype) {
             Type[] actualTypes = ptype.getActualTypeArguments();
             Type keyType = actualTypes[0];
             Type valueType = actualTypes.length > 1 ? actualTypes[1] : null;
-
             if (List.class.isAssignableFrom(collectionType)) {
                 if (keyType instanceof Class<?> keyClass) {
                     return new ListTransformer<>(ValueTransformers.get(keyClass));
@@ -128,12 +127,12 @@ public final class ValueTransformers {
         return new IValueTransformer<>() {
 
             @Override
-            public Tag serializeNBT(T value) {
+            public Tag serializeNBT(T value, boolean isSync, boolean isFullSync) {
                 return nbtSave.apply(value);
             }
 
             @Override
-            public T deserializeNBT(Tag tag, @Nullable T current) {
+            public T deserializeNBT(Tag tag, @Nullable T current, boolean isSync) {
                 return nbtLoad.apply(tag);
             }
         };
@@ -141,19 +140,26 @@ public final class ValueTransformers {
 
     static {
 
-        registerClassTransformer(Integer.class, createSimpleTransformer(IntTag::valueOf, castTag(0, NumericTag.class, NumericTag::getAsInt)));
+        registerClassTransformer(Integer.class,
+                createSimpleTransformer(IntTag::valueOf, castTag(0, NumericTag.class, NumericTag::getAsInt)));
 
-        registerClassTransformer(Long.class, createSimpleTransformer(LongTag::valueOf, castTag(0L, NumericTag.class, NumericTag::getAsLong)));
+        registerClassTransformer(Long.class,
+                createSimpleTransformer(LongTag::valueOf, castTag(0L, NumericTag.class, NumericTag::getAsLong)));
 
-        registerClassTransformer(Float.class, createSimpleTransformer(FloatTag::valueOf, castTag(0f, NumericTag.class, NumericTag::getAsFloat)));
+        registerClassTransformer(Float.class,
+                createSimpleTransformer(FloatTag::valueOf, castTag(0f, NumericTag.class, NumericTag::getAsFloat)));
 
-        registerClassTransformer(Double.class, createSimpleTransformer(DoubleTag::valueOf, castTag(0.0, NumericTag.class, NumericTag::getAsDouble)));
+        registerClassTransformer(Double.class,
+                createSimpleTransformer(DoubleTag::valueOf, castTag(0.0, NumericTag.class, NumericTag::getAsDouble)));
 
-        registerClassTransformer(Short.class, createSimpleTransformer(ShortTag::valueOf, castTag((short) 0, NumericTag.class, NumericTag::getAsShort)));
+        registerClassTransformer(Short.class, createSimpleTransformer(ShortTag::valueOf,
+                castTag((short) 0, NumericTag.class, NumericTag::getAsShort)));
 
-        registerClassTransformer(Byte.class, createSimpleTransformer(ByteTag::valueOf, castTag((byte) 0, NumericTag.class, NumericTag::getAsByte)));
+        registerClassTransformer(Byte.class,
+                createSimpleTransformer(ByteTag::valueOf, castTag((byte) 0, NumericTag.class, NumericTag::getAsByte)));
 
-        registerClassTransformer(Character.class, createSimpleTransformer((c) -> IntTag.valueOf((int) c), castTag((char) 0, NumericTag.class, (tag) -> (char) tag.getAsInt())));
+        registerClassTransformer(Character.class, createSimpleTransformer((c) -> IntTag.valueOf((int) c),
+                castTag((char) 0, NumericTag.class, (tag) -> (char) tag.getAsInt())));
         registerClassTransformer(Boolean.class, createSimpleTransformer(ByteTag::valueOf,
                 (t) -> t instanceof NumericTag num && num.getAsByte() != 0));
 
@@ -164,16 +170,21 @@ public final class ValueTransformers {
 
         // Classes
 
-        registerClassTransformer(String.class, createSimpleTransformer(StringTag::valueOf, castTag("", StringTag.class, StringTag::getAsString)));
+        registerClassTransformer(String.class,
+                createSimpleTransformer(StringTag::valueOf, castTag("", StringTag.class, StringTag::getAsString)));
 
-        registerClassTransformer(ItemStack.class, createSimpleTransformer(ItemStack::serializeNBT, castTag(ItemStack.EMPTY, CompoundTag.class, ItemStack::of)));
-        registerClassTransformer(FluidStack.class, createSimpleTransformer((f) -> f.writeToNBT(new CompoundTag()), castTag(FluidStack.EMPTY, CompoundTag.class, FluidStack::loadFluidStackFromNBT)));
+        registerClassTransformer(ItemStack.class, createSimpleTransformer(ItemStack::serializeNBT,
+                castTag(ItemStack.EMPTY, CompoundTag.class, ItemStack::of)));
+        registerClassTransformer(FluidStack.class, createSimpleTransformer((f) -> f.writeToNBT(new CompoundTag()),
+                castTag(FluidStack.EMPTY, CompoundTag.class, FluidStack::loadFluidStackFromNBT)));
 
         registerClassTransformer(UUID.class, createSimpleTransformer(NbtUtils::createUUID, NbtUtils::loadUUID));
 
-        registerClassTransformer(BlockPos.class, createSimpleTransformer(NbtUtils::writeBlockPos, castTag(BlockPos.ZERO, CompoundTag.class, NbtUtils::readBlockPos)));
+        registerClassTransformer(BlockPos.class, createSimpleTransformer(NbtUtils::writeBlockPos,
+                castTag(BlockPos.ZERO, CompoundTag.class, NbtUtils::readBlockPos)));
 
-        registerClassTransformer(CompoundTag.class, createSimpleTransformer((v) -> v, castTag(new CompoundTag(), CompoundTag.class, (v) -> v)));
+        registerClassTransformer(CompoundTag.class,
+                createSimpleTransformer((v) -> v, castTag(new CompoundTag(), CompoundTag.class, (v) -> v)));
 
         registerClassTransformer(GTRecipe.class, new GTRecipeTransformer());
         registerClassTransformer(GTRecipeType.class, new GTRecipeTypeTransformer());
@@ -182,6 +193,7 @@ public final class ValueTransformers {
 
         // Interfaces
 
+        registerInterfaceTransformer(ISyncManaged.class, new SyncManagedTransformer());
         registerInterfaceTransformer(INBTSerializable.class, new NBTSerialisableTransformer());
 
         registerInterfaceTransformer(Component.class,

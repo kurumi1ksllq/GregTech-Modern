@@ -28,7 +28,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -107,9 +106,9 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     @SuppressWarnings("unused")
     @ClientFieldChangeListener(fieldName = "partPositions")
-    protected void onPartsUpdated(BlockPos[] newValue, BlockPos[] oldValue) {
+    protected void onPartsUpdated() {
         parts.clear();
-        for (var pos : newValue) {
+        for (var pos : partPositions) {
             if (getMachine(getLevel(), pos) instanceof IMultiPart part) {
                 parts.add(part);
             }
@@ -256,7 +255,6 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
                     blockState.setValue(GTBlockStateProperties.UPWARDS_FACING, upwardsFacing));
             if (getLevel() != null && !getLevel().isClientSide) {
                 notifyBlockUpdate();
-                markDirty();
                 checkPattern();
             }
         }

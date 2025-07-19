@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 
 public class ObjectArrayTransformer<T> implements IValueTransformer<T[]> {
 
@@ -20,22 +19,22 @@ public class ObjectArrayTransformer<T> implements IValueTransformer<T[]> {
     }
 
     @Override
-    public Tag serializeNBT(T[] value) {
+    public Tag serializeNBT(T[] value, boolean isSync, boolean isFullSync) {
         ListTag listTag = new ListTag();
         for (T element : value) {
-            listTag.add(elementTransformer.serializeNBT(element));
+            listTag.add(elementTransformer.serializeNBT(element, isSync, isFullSync));
         }
         return listTag;
     }
 
     @Override
-    public T[] deserializeNBT(Tag tag, T[] currentVal) {
+    public T[] deserializeNBT(Tag tag, T[] currentVal, boolean isSync) {
         if (!(tag instanceof ListTag listTag)) throw new IllegalArgumentException("Expected ListTag");
 
         for (int i = 0; i < listTag.size(); i++) {
             if (elementTransformer.mustProvideObject())
-                elementTransformer.deserializeNBT(listTag.get(i), currentVal[i]);
-            else currentVal[i] = elementTransformer.deserializeNBT(listTag.get(i), null);
+                elementTransformer.deserializeNBT(listTag.get(i), currentVal[i], isSync);
+            else currentVal[i] = elementTransformer.deserializeNBT(listTag.get(i), null, isSync);
         }
         return currentVal;
     }

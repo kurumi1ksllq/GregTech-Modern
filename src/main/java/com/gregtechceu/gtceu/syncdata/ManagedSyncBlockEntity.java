@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.syncdata;
 
-import com.gregtechceu.gtceu.GTCEu;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -8,6 +7,8 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -58,7 +59,6 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
 
     @Override
     public CompoundTag getUpdateTag() {
-        GTCEu.LOGGER.info("getUpdateTag: {}", getBlockPos());
         CompoundTag tag = new CompoundTag();
         Arrays.stream(getSyncObjects()).map(obj -> obj.getSyncDataHolder().getClientSyncNBT(true)).forEach(tag::merge);
         return tag;
@@ -66,7 +66,6 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
 
     @Override
     public void handleUpdateTag(CompoundTag tag) {
-        GTCEu.LOGGER.info("handleUpdateTag: {}", getBlockPos());
         Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadClientSyncNBT(tag));
     }
 
@@ -74,30 +73,28 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
 
     @Override
     public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
-        GTCEu.LOGGER.info("getUpdatePacket: {}", getBlockPos());
         return ClientboundBlockEntityDataPacket.create(this, (entity) -> {
             if (!(entity instanceof ManagedSyncBlockEntity syncEntity)) return new CompoundTag();
             var tag = new CompoundTag();
-            Arrays.stream(syncEntity.getSyncObjects()).map(obj -> obj.getSyncDataHolder().getClientSyncNBT(false)).forEach(tag::merge);
+            Arrays.stream(syncEntity.getSyncObjects()).map(obj -> obj.getSyncDataHolder().getClientSyncNBT(false))
+                    .forEach(tag::merge);
             return tag;
         });
     }
 
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        GTCEu.LOGGER.info("onDataPacket: {}", getBlockPos());
         CompoundTag compound = pkt.getTag();
         if (compound != null) {
             Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadClientSyncNBT(compound));
         }
     }
 
-
     @Override
-    public void onChanged() {
+    public void markAsChanged() {
         var level = getLevel();
-        if (level != null && !level.isClientSide && level.getServer() != null) {
-            level.getServer().execute(this::setChanged);
+        if (level instanceof ServerLevel sLvl) {
+            sLvl.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
         }
     }
 }

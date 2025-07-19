@@ -61,9 +61,9 @@ public class MultiblockPartMachine extends MetaMachine implements IMultiPart {
     // Not sure if necessary, but added to match the Controller class
     @SuppressWarnings("unused")
     @ClientFieldChangeListener(fieldName = "controllerPositions")
-    public void onControllersUpdated(Set<BlockPos> newPositions, Set<BlockPos> old) {
+    public void onControllersUpdated() {
         controllers.clear();
-        for (BlockPos blockPos : newPositions) {
+        for (BlockPos blockPos : controllerPositions) {
             if (MetaMachine.getMachine(getLevel(), blockPos) instanceof IMultiController controller) {
                 controllers.add(controller);
             }
@@ -75,7 +75,7 @@ public class MultiblockPartMachine extends MetaMachine implements IMultiPart {
     public SortedSet<IMultiController> getControllers() {
         // Necessary to rebuild the set of controllers on client-side
         if (controllers.size() != controllerPositions.size()) {
-            onControllersUpdated(controllerPositions, Collections.emptySet());
+            onControllersUpdated();
         }
         return Collections.unmodifiableSortedSet(controllers);
     }

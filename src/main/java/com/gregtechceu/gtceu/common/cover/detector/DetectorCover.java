@@ -66,7 +66,6 @@ public abstract class DetectorCover extends CoverBehavior implements IControllab
 
         if (!this.coverHolder.isRemote()) {
             this.coverHolder.notifyBlockUpdate();
-            this.coverHolder.markDirty();
         }
     }
 

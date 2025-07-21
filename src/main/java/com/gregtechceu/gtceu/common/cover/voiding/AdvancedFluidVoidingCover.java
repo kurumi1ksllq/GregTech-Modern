@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.common.cover.data.BucketMode;
 import com.gregtechceu.gtceu.common.cover.data.VoidingMode;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
@@ -25,6 +26,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
+import it.unimi.dsi.fastutil.objects.Object2LongMaps;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -93,21 +95,28 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
     protected void voidOverflow(final IFluidHandler sourceHandler,
                                 final Predicate<FluidStack> fluidFilter,
                                 int keepAmount) {
-        if (sourceHandler == null || fluidFilter == null)
+        if (sourceHandler == null || fluidFilter == null) {
             return;
+        }
+        var fluidAmounts = enumerateDistinctFluids(sourceHandler, TransferDirection.EXTRACT);
 
-        for (int i = 0; i < sourceHandler.getTanks(); ++i) {
-            FluidStack sourceFluid = sourceHandler.getFluidInTank(i);
+        for (var entry : Object2LongMaps.fastIterable(fluidAmounts)) {
+            var stack = entry.getKey();
+            long presentAmount = entry.getLongValue();
             if (this.getFilterHandler().isFilterPresent() &&
                     voidingMode == VoidingMode.VOID_OVERFLOW) {
                 keepAmount = this.getFilterHandler().getFilter()
-                        .getTransferLimit(sourceFluid, maxFluidTransferRate);
+                        .getTransferLimit(stack, maxFluidTransferRate);
             }
-            if (sourceFluid.isEmpty() || sourceFluid.getAmount() == 0 ||
-                    !getFilterHandler().test(sourceFluid))
+            if (keepAmount <= 0L || keepAmount > presentAmount || !getFilterHandler().test(stack)) {
                 continue;
-            sourceFluid.setAmount(sourceFluid.getAmount() - keepAmount);
-            sourceHandler.drain(sourceFluid, IFluidHandler.FluidAction.EXECUTE);
+            }
+
+            long diff = presentAmount - targetAmount;
+            for (int op : GTMath.split(diff)) {
+                var toDrain = new FluidStack(stack, op);
+                sourceHandler.drain(toDrain, IFluidHandler.FluidAction.EXECUTE);
+            }
         }
     }
 

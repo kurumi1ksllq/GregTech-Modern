@@ -1,10 +1,12 @@
 mixin {
+    var refmap = add sourceSets.main, "gtceu.refmap.json"
+    slimJar.from refmap
     config 'gtceu.mixins.json'
 }
 
-neoForge {
-    // Specify the version of NeoForge to use.
-    version = forge.versions.minecraftForge.get()
+legacyForge {
+    // Specify Forge version
+    version = libs.versions.minecraftForge.get()
 
     parchment {
         minecraftVersion = libs.versions.minecraft.get()
@@ -14,22 +16,26 @@ neoForge {
     // This line is optional. Access Transformers are automatically detected
     accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
 
+    interfaceInjectionData = project.files('injected_interfaces/interfaces.json')
+
     addModdingDependenciesTo(sourceSets.test)
-    addModdingDependenciesTo(sourceSets.extra)
+//    addModdingDependenciesTo(sourceSets.extra)
 
     mods {
         // define mod <-> source bindings
         "${mod_id}" {
             sourceSet(sourceSets.main)
+            sourceSet(sourceSets.client)
             sourceSet(sourceSets.test)
             sourceSet(sourceSets.extra)
+            sourceSet(sourceSets.clientExtra)
         }
     }
 
     runs {
         client {
             client()
-            sourceSet = sourceSets.extra
+            sourceSet = sourceSets.clientExtra
             ideName = "Client 1"
 
             systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
@@ -37,26 +43,36 @@ neoForge {
 
         client2 {
             client()
-            sourceSet = sourceSets.extra
+            sourceSet = sourceSets.clientExtra
             ideName = "Client 2"
 
-            programArguments.addAll('--username', 'YoungOnion')
+            programArguments.addAll('--username', 'YoungOnion', '--uuid', '3a27782d-6864-4814-a9fe-7c6931f29a8a')
+            systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
+        }
+
+        server {
+            server()
+            sourceSet = sourceSets.extra
+            ideName = "Server"
+
+            gameDirectory.set(file('run/server'))
+            programArguments.addAll('--nogui', '--world', 'world-extra')
             systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
         }
 
         // Client with GTM + Jade, EMI, AE2
         cleanClient {
             client()
-            sourceSet = sourceSets.main
+            sourceSet = sourceSets.client
             ideName = "Clean Client"
 
             systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
         }
 
-        server {
+        cleanServer {
             server()
             sourceSet = sourceSets.main
-            ideName = "Server"
+            ideName = "Clean Server"
 
             gameDirectory.set(file('run/server'))
             programArgument '--nogui'
@@ -96,6 +112,8 @@ neoForge {
             // "REGISTRIES": For firing of registry events.
             // "REGISTRYDUMP": For getting the contents of all registries.
             systemProperty 'forge.logging.markers', 'REGISTRIES'
+            // Enable assertions for our classes in dev environment
+            jvmArgument('-ea:com.gregtechceu.gtceu...')
 
             // Recommended logging level for the console
             // You can set various levels here.

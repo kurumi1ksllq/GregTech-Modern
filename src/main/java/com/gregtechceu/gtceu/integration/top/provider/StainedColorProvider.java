@@ -16,8 +16,6 @@ import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.IProbeInfoProvider;
 import mcjty.theoneprobe.api.ProbeMode;
 
-import java.util.Locale;
-
 public class StainedColorProvider implements IProbeInfoProvider {
 
     @Override
@@ -29,17 +27,15 @@ public class StainedColorProvider implements IProbeInfoProvider {
     public void addProbeInfo(ProbeMode probeMode, IProbeInfo iProbeInfo, Player player, Level level,
                              BlockState blockState, IProbeHitData iProbeHitData) {
         BlockEntity blockEntity = level.getBlockEntity(iProbeHitData.getPos());
-
-        if (blockEntity instanceof IPaintable paintable) {
-            int paintingColor = paintable.getRealColor();
-            int defaultColor = paintable.getDefaultPaintingColor();
-
-            if (paintingColor != defaultColor) {
-                IProbeInfo horizontal = iProbeInfo
-                        .horizontal(iProbeInfo.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER));
-                horizontal.mcText(Component.translatable("gtceu.top.stained",
-                        "#" + Integer.toHexString(paintingColor).toUpperCase(Locale.ROOT)));
-            }
+        if (!(blockEntity instanceof IPaintable paintable)) {
+            return;
         }
+        if (!paintable.isPainted()) return;
+        int paintingColor = paintable.getPaintingColor();
+
+        IProbeInfo horizontal = iProbeInfo.horizontal(iProbeInfo
+                .defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER));
+        horizontal.mcText(Component.translatable("gtceu.top.stained", String.format("#%06X", paintingColor))
+                .withStyle(style -> style.withColor(paintingColor)));
     }
 }

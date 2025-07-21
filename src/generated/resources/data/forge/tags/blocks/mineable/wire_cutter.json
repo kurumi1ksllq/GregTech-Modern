@@ -1,7 +1,5 @@
 {
   "values": [
-    "gtceu:laser_pipe",
-    "gtceu:laser_reflector_pipe",
-    "gtceu:optical_fiber_cable"
+    "#gtceu:mineable/pickaxe_or_wire_cutter"
   ]
 }

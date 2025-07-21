@@ -16,11 +16,6 @@ import lombok.Getter;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
-/**
- * @author KilaBash
- * @date 2023/3/14
- * @implNote TagFilter
- */
 public abstract class TagFilter<T, S extends Filter<T, S>> implements Filter<T, S> {
 
     private static final Pattern DOUBLE_WILDCARD = Pattern.compile("\\*{2,}");
@@ -41,11 +36,19 @@ public abstract class TagFilter<T, S extends Filter<T, S>> implements Filter<T, 
     protected TagFilter() {}
 
     @Override
+    public boolean isBlank() {
+        return oreDictFilterExpression.isBlank();
+    }
+
+    @Override
     public void loadFilter(CompoundTag tag) {
         this.oreDictFilterExpression = tag.getString("oreDict");
     }
 
     public CompoundTag saveFilter() {
+        if (isBlank()) {
+            return null;
+        }
         var tag = new CompoundTag();
         tag.putString("oreDict", oreDictFilterExpression);
         return tag;

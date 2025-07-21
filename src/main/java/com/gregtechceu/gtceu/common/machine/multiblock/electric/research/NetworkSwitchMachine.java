@@ -1,6 +1,10 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.electric.research;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.IOpticalComputationHatch;
+import com.gregtechceu.gtceu.api.capability.IOpticalComputationProvider;
+import com.gregtechceu.gtceu.api.capability.recipe.CWURecipeCapability;
+import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.data.IDataAccess;
 import com.gregtechceu.gtceu.api.capability.data.query.ComputationQuery;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -58,16 +62,14 @@ public class NetworkSwitchMachine extends DataBankMachine {
                 .addWorkingStatusLine();
     }
 
-    /*
-     * @Override
-     * protected void addWarningText(List<Component> textList) {
-     * super.addWarningText(textList);
-     * if (isFormed() && computationHandler.hasNonBridgingConnections()) {
-     * textList.add(Component.translatable("gtceu.multiblock.computation.non_bridging.detailed").withStyle(
-     * ChatFormatting.YELLOW));
-     * }
-     * }
-     */
+    @Override
+    protected void addWarningText(List<Component> textList) {
+        super.addWarningText(textList);
+        if (isFormed() && computationHandler.hasNonBridgingConnections()) {
+            textList.add(Component.translatable("gtceu.multiblock.computation.non_bridging.detailed").withStyle(
+                    ChatFormatting.YELLOW));
+        }
+    }
 
     private ComputationQuery queryConnected() {
         long tick = GTUtil.getCurrentServerTick();

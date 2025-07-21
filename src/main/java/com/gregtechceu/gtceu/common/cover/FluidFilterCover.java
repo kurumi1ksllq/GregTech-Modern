@@ -36,11 +36,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/3/13
- * @implNote ItemFilterCover
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class FluidFilterCover extends CoverBehavior implements IUICover, CoverWithFluidFilter {
@@ -68,13 +63,13 @@ public class FluidFilterCover extends CoverBehavior implements IUICover, CoverWi
     }
 
     @Override
-    public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
-        return coverable.getCapability(ForgeCapabilities.FLUID_HANDLER).isPresent();
+    protected CoverRenderer buildRenderer() {
+        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_fluid_filter"), null).build();
     }
 
     @Override
-    protected CoverRenderer buildRenderer() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_fluid_filter"), null).build();
+    public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
+        return coverable.getCapability(ForgeCapabilities.FLUID_HANDLER).isPresent();
     }
 
     public @NotNull FilterHandler<FluidStack, FluidFilter> getFilterHandler() {

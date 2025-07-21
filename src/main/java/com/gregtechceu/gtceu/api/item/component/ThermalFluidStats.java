@@ -25,11 +25,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/**
- * @author KilaBash
- * @date 2023/2/22
- * @implNote ThermalFluidStats
- */
 public class ThermalFluidStats implements IItemComponent, IComponentCapability, IAddInformation {
 
     public final int capacity;
@@ -59,6 +54,12 @@ public class ThermalFluidStats implements IItemComponent, IComponentCapability, 
         return new ThermalFluidStats(capacity, maxFluidTemperature, minFluidTemperature,
                 gasProof, acidProof, plasmaProof,
                 allowPartialFill);
+    }
+
+    public static ThermalFluidStats create(int capacity, @NotNull FluidPipeProperties properties,
+                                           boolean allowPartialFill) {
+        return new ThermalFluidStats(capacity, properties.getMaxFluidTemperature(), properties.isGasProof(),
+                properties.isAcidProof(), properties.isCryoProof(), properties.isPlasmaProof(), allowPartialFill);
     }
 
     public ThermalFluidStats setCanContain(@NotNull FluidAttribute attribute, boolean canContain) {

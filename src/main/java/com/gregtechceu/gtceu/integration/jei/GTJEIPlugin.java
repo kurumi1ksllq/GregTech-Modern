@@ -39,11 +39,6 @@ import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/2/25
- * @implNote JEIPlugin
- */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 @JeiPlugin
@@ -114,6 +109,7 @@ public class GTJEIPlugin implements IModPlugin {
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         registration.useNbtForSubtypes(GTItems.PROGRAMMED_CIRCUIT.asItem());
+        registration.useNbtForSubtypes(GTItems.TURBINE_ROTOR.asItem());
     }
 
     @Override

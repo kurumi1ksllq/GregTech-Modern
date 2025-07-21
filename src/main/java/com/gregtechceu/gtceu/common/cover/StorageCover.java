@@ -116,7 +116,7 @@ public class StorageCover extends CoverBehavior implements IUICover {
 
         @Override
         public IGuiTexture getIcon() {
-            return GuiTextures.MAINTENANCE_ICON;
+            return GuiTextures.STORAGE_ICON;
         }
 
         @Override

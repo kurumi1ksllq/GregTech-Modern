@@ -332,6 +332,13 @@ public class MultiblockDisplayText {
             return this;
         }
 
+        public Builder addBatchModeLine(boolean batchEnabled, int batchAmount) {
+            if (batchEnabled && batchAmount > 0) {
+                textList.add(Component.translatable("gtceu.multiblock.batch_enabled", batchAmount));
+            }
+            return this;
+        }
+
         public Builder addOutputLines(GTRecipe recipe) {
             if (!isStructureFormed || !isActive)
                 return this;
@@ -350,7 +357,7 @@ public class MultiblockDisplayText {
                     int count = stack.getCount();
                     double countD = count;
                     if (item.chance < item.maxChance) {
-                        countD = countD * recipe.parallels *
+                        countD = countD * recipe.parallels * recipe.batchParallels *
                                 function.getBoostedChance(item, recipeTier, chanceTier) / item.maxChance;
                         count = countD < 1 ? 1 : (int) Math.round(countD);
                     }
@@ -371,7 +378,7 @@ public class MultiblockDisplayText {
                     int amount = stack.getAmount();
                     double amountD = amount;
                     if (fluid.chance < fluid.maxChance) {
-                        amountD = amountD * recipe.parallels *
+                        amountD = amountD * recipe.parallels * recipe.batchParallels *
                                 function.getBoostedChance(fluid, recipeTier, chanceTier) / fluid.maxChance;
                         amount = amountD < 1 ? 1 : (int) Math.round(amountD);
                     }
@@ -402,21 +409,24 @@ public class MultiblockDisplayText {
             return this;
         }
 
+        public Builder addParallelsLine(int numParallels) {
+            return addParallelsLine(numParallels, false);
+        }
+
         /**
          * Adds a line indicating how many parallels this multi can potentially perform.
          * <br>
          * Added if structure is formed and the number of parallels is greater than one.
          */
-        public Builder addParallelsLine(int numParallels) {
+        public Builder addParallelsLine(int numParallels, boolean exact) {
             if (!isStructureFormed)
                 return this;
             if (numParallels > 1) {
                 Component parallels = Component.literal(FormattingUtil.formatNumbers(numParallels))
                         .withStyle(ChatFormatting.DARK_PURPLE);
-
-                textList.add(Component.translatable(
-                        "gtceu.multiblock.parallel",
-                        parallels)
+                String key = "gtceu.multiblock.parallel";
+                if (exact) key += ".exact";
+                textList.add(Component.translatable(key, parallels)
                         .withStyle(ChatFormatting.GRAY));
             }
             return this;

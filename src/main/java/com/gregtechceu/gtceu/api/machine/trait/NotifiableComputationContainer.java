@@ -11,9 +11,7 @@ import com.gregtechceu.gtceu.api.capability.data.query.DataQueryObject;
 import com.gregtechceu.gtceu.api.capability.data.query.IBridgeable;
 import com.gregtechceu.gtceu.api.capability.data.query.IComputationQuery;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
-import com.gregtechceu.gtceu.api.capability.recipe.CWURecipeCapability;
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
-import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
+import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
@@ -157,7 +155,7 @@ public class NotifiableComputationContainer extends NotifiableRecipeHandlerTrait
                 if (machine instanceof IComputationUser user) {
                     return user.requestCWU(requested, simulate);
                 } else if (machine instanceof IMultiPart part) {
-                    if (part.getControllers().isEmpty()) {
+                    if (!part.isFormed()) {
                         return 0;
                     }
                     for (IMultiController controller : part.getControllers()) {
@@ -197,7 +195,7 @@ public class NotifiableComputationContainer extends NotifiableRecipeHandlerTrait
                 if (machine instanceof IComputationProvider provider) {
                     return provider.maxCWUt();
                 } else if (machine instanceof IMultiPart part) {
-                    if (part.getControllers().isEmpty()) {
+                    if (!part.isFormed()) {
                         return 0;
                     }
                     for (IMultiController controller : part.getControllers()) {
@@ -270,12 +268,11 @@ public class NotifiableComputationContainer extends NotifiableRecipeHandlerTrait
     }
 
     @Override
-    public List<Long> handleRecipeInner(IO io, GTRecipe recipe, List<Long> left, @Nullable String slotName,
-                                        boolean simulate) {
+    public List<Long> handleRecipeInner(IO io, GTRecipe recipe, List<Long> left, boolean simulate) {
         IComputationProvider provider = getOpticalNetProvider();
         if (provider == null) return left;
 
-        long sum = left.stream().reduce(0L, Long::sum);
+        long sum = left.stream().mapToLong(Long::longValue).sum();
         if (io == IO.IN) {
             long availableCWUt = requestCWU(Integer.MAX_VALUE, true);
             if (availableCWUt >= sum) {
@@ -311,7 +308,7 @@ public class NotifiableComputationContainer extends NotifiableRecipeHandlerTrait
     }
 
     @Override
-    public List<Object> getContents() {
+    public @NotNull List<Object> getContents() {
         return List.of(lastOutputCwu);
     }
 

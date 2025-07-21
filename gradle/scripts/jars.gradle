@@ -10,7 +10,8 @@ shadowJar {
     archiveClassifier = "dev"
 }
 
-slimJar {
+tasks.register('slimJar', Jar) {
+    dependsOn("classes")
     configurations = [project.configurations.includedLibrary]
     archiveClassifier = "dev-slim"
 }
@@ -33,17 +34,28 @@ reobfJar {
     archiveClassifier = "no-shadow"
 }
 
-tasks.register('sourcesJar', Jar) {
-    from delombok.outputs.files
-    dependsOn delombok
-    archiveClassifier = "sources"
+// Add sources jar to components.java
+java {
+    artifacts.archives(reobfSlimJar)
+    withSourcesJar()
 }
+
+// Use delombok'd files for sources
+sourcesJar {
+    exclude {
+        sourceSets.main.allSource.contains it.file
+    }
+    from delombok
+}
+
+jar.archiveClassifier = "dev"
 
 base {
     archivesName = "${project.name}-${libs.versions.minecraft.get()}"
 }
 
 afterEvaluate {
+    reobfJar.archiveClassifier = ""
     tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
         exclude ".cache/*"
         duplicatesStrategy = DuplicatesStrategy.INCLUDE

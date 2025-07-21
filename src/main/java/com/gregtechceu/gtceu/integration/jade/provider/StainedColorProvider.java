@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.blockentity.IPaintable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 
 import snownee.jade.api.BlockAccessor;
@@ -14,20 +13,15 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 
-import java.util.Locale;
-
 public class StainedColorProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
 
     @Override
     public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
         if (blockAccessor.getServerData().contains("StainedColor")) {
             int paintingColor = blockAccessor.getServerData().getInt("StainedColor");
-            int defaultColor = blockAccessor.getServerData().getInt("DefaultColor");
-            if (paintingColor != defaultColor) {
-                iTooltip.add(Component
-                        .translatable("gtceu.top.stained",
-                                "#" + Integer.toHexString(paintingColor).toUpperCase(Locale.ROOT))
-                        .withStyle(Style.EMPTY.withColor(paintingColor)));
+            if (paintingColor != IPaintable.UNPAINTED_COLOR) {
+                iTooltip.add(Component.translatable("gtceu.top.stained", String.format("#%06X", paintingColor))
+                        .withStyle(style -> style.withColor(paintingColor)));
             }
         }
     }
@@ -35,8 +29,8 @@ public class StainedColorProvider implements IBlockComponentProvider, IServerDat
     @Override
     public void appendServerData(CompoundTag compoundTag, BlockAccessor blockAccessor) {
         if (blockAccessor.getBlockEntity() instanceof IPaintable paintable) {
-            compoundTag.putInt("StainedColor", paintable.getRealColor());
-            compoundTag.putInt("DefaultColor", paintable.getDefaultPaintingColor());
+            int paintingColor = paintable.isPainted() ? paintable.getPaintingColor() : IPaintable.UNPAINTED_COLOR;
+            compoundTag.putInt("StainedColor", paintingColor);
         }
     }
 

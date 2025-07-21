@@ -16,7 +16,6 @@ import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.common.cover.data.ControllerMode;
-import com.gregtechceu.gtceu.data.lang.LangHandler;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
@@ -73,6 +72,7 @@ public class MachineControllerCover extends CoverBehavior implements IUICover {
     @Persisted
     @DescSynced
     @Getter
+    @Nullable
     private ControllerMode controllerMode = ControllerMode.MACHINE;
 
     public MachineControllerCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
@@ -93,7 +93,8 @@ public class MachineControllerCover extends CoverBehavior implements IUICover {
     public void onAttached(ItemStack itemStack, ServerPlayer player) {
         super.onAttached(itemStack, player);
 
-        setControllerMode(getAllowedModes().get(0));
+        var allowedModes = getAllowedModes();
+        setControllerMode(allowedModes.isEmpty() ? null : allowedModes.get(0));
     }
 
     @Override
@@ -120,7 +121,7 @@ public class MachineControllerCover extends CoverBehavior implements IUICover {
         updateInput();
     }
 
-    public void setControllerMode(ControllerMode controllerMode) {
+    public void setControllerMode(@Nullable ControllerMode controllerMode) {
         resetCurrentControllable();
 
         this.controllerMode = controllerMode;
@@ -217,6 +218,9 @@ public class MachineControllerCover extends CoverBehavior implements IUICover {
 
     @Override
     public Widget createUIWidget() {
+        if (controllerMode != null && getControllable(controllerMode.side) == null) {
+            setControllerMode(null);
+        }
         WidgetGroup group = new WidgetGroup(0, 0, 176, 75);
 
         group.addWidget(new LabelWidget(10, 5, "cover.machine_controller.title"));
@@ -231,15 +235,9 @@ public class MachineControllerCover extends CoverBehavior implements IUICover {
         // Inverted Mode Toggle:
         group.addWidget(new ToggleButtonWidget(
                 146, 20, 20, 20,
-                GuiTextures.INVERT_REDSTONE_BUTTON, this::isInverted, this::setInverted) {
-
-            @Override
-            public void updateScreen() {
-                super.updateScreen();
-                setHoverTooltips(List.copyOf(LangHandler.getMultiLang(
-                        "cover.machine_controller.invert." + (isPressed ? "enabled" : "disabled"))));
-            }
-        });
+                GuiTextures.INVERT_REDSTONE_BUTTON, this::isInverted, this::setInverted)
+                .isMultiLang()
+                .setTooltipText("cover.machine_controller.invert"));
 
         sideCoverSlot = new CustomItemStackHandler(1);
         group.addWidget(new PhantomSlotWidget(sideCoverSlot, 0, 147, 46) {
@@ -256,13 +254,13 @@ public class MachineControllerCover extends CoverBehavior implements IUICover {
     }
 
     private void selectNextMode() {
-        List<ControllerMode> allowedModes = getAllowedModes();
+        var allowedModes = getAllowedModes();
 
         setControllerMode(allowedModes.stream()
-                .dropWhile(mode -> mode != this.controllerMode)
+                .dropWhile(mode -> this.controllerMode != null && mode != this.controllerMode)
                 .skip(1)
                 .findFirst()
-                .orElseGet(() -> allowedModes.get(0)));
+                .orElse(allowedModes.isEmpty() ? null : allowedModes.get(0)));
 
         updateAll();
     }
@@ -273,17 +271,22 @@ public class MachineControllerCover extends CoverBehavior implements IUICover {
     }
 
     private void updateModeButton() {
-        if (modeButton == null) return;
+        if (modeButton == null) {
+            return;
+        }
 
         modeButton.setButtonTexture(new GuiTextureGroup(
                 GuiTextures.VANILLA_BUTTON,
-                new TextTexture(controllerMode.localeName)));
+                new TextTexture(controllerMode != null ? controllerMode.localeName : ControllerMode.nullLocaleName)));
     }
 
     private void updateCoverSlot() {
-        if (sideCoverSlot == null) return;
+        if (sideCoverSlot == null) {
+            return;
+        }
 
-        Optional.ofNullable(controllerMode.side)
+        Optional.ofNullable(controllerMode)
+                .map(mode -> mode.side)
                 .map(coverHolder::getCoverAtSide)
                 .map(CoverBehavior::getAttachItem)
                 .map(ItemStack::copy)

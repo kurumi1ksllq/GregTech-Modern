@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
+import com.gregtechceu.gtceu.api.cover.IIOCover;
 import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.cover.filter.CoverWithFluidFilter;
 import com.gregtechceu.gtceu.api.cover.filter.FilterHandler;
@@ -72,14 +73,9 @@ import java.util.function.Predicate;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/3/12
- * @implNote PumpCover
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class PumpCover extends CoverBehavior implements IUICover, IControllable, CoverWithFluidFilter {
+public class PumpCover extends CoverBehavior implements IIOCover, IUICover, IControllable, CoverWithFluidFilter {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(PumpCover.class,
             CoverBehavior.MANAGED_FIELD_HOLDER);
@@ -112,6 +108,7 @@ public class PumpCover extends CoverBehavior implements IUICover, IControllable,
     protected ManualIOMode manualIOMode = ManualIOMode.DISABLED;
 
     @Persisted
+    @DescSynced
     @Getter
     protected boolean isWorkingEnabled = true;
     protected int mBLeftToTransferLastSecond;

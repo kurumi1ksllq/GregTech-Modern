@@ -12,13 +12,9 @@ import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import lombok.Getter;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
-/**
- * @author KilaBash
- * @date 2023/3/13
- * @implNote TagItemFilter
- */
 public class TagItemFilter extends TagFilter<ItemStack, ItemFilter> implements ItemFilter {
 
     private final Object2BooleanMap<Item> cache = new Object2BooleanOpenHashMap<>();
@@ -29,7 +25,8 @@ public class TagItemFilter extends TagFilter<ItemStack, ItemFilter> implements I
     protected TagItemFilter() {}
 
     public static TagItemFilter loadFilter(ItemStack itemStack) {
-        return loadFilter(itemStack.getOrCreateTag(), filter -> itemStack.setTag(filter.saveFilter()));
+        return loadFilter(Objects.requireNonNullElseGet(itemStack.getTag(), CompoundTag::new),
+                filter -> itemStack.setTag(filter.saveFilter()));
     }
 
     private static TagItemFilter loadFilter(CompoundTag tag, Consumer<ItemFilter> itemWriter) {

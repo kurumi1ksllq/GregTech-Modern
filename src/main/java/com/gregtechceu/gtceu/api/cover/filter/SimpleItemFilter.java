@@ -14,7 +14,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 import lombok.Getter;
 
@@ -23,11 +22,6 @@ import java.util.function.Consumer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/3/13
- * @implNote ItemFilterHandler
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class SimpleItemFilter implements ItemFilter {
@@ -75,6 +69,11 @@ public class SimpleItemFilter implements ItemFilter {
     }
 
     @Override
+    public boolean isBlank() {
+        return !isBlackList && !ignoreNbt && Arrays.stream(matches).allMatch(ItemStack::isEmpty);
+    }
+
+    @Override
     public void loadFilter(CompoundTag tag) {
         this.isBlackList = tag.getBoolean("isBlackList");
         this.ignoreNbt = tag.getBoolean("matchNbt");
@@ -85,6 +84,9 @@ public class SimpleItemFilter implements ItemFilter {
     }
 
     public CompoundTag saveFilter() {
+        if (isBlank()) {
+            return null;
+        }
         var tag = new CompoundTag();
         tag.putString("type", FilterType.ITEM.getSerializedName());
         tag.putBoolean("isBlackList", isBlackList);
@@ -191,9 +193,9 @@ public class SimpleItemFilter implements ItemFilter {
         int totalCount = 0;
 
         for (var candidate : matches) {
-            if (ignoreNbt && ItemStack.isSameItemSameTags(candidate, itemStack)) {
+            if (ignoreNbt && ItemStack.isSameItem(candidate, itemStack)) {
                 totalCount += candidate.getCount();
-            } else if (ItemHandlerHelper.canItemStacksStack(candidate, itemStack)) {
+            } else if (ItemStack.isSameItemSameTags(candidate, itemStack)) {
                 totalCount += candidate.getCount();
             }
         }

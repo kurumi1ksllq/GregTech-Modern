@@ -23,11 +23,6 @@ import java.util.function.Consumer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/3/13
- * @implNote ItemFilterHandler
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class SimpleFluidFilter implements FluidFilter {
@@ -76,6 +71,11 @@ public class SimpleFluidFilter implements FluidFilter {
     }
 
     @Override
+    public boolean isBlank() {
+        return !isBlackList && !ignoreNbt && Arrays.stream(matches).allMatch(FluidStack::isEmpty);
+    }
+
+    @Override
     public void loadFilter(CompoundTag tag) {
         this.isBlackList = tag.getBoolean("isBlackList");
         this.ignoreNbt = tag.getBoolean("matchNbt");
@@ -86,6 +86,9 @@ public class SimpleFluidFilter implements FluidFilter {
     }
 
     public CompoundTag saveFilter() {
+        if (isBlank()) {
+            return null;
+        }
         var tag = new CompoundTag();
         tag.putString("type", FilterType.FLUID.getSerializedName());
         tag.putBoolean("isBlackList", isBlackList);

@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.lookup.GTRecipeLookup;
+import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.MapIngredientTypeManager;
 import com.gregtechceu.gtceu.common.cover.filter.MatchResult;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
@@ -43,16 +44,16 @@ public class SmartItemFilter implements ItemFilter {
     }
 
     @Override
-    public void loadFilter(CompoundTag tag) {
-        this.filterMode = SmartFilteringMode.VALUES[tag.getInt("filterMode")];
-    }
-
-    @Override
     public void setOnUpdated(Consumer<ItemFilter> onUpdated) {
         this.onUpdated = filter -> {
             this.itemWriter.accept(filter);
             onUpdated.accept(filter);
         };
+    }
+
+    @Override
+    public boolean isBlank() {
+        return filterMode.ordinal() == 0;
     }
 
     @Override
@@ -64,7 +65,15 @@ public class SmartItemFilter implements ItemFilter {
     public void setMaxTransferSize(int maxTransferSize) {}
 
     @Override
+    public void loadFilter(CompoundTag tag) {
+        this.filterMode = SmartFilteringMode.VALUES[tag.getInt("filterMode")];
+    }
+
+    @Override
     public CompoundTag saveFilter() {
+        if (isBlank()) {
+            return null;
+        }
         var tag = new CompoundTag();
         tag.putInt("filterMode", filterMode.ordinal());
         return tag;
@@ -95,7 +104,7 @@ public class SmartItemFilter implements ItemFilter {
 
     private int lookup(ItemStack itemStack) {
         ItemStack copy = itemStack.copyWithCount(Integer.MAX_VALUE);
-        var ingredients = ItemRecipeCapability.CAP.convertToMapIngredient(copy);
+        var ingredients = MapIngredientTypeManager.getFrom(copy, ItemRecipeCapability.CAP);
         var recipe = filterMode.lookup.recurseIngredientTreeFindRecipe(List.of(ingredients),
                 filterMode.lookup.getLookup(), r -> true);
         if (recipe == null) return 0;

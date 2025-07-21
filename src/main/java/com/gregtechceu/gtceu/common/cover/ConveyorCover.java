@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
+import com.gregtechceu.gtceu.api.cover.IIOCover;
 import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.cover.filter.CoverWithItemFilter;
 import com.gregtechceu.gtceu.api.cover.filter.FilterHandler;
@@ -85,14 +86,9 @@ import java.util.function.Predicate;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-/**
- * @author KilaBash
- * @date 2023/3/12
- * @implNote ConveyorCover
- */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class ConveyorCover extends CoverBehavior implements IUICover, IControllable, CoverWithItemFilter {
+public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, IControllable, CoverWithItemFilter {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(ConveyorCover.class,
             CoverBehavior.MANAGED_FIELD_HOLDER);
@@ -119,6 +115,7 @@ public class ConveyorCover extends CoverBehavior implements IUICover, IControlla
     @Getter
     protected ManualIOMode manualIOMode = ManualIOMode.DISABLED;
     @Persisted
+    @DescSynced
     @Getter
     protected boolean isWorkingEnabled = true;
     protected int itemsLeftToTransferLastSecond;

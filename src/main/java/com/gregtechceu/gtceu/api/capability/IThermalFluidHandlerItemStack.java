@@ -1,11 +1,16 @@
 package com.gregtechceu.gtceu.api.capability;
 
+import com.gregtechceu.gtceu.api.fluids.FluidConstants;
+import com.gregtechceu.gtceu.api.fluids.FluidState;
 import com.gregtechceu.gtceu.api.fluids.attribute.FluidAttribute;
 import com.gregtechceu.gtceu.api.fluids.attribute.FluidAttributes;
 import com.gregtechceu.gtceu.api.fluids.attribute.IAttributedFluid;
 
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
+
+import java.util.Collection;
 
 /**
  * Interface for FluidHandlerItemStacks which handle GT's unique fluid mechanics
@@ -52,6 +57,7 @@ public interface IThermalFluidHandlerItemStack {
      *
      * @return true if this fluid container allows gases, otherwise false
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isGasProof();
 
     /**

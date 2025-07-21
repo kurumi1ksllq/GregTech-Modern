@@ -14,11 +14,6 @@ import java.util.stream.Stream;
 
 import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 
-/**
- * @author KilaBash
- * @date 2023/2/13
- * @implNote GTBlockEntities
- */
 @SuppressWarnings("unchecked")
 public class GTBlockEntities {
 

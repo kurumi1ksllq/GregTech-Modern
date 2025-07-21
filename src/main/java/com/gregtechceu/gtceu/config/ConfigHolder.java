@@ -3,16 +3,13 @@ package com.gregtechceu.gtceu.config;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 
+import net.minecraft.commands.Commands;
+
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.format.ConfigFormats;
 
-/**
- * @author KilaBash
- * @date 2023/2/14
- * @implNote ConfigHolder
- */
 @Config(id = GTCEu.MOD_ID)
 public class ConfigHolder {
 
@@ -60,8 +57,8 @@ public class ConfigHolder {
         @Configurable
         @Configurable.Comment({
                 "Change the recipe of Rods in the Lathe to 1 Rod and 2 Small Piles of Dust, instead of 2 Rods.",
-                "Default: false" })
-        public boolean harderRods = false; // default false
+                "Default: true" })
+        public boolean harderRods = true; // default true
         @Configurable
         @Configurable.Comment({
                 "Whether to make crafting recipes for Bricks, Firebricks, Nether Bricks, and Coke Bricks harder.",
@@ -97,8 +94,8 @@ public class ConfigHolder {
         public boolean nerfPaperCrafting = true; // default true
         @Configurable
         @Configurable.Comment({ "Recipes for items like Iron Doors, Trapdoors, Anvil" +
-                " require Iron Plates, Rods, and more.", "Default: false" })
-        public boolean hardAdvancedIronRecipes = false; // default false
+                " require Iron Plates, Rods, and more.", "Default: true" })
+        public boolean hardAdvancedIronRecipes = true; // default true
         @Configurable
         @Configurable.Comment({ "Whether to make coloring blocks like Concrete or Glass harder.", "Default: false" })
         public boolean hardDyeRecipes = false; // default false
@@ -130,8 +127,8 @@ public class ConfigHolder {
         @Configurable
         @Configurable.Comment({
                 "Whether tools should have enchants or not. Like the flint sword getting fire aspect.",
-                "Default: true" })
-        public boolean enchantedTools = true;
+                "Default: false" })
+        public boolean enchantedTools = false;
     }
 
     public static class CompatibilityConfigs {
@@ -157,10 +154,12 @@ public class ConfigHolder {
         @Configurable
         @Configurable.Comment({ "Whether to hide facades of all blocks in JEI and creative search menu.",
                 "Default: true" })
+        // todo: implement or purge
         public boolean hideFacadesInRecipeViewer = true;
 
         @Configurable
         @Configurable.Comment({ "Whether to hide filled cells in JEI and creative search menu.", "Default: true" })
+        // todo: implement or purge
         public boolean hideFilledCellsInRecipeViewer = true;
 
         @Configurable
@@ -171,6 +170,7 @@ public class ConfigHolder {
         @Configurable.Comment({
                 "Whether Gregtech should remove smelting recipes from the vanilla furnace for ingots requiring the Electric Blast Furnace.",
                 "Default: true" })
+        // todo: implement or purge
         public boolean removeSmeltingForEBFMetals = true;
 
         @Configurable
@@ -206,13 +206,13 @@ public class ConfigHolder {
             @Configurable
             @Configurable.Comment({ "The interval between ME Hatch/Bus interact ME network.",
                     "It may cause lag if the interval is too small.", "Default: 2 sec" })
-            @Configurable.Range(min = 1, max = 80)
+            @Configurable.Range(min = 1) // Do Not Set a Maximum, if someone wants >80 ticks let them.
             public int updateIntervals = 40;
 
             @Configurable
-            @Configurable.Comment({ "The energy consumption of ME Hatch/Bus.", "Default: 1.0AE/t" })
-            @Configurable.DecimalRange(min = 0.0, max = 10.0)
-            public double meHatchEnergyUsage = 1.0;
+            @Configurable.Comment({ "The energy consumption of ME Hatch/Bus.", "Default: 4.0AE/t" })
+            @Configurable.DecimalRange(min = 0.0, max = Integer.MAX_VALUE)
+            public double meHatchEnergyUsage = 4.0;
         }
 
         public static class MinimapCompatConfig {
@@ -225,17 +225,18 @@ public class ConfigHolder {
             @Configurable
             @Configurable.Comment({ "The radius, in blocks, that picking up a surface rock will search for veins in.",
                     "-1 to disable.", "Default: 24" })
-            @Configurable.Range(min = 1)
+            @Configurable.Range(min = -1)
             public int surfaceRockProspectRange = 24;
             @Configurable
             @Configurable.Comment({ "The radius, in blocks, that clicking an ore block will search for veins in.",
                     "-1 to disable", "Default: 24" })
-            @Configurable.Range(min = 1)
+            @Configurable.Range(min = -1)
             public int oreBlockProspectRange = 24;
 
             @Configurable
             @Configurable.Comment("The map scale at which displayed ores will stop scaling.")
             @Configurable.DecimalRange(min = 0.1, max = 16)
+            // todo: implement or purge
             public float oreScaleStop = 1;
 
             @Configurable
@@ -257,8 +258,8 @@ public class ConfigHolder {
             public Anchor buttonAnchor = Anchor.BOTTOM_LEFT;
 
             @Configurable
-            @Configurable.Comment({ "Which direction the buttons will go", "Default: \"HORIZONTAL\"" })
-            public Direction direction = Direction.HORIZONTAL;
+            @Configurable.Comment({ "Which direction the buttons will go", "Default: \"VERTICAL\"" })
+            public Direction direction = Direction.VERTICAL;
 
             @Configurable
             @Configurable.Comment({ "How horizontally far away from the anchor to place the buttons", "Default: 20" })
@@ -267,12 +268,6 @@ public class ConfigHolder {
             @Configurable
             @Configurable.Comment({ "How vertically far away from the anchor to place the buttons", "Default: 0" })
             public int yOffset = 0;
-
-            @Configurable
-            @Configurable.Comment({
-                    "Whether to put buttons on a separate toolbar on the right instead of the map type toolbar in JourneyMap.",
-                    "Default: true" })
-            public boolean rightToolbar = true;
 
             public static class Toggle {
 
@@ -396,6 +391,9 @@ public class ConfigHolder {
             @Configurable.Comment({ "Make bedrock ore/fluid veins infinite?", "Default: false" })
             public boolean infiniteBedrockOresFluids = false;
             @Configurable
+            @Configurable.Comment({ "Generate ores indicators above ore veins", "Default: true" })
+            public boolean oreIndicators = true;
+            @Configurable
             @Configurable.Comment({
                     "Sets the maximum number of chunks that may be cached for ore vein generation.",
                     "Higher values may improve world generation performance, but at the cost of more RAM usage.",
@@ -416,15 +414,10 @@ public class ConfigHolder {
     public static class MachineConfigs {
 
         @Configurable
-        @Configurable.Comment({ "Whether insufficient energy supply should reset Machine recipe progress to zero.",
-                "If true, progress will reset.", "If false, progress will decrease to zero with 2x speed",
-                "Default: false" })
-        public boolean recipeProgressLowEnergy = false;
-        @Configurable
         @Configurable.Comment({
                 "Whether to require a Wrench, Wirecutter, or other GregTech tools to break machines, casings, wires, and more.",
-                "Default: false" })
-        public boolean requireGTToolsForBlocks = false;
+                "Default: true" })
+        public boolean requireGTToolsForBlocks = true;
         @Configurable
         @Configurable.Comment({
                 "Whether machines explode in rainy weather or when placed next to certain terrain, such as fire or lava",
@@ -450,6 +443,9 @@ public class ConfigHolder {
         @Configurable
         @Configurable.Comment({ "Whether to play machine sounds while machines are active.", "Default: true" })
         public boolean machineSounds = true;
+        @Configurable
+        @Configurable.Comment({ "Duration in ticks that batching will try to reach.", "Default: 100" })
+        public int batchDuration = 100;
         @Configurable
         @Configurable.Comment({ "Whether Steam Multiblocks should use Steel instead of Bronze.", "Default: false" })
         public boolean steelSteamMultiblocks = false;
@@ -494,15 +490,21 @@ public class ConfigHolder {
         @Configurable.Comment({ "Whether the machine's circuit slot need to be inserted a real circuit." })
         public boolean ghostCircuit = true;
         @Configurable
-        @Configurable.Comment({ "Wether to add a \"Bedrock Ore Miner\" (also enables bedrock ore generation)",
+        @Configurable.Comment({ "Whether to add a \"Bedrock Ore Miner\" (also enables bedrock ore generation)",
                 "Default: false" })
         public boolean doBedrockOres = false;
         @Configurable
         @Configurable.Comment({ "What Kind of material should the bedrock ore miner output?", "Default: \"raw\"" })
         public String bedrockOreDropTagPrefix = "raw";
         @Configurable
+        @Configurable.Range(min = 120, max = 800)
+        @Configurable.Comment({ "The base amount of ticks per block for electric singleblock ore miners",
+                "Default: 320" })
+        public int minerSpeed = 320;
+        @Configurable
         @Configurable.Comment({ "Makes nearly every GCYM Multiblock require blocks which set their maximum voltages.",
                 "Default: false" })
+        // todo: implement or purge
         public boolean enableTieredCasings = false;
         @Configurable
         @Configurable.Comment({ "Minimum distance between Long Distance Item Pipe Endpoints", "Default: 50" })
@@ -519,8 +521,8 @@ public class ConfigHolder {
         public boolean onlyOwnerBreak = false;
         @Configurable
         @Configurable.Comment({ "Minimum op level to bypass the ownership checks", "Default: 2" })
-        @Configurable.Range(min = 0, max = 4)
-        public int ownerOPBypass = 2;
+        @Configurable.Range(min = Commands.LEVEL_ALL, max = Commands.LEVEL_OWNERS)
+        public int ownerOPBypass = Commands.LEVEL_GAMEMASTERS;
 
         /**
          * <strong>Addons mods should not reference this config directly.</strong>
@@ -540,8 +542,8 @@ public class ConfigHolder {
         public boolean orderedAssemblyLineItems = true;
         @Configurable
         @Configurable.Comment({ "Whether the Assembly Line should require the fluid inputs to be in order.",
-                "(Requires Ordered Assembly Line Item Inputs to be enabled.)", "Default: false" })
-        public boolean orderedAssemblyLineFluids = false;
+                "(Requires Ordered Assembly Line Item Inputs to be enabled.)", "Default: true" })
+        public boolean orderedAssemblyLineFluids = true;
 
         @Configurable
         @Configurable.Comment({
@@ -698,8 +700,8 @@ public class ConfigHolder {
         public boolean universalHazards = true;
         @Configurable
         @Configurable.Comment({ "Whether environmental hazards like pollution or radiation are active",
-                "Default: true" })
-        public boolean environmentalHazards = true;
+                "Default: false" })
+        public boolean environmentalHazards = false;
         @Configurable
         @Configurable.Comment({ "How much environmental hazards decay per chunk, per tick.",
                 "Default: 0.001" })
@@ -727,8 +729,8 @@ public class ConfigHolder {
         public String defaultPaintingColor = "#FFFFFF";
         @Configurable
         @Configurable.Comment({ "The default color to overlay onto Machine (and other) UIs.",
-                "16777215 (#FFFFFF) is no coloring (like GTCE) (default).",
-                "13819135 (#D2DCFF in decimal) is the classic blue from GT5." })
+                "#FFFFFF is no coloring (like GTCE) (default).",
+                "#D2DCFF is the classic blue from GT5." })
         @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,6}")
         @Configurable.Gui.ColorValue
         public String defaultUIColor = "#FFFFFF";
@@ -753,6 +755,11 @@ public class ConfigHolder {
         public ArmorHud armorHud = new ArmorHud();
         @Configurable
         public RendererConfigs renderer = new RendererConfigs();
+
+        public int getDefaultPaintingColor() {
+            // OR with full alpha to differentiate from a machine that's painted white (map color 0xffffff)
+            return Long.decode(defaultPaintingColor).intValue() | 0xff000000;
+        }
 
         public static class ArmorHud {
 
@@ -798,5 +805,15 @@ public class ConfigHolder {
         @Configurable
         @Configurable.Comment({ "Render fluids in multiblocks that support them?", "Default: true" })
         public boolean renderFluids = true;
+
+        @Configurable
+        @Configurable.Comment({ "Whether or not to color tiered machine highlights in the tier color",
+                "Default: true" })
+        public boolean coloredTieredMachineOutline = true;
+
+        @Configurable
+        @Configurable.Comment({ "Whether or not to color wire/cable highlights based on voltage tier",
+                "Default: true" })
+        public boolean coloredWireOutline = true;
     }
 }

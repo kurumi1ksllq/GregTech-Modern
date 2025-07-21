@@ -16,6 +16,7 @@ public class GTRenderTypes extends RenderType {
             RenderType.CompositeState.builder()
                     .setCullState(NO_CULL)
                     .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .createCompositeState(false));
     private static final RenderType BLOOM_QUAD = RenderType.create("bloom_quad",
             DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256, false, false,

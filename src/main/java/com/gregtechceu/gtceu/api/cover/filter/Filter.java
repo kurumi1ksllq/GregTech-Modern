@@ -14,11 +14,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-/**
- * @author KilaBash
- * @date 2023/3/14
- * @implNote Filter
- */
 public interface Filter<T, S extends Filter<T, S>> extends Predicate<T>, Function<T, MatchResult> {
 
     WidgetGroup openConfigurator(int x, int y);
@@ -28,6 +23,10 @@ public interface Filter<T, S extends Filter<T, S>> extends Predicate<T>, Functio
     CompoundTag saveFilter();
 
     void setOnUpdated(Consumer<S> onUpdated);
+
+    default boolean isBlank() {
+        return false;
+    }
 
     default boolean isBlackList() {
         return false;

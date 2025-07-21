@@ -52,7 +52,7 @@ public class AirScrubberMachine extends SimpleTieredMachine
     }
 
     @Override
-    public boolean dampingWhenWaiting() {
+    public boolean regressWhenWaiting() {
         return false;
     }
 
@@ -145,7 +145,7 @@ public class AirScrubberMachine extends SimpleTieredMachine
                     if (zone.strength() <= 0) {
                         if (serverLevel.hasChunk(chunkPos.x, chunkPos.z)) {
                             LevelChunk chunk = serverLevel.getChunk(chunkPos.x, chunkPos.z);
-                            GTNetwork.NETWORK.sendToTrackingChunk(new SPacketRemoveHazardZone(chunkPos), chunk);
+                            GTNetwork.sendToAllPlayersTrackingChunk(chunk, new SPacketRemoveHazardZone(chunkPos));
                         }
                         return null;
                     } else return zone;

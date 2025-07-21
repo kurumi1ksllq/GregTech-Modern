@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.gui.factory.CoverUIFactory;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfigurator;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.IToolGridHighlight;
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 
@@ -34,12 +35,14 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
 import lombok.Getter;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -67,7 +70,7 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
     protected int redstoneSignalOutput = 0;
 
     @OnlyIn(Dist.CLIENT)
-    protected @Nullable CoverRenderer renderer;
+    protected @Nullable Supplier<CoverRenderer> renderer;
 
     public CoverBehavior(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
         this.coverDefinition = definition;
@@ -102,8 +105,14 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
      *
      * @return true if cover can be attached, false otherwise
      */
+    @MustBeInvokedByOverriders
     public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
-        return true;
+        if (coverable instanceof MetaMachine machine) {
+            if (machine.getDefinition().isAllowCoverOnFront() || !machine.hasFrontFacing()) {
+                return true;
+            }
+        }
+        return coverable.getFrontFacing() != side;
     }
 
     /**
@@ -144,6 +153,7 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
     public void onNeighborChanged(Block block, BlockPos fromPos, boolean isMoving) {}
 
     public void setRedstoneSignalOutput(int redstoneSignalOutput) {
+        if (this.redstoneSignalOutput == redstoneSignalOutput) return;
         this.redstoneSignalOutput = redstoneSignalOutput;
         coverHolder.notifyBlockUpdate();
         coverHolder.markDirty();
@@ -171,8 +181,7 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
             if (playerIn instanceof ServerPlayer serverPlayer) {
                 CoverUIFactory.INSTANCE.openUI(this, serverPlayer);
             }
-            playerIn.swing(hand);
-            return InteractionResult.CONSUME;
+            return InteractionResult.sidedSuccess(playerIn.level().isClientSide);
         }
         return InteractionResult.PASS;
     }
@@ -202,13 +211,14 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
         return true;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public @NotNull CoverRenderer getRenderer() {
+    public @NotNull Supplier<CoverRenderer> getRenderer() {
         if (renderer == null) renderer = buildRenderer();
         return renderer;
     }
 
-    protected abstract CoverRenderer buildRenderer();
+    protected Supplier<CoverRenderer> buildRenderer() {
+        return coverDefinition.getCoverRenderer();
+    }
 
     public @Nullable IFancyConfigurator getConfigurator() {
         return null;
@@ -222,8 +232,8 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
     }
 
     @Override
-    public ResourceTexture sideTips(Player player, BlockPos pos, BlockState state, Set<GTToolType> toolTypes,
-                                    Direction side) {
+    public @Nullable ResourceTexture sideTips(Player player, BlockPos pos, BlockState state, Set<GTToolType> toolTypes,
+                                              Direction side) {
         if (toolTypes.contains(GTToolType.CROWBAR)) {
             return GuiTextures.TOOL_REMOVE_COVER;
         }

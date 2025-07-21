@@ -31,7 +31,7 @@ public class MaintenanceDetectorCover extends DetectorCover {
             return false;
         }
 
-        return coverable.getCapability(GTCapability.CAPABILITY_MAINTENANCE_MACHINE).isPresent();
+        return super.canAttach() && coverable.getCapability(GTCapability.CAPABILITY_MAINTENANCE_MACHINE).isPresent();
     }
 
     @Override

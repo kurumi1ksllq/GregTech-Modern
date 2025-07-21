@@ -37,11 +37,6 @@ import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiStack;
 
-/**
- * @author KilaBash
- * @date 2023/4/4
- * @implNote EMIPlugin
- */
 @EmiEntrypoint
 public class GTEMIPlugin implements EmiPlugin {
 
@@ -70,9 +65,7 @@ public class GTEMIPlugin implements EmiPlugin {
         registry.addCategory(GTProgrammedCircuitCategory.CATEGORY);
 
         // Recipes
-        try {
-            MultiblockInfoEmiCategory.registerDisplays(registry);
-        } catch (NullPointerException ignored) {}
+        MultiblockInfoEmiCategory.registerDisplays(registry);
         GTRecipeEMICategory.registerDisplays(registry);
         if (!ConfigHolder.INSTANCE.compat.hideOreProcessingDiagrams)
             GTOreProcessingEmiCategory.registerDisplays(registry);
@@ -94,6 +87,8 @@ public class GTEMIPlugin implements EmiPlugin {
                 EmiStack.of(GTMultiMachines.LARGE_CHEMICAL_REACTOR.asStack()));
 
         // Comparators
+        registry.setDefaultComparison(GTItems.TURBINE_ROTOR.asItem(), Comparison.compareNbt());
+
         registry.setDefaultComparison(GTItems.PROGRAMMED_CIRCUIT.asItem(), Comparison.compareNbt());
         registry.removeEmiStacks(EmiStack.of(GTItems.PROGRAMMED_CIRCUIT.asStack()));
         registry.addEmiStack(EmiStack.of(IntCircuitBehaviour.stack(0)));

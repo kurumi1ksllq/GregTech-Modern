@@ -9,7 +9,7 @@ import com.gregtechceu.gtceu.api.capability.data.query.RecipeDataQuery;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IWorkableMultiController;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
@@ -45,25 +45,31 @@ public class OpticalDataHatchMachine extends MultiblockPartMachine implements IS
     public boolean accessData(@NotNull DataQueryObject queryObject) {
         if (!getControllers().isEmpty()) {
             if (isTransmitter()) {
-                IMultiController controller = getControllers().get(0);
-                if (!controller.isFormed() || (controller instanceof IWorkable workable && !workable.isActive()))
-                    return false;
-
                 List<IDataAccess> dataAccesses = new ArrayList<>();
                 List<IStandardDataAccess> reception = new ArrayList<>();
-                for (var part : controller.getParts()) {
-                    Block block = part.self().getBlockState().getBlock();
-                    if (part instanceof IDataAccess hatch && PartAbility.DATA_ACCESS.isApplicable(block)) {
-                        dataAccesses.add(hatch);
+
+                for (IMultiController controller : getControllers()) {
+                    if (!controller.isFormed() || (controller instanceof IWorkable workable && !workable.isActive())) {
+                        continue;
                     }
-                    if (part instanceof IStandardDataAccess hatch &&
-                            PartAbility.OPTICAL_DATA_RECEPTION.isApplicable(block)) {
-                        reception.add(hatch);
+
+                    for (IMultiPart part : controller.getParts()) {
+                        if (part == this) continue;
+                        Block block = part.self().getBlockState().getBlock();
+
+                        if (part instanceof IDataAccess hatch && PartAbility.DATA_ACCESS.isApplicable(block)) {
+                            dataAccesses.add(hatch);
+                        }
+                        if (part instanceof IStandardDataAccess hatch &&
+                                PartAbility.OPTICAL_DATA_RECEPTION.isApplicable(block)) {
+                            reception.add(hatch);
+                        }
                     }
                 }
 
-                if (IDataAccess.accessData(dataAccesses, queryObject))
+                if (IDataAccess.accessData(dataAccesses, queryObject)) {
                     return true;
+                }
 
                 if (queryObject instanceof IBridgeable bridgeable && reception.size() > 1) {
                     bridgeable.setBridged();

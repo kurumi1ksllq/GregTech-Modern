@@ -1,6 +1,13 @@
 package com.gregtechceu.gtceu.api.blockentity;
 
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public interface IPaintable {
 
@@ -34,5 +41,15 @@ public interface IPaintable {
      */
     default int getRealColor() {
         return isPainted() ? getPaintingColor() : getDefaultPaintingColor();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    static int tintedColor(BlockState state, BlockAndTintGetter level, BlockPos pos, int index) {
+        if (pos != null && level != null && level.getBlockEntity(pos) instanceof PipeBlockEntity pipe) {
+            if (pipe.isPainted()) {
+                return pipe.getRealColor();
+            }
+        }
+        return -1;
     }
 }

@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.*;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -247,27 +248,28 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
     }
 
     @Override
-    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (pState.hasBlockEntity()) {
-            if (!pState.is(pNewState.getBlock())) { // new block
-                MetaMachine machine = getMachine(pLevel, pPos);
-                if (machine instanceof IMachineLife machineLife) {
-                    machineLife.onMachineRemoved();
-                }
-                if (machine != null) {
-                    machine.getCoverContainer().dropAllCovers();
-                }
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.hasBlockEntity()) {
+            return;
+        }
+        if (!state.is(newState.getBlock())) { // new block
+            MetaMachine machine = getMachine(level, pos);
+            if (machine instanceof IMachineLife machineLife) {
+                machineLife.onMachineRemoved();
+            }
+            if (machine != null) {
+                machine.getCoverContainer().dropAllCovers();
+            }
 
-                pLevel.updateNeighbourForOutputSignal(pPos, this);
-                pLevel.removeBlockEntity(pPos);
-            } else if (getRotationState() != RotationState.NONE) { // old block different facing
-                var oldFacing = pState.getValue(getRotationState().property);
-                var newFacing = pNewState.getValue(getRotationState().property);
-                if (newFacing != oldFacing) {
-                    var machine = getMachine(pLevel, pPos);
-                    if (machine != null) {
-                        machine.onRotated(oldFacing, newFacing);
-                    }
+            level.updateNeighbourForOutputSignal(pos, this);
+            level.removeBlockEntity(pos);
+        } else if (getRotationState() != RotationState.NONE) { // old block different facing
+            var oldFacing = state.getValue(getRotationState().property);
+            var newFacing = newState.getValue(getRotationState().property);
+            if (newFacing != oldFacing) {
+                var machine = getMachine(level, pos);
+                if (machine != null) {
+                    machine.onRotated(oldFacing, newFacing);
                 }
             }
         }

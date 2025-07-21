@@ -42,9 +42,9 @@ public class PipeInfoProvider implements IProbeInfoProvider {
     public void addProbeInfo(ProbeMode mode, IProbeInfo info, Player player, Level level,
                              BlockState state, IProbeHitData hitData) {
         if (state.getBlock() instanceof PipeBlock pipe) {
-            PipeBlockEntity tile = pipe.getBlockEntity(level, hitData.getPos());
-            if (tile != null) {
-                for (NetLogicData data : tile.getNetLogicDatas().values()) {
+            PipeBlockEntity blockEntity = pipe.getBlockEntity(level, hitData.getPos());
+            if (blockEntity != null) {
+                for (NetLogicData data : blockEntity.getNetLogicDatas().values()) {
                     EnergyFlowLogic energy = data.getLogicEntryNullable(EnergyFlowLogic.TYPE);
                     if (energy != null) {
                         addEnergyFlowInformation(mode, info, player, state, hitData, energy);
@@ -85,20 +85,18 @@ public class PipeInfoProvider implements IProbeInfoProvider {
         }
 
         if (state.getBlock() instanceof CableBlock cableBlock) {
+            MaterialEnergyProperties properties = cableBlock.material.getProperty(PropertyKey.PIPENET_PROPERTIES)
+                    .getProperty(MaterialEnergyProperties.KEY);
 
             iProbeInfo.text(CompoundText.create().info(Component.translatable("gtceu.top.cable_voltage"))
                     .important(Component.literal(String.valueOf(cumulativeVoltage / EnergyFlowLogic.MEMORY_TICKS)))
                     .text(" / ")
-                    .important(Component.literal(GTValues.VNF[GTUtil.getTierByVoltage(
-                            cableBlock.material.getProperty(PropertyKey.PIPENET_PROPERTIES)
-                                    .getProperty(MaterialEnergyProperties.KEY).getVoltageLimit())])));
+                    .important(Component.literal(GTValues.VNF[GTUtil.getTierByVoltage(properties.getVoltageLimit())])));
             iProbeInfo.text(CompoundText.create().info(Component.translatable("gtceu.top.cable_amperage"))
                     .important(Component.literal(String.valueOf(cumulativeAmperage / EnergyFlowLogic.MEMORY_TICKS)))
                     .text(" / ")
-                    .important(Component.literal(DECIMAL_FORMAT_1F.format(
-                            cableBlock.material.getProperty(PropertyKey.PIPENET_PROPERTIES)
-                                    .getProperty(MaterialEnergyProperties.KEY).getAmperage(cableBlock.getStructure())) +
-                            "A")));
+                    .important(Component.literal(
+                            DECIMAL_FORMAT_1F.format(properties.getAmperage(cableBlock.getStructure())) + "A")));
         } else {
             iProbeInfo.text(CompoundText.create().info(Component.translatable("gtceu.top.cable_voltage"))
                     .important(Component.literal(String.valueOf(cumulativeVoltage / EnergyFlowLogic.MEMORY_TICKS))));

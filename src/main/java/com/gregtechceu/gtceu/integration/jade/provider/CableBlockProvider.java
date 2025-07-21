@@ -69,13 +69,13 @@ public class CableBlockProvider implements IBlockComponentProvider, IServerDataP
             for (var flow : logic.getFlow(currentTick)) {
                 totalVoltage += flow.voltage();
             }
+            MaterialEnergyProperties properties = cableBlock.material.getProperty(PropertyKey.PIPENET_PROPERTIES)
+                    .getProperty(MaterialEnergyProperties.KEY);
 
             var cableData = new CompoundTag();
-            cableData.putLong("maxVoltage", cableBlock.material.getProperty(PropertyKey.PIPENET_PROPERTIES)
-                    .getProperty(MaterialEnergyProperties.KEY).getVoltageLimit());
+            cableData.putLong("maxVoltage", properties.getVoltageLimit());
             cableData.putLong("currentVoltage", totalVoltage);
-            cableData.putDouble("maxAmperage", cableBlock.material.getProperty(PropertyKey.PIPENET_PROPERTIES)
-                    .getProperty(MaterialEnergyProperties.KEY).getAmperage(cableBlock.getStructure()));
+            cableData.putDouble("maxAmperage", properties.getAmperage(cableBlock.getStructure()));
             cableData.putDouble("currentAmperage", averageAmperage);
 
             data.put("cableData", cableData);

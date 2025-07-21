@@ -337,7 +337,7 @@ public class GTItems {
             .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
             .color(() -> GTItems::cellColor)
             .onRegister(attach(
-                    ThermalFluidStats.create(FluidType.BUCKET_VOLUME, 1800, 121, false, false, false, false),
+                    new ThermalFluidStats(FluidType.BUCKET_VOLUME, 1800, 121, false, false, false, false),
                     new ItemFluidContainer(), cellName()))
             .register();
     public static ItemEntry<ComponentItem> FLUID_CELL_UNIVERSAL = REGISTRATE
@@ -346,7 +346,7 @@ public class GTItems {
             .color(() -> GTItems::cellColor)
             .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
             .onRegister(attach(cellName(),
-                    ThermalFluidStats.create(FluidType.BUCKET_VOLUME, 1800, 121, false, false, false, true),
+                    new ThermalFluidStats(FluidType.BUCKET_VOLUME, 1800, 121, false, false, false, true),
                     new ItemFluidContainer()))
             .register();
     // spotless:off
@@ -361,7 +361,7 @@ public class GTItems {
             .color(() -> GTItems::cellColor)
             .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
             .onRegister(attach(cellName(),
-                    ThermalFluidStats.create(FluidType.BUCKET_VOLUME, 1200, 213, true, false, false, true),
+                    new ThermalFluidStats(FluidType.BUCKET_VOLUME, 1200, 213, true, false, false, true),
                     new ItemFluidContainer()))
             .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Glass, GTValues.M / 4))))
             .register();

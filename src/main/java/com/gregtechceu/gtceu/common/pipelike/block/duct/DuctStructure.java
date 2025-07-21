@@ -17,7 +17,7 @@ public record DuctStructure(String name, float renderThickness, float rateMultip
 
     public static final DuctStructure SMALL = new DuctStructure("small", 0.375f, 2f);
     public static final DuctStructure NORMAL = new DuctStructure("normal", 0.5f, 4f);
-    public static final DuctStructure LARGE = new DuctStructure("large", 0.75f, 8f);
+    public static final DuctStructure LARGE = new DuctStructure("large", 0.625f, 8f);
     public static final DuctStructure HUGE = new DuctStructure("huge", 0.75f, 16f);
 
     @Override

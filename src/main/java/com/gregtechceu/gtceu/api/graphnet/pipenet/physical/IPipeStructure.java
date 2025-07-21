@@ -29,7 +29,7 @@ public interface IPipeStructure extends StringRepresentable {
     PipeModelRedirector getModel();
 
     default ResourceTexture getPipeTexture(boolean isBlock) {
-        return isBlock ? GuiTextures.TOOL_WIRE_CONNECT : GuiTextures.TOOL_WIRE_BLOCK;
+        return isBlock ? GuiTextures.TOOL_PIPE_CONNECT : GuiTextures.TOOL_PIPE_BLOCK;
     }
 
     /**

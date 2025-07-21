@@ -188,16 +188,6 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
                     .removeFromNets(serverLevel, this.getBlockPos(), this.getStructure());
             netCapabilities.values().forEach(PipeCapabilityWrapper::invalidate);
         } else killOverheatParticle();
-        // TODO I hate this so much can someone please make it so that covers go through getDrops()?
-        getCoverHolder().dropAllCovers();
-    }
-
-    public ItemStack getMainDrop(@NotNull BlockState state) {
-        return new ItemStack(state.getBlock(), 1);
-    }
-
-    public ItemStack getDrop() {
-        return new ItemStack(getBlockType(), 1);
     }
 
     public long getOffsetTimer() {

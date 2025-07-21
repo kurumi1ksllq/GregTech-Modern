@@ -332,12 +332,31 @@ public abstract class PipeBlock extends Block implements EntityBlock {
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
-        BlockEntity blockEntity = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         List<ItemStack> drops = new ArrayList<>(super.getDrops(state, builder));
-        if (blockEntity instanceof PipeBlockEntity pipeTile) {
-            pipeTile.getDrops(drops, state);
+
+        BlockEntity blockEntity = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+        if (blockEntity instanceof PipeBlockEntity pipe) {
+            if (!pipe.getFrameMaterial().isNull()) {
+                drops.addAll(GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, pipe.getFrameMaterial())
+                        .getDefaultState().getDrops(builder));
+            }
         }
         return drops;
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!state.hasBlockEntity()) {
+            return;
+        }
+        if (!state.is(newState.getBlock())) { // new block
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof PipeBlockEntity pipe) {
+                pipe.getCoverHolder().dropAllCovers();
+            }
+            level.updateNeighbourForOutputSignal(pos, this);
+            level.removeBlockEntity(pos);
+        }
     }
 
     @Override

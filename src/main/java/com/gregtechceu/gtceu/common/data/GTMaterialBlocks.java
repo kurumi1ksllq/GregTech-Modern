@@ -250,7 +250,7 @@ public class GTMaterialBlocks {
                                                   GTRegistrate registrate) {
         var entry = registrate
                 .block("%s_%s_pipe".formatted(pipeType.name(), material.getName()),
-                        p -> new com.gregtechceu.gtceu.common.pipelike.block.pipe.MaterialPipeBlock(p, pipeType,
+                        p -> new MaterialPipeBlock(p, pipeType,
                                 material))
                 .initialProperties(() -> Blocks.IRON_BLOCK)
                 .properties(p -> {

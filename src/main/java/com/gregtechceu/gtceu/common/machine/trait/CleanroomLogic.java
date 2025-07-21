@@ -8,7 +8,6 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.CleanroomMachine;
-import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 
 import net.minecraft.network.chat.Component;
@@ -61,11 +60,7 @@ public class CleanroomLogic extends RecipeLogic implements IWorkable {
                 // drain the energy
                 if (!consumeEnergy()) {
                     if (progress > 0 && machine.regressWhenWaiting()) {
-                        if (ConfigHolder.INSTANCE.machines.recipeProgressLowEnergy) {
-                            this.progress = 1;
-                        } else {
-                            this.progress = Math.max(1, progress - 2);
-                        }
+                        this.progress = 1;
                     }
 
                     // the cleanroom does not have enough energy, so it looses cleanliness

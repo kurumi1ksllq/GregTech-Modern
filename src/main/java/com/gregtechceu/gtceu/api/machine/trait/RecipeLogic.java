@@ -109,6 +109,10 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
     @Getter
     protected long totalContinuousRunningTime;
     @SaveField
+    protected int runAttempt = 0;
+    protected int runDelay = 0;
+    @SaveField
+    @Getter
     @Setter
     protected boolean suspendAfterFinish = false;
     @Getter
@@ -186,7 +190,11 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
         if (!isSuspend()) {
             if (!isIdle() && lastRecipe != null) {
                 if (progress < duration) {
-                    handleRecipeWorking();
+                    if (runDelay > 0) {
+                        runDelay--;
+                    } else {
+                        handleRecipeWorking();
+                    }
                 }
                 if (progress >= duration) {
                     onRecipeFinish();
@@ -260,6 +268,12 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
                 totalContinuousRunningTime++;
             } else {
                 setWaiting(handleTick.reason());
+                runAttempt++;
+                if (runAttempt > 5) {
+                    runAttempt = 0;
+                    setStatus(Status.SUSPEND);
+                }
+                runDelay = runAttempt * 10;
             }
         } else {
             setWaiting(conditionResult.reason());
@@ -271,11 +285,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
 
     protected void regressRecipe() {
         if (progress > 0 && machine.regressWhenWaiting()) {
-            if (ConfigHolder.INSTANCE.machines.recipeProgressLowEnergy) {
-                this.progress = 1;
-            } else {
-                this.progress = Math.max(1, progress - 2);
-            }
+            this.progress = 1;
         }
     }
 
@@ -357,6 +367,9 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
             if (this.status == Status.WORKING) {
                 this.totalContinuousRunningTime = 0;
             }
+            if (status == Status.SUSPEND && suspendAfterFinish) {
+                suspendAfterFinish = false;
+            }
             machine.notifyStatusChanged(this.status, status);
             this.status = status;
             getSyncDataHolder().markClientSyncFieldDirty("status");
@@ -399,14 +412,13 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
     }
 
     public boolean isWorkingEnabled() {
-        return !isSuspend();
+        return !isSuspend() && !isSuspendAfterFinish();
     }
 
     @Override
     public void setWorkingEnabled(boolean isWorkingAllowed) {
-        if (!isWorkingAllowed) {
-            setStatus(Status.SUSPEND);
-        } else {
+        setSuspendAfterFinish(!isWorkingAllowed);
+        if (isWorkingAllowed) {
             if (lastRecipe != null && duration > 0) {
                 setStatus(Status.WORKING);
             } else {
@@ -427,6 +439,8 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
     public void onRecipeFinish() {
         machine.afterWorking();
         if (lastRecipe != null) {
+            runAttempt = 0;
+            runDelay = 0;
             consecutiveRecipes++;
             handleRecipeIO(lastRecipe, IO.OUT);
             if (machine.alwaysTryModifyRecipe()) {
@@ -448,7 +462,6 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
             } else {
                 if (suspendAfterFinish) {
                     setStatus(Status.SUSPEND);
-                    suspendAfterFinish = false;
                 } else {
                     setStatus(Status.IDLE);
                     waitingReason = recipeCheck.reason();

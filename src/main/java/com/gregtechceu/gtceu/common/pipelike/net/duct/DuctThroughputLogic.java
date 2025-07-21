@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class DuctThroughputLogic extends AbstractFloatLogicData<DuctThroughputLogic> {
 
-    public static final FloatLogicType<DuctThroughputLogic> TYPE = new FloatLogicType<>(GTCEu.MOD_ID, "DuctThroughput",
+    public static final FloatLogicType<DuctThroughputLogic> TYPE = new FloatLogicType<>(GTCEu.id("duct_throughput"),
             DuctThroughputLogic::new, new DuctThroughputLogic());
 
     @Override

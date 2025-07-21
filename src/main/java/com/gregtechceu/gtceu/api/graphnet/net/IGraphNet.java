@@ -144,5 +144,5 @@ public interface IGraphNet {
      * Should only be used by the internal {@link GraphNetBacker} backing this graphnet.
      */
     @ApiStatus.Internal
-    void setDirty();
+    void markAsDirty();
 }

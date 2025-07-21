@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.utils.reference;
+package com.gregtechceu.gtceu.utils.collections;
 
 import org.jetbrains.annotations.NotNull;
 

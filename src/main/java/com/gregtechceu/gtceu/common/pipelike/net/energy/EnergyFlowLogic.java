@@ -1,68 +1,67 @@
 package com.gregtechceu.gtceu.common.pipelike.net.energy;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.graphnet.logic.AbstractTransientLogicData;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicType;
+import com.gregtechceu.gtceu.api.graphnet.logic.RingBufferTransientLogicData;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2LongMap;
+import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
 
-public class EnergyFlowLogic extends AbstractTransientLogicData<EnergyFlowLogic> {
+public class EnergyFlowLogic extends RingBufferTransientLogicData<EnergyFlowLogic, List<EnergyFlowData>> {
 
-    public static final NetLogicType<EnergyFlowLogic> TYPE = new NetLogicType<>(GTCEu.MOD_ID, "EnergyFlow",
+    public static final NetLogicType<EnergyFlowLogic> TYPE = new NetLogicType<>(GTCEu.id("energy_flow"),
             EnergyFlowLogic::new, new EnergyFlowLogic());
-
-    private final AveragingPerTickCounter averageVoltageCounter = new AveragingPerTickCounter();
-    private final AveragingPerTickCounter averageAmperageCounter = new AveragingPerTickCounter();
 
     public static final int MEMORY_TICKS = 10;
 
-    @NotNull
-    private final Long2ObjectOpenHashMap<List<EnergyFlowData>> memory = new Long2ObjectOpenHashMap<>();
+    private final Long2LongMap sum = new Long2LongOpenHashMap();
+    @Getter
+    private @Nullable EnergyFlowData last;
+
+    public EnergyFlowLogic() {
+        super(MEMORY_TICKS);
+    }
 
     @Override
     public @NotNull NetLogicType<EnergyFlowLogic> getType() {
         return TYPE;
     }
 
-    public @NotNull Long2ObjectOpenHashMap<List<EnergyFlowData>> getMemory() {
-        updateMemory(GTCEu.getMinecraftServer().getTickCount());
-        return memory;
+    public @NotNull Long2LongMap getSum(boolean reducedUpdate) {
+        updateBuffer(TickTracker.getTick(), reducedUpdate);
+        return sum;
     }
 
-    public @NotNull List<EnergyFlowData> getFlow(long tick) {
-        updateMemory(tick);
-        return memory.getOrDefault(tick, Collections.emptyList());
+    public @NotNull List<EnergyFlowData> getFlow(int tick) {
+        updateBuffer(tick, false);
+        return getCurrentOrDefault(Collections.emptyList());
     }
 
-    public void recordFlow(long tick, EnergyFlowData flow) {
-        averageVoltageCounter.increment(tick, flow.getEU());
-        averageAmperageCounter.increment(tick, flow.amperage());
-
-        updateMemory(tick);
-        memory.computeIfAbsent(tick, k -> new ObjectArrayList<>()).add(flow);
+    public void recordFlow(int tick, EnergyFlowData flow) {
+        updateBuffer(tick, false);
+        computeCurrentIfAbsent(() -> new ObjectArrayList<>(4)).add(flow);
+        sum.put(flow.voltage(), sum.get(flow.voltage()) + flow.amperage());
+        last = flow;
     }
 
-    private void updateMemory(long tick) {
-        var iter = memory.long2ObjectEntrySet().fastIterator();
-        while (iter.hasNext()) {
-            Long2ObjectMap.Entry<List<EnergyFlowData>> entry = iter.next();
-            if (entry.getLongKey() + MEMORY_TICKS < tick) {
-                iter.remove();
+    @Override
+    protected void dropEntry(List<EnergyFlowData> entry) {
+        super.dropEntry(entry);
+        for (var e : entry) {
+            long fetch = sum.get(e.voltage());
+            if (e.amperage() >= fetch) {
+                sum.remove(e.voltage());
+            } else {
+                sum.put(e.voltage(), fetch - e.amperage());
             }
         }
-    }
-
-    public double getAverageAmperage(long currentTick) {
-        return averageAmperageCounter.getAverage(currentTick);
-    }
-
-    public double getAverageVoltage(long currentTick) {
-        return averageVoltageCounter.getAverage(currentTick);
     }
 }

@@ -45,7 +45,8 @@ import java.util.Set;
 
 public final class MaterialFluidProperties implements PipeNetProperties.IPipeNetMaterialProperty, IPropertyFluidFilter {
 
-    public static final MaterialPropertyKey<MaterialFluidProperties> KEY = new MaterialPropertyKey<>("FluidProperties");
+    public static final MaterialPropertyKey<MaterialFluidProperties> KEY = new MaterialPropertyKey<>(
+            "fluid_properties");
 
     @Getter
     private final Set<FluidAttribute> containedAttributes = new ObjectOpenHashSet<>();
@@ -217,7 +218,7 @@ public final class MaterialFluidProperties implements PipeNetProperties.IPipeNet
                     .setLogicEntry(FluidContainmentLogic.TYPE.getWith(containableStates, containedAttributes,
                             maxFluidTemperature))
                     .setLogicEntry(TemperatureLogic.TYPE.getWith(TemperatureLossFunction.getOrCreatePipe(coolingFactor),
-                            materialMeltTemperature, minFluidTemperature, 50 * pipe.material(), null));
+                            materialMeltTemperature, minFluidTemperature, 50 * pipe.material(), -1));
             if (pipe.channelCount() > 1) {
                 data.setLogicEntry(ChannelCountLogic.TYPE.getWith(pipe.channelCount()));
             }

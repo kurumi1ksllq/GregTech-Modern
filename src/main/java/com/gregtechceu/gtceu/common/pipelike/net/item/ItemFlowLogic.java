@@ -1,77 +1,75 @@
 package com.gregtechceu.gtceu.common.pipelike.net.item;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.graphnet.logic.AbstractTransientLogicData;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicType;
+import com.gregtechceu.gtceu.api.graphnet.logic.RingBufferTransientLogicData;
 import com.gregtechceu.gtceu.api.graphnet.predicate.test.ItemTestObject;
-import com.gregtechceu.gtceu.utils.GTUtil;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
 import net.minecraft.world.item.ItemStack;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2LongArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMaps;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class ItemFlowLogic extends AbstractTransientLogicData<ItemFlowLogic> {
+public class ItemFlowLogic extends RingBufferTransientLogicData<ItemFlowLogic, Object2LongMap<ItemTestObject>> {
 
-    public static final NetLogicType<ItemFlowLogic> TYPE = new NetLogicType<>(GTCEu.MOD_ID, "ItemFlow",
+    public static final NetLogicType<ItemFlowLogic> TYPE = new NetLogicType<>(GTCEu.id("item_flow"),
             ItemFlowLogic::new, new ItemFlowLogic());
 
     public static final int MEMORY_TICKS = WorldItemNet.getBufferTicks();
-    public static final int BUFFER_MULT = MEMORY_TICKS / WorldItemNet.getBufferRegenerationFactor();
 
-    private final Long2ObjectOpenHashMap<Object2LongMap<ItemTestObject>> memory = new Long2ObjectOpenHashMap<>();
-    private ItemStack last;
+    private final Object2LongMap<ItemTestObject> sum = new Object2LongOpenHashMap<>();
+    private @Nullable ItemTestObject last;
+
+    public ItemFlowLogic() {
+        super(MEMORY_TICKS);
+    }
 
     @Override
     public @NotNull NetLogicType<ItemFlowLogic> getType() {
         return TYPE;
     }
 
-    public @NotNull Long2ObjectOpenHashMap<Object2LongMap<ItemTestObject>> getMemory() {
-        updateMemory(GTUtil.getCurrentServerTick());
-        return memory;
-    }
-
-    public @NotNull Object2LongMap<ItemTestObject> getSum() {
-        Object2LongMap<ItemTestObject> sum = new Object2LongArrayMap<>();
-        for (Object2LongMap<ItemTestObject> list : getMemory().values()) {
-            for (var entry : list.object2LongEntrySet()) {
-                sum.put(entry.getKey(), sum.getLong(entry.getKey()) + entry.getLongValue());
-            }
-        }
+    public @NotNull Object2LongMap<ItemTestObject> getSum(boolean reducedUpdate) {
+        updateBuffer(TickTracker.getTick(), reducedUpdate);
         return sum;
     }
 
-    public @NotNull Object2LongMap<ItemTestObject> getFlow(long tick) {
-        updateMemory(tick);
-        return memory.getOrDefault(tick, Object2LongMaps.emptyMap());
+    public @NotNull Object2LongMap<ItemTestObject> getFlow(int tick) {
+        updateBuffer(tick, false);
+        return getCurrentOrDefault(Object2LongMaps.emptyMap());
     }
 
-    public void recordFlow(long tick, @NotNull ItemStack flow) {
+    public void recordFlow(int tick, @NotNull ItemStack flow) {
         recordFlow(tick, new ItemTestObject(flow), flow.getCount());
     }
 
-    public void recordFlow(long tick, @NotNull ItemTestObject testObject, int amount) {
-        updateMemory(tick);
-        Object2LongMap<ItemTestObject> map = memory.computeIfAbsent(tick, k -> new Object2LongArrayMap<>());
+    public void recordFlow(int tick, @NotNull ItemTestObject testObject, int amount) {
+        updateBuffer(tick, false);
+        Object2LongMap<ItemTestObject> map = computeCurrentIfAbsent(() -> new Object2LongArrayMap<>(4));
         map.put(testObject, map.getLong(testObject) + amount);
-        last = testObject.recombine(amount);
+        sum.put(testObject, sum.getLong(testObject) + amount);
+        last = testObject;
     }
 
-    public ItemStack getLast() {
-        return last;
-    }
-
-    private void updateMemory(long tick) {
-        var iter = memory.long2ObjectEntrySet().fastIterator();
-        while (iter.hasNext()) {
-            var entry = iter.next();
-            if (entry.getLongKey() + MEMORY_TICKS < tick) {
-                iter.remove();
+    @Override
+    protected void dropEntry(Object2LongMap<ItemTestObject> entry) {
+        super.dropEntry(entry);
+        for (var e : entry.object2LongEntrySet()) {
+            long fetch = sum.getLong(e.getKey());
+            if (e.getLongValue() >= fetch) {
+                sum.removeLong(e.getKey());
+            } else {
+                sum.put(e.getKey(), fetch - e.getLongValue());
             }
         }
+    }
+
+    public @Nullable ItemTestObject getLast() {
+        return last;
     }
 }

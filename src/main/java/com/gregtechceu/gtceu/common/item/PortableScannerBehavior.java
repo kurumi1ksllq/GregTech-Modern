@@ -31,6 +31,7 @@ import com.gregtechceu.gtceu.common.pipelike.net.energy.EnergyFlowLogic;
 import com.gregtechceu.gtceu.common.pipelike.net.energy.WorldEnergyNet;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -372,7 +373,8 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
                         int cumulativeCount = 0;
                         long cumulativeVoltage = 0;
                         long cumulativeAmperage = 0;
-                        for (var memory : data.getLogicEntryDefaultable(EnergyFlowLogic.TYPE).getMemory().values()) {
+                        for (var memory : data.getLogicEntryDefaultable(EnergyFlowLogic.TYPE).getMemory(true)
+                                .values()) {
                             cumulativeCount++;
                             int count = 0;
                             double voltage = 0;
@@ -402,7 +404,7 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
                                 Component.translatable(FormattingUtil.formatNumbers(cumulativeAmperage))
                                         .withStyle(ChatFormatting.RED)));
 
-                        long tick = GTUtil.getCurrentServerTick();
+                        long tick = TickTracker.getTick();
                         int temp = data.getLogicEntryDefaultable(TemperatureLogic.TYPE).getTemperature(tick);
                         list.add(Component.translatable("behavior.portable_scanner.temperature",
                                 Component.translatable(FormattingUtil.formatNumbers(temp))

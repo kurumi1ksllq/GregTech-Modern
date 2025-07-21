@@ -4,13 +4,13 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.logic.TemperatureLogic;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
-import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
 import com.gregtechceu.gtceu.client.renderer.IRenderSetup;
 import com.gregtechceu.gtceu.client.util.BloomUtils;
 import com.gregtechceu.gtceu.client.util.DrawUtil;
 import com.gregtechceu.gtceu.client.util.EffectRenderContext;
 import com.gregtechceu.gtceu.client.util.RenderBufferHelper;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
 import com.lowdragmc.shimmer.client.shader.RenderUtils;
 
@@ -171,8 +171,7 @@ public class GTOverheatParticle extends GTParticle {
     }
 
     private int getTemperature() {
-        long tick = ClientProxy.getServerTickCount();
-        return temperatureLogic.getTemperature(tick);
+        return temperatureLogic.getTemperature(TickTracker.getTick());
     }
 
     public void updatePipeBoxes(@NotNull VoxelShape pipeBoxes) {

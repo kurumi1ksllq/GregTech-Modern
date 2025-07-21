@@ -14,8 +14,10 @@ import com.gregtechceu.gtceu.client.model.TextureOverrideModel;
 import com.gregtechceu.gtceu.client.model.machine.multipart.MultiPartBakedModel;
 import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererPackage;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
-import com.gregtechceu.gtceu.client.renderer.pipe.AbstractPipeModel;
+import com.gregtechceu.gtceu.client.renderer.pipe.PipeRenderProperties;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
+import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
+import com.gregtechceu.gtceu.client.util.RecolorableBakedQuad;
 import com.gregtechceu.gtceu.client.util.StaticFaceBakery;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
 import com.gregtechceu.gtceu.utils.GTMath;
@@ -227,7 +229,15 @@ public final class MachineModel extends BaseBakedModel implements IMachineRender
         BlockPos pos = modelData.get(MODEL_DATA_POS);
 
         MetaMachine machine = (level == null || pos == null) ? null : MetaMachine.getMachine(level, pos);
-        return getRenderQuads(machine, level, pos, blockState, side, rand, modelData, renderType);
+        List<BakedQuad> quads = getRenderQuads(machine, level, pos, blockState, side, rand, modelData, renderType);
+
+        for (ListIterator<BakedQuad> iter = quads.listIterator(); iter.hasNext();) {
+            BakedQuad quad = iter.next();
+            if (quad instanceof RecolorableBakedQuad recolorable) {
+                iter.set(GTQuadTransformers.setColor(recolorable, recolorable.getColor(), true));
+            }
+        }
+        return quads;
     }
 
     @Override
@@ -266,7 +276,7 @@ public final class MachineModel extends BaseBakedModel implements IMachineRender
         // render covers
         CoverRendererPackage rendererPackage = modelData.get(CoverRendererPackage.PROPERTY);
         if (rendererPackage != null) {
-            int color = GTMath.safeInt(modelData.get(AbstractPipeModel.COLOR_PROPERTY));
+            int color = GTMath.safeInt(modelData.get(PipeRenderProperties.COLOR_PROPERTY));
             ColorData colorData = new ColorData(color);
 
             rendererPackage.addQuads(quads, level, pos, side, rand, modelData, colorData, renderType);

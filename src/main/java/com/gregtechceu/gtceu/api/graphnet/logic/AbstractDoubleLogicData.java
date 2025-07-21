@@ -62,11 +62,6 @@ public abstract class AbstractDoubleLogicData<T extends AbstractDoubleLogicData<
             super(name, supplier, defaultable);
         }
 
-        public DoubleLogicType(@NotNull String namespace, @NotNull String name, @NotNull Supplier<@NotNull T> supplier,
-                               @NotNull T defaultable) {
-            super(namespace, name, supplier, defaultable);
-        }
-
         public T getWith(double value) {
             return getNew().setValue(value);
         }

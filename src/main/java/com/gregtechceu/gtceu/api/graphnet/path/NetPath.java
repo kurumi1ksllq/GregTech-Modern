@@ -15,18 +15,23 @@ public interface NetPath {
     @Unmodifiable
     <N extends NetNode> ImmutableCollection<N> getOrderedNodes();
 
+    @SuppressWarnings("unchecked")
     @NotNull
     default <N extends NetNode> N getSourceNode() {
         ImmutableCollection<NetNode> nodes = getOrderedNodes();
         return (N) nodes.asList().get(0);
     }
 
+    @SuppressWarnings("unchecked")
     @NotNull
     default <N extends NetNode> N getTargetNode() {
         ImmutableCollection<NetNode> nodes = getOrderedNodes();
         return (N) nodes.asList().get(nodes.size() - 1);
     }
 
+    /**
+     * Must always contain 1 more element than {@link #getOrderedNodes()}
+     */
     @NotNull
     @Unmodifiable
     <E extends NetEdge> ImmutableCollection<E> getOrderedEdges();

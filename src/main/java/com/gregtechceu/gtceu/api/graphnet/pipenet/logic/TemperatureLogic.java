@@ -10,7 +10,7 @@ import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IBurnable;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IFreezable;
 import com.gregtechceu.gtceu.client.particle.GTOverheatParticle;
-import com.gregtechceu.gtceu.utils.GTUtil;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +23,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 
@@ -42,7 +41,7 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
     private int temperatureMaximum;
     @Getter
     @Setter
-    private @Nullable Integer partialBurnTemperature;
+    private int partialBurnTemperature = -1;
     @Getter
     @Setter
     private int temperatureMinimum;
@@ -98,7 +97,8 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
     }
 
     public boolean isOverPartialBurnThreshold(int temperature) {
-        return getPartialBurnTemperature() != null && temperature > getPartialBurnTemperature();
+        int partial = getPartialBurnTemperature();
+        return partial > 0 && temperature > getPartialBurnTemperature();
     }
 
     public boolean isUnderMinimum(int temperature) {
@@ -106,7 +106,7 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
     }
 
     public void defaultHandleTemperature(Level world, BlockPos pos) {
-        int temp = getTemperature(GTUtil.getCurrentServerTick());
+        int temp = getTemperature(TickTracker.getTick());
         if (isUnderMinimum(temp)) {
             BlockState state = world.getBlockState(pos);
             if (state.getBlock() instanceof IFreezable freezable) {
@@ -175,20 +175,26 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
 
     @Override
     public void merge(NetNode otherOwner, NetLogicEntry<?, ?> unknown) {
-        if (!(unknown instanceof TemperatureLogic other)) return;
-        if (other.getTemperatureMinimum() > this.getTemperatureMinimum())
+        if (!(unknown instanceof TemperatureLogic other)) {
+            return;
+        }
+        if (other.getTemperatureMinimum() > this.getTemperatureMinimum()) {
             this.setTemperatureMinimum(other.getTemperatureMinimum());
-        if (other.getTemperatureMaximum() < this.getTemperatureMaximum())
+        }
+        if (other.getTemperatureMaximum() < this.getTemperatureMaximum()) {
             this.setTemperatureMaximum(other.getTemperatureMaximum());
+        }
         // since merge also occurs during nbt load, ignore the other's thermal energy.
-        if (other.getThermalMass() < this.getThermalMass()) this.setThermalMass(other.getThermalMass());
+        if (other.getThermalMass() < this.getThermalMass()) {
+            this.setThermalMass(other.getThermalMass());
+        }
         if (other.getFunctionPriority() > this.getFunctionPriority()) {
             this.setRestorationFunction(other.getRestorationFunction());
             this.setFunctionPriority(other.getFunctionPriority());
         }
-        if (other.getPartialBurnTemperature() != null && (this.getPartialBurnTemperature() == null ||
-                other.getPartialBurnTemperature() < this.getPartialBurnTemperature()))
+        if (other.getPartialBurnTemperature() < this.getPartialBurnTemperature()) {
             this.setPartialBurnTemperature(other.getPartialBurnTemperature());
+        }
     }
 
     @Override
@@ -200,7 +206,7 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
         tag.putInt("ThermalMass", this.thermalMass);
         tag.put("RestorationFunction", this.restorationFunction.serializeNBT());
         tag.putInt("FunctionPrio", this.functionPriority);
-        if (partialBurnTemperature != null) tag.putInt("PartialBurn", partialBurnTemperature);
+        if (partialBurnTemperature != -1) tag.putInt("PartialBurn", partialBurnTemperature);
         return tag;
     }
 
@@ -214,7 +220,9 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
         this.functionPriority = nbt.getInt("FunctionPrio");
         if (nbt.contains("PartialBurn")) {
             this.partialBurnTemperature = nbt.getInt("PartialBurn");
-        } else this.partialBurnTemperature = null;
+        } else {
+            this.partialBurnTemperature = -1;
+        }
     }
 
     @Override
@@ -228,8 +236,11 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
             buf.writeVarInt(this.functionPriority);
             // laughs in java 9
             // noinspection ReplaceNullCheck
-            if (this.partialBurnTemperature == null) buf.writeVarInt(-1);
-            else buf.writeVarInt(this.partialBurnTemperature);
+            if (this.partialBurnTemperature == -1) {
+                buf.writeVarInt(-1);
+            } else {
+                buf.writeVarInt(this.partialBurnTemperature);
+            }
         }
     }
 
@@ -242,16 +253,14 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
             this.thermalMass = buf.readVarInt();
             this.restorationFunction.decode(buf);
             this.functionPriority = buf.readVarInt();
-            int partialBurn = buf.readVarInt();
-            if (partialBurn != -1) this.partialBurnTemperature = partialBurn;
-            else this.partialBurnTemperature = null;
+            this.partialBurnTemperature = buf.readVarInt();
         }
     }
 
     public static class TemperatureLogicType extends NetLogicType<TemperatureLogic> {
 
         public TemperatureLogicType() {
-            super(GTCEu.MOD_ID, "Temperature", TemperatureLogic::new, new TemperatureLogic());
+            super(GTCEu.id("temperature"), TemperatureLogic::new, new TemperatureLogic());
         }
 
         public TemperatureLogic getWith(@NotNull TemperatureLossFunction temperatureRestorationFunction,
@@ -266,19 +275,19 @@ public final class TemperatureLogic extends NetLogicEntry<TemperatureLogic, Comp
 
         public TemperatureLogic getWith(@NotNull TemperatureLossFunction temperatureRestorationFunction,
                                         int temperatureMaximum, int temperatureMinimum, int thermalMass) {
-            return getWith(temperatureRestorationFunction, temperatureMaximum, temperatureMinimum, thermalMass, 0);
+            return getWith(temperatureRestorationFunction, temperatureMaximum, temperatureMinimum, thermalMass, -1);
         }
 
         public TemperatureLogic getWith(@NotNull TemperatureLossFunction temperatureRestorationFunction,
                                         int temperatureMaximum, int temperatureMinimum, int thermalMass,
-                                        @Nullable Integer partialBurnTemperature) {
+                                        int partialBurnTemperature) {
             return getWith(temperatureRestorationFunction, temperatureMaximum, temperatureMinimum, thermalMass,
                     partialBurnTemperature, 0);
         }
 
         public TemperatureLogic getWith(@NotNull TemperatureLossFunction temperatureRestorationFunction,
                                         int temperatureMaximum, int temperatureMinimum, int thermalMass,
-                                        @Nullable Integer partialBurnTemperature, int functionPriority) {
+                                        int partialBurnTemperature, int functionPriority) {
             return getNew()
                     .setRestorationFunction(temperatureRestorationFunction)
                     .setTemperatureMaximum(temperatureMaximum)

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class VoltageLossLogic extends AbstractDoubleLogicData<VoltageLossLogic> {
 
-    public static final DoubleLogicType<VoltageLossLogic> TYPE = new DoubleLogicType<>(GTCEu.MOD_ID, "VoltageLoss",
+    public static final DoubleLogicType<VoltageLossLogic> TYPE = new DoubleLogicType<>(GTCEu.id("voltage_loss"),
             VoltageLossLogic::new, new VoltageLossLogic());
 
     @Override

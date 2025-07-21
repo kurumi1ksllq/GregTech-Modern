@@ -5,9 +5,8 @@ import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
 import com.gregtechceu.gtceu.api.graphnet.path.NetPath;
 import com.gregtechceu.gtceu.api.graphnet.path.PathBuilder;
 import com.gregtechceu.gtceu.api.graphnet.traverse.NetIteratorSupplier;
-import com.gregtechceu.gtceu.common.pipelike.net.energy.StandardEnergyPath;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -19,23 +18,24 @@ public class DuctGroupData extends PathCacheGroupData {
     }
 
     public DuctGroupData(NetIteratorSupplier iteratorSupplier,
-                         @NotNull Object2ObjectOpenHashMap<NetNode, SecondaryCache> cache) {
+                         @NotNull Reference2ReferenceOpenHashMap<NetNode, SecondaryCache> cache) {
         super(iteratorSupplier, cache);
     }
 
     @Override
     protected PathBuilder createBuilder(@NotNull NetNode origin) {
-        return new StandardEnergyPath.Builder(origin);
+        return new StandardDuctPath.Builder(origin);
     }
 
     @Override
     protected NetPath buildSingleton(@NotNull NetNode singleton) {
-        return new StandardEnergyPath.SingletonEnergyPath(singleton);
+        return new StandardDuctPath.SingletonDuctPath(singleton);
     }
 
     @Override
     protected @NotNull PathCacheGroupData buildFilteredCache(@NotNull Set<NetNode> filterNodes) {
-        Object2ObjectOpenHashMap<NetNode, SecondaryCache> child = new Object2ObjectOpenHashMap<>(this.cache);
+        Reference2ReferenceOpenHashMap<NetNode, SecondaryCache> child = new Reference2ReferenceOpenHashMap<>(
+                this.cache);
         child.entrySet().removeIf(entry -> {
             if (!filterNodes.contains(entry.getKey())) return true;
             SecondaryCache cache = entry.getValue();

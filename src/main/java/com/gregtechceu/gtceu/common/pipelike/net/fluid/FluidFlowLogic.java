@@ -1,73 +1,72 @@
 package com.gregtechceu.gtceu.common.pipelike.net.fluid;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.graphnet.logic.AbstractTransientLogicData;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicType;
+import com.gregtechceu.gtceu.api.graphnet.logic.RingBufferTransientLogicData;
 import com.gregtechceu.gtceu.api.graphnet.predicate.test.FluidTestObject;
-import com.gregtechceu.gtceu.utils.GTUtil;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
 import net.minecraftforge.fluids.FluidStack;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2LongArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMaps;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class FluidFlowLogic extends AbstractTransientLogicData<FluidFlowLogic> {
+public class FluidFlowLogic extends RingBufferTransientLogicData<FluidFlowLogic, Object2LongMap<FluidTestObject>> {
 
-    public static final NetLogicType<FluidFlowLogic> TYPE = new NetLogicType<>(GTCEu.MOD_ID, "FluidFlow",
+    public static final NetLogicType<FluidFlowLogic> TYPE = new NetLogicType<>(GTCEu.id("fluid_flow"),
             FluidFlowLogic::new, new FluidFlowLogic());
 
     public static final int MEMORY_TICKS = WorldFluidNet.getBufferTicks();
 
-    private final Long2ObjectOpenHashMap<Object2LongMap<FluidTestObject>> memory = new Long2ObjectOpenHashMap<>();
+    private final Object2LongMap<FluidTestObject> sum = new Object2LongOpenHashMap<>();
     @Getter
-    private FluidStack last;
+    private @Nullable FluidTestObject last;
+
+    public FluidFlowLogic() {
+        super(MEMORY_TICKS);
+    }
 
     @Override
     public @NotNull NetLogicType<FluidFlowLogic> getType() {
         return TYPE;
     }
 
-    public @NotNull Long2ObjectOpenHashMap<Object2LongMap<FluidTestObject>> getMemory() {
-        updateMemory(GTUtil.getCurrentServerTick());
-        return memory;
-    }
-
-    public @NotNull Object2LongMap<FluidTestObject> getSum() {
-        Object2LongMap<FluidTestObject> sum = new Object2LongArrayMap<>();
-        for (Object2LongMap<FluidTestObject> list : getMemory().values()) {
-            for (var entry : list.object2LongEntrySet()) {
-                sum.put(entry.getKey(), sum.getLong(entry.getKey()) + entry.getLongValue());
-            }
-        }
+    public @NotNull Object2LongMap<FluidTestObject> getSum(boolean reducedUpdate) {
+        updateBuffer(TickTracker.getTick(), reducedUpdate);
         return sum;
     }
 
-    public @NotNull Object2LongMap<FluidTestObject> getFlow(long tick) {
-        updateMemory(tick);
-        return memory.getOrDefault(tick, Object2LongMaps.emptyMap());
+    public @NotNull Object2LongMap<FluidTestObject> getFlow(int tick) {
+        updateBuffer(tick, false);
+        return getCurrentOrDefault(Object2LongMaps.emptyMap());
     }
 
-    public void recordFlow(long tick, @NotNull FluidStack flow) {
+    public void recordFlow(int tick, @NotNull FluidStack flow) {
         recordFlow(tick, new FluidTestObject(flow), flow.getAmount());
     }
 
-    public void recordFlow(long tick, @NotNull FluidTestObject testObject, int amount) {
-        updateMemory(tick);
-        Object2LongMap<FluidTestObject> map = memory.computeIfAbsent(tick, k -> new Object2LongArrayMap<>());
+    public void recordFlow(int tick, @NotNull FluidTestObject testObject, int amount) {
+        updateBuffer(tick, false);
+        Object2LongMap<FluidTestObject> map = computeCurrentIfAbsent(() -> new Object2LongArrayMap<>(4));
         map.put(testObject, map.getLong(testObject) + amount);
-        last = testObject.recombine(amount);
+        sum.put(testObject, sum.getLong(testObject) + amount);
+        last = testObject;
     }
 
-    private void updateMemory(long tick) {
-        var iter = memory.long2ObjectEntrySet().fastIterator();
-        while (iter.hasNext()) {
-            var entry = iter.next();
-            if (entry.getLongKey() + MEMORY_TICKS < tick) {
-                iter.remove();
+    @Override
+    protected void dropEntry(Object2LongMap<FluidTestObject> entry) {
+        super.dropEntry(entry);
+        for (var e : entry.object2LongEntrySet()) {
+            long fetch = sum.getLong(e.getKey());
+            if (e.getLongValue() >= fetch) {
+                sum.removeLong(e.getKey());
+            } else {
+                sum.put(e.getKey(), fetch - e.getLongValue());
             }
         }
     }

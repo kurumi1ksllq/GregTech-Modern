@@ -35,8 +35,8 @@ public abstract class BaseSyncedBlockEntity extends BlockEntity implements ISync
     }
 
     public @Nullable BlockEntity getNeighbor(@NotNull Direction side) {
-        if (level == null || worldPosition == null) return null;
-        return level.getBlockEntity(worldPosition.relative(side));
+        if (level == null) return null;
+        return level.getBlockEntity(getBlockPos().relative(side));
     }
 
     @Override
@@ -45,7 +45,7 @@ public abstract class BaseSyncedBlockEntity extends BlockEntity implements ISync
         dataWriter.accept(new FriendlyByteBuf(backedBuffer));
         byte[] updateData = Arrays.copyOfRange(backedBuffer.array(), 0, backedBuffer.writerIndex());
         this.updates.add(discriminator, updateData);
-        notifyWorld();
+        notifyWorldOfPendingPackets();
     }
 
     /**
@@ -55,19 +55,20 @@ public abstract class BaseSyncedBlockEntity extends BlockEntity implements ISync
      */
     public void addPacketsFrom(BaseSyncedBlockEntity syncedBlockEntity) {
         if (this == syncedBlockEntity || syncedBlockEntity.updates.isEmpty()) return;
-        boolean wasEmpty = this.updates.isEmpty();
         this.updates.addAll(syncedBlockEntity.updates);
         syncedBlockEntity.updates.clear();
-        if (wasEmpty) notifyWorld(); // if the data is not empty we already notified the world
+        notifyWorldOfPendingPackets();
     }
 
-    private void notifyWorld() {
+    protected void notifyWorldOfPendingPackets() {
+        // this must be called every time packets are added, because it doesn't always get picked up the first time.
         BlockState blockState = getBlockState();
-        level.sendBlockUpdated(getBlockPos(), blockState, blockState, 0);
+        getLevel().sendBlockUpdated(getBlockPos(), blockState, blockState, 0);
     }
 
     @Override
     public final Packet<ClientGamePacketListener> getUpdatePacket() {
+        beforeUpdatePacket(this.updates);
         if (this.updates.isEmpty()) {
             return null;
         }
@@ -75,6 +76,8 @@ public abstract class BaseSyncedBlockEntity extends BlockEntity implements ISync
         updateTag.put("d", this.updates.dumpToNbt());
         return ClientboundBlockEntityDataPacket.create(this, be -> updateTag);
     }
+
+    protected void beforeUpdatePacket(PacketDataList pendingUpdates) {}
 
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {

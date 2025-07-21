@@ -34,7 +34,10 @@ import net.minecraftforge.items.IItemHandler;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 
 public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
@@ -68,7 +71,7 @@ public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
                 // do not sync or handle logic on client side
                 coverBehavior.getSyncStorage().markAllDirty();
                 if (holder.isConnected(side) && !coverBehavior.canPipePassThrough()) {
-                    PipeBlock.disconnectTile(holder, holder.getPipeNeighbor(side, true), side);
+                    PipeBlock.disconnect(holder, holder.getPipeNeighbor(side, true), side);
                 }
             }
 
@@ -224,9 +227,10 @@ public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
         return covers.get(side);
     }
 
+    @UnmodifiableView
     @Override
-    public boolean hasAnyCover() {
-        return !covers.isEmpty();
+    public @NotNull Collection<CoverBehavior> getAttachedCovers() {
+        return Collections.unmodifiableCollection(covers.values());
     }
 
     @Override

@@ -57,11 +57,6 @@ public abstract class AbstractByteLogicData<T extends AbstractByteLogicData<T>> 
             super(name, supplier, defaultable);
         }
 
-        public ByteLogicType(@NotNull String namespace, @NotNull String name, @NotNull Supplier<@NotNull T> supplier,
-                             @NotNull T defaultable) {
-            super(namespace, name, supplier, defaultable);
-        }
-
         public T getWith(byte value) {
             return getNew().setValue(value);
         }

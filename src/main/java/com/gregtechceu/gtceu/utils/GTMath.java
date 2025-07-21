@@ -71,4 +71,12 @@ public class GTMath {
     public static int safeInt(@Nullable Integer integer) {
         return integer == null ? 0 : integer;
     }
+
+    public static float safeFloat(@Nullable Float afloat) {
+        return afloat == null ? 0 : afloat;
+    }
+
+    public static boolean safeBool(@Nullable Boolean bool) {
+        return bool != null && bool;
+    }
 }

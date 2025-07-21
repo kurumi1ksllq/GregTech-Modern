@@ -46,11 +46,6 @@ public final class WorldEnergyNet extends WorldPipeNet {
     }
 
     @Override
-    public void setDirty() {
-        super.setDirty();
-    }
-
-    @Override
     public int getNetworkID() {
         return 0;
     }

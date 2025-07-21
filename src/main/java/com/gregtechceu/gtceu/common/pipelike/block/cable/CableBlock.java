@@ -119,7 +119,7 @@ public class CableBlock extends PipeMaterialBlock implements IBurnable {
                 EnergyFlowLogic logic = node.getData().getLogicEntryNullable(EnergyFlowLogic.TYPE);
 
                 if (logic != null) {
-                    long tick = GTCEu.getMinecraftServer().getTickCount();
+                    int tick = GTCEu.getMinecraftServer().getTickCount();
                     long cumulativeDamage = 0;
                     for (EnergyFlowData data : logic.getFlow(tick)) {
                         cumulativeDamage += (GTUtil.getTierByVoltage(data.voltage()) + 1) * data.amperage() * 4;

@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.graphnet.pipenet.IPipeNetNodeHandler;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeMaterialStructure;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeStructure;
+import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -14,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
@@ -138,6 +140,8 @@ public class PipeNetProperties implements IMaterialProperty, IPipeNetNodeHandler
             private final @NotNull String name;
 
             public MaterialPropertyKey(@NotNull String name) {
+                Preconditions.checkArgument(!FormattingUtil.hasUpperCase(name),
+                        "Material property keys cannot have uppercase characters! got %s", name);
                 this.name = name;
             }
 

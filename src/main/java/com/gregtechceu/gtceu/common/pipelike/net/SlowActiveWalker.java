@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
 import com.gregtechceu.gtceu.api.graphnet.path.NetPath;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.ActivablePipeBlockEntity;
-import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.TaskScheduler;
 import com.gregtechceu.gtceu.utils.function.Task;
 
@@ -47,7 +46,7 @@ public class SlowActiveWalker implements Task {
      */
     public static void dispatch(Level world, NetPath path, int delay,
                                 int stepSize, int activeLength) {
-        long tick = GTUtil.getCurrentServerTick();
+        long tick = TickTracker.getTick();
         RECENT_DISPATCHES.compute(path, (k, v) -> {
             if (v == null || v < tick) {
                 SlowActiveWalker walker = new SlowActiveWalker(path, delay, stepSize, activeLength);

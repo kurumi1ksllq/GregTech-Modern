@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.client.renderer.pipe.quad;
 
 import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
+import com.gregtechceu.gtceu.client.util.RecolorableBakedQuad;
 import com.gregtechceu.gtceu.client.util.StaticFaceBakery;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -25,12 +26,15 @@ public final class QuadHelper {
 
     private QuadHelper() {}
 
-    public static @NotNull BakedQuad buildQuad(Direction normal, Pair<Vector3f, Vector3f> box,
-                                               @NotNull UVMapper uv, @NotNull SpriteInformation targetSprite) {
-        BlockElementFace face = new BlockElementFace(null, -1, targetSprite.sprite().contents().name().toString(),
+    public static @NotNull RecolorableBakedQuad buildQuad(Direction normal, Pair<Vector3f, Vector3f> box,
+                                                          @NotNull UVMapper uv,
+                                                          @NotNull SpriteInformation targetSprite) {
+        BlockElementFace face = new BlockElementFace(null, targetSprite.colorID(),
+                targetSprite.sprite().contents().name().toString(),
                 uv.map(normal, box), ForgeFaceData.DEFAULT);
-        return StaticFaceBakery.bakeRecolorableQuad(box.getLeft(), box.getRight(), face, targetSprite, normal,
+        BakedQuad quad = StaticFaceBakery.bakeQuad(box.getLeft(), box.getRight(), face, targetSprite.sprite(), normal,
                 BlockModelRotation.X0_Y0, null, true, 0);
+        return new RecolorableBakedQuad(quad, targetSprite);
     }
 
     public static @NotNull BakedQuad buildQuad(Direction normal, Pair<Vector3f, Vector3f> box,

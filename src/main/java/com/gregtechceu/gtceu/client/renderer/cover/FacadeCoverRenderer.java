@@ -1,12 +1,15 @@
 package com.gregtechceu.gtceu.client.renderer.cover;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.client.model.BaseBakedModel;
 import com.gregtechceu.gtceu.client.model.ItemBakedModel;
 import com.gregtechceu.gtceu.client.model.TextureOverrideModel;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
+import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
 import com.gregtechceu.gtceu.client.util.FacadeBlockAndTintGetter;
 import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
+import com.gregtechceu.gtceu.client.util.RecolorableBakedQuad;
 import com.gregtechceu.gtceu.client.util.StaticFaceBakery;
 import com.gregtechceu.gtceu.common.cover.FacadeCover;
 import com.gregtechceu.gtceu.common.item.FacadeItemBehaviour;
@@ -179,7 +182,7 @@ public class FacadeCoverRenderer extends BaseBakedModel implements CoverRenderer
                          @NotNull Direction attachedSide, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos,
                          EnumSet<Direction> renderPlate, boolean renderBackside,
                          RandomSource rand, ModelData modelData, ColorData colorData, RenderType renderType) {
-        addPlates(quads, getPlates(attachedSide, colorData, PLATE_QUADS), renderPlate, renderSide);
+        addPlates(quads, getPlates(attachedSide, colorData, PLATE_QUADS[GTValues.LV]), renderPlate, renderSide);
 
         BlockState state = modelData.get(FacadeCover.FACADE_STATE_PROPERTY);
         if (state == null || state.getRenderShape() != RenderShape.MODEL) {
@@ -212,8 +215,9 @@ public class FacadeCoverRenderer extends BaseBakedModel implements CoverRenderer
         for (BakedQuad quad : coverQuads) {
             if (quad.isTinted()) {
                 // if the quad has a tint index set, bake the tint into the vertex
-                int color = blockColors.getColor(state, level, pos, quad.getTintIndex());
-                quad = GTQuadTransformers.setColor(quad, color, true);
+                SpriteInformation info = new SpriteInformation(quad.getSprite(), quad.getTintIndex());
+                int color = blockColors.getColor(state, level, BlockPos.ZERO, quad.getTintIndex());
+                quad = new RecolorableBakedQuad(quad, color, info);
             } else {
                 // otherwise just copy the quad so we don't mutate the original model with the overlay offset
                 quad = GTQuadTransformers.copy(quad);

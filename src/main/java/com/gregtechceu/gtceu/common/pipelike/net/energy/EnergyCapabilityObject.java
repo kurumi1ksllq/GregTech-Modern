@@ -9,12 +9,14 @@ import com.gregtechceu.gtceu.api.graphnet.group.PathCacheGroupData;
 import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeCapabilityObject;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.IWorldPipeNetTile;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeCapabilityWrapper;
-import com.gregtechceu.gtceu.common.cover.ShutterCover;
 import com.gregtechceu.gtceu.utils.GTUtil;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -22,6 +24,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumMap;
 import java.util.List;
 
 public class EnergyCapabilityObject implements IPipeCapabilityObject, IEnergyContainer {
@@ -55,6 +58,8 @@ public class EnergyCapabilityObject implements IPipeCapabilityObject, IEnergyCon
         PathCacheGroupData.SecondaryCache cache = data.getOrCreate(node);
         List<EnergyPath> paths = new ObjectArrayList<>(group.getNodesUnderKey(ACTIVE_KEY).size());
         for (NetNode dest : group.getNodesUnderKey(ACTIVE_KEY)) {
+            if (!(dest instanceof WorldPipeNode)) continue;
+
             EnergyPath path = (EnergyPath) cache.getOrCompute(dest);
             if (path == null) continue;
             // construct the path list in order of ascending weight
@@ -66,27 +71,34 @@ public class EnergyCapabilityObject implements IPipeCapabilityObject, IEnergyCon
             paths.add(i, path);
         }
         long available = amperage;
-        for (EnergyPath path : paths) {
+        MAIN_LOOP:
+        for (int i = 0; i < paths.size(); i++) {
+            EnergyPath path = paths.get(i);
             NetNode target = path.getTargetNode();
-            if (!(target instanceof WorldPipeNode n)) continue;
-            for (var capability : n.getBlockEntity().getTargetsWithCapabilities(n).entrySet()) {
-                if (n == node && capability.getKey() == side) continue; // anti insert-to-our-source logic
+            // WorldPipeNode-ness was already determined in earlier loop
+            IWorldPipeNetTile pipeTile = ((WorldPipeNode) target).getBlockEntity();
+            EnumMap<Direction, BlockEntity> targets = pipeTile.getTargetsWithCapabilities(((WorldPipeNode) target));
+            for (Direction facing : GTUtil.DIRECTIONS) {
+                if (target == node && facing == side) continue; // anti insert-to-our-source logic
+                BlockEntity tile = targets.get(facing);
+                if (tile == null) continue;
+                IEnergyContainer container = tile.getCapability(GTCapability.CAPABILITY_ENERGY_CONTAINER,
+                        facing.getOpposite()).resolve().orElse(null);
+                if (container == null) continue;
 
-                IEnergyContainer container = capability.getValue().getCapability(
-                        GTCapability.CAPABILITY_ENERGY_CONTAINER, capability.getKey().getOpposite())
-                        .resolve().orElse(null);
-                if (container != null && !(n.getBlockEntity().getCoverHolder()
-                        .getCoverAtSide(capability.getKey()) instanceof ShutterCover)) {
-                    long allowed = container.acceptEnergyFromNetwork(capability.getKey(), voltage, amperage, true);
-                    EnergyPath.PathFlowReport flow = path.traverse(voltage, allowed);
+                long allowed = container.acceptEnergyFromNetwork(facing, voltage, available, true);
+                if (allowed <= 0) continue;
+
+                EnergyPath.PathFlowReport flow = path.traverse(voltage, allowed);
+                available -= allowed;
+                if (!simulate) {
+                    flow.report();
                     if (flow.euOut() > 0) {
-                        available -= allowed;
-                        if (!simulate) {
-                            flow.report();
-                            container.acceptEnergyFromNetwork(capability.getKey(), flow.voltageOut(),
-                                    flow.amperageOut(), false);
-                        }
+                        container.acceptEnergyFromNetwork(facing, flow.voltageOut(), flow.amperageOut(), false);
                     }
+                }
+                if (available <= 0) {
+                    break MAIN_LOOP;
                 }
             }
         }
@@ -120,7 +132,7 @@ public class EnergyCapabilityObject implements IPipeCapabilityObject, IEnergyCon
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
         return GTCapability.CAPABILITY_ENERGY_CONTAINER.orEmpty(capability, LazyOptional.of(() -> this));
     }
 
@@ -128,14 +140,14 @@ public class EnergyCapabilityObject implements IPipeCapabilityObject, IEnergyCon
     public long getInputPerSec() {
         EnergyGroupData data = getGroupData();
         if (data == null) return 0;
-        else return data.getEnergyInPerSec(GTUtil.getCurrentServerTick());
+        else return data.getEnergyInPerSec(TickTracker.getTick());
     }
 
     @Override
     public long getOutputPerSec() {
         EnergyGroupData data = getGroupData();
         if (data == null) return 0;
-        else return data.getEnergyOutPerSec(GTUtil.getCurrentServerTick());
+        else return data.getEnergyOutPerSec(TickTracker.getTick());
     }
 
     @Override

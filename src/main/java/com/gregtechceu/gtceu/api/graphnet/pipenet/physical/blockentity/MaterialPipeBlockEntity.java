@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity;
 
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeMaterialBlock;
-import com.gregtechceu.gtceu.client.renderer.pipe.AbstractPipeModel;
+import com.gregtechceu.gtceu.client.renderer.pipe.PipeRenderProperties;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
@@ -29,6 +29,8 @@ public class MaterialPipeBlockEntity extends PipeBlockEntity {
 
     @Override
     public @NotNull ModelData getModelData() {
-        return super.getModelData().derive().with(AbstractPipeModel.MATERIAL_PROPERTY, getBlockType().material).build();
+        return super.getModelData().derive()
+                .with(PipeRenderProperties.MATERIAL_PROPERTY, getBlockType().material)
+                .build();
     }
 }

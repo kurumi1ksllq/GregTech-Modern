@@ -86,8 +86,10 @@ public class IntegrationLang {
         provider.add("gtceu.top.fluid_auto_output", "Fluid Output: %s");
         provider.add("gtceu.top.auto_output", "Auto Output");
         provider.add("gtceu.top.allow_output_input", "Allow Input");
-        provider.add("gtceu.top.cable_voltage", "Voltage: ");
-        provider.add("gtceu.top.cable_amperage", "Amperage: ");
+        provider.add("gtceu.top.pipe.temperature", "Current Temperature: ");
+        provider.add("gtceu.top.pipe.energy", "Recent Energy Transfer: ");
+        provider.add("gtceu.top.pipe.energy_per", "§a%s EU/t §f(%s§f) @ §a%sA");
+        provider.add("gtceu.top.pipe.energy_last", "Last Transfer: §a%s EU/t §f(%s§f) @ §a%sA");
         provider.add("gtceu.top.pipe.fluid_last", "Last Fluid: ");
         provider.add("gtceu.top.pipe.item_last", "Last Item: ");
 

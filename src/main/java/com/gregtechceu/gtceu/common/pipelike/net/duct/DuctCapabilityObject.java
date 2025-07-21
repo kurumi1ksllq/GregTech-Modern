@@ -5,29 +5,28 @@ import com.gregtechceu.gtceu.api.capability.IHazardParticleContainer;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.HazardProperty;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
-import com.gregtechceu.gtceu.api.graphnet.GraphNetUtility;
+import com.gregtechceu.gtceu.api.graphnet.group.NetGroup;
+import com.gregtechceu.gtceu.api.graphnet.group.PathCacheGroupData;
 import com.gregtechceu.gtceu.api.graphnet.logic.ChannelCountLogic;
 import com.gregtechceu.gtceu.api.graphnet.logic.ThroughputLogic;
-import com.gregtechceu.gtceu.api.graphnet.net.NetEdge;
 import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.NodeExposingCapabilities;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeCapabilityObject;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.IWorldPipeNetTile;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.NodeManagingPCW;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeCapabilityWrapper;
-import com.gregtechceu.gtceu.api.graphnet.traverse.EdgeDirection;
-import com.gregtechceu.gtceu.api.graphnet.traverse.EdgeSelector;
-import com.gregtechceu.gtceu.api.graphnet.traverse.ResilientNetClosestIterator;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTUtil;
-import com.gregtechceu.gtceu.utils.MapUtil;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -35,7 +34,6 @@ import it.unimi.dsi.fastutil.objects.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayDeque;
 import java.util.EnumMap;
 import java.util.List;
 
@@ -96,67 +94,62 @@ public class DuctCapabilityObject implements IPipeCapabilityObject, IHazardParti
 
     public float changeHazard(MedicalCondition condition, float differenceAmount, boolean simulate,
                               @Nullable Direction side) {
-        if (this.transferring || inputDisallowed(side)) return 0;
-        NetNode node = getRelevantNode(side);
-        if (node == null) node = this.node;
+        if (blockEntity == null || this.transferring || inputDisallowed(side)) return 0;
+        NetGroup group = node.getGroupSafe();
+        if (!(group.getData() instanceof DuctGroupData data)) return 0;
+
         this.transferring = true;
 
-        float flow = differenceAmount;
-        DuctTestObject testObject = new DuctTestObject(condition);
-        ResilientNetClosestIterator iter = new ResilientNetClosestIterator(node,
-                EdgeSelector.filtered(EdgeDirection.OUTGOING, GraphNetUtility.standardEdgeBlacklist(testObject)));
-        Object2FloatOpenHashMap<NetNode> availableDemandCache = new Object2FloatOpenHashMap<>();
-        Object2FloatOpenHashMap<NetNode> flowLimitCache = new Object2FloatOpenHashMap<>();
-        List<Runnable> postActions = new ObjectArrayList<>();
-        float total = 0;
-        main:
-        while (iter.hasNext()) {
-            if (flow <= 0) break;
-            final NetNode next = iter.next();
-            float limit = Math.min(MapUtil.computeIfAbsent(flowLimitCache, next, n -> getFlowLimit(n, testObject)),
-                    flow);
-            if (limit <= 0) {
-                iter.markInvalid(next);
-                continue;
+        PathCacheGroupData.SecondaryCache cache = data.getOrCreate(node);
+        List<DuctPath> paths = new ObjectArrayList<>(group.getNodesUnderKey(ACTIVE_KEY).size());
+        for (NetNode dest : group.getNodesUnderKey(ACTIVE_KEY)) {
+            if (!(dest instanceof WorldPipeNode)) continue;
+
+            DuctPath path = (DuctPath) cache.getOrCompute(dest);
+            if (path == null) continue;
+            // construct the path list in order of ascending weight
+            int i = 0;
+            while (i < paths.size()) {
+                if (paths.get(i).getWeight() >= path.getWeight()) break;
+                else i++;
             }
-            float supply = MapUtil.computeIfAbsent(availableDemandCache, next,
-                    n -> getSupplyOrDemand(n, testObject, false));
-            if (supply <= 0) continue;
-            supply = Math.min(supply, limit);
-            NetEdge span;
-            NetNode trace = next;
-            ArrayDeque<NetNode> seen = new ArrayDeque<>();
-            seen.add(next);
-            while ((span = iter.getSpanningTreeEdge(trace)) != null) {
-                trace = span.getOppositeNode(trace);
-                if (trace == null) continue main;
-                float l = MapUtil.computeIfAbsent(flowLimitCache, trace, n -> getFlowLimit(n, testObject));
-                if (l == 0) {
-                    iter.markInvalid(node);
-                    continue main;
-                }
-                supply = Math.min(supply, l);
-                seen.addFirst(trace);
-            }
-            total += supply;
-            flow -= supply;
-            final float finalSupply = supply;
-            for (NetNode n : seen) {
-                // reporting flow can cause temperature pipe destruction which causes graph modification while
-                // iterating.
-                if (!simulate) postActions.add(() -> reportFlow(n, finalSupply, testObject));
-                float remaining = flowLimitCache.getFloat(n) - supply;
-                flowLimitCache.put(n, remaining);
-                if (remaining <= 0) {
-                    iter.markInvalid(n);
-                }
-            }
-            if (!simulate) reportExtractedInserted(next, supply, testObject, false);
-            availableDemandCache.put(next, availableDemandCache.getFloat(next) - supply);
+            paths.add(i, path);
         }
-        postActions.forEach(Runnable::run);
+        float available = differenceAmount;
+        MAIN_LOOP:
+        for (int i = 0; i < paths.size(); i++) {
+            DuctPath path = paths.get(i);
+            NetNode target = path.getTargetNode();
+            // WorldPipeNode-ness was already determined in earlier loop
+            IWorldPipeNetTile pipeTile = ((WorldPipeNode) target).getBlockEntity();
+            EnumMap<Direction, BlockEntity> targets = pipeTile.getTargetsWithCapabilities(((WorldPipeNode) target));
+            for (Direction facing : GTUtil.DIRECTIONS) {
+                if (target == node && facing == side) continue; // anti insert-to-our-source logic
+                BlockEntity tile = targets.get(facing);
+                if (tile == null) continue;
+                IHazardParticleContainer container = tile.getCapability(GTCapability.CAPABILITY_HAZARD_CONTAINER,
+                        facing.getOpposite()).resolve().orElse(null);
+                if (container == null) continue;
+
+                float allowed = container.changeHazard(condition, differenceAmount, true);
+                if (allowed <= 0) continue;
+
+                DuctPath.PathFlowReport flow = path.traverse(condition, allowed);
+                available -= allowed;
+                if (!simulate) {
+                    flow.report();
+                    if (flow.amountOut() > 0) {
+                        container.changeHazard(flow.conditionOut(), flow.amountOut(), false);
+                    }
+                }
+                if (available <= 0) {
+                    break MAIN_LOOP;
+                }
+            }
+        }
+
         this.transferring = false;
-        return total;
+        return differenceAmount - available;
     }
 
     public static float getFlowLimit(NetNode node, DuctTestObject testObject) {
@@ -179,7 +172,7 @@ public class DuctCapabilityObject implements IPipeCapabilityObject, IHazardParti
             logic = DuctFlowLogic.TYPE.getNew();
             node.getData().setLogicEntry(logic);
         }
-        logic.recordFlow(GTUtil.getCurrentServerTick(), testObject, flow);
+        logic.recordFlow(TickTracker.getTick(), testObject, flow);
     }
 
     public static float getSupplyOrDemand(NetNode node, DuctTestObject testObject, boolean supply) {

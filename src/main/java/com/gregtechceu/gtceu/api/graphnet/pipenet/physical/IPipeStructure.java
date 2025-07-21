@@ -11,9 +11,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface IPipeStructure extends StringRepresentable {
 
@@ -26,6 +29,7 @@ public interface IPipeStructure extends StringRepresentable {
 
     boolean isPaintable();
 
+    @OnlyIn(Dist.CLIENT)
     PipeModelRedirector getModel();
 
     default ResourceTexture getPipeTexture(boolean isBlock) {
@@ -41,20 +45,20 @@ public interface IPipeStructure extends StringRepresentable {
     }
 
     @Contract("_ -> new")
-    default VoxelShape getPipeBoxes(@NotNull PipeBlockEntity tileContext) {
+    default VoxelShape getPipeBoxes(@NotNull PipeBlockEntity blockEntity) {
         VoxelShape pipeBoxes = Shapes.empty();
         float thickness = getRenderThickness();
-        if ((tileContext.getCoverAdjustedConnectionMask() & 63) < 63) {
+        if ((blockEntity.getCoverAdjustedConnectionMask() & 63) < 63) {
             pipeBoxes = Shapes.or(pipeBoxes, getSideBox(null, thickness));
         }
         for (Direction facing : GTUtil.DIRECTIONS) {
-            if (tileContext.isConnectedCoverAdjusted(facing))
+            if (blockEntity.isConnectedCoverAdjusted(facing))
                 pipeBoxes = Shapes.or(pipeBoxes, getSideBox(facing, thickness));
         }
         return pipeBoxes;
     }
 
-    static VoxelShape getSideBox(Direction side, float thickness) {
+    static VoxelShape getSideBox(@Nullable Direction side, float thickness) {
         float min = (1.0f - thickness) / 2.0f, max = min + thickness;
         float faceMin = 0f, faceMax = 1f;
 

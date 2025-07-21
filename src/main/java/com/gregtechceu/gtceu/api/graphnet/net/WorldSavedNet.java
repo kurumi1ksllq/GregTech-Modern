@@ -97,4 +97,9 @@ public abstract class WorldSavedNet extends SavedData implements IGraphNet {
     public GraphNetBacker getBacker() {
         return backer;
     }
+
+    @Override
+    public void markAsDirty() {
+        this.setDirty();
+    }
 }

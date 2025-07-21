@@ -7,7 +7,6 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
-import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
@@ -744,14 +743,6 @@ public class GTUtil {
                     direction.getStepY() * 0.2 + GTValues.RNG.nextDouble() * 0.1,
                     direction.getStepZ() * 0.2 + GTValues.RNG.nextDouble() * 0.1,
                     0.1);
-        }
-    }
-
-    public static long getCurrentServerTick() {
-        if (GTCEu.isClientThread()) {
-            return ClientProxy.getServerTickCount();
-        } else {
-            return GTCEu.getMinecraftServer().getTickCount();
         }
     }
 }

@@ -27,7 +27,7 @@ import com.gregtechceu.gtceu.api.misc.IOFluidHandlerList;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererPackage;
-import com.gregtechceu.gtceu.client.renderer.pipe.AbstractPipeModel;
+import com.gregtechceu.gtceu.client.renderer.pipe.PipeRenderProperties;
 import com.gregtechceu.gtceu.client.util.ModelUtils;
 import com.gregtechceu.gtceu.common.item.tool.behavior.ToolModeSwitchBehavior;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
@@ -700,7 +700,7 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
 
     @MustBeInvokedByOverriders
     public void updateModelData(ModelData.Builder builder) {
-        builder.with(AbstractPipeModel.COLOR_PROPERTY, getPaintingColor())
+        builder.with(PipeRenderProperties.COLOR_PROPERTY, getPaintingColor())
                 .with(CoverRendererPackage.PROPERTY, getCoverContainer().createPackage());
         for (MachineTrait trait : this.getTraits()) {
             trait.updateModelData(builder);

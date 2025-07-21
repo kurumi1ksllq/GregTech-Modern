@@ -24,12 +24,12 @@ import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeBlock;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.IToolGridHighlight;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
-import com.gregtechceu.gtceu.client.ClientProxy;
+import com.gregtechceu.gtceu.api.network.PacketDataList;
 import com.gregtechceu.gtceu.client.particle.GTOverheatParticle;
 import com.gregtechceu.gtceu.client.particle.GTParticleManager;
-import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererPackage;
-import com.gregtechceu.gtceu.client.renderer.pipe.AbstractPipeModel;
+import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererValues;
+import com.gregtechceu.gtceu.client.renderer.pipe.PipeRenderProperties;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -50,7 +50,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
@@ -75,7 +74,8 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -100,10 +100,14 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
 
     @Getter
     private final Int2ObjectOpenHashMap<NetLogicData> netLogicDatas = new Int2ObjectOpenHashMap<>();
+    private final Reference2ReferenceOpenHashMap<NetLogicType<?>, PendingLogicSync> pendingSyncs = new Reference2ReferenceOpenHashMap<>();
+    private final ObjectOpenHashSet<NetLogicData.ListenerCallback<?>> listeners = new ObjectOpenHashSet<>();
 
     // this tile was loaded from datafixed NBT and needs to initialize its connections
     @Persisted
     private boolean legacy;
+    // used to prevent firing neighbor block updates during chunkload, which will cause a CME
+    private boolean suppressUpdates;
 
     // information that is only required for determining graph topology should be stored on the tile entity level,
     // while information interacted with during graph traversal should be stored on the NetLogicData level.
@@ -139,8 +143,7 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
     @DescSynced
     @Getter
     protected final PipeCoverHolder coverHolder = new PipeCoverHolder(this);
-    private final Object2ObjectOpenCustomHashMap<NetNode, PipeCapabilityWrapper> netCapabilities = WorldPipeNet
-            .getSensitiveHashMap();
+    private final Reference2ReferenceOpenHashMap<NetNode, PipeCapabilityWrapper> netCapabilities = new Reference2ReferenceOpenHashMap<>();
 
     @Getter
     @Nullable
@@ -155,18 +158,10 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
     }
 
     @Nullable
-    public PipeBlockEntity getPipeNeighbor(Direction facing, boolean allowChunkloading) {
-        BlockEntity tile = allowChunkloading ? getNeighbor(facing) : getNeighborNoChunkloading(facing);
+    public PipeBlockEntity getPipeNeighbor(Direction side, boolean allowChunkloading) {
+        BlockEntity tile = allowChunkloading ? getNeighbor(side) : getNeighborNoChunkloading(side);
         if (tile instanceof PipeBlockEntity pipe) return pipe;
         else return null;
-    }
-
-    public void getDrops(@NotNull List<ItemStack> drops, @NotNull BlockState state) {}
-
-    @Override
-    public void scheduleRenderUpdate() {
-        super.scheduleRenderUpdate();
-        requestModelDataUpdate();
     }
 
     @Override
@@ -202,25 +197,25 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
 
     // mask //
 
-    public boolean canConnectTo(Direction facing) {
-        return this.getStructure().canConnectTo(facing, connectionMask);
+    public boolean canConnectTo(Direction side) {
+        return this.getStructure().canConnectTo(side, connectionMask);
     }
 
-    public void setConnected(Direction facing, boolean renderClosed) {
-        this.connectionMask |= 1 << facing.ordinal();
-        updateActiveStatus(facing, false);
+    public void setConnected(Direction side, boolean renderClosed) {
+        this.connectionMask |= 1 << side.ordinal();
+        updateActiveStatus(side, false);
         if (renderClosed) {
-            this.renderMask |= 1 << facing.ordinal();
+            this.renderMask |= 1 << side.ordinal();
         } else {
-            this.renderMask &= ~(1 << facing.ordinal());
+            this.renderMask &= ~(1 << side.ordinal());
         }
         scheduleRenderUpdate();
     }
 
-    public void setDisconnected(Direction facing) {
-        this.connectionMask &= ~(1 << facing.ordinal());
-        this.renderMask &= ~(1 << facing.ordinal());
-        updateActiveStatus(facing, false);
+    public void setDisconnected(Direction side) {
+        this.connectionMask &= ~(1 << side.ordinal());
+        this.renderMask &= ~(1 << side.ordinal());
+        updateActiveStatus(side, false);
         scheduleRenderUpdate();
     }
 
@@ -228,22 +223,22 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
         return (this.connectionMask & 1 << side.ordinal()) > 0;
     }
 
-    public boolean isConnectedCoverAdjusted(Direction facing) {
+    public boolean isConnectedCoverAdjusted(Direction side) {
         CoverBehavior cover;
-        return ((this.connectionMask & 1 << facing.ordinal()) > 0) ||
-                (cover = getCoverHolder().getCoverAtSide(facing)) != null && cover.forcePipeRenderConnection();
+        return ((this.connectionMask & 1 << side.ordinal()) > 0) ||
+                (cover = getCoverHolder().getCoverAtSide(side)) != null && cover.forcePipeRenderConnection();
     }
 
-    public void setRenderClosed(Direction facing, boolean closed) {
+    public void setRenderClosed(Direction side, boolean closed) {
         if (closed) {
-            this.renderMask |= 1 << facing.ordinal();
+            this.renderMask |= 1 << side.ordinal();
         } else {
-            this.renderMask &= ~(1 << facing.ordinal());
+            this.renderMask &= ~(1 << side.ordinal());
         }
     }
 
-    public boolean renderClosed(Direction facing) {
-        return (this.renderMask & 1 << facing.ordinal()) > 0;
+    public boolean renderClosed(Direction side) {
+        return (this.renderMask & 1 << side.ordinal()) > 0;
     }
 
     public byte getCoverAdjustedConnectionMask() {
@@ -257,18 +252,18 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
         return connectionMask;
     }
 
-    public void setBlocked(Direction facing) {
-        this.blockedMask |= (byte) (1 << facing.ordinal());
+    public void setBlocked(Direction side) {
+        this.blockedMask |= (byte) (1 << side.ordinal());
         scheduleRenderUpdate();
     }
 
-    public void setUnblocked(Direction facing) {
-        this.blockedMask &= (byte) ~(1 << facing.ordinal());
+    public void setUnblocked(Direction side) {
+        this.blockedMask &= (byte) ~(1 << side.ordinal());
         scheduleRenderUpdate();
     }
 
-    public boolean isBlocked(Direction facing) {
-        return (this.blockedMask & 1 << facing.ordinal()) > 0;
+    public boolean isBlocked(Direction side) {
+        return (this.blockedMask & 1 << side.ordinal()) > 0;
     }
 
     // paint //
@@ -369,9 +364,9 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
     @Override
     public void onNeighborChanged(Block fromBlock, BlockPos fromPos, boolean isMoving) {
         super.onNeighborChanged(fromBlock, fromPos, isMoving);
-        Direction facing = GTUtil.getFacingToNeighbor(this.getBlockPos(), fromPos);
+        Direction side = GTUtil.getFacingToNeighbor(this.getBlockPos(), fromPos);
         coverHolder.onNeighborChanged(fromBlock, fromPos, isMoving);
-        updateActiveStatus(facing, false);
+        updateActiveStatus(side, false);
     }
 
     /**
@@ -385,20 +380,20 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
         EnumMap<Direction, BlockEntity> caps = new EnumMap<>(Direction.class);
         if (wrapper == null) return caps;
 
-        for (Direction facing : GTUtil.DIRECTIONS) {
-            if (wrapper.isActive(facing)) {
-                BlockEntity tile = getNeighbor(facing);
-                if (tile == null) updateActiveStatus(facing, false);
-                else caps.put(facing, tile);
+        for (Direction side : GTUtil.DIRECTIONS) {
+            if (wrapper.isActive(side)) {
+                BlockEntity tile = getNeighbor(side);
+                if (tile == null) updateActiveStatus(side, false);
+                else caps.put(side, tile);
             }
         }
         return caps;
     }
 
-    public @Nullable BlockEntity getTargetWithCapabilities(WorldPipeNode node, Direction facing) {
+    public @Nullable BlockEntity getTargetWithCapabilities(WorldPipeNode node, Direction side) {
         PipeCapabilityWrapper wrapper = netCapabilities.get(node);
-        if (wrapper == null || !wrapper.isActive(facing)) return null;
-        else return getNeighbor(facing);
+        if (wrapper == null || !wrapper.isActive(side)) return null;
+        else return getNeighbor(side);
     }
 
     @Override
@@ -409,25 +404,25 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
     /**
      * Updates the pipe's active status based on the tile entity connected to the side.
      * 
-     * @param facing            the side to check. Can be null, in which case all sides will be checked.
+     * @param side              the side to check. Can be null, in which case all sides will be checked.
      * @param canOpenConnection whether the pipe is allowed to open a new connection if it finds a tile it can connect
      *                          to.
      */
-    public void updateActiveStatus(@Nullable Direction facing, boolean canOpenConnection) {
-        if (facing == null) {
-            for (Direction side : GTUtil.DIRECTIONS) {
-                updateActiveStatus(side, canOpenConnection);
+    public void updateActiveStatus(@Nullable Direction side, boolean canOpenConnection) {
+        if (side == null) {
+            for (Direction facing : GTUtil.DIRECTIONS) {
+                updateActiveStatus(facing, canOpenConnection);
             }
             return;
         }
-        if (!this.isConnectedCoverAdjusted(facing) && !(canOpenConnection && canConnectTo(facing))) {
-            setAllIdle(facing);
+        if (!this.isConnectedCoverAdjusted(side) && !(canOpenConnection && canConnectTo(side))) {
+            setAllIdle(side);
             return;
         }
 
-        BlockEntity tile = getNeighbor(facing);
+        BlockEntity tile = getNeighbor(side);
         if (tile == null || tile instanceof PipeBlockEntity) {
-            setAllIdle(facing);
+            setAllIdle(side);
             return;
         }
 
@@ -436,58 +431,58 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
             for (Capability<?> cap : netCapability.getValue().capabilities.keySet()) {
                 // hardcode an exception for hazard containers since they can
                 // "connect" and push the pipe contents into empty space
-                if (tile.getCapability(cap, facing.getOpposite()).isPresent() ||
+                if (tile.getCapability(cap, side.getOpposite()).isPresent() ||
                         cap == GTCapability.CAPABILITY_HAZARD_CONTAINER) {
                     oneActive = true;
-                    netCapability.getValue().setActive(facing);
+                    netCapability.getValue().setActive(side);
                     break;
                 }
             }
         }
-        if (canOpenConnection && oneActive) this.setConnected(facing, false);
+        if (canOpenConnection && oneActive) this.setConnected(side, false);
     }
 
-    private void setAllIdle(Direction facing) {
+    private void setAllIdle(Direction side) {
         for (var netCapability : netCapabilities.entrySet()) {
-            netCapability.getValue().setIdle(facing);
+            netCapability.getValue().setIdle(side);
         }
     }
 
     // capability //
 
-    public <T> LazyOptional<T> getCapabilityCoverQuery(@NotNull Capability<T> capability, @Nullable Direction facing) {
+    public <T> LazyOptional<T> getCapabilityCoverQuery(@NotNull Capability<T> capability, @Nullable Direction side) {
         for (PipeCapabilityWrapper wrapper : netCapabilities.values()) {
-            LazyOptional<T> cap = wrapper.getCapability(capability, facing);
+            LazyOptional<T> cap = wrapper.getCapability(capability, side);
             if (cap.isPresent()) return cap;
         }
         return LazyOptional.empty();
     }
 
     @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
+    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction side) {
         if (capability == GTCapability.CAPABILITY_COVERABLE) {
             return GTCapability.CAPABILITY_COVERABLE.orEmpty(capability, LazyOptional.of(this::getCoverHolder));
         }
         LazyOptional<T> pipeCapability = LazyOptional.empty();
         for (PipeCapabilityWrapper wrapper : netCapabilities.values()) {
-            if ((pipeCapability = wrapper.getCapability(capability, facing)).isPresent()) break;
+            if ((pipeCapability = wrapper.getCapability(capability, side)).isPresent()) break;
         }
-        if (!pipeCapability.isPresent()) pipeCapability = super.getCapability(capability, facing);
+        if (!pipeCapability.isPresent()) pipeCapability = super.getCapability(capability, side);
 
-        CoverBehavior cover = facing == null ? null : getCoverHolder().getCoverAtSide(facing);
+        CoverBehavior cover = side == null ? null : getCoverHolder().getCoverAtSide(side);
         if (cover == null) {
-            if (facing == null || isConnected(facing)) {
+            if (side == null || isConnected(side)) {
                 return pipeCapability;
             }
-            return super.getCapability(capability, facing);
+            return super.getCapability(capability, side);
         }
 
         LazyOptional<T> coverCapability = cover.getCapability(capability, pipeCapability);
         if (coverCapability == pipeCapability) {
-            if (isConnectedCoverAdjusted(facing)) {
+            if (isConnectedCoverAdjusted(side)) {
                 return pipeCapability;
             }
-            return super.getCapability(capability, facing);
+            return super.getCapability(capability, side);
         }
         return coverCapability;
     }
@@ -512,17 +507,17 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
         if (!getLevel().isClientSide) {
             this.netLogicDatas.clear();
             this.netCapabilities.clear();
+            this.listeners.forEach(NetLogicData.ListenerCallback::retire);
+            this.listeners.clear();
             for (WorldPipeNode node : PipeBlock.getNodesForTile(this)) {
                 WorldPipeNet net = node.getNet();
                 this.netCapabilities.put(node, net.buildCapabilityWrapper(this, node));
                 int networkID = net.getNetworkID();
                 netLogicDatas.put(networkID, node.getData());
                 node.getData().addListener(
-                        (e, r, f) -> writeLogicData(networkID, e, r, f));
-                // Manually resync the data, as it's loaded & the listeners are queried for the first time *before*
-                // we call `addListener` on the line above.
+                        (e, r, f) -> markDataForSync(networkID, e, r, f));
                 for (var entry : node.getData().getEntries()) {
-                    node.getData().markLogicEntryAsUpdated(entry, true);
+                    markDataForSync(networkID, entry, false, true);
                 }
                 if (this.temperatureLogic == null) {
                     TemperatureLogic candidate = node.getData().getLogicEntryNullable(TemperatureLogic.TYPE);
@@ -531,33 +526,58 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
                 }
             }
             if (this.legacy) {
-                for (Direction facing : GTUtil.DIRECTIONS) {
-                    if (this.isConnected(facing)) {
-                        PipeBlock.connectTile(this, this.getPipeNeighbor(facing, false), facing);
-                        BlockPos pos = this.getBlockPos().relative(facing);
+                for (Direction side : GTUtil.DIRECTIONS) {
+                    if (this.isConnected(side)) {
+                        PipeBlock.connect(this, this.getPipeNeighbor(side, false), side);
+                        BlockPos pos = this.getBlockPos().relative(side);
                         ChunkAccess chunk = getLevel().getChunk(pos);
                         if (chunk instanceof LevelChunk levelChunk) {
                             BlockEntity candidate = levelChunk
                                     .getBlockEntity(pos, LevelChunk.EntityCreationType.CHECK);
                             if (candidate instanceof PipeBlockEntity pipe)
-                                PipeBlock.connectTile(this, pipe, facing);
+                                PipeBlock.connect(this, pipe, side);
                         }
                     }
                 }
             }
             this.netLogicDatas.trim();
             this.netCapabilities.trim();
+            this.suppressUpdates = true;
             updateActiveStatus(null, false);
+            this.suppressUpdates = false;
         }
     }
 
-    private void writeLogicData(int networkID, NetLogicEntry<?, ?> entry, boolean removed, boolean fullChange) {
-        writeCustomData(UPDATE_PIPE_LOGIC, buf -> {
-            buf.writeVarInt(networkID);
-            buf.writeBoolean(removed);
-            if (removed) buf.writeVarInt(NetLogicRegistry.getNetworkID(entry.getType()));
-            else NetLogicData.writeEntry(buf, entry, fullChange);
-        });
+    private void markDataForSync(int networkID, NetLogicEntry<?, ?> entry, boolean removed, boolean fullChange) {
+        // attempt to collapse multiple updates to the same data that occur before a sync packet is sent
+        PendingLogicSync existing = pendingSyncs.get(entry.getType());
+        if (existing != null) {
+            if (removed && !existing.isRemoved()) existing.markRemoved();
+            else if (!removed && existing.isRemoved()) {
+                // if the previous change was a removal and then this change is not a removal,
+                // then this is equivalent to a full change.
+                existing.markRemoved();
+                existing.markFullChange();
+            }
+            if (fullChange) existing.markFullChange();
+        } else {
+            pendingSyncs.put(entry.getType(), new PendingLogicSync(networkID, entry, removed, fullChange));
+        }
+        notifyWorldOfPendingPackets();
+    }
+
+    @Override
+    protected void beforeUpdatePacket(PacketDataList pendingUpdates) {
+        for (PendingLogicSync pendingSync : pendingSyncs.values()) {
+            writeCustomData(UPDATE_PIPE_LOGIC, buf -> {
+                buf.writeVarInt(pendingSync.networkID());
+                buf.writeBoolean(pendingSync.isRemoved());
+                if (pendingSync.isRemoved())
+                    buf.writeVarInt(NetLogicRegistry.getNetworkID(pendingSync.entry().getType()));
+                else NetLogicData.writeEntry(buf, pendingSync.entry(), pendingSync.isFullChange());
+            });
+        }
+        pendingSyncs.clear();
     }
 
     @Override
@@ -586,11 +606,15 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
 
     public void updateTemperatureLogic(@NotNull TemperatureLogic logic) {
         this.temperatureLogic = logic;
+        if (getLevel().isClientSide) {
+            updateTemperatureLogicClient(logic);
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    protected void updateTemperatureLogicClient(@NotNull TemperatureLogic logic) {
         if (overheatParticle == null || !overheatParticle.isAlive()) {
-            long tick = this.level.isClientSide ?
-                    ClientProxy.getServerTickCount() :
-                    GTCEu.getMinecraftServer().getTickCount();;
-            int temp = logic.getTemperature(tick);
+            int temp = logic.getTemperature(logic.getLastRestorationTick());
             if (temp > GTOverheatParticle.TEMPERATURE_CUTOFF) {
                 IPipeStructure structure = this.getStructure();
                 overheatParticle = new GTOverheatParticle(this, logic, structure.getPipeBoxes(this),
@@ -618,11 +642,12 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
     // misc overrides //
 
     public void scheduleNeighborShapeUpdate() {
-        Level level = getLevel();
-        BlockPos pos = getBlockPos();
-
-        if (level == null || pos == null)
+        if (suppressUpdates) {
             return;
+        }
+        Level level = getLevel();
+        if (level == null) return;
+        BlockPos pos = getBlockPos();
 
         level.getBlockState(pos).updateNeighbourShapes(level, pos, Block.UPDATE_ALL);
     }
@@ -640,42 +665,46 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
         this.setChanged();
     }
 
-    public static @Nullable PipeBlockEntity getTileNoLoading(BlockPos pos, ResourceKey<Level> dimension) {
-        Level world = GTCEu.getMinecraftServer().getLevel(dimension);
-        if (world == null || !world.isLoaded(pos)) return null;
-
-        BlockEntity tile = world.getBlockEntity(pos);
-        if (tile instanceof PipeBlockEntity pipe) return pipe;
-        else return null;
-    }
-
     @Override
     public @NotNull ModelData getModelData() {
         byte frameMask = 0;
-        for (Direction facing : GTUtil.DIRECTIONS) {
-            CoverBehavior cover = getCoverHolder().getCoverAtSide(facing);
+        for (Direction side : GTUtil.DIRECTIONS) {
+            CoverBehavior cover = getCoverHolder().getCoverAtSide(side);
             if (cover != null) {
-                frameMask |= 1 << facing.ordinal();
-                if (cover.forcePipeRenderConnection()) this.connectionMask |= (byte) (1 << facing.ordinal());
+                frameMask |= 1 << side.ordinal();
+                if (cover.forcePipeRenderConnection()) this.connectionMask |= (byte) (1 << side.ordinal());
             }
         }
         frameMask = (byte) ~frameMask;
         return ModelData.builder()
-                .with(AbstractPipeModel.THICKNESS_PROPERTY, this.getStructure().getRenderThickness())
-                .with(AbstractPipeModel.CONNECTED_MASK_PROPERTY, connectionMask)
-                .with(AbstractPipeModel.CLOSED_MASK_PROPERTY, renderMask)
-                .with(AbstractPipeModel.BLOCKED_MASK_PROPERTY, blockedMask)
-                .with(AbstractPipeModel.COLOR_PROPERTY, getPaintingColor())
-                .with(AbstractPipeModel.FRAME_MATERIAL_PROPERTY, frameMaterial)
-                .with(AbstractPipeModel.FRAME_MASK_PROPERTY, frameMask)
+                .with(PipeRenderProperties.THICKNESS_PROPERTY, this.getStructure().getRenderThickness())
+                .with(PipeRenderProperties.CONNECTED_MASK_PROPERTY, connectionMask)
+                .with(PipeRenderProperties.CLOSED_MASK_PROPERTY, renderMask)
+                .with(PipeRenderProperties.BLOCKED_MASK_PROPERTY, blockedMask)
+                .with(PipeRenderProperties.COLOR_PROPERTY, getPaintingColor())
+                .with(PipeRenderProperties.FRAME_MATERIAL_PROPERTY, frameMaterial)
+                .with(PipeRenderProperties.FRAME_MASK_PROPERTY, frameMask)
                 .with(CoverRendererPackage.PROPERTY, getCoverHolder().createPackage())
                 .build();
     }
 
+    @Override
+    public void scheduleRenderUpdate() {
+        super.scheduleRenderUpdate();
+        requestModelDataUpdate();
+        if (getLevel().isClientSide) scheduleRenderUpdateClient();
+    }
+
+    protected void scheduleRenderUpdateClient() {
+        if (overheatParticle != null) {
+            overheatParticle.updatePipeBoxes(getStructure().getPipeBoxes(this));
+        }
+    }
+
     public void getCoverBoxes(Consumer<VoxelShape> consumer) {
-        for (Direction facing : GTUtil.DIRECTIONS) {
-            if (getCoverHolder().hasCover(facing)) {
-                consumer.accept(Shapes.create(CoverRendererBuilder.PLATE_AABBS.get(facing)));
+        for (Direction side : GTUtil.DIRECTIONS) {
+            if (getCoverHolder().hasCover(side)) {
+                consumer.accept(Shapes.create(CoverRendererValues.PLATE_AABBS.get(side)));
             }
         }
     }
@@ -734,16 +763,16 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
             if (playerIn.isShiftKeyDown() && this.getBlockType().allowsBlocking()) {
                 boolean isBlocked = this.isBlocked(gridSide);
                 if (isBlocked) {
-                    PipeBlock.unblockTile(this, this.getPipeNeighbor(gridSide, true), gridSide);
+                    PipeBlock.unblock(this, this.getPipeNeighbor(gridSide, true), gridSide);
                 } else {
-                    PipeBlock.blockTile(this, this.getPipeNeighbor(gridSide, true), gridSide);
+                    PipeBlock.block(this, this.getPipeNeighbor(gridSide, true), gridSide);
                 }
             } else {
                 boolean isOpen = this.isConnected(gridSide);
                 if (isOpen) {
-                    PipeBlock.disconnectTile(this, this.getPipeNeighbor(gridSide, true), gridSide);
+                    PipeBlock.disconnect(this, this.getPipeNeighbor(gridSide, true), gridSide);
                 } else {
-                    PipeBlock.connectTile(this, this.getPipeNeighbor(gridSide, true), gridSide);
+                    PipeBlock.connect(this, this.getPipeNeighbor(gridSide, true), gridSide);
                 }
             }
             return Pair.of(this.getBlockType().getToolClass(),

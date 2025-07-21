@@ -1,36 +1,30 @@
 package com.gregtechceu.gtceu.common.network.packets;
 
-import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.client.ClientProxy;
-
-import com.lowdragmc.lowdraglib.networking.IHandlerContext;
-import com.lowdragmc.lowdraglib.networking.IPacket;
+import com.gregtechceu.gtceu.common.network.GTNetwork;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
-import lombok.AllArgsConstructor;
+public class SPacketSyncTickCount implements GTNetwork.INetPacket {
 
-@AllArgsConstructor
-public class SPacketSyncTickCount implements IPacket {
-
-    private long serverTickCount;
+    private final int serverTickCount;
 
     public SPacketSyncTickCount() {
-        serverTickCount = GTCEu.getMinecraftServer().getTickCount();
+        serverTickCount = TickTracker.getTick();
+    }
+
+    public SPacketSyncTickCount(FriendlyByteBuf buf) {
+        this.serverTickCount = buf.readVarInt();
     }
 
     @Override
     public void encode(FriendlyByteBuf buf) {
-        buf.writeVarLong(serverTickCount);
+        buf.writeVarInt(serverTickCount);
     }
 
     @Override
-    public void decode(FriendlyByteBuf buf) {
-        serverTickCount = buf.readVarLong();
-    }
-
-    @Override
-    public void execute(IHandlerContext handler) {
-        ClientProxy.setServerTickCount(serverTickCount);
+    public void execute(NetworkEvent.Context context) {
+        TickTracker.setClientTick(serverTickCount);
     }
 }

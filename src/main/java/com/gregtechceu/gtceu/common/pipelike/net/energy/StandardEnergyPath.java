@@ -11,51 +11,33 @@ import com.gregtechceu.gtceu.api.graphnet.path.StandardNetPath;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.logic.TemperatureLogic;
 import com.gregtechceu.gtceu.api.graphnet.predicate.test.IPredicateTestObject;
-import com.gregtechceu.gtceu.utils.GTUtil;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
 import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import it.unimi.dsi.fastutil.longs.Long2ObjectAVLTreeMap;
-import it.unimi.dsi.fastutil.longs.LongComparator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class StandardEnergyPath extends StandardNetPath implements EnergyPath {
 
-    // reverse of natural order so that larger longs come first in iteration order.
-    public static final LongComparator voltageLimitComparator = new LongComparator() {
-
-        @Override
-        public int compare(long k1, long k2) {
-            return Long.compare(k2, k1);
-        }
-
-        @Override
-        public int compare(Long o1, Long o2) {
-            return Long.compare(o2, o1);
-        }
-    };
-
-    protected final @NotNull Long2ObjectAVLTreeMap<Set<NetNode>> voltageLimitInfo;
+    // sorted in descending order
 
     protected final long loss;
 
-    public StandardEnergyPath(@NotNull ImmutableCollection<NetNode> nodes, @NotNull ImmutableCollection<NetEdge> edges,
-                              double weight, @NotNull Long2ObjectAVLTreeMap<Set<NetNode>> voltageLimitInfo, long loss) {
+    private StandardEnergyPath(@NotNull ImmutableCollection<NetNode> nodes, @NotNull ImmutableCollection<NetEdge> edges,
+                               double weight, long loss) {
         super(nodes, edges, weight);
-        this.voltageLimitInfo = voltageLimitInfo;
         this.loss = loss;
     }
 
     public StandardEnergyPath(@NotNull StandardEnergyPath reverse) {
         super(reverse);
-        this.voltageLimitInfo = reverse.voltageLimitInfo;
         this.loss = reverse.loss;
     }
 
@@ -64,22 +46,20 @@ public class StandardEnergyPath extends StandardNetPath implements EnergyPath {
     public PathFlowReport traverse(final long voltage, final long amperage) {
         long resultVoltage = voltage - loss;
         if (resultVoltage <= 0) return EMPTY;
-        for (NetEdge edge : getOrderedEdges()) {
+        ImmutableList<NetEdge> asList = getOrderedEdges().asList();
+        for (int i = 0; i < asList.size(); i++) {
+            NetEdge edge = asList.get(i);
             if (!edge.test(IPredicateTestObject.INSTANCE)) return EMPTY;
         }
+        final AtomicLong resultVoltageReference = new AtomicLong(resultVoltage);
 
-        var set = voltageLimitInfo.tailMap(resultVoltage).long2ObjectEntrySet();
-        for (var entry : set) {
-            long key = entry.getLongKey();
-            if (key >= resultVoltage) continue;
-            // move 90% of the way towards the limiting voltage for every node with this limit
-            int count = entry.getValue().size();
-            resultVoltage = (long) (key + (resultVoltage - key) * Math.pow(0.1, count));
-        }
-        long tick = GTUtil.getCurrentServerTick();
+        int tick = TickTracker.getTick();
         long resultAmperage = amperage;
         List<Runnable> postActions = new ObjectArrayList<>();
-        for (NetNode node : getOrderedNodes()) {
+        ImmutableList<NetNode> list = getOrderedNodes().asList();
+        for (int i = 0; i < list.size(); i++) {
+            NetNode node = list.get(i);
+
             NetLogicData data = node.getData();
             EnergyFlowLogic energyFlow = data.getLogicEntryNullable(EnergyFlowLogic.TYPE);
             if (energyFlow == null) {
@@ -93,34 +73,41 @@ public class StandardEnergyPath extends StandardNetPath implements EnergyPath {
             }
             long correctedAmperage = Math.min(data.getLogicEntryDefaultable(AmperageLimitLogic.TYPE).getValue() -
                     sum, resultAmperage);
-
-            EnergyFlowLogic finalEnergyFlow = energyFlow;
-            long finalResultVoltage = resultVoltage;
-            long finalResultAmperage = resultAmperage;
-            postActions.add(() -> {
-                TemperatureLogic tempLogic = data.getLogicEntryNullable(TemperatureLogic.TYPE);
-                if (tempLogic != null) {
-                    long endVoltage = Math.min(voltage,
-                            data.getLogicEntryDefaultable(VoltageLimitLogic.TYPE).getValue());
-                    float heat = (float) computeHeat(voltage, endVoltage, finalResultAmperage, correctedAmperage);
-                    if (heat > 0) tempLogic.applyThermalEnergy(heat, tick);
-                    if (node instanceof WorldPipeNode n) {
-                        tempLogic.defaultHandleTemperature(n.getNet().getLevel(), n.getEquivalencyData());
+            long limit = data.getLogicEntryDefaultable(VoltageLimitLogic.TYPE).getValue();
+            resultVoltage = Math.min(resultVoltage, limit);
+            long endVoltage = Math.min(voltage, limit);
+            float heat = (float) computeHeat(voltage, endVoltage, resultAmperage, correctedAmperage);
+            if (heat > 0) {
+                postActions.add(() -> {
+                    TemperatureLogic tempLogic = data.getLogicEntryNullable(TemperatureLogic.TYPE);
+                    if (tempLogic != null) {
+                        tempLogic.applyThermalEnergy(heat, tick);
+                        if (node instanceof WorldPipeNode n) {
+                            tempLogic.defaultHandleTemperature(n.getNet().getLevel(), n.getEquivalencyData());
+                        }
                     }
-                }
-                finalEnergyFlow.recordFlow(tick, new EnergyFlowData(correctedAmperage, finalResultVoltage));
-            });
+                });
+            }
+            if (correctedAmperage > 0) {
+                EnergyFlowLogic finalEnergyFlow = energyFlow;
+                postActions.add(() -> {
+                    finalEnergyFlow.recordFlow(tick,
+                            new EnergyFlowData(correctedAmperage, resultVoltageReference.get()));
+                });
+            }
             resultAmperage = correctedAmperage;
         }
-        long finalResultVoltage = resultVoltage;
-        long finalResultAmperage = resultAmperage;
-        postActions.add(() -> {
-            NetGroup group = getSourceNode().getGroupUnsafe();
-            if (group != null && group.getData() instanceof EnergyGroupData data) {
+
+        resultVoltageReference.set(resultVoltage);
+
+        NetGroup group = list.get(0).getGroupUnsafe();
+        if (group != null && group.getData() instanceof EnergyGroupData data) {
+            long resultEU = resultVoltage * resultAmperage;
+            postActions.add(() -> {
                 data.addEnergyInPerSec(voltage * amperage, tick);
-                data.addEnergyOutPerSec(finalResultVoltage * finalResultAmperage, tick);
-            }
-        });
+                data.addEnergyOutPerSec(resultEU, tick);
+            });
+        }
         return new StandardReport(resultAmperage, resultVoltage, postActions);
     }
 
@@ -140,8 +127,7 @@ public class StandardEnergyPath extends StandardNetPath implements EnergyPath {
 
         public final List<NetNode> nodes = new ObjectArrayList<>();
         public final List<NetEdge> edges = new ObjectArrayList<>();
-        public final Long2ObjectAVLTreeMap<Set<NetNode>> voltageLimitInfo = new Long2ObjectAVLTreeMap<>(
-                voltageLimitComparator);
+        public long limit = Long.MAX_VALUE;
         public double loss = 0;
 
         public Builder(@NotNull NetNode startingNode) {
@@ -150,13 +136,6 @@ public class StandardEnergyPath extends StandardNetPath implements EnergyPath {
         }
 
         private void handleAdditionalInfo(@NotNull NetNode node) {
-            long value = node.getData().getLogicEntryDefaultable(VoltageLimitLogic.TYPE).getValue();
-            Set<NetNode> set = voltageLimitInfo.get(value);
-            if (set == null) {
-                set = new ObjectOpenHashSet<>();
-                voltageLimitInfo.put(value, set);
-            }
-            set.add(node);
             loss += node.getData().getLogicEntryDefaultable(VoltageLossLogic.TYPE).getValue();
         }
 
@@ -200,7 +179,7 @@ public class StandardEnergyPath extends StandardNetPath implements EnergyPath {
                 sum += edgeWeight;
             }
             return new StandardEnergyPath(ImmutableSet.copyOf(nodes), ImmutableSet.copyOf(edges),
-                    sum, voltageLimitInfo, (long) Math.ceil(loss));
+                    sum, (long) Math.ceil(loss));
         }
     }
 
@@ -238,7 +217,7 @@ public class StandardEnergyPath extends StandardNetPath implements EnergyPath {
                 energyFlow = new EnergyFlowLogic();
                 data.setLogicEntry(energyFlow);
             }
-            long tick = GTUtil.getCurrentServerTick();
+            int tick = TickTracker.getTick();
             long sum = 0L;
             for (EnergyFlowData energyFlowData : energyFlow.getFlow(tick)) {
                 long amperaged = energyFlowData.amperage();
@@ -283,6 +262,11 @@ public class StandardEnergyPath extends StandardNetPath implements EnergyPath {
         }
 
         @Override
+        public long euOut() {
+            return 0;
+        }
+
+        @Override
         public void report() {}
     };
 
@@ -290,18 +274,21 @@ public class StandardEnergyPath extends StandardNetPath implements EnergyPath {
 
         private final long amperage;
         private final long voltage;
-        private final Runnable[] report;
+        private final long eu;
+        private final List<Runnable> report;
 
         public StandardReport(long amperage, long voltage, @NotNull Runnable @NotNull... report) {
             this.amperage = amperage;
             this.voltage = voltage;
-            this.report = report;
+            this.report = ObjectArrayList.wrap(report);
+            this.eu = amperage * voltage;
         }
 
         public StandardReport(long amperage, long voltage, @NotNull List<@NotNull Runnable> report) {
             this.amperage = amperage;
             this.voltage = voltage;
-            this.report = report.toArray(new Runnable[0]);
+            this.report = report;
+            this.eu = amperage * voltage;
         }
 
         @Override
@@ -312,6 +299,11 @@ public class StandardEnergyPath extends StandardNetPath implements EnergyPath {
         @Override
         public long amperageOut() {
             return amperage;
+        }
+
+        @Override
+        public long euOut() {
+            return eu;
         }
 
         @Override

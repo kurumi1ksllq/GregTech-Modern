@@ -9,20 +9,13 @@ import java.util.function.Supplier;
 
 public class NetLogicType<T extends NetLogicEntry<T, ?>> implements StringRepresentable {
 
-    private final @NotNull String name;
+    private final @NotNull ResourceLocation name;
     private final @NotNull Supplier<@NotNull T> supplier;
     private final @NotNull T defaultable;
 
     public NetLogicType(@NotNull ResourceLocation name, @NotNull Supplier<@NotNull T> supplier,
                         @NotNull T defaultable) {
-        this.name = name.toString();
-        this.supplier = supplier;
-        this.defaultable = defaultable;
-    }
-
-    public NetLogicType(@NotNull String namespace, @NotNull String name, @NotNull Supplier<@NotNull T> supplier,
-                        @NotNull T defaultable) {
-        this.name = namespace + ":" + name;
+        this.name = name;
         this.supplier = supplier;
         this.defaultable = defaultable;
     }
@@ -42,6 +35,16 @@ public class NetLogicType<T extends NetLogicEntry<T, ?>> implements StringRepres
 
     @Override
     public final @NotNull String getSerializedName() {
-        return name;
+        return name.toString();
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public final int hashCode() {
+        return super.hashCode();
     }
 }

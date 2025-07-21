@@ -47,9 +47,4 @@ public class WorldDuctNet extends WorldPipeNet {
     public int getNetworkID() {
         return 5;
     }
-
-    @Override
-    public void setDirty() {
-        super.setDirty();
-    }
 }

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class VoltageLimitLogic extends AbstractLongLogicData<VoltageLimitLogic> {
 
-    public static final LongLogicType<VoltageLimitLogic> TYPE = new LongLogicType<>(GTCEu.MOD_ID, "VoltageLimit",
+    public static final LongLogicType<VoltageLimitLogic> TYPE = new LongLogicType<>(GTCEu.id("voltage_limit"),
             VoltageLimitLogic::new, new VoltageLimitLogic());
 
     @Override

@@ -17,7 +17,7 @@ import com.gregtechceu.gtceu.api.graphnet.predicate.EdgePredicate;
 import com.gregtechceu.gtceu.api.graphnet.predicate.NetPredicateType;
 import com.gregtechceu.gtceu.api.graphnet.traverse.EdgeDirection;
 import com.gregtechceu.gtceu.common.cover.ShutterCover;
-import com.gregtechceu.gtceu.utils.reference.WeakHashSet;
+import com.gregtechceu.gtceu.utils.collections.WeakHashSet;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -117,7 +117,7 @@ public abstract class WorldPipeNet extends WorldSavedNet {
             }
             dirty |= predicateEdge(edge, node, cNode, neighbor, cNeighbor);
         }
-        if (dirty) this.setDirty();
+        if (dirty) this.markAsDirty();
     }
 
     /**
@@ -240,7 +240,7 @@ public abstract class WorldPipeNet extends WorldSavedNet {
 
         @Override
         public int hashCode(NetNode o) {
-            return Objects.hash(o, o.getNet());
+            return o.hashCode() * 31 + o.getNet().hashCode();
         }
 
         @Override

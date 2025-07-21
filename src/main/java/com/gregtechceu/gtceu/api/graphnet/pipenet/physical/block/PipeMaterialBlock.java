@@ -97,12 +97,12 @@ public abstract class PipeMaterialBlock extends PipeBlock {
     // tile entity //
 
     @Override
-    public @Nullable MaterialPipeBlockEntity getBlockEntity(@NotNull BlockGetter world, @NotNull BlockPos pos) {
+    public @Nullable MaterialPipeBlockEntity getBlockEntity(@NotNull BlockGetter level, @NotNull BlockPos pos) {
         if (lastTilePos.get().equals(pos)) {
             PipeBlockEntity tile = lastTile.get().get();
             if (tile != null && !tile.isRemoved()) return (MaterialPipeBlockEntity) tile;
         }
-        BlockEntity tile = world.getBlockEntity(pos);
+        BlockEntity tile = level.getBlockEntity(pos);
         if (tile instanceof MaterialPipeBlockEntity pipe) {
             lastTilePos.set(pos.immutable());
             lastTile.set(new WeakReference<>(pipe));

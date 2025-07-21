@@ -61,8 +61,8 @@ public class CableModel extends AbstractPipeModel<CacheKey> {
                       @Nullable TextureInformation fullInsulationTex) {
         this.material = material;
         this.wireTex = !material.isNull() ?
-                new TextureInformation(
-                        MaterialIconType.wire.getBlockTexturePath(material.getMaterialIconSet(), "side", true), 0) :
+                new TextureInformation(MaterialIconType.wire
+                        .getBlockTexturePath(material.getMaterialIconSet(), "side", true), 0) :
                 WIRE;
         this.insulationTex = insulationTex;
         this.fullInsulationTex = fullInsulationTex;
@@ -75,12 +75,13 @@ public class CableModel extends AbstractPipeModel<CacheKey> {
     @Override
     protected ColorData computeColorData(@NotNull ModelData data) {
         if (insulationTex == null) return super.computeColorData(data);
-        Material material = Objects.requireNonNullElse(data.get(MATERIAL_PROPERTY), GTMaterials.NULL);
+        Material material = Objects.requireNonNullElse(data.get(PipeRenderProperties.MATERIAL_PROPERTY),
+                GTMaterials.NULL);
 
         if (!material.isNull()) {
             int matColor = GTUtil.convertRGBtoARGB(material.getMaterialRGB());
 
-            int insulationColor = GTMath.safeInt(data.get(COLOR_PROPERTY));
+            int insulationColor = GTMath.safeInt(data.get(PipeRenderProperties.COLOR_PROPERTY));
             if (insulationColor == 0 || insulationColor == matColor) {
                 // unpainted
                 insulationColor = DEFAULT_INSULATION_COLOR;

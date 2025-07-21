@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.api.blockentity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 
 public interface IHasWorldObjectAndCoords extends IDirtyNotifiable {
 
@@ -28,7 +29,7 @@ public interface IHasWorldObjectAndCoords extends IDirtyNotifiable {
         if (getLevel() != null) {
             var state = getLevel().getBlockState(pos);
             if (getLevel().isClientSide) {
-                getLevel().sendBlockUpdated(pos, state, state, 1 << 3);
+                getLevel().sendBlockUpdated(pos, state, state, Block.UPDATE_ALL);
             } else {
                 getLevel().blockEvent(pos, state.getBlock(), 1, 0);
             }

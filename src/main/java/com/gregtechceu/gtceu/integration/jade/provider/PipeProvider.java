@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.integration.jade.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicData;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeBlock;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
@@ -11,6 +12,8 @@ import com.gregtechceu.gtceu.common.pipelike.net.energy.EnergyFlowLogic;
 import com.gregtechceu.gtceu.common.pipelike.net.fluid.FluidFlowLogic;
 import com.gregtechceu.gtceu.common.pipelike.net.item.ItemFlowLogic;
 import com.gregtechceu.gtceu.integration.jade.element.FluidStackElement;
+import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 
@@ -70,11 +73,34 @@ public class PipeProvider extends BlockInfoProvider<PipeBlockEntity> {
         CompoundTag serverData = block.getServerData();
         if (serverData.contains("Energy")) {
             CompoundTag energy = serverData.getCompound("Energy");
-            tooltip.add(Component.translatable("gtceu.top.cable_voltage")
-                    .append(Component.literal(String.valueOf(energy.getLong("voltage")))));
-            tooltip.add(Component.translatable("gtceu.top.cable_amperage")
-                    .append(Component.literal(String.valueOf(energy.getLong("amperage")))));
+
+            CompoundTag lastEnergy = energy.getCompound("LastEnergy");
+            long voltage = lastEnergy.getLong("voltage");
+            long amperage = lastEnergy.getLong("amperage");
+
+            String voltageStr = FormattingUtil.formatNumbers(voltage);
+            String tier = GTValues.VNF[GTUtil.getTierByVoltage(voltage)];
+            String amperageStr = FormattingUtil.formatNumbers(amperage);
+
+            tooltip.add(Component.translatable("gtceu.top.pipe.energy_last", voltageStr, tier, amperageStr));
+
+            ListTag extraEnergy = serverData.getList("ExtraEnergy", Tag.TAG_COMPOUND);
+            if (!extraEnergy.isEmpty()) {
+                tooltip.add(Component.translatable("gtceu.top.pipe.energy"));
+                for (int i = 0; i < extraEnergy.size(); i++) {
+                    CompoundTag entry = extraEnergy.getCompound(i);
+                    voltage = entry.getLong("voltage");
+                    amperage = entry.getLong("amperage");
+
+                    voltageStr = FormattingUtil.formatNumbers(voltage);
+                    tier = GTValues.VNF[GTUtil.getTierByVoltage(voltage)];
+                    amperageStr = FormattingUtil.formatNumbers(amperage);
+
+                    tooltip.add(Component.translatable("gtceu.top.pipe.energy_per", voltageStr, tier, amperageStr));
+                }
+            }
         }
+
         if (serverData.contains("Fluid")) {
             CompoundTag fluid = serverData.getCompound("Fluid");
 
@@ -94,6 +120,7 @@ public class PipeProvider extends BlockInfoProvider<PipeBlockEntity> {
                         .append(stack.getDisplayName()));
             }
         }
+
         if (serverData.contains("Item")) {
             CompoundTag item = serverData.getCompound("Item");
 
@@ -139,34 +166,31 @@ public class PipeProvider extends BlockInfoProvider<PipeBlockEntity> {
     }
 
     private void addEnergyFlowInformation(CompoundTag tag, EnergyFlowLogic logic) {
-        long cumulativeVoltage = 0;
-        long cumulativeAmperage = 0;
-        for (var memory : logic.getMemory().values()) {
-            int count = 0;
-            double voltage = 0;
-            long amperage = 0;
-            for (EnergyFlowData flow : memory) {
-                count++;
-                long prev = amperage;
-                amperage += flow.amperage();
-                // weighted average
-                voltage = voltage * prev / amperage + (double) (flow.voltage() * flow.amperage()) / amperage;
+        CompoundTag energyTag = new CompoundTag();
+
+        if (!logic.getSum(true).isEmpty()) {
+            ListTag list = new ListTag();
+            for (var entry : logic.getSum(true).entrySet()) {
+                CompoundTag entryTag = new CompoundTag();
+                entryTag.putLong("voltage", entry.getKey());
+                entryTag.putLong("amperage", entry.getValue() / EnergyFlowLogic.MEMORY_TICKS);
+                list.add(entryTag);
             }
-            if (count != 0) {
-                cumulativeVoltage += voltage / count;
-                cumulativeAmperage += amperage / count;
-            }
+            energyTag.put("ExtraEnergy", list);
         }
-        CompoundTag energy = new CompoundTag();
-        energy.putLong("voltage", cumulativeVoltage / EnergyFlowLogic.MEMORY_TICKS);
-        energy.putLong("amperage", cumulativeAmperage / EnergyFlowLogic.MEMORY_TICKS);
-        tag.put("Energy", energy);
+        EnergyFlowData last = logic.getLast();
+        if (last != null) {
+            CompoundTag lastTag = new CompoundTag();
+            lastTag.putLong("voltage", last.voltage());
+            lastTag.putLong("amperage", last.amperage());
+            energyTag.put("LastEnergy", lastTag);
+        }
+        tag.put("Energy", energyTag);
     }
 
     private void addFluidFlowInformation(CompoundTag tag, FluidFlowLogic logic) {
         CompoundTag fluid = new CompoundTag();
-
-        fluid.put("LastFluid", logic.getLast().writeToNBT(new CompoundTag()));
+        fluid.put("LastFluid", logic.getLast().recombine().writeToNBT(new CompoundTag()));
 
         Object2LongOpenHashMap<FluidTestObject> counts = new Object2LongOpenHashMap<>();
         for (var memory : logic.getMemory().values()) {
@@ -190,7 +214,7 @@ public class PipeProvider extends BlockInfoProvider<PipeBlockEntity> {
 
     private void addItemFlowInformation(CompoundTag tag, ItemFlowLogic logic) {
         CompoundTag item = new CompoundTag();
-        item.put("LastItem", logic.getLast().save(new CompoundTag()));
+        item.put("LastItem", logic.getLast().recombine().save(new CompoundTag()));
 
         Object2LongOpenHashMap<ItemTestObject> counts = new Object2LongOpenHashMap<>();
         for (var memory : logic.getMemory().values()) {

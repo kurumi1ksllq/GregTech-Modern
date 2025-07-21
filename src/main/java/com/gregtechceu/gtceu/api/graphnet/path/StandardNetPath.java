@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +21,10 @@ import java.util.Objects;
 public class StandardNetPath implements NetPath {
 
     protected final ImmutableCollection<NetNode> nodes;
+    @Getter
+    protected final NetNode sourceNode;
+    @Getter
+    protected final NetNode targetNode;
 
     protected final ImmutableCollection<NetEdge> edges;
 
@@ -38,7 +43,9 @@ public class StandardNetPath implements NetPath {
         this.edges = edges;
         this.weight = weight;
         ImmutableList<NetNode> listForm = nodes.asList();
-        this.hash = Objects.hash(nodes, edges, weight, listForm.get(0), listForm.get(listForm.size() - 1));
+        this.sourceNode = listForm.get(0);
+        this.targetNode = listForm.get(listForm.size() - 1);
+        this.hash = Objects.hash(nodes, edges, weight, sourceNode, targetNode);
     }
 
     public StandardNetPath(@NotNull StandardNetPath reverse) {
@@ -58,15 +65,19 @@ public class StandardNetPath implements NetPath {
         this.edges = builderEdges.build();
         this.weight = reverse.weight;
         ImmutableList<NetNode> listForm = nodes.asList();
-        this.hash = Objects.hash(nodes, edges, weight, listForm.get(0), listForm.get(listForm.size() - 1));
+        this.sourceNode = listForm.get(0);
+        this.targetNode = listForm.get(listForm.size() - 1);
+        this.hash = Objects.hash(nodes, edges, weight, sourceNode, targetNode);
         this.reversed = reverse;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public @NotNull @Unmodifiable <N extends NetNode> ImmutableCollection<N> getOrderedNodes() {
         return (ImmutableCollection<N>) nodes;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public @NotNull @Unmodifiable <E extends NetEdge> ImmutableCollection<E> getOrderedEdges() {
         return (ImmutableCollection<E>) edges;

@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ThroughputLogic extends AbstractLongLogicData<ThroughputLogic> {
 
-    public static final LongLogicType<ThroughputLogic> TYPE = new LongLogicType<>(GTCEu.MOD_ID, "Throughput",
+    public static final LongLogicType<ThroughputLogic> TYPE = new LongLogicType<>(GTCEu.id("throughput"),
             ThroughputLogic::new, new ThroughputLogic());
 
     @Override

@@ -17,14 +17,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
-public record LaserStructure(String name, float renderThickness, boolean mirror,
-                             Supplier<Supplier<PipeModelRedirector>> model)
+@SuppressWarnings("Convert2MethodRef")
+public record LaserStructure(String name, float renderThickness, boolean mirror, Supplier<PipeModelRedirector> model)
         implements IPipeStructure {
 
-    public static final LaserStructure NORMAL = new LaserStructure("laser_pipe_normal", 0.375f,
-            false, () -> () -> PipeModelRegistry.getLaserModel());
-    public static final LaserStructure MIRROR = new LaserStructure("laser_pipe_mirror", 0.5f,
-            true, () -> () -> PipeModelRegistry.getLaserModel());
+    // spotless:off
+    public static final LaserStructure NORMAL = new LaserStructure("laser_pipe_normal", 0.375f, false, () -> PipeModelRegistry.getLaserModel());
+    public static final LaserStructure MIRROR = new LaserStructure("laser_pipe_mirror", 0.5f, true, () -> PipeModelRegistry.getLaserModel());
+    // spotless:on
 
     @Override
     public ResourceTexture getPipeTexture(boolean isBlock) {
@@ -72,7 +72,7 @@ public record LaserStructure(String name, float renderThickness, boolean mirror,
     @Override
     @OnlyIn(Dist.CLIENT)
     public PipeModelRedirector getModel() {
-        return model.get().get();
+        return model.get();
     }
 
     public static void register(@NotNull PipeStructureRegistrationEvent event) {

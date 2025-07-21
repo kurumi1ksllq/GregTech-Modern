@@ -8,9 +8,12 @@ import com.gregtechceu.gtceu.api.graphnet.traverse.EdgeDirection;
 import com.gregtechceu.gtceu.api.graphnet.traverse.NetBreadthIterator;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -33,12 +36,13 @@ public final class NetGroup {
 
     private final @NotNull Int2ObjectMap<Set<NetNode>> sortingNodes;
 
+    @Getter
     private @Nullable GroupData data;
 
     private GroupGraphView graphView;
 
     public NetGroup(IGraphNet net) {
-        this(net, new ObjectOpenHashSet<>(), new Int2ObjectOpenHashMap<>());
+        this(net, new ReferenceOpenHashSet<>(), new Int2ObjectOpenHashMap<>());
     }
 
     public NetGroup(@NotNull IGraphNet net, @NotNull Set<NetNode> nodes) {
@@ -70,7 +74,7 @@ public final class NetGroup {
     private void initialSort(NetNode node) {
         int key = node.getSortingKey();
         Set<NetNode> s = this.sortingNodes.get(key);
-        if (s == null) this.sortingNodes.put(key, s = new ObjectOpenHashSet<>());
+        if (s == null) this.sortingNodes.put(key, s = new ReferenceOpenHashSet<>());
         s.add(node);
     }
 
@@ -109,7 +113,7 @@ public final class NetGroup {
         Set<NetNode> old = this.sortingNodes.get(oldKey);
         if (old != null) {
             old.remove(node);
-            if (old.size() == 0) this.sortingNodes.remove(oldKey);
+            if (old.isEmpty()) this.sortingNodes.remove(oldKey);
         }
         Set<NetNode> n = this.sortingNodes.get(newKey);
         if (n == null) this.sortingNodes.put(newKey, n = new ObjectOpenHashSet<>());
@@ -212,7 +216,7 @@ public final class NetGroup {
         if (edge == null) return false;
         if (data != null) data.notifyOfRemovedEdge(edge);
         if (this.net.getBacker().removeEdge(source.wrapper, target.wrapper) != null) {
-            Set<NetNode> targetGroup = new ObjectOpenHashSet<>();
+            Set<NetNode> targetGroup = new ReferenceOpenHashSet<>();
             NetBreadthIterator i = new NetBreadthIterator(target, EdgeDirection.ALL);
             NetNode temp;
             while (i.hasNext()) {
@@ -222,7 +226,7 @@ public final class NetGroup {
                 targetGroup.add(temp);
             }
             this.removeNodes(targetGroup);
-            if (targetGroup.size() != 0) {
+            if (!targetGroup.isEmpty()) {
                 if (data == null) new NetGroup(this.net, targetGroup);
                 else {
                     Pair<GroupData, GroupData> split = data.splitAcross(this.nodes, targetGroup);
@@ -238,7 +242,7 @@ public final class NetGroup {
     @NotNull
     @UnmodifiableView
     public Set<NetNode> getNodes() {
-        return nodes;
+        return Collections.unmodifiableSet(nodes);
     }
 
     @NotNull
@@ -251,11 +255,7 @@ public final class NetGroup {
     @NotNull
     @UnmodifiableView
     public Int2ObjectMap<Set<NetNode>> getSortingNodes() {
-        return sortingNodes;
-    }
-
-    public @Nullable GroupData getData() {
-        return this.data;
+        return Int2ObjectMaps.unmodifiable(sortingNodes);
     }
 
     public GroupGraphView getGraphView() {

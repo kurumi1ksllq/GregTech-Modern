@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.cosmetics.CapeRegistry;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.client.EnvironmentalHazardClientHandler;
 import com.gregtechceu.gtceu.client.TooltipsHandler;
 import com.gregtechceu.gtceu.client.renderer.BlockHighlightRenderer;
@@ -16,6 +15,7 @@ import com.gregtechceu.gtceu.common.commands.GTClientCommands;
 import com.gregtechceu.gtceu.core.mixins.client.AbstractClientPlayerAccessor;
 import com.gregtechceu.gtceu.core.mixins.client.PlayerInfoAccessor;
 import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -102,7 +102,7 @@ public class ForgeClientEventListener {
             EnvironmentalHazardClientHandler.INSTANCE.onClientTick();
             GTValues.CLIENT_TIME++;
         } else {
-            ClientProxy.setServerTickCount(ClientProxy.getServerTickCount() + 1);
+            TickTracker.updateClient();
         }
     }
 

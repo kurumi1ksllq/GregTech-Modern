@@ -63,11 +63,6 @@ public abstract class AbstractFloatLogicData<T extends AbstractFloatLogicData<T>
             super(name, supplier, defaultable);
         }
 
-        public FloatLogicType(@NotNull String namespace, @NotNull String name, @NotNull Supplier<@NotNull T> supplier,
-                              @NotNull T defaultable) {
-            super(namespace, name, supplier, defaultable);
-        }
-
         public T getWith(float value) {
             return getNew().setValue(value);
         }

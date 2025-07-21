@@ -34,10 +34,9 @@ import net.minecraftforge.items.IItemHandler;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.Objects;
+import java.util.*;
 
 public class MachineCoverContainer implements ICoverable, IEnhancedManaged {
 
@@ -173,6 +172,11 @@ public class MachineCoverContainer implements ICoverable, IEnhancedManaged {
     @Override
     public @Nullable CoverBehavior getCoverAtSide(Direction side) {
         return covers.get(side);
+    }
+
+    @Override
+    public @NotNull @UnmodifiableView Collection<CoverBehavior> getAttachedCovers() {
+        return Collections.unmodifiableCollection(covers.values());
     }
 
     @Override

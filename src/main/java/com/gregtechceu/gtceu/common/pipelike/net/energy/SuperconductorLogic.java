@@ -9,7 +9,7 @@ public final class SuperconductorLogic extends AbstractByteLogicData<Superconduc
 
     public static final SuperconductorLogic INSTANCE = new SuperconductorLogic();
 
-    public static final ByteLogicType<SuperconductorLogic> TYPE = new ByteLogicType<>(GTCEu.MOD_ID, "Superconductor",
+    public static final ByteLogicType<SuperconductorLogic> TYPE = new ByteLogicType<>(GTCEu.id("superconductor"),
             () -> INSTANCE, INSTANCE);
 
     @Override

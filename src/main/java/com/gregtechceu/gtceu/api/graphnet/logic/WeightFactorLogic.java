@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class WeightFactorLogic extends AbstractDoubleLogicData<WeightFactorLogic> {
 
-    public static final DoubleLogicType<WeightFactorLogic> TYPE = new DoubleLogicType<>(GTCEu.MOD_ID, "WeightFactor",
+    public static final DoubleLogicType<WeightFactorLogic> TYPE = new DoubleLogicType<>(GTCEu.id("weight_factor"),
             WeightFactorLogic::new, new WeightFactorLogic().setValue(0));
 
     @Override

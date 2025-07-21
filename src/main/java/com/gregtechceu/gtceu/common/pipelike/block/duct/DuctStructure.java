@@ -13,12 +13,19 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import org.jetbrains.annotations.NotNull;
 
-public record DuctStructure(String name, float renderThickness, float rateMultiplier) implements IPipeStructure {
+import java.util.function.Supplier;
 
-    public static final DuctStructure SMALL = new DuctStructure("small", 0.375f, 2f);
-    public static final DuctStructure NORMAL = new DuctStructure("normal", 0.5f, 4f);
-    public static final DuctStructure LARGE = new DuctStructure("large", 0.625f, 8f);
-    public static final DuctStructure HUGE = new DuctStructure("huge", 0.75f, 16f);
+@SuppressWarnings("Convert2MethodRef")
+public record DuctStructure(String name, float renderThickness, float rateMultiplier,
+                            Supplier<PipeModelRedirector> model)
+        implements IPipeStructure {
+
+    // spotless:off
+    public static final DuctStructure SMALL = new DuctStructure("small", 0.375f, 2f, () -> PipeModelRegistry.getDuctModel());
+    public static final DuctStructure NORMAL = new DuctStructure("normal", 0.5f, 4f, () -> PipeModelRegistry.getDuctModel());
+    public static final DuctStructure LARGE = new DuctStructure("large", 0.625f, 8f, () -> PipeModelRegistry.getDuctModel());
+    public static final DuctStructure HUGE = new DuctStructure("huge", 0.75f, 16f, () -> PipeModelRegistry.getDuctModel());
+    // spotless:on
 
     @Override
     public @NotNull String getSerializedName() {

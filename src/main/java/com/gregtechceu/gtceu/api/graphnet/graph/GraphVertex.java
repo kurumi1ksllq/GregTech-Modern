@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.api.graphnet.graph;
 
 import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
 
-import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +12,6 @@ import java.util.Objects;
 public final class GraphVertex {
 
     @ApiStatus.Internal
-    @Getter
     public final NetNode wrapped;
 
     public GraphVertex(@NotNull NetNode wrapped) {
@@ -24,6 +22,10 @@ public final class GraphVertex {
     @ApiStatus.Internal
     public GraphVertex() {
         wrapped = null;
+    }
+
+    public NetNode getWrapped() {
+        return wrapped;
     }
 
     @Nullable
@@ -42,6 +44,6 @@ public final class GraphVertex {
 
     @Override
     public int hashCode() {
-        return Objects.hash(wrapped);
+        return wrapped == null ? 0 : wrapped.hashCode();
     }
 }

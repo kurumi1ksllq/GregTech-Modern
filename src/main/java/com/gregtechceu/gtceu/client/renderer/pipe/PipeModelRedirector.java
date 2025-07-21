@@ -5,6 +5,8 @@ import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeMaterialBlock;
 import com.gregtechceu.gtceu.client.model.BaseBakedModel;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.MaterialModelSupplier;
+import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
+import com.gregtechceu.gtceu.client.util.RecolorableBakedQuad;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
 import com.lowdragmc.lowdraglib.client.model.ModelFactory;
@@ -29,9 +31,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 import static com.gregtechceu.gtceu.api.machine.IMachineBlockEntity.*;
@@ -71,8 +71,12 @@ public class PipeModelRedirector extends BaseBakedModel {
     public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side,
                                              @NotNull RandomSource rand, @NotNull ModelData data,
                                              @Nullable RenderType renderType) {
-        Material mat = Objects.requireNonNullElse(data.get(AbstractPipeModel.MATERIAL_PROPERTY), GTMaterials.NULL);
-        if (mat.isNull() && state != null && state.getBlock() instanceof PipeMaterialBlock block) {
+        if (state == null) {
+            return Collections.emptyList();
+        }
+
+        Material mat = Objects.requireNonNullElse(data.get(PipeRenderProperties.MATERIAL_PROPERTY), GTMaterials.NULL);
+        if (mat.isNull() && state.getBlock() instanceof PipeMaterialBlock block) {
             mat = block.material;
         }
         AbstractPipeModel<?> model = supplier.getModel(mat);
@@ -81,7 +85,15 @@ public class PipeModelRedirector extends BaseBakedModel {
         if (model == null) {
             return Collections.emptyList();
         }
-        return model.getQuads(state, side, rand, data, renderType);
+        List<BakedQuad> quads = model.getQuads(state, side, rand, data, renderType);
+        for (ListIterator<BakedQuad> iter = quads.listIterator(); iter.hasNext();) {
+            BakedQuad quad = iter.next();
+            if (quad instanceof RecolorableBakedQuad recolorable) {
+                iter.set(GTQuadTransformers.setColor(recolorable, recolorable.getColor(), true));
+            }
+        }
+
+        return quads;
     }
 
     @Override
@@ -106,7 +118,7 @@ public class PipeModelRedirector extends BaseBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
-        Material mat = Objects.requireNonNullElse(data.get(AbstractPipeModel.MATERIAL_PROPERTY), GTMaterials.NULL);
+        Material mat = Objects.requireNonNullElse(data.get(PipeRenderProperties.MATERIAL_PROPERTY), GTMaterials.NULL);
         BlockState state = data.get(MODEL_DATA_STATE);
 
         if (mat.isNull() && state != null && state.getBlock() instanceof PipeMaterialBlock block) {

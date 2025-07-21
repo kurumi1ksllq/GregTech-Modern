@@ -14,14 +14,17 @@ public class BlockPosNode extends NetNode {
             BlockPosNode::new);
 
     private @NotNull BlockPos pos;
+    private int hash;
 
     public BlockPosNode(IGraphNet net) {
         super(net);
-        pos = BlockPos.ZERO;
+        this.pos = BlockPos.ZERO;
+        this.hash = pos.hashCode();
     }
 
     public BlockPosNode setPos(BlockPos pos) {
         this.pos = pos;
+        this.hash = pos.hashCode();
         return this;
     }
 
@@ -41,6 +44,12 @@ public class BlockPosNode extends NetNode {
     @Override
     public @NotNull BlockPos getEquivalencyData() {
         return pos;
+    }
+
+    // cache the hash to improve hashmap performance
+    @Override
+    public int hashCode() {
+        return hash;
     }
 
     @Override

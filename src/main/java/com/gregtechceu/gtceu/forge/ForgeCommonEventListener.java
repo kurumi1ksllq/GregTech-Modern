@@ -57,6 +57,7 @@ import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
 import com.gregtechceu.gtceu.integration.map.WaypointManager;
 import com.gregtechceu.gtceu.integration.map.cache.server.ServerCache;
 import com.gregtechceu.gtceu.utils.TaskHandler;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -160,6 +161,13 @@ public class ForgeCommonEventListener {
     public static void registerCapes(RegisterGTCapesEvent event) {
         GTCapes.registerGTCapes(event);
         GTCapes.giveDevCapes(event);
+    }
+
+    @SubscribeEvent
+    public static void updateTickUtil(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            TickTracker.updateServer();
+        }
     }
 
     @SubscribeEvent

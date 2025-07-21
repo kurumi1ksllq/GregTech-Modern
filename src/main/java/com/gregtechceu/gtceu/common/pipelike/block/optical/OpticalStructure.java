@@ -17,11 +17,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
-public record OpticalStructure(String name, float renderThickness, Supplier<Supplier<PipeModelRedirector>> model)
+@SuppressWarnings("Convert2MethodRef")
+public record OpticalStructure(String name, float renderThickness, Supplier<PipeModelRedirector> model)
         implements IPipeStructure {
 
-    public static final OpticalStructure INSTANCE = new OpticalStructure("optical_pipe_normal", 0.375f,
-            () -> () -> PipeModelRegistry.getOpticalModel());
+    // spotless:off
+    public static final OpticalStructure INSTANCE = new OpticalStructure("optical_pipe_normal", 0.375f, () -> PipeModelRegistry.getOpticalModel());
+    // spotless:on
 
     @Override
     public ResourceTexture getPipeTexture(boolean isBlock) {
@@ -59,7 +61,7 @@ public record OpticalStructure(String name, float renderThickness, Supplier<Supp
     @Override
     @OnlyIn(Dist.CLIENT)
     public PipeModelRedirector getModel() {
-        return model.get().get();
+        return model.get();
     }
 
     public static void register(@NotNull PipeStructureRegistrationEvent event) {

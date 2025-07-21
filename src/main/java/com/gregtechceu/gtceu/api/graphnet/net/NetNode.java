@@ -126,6 +126,6 @@ public abstract class NetNode implements ITagSerializable<CompoundTag>, IContent
 
     @Override
     public int hashCode() {
-        return Objects.hash(getEquivalencyData());
+        return getEquivalencyData().hashCode();
     }
 }

@@ -35,6 +35,7 @@ import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -180,11 +181,18 @@ public interface ICoverable extends ITickSubscription, IAppearance, ICapabilityP
         }
     }
 
+    /**
+     * @return a collection containing all attached covers.
+     */
+    @NotNull
+    @UnmodifiableView
+    Collection<CoverBehavior> getAttachedCovers();
+
+    /**
+     * @return if there is any cover attached
+     */
     default boolean hasAnyCover() {
-        for (Direction facing : GTUtil.DIRECTIONS)
-            if (getCoverAtSide(facing) != null)
-                return true;
-        return false;
+        return !getAttachedCovers().isEmpty();
     }
 
     /**

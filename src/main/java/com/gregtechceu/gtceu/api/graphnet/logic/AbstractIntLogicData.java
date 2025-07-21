@@ -61,11 +61,6 @@ public abstract class AbstractIntLogicData<T extends AbstractIntLogicData<T>> ex
             super(name, supplier, defaultable);
         }
 
-        public IntLogicType(@NotNull String namespace, @NotNull String name, @NotNull Supplier<@NotNull T> supplier,
-                            @NotNull T defaultable) {
-            super(namespace, name, supplier, defaultable);
-        }
-
         public T getWith(int value) {
             return getNew().setValue(value);
         }

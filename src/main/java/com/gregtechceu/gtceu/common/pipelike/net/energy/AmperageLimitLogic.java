@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class AmperageLimitLogic extends AbstractLongLogicData<AmperageLimitLogic> {
 
-    public static final LongLogicType<AmperageLimitLogic> TYPE = new LongLogicType<>(GTCEu.MOD_ID, "AmperageLimit",
+    public static final LongLogicType<AmperageLimitLogic> TYPE = new LongLogicType<>(GTCEu.id("amperage_limit"),
             AmperageLimitLogic::new, new AmperageLimitLogic());
 
     @Override

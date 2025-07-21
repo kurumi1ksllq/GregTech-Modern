@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.MaterialBlock;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
@@ -14,7 +13,6 @@ import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlock
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeCoverHolder;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
-import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.item.CoverPlaceBehavior;
@@ -22,6 +20,7 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 import com.gregtechceu.gtceu.utils.EntityDamageUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -92,12 +91,12 @@ public abstract class PipeBlock extends Block implements EntityBlock {
                 // second check -- connect to matching mark pipes if side matches or config allows.
                 if (tile.getPaintingColor() == other.getPaintingColor() && (facing == placedBlockSearchSide ||
                         !ConfigHolder.INSTANCE.machines.gt6StylePipesCables)) {
-                    if (coverCheck(tile, other, facing)) connectTile(tile, other, facing);
+                    if (coverCheck(tile, other, facing)) connect(tile, other, facing);
                     continue;
                 }
                 // third check -- connect to pipes with an open connection, no matter the mark status.
                 if (other.isConnected(facing.getOpposite())) {
-                    if (coverCheck(tile, other, facing)) connectTile(tile, other, facing);
+                    if (coverCheck(tile, other, facing)) connect(tile, other, facing);
                 }
             } else if (facing == placedBlockSearchSide) {
                 // if the placed on tile supports one of our capabilities, connect to it.
@@ -125,24 +124,23 @@ public abstract class PipeBlock extends Block implements EntityBlock {
             if (frameBlock != null) {
                 pipeBlockEntity.setFrameMaterial(frameBlock.material);
                 if (!player.isCreative()) itemStack.shrink(1);
-                SoundType type = VanillaRecipeHelper.isMaterialWood(frameBlock.material) ? SoundType.WOOD :
-                        SoundType.METAL;
-                level.playSound(player, pos,
-                        type.getPlaceSound(), SoundSource.BLOCKS,
+                SoundType type = VanillaRecipeHelper.isMaterialWood(frameBlock.material) ?
+                        SoundType.WOOD : SoundType.METAL;
+                level.playSound(player, pos, type.getPlaceSound(), SoundSource.BLOCKS,
                         (type.getVolume() + 1.0F) / 2.0F, type.getPitch() * 0.8F);
                 player.swing(hand);
                 return InteractionResult.SUCCESS;
             }
         }
 
-        if (itemStack.getItem() instanceof PipeBlockItem itemPipe) {
+        if (itemStack.getItem() instanceof PipeBlockItem) {
             BlockPos offsetPos = pos.offset(hit.getDirection().getNormal());
             BlockState stateAtSide = level.getBlockState(offsetPos);
             if (stateAtSide.getBlock() instanceof MaterialBlock matBlock && matBlock.tagPrefix == TagPrefix.frameGt) {
                 boolean wasPlaced = matBlock.replaceWithFramedPipe(level, offsetPos,
                         stateAtSide, player, itemStack, hit);
                 if (wasPlaced) {
-                    connectTile(pipeBlockEntity, pipeBlockEntity.getPipeNeighbor(hit.getDirection(), false),
+                    connect(pipeBlockEntity, pipeBlockEntity.getPipeNeighbor(hit.getDirection(), false),
                             hit.getDirection());
                 }
                 return wasPlaced ? InteractionResult.sidedSuccess(level.isClientSide) : InteractionResult.FAIL;
@@ -185,44 +183,45 @@ public abstract class PipeBlock extends Block implements EntityBlock {
      * super.onBlockClicked(worldIn, pos, playerIn);
      * }
      */
+
     /**
      * Should be called to verify if a connection can be formed before
-     * {@link #connectTile(PipeBlockEntity, PipeBlockEntity, Direction)} is called.
+     * {@link #connect(PipeBlockEntity, PipeBlockEntity, Direction)} is called.
      * 
      * @return whether the connection is allowed.
      */
-    public static boolean coverCheck(@NotNull PipeBlockEntity tile, @Nullable PipeBlockEntity tileAcross,
-                                     Direction facing) {
-        CoverBehavior tileCover = tile.getCoverHolder().getCoverAtSide(facing);
-        CoverBehavior acrossCover = tileAcross != null ?
-                tileAcross.getCoverHolder().getCoverAtSide(facing.getOpposite()) :
+    public static boolean coverCheck(@NotNull PipeBlockEntity blockEntity, @Nullable PipeBlockEntity beAcross,
+                                     Direction side) {
+        CoverBehavior tileCover = blockEntity.getCoverHolder().getCoverAtSide(side);
+        CoverBehavior acrossCover = beAcross != null ?
+                beAcross.getCoverHolder().getCoverAtSide(side.getOpposite()) :
                 null;
         return (tileCover == null || tileCover.canPipePassThrough()) &&
                 (acrossCover == null || acrossCover.canPipePassThrough());
     }
 
-    public static void connectTile(@NotNull PipeBlockEntity tile, @Nullable PipeBlockEntity tileAcross,
-                                   Direction facing) {
+    public static void connect(@NotNull PipeBlockEntity blockEntity, @Nullable PipeBlockEntity beAcross,
+                               Direction side) {
         // abort connection if either tile refuses it.
-        if (!tile.canConnectTo(facing) || tileAcross != null && !tileAcross.canConnectTo(facing.getOpposite())) return;
+        if (!blockEntity.canConnectTo(side) || beAcross != null && !beAcross.canConnectTo(side.getOpposite())) return;
 
         // if one of the pipes is larger than the other, render it closed.
-        tile.setConnected(facing, tileAcross != null &&
-                tile.getStructure().getRenderThickness() > tileAcross.getStructure().getRenderThickness());
-        if (tileAcross == null) return;
-        tileAcross.setConnected(facing.getOpposite(),
-                tileAcross.getStructure().getRenderThickness() > tile.getStructure().getRenderThickness());
-        if (tile.getLevel().isClientSide) return;
+        blockEntity.setConnected(side, beAcross != null &&
+                blockEntity.getStructure().getRenderThickness() > beAcross.getStructure().getRenderThickness());
+        if (beAcross == null) return;
+        beAcross.setConnected(side.getOpposite(),
+                beAcross.getStructure().getRenderThickness() > blockEntity.getStructure().getRenderThickness());
+        if (blockEntity.getLevel().isClientSide) return;
 
-        boolean blocked1 = tile.isBlocked(facing);
-        boolean blocked2 = tileAcross.isBlocked(facing.getOpposite());
+        boolean blocked1 = blockEntity.isBlocked(side);
+        boolean blocked2 = beAcross.isBlocked(side.getOpposite());
 
         Map<WorldPipeNet, WorldPipeNode> tile2Nodes = new Object2ObjectOpenHashMap<>();
-        for (WorldPipeNode node : getNodesForTile(tileAcross)) {
+        for (WorldPipeNode node : getNodesForTile(beAcross)) {
             tile2Nodes.put(node.getNet(), node);
         }
 
-        for (WorldPipeNode node : getNodesForTile(tile)) {
+        for (WorldPipeNode node : getNodesForTile(blockEntity)) {
             WorldPipeNet net = node.getNet();
             WorldPipeNode other = tile2Nodes.get(net);
             if (other == null) continue;
@@ -235,19 +234,19 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         }
     }
 
-    public static void disconnectTile(@NotNull PipeBlockEntity tile, @Nullable PipeBlockEntity tileAcross,
-                                      Direction facing) {
-        tile.setDisconnected(facing);
-        if (tileAcross == null) return;
-        tileAcross.setDisconnected(facing.getOpposite());
-        if (tile.getLevel().isClientSide) return;
+    public static void disconnect(@NotNull PipeBlockEntity blockEntity, @Nullable PipeBlockEntity beAcross,
+                                  Direction side) {
+        blockEntity.setDisconnected(side);
+        if (beAcross == null) return;
+        beAcross.setDisconnected(side.getOpposite());
+        if (blockEntity.getLevel().isClientSide) return;
 
         Map<WorldPipeNet, WorldPipeNode> tile2Nodes = new Object2ObjectOpenHashMap<>();
-        for (WorldPipeNode node : getNodesForTile(tileAcross)) {
+        for (WorldPipeNode node : getNodesForTile(beAcross)) {
             tile2Nodes.put(node.getNet(), node);
         }
 
-        for (WorldPipeNode node : getNodesForTile(tile)) {
+        for (WorldPipeNode node : getNodesForTile(blockEntity)) {
             WorldPipeNet net = node.getNet();
             WorldPipeNode other = tile2Nodes.get(net);
             if (other == null) continue;
@@ -255,17 +254,16 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         }
     }
 
-    public static void blockTile(@NotNull PipeBlockEntity tile, @Nullable PipeBlockEntity tileAcross,
-                                 Direction facing) {
-        tile.setBlocked(facing);
-        if (tileAcross == null || tile.getLevel().isClientSide) return;
+    public static void block(@NotNull PipeBlockEntity blockEntity, @Nullable PipeBlockEntity beAcross, Direction side) {
+        blockEntity.setBlocked(side);
+        if (beAcross == null || blockEntity.getLevel().isClientSide) return;
 
         Map<WorldPipeNet, WorldPipeNode> tile2Nodes = new Object2ObjectOpenHashMap<>();
-        for (WorldPipeNode node : getNodesForTile(tileAcross)) {
+        for (WorldPipeNode node : getNodesForTile(beAcross)) {
             tile2Nodes.put(node.getNet(), node);
         }
 
-        for (WorldPipeNode node : getNodesForTile(tile)) {
+        for (WorldPipeNode node : getNodesForTile(blockEntity)) {
             WorldPipeNet net = node.getNet();
             WorldPipeNode other = tile2Nodes.get(net);
             if (other == null) continue;
@@ -273,17 +271,17 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         }
     }
 
-    public static void unblockTile(@NotNull PipeBlockEntity tile, @Nullable PipeBlockEntity tileAcross,
-                                   Direction facing) {
-        tile.setUnblocked(facing);
-        if (tileAcross == null || tile.getLevel().isClientSide) return;
+    public static void unblock(@NotNull PipeBlockEntity blockEntity, @Nullable PipeBlockEntity beAcross,
+                               Direction side) {
+        blockEntity.setUnblocked(side);
+        if (beAcross == null || blockEntity.getLevel().isClientSide) return;
 
         Map<WorldPipeNet, WorldPipeNode> tile2Nodes = new Object2ObjectOpenHashMap<>();
-        for (WorldPipeNode node : getNodesForTile(tileAcross)) {
+        for (WorldPipeNode node : getNodesForTile(beAcross)) {
             tile2Nodes.put(node.getNet(), node);
         }
 
-        for (WorldPipeNode node : getNodesForTile(tile)) {
+        for (WorldPipeNode node : getNodesForTile(blockEntity)) {
             WorldPipeNet net = node.getNet();
             WorldPipeNode other = tile2Nodes.get(net);
             if (other == null) continue;
@@ -295,10 +293,11 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         return true;
     }
 
-    public static Collection<WorldPipeNode> getNodesForTile(PipeBlockEntity tile) {
-        assert tile.getLevel() instanceof ServerLevel;
-        return tile.getBlockType().getHandler(tile)
-                .getOrCreateFromNets((ServerLevel) tile.getLevel(), tile.getBlockPos(), tile.getStructure());
+    public static Collection<WorldPipeNode> getNodesForTile(PipeBlockEntity blockEntity) {
+        assert blockEntity.getLevel() instanceof ServerLevel;
+        return blockEntity.getBlockType().getHandler(blockEntity)
+                .getOrCreateFromNets((ServerLevel) blockEntity.getLevel(), blockEntity.getBlockPos(),
+                        blockEntity.getStructure());
     }
 
     @NotNull
@@ -372,7 +371,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         if (tile != null && tile.getFrameMaterial().isNull() && tile.getOffsetTimer() % 10 == 0) {
             TemperatureLogic logic = tile.getTemperatureLogic();
             if (logic != null) {
-                long tick = GTCEu.getMinecraftServer().getTickCount();
+                long tick = TickTracker.getTick();
                 EntityDamageUtil.applyTemperatureDamage(living, logic.getTemperature(tick), 1f, 5);
             }
         }
@@ -509,12 +508,12 @@ public abstract class PipeBlock extends Block implements EntityBlock {
     }
 
     @Nullable
-    public PipeBlockEntity getBlockEntity(@NotNull BlockGetter world, @NotNull BlockPos pos) {
+    public PipeBlockEntity getBlockEntity(@NotNull BlockGetter level, @NotNull BlockPos pos) {
         if (lastTilePos.get().equals(pos)) {
             PipeBlockEntity tile = lastTile.get().get();
             if (tile != null && !tile.isRemoved()) return tile;
         }
-        BlockEntity tile = world.getBlockEntity(pos);
+        BlockEntity tile = level.getBlockEntity(pos);
         if (tile instanceof PipeBlockEntity pipe) {
             lastTilePos.set(pos.immutable());
             lastTile.set(new WeakReference<>(pipe));
@@ -541,21 +540,20 @@ public abstract class PipeBlock extends Block implements EntityBlock {
 
     @Override
     public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
-        PipeBlockEntity tile = getBlockEntity(level, pos);
-        if (tile != null && level instanceof Level level1) {
-            TemperatureLogic temperatureLogic = tile.getTemperatureLogic();
-            int temp = temperatureLogic == null ? 0 : temperatureLogic
-                    .getTemperature(!level1.isClientSide ?
-                            level1.getServer().getTickCount() :
-                            ClientProxy.getServerTickCount());
-            // max light at 5000 K
-            // min light at 500 K
-            if (temp >= 5000) {
-                return 15;
-            }
-            if (temp > 500) {
-                return (temp - 500) * 15 / (4500);
-            }
+        PipeBlockEntity blockEntity = getBlockEntity(level, pos);
+        if (blockEntity == null) {
+            return 0;
+        }
+        TemperatureLogic temperatureLogic = blockEntity.getTemperatureLogic();
+        int temp = temperatureLogic == null ? 0 : temperatureLogic
+                .getTemperature(TickTracker.getTick());
+        // max light at 5000 K
+        // min light at 500 K
+        if (temp >= 5000) {
+            return 15;
+        }
+        if (temp > 500) {
+            return (temp - 500) * 15 / (4500);
         }
         return 0;
     }

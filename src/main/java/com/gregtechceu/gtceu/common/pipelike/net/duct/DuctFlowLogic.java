@@ -5,7 +5,7 @@ import com.gregtechceu.gtceu.api.data.medicalcondition.HazardStack;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.graphnet.logic.AbstractTransientLogicData;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicType;
-import com.gregtechceu.gtceu.utils.GTUtil;
+import com.gregtechceu.gtceu.utils.TickTracker;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.*;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class DuctFlowLogic extends AbstractTransientLogicData<DuctFlowLogic> {
 
-    public static final NetLogicType<DuctFlowLogic> TYPE = new NetLogicType<>(GTCEu.MOD_ID, "DuctFlow",
+    public static final NetLogicType<DuctFlowLogic> TYPE = new NetLogicType<>(GTCEu.id("duct_flow"),
             DuctFlowLogic::new, new DuctFlowLogic());
 
     public static final int MEMORY_TICKS = WorldDuctNet.getBufferTicks();
@@ -29,7 +29,7 @@ public class DuctFlowLogic extends AbstractTransientLogicData<DuctFlowLogic> {
     }
 
     public @NotNull Long2ObjectOpenHashMap<Object2FloatMap<DuctTestObject>> getMemory() {
-        updateMemory(GTUtil.getCurrentServerTick());
+        updateMemory(TickTracker.getTick());
         return memory;
     }
 

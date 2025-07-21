@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.capability.data.query.ComputationQuery;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockDisplayText;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
-import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
@@ -70,7 +69,7 @@ public class NetworkSwitchMachine extends DataBankMachine {
      */
 
     private ComputationQuery queryConnected() {
-        long tick = GTUtil.getCurrentServerTick();
+        long tick = TickTracker.getTick();
         if (tick >= nextQueryTick) {
             this.query = new ComputationQuery();
             List<IDataAccess> dataAccesses = getParts().stream()

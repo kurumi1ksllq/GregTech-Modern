@@ -34,7 +34,6 @@ public class GTJadePlugin implements IWailaPlugin {
         registration.registerBlockDataProvider(new ExhaustVentBlockProvider(), BlockEntity.class);
         registration.registerBlockDataProvider(new SteamBoilerBlockProvider(), BlockEntity.class);
         registration.registerBlockDataProvider(new AutoOutputBlockProvider(), BlockEntity.class);
-        registration.registerBlockDataProvider(new CableBlockProvider(), BlockEntity.class);
         registration.registerBlockDataProvider(new MachineModeProvider(), BlockEntity.class);
         registration.registerBlockDataProvider(new StainedColorProvider(), BlockEntity.class);
         registration.registerBlockDataProvider(new HazardCleanerBlockProvider(), BlockEntity.class);
@@ -61,7 +60,6 @@ public class GTJadePlugin implements IWailaPlugin {
         registration.registerBlockComponent(new ExhaustVentBlockProvider(), Block.class);
         registration.registerBlockComponent(new SteamBoilerBlockProvider(), Block.class);
         registration.registerBlockComponent(new AutoOutputBlockProvider(), Block.class);
-        registration.registerBlockComponent(new CableBlockProvider(), Block.class);
         registration.registerBlockComponent(new MachineModeProvider(), Block.class);
         registration.registerBlockComponent(new StainedColorProvider(), Block.class);
         registration.registerBlockComponent(new HazardCleanerBlockProvider(), Block.class);

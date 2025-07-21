@@ -23,8 +23,7 @@ import org.joml.*;
 
 import java.lang.Math;
 
-import static net.minecraft.client.renderer.block.model.FaceBakery.calculateFacing;
-
+@SuppressWarnings("UnstableApiUsage")
 public class StaticFaceBakery {
 
     public static final AABB SLIGHTLY_OVER_BLOCK = new AABB(-0.001f, -0.001f, -0.001f,
@@ -124,7 +123,7 @@ public class StaticFaceBakery {
 
         int[] vertices = makeVertices(uvs, sprite, facing,
                 setupShape(posFrom, posTo), transform.getRotation(), partRotation, shade);
-        Direction direction = calculateFacing(vertices);
+        Direction direction = FaceBakery.calculateFacing(vertices);
         System.arraycopy(originalUVs, 0, uvs.uvs, 0, originalUVs.length);
         if (partRotation == null) {
             recalculateWinding(vertices, direction);
@@ -158,20 +157,21 @@ public class StaticFaceBakery {
             blockfaceuv = recomputeUVs(face.uv, facing, transform.getRotation());
         }
 
-        float[] afloat = new float[blockfaceuv.uvs.length];
-        System.arraycopy(blockfaceuv.uvs, 0, afloat, 0, afloat.length);
-        float f = sprite.sprite().uvShrinkRatio();
+        float[] originalUVs = new float[blockfaceuv.uvs.length];
+        System.arraycopy(blockfaceuv.uvs, 0, originalUVs, 0, originalUVs.length);
+
+        float shrinkRatio = sprite.sprite().uvShrinkRatio();
         float f1 = (blockfaceuv.uvs[0] + blockfaceuv.uvs[0] + blockfaceuv.uvs[2] + blockfaceuv.uvs[2]) / VERTEX_COUNT;
         float f2 = (blockfaceuv.uvs[1] + blockfaceuv.uvs[1] + blockfaceuv.uvs[3] + blockfaceuv.uvs[3]) / VERTEX_COUNT;
-        blockfaceuv.uvs[0] = Mth.lerp(f, blockfaceuv.uvs[0], f1);
-        blockfaceuv.uvs[2] = Mth.lerp(f, blockfaceuv.uvs[2], f1);
-        blockfaceuv.uvs[1] = Mth.lerp(f, blockfaceuv.uvs[1], f2);
-        blockfaceuv.uvs[3] = Mth.lerp(f, blockfaceuv.uvs[3], f2);
+        blockfaceuv.uvs[0] = Mth.lerp(shrinkRatio, blockfaceuv.uvs[0], f1);
+        blockfaceuv.uvs[2] = Mth.lerp(shrinkRatio, blockfaceuv.uvs[2], f1);
+        blockfaceuv.uvs[1] = Mth.lerp(shrinkRatio, blockfaceuv.uvs[1], f2);
+        blockfaceuv.uvs[3] = Mth.lerp(shrinkRatio, blockfaceuv.uvs[3], f2);
         int[] aint = makeVertices(blockfaceuv, sprite.sprite(), facing, setupShape(posFrom, posTo),
                 transform.getRotation(),
                 partRotation, shade);
-        Direction direction = calculateFacing(aint);
-        System.arraycopy(afloat, 0, blockfaceuv.uvs, 0, afloat.length);
+        Direction direction = FaceBakery.calculateFacing(aint);
+        System.arraycopy(originalUVs, 0, blockfaceuv.uvs, 0, originalUVs.length);
         if (partRotation == null) {
             recalculateWinding(aint, direction);
         }
@@ -184,8 +184,9 @@ public class StaticFaceBakery {
             QuadTransformers.applyingLightmap(data.blockLight(), data.skyLight()).processInPlace(quad);
             QuadTransformers.applyingColor(data.color()).processInPlace(quad);
         }
-        com.lowdragmc.lowdraglib.client.bakedpipeline.QuadTransformers.settingEmissivity(emissivity)
-                .processInPlace(quad);
+        if (emissivity > 0) {
+            QuadTransformers.settingEmissivity(emissivity).processInPlace(quad);
+        }
 
         return quad;
     }
@@ -328,6 +329,7 @@ public class StaticFaceBakery {
         pos.set(transformed.x() + origin.x(), transformed.y() + origin.y(), transformed.z() + origin.z());
     }
 
+    @SuppressWarnings("SuspiciousNameCombination")
     private static void recalculateWinding(int[] vertices, Direction direction) {
         int[] verticesCopy = new int[vertices.length];
         System.arraycopy(vertices, 0, verticesCopy, 0, vertices.length);

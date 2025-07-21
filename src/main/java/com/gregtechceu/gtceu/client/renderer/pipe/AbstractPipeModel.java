@@ -12,7 +12,7 @@ import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTUtil;
-import com.gregtechceu.gtceu.utils.reference.WeakHashSet;
+import com.gregtechceu.gtceu.utils.collections.WeakHashSet;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -31,7 +31,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ChunkRenderTypeSet;
 import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.client.model.data.ModelProperty;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -44,18 +43,6 @@ import java.util.Objects;
 import static com.gregtechceu.gtceu.api.machine.IMachineBlockEntity.*;
 
 public abstract class AbstractPipeModel<K extends CacheKey> {
-
-    public static ModelProperty<Float> THICKNESS_PROPERTY = new ModelProperty<>();
-
-    public static ModelProperty<Material> FRAME_MATERIAL_PROPERTY = new ModelProperty<>();
-    public static ModelProperty<Byte> FRAME_MASK_PROPERTY = new ModelProperty<>();
-
-    public static ModelProperty<Byte> CONNECTED_MASK_PROPERTY = new ModelProperty<>();
-    public static ModelProperty<Byte> CLOSED_MASK_PROPERTY = new ModelProperty<>();
-    public static ModelProperty<Byte> BLOCKED_MASK_PROPERTY = new ModelProperty<>();
-
-    public static ModelProperty<Integer> COLOR_PROPERTY = new ModelProperty<>();
-    public static final ModelProperty<Material> MATERIAL_PROPERTY = new ModelProperty<>();
 
     protected final Object2ObjectOpenHashMap<K, StructureQuadCache> pipeCache;
 
@@ -74,7 +61,7 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side,
+    public @NotNull List<BakedQuad> getQuads(@NotNull BlockState state, @Nullable Direction side,
                                              @NotNull RandomSource rand, @NotNull ModelData modelData,
                                              @Nullable RenderType renderType) {
         ColorData data = computeColorData(modelData);
@@ -84,12 +71,13 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
         BlockPos pos = modelData.get(MODEL_DATA_POS);
 
         List<BakedQuad> quads = getQuads(toKey(modelData), level, pos, side,
-                GTMath.safeByte(modelData.get(CONNECTED_MASK_PROPERTY)),
-                GTMath.safeByte(modelData.get(CLOSED_MASK_PROPERTY)),
-                GTMath.safeByte(modelData.get(BLOCKED_MASK_PROPERTY)),
-                GTMath.safeByte(modelData.get(FRAME_MASK_PROPERTY)),
+                GTMath.safeByte(modelData.get(PipeRenderProperties.CONNECTED_MASK_PROPERTY)),
+                GTMath.safeByte(modelData.get(PipeRenderProperties.CLOSED_MASK_PROPERTY)),
+                GTMath.safeByte(modelData.get(PipeRenderProperties.BLOCKED_MASK_PROPERTY)),
+                GTMath.safeByte(modelData.get(PipeRenderProperties.FRAME_MASK_PROPERTY)),
                 coverMask,
-                Objects.requireNonNullElse(modelData.get(FRAME_MATERIAL_PROPERTY), GTMaterials.NULL),
+                Objects.requireNonNullElse(modelData.get(PipeRenderProperties.FRAME_MATERIAL_PROPERTY),
+                        GTMaterials.NULL),
                 data, rand, modelData, renderType);
         if (rendererPackage != null) renderCovers(quads, rendererPackage,
                 side, level, pos, rand, modelData, renderType);
@@ -100,8 +88,9 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
     protected void renderCovers(List<BakedQuad> quads, @NotNull CoverRendererPackage rendererPackage,
                                 @Nullable Direction side, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos,
                                 RandomSource rand, @NotNull ModelData data, RenderType renderType) {
-        int color = GTMath.safeInt(data.get(COLOR_PROPERTY));
-        Material material = Objects.requireNonNullElse(data.get(MATERIAL_PROPERTY), GTMaterials.NULL);
+        int color = GTMath.safeInt(data.get(PipeRenderProperties.COLOR_PROPERTY));
+        Material material = Objects.requireNonNullElse(data.get(PipeRenderProperties.MATERIAL_PROPERTY),
+                GTMaterials.NULL);
 
         if (!material.isNull()) {
             int matColor = GTUtil.convertRGBtoARGB(material.getMaterialRGB());
@@ -114,7 +103,7 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
     }
 
     protected ColorData computeColorData(@NotNull ModelData data) {
-        return new ColorData(GTMath.safeInt(data.get(COLOR_PROPERTY)));
+        return new ColorData(GTMath.safeInt(data.get(PipeRenderProperties.COLOR_PROPERTY)));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -146,7 +135,7 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
     protected abstract @NotNull K toKey(@NotNull ModelData state);
 
     protected final @NotNull CacheKey defaultKey(@NotNull ModelData state) {
-        return CacheKey.of(state.get(THICKNESS_PROPERTY));
+        return CacheKey.of(state.get(PipeRenderProperties.THICKNESS_PROPERTY));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -160,8 +149,8 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
 
     @OnlyIn(Dist.CLIENT)
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
-        return getParticleTexture(GTMath.safeInt(data.get(COLOR_PROPERTY)),
-                Objects.requireNonNullElse(data.get(MATERIAL_PROPERTY), GTMaterials.NULL));
+        return getParticleTexture(GTMath.safeInt(data.get(PipeRenderProperties.COLOR_PROPERTY)),
+                Objects.requireNonNullElse(data.get(PipeRenderProperties.MATERIAL_PROPERTY), GTMaterials.NULL));
     }
 
     public abstract SpriteInformation getParticleSprite(@NotNull Material material);

@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ChannelCountLogic extends AbstractIntLogicData<ChannelCountLogic> {
 
-    public static final IntLogicType<ChannelCountLogic> TYPE = new IntLogicType<>(GTCEu.MOD_ID, "ChannelCount",
+    public static final IntLogicType<ChannelCountLogic> TYPE = new IntLogicType<>(GTCEu.id("channel_count"),
             ChannelCountLogic::new, new ChannelCountLogic().setValue(1));
 
     @Override

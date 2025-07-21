@@ -40,7 +40,7 @@ import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlag
 public final class MaterialEnergyProperties implements PipeNetProperties.IPipeNetMaterialProperty {
 
     public static final MaterialPropertyKey<MaterialEnergyProperties> KEY = new MaterialPropertyKey<>(
-            "EnergyProperties");
+            "energy_properties");
 
     private static final int MINIMUM_MELT_TEMPERATURE = 1500;
 
@@ -184,7 +184,7 @@ public final class MaterialEnergyProperties implements PipeNetProperties.IPipeNe
                     .setLogicEntry(VoltageLimitLogic.TYPE.getWith(voltageLimit))
                     .setLogicEntry(TemperatureLogic.TYPE
                             .getWith(TemperatureLossFunction.getOrCreatePipe(coolingFactor), materialMeltTemperature, 1,
-                                    50 * pipe.material(), null)
+                                    50 * pipe.material(), -1)
                             .setInitialThermalEnergy(energy));
             if (superconductor) {
                 data.setLogicEntry(SuperconductorLogic.TYPE.getNew());

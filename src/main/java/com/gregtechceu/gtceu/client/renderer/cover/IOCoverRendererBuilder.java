@@ -37,9 +37,9 @@ public class IOCoverRendererBuilder extends CoverRendererBuilder {
     protected TextureAtlasSprite spriteInvertedEmissive;
 
     @Setter
-    protected @NotNull UVMapper mapperInverted = DEFAULT_MAPPER;
+    protected @NotNull UVMapper mapperInverted = defaultMapper;
     @Setter
-    protected @NotNull UVMapper mapperInvertedEmissive = DEFAULT_MAPPER;
+    protected @NotNull UVMapper mapperInvertedEmissive = defaultMapper;
 
     public IOCoverRendererBuilder(@NotNull ResourceLocation texture,
                                   @Nullable ResourceLocation textureEmissive,
@@ -93,23 +93,30 @@ public class IOCoverRendererBuilder extends CoverRendererBuilder {
                 new EnumMap<>(Direction.class) : null;
         for (Direction facing : GTUtil.DIRECTIONS) {
             if (texture != null) spriteQuads.put(facing, ImmutablePair.of(
-                    QuadHelper.buildQuad(facing, OVERLAY_BOXES_1.get(facing), mapper, sprite),
-                    QuadHelper.buildQuad(facing.getOpposite(), OVERLAY_BOXES_1.get(facing), mapper, sprite)));
+                    QuadHelper.buildQuad(facing, CoverRendererValues.OVERLAY_BOXES_1.get(facing), mapper, sprite),
+                    QuadHelper.buildQuad(facing.getOpposite(), CoverRendererValues.OVERLAY_BOXES_1.get(facing), mapper,
+                            sprite)));
 
             if (textureEmissive != null) spriteEmissiveQuads.put(facing, ImmutablePair.of(
-                    QuadHelper.buildQuad(facing, OVERLAY_BOXES_2.get(facing), mapperEmissive, spriteEmissive),
-                    QuadHelper.buildQuad(facing.getOpposite(), OVERLAY_BOXES_2.get(facing), mapperEmissive,
+                    QuadHelper.buildQuad(facing, CoverRendererValues.OVERLAY_BOXES_2.get(facing), mapperEmissive,
+                            spriteEmissive),
+                    QuadHelper.buildQuad(facing.getOpposite(), CoverRendererValues.OVERLAY_BOXES_2.get(facing),
+                            mapperEmissive,
                             spriteEmissive)));
 
             if (textureInverted != null) spriteInvertedQuads.put(facing, ImmutablePair.of(
-                    QuadHelper.buildQuad(facing, OVERLAY_BOXES_2.get(facing), mapperInverted, spriteInverted),
-                    QuadHelper.buildQuad(facing.getOpposite(), OVERLAY_BOXES_2.get(facing), mapperInverted,
+                    QuadHelper.buildQuad(facing, CoverRendererValues.OVERLAY_BOXES_2.get(facing), mapperInverted,
+                            spriteInverted),
+                    QuadHelper.buildQuad(facing.getOpposite(), CoverRendererValues.OVERLAY_BOXES_2.get(facing),
+                            mapperInverted,
                             spriteInverted)));
 
             if (textureInvertedEmissive != null) spriteInvertedEmissiveQuads.put(facing, ImmutablePair.of(
-                    QuadHelper.buildQuad(facing, OVERLAY_BOXES_2.get(facing), mapperInvertedEmissive,
+                    QuadHelper.buildQuad(facing, CoverRendererValues.OVERLAY_BOXES_2.get(facing),
+                            mapperInvertedEmissive,
                             spriteInvertedEmissive),
-                    QuadHelper.buildQuad(facing.getOpposite(), OVERLAY_BOXES_2.get(facing), mapperInvertedEmissive,
+                    QuadHelper.buildQuad(facing.getOpposite(), CoverRendererValues.OVERLAY_BOXES_2.get(facing),
+                            mapperInvertedEmissive,
                             spriteInvertedEmissive)));
         }
 

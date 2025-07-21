@@ -14,7 +14,9 @@ import com.gregtechceu.gtceu.api.cover.filter.FilterHandler;
 import com.gregtechceu.gtceu.api.cover.filter.FilterHandlers;
 import com.gregtechceu.gtceu.api.cover.filter.ItemFilter;
 import com.gregtechceu.gtceu.api.graphnet.GraphNetUtility;
+import com.gregtechceu.gtceu.api.graphnet.net.NetEdge;
 import com.gregtechceu.gtceu.api.graphnet.net.NetNode;
+import com.gregtechceu.gtceu.api.graphnet.path.NetPath;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.NodeExposingCapabilities;
 import com.gregtechceu.gtceu.api.graphnet.predicate.test.ItemTestObject;
 import com.gregtechceu.gtceu.api.graphnet.traverse.EdgeDirection;
@@ -33,9 +35,9 @@ import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
 import com.gregtechceu.gtceu.common.cover.filter.MatchResult;
 import com.gregtechceu.gtceu.common.cover.filter.MergabilityInfo;
 import com.gregtechceu.gtceu.common.pipelike.net.item.*;
-import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
+import com.gregtechceu.gtceu.utils.collections.ListHashSet;
 import com.gregtechceu.gtceu.utils.function.BiIntConsumer;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
@@ -66,11 +68,8 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
-import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2IntFunction;
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+import com.google.common.collect.ImmutableList;
+import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.*;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -82,6 +81,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -162,8 +162,16 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
     }
 
     protected @Nullable IItemHandler getAdjacentItemHandler() {
-        return GTTransferUtils.getAdjacentItemHandler(coverHolder.getLevel(), coverHolder.getPos(), attachedSide)
-                .resolve().orElse(null);
+        BlockEntity blockEntity = coverHolder.getNeighbor(attachedSide);
+        if (blockEntity == null) {
+            return null;
+        }
+        var opt = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, attachedSide.getOpposite());
+        if (opt.isPresent()) {
+            return opt.resolve().orElse(null);
+        } else {
+            return null;
+        }
     }
 
     //////////////////////////////////////
@@ -253,12 +261,11 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
     protected void update() {
         long timer = coverHolder.getOffsetTimer();
         if (timer % 5 == 0 && isWorkingEnabled && getItemsLeftToTransfer() > 0) {
-            Direction side = attachedSide;
-            BlockEntity tileEntity = coverHolder.getNeighbor(side);
-            IItemHandler itemHandler = tileEntity == null ? null :
-                    tileEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, side.getOpposite()).resolve().orElse(null);
-            IItemHandler myItemHandler = coverHolder.getCapability(ForgeCapabilities.ITEM_HANDLER, side).resolve()
-                    .orElse(null);
+            IItemHandler itemHandler = getAdjacentItemHandler();
+            IItemHandler myItemHandler = getOwnItemHandler();
+            // if we're on a pipe, we shouldn't see said pipe's sided handler, but instead its unsided handler.
+            IItemHandler h = ItemCapabilityObject.instanceOf(myItemHandler);
+            if (h != null) myItemHandler = h;
             if (itemHandler != null && myItemHandler != null) {
                 if (io == IO.OUT) {
                     performTransferOnUpdate(myItemHandler, itemHandler);
@@ -308,7 +315,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
                                   @NotNull IntUnaryOperator maxTransfer, @Nullable BiIntConsumer transferReport) {
         var filter = this.getFilterHandler();
         byFilterSlot = byFilterSlot && filter.isFilterPresent(); // can't be by filter slot if there is no filter
-        Int2IntArrayMap containedByFilterSlot = new Int2IntArrayMap();
+        Int2IntLinkedOpenHashMap containedByFilterSlot = new Int2IntLinkedOpenHashMap();
         Int2ObjectArrayMap<MergabilityInfo<ItemTestObject>> filterSlotToMergability = new Int2ObjectArrayMap<>();
         for (int i = 0; i < sourceHandler.getSlots(); i++) {
             ItemStack stack = sourceHandler.getStackInSlot(i);
@@ -320,7 +327,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
                 if (byFilterSlot) {
                     filterSlot = match.getFilterIndex();
                 }
-                containedByFilterSlot.merge(filterSlot, extracted, Integer::sum);
+                containedByFilterSlot.addTo(filterSlot, extracted);
                 final int handlerSlot = i;
                 filterSlotToMergability.compute(filterSlot, (k, v) -> {
                     if (v == null) v = new MergabilityInfo<>();
@@ -340,11 +347,10 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
             int slotTransfer = 0;
             if (next.getIntValue() >= min) {
                 MergabilityInfo<ItemTestObject> mergabilityInfo = filterSlotToMergability.get(filterSlot);
-                MergabilityInfo<ItemTestObject>.Merge merge = mergabilityInfo.getLargestMerge();
-                // since we can't guarantee the transferability of multiple stack types while just simulating,
-                // if the largest merge is not large enough we have to give up.
-                if (merge.getCount() >= min) {
-                    int transfer = Math.min(merge.getCount(), max);
+                var merges = mergabilityInfo.getMerges();
+                for (var merge : merges) {
+                    if (merge.getCount() + slotTransfer < min) break;
+                    int transfer = Math.min(merge.getCount(), max - slotTransfer);
                     transfer = doInsert(destHandler, merge.getTestObject(), transfer, true);
                     if (transfer < min) continue;
                     transfer = doExtract(sourceHandler, merge.getTestObject(), transfer, true);
@@ -353,24 +359,11 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
                     doInsert(destHandler, merge.getTestObject(), transfer, false);
                     int remaining = max - transfer;
                     slotTransfer += transfer;
-                    if (remaining <= 0) continue;
-                    for (MergabilityInfo<ItemTestObject>.Merge otherMerge : mergabilityInfo
-                            .getNonLargestMerges(merge)) {
-                        transfer = Math.min(otherMerge.getCount(), remaining);
-                        transfer = doInsert(destHandler, otherMerge.getTestObject(), transfer, true);
-                        if (transfer < min) continue;
-                        transfer = doExtract(sourceHandler, otherMerge.getTestObject(), transfer, true);
-                        if (transfer < min) continue;
-                        doExtract(sourceHandler, otherMerge.getTestObject(), transfer, false);
-                        doInsert(destHandler, otherMerge.getTestObject(), transfer, false);
-                        remaining -= transfer;
-                        slotTransfer += transfer;
-                        if (remaining <= 0) break;
-                    }
+                    if (remaining <= 0 || slotTransfer >= max) break;
                 }
+                if (transferReport != null) transferReport.accept(filterSlot, slotTransfer);
+                totalTransfer += slotTransfer;
             }
-            if (transferReport != null) transferReport.accept(filterSlot, slotTransfer);
-            totalTransfer += slotTransfer;
         }
         return totalTransfer;
     }
@@ -385,28 +378,28 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
         if (distributionMode == DistributionMode.FLOOD || (cap = ItemCapabilityObject.instanceOf(handler)) == null)
             return simpleExtract(handler, testObject, count, simulate);
         NetNode origin = cap.getNode();
-        Predicate<Object> filter = GraphNetUtility.standardEdgeBlacklist(testObject);
         // if you find yourself here because you added a new distribution mode and now it won't compile,
         // good luck.
         return switch (distributionMode) {
             case ROUND_ROBIN -> {
-                ItemNetworkView view = cap.getNetworkView();
-                Iterator<IItemHandler> iter = view.handler().getBackingHandlers().iterator();
+                ItemNetworkView view = cap.getNetworkView(ItemCapabilityObject.facingOf(handler));
+                Iterator<IItemHandler> iter = view.getHandler().getBackingHandlers().iterator();
                 ObjectLinkedOpenHashSet<IItemHandler> cache = getRoundRobinCache(true, simulate);
                 Set<IItemHandler> backlog = new ObjectOpenHashSet<>();
-                Object2IntOpenHashMap<NetNode> flows = new Object2IntOpenHashMap<>();
+                Reference2IntOpenHashMap<NetNode> flowLimitCache = new Reference2IntOpenHashMap<>(
+                        origin.getGroupSafe().getNodes().size());
                 int available = count;
                 while (available > 0) {
                     if (!cache.isEmpty() && backlog.remove(cache.first())) {
                         IItemHandler candidate = cache.first();
-                        NetNode linked = view.handlerNetNodeBiMap().get(candidate);
+                        NetNode linked = view.getBiMap().get(candidate);
                         if (linked == null) {
                             cache.removeFirst();
                             continue;
                         } else {
                             cache.addAndMoveToLast(candidate);
                         }
-                        available = rrExtract(testObject, simulate, origin, filter, flows, available, candidate,
+                        available = rrExtract(testObject, simulate, origin, flowLimitCache, available, candidate,
                                 linked);
                         continue;
                     }
@@ -414,14 +407,14 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
                         IItemHandler candidate = iter.next();
                         boolean frontOfCache = !cache.isEmpty() && cache.first() == candidate;
                         if (frontOfCache || !cache.contains(candidate)) {
-                            NetNode linked = view.handlerNetNodeBiMap().get(candidate);
+                            NetNode linked = view.getBiMap().get(candidate);
                             if (linked == null) {
                                 if (frontOfCache) cache.removeFirst();
                                 continue;
                             } else {
                                 cache.addAndMoveToLast(candidate);
                             }
-                            available = rrExtract(testObject, simulate, origin, filter, flows, available, candidate,
+                            available = rrExtract(testObject, simulate, origin, flowLimitCache, available, candidate,
                                     linked);
                         } else {
                             backlog.add(candidate);
@@ -431,7 +424,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
                         break;
                     } else {
                         if (!cache.isEmpty()) {
-                            if (view.handler().getBackingHandlers().contains(cache.first()))
+                            if (view.getHandler().getBackingHandlers().contains(cache.first()))
                                 break; // we've already visited the next node in the cache
                             else {
                                 // the network view does not contain the node in the front of the cache, so yeet it.
@@ -445,28 +438,26 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
                 while (iter.hasNext()) {
                     cache.add(iter.next());
                 }
-                if (!simulate) {
-                    for (var entry : flows.object2IntEntrySet()) {
-                        ItemCapabilityObject.reportFlow(entry.getKey(), entry.getIntValue(), testObject);
-                    }
-                }
                 yield count - available;
             }
             case EQUALIZED -> {
+                // only consider destinations that are not on the other side of a filter that rejects our test object
                 NetClosestIterator gather = new NetClosestIterator(origin,
-                        EdgeSelector.filtered(EdgeDirection.INCOMING, filter));
+                        EdgeSelector.filtered(EdgeDirection.INCOMING,
+                                GraphNetUtility.edgeSelectorBlacklist(testObject)));
                 Object2ObjectOpenHashMap<NetNode, IItemHandler> candidates = new Object2ObjectOpenHashMap<>();
                 while (gather.hasNext()) {
                     NetNode node = gather.next();
                     if (node instanceof NodeExposingCapabilities exposer) {
                         IItemHandler h = exposer.getProvider().getCapability(
-                                ForgeCapabilities.ITEM_HANDLER, exposer.exposedFacing())
-                                .resolve().orElse(null);
+                                ForgeCapabilities.ITEM_HANDLER,
+                                exposer.exposedFacing()).resolve().orElse(null);
                         if (h != null && ItemCapabilityObject.instanceOf(h) == null) {
                             candidates.put(node, h);
                         }
                     }
                 }
+                if (candidates.isEmpty()) yield 0;
                 int largestMin = count / candidates.size();
                 if (largestMin <= 0) yield 0;
                 for (IItemHandler value : candidates.values()) {
@@ -474,20 +465,57 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
                     if (largestMin <= 0) yield 0;
                 }
                 // binary search for largest scale that doesn't exceed flow limits
-                Int2ObjectArrayMap<Object2IntOpenHashMap<NetNode>> flows = new Int2ObjectArrayMap<>();
+                Reference2IntOpenHashMap<NetNode> flowLimitCache = new Reference2IntOpenHashMap<>();
+                Int2ObjectArrayMap<Reference2IntOpenHashMap<NetNode>> flows = new Int2ObjectArrayMap<>();
                 largestMin = GTUtil.binarySearchInt(0, largestMin, l -> {
                     if (flows.containsKey(l) && flows.get(l) == null) return false;
-                    ResilientNetClosestIterator forwardFrontier = new ResilientNetClosestIterator(origin,
-                            EdgeSelector.filtered(EdgeDirection.INCOMING, filter));
-                    Object2IntOpenHashMap<NetNode> localFlows = new Object2IntOpenHashMap<>();
+                    ResilientNetClosestIterator backwardFrontier = null;
+                    Reference2IntOpenHashMap<NetNode> localFlows = new Reference2IntOpenHashMap<>();
                     for (NetNode node : candidates.keySet()) {
-                        ResilientNetClosestIterator backwardFrontier = new ResilientNetClosestIterator(node,
-                                EdgeSelector.filtered(EdgeDirection.OUTGOING, filter));
-                        if (GraphNetUtility.p2pWalk(simulate, l,
-                                n -> ItemCapabilityObject.getFlowLimit(n, testObject) - localFlows.getInt(n),
-                                (n, i) -> localFlows.put(n, localFlows.getInt(n) + i),
-                                forwardFrontier, backwardFrontier) < l)
+                        ListHashSet<NetPath> pathCache = ItemCapabilityObject.getNetworkView(node).getPathCache(origin);
+                        ResilientNetClosestIterator forwardFrontier = null;
+                        Iterator<NetPath> iterator = pathCache.iterator();
+                        int needed = l;
+                        while (needed > 0) {
+                            NetPath path;
+                            if (iterator != null && iterator.hasNext()) path = iterator.next();
+                            else {
+                                iterator = null;
+                                if (backwardFrontier == null) {
+                                    backwardFrontier = new ResilientNetClosestIterator(origin, EdgeDirection.INCOMING);
+                                }
+                                if (forwardFrontier == null) {
+                                    forwardFrontier = new ResilientNetClosestIterator(node, EdgeDirection.OUTGOING);
+                                }
+                                path = GraphNetUtility.p2pNextPath(
+                                        n -> ItemCapabilityObject.getFlowLimitCached(flowLimitCache, n, testObject) <=
+                                                localFlows.getInt(n),
+                                        e -> !e.test(testObject), forwardFrontier, backwardFrontier,
+                                        (f, b) -> f.hasNext());
+                                if (path == null) break;
+                                int i = pathCache.size();
+                                while (i > 0 && pathCache.get(i - 1).getWeight() > path.getWeight()) {
+                                    i--;
+                                }
+                                if (!pathCache.addSensitive(i, path)) break;
+                            }
+                            int extract = attemptPath(path, needed,
+                                    n -> ItemCapabilityObject.getFlowLimitCached(flowLimitCache, n, testObject) -
+                                            localFlows.getInt(n),
+                                    e -> !e.test(testObject));
+                            if (extract > 0) {
+                                needed -= extract;
+                                ImmutableList<NetNode> asList = path.getOrderedNodes().asList();
+                                for (int j = 0; j < asList.size(); j++) {
+                                    NetNode n = asList.get(j);
+                                    localFlows.put(n, localFlows.getInt(n) + extract);
+                                }
+                            }
+                        }
+                        if (needed > 0) {
+                            flows.put(l, null);
                             return false;
+                        }
                     }
                     flows.put(l, localFlows);
                     return true;
@@ -497,7 +525,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
                     for (IItemHandler value : candidates.values()) {
                         simpleExtract(value, testObject, largestMin, false);
                     }
-                    for (var e : flows.get(largestMin).object2IntEntrySet()) {
+                    for (var e : flows.get(largestMin).reference2IntEntrySet()) {
                         ItemCapabilityObject.reportFlow(e.getKey(), e.getIntValue(), testObject);
                     }
                 }
@@ -507,22 +535,48 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
         };
     }
 
-    protected int rrExtract(ItemTestObject testObject, boolean simulate, NetNode origin, Predicate<Object> filter,
-                            Object2IntOpenHashMap<NetNode> flows, int available, IItemHandler candidate,
-                            NetNode linked) {
-        int accepted = simpleExtract(candidate, testObject, available, true);
-        if (accepted > 0) {
-            ResilientNetClosestIterator forwardFrontier = new ResilientNetClosestIterator(origin,
-                    EdgeSelector.filtered(EdgeDirection.INCOMING, filter));
-            ResilientNetClosestIterator backwardFrontier = new ResilientNetClosestIterator(linked,
-                    EdgeSelector.filtered(EdgeDirection.OUTGOING, filter));
-            accepted = GraphNetUtility.p2pWalk(simulate, accepted,
-                    n -> ItemCapabilityObject.getFlowLimit(n, testObject) - flows.getInt(n),
-                    (n, i) -> flows.put(n, flows.getInt(n) + i),
-                    forwardFrontier, backwardFrontier);
-            if (accepted > 0) {
-                available -= accepted;
-                if (!simulate) simpleExtract(candidate, testObject, accepted, false);
+    protected int rrExtract(ItemTestObject testObject, boolean simulate, NetNode origin,
+                            Reference2IntOpenHashMap<NetNode> flowLimitCache, int available,
+                            IItemHandler candidate, NetNode linked) {
+        int extractable = simpleExtract(candidate, testObject, available, true);
+        if (extractable > 0) {
+            ListHashSet<NetPath> pathCache = ItemCapabilityObject.getNetworkView(linked).getPathCache(origin);
+            Iterator<NetPath> iterator = pathCache.iterator();
+            ResilientNetClosestIterator forwardFrontier = null;
+            ResilientNetClosestIterator backwardFrontier = null;
+            while (extractable > 0) {
+                NetPath path;
+                if (iterator != null && iterator.hasNext()) path = iterator.next();
+                else {
+                    iterator = null;
+                    if (forwardFrontier == null) {
+                        forwardFrontier = new ResilientNetClosestIterator(linked, EdgeDirection.OUTGOING);
+                        backwardFrontier = new ResilientNetClosestIterator(origin, EdgeDirection.INCOMING);
+                    }
+                    path = GraphNetUtility.p2pNextPath(
+                            n -> ItemCapabilityObject.getFlowLimitCached(flowLimitCache, n, testObject) <= 0,
+                            e -> !e.test(testObject), forwardFrontier, backwardFrontier);
+                    if (path == null) break;
+                    int i = pathCache.size();
+                    while (i > 0 && pathCache.get(i - 1).getWeight() > path.getWeight()) {
+                        i--;
+                    }
+                    if (!pathCache.addSensitive(i, path)) break;
+                }
+                int extract = attemptPath(path, extractable,
+                        n -> ItemCapabilityObject.getFlowLimitCached(flowLimitCache, n, testObject),
+                        e -> !e.test(testObject));
+                if (extract > 0) {
+                    extractable -= extract;
+                    available -= extract;
+                    ImmutableList<NetNode> asList = path.getOrderedNodes().asList();
+                    for (int j = 0; j < asList.size(); j++) {
+                        NetNode n = asList.get(j);
+                        if (!simulate) ItemCapabilityObject.reportFlow(n, extract, testObject);
+                        flowLimitCache.put(n, flowLimitCache.getInt(n) - extract);
+                    }
+                    if (!simulate) simpleExtract(candidate, testObject, extract, false);
+                }
             }
         }
         return available;
@@ -547,42 +601,43 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
         if (distributionMode == DistributionMode.FLOOD || (cap = ItemCapabilityObject.instanceOf(handler)) == null)
             return simpleInsert(handler, testObject, count, simulate);
         NetNode origin = cap.getNode();
-        Predicate<Object> filter = GraphNetUtility.standardEdgeBlacklist(testObject);
         // if you find yourself here because you added a new distribution mode and now it won't compile,
         // good luck.
         return switch (distributionMode) {
             case ROUND_ROBIN -> {
-                ItemNetworkView view = cap.getNetworkView();
-                Iterator<IItemHandler> iter = view.handler().getBackingHandlers().iterator();
+                ItemNetworkView view = cap.getNetworkView(ItemCapabilityObject.facingOf(handler));
+                Iterator<IItemHandler> iter = view.getHandler().getBackingHandlers().iterator();
                 ObjectLinkedOpenHashSet<IItemHandler> cache = getRoundRobinCache(false, simulate);
                 Set<IItemHandler> backlog = new ObjectOpenHashSet<>();
-                Object2IntOpenHashMap<NetNode> flows = new Object2IntOpenHashMap<>();
+                Reference2IntOpenHashMap<NetNode> flowLimitCache = new Reference2IntOpenHashMap<>(
+                        origin.getGroupSafe().getNodes().size());
                 int available = count;
                 while (available > 0) {
                     if (!cache.isEmpty() && backlog.remove(cache.first())) {
                         IItemHandler candidate = cache.first();
-                        NetNode linked = view.handlerNetNodeBiMap().get(candidate);
+                        NetNode linked = view.getBiMap().get(candidate);
                         if (linked == null) {
                             cache.removeFirst();
                             continue;
                         } else {
                             cache.addAndMoveToLast(candidate);
                         }
-                        available = rrInsert(testObject, simulate, origin, filter, flows, available, candidate, linked);
+                        available = rrInsert(testObject, simulate, origin, flowLimitCache, available, candidate,
+                                linked);
                         continue;
                     }
                     if (iter.hasNext()) {
                         IItemHandler candidate = iter.next();
                         boolean frontOfCache = !cache.isEmpty() && cache.first() == candidate;
                         if (frontOfCache || !cache.contains(candidate)) {
-                            NetNode linked = view.handlerNetNodeBiMap().get(candidate);
+                            NetNode linked = view.getBiMap().get(candidate);
                             if (linked == null) {
                                 if (frontOfCache) cache.removeFirst();
                                 continue;
                             } else {
                                 cache.addAndMoveToLast(candidate);
                             }
-                            available = rrInsert(testObject, simulate, origin, filter, flows, available, candidate,
+                            available = rrInsert(testObject, simulate, origin, flowLimitCache, available, candidate,
                                     linked);
                         } else {
                             backlog.add(candidate);
@@ -592,7 +647,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
                         break;
                     } else {
                         if (!cache.isEmpty()) {
-                            if (view.handler().getBackingHandlers().contains(cache.first()))
+                            if (view.getHandler().getBackingHandlers().contains(cache.first()))
                                 break; // we've already visited the next node in the cache
                             else {
                                 // the network view does not contain the node in the front of the cache, so yeet it.
@@ -606,28 +661,26 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
                 while (iter.hasNext()) {
                     cache.add(iter.next());
                 }
-                if (!simulate) {
-                    for (var entry : flows.object2IntEntrySet()) {
-                        ItemCapabilityObject.reportFlow(entry.getKey(), entry.getIntValue(), testObject);
-                    }
-                }
                 yield count - available;
             }
             case EQUALIZED -> {
+                // only consider destinations that are not on the other side of a filter that rejects our test object
                 NetClosestIterator gather = new NetClosestIterator(origin,
-                        EdgeSelector.filtered(EdgeDirection.OUTGOING, filter));
+                        EdgeSelector.filtered(EdgeDirection.OUTGOING,
+                                GraphNetUtility.edgeSelectorBlacklist(testObject)));
                 Object2ObjectOpenHashMap<NetNode, IItemHandler> candidates = new Object2ObjectOpenHashMap<>();
                 while (gather.hasNext()) {
                     NetNode node = gather.next();
                     if (node instanceof NodeExposingCapabilities exposer) {
                         IItemHandler h = exposer.getProvider().getCapability(
-                                ForgeCapabilities.ITEM_HANDLER, exposer.exposedFacing())
-                                .resolve().orElse(null);
+                                ForgeCapabilities.ITEM_HANDLER,
+                                exposer.exposedFacing()).resolve().orElse(null);
                         if (h != null && ItemCapabilityObject.instanceOf(h) == null) {
                             candidates.put(node, h);
                         }
                     }
                 }
+                if (candidates.isEmpty()) yield 0;
                 int largestMin = count / candidates.size();
                 if (largestMin <= 0) yield 0;
                 for (IItemHandler value : candidates.values()) {
@@ -635,20 +688,58 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
                     if (largestMin <= 0) yield 0;
                 }
                 // binary search for largest scale that doesn't exceed flow limits
-                Int2ObjectArrayMap<Object2IntOpenHashMap<NetNode>> flows = new Int2ObjectArrayMap<>();
+                Reference2IntOpenHashMap<NetNode> flowLimitCache = new Reference2IntOpenHashMap<>();
+                Int2ObjectArrayMap<Reference2IntOpenHashMap<NetNode>> flows = new Int2ObjectArrayMap<>();
+                ItemNetworkView view = ItemCapabilityObject.getNetworkView(origin);
                 largestMin = GTUtil.binarySearchInt(0, largestMin, l -> {
                     if (flows.containsKey(l) && flows.get(l) == null) return false;
-                    ResilientNetClosestIterator forwardFrontier = new ResilientNetClosestIterator(origin,
-                            EdgeSelector.filtered(EdgeDirection.OUTGOING, filter));
-                    Object2IntOpenHashMap<NetNode> localFlows = new Object2IntOpenHashMap<>();
+                    ResilientNetClosestIterator forwardFrontier = null;
+                    Reference2IntOpenHashMap<NetNode> localFlows = new Reference2IntOpenHashMap<>();
                     for (NetNode node : candidates.keySet()) {
-                        ResilientNetClosestIterator backwardFrontier = new ResilientNetClosestIterator(node,
-                                EdgeSelector.filtered(EdgeDirection.INCOMING, filter));
-                        if (GraphNetUtility.p2pWalk(simulate, l,
-                                n -> ItemCapabilityObject.getFlowLimit(n, testObject) - localFlows.getInt(n),
-                                (n, i) -> localFlows.put(n, localFlows.getInt(n) + i),
-                                forwardFrontier, backwardFrontier) < l)
+                        ListHashSet<NetPath> pathCache = view.getPathCache(node);
+                        ResilientNetClosestIterator backwardFrontier = null;
+                        Iterator<NetPath> iterator = pathCache.iterator();
+                        int needed = l;
+                        while (needed > 0) {
+                            NetPath path;
+                            if (iterator != null && iterator.hasNext()) path = iterator.next();
+                            else {
+                                iterator = null;
+                                if (forwardFrontier == null) {
+                                    forwardFrontier = new ResilientNetClosestIterator(origin, EdgeDirection.OUTGOING);
+                                }
+                                if (backwardFrontier == null) {
+                                    backwardFrontier = new ResilientNetClosestIterator(node, EdgeDirection.INCOMING);
+                                }
+                                path = GraphNetUtility.p2pNextPath(
+                                        n -> ItemCapabilityObject.getFlowLimitCached(flowLimitCache, n, testObject) <=
+                                                localFlows.getInt(n),
+                                        e -> !e.test(testObject), forwardFrontier, backwardFrontier,
+                                        (f, b) -> b.hasNext());
+                                if (path == null) break;
+                                int i = pathCache.size();
+                                while (i > 0 && pathCache.get(i - 1).getWeight() > path.getWeight()) {
+                                    i--;
+                                }
+                                if (!pathCache.addSensitive(i, path)) break;
+                            }
+                            int insert = attemptPath(path, needed,
+                                    n -> ItemCapabilityObject.getFlowLimitCached(flowLimitCache, n, testObject) -
+                                            localFlows.getInt(n),
+                                    e -> !e.test(testObject));
+                            if (insert > 0) {
+                                needed -= insert;
+                                ImmutableList<NetNode> asList = path.getOrderedNodes().asList();
+                                for (int j = 0; j < asList.size(); j++) {
+                                    NetNode n = asList.get(j);
+                                    localFlows.put(n, localFlows.getInt(n) + insert);
+                                }
+                            }
+                        }
+                        if (needed > 0) {
+                            flows.put(l, null);
                             return false;
+                        }
                     }
                     flows.put(l, localFlows);
                     return true;
@@ -658,7 +749,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
                     for (IItemHandler value : candidates.values()) {
                         simpleInsert(value, testObject, largestMin, false);
                     }
-                    for (var e : flows.get(largestMin).object2IntEntrySet()) {
+                    for (var e : flows.get(largestMin).reference2IntEntrySet()) {
                         ItemCapabilityObject.reportFlow(e.getKey(), e.getIntValue(), testObject);
                     }
                 }
@@ -668,22 +759,48 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
         };
     }
 
-    protected int rrInsert(ItemTestObject testObject, boolean simulate, NetNode origin, Predicate<Object> filter,
-                           Object2IntOpenHashMap<NetNode> flows, int available, IItemHandler candidate,
+    protected int rrInsert(ItemTestObject testObject, boolean simulate, NetNode origin,
+                           Reference2IntOpenHashMap<NetNode> flowLimitCache, int available, IItemHandler candidate,
                            NetNode linked) {
-        int accepted = simpleInsert(candidate, testObject, available, true);
-        if (accepted > 0) {
-            ResilientNetClosestIterator forwardFrontier = new ResilientNetClosestIterator(origin,
-                    EdgeSelector.filtered(EdgeDirection.OUTGOING, filter));
-            ResilientNetClosestIterator backwardFrontier = new ResilientNetClosestIterator(linked,
-                    EdgeSelector.filtered(EdgeDirection.INCOMING, filter));
-            accepted = GraphNetUtility.p2pWalk(simulate, accepted,
-                    n -> ItemCapabilityObject.getFlowLimit(n, testObject) - flows.getInt(n),
-                    (n, i) -> flows.put(n, flows.getInt(n) + i),
-                    forwardFrontier, backwardFrontier);
-            if (accepted > 0) {
-                available -= accepted;
-                if (!simulate) simpleInsert(candidate, testObject, accepted, false);
+        int insertable = simpleInsert(candidate, testObject, available, true);
+        if (insertable > 0) {
+            ListHashSet<NetPath> pathCache = ItemCapabilityObject.getNetworkView(origin).getPathCache(linked);
+            Iterator<NetPath> iterator = pathCache.iterator();
+            ResilientNetClosestIterator forwardFrontier = null;
+            ResilientNetClosestIterator backwardFrontier = null;
+            while (insertable > 0) {
+                NetPath path;
+                if (iterator != null && iterator.hasNext()) path = iterator.next();
+                else {
+                    iterator = null;
+                    if (forwardFrontier == null) {
+                        forwardFrontier = new ResilientNetClosestIterator(origin, EdgeDirection.OUTGOING);
+                        backwardFrontier = new ResilientNetClosestIterator(linked, EdgeDirection.INCOMING);
+                    }
+                    path = GraphNetUtility.p2pNextPath(
+                            n -> ItemCapabilityObject.getFlowLimitCached(flowLimitCache, n, testObject) <= 0,
+                            e -> !e.test(testObject), forwardFrontier, backwardFrontier);
+                    if (path == null) break;
+                    int i = pathCache.size();
+                    while (i > 0 && pathCache.get(i - 1).getWeight() > path.getWeight()) {
+                        i--;
+                    }
+                    if (!pathCache.addSensitive(i, path)) break;
+                }
+                int insert = attemptPath(path, insertable,
+                        n -> ItemCapabilityObject.getFlowLimitCached(flowLimitCache, n, testObject),
+                        e -> !e.test(testObject));
+                if (insert > 0) {
+                    insertable -= insert;
+                    available -= insert;
+                    ImmutableList<NetNode> asList = path.getOrderedNodes().asList();
+                    for (int j = 0; j < asList.size(); j++) {
+                        NetNode n = asList.get(j);
+                        if (!simulate) ItemCapabilityObject.reportFlow(n, insert, testObject);
+                        flowLimitCache.put(n, flowLimitCache.getInt(n) - insert);
+                    }
+                    if (!simulate) simpleInsert(candidate, testObject, insert, false);
+                }
             }
         }
         return available;
@@ -698,6 +815,19 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
             if (available <= 0) return count;
         }
         return count - available;
+    }
+
+    protected int attemptPath(NetPath path, int available, ToIntFunction<NetNode> limit, Predicate<NetEdge> filter) {
+        ImmutableList<NetEdge> edges = path.getOrderedEdges().asList();
+        for (int i = 0; i < edges.size(); i++) {
+            if (filter.test(edges.get(i))) return 0;
+        }
+        ImmutableList<NetNode> nodes = path.getOrderedNodes().asList();
+        for (int i = 0; i < nodes.size(); i++) {
+            available = Math.min(limit.applyAsInt(nodes.get(i)), available);
+            if (available <= 0) return 0;
+        }
+        return available;
     }
 
     protected static class TypeItemInfo {

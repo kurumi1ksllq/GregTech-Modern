@@ -151,7 +151,7 @@ public final class FluidContainmentLogic extends NetLogicEntry<FluidContainmentL
     public static final class FluidContainmentLogicType extends NetLogicType<FluidContainmentLogic> {
 
         public FluidContainmentLogicType() {
-            super(GTCEu.MOD_ID, "FluidContainment", FluidContainmentLogic::new,
+            super(GTCEu.id("fluid_containment"), FluidContainmentLogic::new,
                     new FluidContainmentLogic().contain(FluidState.LIQUID));
         }
 

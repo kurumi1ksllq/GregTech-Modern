@@ -52,18 +52,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import lombok.Getter;
-import lombok.Setter;
 
 public class ClientProxy extends CommonProxy {
 
     public static final BiMap<ResourceLocation, GTOreDefinition> CLIENT_ORE_VEINS = HashBiMap.create();
     public static final BiMap<ResourceLocation, BedrockFluidDefinition> CLIENT_FLUID_VEINS = HashBiMap.create();
     public static final BiMap<ResourceLocation, BedrockOreDefinition> CLIENT_BEDROCK_ORE_VEINS = HashBiMap.create();
-
-    @Getter
-    @Setter
-    private static long serverTickCount = -1L;
 
     public ClientProxy() {
         super();

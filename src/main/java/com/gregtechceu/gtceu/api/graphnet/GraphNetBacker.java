@@ -51,7 +51,7 @@ public final class GraphNetBacker {
         GraphVertex existing = this.vertexMap.put(node.getEquivalencyData(), vertex);
         if (existing != null) getGraph().removeVertex(existing);
         getGraph().addVertex(vertex);
-        backedNet.setDirty();
+        backedNet.markAsDirty();
     }
 
     @Nullable
@@ -72,8 +72,10 @@ public final class GraphNetBacker {
             NetGroup group = node.getGroupUnsafe();
             if (group != null) {
                 group.splitNode(node);
-            } else this.removeVertex(node.wrapper);
-            backedNet.setDirty();
+            } else {
+                this.removeVertex(node.wrapper);
+            }
+            backedNet.markAsDirty();
             return true;
         } else return false;
     }
@@ -84,7 +86,7 @@ public final class GraphNetBacker {
             if (vertex.wrapped == null) return;
             this.vertexMap.remove(vertex.wrapped.getEquivalencyData());
             vertex.wrapped.onRemove();
-            backedNet.setDirty();
+            backedNet.markAsDirty();
         }
     }
 
@@ -97,7 +99,7 @@ public final class GraphNetBacker {
             getGraph().setEdgeWeight(graphEdge, weight);
             assert graphEdge.wrapped != null;
             NetGroup.mergeEdge(graphEdge.wrapped, direction);
-            backedNet.setDirty();
+            backedNet.markAsDirty();
         }
         return graphEdge == null ? null : graphEdge.wrapped;
     }
@@ -119,14 +121,16 @@ public final class GraphNetBacker {
         if (group == null) {
             // weird since there should always be a group for two joined nodes, but whatever
             return removeEdge(source.wrapper, target.wrapper) != null;
-        } else return group.splitEdge(source, target);
+        } else {
+            return group.splitEdge(source, target);
+        }
     }
 
     @ApiStatus.Internal
     public GraphEdge removeEdge(GraphVertex source, GraphVertex target) {
         GraphEdge edge = this.getGraph().removeEdge(source, target);
         if (edge != null) {
-            backedNet.setDirty();
+            backedNet.markAsDirty();
         }
         return edge;
     }
@@ -134,7 +138,7 @@ public final class GraphNetBacker {
     @ApiStatus.Internal
     public boolean removeEdge(GraphEdge edge) {
         if (this.getGraph().removeEdge(edge)) {
-            backedNet.setDirty();
+            backedNet.markAsDirty();
             return true;
         }
         return false;

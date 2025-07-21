@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.TextureInformation;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.client.bakedpipeline.Quad;
 import com.lowdragmc.lowdraglib.client.model.ModelFactory;
@@ -27,7 +28,6 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.client.model.data.ModelProperty;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ActivablePipeModel extends AbstractPipeModel<ActivableCacheKey> {
-
-    public static final ModelProperty<Boolean> ACTIVE_PROPERTY = new ModelProperty<>();
 
     private final TextureInformation inTex;
     private final TextureInformation sideTex;
@@ -90,7 +88,9 @@ public class ActivablePipeModel extends AbstractPipeModel<ActivableCacheKey> {
 
     @Override
     protected @NotNull ActivableCacheKey toKey(@NotNull ModelData state) {
-        return ActivableCacheKey.of(state.get(THICKNESS_PROPERTY), state.get(ACTIVE_PROPERTY));
+        return ActivableCacheKey.of(
+                GTMath.safeFloat(state.get(PipeRenderProperties.THICKNESS_PROPERTY)),
+                GTMath.safeBool(state.get(PipeRenderProperties.ACTIVE_PROPERTY)));
     }
 
     @Override

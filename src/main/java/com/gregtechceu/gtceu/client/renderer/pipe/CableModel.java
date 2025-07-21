@@ -13,6 +13,8 @@ import com.gregtechceu.gtceu.client.renderer.pipe.util.CacheKey;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.TextureInformation;
+import com.gregtechceu.gtceu.common.data.GTMaterials;
+import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.client.model.ModelFactory;
@@ -25,6 +27,8 @@ import net.minecraftforge.client.model.data.ModelData;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class CableModel extends AbstractPipeModel<CacheKey> {
 
@@ -53,10 +57,10 @@ public class CableModel extends AbstractPipeModel<CacheKey> {
     private SpriteInformation insulationSprite;
     private SpriteInformation fullInsulationSprite;
 
-    public CableModel(@Nullable Material material, @Nullable TextureInformation insulationTex,
+    public CableModel(@NotNull Material material, @Nullable TextureInformation insulationTex,
                       @Nullable TextureInformation fullInsulationTex) {
         this.material = material;
-        this.wireTex = material != null ?
+        this.wireTex = !material.isNull() ?
                 new TextureInformation(
                         MaterialIconType.wire.getBlockTexturePath(material.getMaterialIconSet(), "side", true), 0) :
                 WIRE;
@@ -69,12 +73,14 @@ public class CableModel extends AbstractPipeModel<CacheKey> {
     }
 
     @Override
-    protected ColorData computeColorData(@NotNull ModelData ext) {
-        if (insulationTex == null) return super.computeColorData(ext);
-        Material material = ext.get(AbstractPipeModel.MATERIAL_PROPERTY);
-        int insulationColor = safeInt(ext.get(COLOR_PROPERTY));
-        if (material != null) {
+    protected ColorData computeColorData(@NotNull ModelData data) {
+        if (insulationTex == null) return super.computeColorData(data);
+        Material material = Objects.requireNonNullElse(data.get(MATERIAL_PROPERTY), GTMaterials.NULL);
+
+        if (!material.isNull()) {
             int matColor = GTUtil.convertRGBtoARGB(material.getMaterialRGB());
+
+            int insulationColor = GTMath.safeInt(data.get(COLOR_PROPERTY));
             if (insulationColor == 0 || insulationColor == matColor) {
                 // unpainted
                 insulationColor = DEFAULT_INSULATION_COLOR;
@@ -85,7 +91,7 @@ public class CableModel extends AbstractPipeModel<CacheKey> {
     }
 
     @Override
-    public SpriteInformation getParticleSprite(@Nullable Material material) {
+    public SpriteInformation getParticleSprite(@NotNull Material material) {
         return wireSprite;
     }
 

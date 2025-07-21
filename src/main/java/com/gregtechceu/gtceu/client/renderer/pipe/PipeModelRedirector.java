@@ -2,8 +2,10 @@ package com.gregtechceu.gtceu.client.renderer.pipe;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeMaterialBlock;
+import com.gregtechceu.gtceu.client.model.BaseBakedModel;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.MaterialModelSupplier;
-import com.gregtechceu.gtceu.common.pipelike.block.pipe.MaterialPipeBlock;
+import com.gregtechceu.gtceu.common.data.GTMaterials;
 
 import com.lowdragmc.lowdraglib.client.model.ModelFactory;
 
@@ -14,26 +16,30 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelData;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
-@OnlyIn(Dist.CLIENT)
-public class PipeModelRedirector implements BakedModel {
+import static com.gregtechceu.gtceu.api.machine.IMachineBlockEntity.*;
+
+public class PipeModelRedirector extends BaseBakedModel {
 
     private final boolean ambientOcclusion;
+    @Getter
     private final boolean gui3d;
 
     public final MaterialModelSupplier supplier;
@@ -62,25 +68,30 @@ public class PipeModelRedirector implements BakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction direction, RandomSource random) {
-        return List.of();
-    }
-
-    @Override
     public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side,
                                              @NotNull RandomSource rand, @NotNull ModelData data,
                                              @Nullable RenderType renderType) {
-        Material mat = data.get(AbstractPipeModel.MATERIAL_PROPERTY);
-        if (mat == null && state != null && state.getBlock() instanceof MaterialPipeBlock block) {
+        Material mat = Objects.requireNonNullElse(data.get(AbstractPipeModel.MATERIAL_PROPERTY), GTMaterials.NULL);
+        if (mat.isNull() && state != null && state.getBlock() instanceof PipeMaterialBlock block) {
             mat = block.material;
         }
         AbstractPipeModel<?> model = supplier.getModel(mat);
         // this can happen when transferring old data, apparently.
         // noinspection ConstantValue
         if (model == null) {
-            return List.of();
+            return Collections.emptyList();
         }
         return model.getQuads(state, side, rand, data, renderType);
+    }
+
+    @Override
+    public @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos,
+                                           @NotNull BlockState state, @NotNull ModelData modelData) {
+        return modelData.derive()
+                .with(MODEL_DATA_LEVEL, level)
+                .with(MODEL_DATA_POS, pos)
+                .with(MODEL_DATA_STATE, state)
+                .build();
     }
 
     @Override
@@ -89,23 +100,20 @@ public class PipeModelRedirector implements BakedModel {
     }
 
     @Override
-    public boolean isGui3d() {
-        return gui3d;
-    }
-
-    @Override
-    public boolean usesBlockLight() {
-        return false;
-    }
-
-    @Override
-    public boolean isCustomRenderer() {
-        return false;
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleIcon() {
+    public @NotNull TextureAtlasSprite getParticleIcon() {
         return ModelFactory.getBlockSprite(GTCEu.id("block/cable/wire"));
+    }
+
+    @Override
+    public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
+        Material mat = Objects.requireNonNullElse(data.get(AbstractPipeModel.MATERIAL_PROPERTY), GTMaterials.NULL);
+        BlockState state = data.get(MODEL_DATA_STATE);
+
+        if (mat.isNull() && state != null && state.getBlock() instanceof PipeMaterialBlock block) {
+            mat = block.material;
+        }
+        AbstractPipeModel<?> model = supplier.getModel(mat);
+        return model.getParticleIcon(data);
     }
 
     @Override
@@ -120,15 +128,15 @@ public class PipeModelRedirector implements BakedModel {
                                    Function<ItemStack, Material> stackMaterialFunction);
     }
 
-    protected class FakeItemOverrides extends ItemOverrides {
+    protected static class FakeItemOverrides extends ItemOverrides {
 
         @Nullable
         @Override
-        public BakedModel resolve(BakedModel originalModel, ItemStack stack, @Nullable ClientLevel level,
-                                  @Nullable LivingEntity entity, int seed) {
+        public BakedModel resolve(@NotNull BakedModel originalModel, @NotNull ItemStack stack,
+                                  @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
             if (originalModel instanceof PipeModelRedirector model) {
                 PipeItemModel<?> item = model.supplier.getModel(model.stackMaterialFunction.apply(stack))
-                        .getItemModel(PipeModelRedirector.this, stack, level, entity);
+                        .getItemModel(model, stack, level, entity);
                 if (item != null) return item;
             }
             return originalModel;

@@ -63,11 +63,11 @@ public final class WireRecipeHandler {
     private WireRecipeHandler() {}
 
     public static void run(@NotNull Consumer<FinishedRecipe> provider, @NotNull Material material) {
-        PipeNetProperties pipeProp = material.getProperty(PropertyKey.PIPE_PROPERTIES);
+        PipeNetProperties pipeProp = material.getProperty(PropertyKey.PIPENET_PROPERTIES);
         if (pipeProp == null) {
             return;
         }
-        MaterialEnergyProperties property = property.getProperty(MaterialEnergyProperties.KEY);
+        MaterialEnergyProperties property = pipeProp.getProperty(MaterialEnergyProperties.KEY);
 
         // Generate Wire creation recipes (Wiremill, Extruder, Wire Cutters)
         // Wiremill: Ingot -> 1x, 2x, 4x, 8x, 16x, Fine
@@ -137,7 +137,7 @@ public final class WireRecipeHandler {
     }
 
     private static void generateCableCovering(@NotNull Consumer<FinishedRecipe> provider,
-                                              @NotNull WireProperties property,
+                                              @NotNull MaterialEnergyProperties property,
                                               @NotNull TagPrefix prefix, @NotNull Material material) {
         if (!material.shouldGenerateRecipesFor(prefix) || property.isSuperconductor()) {
             // Superconductors have no Cables, so exit early
@@ -146,7 +146,7 @@ public final class WireRecipeHandler {
 
         int cableAmount = (int) (prefix.getMaterialAmount(material) * 2 / M);
         TagPrefix cablePrefix = TagPrefix.get("cable" + prefix.name().substring(4));
-        int voltageTier = GTUtil.getTierByVoltage(property.getVoltage());
+        int voltageTier = GTUtil.getTierByVoltage(property.getVoltageLimit());
         int insulationAmount = INSULATION_AMOUNT.getInt(cablePrefix);
 
         // Generate hand-crafting recipes for ULV and LV cables

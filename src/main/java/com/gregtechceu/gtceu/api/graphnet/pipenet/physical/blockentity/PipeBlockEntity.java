@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.block.BlockProperties;
 import com.gregtechceu.gtceu.api.blockentity.IPaintable;
 import com.gregtechceu.gtceu.api.blockentity.ITickSubscription;
 import com.gregtechceu.gtceu.api.blockentity.NeighborCacheBlockEntity;
@@ -28,10 +27,11 @@ import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.client.particle.GTOverheatParticle;
 import com.gregtechceu.gtceu.client.particle.GTParticleManager;
+import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererBuilder;
+import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererPackage;
 import com.gregtechceu.gtceu.client.renderer.pipe.AbstractPipeModel;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererPackage;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
+import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.editor.runtime.PersistedParser;
@@ -40,6 +40,7 @@ import com.lowdragmc.lowdraglib.syncdata.IEnhancedManaged;
 import com.lowdragmc.lowdraglib.syncdata.IManagedStorage;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.syncdata.blockentity.IAsyncAutoSyncBlockEntity;
 import com.lowdragmc.lowdraglib.syncdata.blockentity.IAutoPersistBlockEntity;
 import com.lowdragmc.lowdraglib.syncdata.field.FieldManagedStorage;
@@ -83,6 +84,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
+@SuppressWarnings("lossy-conversions")
 public class PipeBlockEntity extends NeighborCacheBlockEntity
                              implements IWorldPipeNetTile, ITickSubscription, IEnhancedManaged,
                              IAsyncAutoSyncBlockEntity, IAutoPersistBlockEntity, IToolGridHighlight, IToolable,
@@ -124,10 +126,11 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
     @Setter
     private int paintingColor = -1;
 
-    @Getter
-    @Persisted
+    @RequireRerender
     @DescSynced
-    private @Nullable Material frameMaterial;
+    @Persisted
+    @Setter
+    private @NotNull Material frameMaterial = GTMaterials.NULL;
 
     private final List<TickableSubscription> serverTicks = new ArrayList<>();
     private final List<TickableSubscription> waitingToAdd = new ArrayList<>();
@@ -147,9 +150,6 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
 
     private final int offset = (int) (Math.random() * 20);
 
-    private long nextDamageTime = 0;
-    private long nextSoundTime = 0;
-
     public PipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState, true);
     }
@@ -161,10 +161,7 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
         else return null;
     }
 
-    public void getDrops(@NotNull List<ItemStack> drops, @NotNull BlockState state) {
-        if (getFrameMaterial() != null)
-            drops.add(GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, getFrameMaterial()).asStack());
-    }
+    public void getDrops(@NotNull List<ItemStack> drops, @NotNull BlockState state) {}
 
     @Override
     public void scheduleRenderUpdate() {
@@ -284,11 +281,6 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
         return (this.blockedMask & 1 << facing.ordinal()) > 0;
     }
 
-    public void setFrameMaterial(@Nullable Material frameMaterial) {
-        this.frameMaterial = frameMaterial;
-        scheduleRenderUpdate();
-    }
-
     // paint //
 
     public int getVisualColor() {
@@ -313,6 +305,15 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
         return DEFAULT_COLOR;
     }
 
+    public @NotNull Material getFrameMaterial() {
+        // backwards compat
+        // noinspection ConstantValue
+        if (frameMaterial == null) {
+            frameMaterial = GTMaterials.NULL;
+        }
+        return frameMaterial;
+    }
+
     // ticking //
 
     @Override
@@ -320,15 +321,6 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
         if (!isClientSide()) {
             var subscription = new TickableSubscription(runnable);
             waitingToAdd.add(subscription);
-            var blockState = getBlockState();
-            if (!blockState.getValue(BlockProperties.SERVER_TICK)) {
-                if (getLevel() instanceof ServerLevel serverLevel) {
-                    blockState = blockState.setValue(BlockProperties.SERVER_TICK, true);
-                    setBlockState(blockState);
-                    serverLevel.getServer().tell(new TickTask(0, () -> serverLevel.setBlockAndUpdate(getBlockPos(),
-                            getBlockState().setValue(BlockProperties.SERVER_TICK, true))));
-                }
-            }
             return subscription;
         }
         return null;
@@ -346,8 +338,7 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
             serverTicks.addAll(waitingToAdd);
             waitingToAdd.clear();
         }
-        var iter = serverTicks.iterator();
-        while (iter.hasNext()) {
+        for (var iter = serverTicks.iterator(); iter.hasNext();) {
             var tickable = iter.next();
             if (tickable.isStillSubscribed()) {
                 tickable.run();
@@ -355,9 +346,6 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
             if (!tickable.isStillSubscribed()) {
                 iter.remove();
             }
-        }
-        if (serverTicks.isEmpty() && waitingToAdd.isEmpty() && !this.isRemoved()) {
-            getLevel().setBlockAndUpdate(getBlockPos(), getBlockState().setValue(BlockProperties.SERVER_TICK, false));
         }
     }
 
@@ -768,23 +756,19 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
                     PipeBlock.connectTile(this, this.getPipeNeighbor(gridSide, true), gridSide);
                 }
             }
-            playerIn.swing(hand);
-            return Pair.of(this.getBlockType().getToolClass(), InteractionResult.CONSUME);
+            return Pair.of(this.getBlockType().getToolClass(),
+                    InteractionResult.sidedSuccess(context.getLevel().isClientSide));
         } else if (toolTypes.contains(GTToolType.CROWBAR)) {
             if (coverBehavior != null) {
                 if (isServerSide()) {
                     coverHolder.removeCover(gridSide, playerIn);
-                    playerIn.swing(hand);
-                    return Pair.of(GTToolType.CROWBAR, InteractionResult.CONSUME);
+                    return Pair.of(GTToolType.CROWBAR, InteractionResult.sidedSuccess(context.getLevel().isClientSide));
                 }
-            } else {
-                if (frameMaterial != null) {
-                    Block.popResource(getLevel(), getBlockPos(),
-                            GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, frameMaterial).asStack());
-                    frameMaterial = null;
-                    playerIn.swing(hand);
-                    return Pair.of(GTToolType.CROWBAR, InteractionResult.CONSUME);
-                }
+            } else if (!getFrameMaterial().isNull()) {
+                Block.popResource(context.getLevel(), getBlockPos(),
+                        GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, getFrameMaterial()).asStack());
+                setFrameMaterial(GTMaterials.NULL);
+                return Pair.of(GTToolType.CROWBAR, InteractionResult.sidedSuccess(context.getLevel().isClientSide));
             }
         }
 

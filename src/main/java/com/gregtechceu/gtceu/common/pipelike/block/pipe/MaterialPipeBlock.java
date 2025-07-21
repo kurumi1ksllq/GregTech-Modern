@@ -5,11 +5,11 @@ import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IBurnable;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IFreezable;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeMaterialBlock;
 
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import org.jetbrains.annotations.NotNull;
 
 public class MaterialPipeBlock extends PipeMaterialBlock implements IBurnable, IFreezable {
 
-    public MaterialPipeBlock(BlockBehaviour.Properties properties, MaterialPipeStructure structure, Material material) {
+    public MaterialPipeBlock(Properties properties, MaterialPipeStructure structure, @NotNull Material material) {
         super(properties, structure, material);
     }
 

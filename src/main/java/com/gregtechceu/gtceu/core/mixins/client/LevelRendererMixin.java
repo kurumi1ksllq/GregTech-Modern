@@ -2,15 +2,17 @@ package com.gregtechceu.gtceu.core.mixins.client;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.MaterialBlock;
-import com.gregtechceu.gtceu.api.block.MaterialPipeBlock;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.data.chemical.material.Material;
+import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeMaterialBlock;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.item.tool.aoe.AoESymmetrical;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
-import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
-import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
+import com.gregtechceu.gtceu.common.pipelike.handlers.properties.MaterialEnergyProperties;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -186,14 +188,19 @@ public abstract class LevelRendererMixin {
                 doRenderColoredOutline = true;
                 rgb = GTValues.VCM[tiered.getTier()];
             }
-        } else if (rendererCfg.coloredWireOutline && level.getBlockEntity(pos) instanceof IPipeNode<?, ?> pipe) {
+        } else if (rendererCfg.coloredWireOutline && level.getBlockEntity(pos) instanceof PipeBlockEntity pipe) {
             doRenderColoredOutline = true;
             if (!pipe.getFrameMaterial().isNull()) {
                 rgb = pipe.getFrameMaterial().getMaterialRGB();
-            } else if (pipe instanceof CableBlockEntity cable) {
-                rgb = GTValues.VCM[GTUtil.getTierByVoltage(cable.getNodeData().getVoltage())];
-            } else if (state.getBlock() instanceof MaterialPipeBlock<?,?,?> materialPipe) {
-                rgb = materialPipe.material.getMaterialRGB();
+            } else if (state.getBlock() instanceof PipeMaterialBlock materialPipe) {
+                Material material = materialPipe.material;
+                if (MaterialEnergyProperties.hasEnergyProperty(material)) {
+                    MaterialEnergyProperties property = material.getProperty(PropertyKey.PIPENET_PROPERTIES)
+                            .getProperty(MaterialEnergyProperties.KEY);
+                    rgb = GTValues.VCM[GTUtil.getTierByVoltage(property.getVoltageLimit())];
+                } else {
+                    rgb = materialPipe.material.getMaterialRGB();
+                }
             }
         }
 

@@ -2,27 +2,32 @@ package com.gregtechceu.gtceu.client.renderer.pipe;
 
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererPackage;
 import com.gregtechceu.gtceu.client.renderer.pipe.cache.ColorQuadCache;
 import com.gregtechceu.gtceu.client.renderer.pipe.cache.StructureQuadCache;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererPackage;
-import com.gregtechceu.gtceu.client.renderer.pipe.quad.PipeQuadHelper;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.CacheKey;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
+import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
+import com.gregtechceu.gtceu.common.data.GTMaterials;
+import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.reference.WeakHashSet;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -35,8 +40,11 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+
+import static com.gregtechceu.gtceu.api.machine.IMachineBlockEntity.*;
 
 public abstract class AbstractPipeModel<K extends CacheKey> {
 
@@ -73,77 +81,88 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
     public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side,
                                              @NotNull RandomSource rand, @NotNull ModelData modelData,
                                              @Nullable RenderType renderType) {
-        if (side == null) {
-            ColorData data = computeColorData(modelData);
-            CoverRendererPackage rendererPackage = modelData.get(CoverRendererPackage.PROPERTY);
-            byte coverMask = rendererPackage == null ? 0 : rendererPackage.getMask();
-            List<BakedQuad> quads = getQuads(toKey(modelData), safeByte(modelData.get(CONNECTED_MASK_PROPERTY)),
-                    safeByte(modelData.get(CLOSED_MASK_PROPERTY)), safeByte(modelData.get(BLOCKED_MASK_PROPERTY)),
-                    data, modelData.get(FRAME_MATERIAL_PROPERTY),
-                    safeByte(modelData.get(FRAME_MASK_PROPERTY)), coverMask,
-                    rand, modelData, renderType);
-            if (rendererPackage != null) renderCovers(quads, rendererPackage, rand, modelData, renderType);
-            return quads;
-        }
-        return Collections.emptyList();
+        ColorData data = computeColorData(modelData);
+        CoverRendererPackage rendererPackage = modelData.get(CoverRendererPackage.PROPERTY);
+        byte coverMask = rendererPackage == null ? 0 : rendererPackage.getMask();
+        BlockAndTintGetter level = modelData.get(MODEL_DATA_LEVEL);
+        BlockPos pos = modelData.get(MODEL_DATA_POS);
+
+        List<BakedQuad> quads = getQuads(toKey(modelData), level, pos, side,
+                GTMath.safeByte(modelData.get(CONNECTED_MASK_PROPERTY)),
+                GTMath.safeByte(modelData.get(CLOSED_MASK_PROPERTY)),
+                GTMath.safeByte(modelData.get(BLOCKED_MASK_PROPERTY)),
+                GTMath.safeByte(modelData.get(FRAME_MASK_PROPERTY)),
+                coverMask,
+                Objects.requireNonNullElse(modelData.get(FRAME_MATERIAL_PROPERTY), GTMaterials.NULL),
+                data, rand, modelData, renderType);
+        if (rendererPackage != null) renderCovers(quads, rendererPackage,
+                side, level, pos, rand, modelData, renderType);
+        return quads;
     }
 
     @OnlyIn(Dist.CLIENT)
     protected void renderCovers(List<BakedQuad> quads, @NotNull CoverRendererPackage rendererPackage,
+                                @Nullable Direction side, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos,
                                 RandomSource rand, @NotNull ModelData data, RenderType renderType) {
-        int color = safeInt(data.get(COLOR_PROPERTY));
-        if (data.get(AbstractPipeModel.MATERIAL_PROPERTY) != null) {
-            Material material = data.get(AbstractPipeModel.MATERIAL_PROPERTY);
-            if (material != null) {
-                int matColor = GTUtil.convertRGBtoARGB(material.getMaterialRGB());
-                if (color == 0 || color == matColor) {
-                    // unpainted
-                    color = 0xFFFFFFFF;
-                }
+        int color = GTMath.safeInt(data.get(COLOR_PROPERTY));
+        Material material = Objects.requireNonNullElse(data.get(MATERIAL_PROPERTY), GTMaterials.NULL);
+
+        if (!material.isNull()) {
+            int matColor = GTUtil.convertRGBtoARGB(material.getMaterialRGB());
+            if (color == 0 || color == matColor) {
+                // unpainted
+                color = 0xFFFFFFFF;
             }
         }
-        rendererPackage.addQuads(quads, rand, data, new ColorData(color), renderType);
+        rendererPackage.addQuads(quads, level, pos, side, rand, data, new ColorData(color), renderType);
     }
 
     protected ColorData computeColorData(@NotNull ModelData data) {
-        return new ColorData(safeInt(data.get(COLOR_PROPERTY)));
-    }
-
-    protected static byte safeByte(@Nullable Byte abyte) {
-        return abyte == null ? 0 : abyte;
-    }
-
-    protected static int safeInt(@Nullable Integer integer) {
-        return integer == null ? 0 : integer;
+        return new ColorData(GTMath.safeInt(data.get(COLOR_PROPERTY)));
     }
 
     @OnlyIn(Dist.CLIENT)
-    public @NotNull List<BakedQuad> getQuads(K key, byte connectionMask, byte closedMask, byte blockedMask,
-                                             ColorData data,
-                                             @Nullable Material frameMaterial, byte frameMask, byte coverMask,
-                                             RandomSource randomSource, ModelData modelData, RenderType renderType) {
+    public @NotNull List<BakedQuad> getQuads(K key, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos,
+                                             @Nullable Direction side, byte connectionMask, byte closedMask,
+                                             byte blockedMask, byte coverMask, byte frameMask,
+                                             @NotNull Material frameMaterial, ColorData data,
+                                             RandomSource rand, ModelData modelData, RenderType renderType) {
         List<BakedQuad> quads = new ObjectArrayList<>();
 
         StructureQuadCache cache = pipeCache.computeIfAbsent(key, this::constructForKey);
-        cache.addToList(quads, connectionMask, closedMask,
-                blockedMask, data, coverMask);
+        cache.addToList(quads, connectionMask, closedMask, blockedMask, data, coverMask);
 
-        if (frameMaterial != null) {
-            BlockState state = GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, frameMaterial).getDefaultState();
-            ColorQuadCache frame = frameCache.get(state);
-            if (frame == null) {
-                BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-                frame = new ColorQuadCache(PipeQuadHelper
-                        .createFrame(model, randomSource, modelData, renderType));
-                frameCache.put(state, frame);
-            }
-            List<BakedQuad> frameQuads = frame
-                    .getQuads(new ColorData(GTUtil.convertRGBtoARGB(frameMaterial.getMaterialRGB())));
-            for (Direction dir : GTUtil.DIRECTIONS) {
-                if ((frameMask & (1 << dir.ordinal())) > 0) {
-                    quads.addAll(frameQuads.stream().filter(quad -> quad.getDirection() == dir).toList());
+        if (frameMaterial.isNull() || (renderType != null && renderType != RenderType.translucent())) {
+            return quads;
+        }
+
+        BlockState frameState = GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, frameMaterial)
+                .getDefaultState();
+        BakedModel frameModel = Minecraft.getInstance().getBlockRenderer().getBlockModel(frameState);
+        if (level != null && pos != null) {
+            modelData = frameModel.getModelData(level, pos, frameState, modelData);
+        }
+
+        List<BakedQuad> frameQuads = new LinkedList<>();
+        if (side == null || !GTUtil.evalMask(side, frameMask)) {
+            frameQuads.addAll(frameModel.getQuads(frameState, side, rand, modelData, renderType));
+        }
+        if (side == null) {
+            for (Direction face : GTUtil.DIRECTIONS) {
+                if (GTUtil.evalMask(face, frameMask)) {
+                    frameQuads.addAll(frameModel.getQuads(frameState, face, rand, modelData, renderType));
                 }
             }
+        }
+
+        // bake all the quads' tint colors into the vertices
+        BlockColors blockColors = Minecraft.getInstance().getBlockColors();
+        for (BakedQuad frameQuad : frameQuads) {
+            if (frameQuad.isTinted()) {
+                int color = blockColors.getColor(frameState, level, pos, frameQuad.getTintIndex());
+                frameQuad = GTQuadTransformers.setColor(frameQuad, color, true);
+            }
+            quads.add(frameQuad);
         }
         return quads;
     }
@@ -154,18 +173,22 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
         return CacheKey.of(state.get(THICKNESS_PROPERTY));
     }
 
+    @OnlyIn(Dist.CLIENT)
     protected abstract StructureQuadCache constructForKey(K key);
 
-    public TextureAtlasSprite getParticleTexture(int paintColor, @Nullable Material material) {
+    @OnlyIn(Dist.CLIENT)
+    public TextureAtlasSprite getParticleTexture(int paintColor, @NotNull Material material) {
         SpriteInformation spriteInformation = getParticleSprite(material);
         return spriteInformation.sprite();
     }
 
+    @OnlyIn(Dist.CLIENT)
     public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
-        return getParticleTexture(safeInt(data.get(COLOR_PROPERTY)), data.get(MATERIAL_PROPERTY));
+        return getParticleTexture(GTMath.safeInt(data.get(COLOR_PROPERTY)),
+                Objects.requireNonNullElse(data.get(MATERIAL_PROPERTY), GTMaterials.NULL));
     }
 
-    public abstract SpriteInformation getParticleSprite(@Nullable Material material);
+    public abstract SpriteInformation getParticleSprite(@NotNull Material material);
 
     @Nullable
     protected abstract PipeItemModel<K> getItemModel(PipeModelRedirector redirector, @NotNull ItemStack stack,

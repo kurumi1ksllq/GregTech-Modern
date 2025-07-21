@@ -1,12 +1,8 @@
 package com.gregtechceu.gtceu.client.renderer.pipe.util;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
-@OnlyIn(Dist.CLIENT)
 public class ActivableCacheKey extends CacheKey {
 
     @Getter

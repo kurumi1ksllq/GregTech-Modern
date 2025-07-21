@@ -19,7 +19,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 import java.util.HashMap;
@@ -206,8 +205,7 @@ public final class PipeModelRegistry {
         }
     }
 
-    private static PipeModel getOrCachePipeModel(@Nullable Material m, int i) {
-        if (m == null) return PIPE_OVERRIDES.last().getModel(null, i);
+    private static PipeModel getOrCachePipeModel(@NotNull Material m, int i) {
         PipeModel[] cached = PIPE.computeIfAbsent(m, k -> new PipeModel[PIPE_MODEL_COUNT]);
         PipeModel selected = cached[i];
         if (selected == null) {
@@ -220,8 +218,7 @@ public final class PipeModelRegistry {
         return selected;
     }
 
-    private static PipeModel getOrCachePipeRestrictiveModel(Material m, int i) {
-        if (m == null) return PIPE_RESTRICTIVE_OVERRIDES.last().getModel(null, i);
+    private static PipeModel getOrCachePipeRestrictiveModel(@NotNull Material m, int i) {
         PipeModel[] cached = PIPE_RESTRICTIVE.computeIfAbsent(m, k -> new PipeModel[PIPE_MODEL_COUNT]);
         PipeModel selected = cached[i];
         if (selected == null) {
@@ -250,8 +247,7 @@ public final class PipeModelRegistry {
         }
     }
 
-    private static CableModel getOrCacheCableModel(@Nullable Material m, int i) {
-        if (m == null) return CABLE_OVERRIDES.last().getModel(null, i);
+    private static CableModel getOrCacheCableModel(@NotNull Material m, int i) {
         CableModel[] cached = CABLE.computeIfAbsent(m, k -> new CableModel[CABLE_MODEL_COUNT]);
         CableModel selected = cached[i];
         if (selected == null) {

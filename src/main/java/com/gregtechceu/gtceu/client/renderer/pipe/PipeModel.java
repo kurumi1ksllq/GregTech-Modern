@@ -53,7 +53,7 @@ public class PipeModel extends AbstractPipeModel<CacheKey> {
     }
 
     @Override
-    public SpriteInformation getParticleSprite(@Nullable Material material) {
+    public SpriteInformation getParticleSprite(@NotNull Material material) {
         return sideSprite;
     }
 

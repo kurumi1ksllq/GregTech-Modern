@@ -11,8 +11,8 @@ import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardEmitter;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.data.GTParticleTypes;
-
 import com.gregtechceu.gtceu.common.pipelike.block.duct.DuctStructure;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -35,8 +35,8 @@ public interface IMufflerMachine extends IMultiPart, IEnvironmentalHazardEmitter
         } else if (self().getLevel().getBlockEntity(frontPos) instanceof PipeBlockEntity pipe &&
                 pipe.isConnected(self().getFrontFacing().getOpposite()) &&
                 pipe.getStructure() instanceof DuctStructure) {
-            return true;
-        }
+                    return true;
+                }
         return false;
     }
 

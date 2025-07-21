@@ -137,11 +137,6 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void modelRegistry(final ModelEvent.RegisterGeometryLoaders e) {
-        e.register("pipe", UnbakedPipeModel.Loader.INSTANCE);
-    }
-
-    @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
         MachineOwner.init();
         if (ConfigHolder.INSTANCE.compat.minimap.toggle.ftbChunksIntegration &&
@@ -164,5 +159,6 @@ public class ClientProxy extends CommonProxy {
     public void onRegisterModelLoaders(ModelEvent.RegisterGeometryLoaders event) {
         event.register(MachineModelLoader.ID.getPath(), MachineModelLoader.INSTANCE);
         event.register("facade", FacadeUnbakedModel.Loader.INSTANCE);
+        event.register("pipe", UnbakedPipeModel.Loader.INSTANCE);
     }
 }

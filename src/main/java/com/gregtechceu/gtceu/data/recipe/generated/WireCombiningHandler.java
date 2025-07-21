@@ -3,7 +3,6 @@ package com.gregtechceu.gtceu.data.recipe.generated;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
@@ -53,7 +52,7 @@ public final class WireCombiningHandler {
     private static void generateWireCombiningRecipe(@NotNull Consumer<FinishedRecipe> provider, int index,
                                                     @NotNull Material material) {
         TagPrefix prefix = WIRE_DOUBLING_ORDER[index];
-        if (!material.shouldGenerateRecipesFor(prefix) || !material.hasProperty(PropertyKey.WIRE)) {
+        if (!material.shouldGenerateRecipesFor(prefix) || !MaterialEnergyProperties.hasEnergyProperty(material)) {
             return;
         }
 
@@ -81,7 +80,7 @@ public final class WireCombiningHandler {
     }
 
     private static void processWireCompression(@NotNull Consumer<FinishedRecipe> provider, @NotNull Material material) {
-        if (!material.shouldGenerateRecipesFor(wireGtSingle) || !material.hasProperty(PropertyKey.WIRE)) {
+        if (!material.shouldGenerateRecipesFor(wireGtSingle) || !MaterialEnergyProperties.hasEnergyProperty(material)) {
             return;
         }
 
@@ -106,7 +105,7 @@ public final class WireCombiningHandler {
 
     private static void processCableStripping(@NotNull Consumer<FinishedRecipe> provider, @NotNull TagPrefix prefix,
                                               @NotNull Material material) {
-        if (!material.shouldGenerateRecipesFor(prefix) || !material.hasProperty(PropertyKey.WIRE)) {
+        if (!material.shouldGenerateRecipesFor(prefix) || !MaterialEnergyProperties.hasEnergyProperty(material)) {
             return;
         }
 

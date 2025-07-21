@@ -27,6 +27,7 @@ public interface IWorldPipeNetTile extends ICapabilityProvider {
     @NotNull
     ICoverable getCoverHolder();
 
+    @Nullable
     Level getLevel();
 
     BlockPos getBlockPos();

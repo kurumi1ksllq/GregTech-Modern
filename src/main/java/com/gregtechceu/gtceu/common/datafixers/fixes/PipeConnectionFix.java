@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.common.datafixer.fixes;
+package com.gregtechceu.gtceu.common.datafixers.fixes;
 
 import net.minecraft.util.datafix.fixes.NamedEntityFix;
 import net.minecraft.util.datafix.fixes.References;

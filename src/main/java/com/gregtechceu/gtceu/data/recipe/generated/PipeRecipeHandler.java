@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.data.recipe.generated;
 
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.IMaterialProperty;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
@@ -29,6 +28,7 @@ public final class PipeRecipeHandler {
 
     private PipeRecipeHandler() {}
 
+    // spotless:off
     public static void run(@NotNull Consumer<FinishedRecipe> provider, @NotNull Material material) {
         processPipeTiny(provider, PropertyKey.PIPENET_PROPERTIES, pipeTiny, material);
         processPipeSmall(provider, PropertyKey.PIPENET_PROPERTIES, pipeSmall, material);
@@ -49,6 +49,7 @@ public final class PipeRecipeHandler {
         addDuctRecipes(provider, StainlessSteel, 4);
         addDuctRecipes(provider, TungstenSteel, 8);
     }
+    // spotless:on
 
     private static void processRestrictivePipe(@NotNull Consumer<FinishedRecipe> provider,
                                                @NotNull PropertyKey<?> propertyKey,

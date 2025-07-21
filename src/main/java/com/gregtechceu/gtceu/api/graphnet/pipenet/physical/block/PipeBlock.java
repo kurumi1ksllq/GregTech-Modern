@@ -16,6 +16,7 @@ import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
+import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.item.CoverPlaceBehavior;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
@@ -47,7 +48,6 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
@@ -64,8 +64,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
 
-import static com.gregtechceu.gtceu.api.block.BlockProperties.SERVER_TICK;
-
+@SuppressWarnings("deprecation")
 public abstract class PipeBlock extends Block implements EntityBlock {
 
     // do not touch these two unless you know what you are doing
@@ -79,7 +78,6 @@ public abstract class PipeBlock extends Block implements EntityBlock {
     public PipeBlock(BlockBehaviour.Properties properties, IPipeStructure structure) {
         super(properties);
         this.structure = structure;
-        this.registerDefaultState(this.defaultBlockState().setValue(SERVER_TICK, false));
     }
 
     // net logic //
@@ -122,7 +120,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
             return InteractionResult.FAIL;
         }
 
-        if (pipeBlockEntity.getFrameMaterial() == null) {
+        if (pipeBlockEntity.getFrameMaterial().isNull()) {
             var frameBlock = MaterialBlock.getFrameboxFromItem(itemStack);
             if (frameBlock != null) {
                 pipeBlockEntity.setFrameMaterial(frameBlock.material);
@@ -141,13 +139,13 @@ public abstract class PipeBlock extends Block implements EntityBlock {
             BlockPos offsetPos = pos.offset(hit.getDirection().getNormal());
             BlockState stateAtSide = level.getBlockState(offsetPos);
             if (stateAtSide.getBlock() instanceof MaterialBlock matBlock && matBlock.tagPrefix == TagPrefix.frameGt) {
-                boolean wasPlaced = matBlock.replaceWithFramedPipe(level, offsetPos, stateAtSide, player, itemStack,
-                        hit);
+                boolean wasPlaced = matBlock.replaceWithFramedPipe(level, offsetPos,
+                        stateAtSide, player, itemStack, hit);
                 if (wasPlaced) {
                     connectTile(pipeBlockEntity, pipeBlockEntity.getPipeNeighbor(hit.getDirection(), false),
                             hit.getDirection());
                 }
-                return wasPlaced ? InteractionResult.CONSUME : InteractionResult.FAIL;
+                return wasPlaced ? InteractionResult.sidedSuccess(level.isClientSide) : InteractionResult.FAIL;
             }
         }
 
@@ -352,7 +350,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (level.isClientSide || !(entity instanceof LivingEntity living)) return;
         PipeBlockEntity tile = getBlockEntity(level, pos);
-        if (tile != null && tile.getFrameMaterial() == null && tile.getOffsetTimer() % 10 == 0) {
+        if (tile != null && tile.getFrameMaterial().isNull() && tile.getOffsetTimer() % 10 == 0) {
             TemperatureLogic logic = tile.getTemperatureLogic();
             if (logic != null) {
                 long tick = GTCEu.getMinecraftServer().getTickCount();
@@ -467,11 +465,6 @@ public abstract class PipeBlock extends Block implements EntityBlock {
     // blockstate //
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(SERVER_TICK);
-    }
-
-    @Override
     public boolean triggerEvent(BlockState pState, Level pLevel, BlockPos pPos, int pId, int pParam) {
         BlockEntity tile = pLevel.getBlockEntity(pPos);
         if (tile != null) {
@@ -484,9 +477,9 @@ public abstract class PipeBlock extends Block implements EntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
-                                                                  BlockEntityType<T> blockEntityType) {
-        if (!level.isClientSide && state.getValue(SERVER_TICK)) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, @NotNull BlockState state,
+                                                                  @NotNull BlockEntityType<T> blockEntityType) {
+        if (!level.isClientSide) {
             return (pLevel, pPos, pState, pTile) -> {
                 if (pTile instanceof PipeBlockEntity pipeNode) {
                     pipeNode.serverTick();

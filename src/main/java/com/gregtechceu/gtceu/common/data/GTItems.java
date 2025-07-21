@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.ItemMaterialData;
 import com.gregtechceu.gtceu.api.data.chemical.material.MarkerMaterial;
 import com.gregtechceu.gtceu.api.data.chemical.material.MarkerMaterials;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
+import com.gregtechceu.gtceu.api.data.chemical.material.properties.PipeNetProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.ItemMaterialInfo;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
@@ -367,7 +368,11 @@ public class GTItems {
     // spotless:on
 
     public static ItemEntry<ComponentItem> createFluidCell(Material mat, int capacity, int matSize, int stackSize) {
-        var prop = mat.getProperty(PropertyKey.FLUID_PIPE);
+        PipeNetProperties pipeProp = mat.getProperty(PropertyKey.PIPENET_PROPERTIES);
+        Preconditions.checkArgument(pipeProp != null,
+                "Material '%s' does not have Pipe net properties, but is being used to create a Fluid Cell",
+                mat.getName());
+        MaterialFluidProperties prop = pipeProp.getProperty(MaterialFluidProperties.KEY);
         Preconditions.checkArgument(prop != null,
                 "Material '%s' does not have Fluid Pipe properties, but is being used to create a Fluid Cell",
                 mat.getName());

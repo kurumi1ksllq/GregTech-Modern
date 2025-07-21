@@ -23,17 +23,15 @@ public class MaterialPipeBlockItem extends PipeBlockItem {
     }
 
     @Override
-    public Component getName(ItemStack stack) {
+    public @NotNull Component getName(@NotNull ItemStack stack) {
         Material material = getBlock().material;
-        return material == null ? Component.literal("unnamed") :
-                getBlock().getStructure().getPrefix().getLocalizedName(material);
+        return getBlock().getStructure().getPrefix().getLocalizedName(material);
     }
 
     @Override
-    public Component getDescription() {
+    public @NotNull Component getDescription() {
         Material material = getBlock().material;
-        return material == null ? Component.literal("unnamed") :
-                getBlock().getStructure().getPrefix().getLocalizedName(material);
+        return getBlock().getStructure().getPrefix().getLocalizedName(material);
     }
 
     @OnlyIn(Dist.CLIENT)

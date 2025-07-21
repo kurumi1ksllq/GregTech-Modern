@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.addon.AddonFinder;
 import com.gregtechceu.gtceu.api.addon.events.MaterialCasingCollectionEvent;
 import com.gregtechceu.gtceu.api.block.*;
+import com.gregtechceu.gtceu.api.blockentity.IPaintable;
 import com.gregtechceu.gtceu.api.data.chemical.material.ItemMaterialData;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
@@ -14,13 +15,13 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.data.tag.TagUtil;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.PipeStructureRegistry;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeBlockItem;
-import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeMaterialBlock;
 import com.gregtechceu.gtceu.api.item.*;
 import com.gregtechceu.gtceu.api.machine.multiblock.IBatteryData;
 import com.gregtechceu.gtceu.api.pipenet.longdistance.LongDistancePipeBlock;
 import com.gregtechceu.gtceu.common.block.*;
 import com.gregtechceu.gtceu.common.block.explosive.IndustrialTNTBlock;
 import com.gregtechceu.gtceu.common.block.explosive.PowderbarrelBlock;
+import com.gregtechceu.gtceu.common.data.models.GTModels;
 import com.gregtechceu.gtceu.common.pipelike.block.duct.DuctPipeBlock;
 import com.gregtechceu.gtceu.common.pipelike.block.duct.DuctStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.laser.LaserPipeBlock;
@@ -114,10 +115,9 @@ public class GTBlocks {
             .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WIRE_CUTTER)
             .addLayer(() -> RenderType::cutoutMipped)
             .addLayer(() -> RenderType::translucent)
-            .color(() -> LaserPipeBlock::tintedColor)
-            .item(LaserPipeBlockItem::new)
+            .color(() -> () -> IPaintable::tintedColor)
+            .item(PipeBlockItem::new)
             .model(NonNullBiConsumer.noop())
-            .color(() -> LaserPipeBlockItem::tintColor)
             .build()
             .register();
     public static final BlockEntry<LaserPipeBlock> LASER_REFLECTOR_PIPE = REGISTRATE
@@ -129,10 +129,9 @@ public class GTBlocks {
             .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WIRE_CUTTER)
             .addLayer(() -> RenderType::cutoutMipped)
             .addLayer(() -> RenderType::translucent)
-            .color(() -> LaserPipeBlock::tintedColor)
-            .item(LaserPipeBlockItem::new)
+            .color(() -> () -> IPaintable::tintedColor)
+            .item(PipeBlockItem::new)
             .model(NonNullBiConsumer.noop())
-            .color(() -> LaserPipeBlockItem::tintColor)
             .build()
             .register();
     public static final BlockEntry<OpticalPipeBlock> OPTICAL_PIPE = REGISTRATE
@@ -144,10 +143,9 @@ public class GTBlocks {
             .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WIRE_CUTTER)
             .addLayer(() -> RenderType::cutoutMipped)
             .addLayer(() -> RenderType::translucent)
-            .color(() -> OpticalPipeBlock::tintedColor)
-            .item(OpticalPipeBlockItem::new)
+            .color(() -> () -> IPaintable::tintedColor)
+            .item(PipeBlockItem::new)
             .model(NonNullBiConsumer.noop())
-            .color(() -> () -> (stack, color) -> -1)
             .build()
             .register();
 
@@ -171,6 +169,7 @@ public class GTBlocks {
                 .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WRENCH)
                 .addLayer(() -> RenderType::cutoutMipped)
                 .addLayer(() -> RenderType::translucent)
+                .color(() -> () -> IPaintable::tintedColor)
                 .item(PipeBlockItem::new)
                 .model(NonNullBiConsumer.noop())
                 .build()

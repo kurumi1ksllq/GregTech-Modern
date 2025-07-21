@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.FluidProperty
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.MaterialProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PipeNetProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
-import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.FluidBuilder;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.graphnet.logic.NetLogicData;
@@ -37,7 +36,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.GENERATE_FOIL;
-import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.NO_UNIFICATION;
 
 public final class MaterialEnergyProperties implements PipeNetProperties.IPipeNetMaterialProperty {
 
@@ -79,14 +77,9 @@ public final class MaterialEnergyProperties implements PipeNetProperties.IPipeNe
         return new MaterialEnergyProperties(voltageLimit, amperageLimit, lossPerAmp, false);
     }
 
-    public static TagPrefix.MaterialRecipeHandler registrationHandler(TagPrefix.PropertyMaterialRecipeHandler<MaterialEnergyProperties> handler) {
-        return (orePrefix, material, provider) -> {
-            if (material.hasProperty(PropertyKey.PIPENET_PROPERTIES) && !material.hasFlag(NO_UNIFICATION) &&
-                    material.getProperty(PropertyKey.PIPENET_PROPERTIES).hasProperty(KEY)) {
-                handler.accept(orePrefix, material,
-                        material.getProperty(PropertyKey.PIPENET_PROPERTIES).getProperty(KEY), provider);
-            }
-        };
+    public static boolean hasEnergyProperty(Material material) {
+        return material.hasProperty(PropertyKey.PIPENET_PROPERTIES) &&
+                material.getProperty(PropertyKey.PIPENET_PROPERTIES).hasProperty(KEY);
     }
 
     @Override
@@ -204,7 +197,9 @@ public final class MaterialEnergyProperties implements PipeNetProperties.IPipeNe
             return lossPerAmp * cable.costFactor();
         } else if (structure instanceof MaterialPipeStructure pipe) {
             return lossPerAmp * (pipe.material() > 6 ? 3 : 2);
-        } else return lossPerAmp;
+        } else {
+            return lossPerAmp;
+        }
     }
 
     public long getAmperage(IPipeStructure structure) {
@@ -212,15 +207,19 @@ public final class MaterialEnergyProperties implements PipeNetProperties.IPipeNe
             return amperageLimit * cable.material();
         } else if (structure instanceof MaterialPipeStructure pipe) {
             return amperageLimit * pipe.material() / 2;
-        } else return amperageLimit;
+        } else {
+            return amperageLimit;
+        }
     }
 
     @Override
     @Nullable
     public WorldPipeNode getFromNet(ServerLevel world, BlockPos pos, IPipeStructure structure) {
-        if (structure instanceof CableStructure || structure instanceof MaterialPipeStructure)
+        if (structure instanceof CableStructure || structure instanceof MaterialPipeStructure) {
             return WorldEnergyNet.getWorldNet(world).getNode(pos);
-        else return null;
+        } else {
+            return null;
+        }
     }
 
     @Override

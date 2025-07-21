@@ -25,11 +25,8 @@ import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
 import com.gregtechceu.gtceu.api.misc.IOFilteredInvWrapper;
 import com.gregtechceu.gtceu.api.misc.IOFluidHandlerList;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
-import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.client.util.ModelUtils;
-import com.gregtechceu.gtceu.common.cover.FluidFilterCover;
-import com.gregtechceu.gtceu.common.cover.ItemFilterCover;
 import com.gregtechceu.gtceu.common.item.tool.behavior.ToolModeSwitchBehavior;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.common.machine.owner.PlayerOwner;
@@ -610,7 +607,7 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
             // noinspection DataFlowIssue
             var coverDefinition = coverContainer.getCoverAtSide(facing).coverDefinition;
             var behaviour = coverDefinition.createCoverBehavior(coverContainer, getFrontFacing());
-            if (!behaviour.canAttach()) {
+            if (!behaviour.canAttach(coverContainer, getFrontFacing())) {
                 return false;
             }
         }

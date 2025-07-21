@@ -39,7 +39,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 
 public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
 
@@ -59,11 +58,6 @@ public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
         this.holder = holder;
     }
 
-    protected final void addCoverSilent(@NotNull Direction side, @NotNull CoverBehavior cover) {
-        // we checked before if the side already has a cover
-        this.covers.put(side, cover);
-    }
-
     @Override
     public final boolean acceptsCovers() {
         return covers.size() < GTUtil.DIRECTIONS.length;
@@ -71,8 +65,8 @@ public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
 
     @Override
     public void setCoverAtSide(@Nullable CoverBehavior coverBehavior, Direction side) {
+        covers.put(side, coverBehavior);
         if (coverBehavior != null) {
-            addCoverSilent(side, coverBehavior);
             if (!getLevel().isClientSide) {
                 // do not sync or handle logic on client side
                 coverBehavior.getSyncStorage().markAllDirty();

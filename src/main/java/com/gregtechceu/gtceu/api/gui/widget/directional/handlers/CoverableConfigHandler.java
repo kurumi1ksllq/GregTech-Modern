@@ -83,7 +83,7 @@ public class CoverableConfigHandler implements IDirectionalConfigHandler {
             @Override
             public boolean canPutStack(ItemStack stack) {
                 return super.canPutStack(stack) && CoverPlaceBehavior.isCoverBehaviorItem(stack, () -> false,
-                        def -> def.createCoverBehavior(machine, side).canAttach());
+                        def -> def.createCoverBehavior(machine, side).canAttach(machine, side));
             }
         }
                 .setChangeListener(this::coverItemChanged)

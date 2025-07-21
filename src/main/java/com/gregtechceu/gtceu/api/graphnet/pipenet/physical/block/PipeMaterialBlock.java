@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block;
 
+import com.gregtechceu.gtceu.api.blockentity.IPaintable;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.IPipeNetNodeHandler;
@@ -7,18 +8,14 @@ import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.IPipeMaterialStructur
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.MaterialPipeBlockEntity;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
-import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -27,41 +24,32 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 
 public abstract class PipeMaterialBlock extends PipeBlock {
 
-    public final Material material;
+    public final @NotNull Material material;
 
-    public PipeMaterialBlock(BlockBehaviour.Properties properties, IPipeMaterialStructure structure,
-                             Material material) {
+    public PipeMaterialBlock(Properties properties, IPipeMaterialStructure structure, @NotNull Material material) {
         super(properties, structure);
         this.material = material;
     }
 
     @OnlyIn(Dist.CLIENT)
     public static BlockColor tintedColor() {
-        return (blockState, level, blockPos, index) -> {
-            if (blockPos != null && level != null &&
-                    level.getBlockEntity(blockPos) instanceof PipeBlockEntity pipe) {
-                if (pipe.getFrameMaterial() != null) {
-                    if (index >= 3) {
-                        return pipe.getFrameMaterial().getMaterialRGB(index - 3);
-                    }
-                }
-                if (index == 0 && pipe.isPainted()) {
-                    return pipe.getPaintingColor();
+        return (state, level, pos, index) -> {
+            if (level != null && pos != null && (index == 0 || index == 1)) {
+                if (level.getBlockEntity(pos) instanceof IPaintable paintable && paintable.isPainted()) {
+                    return paintable.getPaintingColor();
                 }
             }
-            if (blockState.getBlock() instanceof PipeMaterialBlock block) {
-                return block.tinted(blockState, level, blockPos, index);
+            if (state.getBlock() instanceof PipeMaterialBlock block) {
+                return block.tinted(state, level, pos, index);
             }
             return -1;
         };
     }
 
-    public int tinted(BlockState blockState, @Nullable BlockAndTintGetter blockAndTintGetter,
-                      @Nullable BlockPos blockPos, int index) {
+    public int tinted(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
         if (index == 0) {
             return material.getMaterialRGB();
         }
@@ -97,26 +85,13 @@ public abstract class PipeMaterialBlock extends PipeBlock {
     }
 
     @Override
-    public String getDescriptionId() {
-        return material == null ? "unnamed" :
-                getStructure().getPrefix().getUnlocalizedName(material);
+    public @NotNull String getDescriptionId() {
+        return getStructure().getPrefix().getUnlocalizedName(material);
     }
 
     @Override
-    public MutableComponent getName() {
-        return material == null ? Component.literal("unnamed") :
-                getStructure().getPrefix().getLocalizedName(material);
-    }
-
-    @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip,
-                                TooltipFlag flag) {
-        super.appendHoverText(stack, level, tooltip, flag);
-        if (ConfigHolder.INSTANCE.dev.debug) {
-            if (material != null)
-                tooltip.add(Component
-                        .literal("MetaItem Id: " + getStructure().getPrefix().name + material.toCamelCaseString()));
-        }
+    public @NotNull MutableComponent getName() {
+        return getStructure().getPrefix().getLocalizedName(material);
     }
 
     // tile entity //

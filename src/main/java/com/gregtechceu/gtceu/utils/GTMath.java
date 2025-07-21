@@ -5,6 +5,7 @@ import net.minecraft.world.item.ItemStack;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -61,5 +62,13 @@ public class GTMath {
 
     public static float ratio(BigInteger a, BigInteger b) {
         return new BigDecimal(a).divide(new BigDecimal(b), MathContext.DECIMAL32).floatValue();
+    }
+
+    public static byte safeByte(@Nullable Byte abyte) {
+        return abyte == null ? 0 : abyte;
+    }
+
+    public static int safeInt(@Nullable Integer integer) {
+        return integer == null ? 0 : integer;
     }
 }

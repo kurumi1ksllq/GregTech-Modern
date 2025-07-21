@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.common.datafixer;
+package com.gregtechceu.gtceu.common.datafixers;
 
 import com.gregtechceu.gtceu.utils.GTMath;
 

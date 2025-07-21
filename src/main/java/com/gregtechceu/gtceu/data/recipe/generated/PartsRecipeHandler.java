@@ -170,8 +170,7 @@ public final class PartsRecipeHandler {
             VanillaRecipeHelper.addShapelessRecipe(provider, String.format("fine_wire_%s", material.getName()),
                     fineWireStack, 'x', new MaterialEntry(foil, material));
 
-        if (material.hasProperty(PropertyKey.PIPENET_PROPERTIES) &&
-                material.getProperty(PropertyKey.PIPENET_PROPERTIES).hasProperty(MaterialEnergyProperties.KEY)) {
+        if (MaterialEnergyProperties.hasEnergyProperty(material)) {
             WIREMILL_RECIPES.recipeBuilder("mill_" + material.getName() + "_wire_to_fine_wire")
                     .inputItems(wireGtSingle, material)
                     .outputItems(fineWireStack.copyWithCount(4))

@@ -38,7 +38,7 @@ public class CableBlock extends PipeMaterialBlock implements IBurnable {
 
     private static final ThreadLocal<Boolean> RELOCATING_TILE = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
-    public CableBlock(BlockBehaviour.Properties properties, CableStructure structure, Material material) {
+    public CableBlock(BlockBehaviour.Properties properties, CableStructure structure, @NotNull Material material) {
         super(properties, structure, material);
         CACHE.compute(material, (k, v) -> {
             if (v == null) v = new Object2ObjectOpenHashMap<>();
@@ -47,12 +47,12 @@ public class CableBlock extends PipeMaterialBlock implements IBurnable {
         });
     }
 
-    public int tinted(BlockState blockState, @Nullable BlockAndTintGetter blockAndTintGetter,
-                      @Nullable BlockPos blockPos, int index) {
+    public int tinted(BlockState state, @Nullable BlockAndTintGetter level,
+                      @Nullable BlockPos pos, int index) {
         if (getStructure().isInsulated() && index == 1) {
             return CableModel.DEFAULT_INSULATION_COLOR;
         }
-        return index == 0 ? material.getMaterialRGB() : -1;
+        return super.tinted(state, level, pos, index);
     }
 
     @Override
@@ -107,20 +107,24 @@ public class CableBlock extends PipeMaterialBlock implements IBurnable {
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         super.entityInside(state, level, pos, entity);
         if (!(level instanceof ServerLevel serverLevel) || getStructure().isInsulated() ||
-                !(entity instanceof LivingEntity living))
+                !(entity instanceof LivingEntity living)) {
             return;
+        }
         PipeBlockEntity tile = getBlockEntity(level, pos);
-        if (tile != null && tile.getFrameMaterial() == null && tile.getOffsetTimer() % 10 == 0) {
+        if (tile != null && tile.getFrameMaterial().isNull() && tile.getOffsetTimer() % 10 == 0) {
             WorldPipeNode node = WorldEnergyNet.getWorldNet(serverLevel).getNode(pos);
+
             if (node != null) {
                 if (node.getData().getLogicEntryNullable(SuperconductorLogic.TYPE) != null) return;
                 EnergyFlowLogic logic = node.getData().getLogicEntryNullable(EnergyFlowLogic.TYPE);
+
                 if (logic != null) {
                     long tick = GTCEu.getMinecraftServer().getTickCount();
                     long cumulativeDamage = 0;
                     for (EnergyFlowData data : logic.getFlow(tick)) {
                         cumulativeDamage += (GTUtil.getTierByVoltage(data.voltage()) + 1) * data.amperage() * 4;
                     }
+
                     if (cumulativeDamage != 0) {
                         living.hurt(GTDamageTypes.ELECTRIC.source(serverLevel), cumulativeDamage);
                         // TODO advancement

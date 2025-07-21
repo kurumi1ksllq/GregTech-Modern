@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.common.datafixer.fixes;
+package com.gregtechceu.gtceu.common.datafixers.fixes;
 
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;

@@ -33,7 +33,7 @@ public class OpticalPipeBlock extends ActivablePipeBlock {
     }
 
     @Override
-    public IPipeNetNodeHandler getHandler(PipeBlockEntity tileContext) {
+    public @NotNull IPipeNetNodeHandler getHandler(PipeBlockEntity tileContext) {
         return DuctNetHandler.INSTANCE;
     }
 

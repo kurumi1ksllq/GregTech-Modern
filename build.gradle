@@ -86,6 +86,9 @@ obfuscation {
 }
 
 tasks.register('slimJar', ShadowJar) {
+    dependsOn("classes")
+    configurations = [project.configurations.includedLibrary]
+    archiveClassifier = "dev-slim"
     from sourceSets.main.output
 }
 

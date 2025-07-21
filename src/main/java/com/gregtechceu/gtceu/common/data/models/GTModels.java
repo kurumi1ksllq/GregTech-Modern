@@ -15,6 +15,8 @@ import com.gregtechceu.gtceu.api.machine.multiblock.IBatteryData;
 import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
 import com.gregtechceu.gtceu.common.block.*;
 import com.gregtechceu.gtceu.common.block.LampBlock;
+import com.gregtechceu.gtceu.common.data.GTBlocks;
+import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.pipelike.block.cable.CableBlock;
 import com.gregtechceu.gtceu.common.pipelike.block.cable.CableStructure;
 import com.gregtechceu.gtceu.common.pipelike.block.duct.DuctPipeBlock;
@@ -355,6 +357,7 @@ public class GTModels {
 
                     JsonObject json = new JsonObject();
                     json.addProperty("loader", "gtceu:pipe");
+                    json.addProperty("parent", "minecraft:block/block");
                     String modelId = structure.getModel().getLoc().toString();
                     json.addProperty("model_id", modelId);
 
@@ -374,6 +377,7 @@ public class GTModels {
 
                 JsonObject json = new JsonObject();
                 json.addProperty("loader", "gtceu:pipe");
+                json.addProperty("parent", "minecraft:block/block");
                 String modelId = structure.getModel().getLoc().toString();
                 json.addProperty("model_id", modelId);
 
@@ -390,6 +394,7 @@ public class GTModels {
         for (var structure : PipeStructureRegistry.getStructures(DuctStructure.class)) {
             JsonObject json = new JsonObject();
             json.addProperty("loader", "gtceu:pipe");
+            json.addProperty("parent", "minecraft:block/block");
             String modelId = structure.getModel().getLoc().toString();
             json.addProperty("model_id", modelId);
 
@@ -404,6 +409,7 @@ public class GTModels {
         {
             JsonObject json = new JsonObject();
             json.addProperty("loader", "gtceu:pipe");
+            json.addProperty("parent", "minecraft:block/block");
             String modelId = LaserStructure.NORMAL.getModel().getLoc().toString();
             json.addProperty("model_id", modelId);
 
@@ -418,6 +424,7 @@ public class GTModels {
         {
             JsonObject json = new JsonObject();
             json.addProperty("loader", "gtceu:pipe");
+            json.addProperty("parent", "minecraft:block/block");
             String modelId = LaserStructure.MIRROR.getModel().getLoc().toString();
             json.addProperty("model_id", modelId);
 
@@ -432,6 +439,7 @@ public class GTModels {
         {
             JsonObject json = new JsonObject();
             json.addProperty("loader", "gtceu:pipe");
+            json.addProperty("parent", "minecraft:block/block");
             String modelId = OpticalStructure.INSTANCE.getModel().getLoc().toString();
             json.addProperty("model_id", modelId);
 
@@ -447,10 +455,7 @@ public class GTModels {
 
     private static void createPipeBlockState(ResourceLocation blockId, ResourceLocation blockModelId, Block block) {
         Variant variant = Variant.variant().with(VariantProperties.MODEL, blockModelId);
-        GTDynamicResourcePack.addBlockState(blockId, MultiVariantGenerator.multiVariant(block)
-                .with(PropertyDispatch.property(BlockProperties.SERVER_TICK)
-                        .select(true, variant)
-                        .select(false, variant)));
+        GTDynamicResourcePack.addBlockState(blockId, MultiVariantGenerator.multiVariant(block, variant));
     }
 
     // endregion

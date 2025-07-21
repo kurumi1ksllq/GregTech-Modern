@@ -1,19 +1,7 @@
-// hack to avoid a bug in Shadow: https://github.com/GradleUp/shadow/issues/111
-tasks.register('shadowBugWorkaround', Jar) {
-    dependsOn jarJar
-    from jarJar.outputs
-}
-
 shadowJar {
-    from tasks.shadowBugWorkaround
+    from sourceSets.main.output
     configurations = [project.configurations.includedLibrary]
     archiveClassifier = "dev"
-}
-
-tasks.register('slimJar', Jar) {
-    dependsOn("classes")
-    configurations = [project.configurations.includedLibrary]
-    archiveClassifier = "dev-slim"
 }
 
 obfuscation {
@@ -28,10 +16,6 @@ obfuscation {
 jar {
     archiveClassifier = "dev-no-shadow"
     archiveClassifier.convention("dev-no-shadow")
-}
-
-reobfJar {
-    archiveClassifier = "no-shadow"
 }
 
 // Add sources jar to components.java

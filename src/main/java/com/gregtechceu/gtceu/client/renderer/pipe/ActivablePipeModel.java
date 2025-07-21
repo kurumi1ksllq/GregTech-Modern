@@ -18,9 +18,12 @@ import com.lowdragmc.lowdraglib.client.model.ModelFactory;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelData;
@@ -61,13 +64,14 @@ public class ActivablePipeModel extends AbstractPipeModel<ActivableCacheKey> {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public @NotNull List<BakedQuad> getQuads(ActivableCacheKey key,
-                                             byte connectionMask, byte closedMask, byte blockedMask,
-                                             ColorData data, @Nullable Material frameMaterial,
-                                             byte frameMask, byte coverMask,
+    public @NotNull List<BakedQuad> getQuads(ActivableCacheKey key, @Nullable BlockAndTintGetter level,
+                                             @Nullable BlockPos pos, @Nullable Direction side,
+                                             byte connectionMask, byte closedMask, byte blockedMask, byte frameMask,
+                                             byte coverMask, @NotNull Material frameMaterial, ColorData data,
                                              RandomSource randomSource, ModelData modelData, RenderType renderType) {
-        List<BakedQuad> quads = super.getQuads(key, connectionMask, closedMask, blockedMask, data, frameMaterial,
-                frameMask, coverMask, randomSource, modelData, renderType);
+        List<BakedQuad> quads = super.getQuads(key, level, pos, side,
+                connectionMask, closedMask, blockedMask, frameMask, coverMask,
+                frameMaterial, data, randomSource, modelData, renderType);
 
         if (key.isActive() && allowActive()) {
             if (emissiveActive) {
@@ -90,7 +94,7 @@ public class ActivablePipeModel extends AbstractPipeModel<ActivableCacheKey> {
     }
 
     @Override
-    public SpriteInformation getParticleSprite(@Nullable Material material) {
+    public SpriteInformation getParticleSprite(@NotNull Material material) {
         return sideSprite;
     }
 

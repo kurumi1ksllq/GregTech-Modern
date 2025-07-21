@@ -10,6 +10,7 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class PipeCapabilityWrapper implements ICapabilityProvider {
 
@@ -66,7 +67,7 @@ public class PipeCapabilityWrapper implements ICapabilityProvider {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, Direction facing) {
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
         IPipeCapabilityObject obj = capabilities.get(capability);
         if (obj == null) return LazyOptional.empty();
         return obj.getCapability(capability, facing);

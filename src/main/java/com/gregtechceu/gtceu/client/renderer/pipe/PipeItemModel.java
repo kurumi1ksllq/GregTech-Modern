@@ -1,18 +1,18 @@
 package com.gregtechceu.gtceu.client.renderer.pipe;
 
+import com.gregtechceu.gtceu.client.model.BaseBakedModel;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.CacheKey;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
+import com.gregtechceu.gtceu.common.data.GTMaterials;
 
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.ModelData;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PipeItemModel<K extends CacheKey> implements IDynamicBakedModel {
+public class PipeItemModel<K extends CacheKey> extends BaseBakedModel {
 
     private static final Map<ItemDisplayContext, Matrix4f> CAMERA_TRANSFORMS = new HashMap<>();
 
@@ -48,7 +48,7 @@ public class PipeItemModel<K extends CacheKey> implements IDynamicBakedModel {
     }
 
     private static Quaternionf rotDegrees(float x, float y, float z) {
-        return quatFromXYZDegrees(new Vector3f(x, y, z));
+        return new Quaternionf().rotateXYZ(x * Mth.DEG_TO_RAD, y * Mth.DEG_TO_RAD, z * Mth.DEG_TO_RAD);
     }
 
     private final PipeModelRedirector redirector;
@@ -68,7 +68,9 @@ public class PipeItemModel<K extends CacheKey> implements IDynamicBakedModel {
                                              @NotNull RandomSource rand, @NotNull ModelData modelData,
                                              @Nullable RenderType renderType) {
         byte z = 0;
-        return basis.getQuads(key, (byte) 0b1100, z, z, data, null, z, z, rand, modelData, renderType);
+        return basis.getQuads(key, null, null, side,
+                (byte) 0b1100, z, z, z, z,
+                GTMaterials.NULL, data, rand, modelData, renderType);
     }
 
     @Override
@@ -87,25 +89,11 @@ public class PipeItemModel<K extends CacheKey> implements IDynamicBakedModel {
     }
 
     @Override
-    public boolean isCustomRenderer() {
-        return false;
-    }
-
-    @Override
-    public BakedModel applyTransform(ItemDisplayContext transformType, PoseStack poseStack,
-                                     boolean applyLeftHandTransform) {
-        poseStack.mulPoseMatrix(CAMERA_TRANSFORMS.get(transformType));
+    public @NotNull BakedModel applyTransform(@NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack,
+                                              boolean applyLeftHandTransform) {
+        redirector.applyTransform(transformType, poseStack, applyLeftHandTransform);
+        // poseStack.mulPoseMatrix(CAMERA_TRANSFORMS.get(transformType));
         return this;
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleIcon() {
-        return redirector.getParticleIcon();
-    }
-
-    @Override
-    public ItemOverrides getOverrides() {
-        return ItemOverrides.EMPTY;
     }
 
     public static Matrix4f mul(@Nullable Vector3f translation, @Nullable Quaternionf leftRot, @Nullable Vector3f scale,
@@ -129,24 +117,5 @@ public class PipeItemModel<K extends CacheKey> implements IDynamicBakedModel {
         }
         if (translation != null) res.setTranslation(translation);
         return res;
-    }
-
-    public static Quaternionf quatFromXYZDegrees(Vector3f xyz) {
-        return quatFromXYZ((float) Math.toRadians(xyz.x), (float) Math.toRadians(xyz.y), (float) Math.toRadians(xyz.z));
-    }
-
-    public static Quaternionf quatFromXYZ(Vector3f xyz) {
-        return quatFromXYZ(xyz.x, xyz.y, xyz.z);
-    }
-
-    public static Quaternionf quatFromXYZ(float x, float y, float z) {
-        Quaternionf ret = new Quaternionf(0, 0, 0, 1), t = new Quaternionf();
-        t.set((float) Math.sin(x / 2), 0, 0, (float) Math.cos(x / 2));
-        ret.mul(t);
-        t.set(0, (float) Math.sin(y / 2), 0, (float) Math.cos(y / 2));
-        ret.mul(t);
-        t.set(0, 0, (float) Math.sin(z / 2), (float) Math.cos(z / 2));
-        ret.mul(t);
-        return ret;
     }
 }

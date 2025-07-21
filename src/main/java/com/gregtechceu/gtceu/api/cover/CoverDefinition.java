@@ -41,8 +41,8 @@ public final class CoverDefinition {
         }
     }
 
-    public CoverBehavior createCoverBehavior(ICoverable metaBlockEntity, Direction side) {
-        return behaviorCreator.create(this, metaBlockEntity, side);
+    public CoverBehavior createCoverBehavior(ICoverable coverHolder, Direction side) {
+        return behaviorCreator.create(this, coverHolder, side);
     }
 
     private static class ClientHelper {

@@ -5,10 +5,16 @@ import com.gregtechceu.gtceu.api.block.IAppearance;
 import com.gregtechceu.gtceu.api.blockentity.ITickSubscription;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.utils.GTUtil;
+
+import com.lowdragmc.lowdraglib.gui.editor.runtime.PersistedParser;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -30,10 +36,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public interface ICoverable extends ITickSubscription, IAppearance, ICapabilityProvider {
@@ -71,8 +74,10 @@ public interface ICoverable extends ITickSubscription, IAppearance, ICapabilityP
 
     boolean shouldRenderBackSide();
 
+    @Nullable
     IItemHandler getItemHandlerCap(@Nullable Direction side, boolean useCoverCapability);
 
+    @Nullable
     IFluidHandler getFluidHandlerCap(@Nullable Direction side, boolean useCoverCapability);
 
     /**
@@ -238,15 +243,6 @@ public interface ICoverable extends ITickSubscription, IAppearance, ICapabilityP
         return traceCoverSide(rayTrace);
     }
 
-    class PrimaryBoxData {
-
-        public final boolean usePlacementGrid;
-
-        public PrimaryBoxData(boolean usePlacementGrid) {
-            this.usePlacementGrid = usePlacementGrid;
-        }
-    }
-
     @Nullable
     static Direction traceCoverSide(BlockHitResult result) {
         return determineGridSideHit(result);
@@ -291,5 +287,22 @@ public interface ICoverable extends ITickSubscription, IAppearance, ICapabilityP
             return getCoverAtSide(side).getAppearance(sourceState, sourcePos);
         }
         return null;
+    }
+
+    default void deserializeCover(CompoundTag tag, EnumMap<Direction, CoverBehavior> map) {
+        if (!tag.contains("id", Tag.TAG_STRING)) {
+            return;
+        }
+        Direction coverSide = Direction.from3DDataValue(tag.getByte("side"));
+        ResourceLocation coverLocation = new ResourceLocation(tag.getString("id"));
+        CoverDefinition coverDefinition = GTRegistries.COVERS.get(coverLocation);
+        if (coverDefinition == null) {
+            GTCEu.LOGGER.warn("Unable to find CoverDefinition for ResourceLocation {} at position {}",
+                    coverLocation, this.getPos());
+        } else {
+            CoverBehavior cover = coverDefinition.createCoverBehavior(this, coverSide);
+            PersistedParser.deserializeNBT(tag, new HashMap<>(), cover.getClass(), cover);
+            map.put(coverSide, cover);
+        }
     }
 }

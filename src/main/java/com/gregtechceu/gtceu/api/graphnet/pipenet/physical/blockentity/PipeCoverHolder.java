@@ -160,12 +160,12 @@ public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
     }
 
     @Override
-    public IItemHandler getItemHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
+    public @Nullable IItemHandler getItemHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
         return null;
     }
 
     @Override
-    public IFluidHandler getFluidHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
+    public @Nullable IFluidHandler getFluidHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
         return null;
     }
 
@@ -306,7 +306,7 @@ public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
                 coversList.add(tag);
             }
         }
-        tagCompound.put("Covers", coversList);
+        tagCompound.put("covers", coversList);
         return tagCompound;
     }
 
@@ -314,21 +314,20 @@ public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
     private EnumMap<Direction, CoverBehavior> deserializeCovers(CompoundTag tagCompound) {
         EnumMap<Direction, CoverBehavior> map = new EnumMap<>(Direction.class);
 
-        ListTag coversList = tagCompound.getList("Covers", Tag.TAG_COMPOUND);
-        for (int index = 0; index < coversList.size(); index++) {
-            CompoundTag tag = coversList.getCompound(index);
-            if (tag.contains("id", Tag.TAG_STRING)) {
-                Direction coverSide = Direction.from3DDataValue(tag.getByte("Side"));
-                ResourceLocation coverLocation = new ResourceLocation(tag.getString("CoverId"));
-                CoverDefinition coverDefinition = GTRegistries.COVERS.get(coverLocation);
-                if (coverDefinition == null) {
-                    GTCEu.LOGGER.warn("Unable to find CoverDefinition for ResourceLocation {} at position {}",
-                            coverLocation, holder.getBlockPos());
-                } else {
-                    CoverBehavior cover = coverDefinition.createCoverBehavior(this, coverSide);
-                    PersistedParser.deserializeNBT(tag, new HashMap<>(), cover.getClass(), cover);
-                    map.put(coverSide, cover);
+        if (tagCompound.contains("covers", Tag.TAG_LIST)) {
+            ListTag coversList = tagCompound.getList("covers", Tag.TAG_COMPOUND);
+            for (int index = 0; index < coversList.size(); index++) {
+                CompoundTag tag = coversList.getCompound(index);
+                deserializeCover(tag, map);
+            }
+        } else {
+            // backwards compat with the old serialization logic (which saved the covers into separate keys)
+            for (Direction direction : GTUtil.DIRECTIONS) {
+                if (!tagCompound.contains(direction.getSerializedName(), Tag.TAG_COMPOUND)) {
+                    continue;
                 }
+                CompoundTag tag = tagCompound.getCompound(direction.getSerializedName());
+                deserializeCover(tag, map);
             }
         }
         return map;

@@ -460,7 +460,7 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
             LazyOptional<T> cap = wrapper.getCapability(capability, facing);
             if (cap.isPresent()) return cap;
         }
-        return null;
+        return LazyOptional.empty();
     }
 
     @Override
@@ -691,8 +691,8 @@ public class PipeBlockEntity extends NeighborCacheBlockEntity
         return false;
     }
 
-    public ResourceTexture sideTips(Player player, BlockPos pos, BlockState state, Set<GTToolType> toolTypes,
-                                    Direction side) {
+    public @Nullable ResourceTexture sideTips(Player player, BlockPos pos, BlockState state, Set<GTToolType> toolTypes,
+                                              Direction side) {
         if (toolTypes.contains(getBlockType().getToolClass())) {
             if (player.isShiftKeyDown() && this.getBlockType().allowsBlocking()) {
                 return getStructure().getPipeTexture(isBlocked(side));

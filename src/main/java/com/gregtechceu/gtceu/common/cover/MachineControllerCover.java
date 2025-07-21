@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.common.cover;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
@@ -13,8 +12,6 @@ import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.PhantomSlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.common.cover.data.ControllerMode;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
@@ -79,11 +76,7 @@ public class MachineControllerCover extends CoverBehavior implements IUICover {
         super(definition, coverHolder, attachedSide);
     }
 
-    @Override
-    protected CoverRenderer buildRenderer() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_controller"), null).build();
-    }
-
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
         return !getAllowedModes(coverable, side).isEmpty();

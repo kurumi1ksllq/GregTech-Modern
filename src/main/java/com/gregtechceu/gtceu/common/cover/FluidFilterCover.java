@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.common.cover;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
@@ -12,8 +11,6 @@ import com.gregtechceu.gtceu.api.cover.filter.FluidFilter;
 import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
 import com.gregtechceu.gtceu.api.transfer.fluid.FluidHandlerDelegate;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.common.cover.data.FilterMode;
 import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
 
@@ -62,11 +59,7 @@ public class FluidFilterCover extends CoverBehavior implements IUICover, CoverWi
         coverHolder.markDirty();
     }
 
-    @Override
-    protected CoverRenderer buildRenderer() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_fluid_filter"), null).build();
-    }
-
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
         return coverable.getCapability(ForgeCapabilities.FLUID_HANDLER).isPresent();

@@ -391,7 +391,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         shapes.add(getStructure().getPipeBoxes(tile));
         tile.getCoverBoxes(shapes::add);
         VoxelShape shape = shapes.stream().reduce(Shapes.empty(), Shapes::or);
-        if (tile.getFrameMaterial() != null) {
+        if (!tile.getFrameMaterial().isNull()) {
             return Shapes.or(shape, MaterialBlock.FRAME_COLLISION_BOX);
         }
         return shape;
@@ -413,7 +413,7 @@ public abstract class PipeBlock extends Block implements EntityBlock {
         shapes.add(getStructure().getPipeBoxes(tile));
         tile.getCoverBoxes(shapes::add);
         VoxelShape shape = shapes.stream().reduce(Shapes.empty(), Shapes::or);
-        if (tile.getFrameMaterial() != null) {
+        if (!tile.getFrameMaterial().isNull()) {
             return Shapes.or(shape, MaterialBlock.FRAME_COLLISION_BOX);
         }
         return shape;

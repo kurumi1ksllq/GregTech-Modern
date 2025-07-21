@@ -3,12 +3,11 @@ package com.gregtechceu.gtceu.client.renderer.pipe;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererPackage;
-import com.gregtechceu.gtceu.client.renderer.pipe.cache.ColorQuadCache;
 import com.gregtechceu.gtceu.client.renderer.pipe.cache.StructureQuadCache;
+import com.gregtechceu.gtceu.client.renderer.pipe.quad.PipeQuadHelper;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.CacheKey;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
-import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.utils.GTMath;
@@ -16,7 +15,6 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.reference.WeakHashSet;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -40,7 +38,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -60,7 +57,6 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
     public static ModelProperty<Integer> COLOR_PROPERTY = new ModelProperty<>();
     public static final ModelProperty<Material> MATERIAL_PROPERTY = new ModelProperty<>();
 
-    protected final Object2ObjectOpenHashMap<BlockState, ColorQuadCache> frameCache = new Object2ObjectOpenHashMap<>();
     protected final Object2ObjectOpenHashMap<K, StructureQuadCache> pipeCache;
 
     protected static final WeakHashSet<Object2ObjectOpenHashMap<? extends CacheKey, StructureQuadCache>> PIPE_CACHES = new WeakHashSet<>();
@@ -136,33 +132,13 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
             return quads;
         }
 
-        BlockState frameState = GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, frameMaterial)
-                .getDefaultState();
-        BakedModel frameModel = Minecraft.getInstance().getBlockRenderer().getBlockModel(frameState);
-        if (level != null && pos != null) {
-            modelData = frameModel.getModelData(level, pos, frameState, modelData);
-        }
+        var frameBlock = GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, frameMaterial);
+        if (frameBlock != null) {
+            BlockState frameState = frameBlock.getDefaultState();
+            BakedModel frameModel = Minecraft.getInstance().getBlockRenderer().getBlockModel(frameState);
 
-        List<BakedQuad> frameQuads = new LinkedList<>();
-        if (side == null || !GTUtil.evalMask(side, frameMask)) {
-            frameQuads.addAll(frameModel.getQuads(frameState, side, rand, modelData, renderType));
-        }
-        if (side == null) {
-            for (Direction face : GTUtil.DIRECTIONS) {
-                if (GTUtil.evalMask(face, frameMask)) {
-                    frameQuads.addAll(frameModel.getQuads(frameState, face, rand, modelData, renderType));
-                }
-            }
-        }
-
-        // bake all the quads' tint colors into the vertices
-        BlockColors blockColors = Minecraft.getInstance().getBlockColors();
-        for (BakedQuad frameQuad : frameQuads) {
-            if (frameQuad.isTinted()) {
-                int color = blockColors.getColor(frameState, level, pos, frameQuad.getTintIndex());
-                frameQuad = GTQuadTransformers.setColor(frameQuad, color, true);
-            }
-            quads.add(frameQuad);
+            PipeQuadHelper.createFrame(quads, frameModel, level, pos,
+                    frameState, frameMask, side, rand, modelData, renderType);
         }
         return quads;
     }

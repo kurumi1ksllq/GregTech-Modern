@@ -2,10 +2,7 @@ package com.gregtechceu.gtceu.client.util;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.client.model.machine.MachineModel;
-import com.gregtechceu.gtceu.client.renderer.cover.ICoverableRenderer;
-import com.gregtechceu.gtceu.integration.modernfix.GTModernFixIntegration;
-
-import com.lowdragmc.lowdraglib.client.model.custommodel.CustomBakedModel;
+import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererPackage;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -108,7 +105,7 @@ public class ModelUtils {
         TextureAtlas atlas = event.getAtlas();
         if (atlas.location() == TextureAtlas.LOCATION_BLOCKS) {
             MachineModel.initSprites(atlas);
-            ICoverableRenderer.initSprites(atlas);
+            CoverRendererPackage.initSprites(atlas);
         }
 
         for (var listener : EVENT_LISTENERS) {
@@ -126,21 +123,6 @@ public class ModelUtils {
             Class<?> eventClass = listener.listener.eventClass();
             if (eventClass != null && eventClass.isInstance(event)) {
                 ((AssetEventListener<ModelEvent.ModifyBakingResult>) listener.listener).accept(event);
-            }
-        }
-
-        // don't process the CTM model unwrapping here if modernfix dynamic resources is enabled
-        if (GTCEu.Mods.isModernFixLoaded() && GTModernFixIntegration.isDynamicResourcesEnabled()) return;
-
-        // Unwrap all machine models from LDLib CTM models so we don't need to be as aggressive with mixins
-        // Also, the caching they have stops our models from updating properly
-        for (var entry : event.getModels().entrySet()) {
-            BakedModel model = entry.getValue();
-            if (!(model instanceof CustomBakedModel ctmModel)) {
-                continue;
-            }
-            if (ctmModel.getParent() instanceof MachineModel machine) {
-                entry.setValue(machine);
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.common.cover.voiding;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.filter.FluidFilter;
@@ -8,12 +7,9 @@ import com.gregtechceu.gtceu.api.cover.filter.SimpleFluidFilter;
 import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
 import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.NumberInputWidget;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.common.cover.data.BucketMode;
 import com.gregtechceu.gtceu.common.cover.data.VoidingMode;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
-import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
@@ -26,7 +22,6 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
-import it.unimi.dsi.fastutil.objects.Object2LongMaps;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,12 +54,6 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
         super(definition, coverHolder, attachedSide);
     }
 
-    @Override
-    protected CoverRenderer buildRenderer() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_fluid_voiding_advanced"),
-                GTCEu.id("block/cover/overlay_fluid_voiding_advanced_emissive")).build();
-    }
-
     //////////////////////////////////////////////
     // *********** COVER LOGIC ***********//
     //////////////////////////////////////////////
@@ -92,31 +81,18 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
      * @param fluidFilter   a predicate which determines what fluids may be moved
      * @param keepAmount    the desired amount in milliBuckets of a particular fluid in the destination
      */
-    protected void voidOverflow(final IFluidHandler sourceHandler,
-                                final Predicate<FluidStack> fluidFilter,
-                                int keepAmount) {
-        if (sourceHandler == null || fluidFilter == null) {
-            return;
-        }
-        var fluidAmounts = enumerateDistinctFluids(sourceHandler, TransferDirection.EXTRACT);
-
-        for (var entry : Object2LongMaps.fastIterable(fluidAmounts)) {
-            var stack = entry.getKey();
-            long presentAmount = entry.getLongValue();
-            if (this.getFilterHandler().isFilterPresent() &&
-                    voidingMode == VoidingMode.VOID_OVERFLOW) {
-                keepAmount = this.getFilterHandler().getFilter()
-                        .getTransferLimit(stack, maxFluidTransferRate);
+    protected void voidOverflow(IFluidHandler sourceHandler, Predicate<FluidStack> fluidFilter, int keepAmount) {
+        for (int i = 0; i < sourceHandler.getTanks(); ++i) {
+            FluidStack sourceFluid = sourceHandler.getFluidInTank(i);
+            if (this.getFilterHandler().isFilterPresent()) {
+                keepAmount = this.getFilterHandler().getFilter().getTransferLimit(sourceFluid, maxFluidTransferRate);
             }
-            if (keepAmount <= 0L || keepAmount > presentAmount || !getFilterHandler().test(stack)) {
+            if (sourceFluid.isEmpty() || sourceFluid.getAmount() == 0 || !getFilterHandler().test(sourceFluid)) {
                 continue;
             }
 
-            long diff = presentAmount - targetAmount;
-            for (int op : GTMath.split(diff)) {
-                var toDrain = new FluidStack(stack, op);
-                sourceHandler.drain(toDrain, IFluidHandler.FluidAction.EXECUTE);
-            }
+            sourceFluid.setAmount(sourceFluid.getAmount() - keepAmount);
+            sourceHandler.drain(sourceFluid, IFluidHandler.FluidAction.EXECUTE);
         }
     }
 

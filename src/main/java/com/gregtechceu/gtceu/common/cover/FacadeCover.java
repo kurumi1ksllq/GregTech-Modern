@@ -3,8 +3,6 @@ package com.gregtechceu.gtceu.common.cover;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
-import com.gregtechceu.gtceu.client.renderer.cover.FacadeCoverRenderer;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
 import com.gregtechceu.gtceu.common.item.FacadeItemBehaviour;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
@@ -19,9 +17,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.data.ModelProperty;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -32,6 +33,9 @@ public class FacadeCover extends CoverBehavior {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(FacadeCover.class,
             CoverBehavior.MANAGED_FIELD_HOLDER);
+    public static final ModelProperty<BlockState> FACADE_STATE_PROPERTY = new ModelProperty<>(
+            FacadeItemBehaviour::isValidFacade);
+
     @Setter
     @Getter
     @DescSynced
@@ -72,8 +76,10 @@ public class FacadeCover extends CoverBehavior {
     }
 
     @Override
-    protected CoverRenderer buildRenderer() {
-        return FacadeCoverRenderer.createRenderer(coverHolder.getLevel(), coverHolder.getPos(), facadeState);
+    public @NotNull ModelData getModelData() {
+        return ModelData.builder()
+                .with(FACADE_STATE_PROPERTY, this.getFacadeState())
+                .build();
     }
 
     @Nullable

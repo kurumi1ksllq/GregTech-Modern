@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.common.cover;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
@@ -27,8 +26,7 @@ import com.gregtechceu.gtceu.api.gui.widget.NumberInputWidget;
 import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
 import com.gregtechceu.gtceu.api.transfer.fluid.FluidHandlerDelegate;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
+import com.gregtechceu.gtceu.client.renderer.cover.CoverRenderer;
 import com.gregtechceu.gtceu.common.cover.data.BucketMode;
 import com.gregtechceu.gtceu.common.cover.data.DistributionMode;
 import com.gregtechceu.gtceu.common.cover.data.FilterMode;
@@ -53,6 +51,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -161,6 +160,7 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
 
     //////////////////////////////////////
     // ***** Initialization ******//
+
     //////////////////////////////////////
     @Override
     public ManagedFieldHolder getFieldHolder() {
@@ -168,8 +168,14 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
     }
 
     @Override
+    public @NotNull ModelData getModelData() {
+        return IIOCover.super.getModelData();
+    }
+
+    @Override
     public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
-        return coverable.getCapability(ForgeCapabilities.FLUID_HANDLER, side).isPresent();
+        return super.canAttach(coverable, side) &&
+                coverable.getCapability(ForgeCapabilities.FLUID_HANDLER, side).isPresent();
     }
 
     public void setIo(IO io) {
@@ -202,28 +208,6 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
     @Override
     public void onNeighborChanged(Block block, BlockPos fromPos, boolean isMoving) {
         subscriptionHandler.updateSubscription();
-    }
-
-    @Override
-    public @NotNull CoverRenderer getRenderer() {
-        if (io == IO.OUT) {
-            if (renderer == null) renderer = buildRenderer();
-            return renderer;
-        } else {
-            if (rendererInverted == null) rendererInverted = buildRendererInverted();
-            return rendererInverted;
-        }
-    }
-
-    @Override
-    protected CoverRenderer buildRenderer() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_pump"),
-                GTCEu.id("block/cover/overlay_pump_emissive")).build();
-    }
-
-    protected CoverRenderer buildRendererInverted() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_pump_inverted"),
-                GTCEu.id("block/cover/overlay_pump_inverted_emissive")).build();
     }
 
     @Override

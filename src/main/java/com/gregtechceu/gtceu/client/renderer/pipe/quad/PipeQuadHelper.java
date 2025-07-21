@@ -1,15 +1,19 @@
 package com.gregtechceu.gtceu.client.renderer.pipe.quad;
 
 import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
+import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.client.bakedpipeline.Quad;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelData;
@@ -18,9 +22,11 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.EnumMap;
+import java.util.LinkedList;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
@@ -145,28 +151,34 @@ public final class PipeQuadHelper {
         return QuadHelper.buildQuad(normal, box, uv, targetSprite);
     }
 
-    public static @NotNull List<BakedQuad> createFrame(BakedModel frameModel, RandomSource randomSource,
-                                                       ModelData modelData, RenderType renderType) {
-        List<BakedQuad> list = new ObjectArrayList<>();
-        // should always work
-        list.addAll(frameModel.getQuads(null, null, randomSource, modelData, renderType)
-                .stream()
-                .map(quad -> {
-                    BakedQuad q = Quad.from(quad, -0.002f).rebake();
-                    return new BakedQuad(q.getVertices(), q.getTintIndex() + 3,
-                            q.getDirection(), q.getSprite(), q.isShade(), q.hasAmbientOcclusion());
-                })
-                .toList());
-        for (Direction facing : GTUtil.DIRECTIONS) {
-            list.addAll(frameModel.getQuads(null, facing, randomSource, modelData, renderType)
-                    .stream()
-                    .map(quad -> {
-                        BakedQuad q = Quad.from(quad, -0.002f).rebake();
-                        return new BakedQuad(q.getVertices(), q.getTintIndex() + 3,
-                                q.getDirection(), q.getSprite(), q.isShade(), q.hasAmbientOcclusion());
-                    })
-                    .toList());
+    public static void createFrame(List<BakedQuad> quads, BakedModel frameModel,
+                                   @Nullable BlockAndTintGetter level, @Nullable BlockPos pos,
+                                   BlockState frameState, byte frameMask, @Nullable Direction side,
+                                   RandomSource rand, ModelData modelData, RenderType renderType) {
+        if (level != null && pos != null) {
+            modelData = frameModel.getModelData(level, pos, frameState, modelData);
         }
-        return list;
+
+        List<BakedQuad> frameQuads = new LinkedList<>();
+        if (side == null || !GTUtil.evalMask(side, frameMask)) {
+            frameQuads.addAll(frameModel.getQuads(frameState, side, rand, modelData, renderType));
+        }
+        if (side == null) {
+            for (Direction face : GTUtil.DIRECTIONS) {
+                if (GTUtil.evalMask(face, frameMask)) {
+                    frameQuads.addAll(frameModel.getQuads(frameState, face, rand, modelData, renderType));
+                }
+            }
+        }
+
+        // bake all the quads' tint colors into the vertices
+        BlockColors blockColors = Minecraft.getInstance().getBlockColors();
+        for (BakedQuad frameQuad : frameQuads) {
+            if (frameQuad.isTinted()) {
+                int color = blockColors.getColor(frameState, level, pos, frameQuad.getTintIndex());
+                frameQuad = GTQuadTransformers.setColor(frameQuad, color, true);
+            }
+            quads.add(frameQuad);
+        }
     }
 }

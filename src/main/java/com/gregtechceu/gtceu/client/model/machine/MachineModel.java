@@ -12,10 +12,13 @@ import com.gregtechceu.gtceu.client.model.BaseBakedModel;
 import com.gregtechceu.gtceu.client.model.IBlockEntityRendererBakedModel;
 import com.gregtechceu.gtceu.client.model.TextureOverrideModel;
 import com.gregtechceu.gtceu.client.model.machine.multipart.MultiPartBakedModel;
-import com.gregtechceu.gtceu.client.renderer.cover.ICoverableRenderer;
+import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererPackage;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
+import com.gregtechceu.gtceu.client.renderer.pipe.AbstractPipeModel;
+import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
 import com.gregtechceu.gtceu.client.util.StaticFaceBakery;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
+import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.client.model.custommodel.CustomBakedModel;
 
@@ -61,8 +64,8 @@ import java.util.stream.Collectors;
 
 import static com.gregtechceu.gtceu.api.machine.IMachineBlockEntity.*;
 
-public final class MachineModel extends BaseBakedModel implements ICoverableRenderer,
-                                IMachineRendererModel<MetaMachine>, IBlockEntityRendererBakedModel<BlockEntity> {
+public final class MachineModel extends BaseBakedModel implements IMachineRendererModel<MetaMachine>,
+                                IBlockEntityRendererBakedModel<BlockEntity> {
 
     public static final ResourceLocation PIPE_OVERLAY = GTCEu.id("block/overlay/machine/overlay_pipe");
     public static final ResourceLocation FLUID_OUTPUT_OVERLAY = GTCEu.id("block/overlay/machine/overlay_fluid_output");
@@ -175,7 +178,8 @@ public final class MachineModel extends BaseBakedModel implements ICoverableRend
                                            @NotNull BlockState state, @NotNull ModelData modelData) {
         ModelData.Builder builder = modelData.derive()
                 .with(MODEL_DATA_LEVEL, level)
-                .with(MODEL_DATA_POS, pos);
+                .with(MODEL_DATA_POS, pos)
+                .with(MODEL_DATA_STATE, state);
         MetaMachine machine = MetaMachine.getMachine(level, pos);
         MachineRenderState renderState = machine == null ? definition.defaultRenderState() : machine.getRenderState();
 
@@ -260,8 +264,13 @@ public final class MachineModel extends BaseBakedModel implements ICoverableRend
         }
 
         // render covers
-        ICoverableRenderer.super.renderCovers(quads, machine.getCoverContainer(), pos, level,
-                side, rand, modelData, renderType);
+        CoverRendererPackage rendererPackage = modelData.get(CoverRendererPackage.PROPERTY);
+        if (rendererPackage != null) {
+            int color = GTMath.safeInt(modelData.get(AbstractPipeModel.COLOR_PROPERTY));
+            ColorData colorData = new ColorData(color);
+
+            rendererPackage.addQuads(quads, level, pos, side, rand, modelData, colorData, renderType);
+        }
         return quads;
     }
 

@@ -1,10 +1,7 @@
 package com.gregtechceu.gtceu.common.cover.detector;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.utils.RedstoneUtil;
 
 import net.minecraft.core.Direction;
@@ -21,11 +18,7 @@ public class FluidDetectorCover extends DetectorCover {
         super(definition, coverHolder, attachedSide);
     }
 
-    @Override
-    protected CoverRenderer buildRenderer() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_fluid_detector"), null).build();
-    }
-
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
         return coverable.getCapability(ForgeCapabilities.FLUID_HANDLER).isPresent();

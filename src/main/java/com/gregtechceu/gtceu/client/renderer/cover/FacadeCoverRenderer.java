@@ -1,11 +1,10 @@
 package com.gregtechceu.gtceu.client.renderer.cover;
 
-import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.client.model.BaseBakedModel;
 import com.gregtechceu.gtceu.client.model.ItemBakedModel;
 import com.gregtechceu.gtceu.client.model.TextureOverrideModel;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
+import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
 import com.gregtechceu.gtceu.client.util.FacadeBlockAndTintGetter;
 import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
 import com.gregtechceu.gtceu.client.util.StaticFaceBakery;
@@ -26,10 +25,10 @@ import net.minecraft.client.resources.model.BlockModelRotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
@@ -44,11 +43,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static com.gregtechceu.gtceu.client.renderer.cover.CoverRendererBuilder.*;
+
 /**
  * It can only be used for item.
  * call it in other renderer to render a facade cover.
  */
-public class FacadeCoverRenderer extends BaseBakedModel {
+public class FacadeCoverRenderer extends BaseBakedModel implements CoverRenderer {
 
     private static final AABB FACADE_PLANE = new AABB(0.01, 0.01, 0.01, 0.99, 0.99, 1 / 16f);
     private static final EnumSet<Direction> FACADE_EDGE_FACES = EnumSet.of(Direction.DOWN, Direction.UP,
@@ -167,47 +168,43 @@ public class FacadeCoverRenderer extends BaseBakedModel {
             }
 
             for (Direction modelSide : FACADE_EDGE_FACES) {
-                quads.add(StaticFaceBakery.bakeFace(FACADE_PLANE, modelSide, ICoverableRenderer.COVER_BACK_PLATE[0]));
+                quads.add(StaticFaceBakery.bakeFace(FACADE_PLANE, modelSide, CoverRendererPackage.COVER_BACK_PLATE[0]));
             }
         }
         return quads;
     }
 
-    public static CoverRenderer createRenderer(final BlockAndTintGetter level, BlockPos pos, final BlockState state) {
-        BlockRenderDispatcher dispatcher = Minecraft.getInstance().getBlockRenderer();
-
-        BakedModel model = dispatcher.getBlockModel(state);
-
-        return (quads, side, rand, renderPlate, renderBackside, modelData, data, renderType) -> {
-            FacadeCoverRenderer.INSTANCE.renderCover(quads, side, rand, state, pos, level, renderBackside,
-                    modelData, renderType);
-        };
-    }
-
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void renderCover(List<BakedQuad> quads, Direction side, RandomSource rand,
-                            BlockState state, BlockPos pos, BlockAndTintGetter level, boolean renderBackside,
-                            @NotNull ModelData modelData, @Nullable RenderType renderType) {
-        if (state.getRenderShape() != RenderShape.MODEL) {
+    public void addQuads(List<BakedQuad> quads, @Nullable Direction renderSide,
+                         @NotNull Direction attachedSide, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos,
+                         EnumSet<Direction> renderPlate, boolean renderBackside,
+                         RandomSource rand, ModelData modelData, ColorData colorData, RenderType renderType) {
+        addPlates(quads, getPlates(attachedSide, colorData, PLATE_QUADS), renderPlate, renderSide);
+
+        BlockState state = modelData.get(FacadeCover.FACADE_STATE_PROPERTY);
+        if (state == null || state.getRenderShape() != RenderShape.MODEL) {
             return;
         }
 
         BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        ModelData extraData = model.getModelData(level, pos, state, modelData);
+        ModelData extraData = modelData;
+        if (level != null && pos != null) {
+            extraData = model.getModelData(level, pos, state, extraData);
+        }
+
         List<BakedQuad> facadeQuads = model.getQuads(state, attachedSide, rand, extraData, renderType);
 
         List<BakedQuad> coverQuads = new ArrayList<>();
-        if (side == null && renderBackside) {
-            AABB cube = CoverRendererBuilder.PLATE_AABBS.get(side);
+        if (renderSide == attachedSide) {
+            coverQuads.addAll(facadeQuads);
+        } else if (renderSide == null && renderBackside) {
+            AABB cube = COVER_BACK_CUBES.get(attachedSide);
 
             for (BakedQuad quad : facadeQuads) {
                 coverQuads.add(StaticFaceBakery.bakeFace(cube, attachedSide.getOpposite(),
                         quad.getSprite(), BlockModelRotation.X0_Y0,
                         quad.getTintIndex(), 0, false, quad.isShade()));
             }
-        } else {
-            coverQuads.addAll(facadeQuads);
         }
 
         // offset all the cover quads by a small value and bake their tint color into the vertices

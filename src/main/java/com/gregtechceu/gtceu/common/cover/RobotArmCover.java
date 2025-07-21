@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.common.cover;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.filter.FilterHandler;
@@ -9,8 +8,6 @@ import com.gregtechceu.gtceu.api.cover.filter.SimpleItemFilter;
 import com.gregtechceu.gtceu.api.graphnet.predicate.test.ItemTestObject;
 import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
 import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.common.cover.data.TransferMode;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -63,18 +60,6 @@ public class RobotArmCover extends ConveyorCover {
     @Override
     public ManagedFieldHolder getFieldHolder() {
         return MANAGED_FIELD_HOLDER;
-    }
-
-    @Override
-    protected CoverRenderer buildRenderer() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_arm"),
-                GTCEu.id("block/cover/overlay_arm_emissive")).build();
-    }
-
-    @Override
-    protected CoverRenderer buildRendererInverted() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_arm"),
-                GTCEu.id("block/cover/overlay_arm_inverted_emissive")).build();
     }
 
     @Override

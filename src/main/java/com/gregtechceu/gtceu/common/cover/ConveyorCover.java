@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.common.cover;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
@@ -27,8 +26,7 @@ import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
 import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
 import com.gregtechceu.gtceu.api.transfer.item.ItemHandlerDelegate;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
+import com.gregtechceu.gtceu.client.renderer.cover.CoverRenderer;
 import com.gregtechceu.gtceu.common.cover.data.DistributionMode;
 import com.gregtechceu.gtceu.common.cover.data.FilterMode;
 import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
@@ -62,6 +60,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -173,6 +172,11 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
     @Override
     public ManagedFieldHolder getFieldHolder() {
         return MANAGED_FIELD_HOLDER;
+    }
+
+    @Override
+    public @NotNull ModelData getModelData() {
+        return IIOCover.super.getModelData();
     }
 
     public void setTransferRate(int transferRate) {
@@ -741,7 +745,8 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
 
     @Override
     public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
-        return coverable.getCapability(ForgeCapabilities.ITEM_HANDLER, attachedSide).isPresent();
+        return super.canAttach(coverable, side) &&
+                coverable.getCapability(ForgeCapabilities.ITEM_HANDLER, attachedSide).isPresent();
     }
 
     @Override
@@ -852,28 +857,6 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
 
     protected int getMaxStackSize() {
         return 1;
-    }
-
-    @Override
-    public @NotNull CoverRenderer getRenderer() {
-        if (io == IO.OUT) {
-            if (renderer == null) renderer = buildRenderer();
-            return renderer;
-        } else {
-            if (rendererInverted == null) rendererInverted = buildRendererInverted();
-            return rendererInverted;
-        }
-    }
-
-    @Override
-    protected CoverRenderer buildRenderer() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_conveyor"),
-                GTCEu.id("block/cover/overlay_conveyor_emissive")).build();
-    }
-
-    protected CoverRenderer buildRendererInverted() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_conveyor_inverted"),
-                GTCEu.id("block/cover/overlay_conveyor_inverted_emissive")).build();
     }
 
     private class CoverableItemHandlerWrapper extends ItemHandlerDelegate {

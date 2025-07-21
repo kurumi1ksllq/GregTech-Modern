@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.common.cover;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
@@ -10,8 +9,6 @@ import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfigurator;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.MachineCoverContainer;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -71,16 +68,12 @@ public class StorageCover extends CoverBehavior implements IUICover {
     }
 
     @Override
-    protected CoverRenderer buildRenderer() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_storage"), null).build();
-    }
-
-    @Override
     public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
         if (!(coverHolder instanceof MachineCoverContainer)) return false;
         for (var dir : GTUtil.DIRECTIONS) {
-            if (coverHolder.hasCover(dir) && coverHolder.getCoverAtSide(dir) instanceof StorageCover)
+            if (coverHolder.hasCover(dir) && coverHolder.getCoverAtSide(dir) instanceof StorageCover) {
                 return false;
+            }
         }
         return super.canAttach(coverable, side);
     }

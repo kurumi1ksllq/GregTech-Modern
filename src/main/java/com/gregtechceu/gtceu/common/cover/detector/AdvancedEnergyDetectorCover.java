@@ -8,9 +8,6 @@ import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.LongInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
-import com.gregtechceu.gtceu.data.lang.LangHandler;
 import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
@@ -66,11 +63,6 @@ public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements 
         this.minValue = DEFAULT_MIN_PERCENT;
         this.maxValue = DEFAULT_MAX_PERCENT;
         this.usePercent = true;
-    }
-
-    @Override
-    protected CoverRenderer buildRenderer() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_energy_detector_advanced"), null).build();
     }
 
     @Override

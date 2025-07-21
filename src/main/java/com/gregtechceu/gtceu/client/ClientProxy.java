@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.IGTTool;
 import com.gregtechceu.gtceu.api.item.LampBlockItem;
 import com.gregtechceu.gtceu.client.model.item.FacadeUnbakedModel;
+import com.gregtechceu.gtceu.client.model.machine.MachineModel;
 import com.gregtechceu.gtceu.client.model.machine.MachineModelLoader;
 import com.gregtechceu.gtceu.client.particle.HazardParticle;
 import com.gregtechceu.gtceu.client.particle.MufflerParticle;
@@ -23,7 +24,6 @@ import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.data.GTEntityTypes;
 import com.gregtechceu.gtceu.common.data.GTParticleTypes;
 import com.gregtechceu.gtceu.common.entity.GTBoat;
-import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
 import com.gregtechceu.gtceu.integration.map.cache.client.GTClientCache;
@@ -31,13 +31,17 @@ import com.gregtechceu.gtceu.integration.map.ftbchunks.FTBChunksPlugin;
 import com.gregtechceu.gtceu.integration.map.layer.Layers;
 import com.gregtechceu.gtceu.integration.map.layer.builtin.FluidRenderLayer;
 import com.gregtechceu.gtceu.integration.map.layer.builtin.OreRenderLayer;
+import com.gregtechceu.gtceu.integration.modernfix.GTModernFixIntegration;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
+
+import com.lowdragmc.lowdraglib.client.model.custommodel.CustomBakedModel;
 
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -129,6 +133,21 @@ public class ClientProxy extends CommonProxy {
     public void modifyModels(ModelEvent.ModifyBakingResult event) {
         AbstractPipeModel.invalidateCaches();
         PipeModelRegistry.registerModels(event.getModels()::put);
+
+        // don't process the CTM model unwrapping here if modernfix dynamic resources is enabled
+        if (GTCEu.Mods.isModernFixLoaded() && GTModernFixIntegration.isDynamicResourcesEnabled()) return;
+
+        // Unwrap all machine models from LDLib CTM models so we don't need to be as aggressive with mixins
+        // Also, the caching they have stops our models from updating properly
+        for (var entry : event.getModels().entrySet()) {
+            BakedModel model = entry.getValue();
+            if (!(model instanceof CustomBakedModel ctmModel)) {
+                continue;
+            }
+            if (ctmModel.getParent() instanceof MachineModel machine) {
+                entry.setValue(machine);
+            }
+        }
     }
 
     @SubscribeEvent
@@ -138,7 +157,6 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
-        MachineOwner.init();
         if (ConfigHolder.INSTANCE.compat.minimap.toggle.ftbChunksIntegration &&
                 GTCEu.isModLoaded(GTValues.MODID_FTB_CHUNKS)) {
             FTBChunksPlugin.addEventListeners();

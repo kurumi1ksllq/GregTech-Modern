@@ -1,14 +1,11 @@
 package com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeBlock;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
-import com.gregtechceu.gtceu.api.registry.GTRegistries;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererPackage;
-import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererPackage;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.editor.runtime.PersistedParser;
@@ -172,14 +169,6 @@ public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
         return null;
     }
 
-    public boolean shouldRenderCoverBackSides() {
-        return false;
-    }
-
-    public int getPaintingColorForRendering() {
-        return Long.decode(ConfigHolder.INSTANCE.client.defaultPaintingColor).intValue();
-    }
-
     public boolean canConnectRedstone(@Nullable Direction side) {
         // so far null side means either upwards or downwards redstone wire connection
         // so check both top cover and bottom cover
@@ -258,9 +247,10 @@ public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
     @OnlyIn(Dist.CLIENT)
     public CoverRendererPackage createPackage() {
         if (covers.isEmpty()) return CoverRendererPackage.EMPTY;
-        CoverRendererPackage rendererPackage = new CoverRendererPackage(shouldRenderCoverBackSides());
+        CoverRendererPackage rendererPackage = new CoverRendererPackage(false);
         for (var cover : covers.entrySet()) {
-            rendererPackage.addRenderer(cover.getValue().getRenderer(), cover.getKey());
+            rendererPackage.addRenderer(cover.getValue().getCoverRenderer().get(), cover.getKey());
+            rendererPackage.addModelData(cover.getKey(), cover.getValue().getModelData());
         }
         return rendererPackage;
     }

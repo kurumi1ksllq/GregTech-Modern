@@ -138,7 +138,8 @@ public class MultiPartBakedModel implements IDynamicBakedModel {
     public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
         ModelData.Builder builder = modelData.derive()
                 .with(MODEL_DATA_LEVEL, level)
-                .with(MODEL_DATA_POS, pos);
+                .with(MODEL_DATA_POS, pos)
+                .with(MODEL_DATA_STATE, state);
 
         var machine = MetaMachine.getMachine(level, pos);
         if (machine == null) return builder.build();

@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.common.cover;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
@@ -10,8 +9,6 @@ import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
 import com.gregtechceu.gtceu.api.machine.MachineCoverContainer;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.transfer.item.ItemHandlerDelegate;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.common.cover.data.FilterMode;
 import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
 
@@ -58,11 +55,6 @@ public class ItemFilterCover extends CoverBehavior implements IUICover, CoverWit
     }
 
     @Override
-    protected CoverRenderer buildRenderer() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_item_filter"), null).build();
-    }
-
-    @Override
     public @NotNull FilterHandler<ItemStack, ItemFilter> getFilterHandler() {
         if (!filterHandler.isFilterPresent()) {
             filterHandler.loadFilter(attachItem);
@@ -85,13 +77,14 @@ public class ItemFilterCover extends CoverBehavior implements IUICover, CoverWit
         return ManualIOMode.FILTERED;
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
         return coverable.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent();
     }
 
     @Override
-    public @Nullable IItemHandler getItemHandlerCap(IItemHandler defaultValue) {
+    public @Nullable IItemHandler getItemHandlerCap(@Nullable IItemHandler defaultValue) {
         if (defaultValue == null) {
             return null;
         }

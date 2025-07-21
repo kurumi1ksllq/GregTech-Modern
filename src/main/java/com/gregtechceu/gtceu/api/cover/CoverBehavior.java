@@ -8,7 +8,7 @@ import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.IToolGridHighlight;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
+import com.gregtechceu.gtceu.client.renderer.cover.CoverRenderer;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.syncdata.IEnhancedManaged;
@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
@@ -41,6 +42,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -211,13 +213,12 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
         return true;
     }
 
-    public @NotNull Supplier<CoverRenderer> getRenderer() {
-        if (renderer == null) renderer = buildRenderer();
-        return renderer;
+    public @NotNull Supplier<CoverRenderer> getCoverRenderer() {
+        return Objects.requireNonNull(coverDefinition.getCoverRenderer());
     }
 
-    protected Supplier<CoverRenderer> buildRenderer() {
-        return coverDefinition.getCoverRenderer();
+    public @NotNull ModelData getModelData() {
+        return ModelData.EMPTY;
     }
 
     public @Nullable IFancyConfigurator getConfigurator() {

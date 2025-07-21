@@ -4,7 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
-import com.gregtechceu.gtceu.api.registry.GTRegistries;
+import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererPackage;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.syncdata.IEnhancedManaged;
@@ -274,5 +274,16 @@ public class MachineCoverContainer implements ICoverable, IEnhancedManaged {
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction arg) {
         // FIXME
         return LazyOptional.empty();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public CoverRendererPackage createPackage() {
+        if (covers.isEmpty()) return CoverRendererPackage.EMPTY;
+        CoverRendererPackage rendererPackage = new CoverRendererPackage(false);
+        for (var cover : covers.entrySet()) {
+            rendererPackage.addRenderer(cover.getValue().getCoverRenderer().get(), cover.getKey());
+            rendererPackage.addModelData(cover.getKey(), cover.getValue().getModelData());
+        }
+        return rendererPackage;
     }
 }

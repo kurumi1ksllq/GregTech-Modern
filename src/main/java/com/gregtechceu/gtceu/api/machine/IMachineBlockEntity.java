@@ -18,6 +18,7 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.extensions.IForgeBlockEntity;
@@ -34,6 +35,7 @@ public interface IMachineBlockEntity extends IToolGridHighlight, IAsyncAutoSyncB
 
     ModelProperty<BlockAndTintGetter> MODEL_DATA_LEVEL = new ModelProperty<>();
     ModelProperty<BlockPos> MODEL_DATA_POS = new ModelProperty<>();
+    ModelProperty<BlockState> MODEL_DATA_STATE = new ModelProperty<>();
 
     default BlockEntity self() {
         return (BlockEntity) this;

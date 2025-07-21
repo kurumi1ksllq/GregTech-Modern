@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.api.cover;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
+import com.gregtechceu.gtceu.client.renderer.cover.CoverRenderer;
 
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -47,7 +47,7 @@ public final class CoverDefinition {
 
     private static class ClientHelper {
 
-        private static Supplier<ICoverRenderer> initRenderer(Supplier<Supplier<CoverRenderer>> coverRenderer) {
+        private static Supplier<CoverRenderer> initRenderer(Supplier<Supplier<CoverRenderer>> coverRenderer) {
             CoverRenderer value = coverRenderer.get().get();
             return () -> value;
         }

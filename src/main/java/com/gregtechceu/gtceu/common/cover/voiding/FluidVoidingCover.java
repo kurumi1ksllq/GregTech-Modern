@@ -1,22 +1,18 @@
 package com.gregtechceu.gtceu.common.cover.voiding;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRenderer;
-import com.gregtechceu.gtceu.client.renderer.pipe.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
-import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.common.cover.PumpCover;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
-import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -34,8 +30,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
-import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import it.unimi.dsi.fastutil.objects.Object2LongMaps;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,11 +51,6 @@ public class FluidVoidingCover extends PumpCover {
     public FluidVoidingCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide, 0);
         setWorkingEnabled(false);
-    }
-
-    @Override
-    protected CoverRenderer buildRenderer() {
-        return new CoverRendererBuilder(GTCEu.id("block/cover/overlay_fluid_voiding"), null).build();
     }
 
     @Override
@@ -159,7 +149,7 @@ public class FluidVoidingCover extends PumpCover {
         return MANAGED_FIELD_HOLDER;
     }
 
-    class NullFluidTank extends FluidTank {
+    protected class NullFluidTank extends FluidTank {
 
         public NullFluidTank() {
             super(Integer.MAX_VALUE);

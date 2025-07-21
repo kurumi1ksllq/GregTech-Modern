@@ -245,7 +245,7 @@ public class FacadeCoverRenderer extends BaseBakedModel implements ICoverRendere
         if (defaultItemModel != null) {
             defaultItemModel.applyTransform(transformType, poseStack, leftHand);
         }
-        poseStack.translate(0.0, 0, 9.0/16.0);
+        poseStack.translate(0.0, 0, 9.0 / 16.0);
         poseStack.scale(1.2f, 1.2f, 1.2f);
         return this;
     }

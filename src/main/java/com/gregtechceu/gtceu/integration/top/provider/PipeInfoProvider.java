@@ -69,10 +69,10 @@ public class PipeInfoProvider implements IProbeInfoProvider {
                                           IProbeHitData hitData, EnergyFlowLogic logic) {
         if (!logic.getSum(true).isEmpty()) {
             iProbeInfo.text(Component.translatable("gtceu.top.pipe.energy"));
-            for (var entry : logic.getSum(true).entrySet()) {
-                String voltage = FormattingUtil.formatNumbers(entry.getKey());
-                String tier = GTValues.VNF[GTUtil.getTierByVoltage(entry.getKey())];
-                String amperage = FormattingUtil.formatNumbers(entry.getValue() / EnergyFlowLogic.MEMORY_TICKS);
+            for (var entry : logic.getSum(true).long2LongEntrySet()) {
+                String voltage = FormattingUtil.formatNumbers(entry.getLongKey());
+                String tier = GTValues.VNF[GTUtil.getTierByVoltage(entry.getLongKey())];
+                String amperage = FormattingUtil.formatNumbers(entry.getLongValue() / EnergyFlowLogic.MEMORY_TICKS);
                 iProbeInfo.text(Component.translatable("gtceu.top.pipe.energy_per", voltage, tier, amperage));
             }
         }

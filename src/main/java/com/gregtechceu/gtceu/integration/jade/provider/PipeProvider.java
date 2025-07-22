@@ -170,10 +170,10 @@ public class PipeProvider extends BlockInfoProvider<PipeBlockEntity> {
 
         if (!logic.getSum(true).isEmpty()) {
             ListTag list = new ListTag();
-            for (var entry : logic.getSum(true).entrySet()) {
+            for (var entry : logic.getSum(true).long2LongEntrySet()) {
                 CompoundTag entryTag = new CompoundTag();
-                entryTag.putLong("voltage", entry.getKey());
-                entryTag.putLong("amperage", entry.getValue() / EnergyFlowLogic.MEMORY_TICKS);
+                entryTag.putLong("voltage", entry.getLongKey());
+                entryTag.putLong("amperage", entry.getLongValue() / EnergyFlowLogic.MEMORY_TICKS);
                 list.add(entryTag);
             }
             energyTag.put("ExtraEnergy", list);

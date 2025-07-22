@@ -12,6 +12,7 @@ import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.item.tool.aoe.AoESymmetrical;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
+import com.gregtechceu.gtceu.api.machine.steam.SteamMachine;
 import com.gregtechceu.gtceu.common.pipelike.handlers.properties.MaterialEnergyProperties;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -184,9 +185,14 @@ public abstract class LevelRendererMixin {
             doRenderColoredOutline = true;
             rgb = materialEntry.material().getMaterialRGB();
         } else if (level.getBlockEntity(pos) instanceof IMachineBlockEntity mbe) {
-            if (rendererCfg.coloredTieredMachineOutline && mbe.getMetaMachine() instanceof ITieredMachine tiered) {
-                doRenderColoredOutline = true;
-                rgb = GTValues.VCM[tiered.getTier()];
+            if (rendererCfg.coloredTieredMachineOutline) {
+                if (mbe.getMetaMachine() instanceof SteamMachine steam) {
+                    doRenderColoredOutline = true;
+                    rgb = steam.isHighPressure() ? GTValues.VC_HP_STEAM : GTValues.VC_LP_STEAM;
+                } else if (mbe.getMetaMachine() instanceof ITieredMachine tiered) {
+                    doRenderColoredOutline = true;
+                    rgb = GTValues.VCM[tiered.getTier()];
+                }
             }
         } else if (rendererCfg.coloredWireOutline && level.getBlockEntity(pos) instanceof PipeBlockEntity pipe) {
             doRenderColoredOutline = true;

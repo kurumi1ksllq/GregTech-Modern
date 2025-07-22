@@ -135,14 +135,14 @@ public class SyncDataHolder {
                 }
 
             }
+            for (MethodHandle modifier : field.nbtLoadModifiers) {
+                modifier.invoke(holder, savedValue);
+            }
             if (isSync) {
                 for (MethodHandle listener : field.changeListenerHandles) {
                     listener.invoke(holder);
                 }
                 if (field.triggerClientRerender) holder.scheduleRenderUpdate();
-            }
-            for (MethodHandle modifier : field.nbtLoadModifiers) {
-                modifier.invoke(holder, savedValue);
             }
 
         }

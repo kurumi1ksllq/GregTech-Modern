@@ -45,11 +45,13 @@ public void syncLongHasChanged() {
 
 ### `@FieldDataModifier` and `@CustomDataField`
 
+
+
 The `@FieldDataModifier`annotation defines custom processing to be performed on the NBT for a field, e.g. for compatibility reasons.
 
 The `@CustomDataField`annotation defines a field with a type too complex to be serialised using the normal system. Custom data fields must have exactly one load modifier and one data modifier.
 
-Field data modifiers on non-custom fields will be applied *after* standard serialisation/deserialisation.
+Field data modifiers on non-custom fields will be applied *after* standard serialisation/deserialisation, and will be called with an argument containing the current tag.
 
 ```java
 

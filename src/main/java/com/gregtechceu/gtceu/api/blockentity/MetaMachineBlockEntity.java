@@ -52,7 +52,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class MetaMachineBlockEntity extends ManagedSyncBlockEntity implements IMachineBlockEntity, ISyncManaged {
+public class MetaMachineBlockEntity extends ManagedSyncBlockEntity implements IMachineBlockEntity {
 
     @Getter
     protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);

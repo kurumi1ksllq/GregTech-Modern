@@ -44,7 +44,7 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
     // Called when this BlockEntity is saved or loaded
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
+    protected final void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         Arrays.stream(getSyncObjects()).map(obj -> obj.getSyncDataHolder().saveNBT()).forEach(tag::merge);
     }
@@ -58,21 +58,21 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
     // Called when a client loads this BlockEntity
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public final CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
         Arrays.stream(getSyncObjects()).map(obj -> obj.getSyncDataHolder().getClientSyncNBT(true)).forEach(tag::merge);
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
+    public final void handleUpdateTag(CompoundTag tag) {
         Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadClientSyncNBT(tag));
     }
 
     // Called when this BlockEntity has changed and must send changes to client.
 
     @Override
-    public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
+    public final Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this, (entity) -> {
             if (!(entity instanceof ManagedSyncBlockEntity syncEntity)) return new CompoundTag();
             var tag = new CompoundTag();
@@ -83,7 +83,7 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public final void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
         CompoundTag compound = pkt.getTag();
         if (compound != null) {
             Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadClientSyncNBT(compound));
@@ -91,7 +91,7 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
     }
 
     @Override
-    public void markAsChanged() {
+    public final void markAsChanged() {
         var level = getLevel();
         if (level instanceof ServerLevel sLvl) {
             sLvl.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);

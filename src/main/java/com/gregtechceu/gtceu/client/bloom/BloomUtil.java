@@ -268,7 +268,7 @@ public class BloomUtil {
                 VertexBuffer.unbind();
                 Minecraft.getInstance().getProfiler().pop();
 
-                //noinspection UnstableApiUsage
+                // noinspection UnstableApiUsage
                 ForgeHooksClient.dispatchRenderStage(GTRenderTypes.getBloom(), levelRenderer,
                         poseStack, projectionMatrix, levelRenderer.getTicks(), camera, frustum);
 
@@ -410,7 +410,8 @@ public class BloomUtil {
         if (builder == null || !builder.building()) {
             return;
         }
-        builder.setQuadSorting(VertexSorting.byDistance((float) camPos.x() - pos.getX(), (float) camPos.y() - pos.getY(), (float) camPos.z() - pos.getZ()));
+        builder.setQuadSorting(VertexSorting.byDistance((float) camPos.x() - pos.getX(),
+                (float) camPos.y() - pos.getY(), (float) camPos.z() - pos.getZ()));
 
         finishBloomBuffer(pos, builder);
     }
@@ -485,7 +486,7 @@ public class BloomUtil {
     }
 
     private static void render(float partialTicks, PoseStack poseStack, Matrix4f projectionMatrix,
-                                   LevelRenderer levelRenderer, Camera camera, Frustum frustum) {
+                               LevelRenderer levelRenderer, Camera camera, Frustum frustum) {
         // RenderSystem.disableDepthTest();
         // RenderSystem.disableBlend();
         // RenderSystem.defaultBlendFunc();
@@ -497,7 +498,7 @@ public class BloomUtil {
         VertexBuffer.unbind();
         Minecraft.getInstance().getProfiler().pop();
 
-        //noinspection UnstableApiUsage
+        // noinspection UnstableApiUsage
         ForgeHooksClient.dispatchRenderStage(GTRenderTypes.getBloom(), levelRenderer,
                 poseStack, projectionMatrix, levelRenderer.getTicks(), camera, frustum);
 
@@ -511,7 +512,7 @@ public class BloomUtil {
     public static void resortBloomTransparency(Vec3 camPos, LevelRenderer renderer) {
         Minecraft.getInstance().getProfiler().push("translucent_sort");
 
-        for(BlockPos pos : getVisibleRenderRegions(camPos, renderer)) {
+        for (BlockPos pos : getVisibleRenderRegions(camPos, renderer)) {
             Util.backgroundExecutor().submit(() -> BloomUtil.resortTransparencyInner(pos, camPos));
         }
 
@@ -521,7 +522,8 @@ public class BloomUtil {
     private static void resortTransparencyInner(BlockPos pos, Vec3 camPos) {
         BufferBuilder builder = getOrStartBloomBuffer(pos);
         builder.restoreSortState(BLOOM_BUFFER_SORT_STATES.get(pos));
-        builder.setQuadSorting(VertexSorting.byDistance((float) camPos.x() - pos.getX(), (float) camPos.y() - pos.getY(), (float) camPos.z() - pos.getZ()));
+        builder.setQuadSorting(VertexSorting.byDistance((float) camPos.x() - pos.getX(),
+                (float) camPos.y() - pos.getY(), (float) camPos.z() - pos.getZ()));
         finishBloomBuffer(pos, builder);
     }
 

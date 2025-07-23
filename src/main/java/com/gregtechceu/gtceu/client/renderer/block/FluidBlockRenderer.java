@@ -79,9 +79,9 @@ public class FluidBlockRenderer {
         }
     }
 
-    public void drawPlanes(Direction[] faces, Map<Direction, Collection<BlockPos>> directionalOffsets, PoseStack poseStack,
-                           VertexConsumer consumer, Fluid fluid, RenderUtil.FluidTextureType texture,
-                           int combinedOverlay, int combinedLight) {
+    public void drawPlanes(Direction[] faces, Map<Direction, Collection<BlockPos>> directionalOffsets,
+                           PoseStack poseStack, VertexConsumer consumer, Fluid fluid,
+                           RenderUtil.FluidTextureType texture, int combinedOverlay, int combinedLight) {
         for (var face : faces) {
             if (!directionalOffsets.containsKey(face)) continue;
             drawPlane(face, directionalOffsets.get(face), poseStack, consumer, fluid, texture, combinedOverlay,
@@ -121,7 +121,9 @@ public class FluidBlockRenderer {
         for (var offset : offsets) {
             poseStack.pushPose();
             poseStack.translate(offset.getX(), offset.getY(), offset.getZ());
-            drawFace(poseStack.last(), consumer, vertices, normal, u0, u1, v0, v1, r, g, b, a, combinedOverlay, combinedLight);
+            drawFace(poseStack.last(), consumer, vertices, normal,
+                    u0, u1, v0, v1, r, g, b, a,
+                    combinedOverlay, combinedLight);
             poseStack.popPose();
         }
     }

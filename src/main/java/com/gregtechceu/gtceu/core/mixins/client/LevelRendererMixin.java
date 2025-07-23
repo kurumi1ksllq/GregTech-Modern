@@ -83,15 +83,17 @@ public abstract class LevelRendererMixin {
     @Unique
     private final RandomSource gtceu$modelRandom = RandomSource.create();
 
-    @Shadow public abstract ChunkRenderDispatcher getChunkRenderDispatcher();
+    @Shadow
+    public abstract ChunkRenderDispatcher getChunkRenderDispatcher();
 
     @Inject(method = "applyFrustum",
             at = @At(value = "INVOKE",
-                    target = "Lit/unimi/dsi/fastutil/objects/ObjectArrayList;add(Ljava/lang/Object;)Z",
-                    remap = false))
+                     target = "Lit/unimi/dsi/fastutil/objects/ObjectArrayList;add(Ljava/lang/Object;)Z",
+                     remap = false))
     private void gtceu$compileBloomBuffers(Frustum frustum, CallbackInfo ci,
                                            @Local LevelRenderer.RenderChunkInfo chunkInfo) {
-        BloomUtil.bakeBloomChunkBuffers(chunkInfo.chunk.getOrigin(), this.getChunkRenderDispatcher().getCameraPosition());
+        BloomUtil.bakeBloomChunkBuffers(chunkInfo.chunk.getOrigin(),
+                this.getChunkRenderDispatcher().getCameraPosition());
     }
 
     @Inject(method = "resize", at = @At("TAIL"))

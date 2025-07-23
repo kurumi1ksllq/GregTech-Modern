@@ -145,11 +145,6 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
-        PipeModelRegistry.registerModels((id, $) -> event.register(id));
-    }
-
-    @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent event) {
         if (ConfigHolder.INSTANCE.compat.minimap.toggle.ftbChunksIntegration &&
                 GTCEu.isModLoaded(GTValues.MODID_FTB_CHUNKS)) {

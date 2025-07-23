@@ -14,6 +14,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -21,11 +22,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -50,6 +53,9 @@ public class PipeModelRedirector extends BaseBakedModel {
     @Getter
     @Setter
     private TextureAtlasSprite defaultParticleIcon = null;
+    @Getter
+    @Setter
+    private ItemTransforms defaultItemTransforms = null;
 
     private final FakeItemOverrides fakeItemOverrideList = new FakeItemOverrides();
 
@@ -68,6 +74,12 @@ public class PipeModelRedirector extends BaseBakedModel {
         this.gui3d = gui3d;
 
         PipeModelRegistry.MODELS.put(loc, this);
+    }
+
+    @Override
+    public @NotNull BakedModel applyTransform(@NotNull ItemDisplayContext transformType, @NotNull PoseStack poseStack,
+                                              boolean applyLeftHandTransform) {
+        return super.applyTransform(transformType, poseStack, applyLeftHandTransform);
     }
 
     @Override

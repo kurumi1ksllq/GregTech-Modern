@@ -11,7 +11,6 @@ import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
 import com.gregtechceu.gtceu.client.util.ModelUtils;
 
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -33,9 +32,8 @@ public class DuctPipeModel extends AbstractPipeModel<CacheKey> {
 
     public DuctPipeModel() {
         ModelUtils.registerAtlasStitchedEventListener(false, InventoryMenu.BLOCK_ATLAS, event -> {
-            TextureAtlas atlas = event.getAtlas();
-            sideSprite = new SpriteInformation(atlas.getSprite(SIDE_TEXTURE), -1);
-            endSprite = new SpriteInformation(atlas.getSprite(END_TEXTURE), -1);
+            sideSprite = null;
+            endSprite = null;
         });
     }
 
@@ -46,6 +44,13 @@ public class DuctPipeModel extends AbstractPipeModel<CacheKey> {
 
     @Override
     protected StructureQuadCache constructForKey(CacheKey key) {
+        if (sideSprite == null) {
+            sideSprite = new SpriteInformation(ModelUtils.getBlockSprite(SIDE_TEXTURE), -1);
+        }
+        if (endSprite == null) {
+            endSprite = new SpriteInformation(ModelUtils.getBlockSprite(END_TEXTURE), -1);
+        }
+
         return StructureQuadCache.create(PipeQuadHelper.create(key.getThickness()), endSprite, sideSprite);
     }
 

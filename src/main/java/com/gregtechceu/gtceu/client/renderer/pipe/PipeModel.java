@@ -17,7 +17,6 @@ import com.gregtechceu.gtceu.client.util.ModelUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -47,15 +46,10 @@ public class PipeModel extends AbstractPipeModel<CacheKey> {
         this.blockedTex = blockedTex;
 
         ModelUtils.registerAtlasStitchedEventListener(false, InventoryMenu.BLOCK_ATLAS, event -> {
-            TextureAtlas atlas = event.getAtlas();
-
-            inSprite = new SpriteInformation(atlas.getSprite(inTex.texture()), inTex.colorID());
-            sideSprite = new SpriteInformation(atlas.getSprite(sideTex.texture()), sideTex.colorID());
-            if (restrictiveTex != null) {
-                restrictiveSprite = new SpriteInformation(atlas.getSprite(restrictiveTex.texture()),
-                        restrictiveTex.colorID());
-            }
-            blockedSprite = new SpriteInformation(atlas.getSprite(blockedTex.texture()), blockedTex.colorID());
+            inSprite = null;
+            sideSprite = null;
+            restrictiveSprite = null;
+            blockedSprite = null;
         });
     }
 
@@ -77,6 +71,21 @@ public class PipeModel extends AbstractPipeModel<CacheKey> {
 
     @Override
     protected StructureQuadCache constructForKey(CacheKey key) {
+        if (inSprite == null) {
+            inSprite = new SpriteInformation(ModelUtils.getBlockSprite(inTex.texture()), inTex.colorID());
+        }
+        if (sideSprite == null) {
+            sideSprite = new SpriteInformation(ModelUtils.getBlockSprite(sideTex.texture()), sideTex.colorID());
+        }
+        if (restrictiveSprite == null && restrictiveTex != null) {
+            restrictiveSprite = new SpriteInformation(ModelUtils.getBlockSprite(restrictiveTex.texture()),
+                    restrictiveTex.colorID());
+        }
+        if (blockedSprite == null) {
+            blockedSprite = new SpriteInformation(ModelUtils.getBlockSprite(blockedTex.texture()),
+                    blockedTex.colorID());
+        }
+
         if (restrictiveTex != null) {
             return RestrictiveSQC.create(PipeQuadHelper.create(key.getThickness()), inSprite, sideSprite,
                     blockedSprite, restrictiveSprite);

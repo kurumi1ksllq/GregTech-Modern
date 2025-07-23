@@ -28,6 +28,9 @@ public class UnbakedPipeModel implements IUnbakedGeometry<UnbakedPipeModel> {
         if (model.getDefaultParticleIcon() == null && context.hasMaterial("particle")) {
             model.setDefaultParticleIcon(spriteGetter.apply(context.getMaterial("particle")));
         }
+        if (model.getDefaultItemTransforms() == null) {
+            model.setDefaultItemTransforms(context.getTransforms());
+        }
         return model;
     }
 

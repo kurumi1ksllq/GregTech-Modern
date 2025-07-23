@@ -14,8 +14,6 @@ import com.gregtechceu.gtceu.client.util.ModelUtils;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTMath;
 
-import com.lowdragmc.lowdraglib.client.bakedpipeline.Quad;
-
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -28,13 +26,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.model.QuadTransformers;
 import net.minecraftforge.client.model.data.ModelData;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.ListIterator;
 
 public class ActivablePipeModel extends AbstractPipeModel<ActivableCacheKey> {
 
@@ -61,13 +60,10 @@ public class ActivablePipeModel extends AbstractPipeModel<ActivableCacheKey> {
         this.emissiveActive = emissiveActive;
 
         ModelUtils.registerAtlasStitchedEventListener(false, InventoryMenu.BLOCK_ATLAS, event -> {
-            var atlas = event.getAtlas();
-
-            inSprite = new SpriteInformation(atlas.getSprite(inTex.texture()), inTex.colorID());
-            sideSprite = new SpriteInformation(atlas.getSprite(sideTex.texture()), sideTex.colorID());
-            overlaySprite = new SpriteInformation(atlas.getSprite(overlayTex.texture()), overlayTex.colorID());
-            overlayActiveSprite = new SpriteInformation(atlas.getSprite(overlayActiveTex.texture()),
-                    overlayActiveTex.colorID());
+            inSprite = null;
+            sideSprite = null;
+            overlaySprite = null;
+            overlayActiveSprite = null;
         });
     }
 
@@ -85,10 +81,10 @@ public class ActivablePipeModel extends AbstractPipeModel<ActivableCacheKey> {
         if (key.isActive() && allowActive()) {
             if (emissiveActive) {
                 ((ActivableSQC) pipeCache.get(key)).addOverlay(quads, connectionMask, data, true);
-                // TODO bake this into the original quads
-                quads = quads.stream()
-                        .map(quad -> Quad.from(quad).setLight(15, 15).rebake())
-                        .collect(Collectors.toList());
+                for (ListIterator<BakedQuad> iter = quads.listIterator(); iter.hasNext();) {
+                    BakedQuad quad = iter.next();
+                    iter.set(QuadTransformers.settingMaxEmissivity().process(quad));
+                }
             }
             ((ActivableSQC) pipeCache.get(key)).addOverlay(quads, connectionMask, data, true);
         } else {
@@ -111,6 +107,21 @@ public class ActivablePipeModel extends AbstractPipeModel<ActivableCacheKey> {
 
     @Override
     protected StructureQuadCache constructForKey(ActivableCacheKey key) {
+        if (inSprite == null) {
+            inSprite = new SpriteInformation(ModelUtils.getBlockSprite(inTex.texture()), inTex.colorID());
+        }
+        if (sideSprite == null) {
+            sideSprite = new SpriteInformation(ModelUtils.getBlockSprite(sideTex.texture()), sideTex.colorID());
+        }
+        if (overlaySprite == null) {
+            overlaySprite = new SpriteInformation(ModelUtils.getBlockSprite(overlayTex.texture()),
+                    overlayTex.colorID());
+        }
+        if (overlayActiveSprite == null) {
+            overlayActiveSprite = new SpriteInformation(ModelUtils.getBlockSprite(overlayActiveTex.texture()),
+                    overlayActiveTex.colorID());
+        }
+
         return ActivableSQC.create(PipeQuadHelper.create(key.getThickness()), inSprite, sideSprite,
                 overlaySprite, overlayActiveSprite);
     }

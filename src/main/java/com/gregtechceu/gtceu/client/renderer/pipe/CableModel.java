@@ -68,17 +68,9 @@ public class CableModel extends AbstractPipeModel<CacheKey> {
         this.fullInsulationTex = fullInsulationTex;
 
         ModelUtils.registerAtlasStitchedEventListener(false, InventoryMenu.BLOCK_ATLAS, event -> {
-            var atlas = event.getAtlas();
-
-            if (fullInsulationTex != null) {
-                fullInsulationSprite = new SpriteInformation(atlas.getSprite(fullInsulationTex.texture()),
-                        fullInsulationTex.colorID());
-            }
-            if (insulationTex != null) {
-                insulationSprite = new SpriteInformation(atlas.getSprite(insulationTex.texture()),
-                        insulationTex.colorID());
-            }
-            wireSprite = new SpriteInformation(atlas.getSprite(wireTex.texture()), wireTex.colorID());
+            fullInsulationSprite = null;
+            insulationSprite = null;
+            wireSprite = null;
         });
     }
 
@@ -117,6 +109,18 @@ public class CableModel extends AbstractPipeModel<CacheKey> {
 
     @Override
     protected StructureQuadCache constructForKey(CacheKey key) {
+        if (fullInsulationSprite == null && fullInsulationTex != null) {
+            fullInsulationSprite = new SpriteInformation(ModelUtils.getBlockSprite(fullInsulationTex.texture()),
+                    fullInsulationTex.colorID());
+        }
+        if (insulationSprite == null && insulationTex != null) {
+            insulationSprite = new SpriteInformation(ModelUtils.getBlockSprite(insulationTex.texture()),
+                    insulationTex.colorID());
+        }
+        if (wireSprite == null) {
+            wireSprite = new SpriteInformation(ModelUtils.getBlockSprite(wireTex.texture()), wireTex.colorID());
+        }
+
         SpriteInformation sideTex = fullInsulationSprite != null ? fullInsulationSprite : wireSprite;
         if (insulationSprite == null) {
             return StructureQuadCache.create(PipeQuadHelper.create(key.getThickness()), wireSprite, sideTex);

@@ -1,12 +1,14 @@
 package com.gregtechceu.gtceu.client.renderer.pipe.cache;
 
 import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
+import com.gregtechceu.gtceu.client.util.RecolorableBakedQuad;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
 
@@ -23,15 +25,18 @@ public final class ColorQuadCache {
     }
 
     public List<BakedQuad> getQuads(ColorData data) {
-        // List<BakedQuad> existing = cache.get(data);
-        // if (existing == null) {
-        // existing = new ObjectArrayList<>();
-        // for (BakedQuad quad : prototypes) {
-        // existing.add(quad);
-        // }
-        // cache.put(data, existing);
-        // // if (cache.size() > 20) cache.removeLast();
-        // }
-        return prototypes;
+        List<BakedQuad> existing = cache.get(data);
+        if (existing == null) {
+            existing = new ObjectArrayList<>();
+            for (BakedQuad quad : prototypes) {
+                if (quad instanceof RecolorableBakedQuad recolorable) {
+                    existing.add(recolorable.withColor(data));
+                } else {
+                    existing.add(quad);
+                }
+            }
+            cache.put(data, existing);
+        }
+        return existing;
     }
 }

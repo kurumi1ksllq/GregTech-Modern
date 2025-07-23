@@ -11,4 +11,11 @@ public record ColorData(int... colorsARGB) {
         var that = (ColorData) obj;
         return Arrays.equals(this.colorsARGB, that.colorsARGB);
     }
+
+    @Override
+    public String toString() {
+        return "ColorData{" +
+                "colorsARGB=" + Arrays.toString(colorsARGB) +
+                '}';
+    }
 }

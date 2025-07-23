@@ -61,6 +61,9 @@ public class PipeModel extends AbstractPipeModel<CacheKey> {
 
     @Override
     public SpriteInformation getParticleSprite(@NotNull Material material) {
+        if (sideSprite == null) {
+            sideSprite = new SpriteInformation(ModelUtils.getBlockSprite(sideTex.texture()), sideTex.colorID());
+        }
         return sideSprite;
     }
 

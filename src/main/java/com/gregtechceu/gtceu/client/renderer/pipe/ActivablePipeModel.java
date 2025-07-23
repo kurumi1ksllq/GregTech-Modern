@@ -72,23 +72,23 @@ public class ActivablePipeModel extends AbstractPipeModel<ActivableCacheKey> {
     public @NotNull List<BakedQuad> getQuads(ActivableCacheKey key, @Nullable BlockAndTintGetter level,
                                              @Nullable BlockPos pos, @Nullable Direction side,
                                              byte connectionMask, byte closedMask, byte blockedMask, byte frameMask,
-                                             byte coverMask, @NotNull Material frameMaterial, ColorData data,
+                                             byte coverMask, @NotNull Material frameMaterial, ColorData colorData,
                                              RandomSource randomSource, ModelData modelData, RenderType renderType) {
         List<BakedQuad> quads = super.getQuads(key, level, pos, side,
                 connectionMask, closedMask, blockedMask, frameMask, coverMask,
-                frameMaterial, data, randomSource, modelData, renderType);
+                frameMaterial, colorData, randomSource, modelData, renderType);
 
         if (key.isActive() && allowActive()) {
             if (emissiveActive) {
-                ((ActivableSQC) pipeCache.get(key)).addOverlay(quads, connectionMask, data, true);
+                ((ActivableSQC) pipeCache.get(key)).addOverlay(quads, connectionMask, colorData, true);
                 for (ListIterator<BakedQuad> iter = quads.listIterator(); iter.hasNext();) {
                     BakedQuad quad = iter.next();
                     iter.set(QuadTransformers.settingMaxEmissivity().process(quad));
                 }
             }
-            ((ActivableSQC) pipeCache.get(key)).addOverlay(quads, connectionMask, data, true);
+            ((ActivableSQC) pipeCache.get(key)).addOverlay(quads, connectionMask, colorData, true);
         } else {
-            ((ActivableSQC) pipeCache.get(key)).addOverlay(quads, connectionMask, data, false);
+            ((ActivableSQC) pipeCache.get(key)).addOverlay(quads, connectionMask, colorData, false);
         }
         return quads;
     }
@@ -102,6 +102,9 @@ public class ActivablePipeModel extends AbstractPipeModel<ActivableCacheKey> {
 
     @Override
     public SpriteInformation getParticleSprite(@NotNull Material material) {
+        if (sideSprite == null) {
+            sideSprite = new SpriteInformation(ModelUtils.getBlockSprite(sideTex.texture()), sideTex.colorID());
+        }
         return sideSprite;
     }
 

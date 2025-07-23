@@ -57,7 +57,7 @@ public class RestrictiveSQC extends BlockableSQC {
     }
 
     @Override
-    public void addToList(List<BakedQuad> list, byte connectionMask, byte closedMask, byte blockedMask, ColorData data,
+    public void addToList(List<BakedQuad> list, ColorData data, byte connectionMask, byte closedMask, byte blockedMask,
                           byte coverMask) {
         List<BakedQuad> quads = cache.getQuads(data);
         for (Direction facing : GTUtil.DIRECTIONS) {

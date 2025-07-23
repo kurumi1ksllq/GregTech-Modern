@@ -99,6 +99,9 @@ public class CableModel extends AbstractPipeModel<CacheKey> {
 
     @Override
     public SpriteInformation getParticleSprite(@NotNull Material material) {
+        if (wireSprite == null) {
+            wireSprite = new SpriteInformation(ModelUtils.getBlockSprite(wireTex.texture()), wireTex.colorID());
+        }
         return wireSprite;
     }
 

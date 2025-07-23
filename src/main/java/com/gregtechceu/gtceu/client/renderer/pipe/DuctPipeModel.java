@@ -56,6 +56,9 @@ public class DuctPipeModel extends AbstractPipeModel<CacheKey> {
 
     @Override
     public SpriteInformation getParticleSprite(@NotNull Material material) {
+        if (sideSprite == null) {
+            sideSprite = new SpriteInformation(ModelUtils.getBlockSprite(SIDE_TEXTURE), -1);
+        }
         return sideSprite;
     }
 

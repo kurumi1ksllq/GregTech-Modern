@@ -64,7 +64,7 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
     public @NotNull List<BakedQuad> getQuads(@NotNull BlockState state, @Nullable Direction side,
                                              @NotNull RandomSource rand, @NotNull ModelData modelData,
                                              @Nullable RenderType renderType) {
-        ColorData data = computeColorData(modelData);
+        ColorData colorData = computeColorData(modelData);
         CoverRendererPackage rendererPackage = modelData.get(CoverRendererPackage.PROPERTY);
         byte coverMask = rendererPackage == null ? 0 : rendererPackage.getMask();
         BlockAndTintGetter level = modelData.get(MODEL_DATA_LEVEL);
@@ -78,7 +78,7 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
                 coverMask,
                 Objects.requireNonNullElse(modelData.get(PipeRenderProperties.FRAME_MATERIAL_PROPERTY),
                         GTMaterials.NULL),
-                data, rand, modelData, renderType);
+                colorData, rand, modelData, renderType);
         if (rendererPackage != null) renderCovers(quads, rendererPackage,
                 side, level, pos, rand, modelData, renderType);
         return quads;
@@ -110,12 +110,12 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
     public @NotNull List<BakedQuad> getQuads(K key, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos,
                                              @Nullable Direction side, byte connectionMask, byte closedMask,
                                              byte blockedMask, byte coverMask, byte frameMask,
-                                             @NotNull Material frameMaterial, ColorData data,
+                                             @NotNull Material frameMaterial, ColorData colorData,
                                              RandomSource rand, ModelData modelData, RenderType renderType) {
         List<BakedQuad> quads = new ObjectArrayList<>();
 
         StructureQuadCache cache = pipeCache.computeIfAbsent(key, this::constructForKey);
-        cache.addToList(quads, connectionMask, closedMask, blockedMask, data, coverMask);
+        cache.addToList(quads, colorData, connectionMask, closedMask, blockedMask, coverMask);
 
         if (frameMaterial.isNull() || (renderType != null && renderType != RenderType.translucent())) {
             return quads;
@@ -142,13 +142,13 @@ public abstract class AbstractPipeModel<K extends CacheKey> {
     protected abstract StructureQuadCache constructForKey(K key);
 
     @OnlyIn(Dist.CLIENT)
-    public TextureAtlasSprite getParticleTexture(int paintColor, @NotNull Material material) {
+    public @Nullable TextureAtlasSprite getParticleTexture(int paintColor, @NotNull Material material) {
         SpriteInformation spriteInformation = getParticleSprite(material);
-        return spriteInformation.sprite();
+        return spriteInformation != null ? spriteInformation.sprite() : null;
     }
 
     @OnlyIn(Dist.CLIENT)
-    public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
+    public @Nullable TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
         return getParticleTexture(GTMath.safeInt(data.get(PipeRenderProperties.COLOR_PROPERTY)),
                 Objects.requireNonNullElse(data.get(PipeRenderProperties.MATERIAL_PROPERTY), GTMaterials.NULL));
     }

@@ -128,12 +128,15 @@ public class PipeModelRedirector extends BaseBakedModel {
     public @NotNull TextureAtlasSprite getParticleIcon() {
         AbstractPipeModel<?> model = supplier.getModel(GTMaterials.NULL);
         if (model != null) {
-            return model.getParticleIcon(ModelData.EMPTY);
-        } else if (defaultParticleIcon != null) {
-            return defaultParticleIcon;
-        } else {
-            return ModelUtils.getBlockSprite(GTCEu.id("block/pipe/pipe_side"));
+            TextureAtlasSprite sprite = model.getParticleIcon(ModelData.EMPTY);
+            if (sprite != null) {
+                return sprite;
+            }
         }
+        if (defaultParticleIcon != null) {
+            return defaultParticleIcon;
+        }
+        return ModelUtils.getBlockSprite(GTCEu.id("block/pipe/pipe_side"));
     }
 
     @Override
@@ -146,10 +149,12 @@ public class PipeModelRedirector extends BaseBakedModel {
         }
         AbstractPipeModel<?> model = supplier.getModel(mat);
         if (model != null) {
-            return model.getParticleIcon(data);
-        } else {
-            return getParticleIcon();
+            TextureAtlasSprite sprite = model.getParticleIcon(data);
+            if (sprite != null) {
+                return sprite;
+            }
         }
+        return getParticleIcon();
     }
 
     @Override

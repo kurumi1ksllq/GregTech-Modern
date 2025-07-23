@@ -40,6 +40,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
@@ -58,6 +59,10 @@ public class BloomUtil {
     private static final List<BloomRenderTicket> SCHEDULED_BLOOM_RENDERS = new ArrayList<>();
 
     private static final ReadWriteLock BLOOM_RENDER_LOCK = new ReentrantReadWriteLock();
+
+    public static Map<BlockPos, VertexBuffer> BLOOM_BUFFERS = new HashMap<>();
+    public static Map<BlockPos, BufferBuilder> BLOOM_BUFFER_BUILDERS = new ConcurrentHashMap<>();
+    public static Map<BlockPos, BufferBuilder.SortState> BLOOM_BUFFER_SORT_STATES = new HashMap<>();
 
     /**
      * <p>
@@ -352,16 +357,16 @@ public class BloomUtil {
     public static void finishBloomBuffer(BlockPos pos, BufferBuilder builder) {
         BufferBuilder.RenderedBuffer buffer = builder.endOrDiscardIfEmpty();
         if (buffer != null) {
-            GTShaders.BLOOM_BUFFER_BUILDERS.remove(pos, builder);
-            GTShaders.BLOOM_BUFFER_SORT_STATES.put(pos, builder.getSortState());
+            BLOOM_BUFFER_BUILDERS.remove(pos, builder);
+            BLOOM_BUFFER_SORT_STATES.put(pos, builder.getSortState());
 
             if (RenderSystem.isOnRenderThread()) {
-                VertexBuffer vertexBuffer = GTShaders.BLOOM_BUFFERS.computeIfAbsent(pos,
+                VertexBuffer vertexBuffer = BLOOM_BUFFERS.computeIfAbsent(pos,
                         $ -> new VertexBuffer(VertexBuffer.Usage.STATIC));
                 BloomUtil.uploadBloomBuffer(buffer, vertexBuffer);
             } else {
                 RenderSystem.recordRenderCall(() -> {
-                    VertexBuffer vertexBuffer = GTShaders.BLOOM_BUFFERS.computeIfAbsent(pos,
+                    VertexBuffer vertexBuffer = BLOOM_BUFFERS.computeIfAbsent(pos,
                             $ -> new VertexBuffer(VertexBuffer.Usage.STATIC));
                     BloomUtil.uploadBloomBuffer(buffer, vertexBuffer);
                 });
@@ -378,8 +383,8 @@ public class BloomUtil {
     }
 
     public static void removeBloomChunk(BlockPos origin) {
-        GTShaders.BLOOM_BUFFER_BUILDERS.remove(origin);
-        VertexBuffer buffer = GTShaders.BLOOM_BUFFERS.remove(origin);
+        BLOOM_BUFFER_BUILDERS.remove(origin);
+        VertexBuffer buffer = BLOOM_BUFFERS.remove(origin);
         if (buffer != null) {
             if (!RenderSystem.isOnRenderThread()) {
                 RenderSystem.recordRenderCall(buffer::close);
@@ -390,7 +395,7 @@ public class BloomUtil {
     }
 
     public static BufferBuilder getOrStartBloomBuffer(BlockPos pos) {
-        BufferBuilder builder = GTShaders.BLOOM_BUFFER_BUILDERS.computeIfAbsent(pos,
+        BufferBuilder builder = BLOOM_BUFFER_BUILDERS.computeIfAbsent(pos,
                 $ -> new BufferBuilder(GTRenderTypes.getBloom().bufferSize()));
         if (!builder.building()) {
             builder.begin(GTRenderTypes.getBloom().mode(), GTRenderTypes.getBloom().format());
@@ -403,7 +408,7 @@ public class BloomUtil {
             return;
         }
 
-        BufferBuilder builder = GTShaders.BLOOM_BUFFER_BUILDERS.get(pos);
+        BufferBuilder builder = BLOOM_BUFFER_BUILDERS.get(pos);
         if (builder == null || !builder.building()) {
             return;
         }
@@ -453,7 +458,7 @@ public class BloomUtil {
     }
 
     private static void drawBlockBloom(PoseStack poseStack, Matrix4f projectionMatrix, Vec3 camPos) {
-        for (var it = GTShaders.BLOOM_BUFFERS.entrySet().iterator(); it.hasNext();) {
+        for (var it = BLOOM_BUFFERS.entrySet().iterator(); it.hasNext();) {
             var entry = it.next();
             BlockPos pos = entry.getKey();
 
@@ -474,8 +479,8 @@ public class BloomUtil {
                 poseStack.popPose();
             } finally {
                 entry.getValue().close();
-                GTShaders.BLOOM_BUFFER_BUILDERS.remove(pos);
-                GTShaders.BLOOM_BUFFER_SORT_STATES.remove(pos);
+                BLOOM_BUFFER_BUILDERS.remove(pos);
+                BLOOM_BUFFER_SORT_STATES.remove(pos);
                 it.remove();
             }
         }
@@ -517,7 +522,7 @@ public class BloomUtil {
 
     private static void resortTransparencyInner(BlockPos pos, Vec3 camPos) {
         BufferBuilder builder = getOrStartBloomBuffer(pos);
-        builder.restoreSortState(GTShaders.BLOOM_BUFFER_SORT_STATES.get(pos));
+        builder.restoreSortState(BLOOM_BUFFER_SORT_STATES.get(pos));
         builder.setQuadSorting(VertexSorting.byDistance((float) camPos.x() - pos.getX(), (float) camPos.y() - pos.getY(), (float) camPos.z() - pos.getZ()));
         finishBloomBuffer(pos, builder);
     }
@@ -552,7 +557,7 @@ public class BloomUtil {
                 zBloomOld = camPos.z;
 
                 BlockPos pos = SectionPos.of(camSectionX, camSectionY, camSectionZ).origin();
-                if (!GTShaders.BLOOM_BUFFERS.containsKey(pos) || !GTShaders.BLOOM_BUFFER_SORT_STATES.containsKey(pos)) {
+                if (!BLOOM_BUFFERS.containsKey(pos) || !BLOOM_BUFFER_SORT_STATES.containsKey(pos)) {
                     continue;
                 }
 

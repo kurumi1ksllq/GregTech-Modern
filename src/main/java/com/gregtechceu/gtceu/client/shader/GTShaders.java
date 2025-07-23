@@ -8,7 +8,6 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 import net.irisshaders.iris.api.v0.IrisApi;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -16,26 +15,15 @@ import net.minecraftforge.client.event.RegisterShadersEvent;
 
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.VertexBuffer;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @OnlyIn(Dist.CLIENT)
 public class GTShaders {
 
-    public static final Minecraft mc = Minecraft.getInstance();
-
     public static PostChain BLOOM_CHAIN = null;
     public static BloomAlgorithm BLOOM_TYPE = ConfigHolder.INSTANCE.client.shader.bloomAlgorithm;
     public static RenderTarget BLOOM_TARGET = null;
-
-    public static Map<BlockPos, VertexBuffer> BLOOM_BUFFERS = new HashMap<>();
-    public static Map<BlockPos, BufferBuilder> BLOOM_BUFFER_BUILDERS = new ConcurrentHashMap<>();
-    public static Map<BlockPos, BufferBuilder.SortState> BLOOM_BUFFER_SORT_STATES = new HashMap<>();
 
     public static void onRegisterShaders(RegisterShadersEvent event) {
         if (!innerAllowedShader()) {
@@ -74,6 +62,8 @@ public class GTShaders {
         }
 
         try {
+            Minecraft mc = Minecraft.getInstance();
+
             BLOOM_CHAIN = new PostChain(mc.getTextureManager(), mc.getResourceManager(), mc.getMainRenderTarget(), id);
             BLOOM_CHAIN.resize(mc.getWindow().getWidth(), mc.getWindow().getHeight());
             BLOOM_TARGET = BLOOM_CHAIN.getTempTarget("final");

@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.integration.embeddium;
 
-import com.gregtechceu.gtceu.client.shader.GTShaders;
+import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 import com.gregtechceu.gtceu.core.mixins.embeddium.SodiumWorldRendererAccessor;
 import com.gregtechceu.gtceu.integration.embeddium.renderer.BloomMeshAppender;
 
@@ -66,7 +66,7 @@ public class GTEmbeddiumCompat {
                         camSectionZ != SectionPos.blockToSectionCoord(section.lastCameraZ);
 
                 BlockPos pos = SectionPos.of(camSectionX, camSectionY, camSectionZ).origin();
-                if (!GTShaders.BLOOM_BUFFERS.containsKey(pos) || !GTShaders.BLOOM_BUFFER_SORT_STATES.containsKey(pos)) {
+                if (!BloomUtil.BLOOM_BUFFERS.containsKey(pos) || !BloomUtil.BLOOM_BUFFER_SORT_STATES.containsKey(pos)) {
                     continue;
                 }
 

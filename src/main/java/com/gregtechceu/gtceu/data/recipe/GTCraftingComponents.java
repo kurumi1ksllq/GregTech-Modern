@@ -643,7 +643,7 @@ public class GTCraftingComponents {
                 .add(UV, rod, Tritanium)
                 .add(UHV, rod, Tritanium);
 
-        PIPE_REACTOR = CraftingComponent.of("pipe_reactor", Tags.s.GLASS)
+        PIPE_REACTOR = CraftingComponent.of("pipe_reactor", Tags.Items.GLASS)
                 .add(ULV, Tags.Items.GLASS)
                 .add(LV, Tags.Items.GLASS)
                 .add(MV, Tags.Items.GLASS)

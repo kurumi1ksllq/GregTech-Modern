@@ -24,6 +24,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -84,7 +85,7 @@ public class ItemFilterCover extends CoverBehavior implements IUICover, CoverWit
     }
 
     @Override
-    public @Nullable IItemHandler getItemHandlerCap(@Nullable IItemHandler defaultValue) {
+    public @Nullable IItemHandlerModifiable getItemHandlerCap(@Nullable IItemHandlerModifiable defaultValue) {
         if (defaultValue == null) {
             return null;
         }
@@ -118,8 +119,9 @@ public class ItemFilterCover extends CoverBehavior implements IUICover, CoverWit
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if ((filterMode == FilterMode.FILTER_EXTRACT) && allowFlow == ManualIOMode.UNFILTERED)
+            if (filterMode == FilterMode.FILTER_EXTRACT && allowFlow == ManualIOMode.UNFILTERED) {
                 return super.insertItem(slot, stack, simulate);
+            }
             if (filterMode != FilterMode.FILTER_EXTRACT && getFilterHandler().test(stack)) {
                 return super.insertItem(slot, stack, simulate);
             }

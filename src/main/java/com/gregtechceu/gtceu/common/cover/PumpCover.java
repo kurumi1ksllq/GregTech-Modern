@@ -36,6 +36,7 @@ import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
 import com.gregtechceu.gtceu.common.cover.filter.MatchResult;
 import com.gregtechceu.gtceu.common.pipelike.net.fluid.*;
 import com.gregtechceu.gtceu.common.pipelike.net.item.ItemCapabilityObject;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.collections.ListHashSet;
 import com.gregtechceu.gtceu.utils.function.BiIntConsumer;
 
@@ -456,8 +457,8 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
                     NetNode node = gather.next();
                     if (node instanceof NodeExposingCapabilities exposer) {
                         IFluidHandler h = exposer.getProvider().getCapability(
-                                CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY,
-                                exposer.exposedFacing());
+                                ForgeCapabilities.FLUID_HANDLER,
+                                exposer.exposedFacing()).resolve().orElse(null);
                         if (h != null && FluidCapabilityObject.instanceOf(h) == null) {
                             candidates.put(node, h);
                         }
@@ -476,7 +477,7 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
                 Int2IntOpenHashMap losses = new Int2IntOpenHashMap();
                 Int2ObjectArrayMap<List<Runnable>> postActions = new Int2ObjectArrayMap<>();
                 Reference2BooleanOpenHashMap<NetNode> lossyCache = new Reference2BooleanOpenHashMap<>();
-                largestMin = GTUtility.binarySearchInt(0, largestMin, l -> {
+                largestMin = GTUtil.binarySearchInt(0, largestMin, l -> {
                     if (flows.containsKey(l) && flows.get(l) == null) return false;
                     ResilientNetClosestIterator backwardFrontier = null;
                     Reference2IntOpenHashMap<NetNode> localFlows = new Reference2IntOpenHashMap<>();
@@ -707,8 +708,8 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
                     NetNode node = gather.next();
                     if (node instanceof NodeExposingCapabilities exposer) {
                         IFluidHandler h = exposer.getProvider().getCapability(
-                                CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY,
-                                exposer.exposedFacing());
+                                ForgeCapabilities.FLUID_HANDLER,
+                                exposer.exposedFacing()).resolve().orElse(null);
                         if (h != null && FluidCapabilityObject.instanceOf(h) == null) {
                             candidates.put(node, h);
                         }
@@ -728,7 +729,7 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
                 Int2ObjectArrayMap<List<Runnable>> postActions = new Int2ObjectArrayMap<>();
                 Reference2BooleanOpenHashMap<NetNode> lossyCache = new Reference2BooleanOpenHashMap<>();
                 FluidNetworkView view = FluidCapabilityObject.getNetworkView(origin);
-                largestMin = GTUtility.binarySearchInt(0, largestMin, l -> {
+                largestMin = GTUtil.binarySearchInt(0, largestMin, l -> {
                     if (flows.containsKey(l) && flows.get(l) == null) return false;
                     ResilientNetClosestIterator forwardFrontier = null;
                     Reference2IntOpenHashMap<NetNode> localFlows = new Reference2IntOpenHashMap<>();

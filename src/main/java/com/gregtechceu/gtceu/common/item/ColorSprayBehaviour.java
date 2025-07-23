@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.PipeBlock
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IDurabilityBar;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
-import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
 import com.gregtechceu.gtceu.common.data.GTSoundEntries;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
@@ -199,9 +198,10 @@ public class ColorSprayBehaviour implements IDurabilityBar, IInteractionItem, IA
         return true;
     }
 
-    @SuppressWarnings({ "rawtypes", "DataFlowIssue" })
     private boolean handleSpecialBlockEntities(BlockEntity first, int limit, UseOnContext context) {
-        var player = context.getPlayer();
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        Player player = context.getPlayer();
         if (player == null) {
             return false;
         }
@@ -213,7 +213,7 @@ public class ColorSprayBehaviour implements IDurabilityBar, IInteractionItem, IA
                     continue;
                 }
                 c.recolourBlock(context.getClickedFace(), ae2Color, player);
-                if (!useItemDurability(player, context.getHand(), context.getItemInHand(), ItemStack.EMPTY)) {
+                if (!useItemDurability(player, context.getHand(), context.getItemInHand(), empty.get())) {
                     break;
                 }
             }
@@ -228,8 +228,6 @@ public class ColorSprayBehaviour implements IDurabilityBar, IInteractionItem, IA
             paintPaintables(collected, context);
         } else if (first instanceof ShulkerBoxBlockEntity shulkerBox) {
             var tag = shulkerBox.saveWithoutMetadata();
-            var level = first.getLevel();
-            var pos = first.getBlockPos();
             recolorBlockNoState(SHULKER_BOX_MAP, color, level, pos, Blocks.SHULKER_BOX);
             if (level.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity newShulker) {
                 newShulker.load(tag);
@@ -461,8 +459,8 @@ public class ColorSprayBehaviour implements IDurabilityBar, IInteractionItem, IA
         return parent.getPaintingColor() == child.getPaintingColor();
     };
 
-    @SuppressWarnings("rawtypes")
-    private static final TriPredicate<IPipeNode, IPipeNode, Direction> gtPipePredicate = (parent, child, direction) -> {
+    private static final TriPredicate<PipeBlockEntity, PipeBlockEntity, Direction> gtPipePredicate = (parent, child,
+                                                                                                      direction) -> {
         if (parent == null) return true;
         if (!paintablePredicate.test(parent, child, direction)) {
             return false;

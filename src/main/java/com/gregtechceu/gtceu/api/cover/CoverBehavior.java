@@ -6,7 +6,7 @@ import com.gregtechceu.gtceu.api.gui.factory.CoverUIFactory;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfigurator;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.IToolGridHighlight;
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.MachineCoverContainer;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.cover.CoverRenderer;
 
@@ -33,7 +33,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import lombok.Getter;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
@@ -109,12 +109,12 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
      */
     @MustBeInvokedByOverriders
     public boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side) {
-        if (coverable instanceof MetaMachine machine) {
-            if (machine.getDefinition().isAllowCoverOnFront() || !machine.hasFrontFacing()) {
+        if (coverable instanceof MachineCoverContainer machine) {
+            if (machine.getMachine().getDefinition().isAllowCoverOnFront() || !machine.getMachine().hasFrontFacing()) {
                 return true;
             }
         }
-        return coverable.getFrontFacing() != side;
+        return side != coverable.getFrontFacing();
     }
 
     /**
@@ -257,7 +257,7 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
     //////////////////////////////////////
 
     @Nullable
-    public IItemHandler getItemHandlerCap(IItemHandler defaultValue) {
+    public IItemHandlerModifiable getItemHandlerCap(IItemHandlerModifiable defaultValue) {
         return defaultValue;
     }
 

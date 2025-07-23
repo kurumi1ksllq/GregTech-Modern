@@ -90,7 +90,7 @@ public abstract class AbstractEnderLinkCover<T extends VirtualEntry> extends Cov
     }
 
     @Override
-    public abstract boolean canAttach();
+    public abstract boolean canAttach(@NotNull ICoverable coverable, @NotNull Direction side);
 
     @Override
     public void onAttached(@NotNull ItemStack itemStack, @NotNull ServerPlayer player) {

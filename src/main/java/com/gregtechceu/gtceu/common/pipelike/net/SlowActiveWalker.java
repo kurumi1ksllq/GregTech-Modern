@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.graphnet.path.NetPath;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.WorldPipeNode;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.blockentity.ActivablePipeBlockEntity;
 import com.gregtechceu.gtceu.utils.TaskScheduler;
+import com.gregtechceu.gtceu.utils.TickTracker;
 import com.gregtechceu.gtceu.utils.function.Task;
 
 import net.minecraft.world.level.Level;

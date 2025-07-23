@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.transfer.fluid.FluidHandlerList;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +19,7 @@ public class IOFluidHandlerList extends FluidHandlerList implements IFluidHandle
     private final Predicate<FluidStack> inFilter;
     private final Predicate<FluidStack> outFilter;
 
-    public IOFluidHandlerList(List<IFluidHandler> handlers, IO io, Predicate<FluidStack> inFilter,
+    public IOFluidHandlerList(List<IFluidHandlerModifiable> handlers, IO io, Predicate<FluidStack> inFilter,
                               Predicate<FluidStack> outFilter) {
         super(handlers);
         this.io = io;
@@ -54,17 +53,5 @@ public class IOFluidHandlerList extends FluidHandlerList implements IFluidHandle
         if (io.support(IO.IN)) filter = inFilter.and(filter);
         if (io.support(IO.OUT)) filter = outFilter.and(filter);
         return filter.test(stack) && super.isFluidValid(tank, stack);
-    }
-
-    @Override
-    public void setFluidInTank(int tank, FluidStack stack) {
-        int index = 0;
-        for (IFluidHandler handler : handlers) {
-            if (handler instanceof IFluidHandlerModifiable modifiable) {
-                if (tank - index < handler.getTanks()) modifiable.setFluidInTank(tank - index, stack);
-                return;
-            }
-            index += handler.getTanks();
-        }
     }
 }

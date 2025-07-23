@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeBlock;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
+import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererPackage;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -28,8 +29,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -153,7 +153,7 @@ public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
     }
 
     @Override
-    public Direction getFrontFacing() {
+    public @Nullable Direction getFrontFacing() {
         return null;
     }
 
@@ -163,12 +163,12 @@ public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
     }
 
     @Override
-    public @Nullable IItemHandler getItemHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
+    public @Nullable IItemHandlerModifiable getItemHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
         return null;
     }
 
     @Override
-    public @Nullable IFluidHandler getFluidHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
+    public @Nullable IFluidHandlerModifiable getFluidHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
         return null;
     }
 

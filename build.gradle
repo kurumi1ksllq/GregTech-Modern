@@ -47,8 +47,8 @@ sourceSets {
     }
 
     clientExtra {
-        compileClasspath += client.output + extra.compileClasspath
-        runtimeClasspath += client.output + client.runtimeClasspath + extra.runtimeClasspath
+        compileClasspath += client.output + extra.output
+        runtimeClasspath += client.output + client.runtimeClasspath + extra.output + extra.runtimeClasspath
     }
 }
 
@@ -91,7 +91,6 @@ obfuscation {
 
 tasks.register('slimJar', ShadowJar) {
     dependsOn("classes")
-    configurations = [project.configurations.includedLibrary]
     archiveClassifier = "dev-slim"
     from sourceSets.main.output
 }

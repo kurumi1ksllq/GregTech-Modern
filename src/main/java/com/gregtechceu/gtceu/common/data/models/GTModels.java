@@ -33,7 +33,7 @@ import com.gregtechceu.gtceu.data.pack.GTDynamicResourcePack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.models.blockstates.*;
+import net.minecraft.data.models.BlockModelGenerators;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.BlockItem;
@@ -363,11 +363,13 @@ public class GTModels {
 
                     CableBlock block = GTMaterialBlocks.CABLE_BLOCKS.get(structure.prefix(), material).get();
                     ResourceLocation blockId = GTMaterialBlocks.CABLE_BLOCKS.get(structure.prefix(), material).getId();
-                    ResourceLocation blockModelId = blockId.withPrefix("block/");
-                    GTDynamicResourcePack.addBlockModel(blockModelId, json);
+                    GTDynamicResourcePack.addBlockModel(blockId, json);
+
+                    json = new JsonObject();
+                    json.addProperty("parent", "block/" + blockId);
                     GTDynamicResourcePack.addItemModel(blockId, json);
 
-                    createPipeBlockState(blockId, blockModelId, block);
+                    createPipeBlockState(blockId, block);
                 }
             }
             for (var structure : PipeStructureRegistry.getStructures(MaterialPipeStructure.class)) {
@@ -384,11 +386,13 @@ public class GTModels {
                 MaterialPipeBlock block = GTMaterialBlocks.MATERIAL_PIPE_BLOCKS.get(structure.prefix(), material).get();
                 ResourceLocation blockId = GTMaterialBlocks.MATERIAL_PIPE_BLOCKS.get(structure.prefix(), material)
                         .getId();
-                ResourceLocation blockModelId = blockId.withPrefix("block/");
-                GTDynamicResourcePack.addBlockModel(blockModelId, json);
+                GTDynamicResourcePack.addBlockModel(blockId, json);
+
+                json = new JsonObject();
+                json.addProperty("parent", "block/" + blockId);
                 GTDynamicResourcePack.addItemModel(blockId, json);
 
-                createPipeBlockState(blockId, blockModelId, block);
+                createPipeBlockState(blockId, block);
             }
         }
         for (var structure : PipeStructureRegistry.getStructures(DuctStructure.class)) {
@@ -400,11 +404,13 @@ public class GTModels {
 
             DuctPipeBlock block = GTBlocks.DUCT_PIPE_BLOCKS.get(structure).get();
             ResourceLocation blockId = GTBlocks.DUCT_PIPE_BLOCKS.get(structure).getId();
-            ResourceLocation blockModelId = blockId.withPrefix("block/");
-            GTDynamicResourcePack.addBlockModel(blockModelId, json);
+            GTDynamicResourcePack.addBlockModel(blockId, json);
+
+            json = new JsonObject();
+            json.addProperty("parent", "block/" + blockId);
             GTDynamicResourcePack.addItemModel(blockId, json);
 
-            createPipeBlockState(blockId, blockModelId, block);
+            createPipeBlockState(blockId, block);
         }
         {
             JsonObject json = new JsonObject();
@@ -415,11 +421,13 @@ public class GTModels {
 
             LaserPipeBlock block = GTBlocks.LASER_PIPE.get();
             ResourceLocation blockId = GTBlocks.LASER_PIPE.getId();
-            ResourceLocation blockModelId = blockId.withPrefix("block/");
-            GTDynamicResourcePack.addBlockModel(blockModelId, json);
+            GTDynamicResourcePack.addBlockModel(blockId, json);
+
+            json = new JsonObject();
+            json.addProperty("parent", "block/" + blockId);
             GTDynamicResourcePack.addItemModel(blockId, json);
 
-            createPipeBlockState(blockId, blockModelId, block);
+            createPipeBlockState(blockId, block);
         }
         {
             JsonObject json = new JsonObject();
@@ -430,11 +438,13 @@ public class GTModels {
 
             LaserPipeBlock block = GTBlocks.LASER_REFLECTOR_PIPE.get();
             ResourceLocation blockId = GTBlocks.LASER_REFLECTOR_PIPE.getId();
-            ResourceLocation blockModelId = blockId.withPrefix("block/");
-            GTDynamicResourcePack.addBlockModel(blockModelId, json);
+            GTDynamicResourcePack.addBlockModel(blockId, json);
+
+            json = new JsonObject();
+            json.addProperty("parent", "block/" + blockId);
             GTDynamicResourcePack.addItemModel(blockId, json);
 
-            createPipeBlockState(blockId, blockModelId, block);
+            createPipeBlockState(blockId, block);
         }
         {
             JsonObject json = new JsonObject();
@@ -445,17 +455,19 @@ public class GTModels {
 
             OpticalPipeBlock block = GTBlocks.OPTICAL_PIPE.get();
             ResourceLocation blockId = GTBlocks.OPTICAL_PIPE.getId();
-            ResourceLocation blockModelId = blockId.withPrefix("block/");
-            GTDynamicResourcePack.addBlockModel(blockModelId, json);
+            GTDynamicResourcePack.addBlockModel(blockId, json);
+
+            json = new JsonObject();
+            json.addProperty("parent", "block/" + blockId);
             GTDynamicResourcePack.addItemModel(blockId, json);
 
-            createPipeBlockState(blockId, blockModelId, block);
+            createPipeBlockState(blockId, block);
         }
     }
 
-    private static void createPipeBlockState(ResourceLocation blockId, ResourceLocation blockModelId, Block block) {
-        Variant variant = Variant.variant().with(VariantProperties.MODEL, blockModelId);
-        GTDynamicResourcePack.addBlockState(blockId, MultiVariantGenerator.multiVariant(block, variant));
+    private static void createPipeBlockState(ResourceLocation blockId, Block block) {
+        GTDynamicResourcePack.addBlockState(blockId,
+                BlockModelGenerators.createSimpleBlock(block, blockId.withPrefix("block/")));
     }
 
     // endregion

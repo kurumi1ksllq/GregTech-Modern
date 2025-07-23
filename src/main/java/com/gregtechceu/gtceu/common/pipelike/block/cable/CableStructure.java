@@ -19,21 +19,21 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Supplier;
 
 public record CableStructure(String name, int material, int costFactor, TagPrefix prefix,
-                             @Nullable CableStructure partialBurnStructure, @Nullable Integer partialBurnThreshold,
+                             @Nullable CableStructure partialBurnStructure, int partialBurnThreshold,
                              float renderThickness, Supplier<PipeModelRedirector> model)
         implements IPipeMaterialStructure, IInsulatable {
 
     public static final int INSULATION_BURN_TEMP = 1000;
 
     public static final CableStructure WIRE_SINGLE = new CableStructure("single_wire", 1, 2, TagPrefix.wireGtSingle,
-            null, null, 0.1875f, () -> PipeModelRegistry.getCableModel(0));
+            null, -1, 0.1875f, () -> PipeModelRegistry.getCableModel(0));
     public static final CableStructure WIRE_DOUBLE = new CableStructure("double_wire", 2, 2, TagPrefix.wireGtDouble,
-            null, null, 0.3125f, () -> PipeModelRegistry.getCableModel(0));
+            null, -1, 0.3125f, () -> PipeModelRegistry.getCableModel(0));
     public static final CableStructure WIRE_QUADRUPLE = new CableStructure("quadruple_wire", 4, 3,
-            TagPrefix.wireGtQuadruple, null, null, 0.4375f, () -> PipeModelRegistry.getCableModel(0));
+            TagPrefix.wireGtQuadruple, null, -1, 0.4375f, () -> PipeModelRegistry.getCableModel(0));
     public static final CableStructure WIRE_OCTAL = new CableStructure("octal_wire", 8, 3, TagPrefix.wireGtOctal, null,
-            null, 0.5625f, () -> PipeModelRegistry.getCableModel(0));
-    public static final CableStructure WIRE_HEX = new CableStructure("hex_wire", 16, 3, TagPrefix.wireGtHex, null, null,
+            -1, 0.5625f, () -> PipeModelRegistry.getCableModel(0));
+    public static final CableStructure WIRE_HEX = new CableStructure("hex_wire", 16, 3, TagPrefix.wireGtHex, null, -1,
             0.8125f, () -> PipeModelRegistry.getCableModel(0));
 
     public static final CableStructure CABLE_SINGLE = new CableStructure("single_cable", 1, 1, TagPrefix.cableGtSingle,

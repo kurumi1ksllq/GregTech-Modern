@@ -11,7 +11,6 @@ import com.lowdragmc.lowdraglib.syncdata.payload.PrimitiveTypedPayload;
 import net.minecraft.nbt.Tag;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -20,10 +19,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MapAccessor implements IAccessor {
-
-    @Getter
-    @Setter
-    private byte defaultType = -1;
 
     @Getter
     private final IAccessor keyAccessor;
@@ -60,6 +55,11 @@ public class MapAccessor implements IAccessor {
     @Override
     public byte getDefaultType() {
         return TypedPayloadRegistries.getId(MapPayload.class);
+    }
+
+    @Override
+    public void setDefaultType(byte defaultType) {
+        throw new UnsupportedOperationException("Cannot set the default type for MapAccessor");
     }
 
     @Override

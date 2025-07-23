@@ -42,9 +42,9 @@ public class OreBlockRenderer {
     public static void reinitModels() {
         for (OreBlockRenderer model : MODELS) {
             ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(model.block);
-            ResourceLocation modelId = blockId.withPrefix("block/");
             OreBlockRenderer.cloneBlockModel(blockId, model.block.tagPrefix, model.block.material);
-            GTDynamicResourcePack.addBlockState(blockId, BlockModelGenerators.createSimpleBlock(model.block, modelId));
+            GTDynamicResourcePack.addBlockState(blockId,
+                    BlockModelGenerators.createSimpleBlock(model.block, blockId.withPrefix("block/")));
             GTDynamicResourcePack.addItemModel(BuiltInRegistries.ITEM.getKey(model.block.asItem()),
                     new DelegatedModel(ModelLocationUtils.getModelLocation(model.block)));
         }
@@ -53,11 +53,11 @@ public class OreBlockRenderer {
     /**
      * Clones & modifies the base JSON for a single ore block.
      * 
-     * @param modelId  the model id (usually {@code gtceu:block/<block id path>})
+     * @param blockId  the model id (usually {@code gtceu:block/<block id path>})
      * @param prefix   the TagPrefix of the block being added.
      * @param material the material of the block being added. must have an ore property.
      */
-    public static void cloneBlockModel(ResourceLocation modelId, TagPrefix prefix, Material material) {
+    public static void cloneBlockModel(ResourceLocation blockId, TagPrefix prefix, Material material) {
         OreProperty prop = material.getProperty(PropertyKey.ORE);
         Preconditions.checkNotNull(prop,
                 "material %s has no ore property, but needs one for an ore model!".formatted(material.getName()));
@@ -87,6 +87,6 @@ public class OreBlockRenderer {
 
         newJson.getAsJsonObject("textures").addProperty("particle", layer0.toString());
 
-        GTDynamicResourcePack.addBlockModel(modelId, newJson);
+        GTDynamicResourcePack.addBlockModel(blockId, newJson);
     }
 }

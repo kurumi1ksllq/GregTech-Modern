@@ -10,8 +10,8 @@ import com.gregtechceu.gtceu.api.item.tool.aoe.AoESymmetrical;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
 import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
+import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 import com.gregtechceu.gtceu.client.shader.GTShaders;
-import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
 import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -91,7 +91,7 @@ public abstract class LevelRendererMixin {
                     remap = false))
     private void gtceu$compileBloomBuffers(Frustum frustum, CallbackInfo ci,
                                            @Local LevelRenderer.RenderChunkInfo chunkInfo) {
-        BloomEffectUtil.bakeBloomChunkBuffers(chunkInfo.chunk.getOrigin(), this.getChunkRenderDispatcher().getCameraPosition());
+        BloomUtil.bakeBloomChunkBuffers(chunkInfo.chunk.getOrigin(), this.getChunkRenderDispatcher().getCameraPosition());
     }
 
     @Inject(method = "resize", at = @At("TAIL"))

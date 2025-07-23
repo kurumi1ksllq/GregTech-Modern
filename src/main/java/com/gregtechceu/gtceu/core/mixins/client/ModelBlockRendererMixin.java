@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.core.mixins.client;
 
-import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
+import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -21,7 +21,7 @@ public class ModelBlockRendererMixin {
                                          float[] colorMuls, float red, float green, float blue,
                                          int[] combinedLights, int combinedOverlay, boolean mulColor,
                                          Operation<Void> original) {
-        BloomEffectUtil.copyToBloomBuffer(consumer, pose, quad, colorMuls, red, green, blue,
+        BloomUtil.copyToBloomBuffer(consumer, pose, quad, colorMuls, red, green, blue,
                 combinedLights, combinedOverlay, mulColor, original);
     }
 }

@@ -1,15 +1,15 @@
 package com.gregtechceu.gtceu.client.renderer.machine.impl;
 
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
-import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
-import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
-import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
-import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomEffect;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
-import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
+import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 import com.gregtechceu.gtceu.client.bloom.EffectRenderContext;
 import com.gregtechceu.gtceu.client.bloom.IBloomEffect;
+import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomEffect;
+import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
+import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
+import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
 import com.gregtechceu.gtceu.client.util.RenderBufferHelper;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.FusionReactorMachine;
 import com.gregtechceu.gtceu.config.ConfigHolder;
@@ -69,7 +69,7 @@ public class FusionRingRender extends DynamicRender<FusionReactorMachine, Fusion
 
         if (!machine.isRegisteredBloomTicket()) {
             machine.setRegisteredBloomTicket(true);
-            BloomEffectUtil.registerBloomRender(FusionBloomSetup.INSTANCE, getBloomType(),
+            BloomUtil.registerBloomRender(FusionBloomSetup.INSTANCE, getBloomType(),
                     new FusionBloomEffect(machine), machine.getHolder().self());
         }
         // TODO fix bloom on fusion reactor light

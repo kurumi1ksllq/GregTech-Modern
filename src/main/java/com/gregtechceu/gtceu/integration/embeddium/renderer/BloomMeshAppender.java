@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.integration.embeddium.renderer;
 
-import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
+import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 import com.gregtechceu.gtceu.client.shader.GTShaders;
 
 import net.minecraft.client.Minecraft;
@@ -21,7 +21,7 @@ public class BloomMeshAppender implements MeshAppender {
 
         Vec3 camPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         BlockPos chunkOrigin = context.sectionOrigin().origin();
-        BloomEffectUtil.CURRENT_RENDERING_CHUNK_POS.set(chunkOrigin);
-        BloomEffectUtil.bakeBloomChunkBuffers(chunkOrigin, camPos);
+        BloomUtil.CURRENT_RENDERING_CHUNK_POS.set(chunkOrigin);
+        BloomUtil.bakeBloomChunkBuffers(chunkOrigin, camPos);
     }
 }

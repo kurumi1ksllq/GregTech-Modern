@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.core.mixins.embeddium;
 
+import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 import com.gregtechceu.gtceu.client.model.BloomMetadataSection;
 import com.gregtechceu.gtceu.client.shader.GTShaders;
-import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
 
 import net.caffeinemc.mods.sodium.api.util.ColorARGB;
 import net.caffeinemc.mods.sodium.api.util.NormI8;
@@ -65,7 +65,7 @@ public class BlockRendererMixin {
                 int lightUv = ModelQuadUtil.mergeBakedLight(quad.getLight(srcIndex), light.lm[srcIndex]);
                 int normal = quad.getForgeNormal(dstIndex);
 
-                BloomEffectUtil.getOrStartBloomBuffer(chunkOrigin)
+                BloomUtil.getOrStartBloomBuffer(chunkOrigin)
                         .vertex(ctx.origin().x() + quad.getX(srcIndex) + (float) offset.x(),
                                 ctx.origin().y() + quad.getY(srcIndex) + (float) offset.y(),
                                 ctx.origin().z() + quad.getZ(srcIndex) + (float) offset.z(),

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Render callback interface for
- * {@link BloomEffectUtil#registerBloomRender(IRenderSetup, BloomAlgorithm, IBloomEffect, BlockEntity)}.
+ * {@link BloomUtil#registerBloomRender(IRenderSetup, BloomAlgorithm, IBloomEffect, BlockEntity)}.
  */
 @FunctionalInterface
 public interface IBloomEffect {

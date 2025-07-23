@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.core.mixins.client;
 
-import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
+import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 
 import net.minecraft.client.renderer.ChunkBufferBuilderPack;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
@@ -25,6 +25,6 @@ public class RebuildTaskMixin {
                                                 ChunkBufferBuilderPack chunkBufferBuilderPack,
                                                 CallbackInfoReturnable<Object> cir) {
         BlockPos pos = this.this$1.getOrigin();
-        BloomEffectUtil.CURRENT_RENDERING_CHUNK_POS.set(pos);
+        BloomUtil.CURRENT_RENDERING_CHUNK_POS.set(pos);
     }
 }

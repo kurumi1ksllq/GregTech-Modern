@@ -1,12 +1,12 @@
 package com.gregtechceu.gtceu.client.bloom;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
+import com.gregtechceu.gtceu.client.bloom.shader.BloomEffect;
 import com.gregtechceu.gtceu.client.model.BloomMetadataSection;
 import com.gregtechceu.gtceu.client.particle.GTParticle;
 import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
 import com.gregtechceu.gtceu.client.shader.GTShaders;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomEffect;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.client.LevelRendererAccessor;
 import com.gregtechceu.gtceu.core.mixins.client.PostChainAccessor;
@@ -46,7 +46,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @OnlyIn(Dist.CLIENT)
-public class BloomEffectUtil {
+public class BloomUtil {
 
     private static final Map<BloomRenderKey, List<BloomRenderTicket>> BLOOM_RENDERS = new Object2ObjectOpenHashMap<>();
     private static final List<BloomRenderTicket> SCHEDULED_BLOOM_RENDERS = new ArrayList<>();
@@ -352,12 +352,12 @@ public class BloomEffectUtil {
             if (RenderSystem.isOnRenderThread()) {
                 VertexBuffer vertexBuffer = GTShaders.BLOOM_BUFFERS.computeIfAbsent(pos,
                         $ -> new VertexBuffer(VertexBuffer.Usage.STATIC));
-                BloomEffectUtil.uploadBloomBuffer(buffer, vertexBuffer);
+                BloomUtil.uploadBloomBuffer(buffer, vertexBuffer);
             } else {
                 RenderSystem.recordRenderCall(() -> {
                     VertexBuffer vertexBuffer = GTShaders.BLOOM_BUFFERS.computeIfAbsent(pos,
                             $ -> new VertexBuffer(VertexBuffer.Usage.STATIC));
-                    BloomEffectUtil.uploadBloomBuffer(buffer, vertexBuffer);
+                    BloomUtil.uploadBloomBuffer(buffer, vertexBuffer);
                 });
             }
         }
@@ -503,7 +503,7 @@ public class BloomEffectUtil {
         Minecraft.getInstance().getProfiler().push("translucent_sort");
 
         for(BlockPos pos : getVisibleRenderRegions(camPos, renderer)) {
-            Util.backgroundExecutor().submit(() -> BloomEffectUtil.resortTransparencyInner(pos, camPos));
+            Util.backgroundExecutor().submit(() -> BloomUtil.resortTransparencyInner(pos, camPos));
         }
 
         Minecraft.getInstance().getProfiler().pop();
@@ -570,9 +570,9 @@ public class BloomEffectUtil {
             return;
         }
 
-        BlockPos chunkOrigin = BloomEffectUtil.CURRENT_RENDERING_CHUNK_POS.get();
+        BlockPos chunkOrigin = BloomUtil.CURRENT_RENDERING_CHUNK_POS.get();
         if (chunkOrigin != null && BloomMetadataSection.hasBloom(quad, combinedLights)) {
-            original.call(BloomEffectUtil.getOrStartBloomBuffer(chunkOrigin), pose, quad,
+            original.call(BloomUtil.getOrStartBloomBuffer(chunkOrigin), pose, quad,
                     colorMuls, red, green, blue,
                     combinedLights, combinedOverlay, mulColor);
         }

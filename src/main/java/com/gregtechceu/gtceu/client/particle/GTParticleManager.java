@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.client.particle;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
 import com.gregtechceu.gtceu.client.bloom.EffectRenderContext;
+import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Camera;

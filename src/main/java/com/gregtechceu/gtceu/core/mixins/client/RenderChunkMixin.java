@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.core.mixins.client;
 
-import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
+import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 import net.minecraft.core.BlockPos;
@@ -21,6 +21,6 @@ public class RenderChunkMixin {
 
     @Inject(method = "reset", at = @At("HEAD"))
     private void gtceu$resetBloomBuffers(CallbackInfo ci) {
-        BloomEffectUtil.removeBloomChunk(this.origin);
+        BloomUtil.removeBloomChunk(this.origin);
     }
 }

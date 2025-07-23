@@ -7,11 +7,11 @@ import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.client.EnvironmentalHazardClientHandler;
 import com.gregtechceu.gtceu.client.TooltipsHandler;
+import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 import com.gregtechceu.gtceu.client.renderer.BlockHighlightRenderer;
 import com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer;
 import com.gregtechceu.gtceu.client.renderer.cover.FacadeCoverRenderer;
 import com.gregtechceu.gtceu.client.shader.GTShaders;
-import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
 import com.gregtechceu.gtceu.client.util.TooltipHelper;
 import com.gregtechceu.gtceu.common.commands.GTClientCommands;
 import com.gregtechceu.gtceu.core.mixins.client.AbstractClientPlayerAccessor;
@@ -19,6 +19,7 @@ import com.gregtechceu.gtceu.core.mixins.client.PlayerInfoAccessor;
 import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -31,7 +32,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.client.Camera;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.*;
@@ -69,9 +69,9 @@ public class ForgeClientEventListener {
             // so it can be seen through the transparent blocks.
             MultiblockInWorldPreviewRenderer.renderInWorldPreview(poseStack, camera, partialTick);
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
-            BloomEffectUtil.resortBloomTransparency(camera.getPosition(), levelRenderer);
+            BloomUtil.resortBloomTransparency(camera.getPosition(), levelRenderer);
 
-            BloomEffectUtil.renderBloom(camera, camera.getEntity(), levelRenderer,
+            BloomUtil.renderBloom(camera, camera.getEntity(), levelRenderer,
                     poseStack, event.getProjectionMatrix(), event.getFrustum(), partialTick);
         }
     }
@@ -89,7 +89,7 @@ public class ForgeClientEventListener {
 
         BlockPos.MutableBlockPos chunkPos = chunk.getPos().getWorldPosition().mutable();
         for (int y = level.getMinSection(); y < level.getMaxSection(); y++) {
-            BloomEffectUtil.removeBloomChunk(chunkPos.setY(SectionPos.sectionToBlockCoord(y)));
+            BloomUtil.removeBloomChunk(chunkPos.setY(SectionPos.sectionToBlockCoord(y)));
         }
     }
 
@@ -105,7 +105,7 @@ public class ForgeClientEventListener {
 
     @SubscribeEvent
     public static void onLevelUnload(LevelEvent.Unload event) {
-        BloomEffectUtil.invalidateLevelTickets(event.getLevel());
+        BloomUtil.invalidateLevelTickets(event.getLevel());
     }
 
     private static final Map<UUID, ResourceLocation> DEFAULT_CAPES = new Object2ObjectOpenHashMap<>();

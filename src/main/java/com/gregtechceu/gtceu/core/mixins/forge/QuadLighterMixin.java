@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.core.mixins.forge;
 
-import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
+import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraftforge.client.model.lighting.QuadLighter;
@@ -22,7 +22,7 @@ public class QuadLighterMixin {
                                          float[] colorMuls, float red, float green, float blue,
                                          int[] combinedLights, int combinedOverlay, boolean mulColor,
                                          Operation<Void> original) {
-        BloomEffectUtil.copyToBloomBuffer(consumer, pose, quad, colorMuls, red, green, blue,
+        BloomUtil.copyToBloomBuffer(consumer, pose, quad, colorMuls, red, green, blue,
                 combinedLights, combinedOverlay, mulColor, original);
     }
 }

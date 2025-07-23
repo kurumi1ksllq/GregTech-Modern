@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.data.worldgen.bedrockore.BedrockOreDefinition;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.IGTTool;
 import com.gregtechceu.gtceu.api.item.LampBlockItem;
+import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 import com.gregtechceu.gtceu.client.model.item.FacadeUnbakedModel;
 import com.gregtechceu.gtceu.client.model.machine.MachineModelLoader;
 import com.gregtechceu.gtceu.client.particle.HazardParticle;
@@ -21,7 +22,6 @@ import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderManager;
 import com.gregtechceu.gtceu.client.renderer.machine.impl.*;
 import com.gregtechceu.gtceu.client.renderer.machine.impl.BoilerMultiPartRender;
 import com.gregtechceu.gtceu.client.shader.GTShaders;
-import com.gregtechceu.gtceu.client.bloom.BloomEffectUtil;
 import com.gregtechceu.gtceu.common.CommonProxy;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.data.GTEntityTypes;
@@ -70,7 +70,7 @@ public class ClientProxy extends CommonProxy {
             ClientCacheManager.registerClientCache(GTClientCache.instance, "gtceu");
             Layers.registerLayer(OreRenderLayer::new, "ore_veins");
             Layers.registerLayer(FluidRenderLayer::new, "bedrock_fluids");
-            BloomEffectUtil.init();
+            BloomUtil.init();
             if (GTCEu.Mods.isSodiumEmbeddiumLoaded()) {
                 MinecraftForge.EVENT_BUS.register(GTEmbeddiumCompat.class);
             }

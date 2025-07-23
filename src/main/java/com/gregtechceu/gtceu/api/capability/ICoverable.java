@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 
 public interface ICoverable extends ITickSubscription, IAppearance, ICapabilityProvider {
 
+    @Nullable
     Level getLevel();
 
     BlockPos getPos();

@@ -51,7 +51,7 @@ public class MachineCoverContainer implements ICoverable, IEnhancedManaged {
     @ReadOnlyManaged(onDirtyMethod = "onCoversDirty",
                      serializeMethod = "serializeCovers",
                      deserializeMethod = "deserializeCovers")
-    private final EnumMap<Direction, CoverBehavior> covers = new EnumMap<>(Direction.class);
+    private final Map<Direction, CoverBehavior> covers = new EnumMap<>(Direction.class);
 
     private final int[] sidedRedstoneInput = new int[6];
 

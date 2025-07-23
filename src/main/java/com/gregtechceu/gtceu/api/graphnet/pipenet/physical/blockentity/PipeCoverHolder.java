@@ -39,6 +39,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.Map;
 
 public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
 
@@ -47,11 +48,13 @@ public class PipeCoverHolder implements ICoverable, IEnhancedManaged {
     private final FieldManagedStorage syncStorage = new FieldManagedStorage(this);
 
     private final PipeBlockEntity holder;
+    @DescSynced
+    @Persisted
     @RequireRerender
     @ReadOnlyManaged(onDirtyMethod = "onCoversDirty",
                      serializeMethod = "serializeCovers",
                      deserializeMethod = "deserializeCovers")
-    private final EnumMap<Direction, CoverBehavior> covers = new EnumMap<>(Direction.class);
+    private final Map<Direction, CoverBehavior> covers = new EnumMap<>(Direction.class);
     private final int[] sidedRedstoneInput = new int[6];
 
     public PipeCoverHolder(PipeBlockEntity holder) {

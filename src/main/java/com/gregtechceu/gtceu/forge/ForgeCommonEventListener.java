@@ -17,6 +17,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.chemical.material.registry.MaterialRegistry;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.PipeStructureRegistry;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -48,6 +49,7 @@ import com.gregtechceu.gtceu.common.network.packets.SPacketSyncOreVeins;
 import com.gregtechceu.gtceu.common.network.packets.hazard.SPacketAddHazardZone;
 import com.gregtechceu.gtceu.common.network.packets.hazard.SPacketRemoveHazardZone;
 import com.gregtechceu.gtceu.common.network.packets.hazard.SPacketSyncLevelHazards;
+import com.gregtechceu.gtceu.common.pipelike.block.pipe.MaterialPipeStructure;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.loader.BedrockFluidLoader;
 import com.gregtechceu.gtceu.data.loader.BedrockOreLoader;
@@ -108,6 +110,7 @@ import com.tterrag.registrate.util.entry.ItemEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -587,15 +590,9 @@ public class ForgeCommonEventListener {
         // remap pipe blocks (uses the datafixer in 1.21)
         for (MaterialRegistry registry : GTCEuAPI.materialManager.getRegistries()) {
             String namespace = registry.getModid();
-            event.getMappings(Registries.BLOCK, namespace).forEach(mapping -> {
-                remapPipe(mapping);
-            });
-            event.getMappings(Registries.ITEM, namespace).forEach(mapping -> {
-                remapPipe(mapping);
-            });
-            event.getMappings(Registries.BLOCK_ENTITY_TYPE, namespace).forEach(mapping -> {
-                remapPipe(mapping);
-            });
+            event.getMappings(Registries.BLOCK, namespace).forEach(ForgeCommonEventListener::remapPipe);
+            event.getMappings(Registries.ITEM, namespace).forEach(ForgeCommonEventListener::remapPipe);
+            event.getMappings(Registries.BLOCK_ENTITY_TYPE, namespace).forEach(ForgeCommonEventListener::remapPipe);
         }
         event.getMappings(Registries.BLOCK, GTCEu.MOD_ID).forEach(mapping -> {
             switch (mapping.getKey().getPath()) {
@@ -651,30 +648,50 @@ public class ForgeCommonEventListener {
         }
     }
 
-    private static <T> void remapPipe(MissingMappingsEvent.Mapping<T> mapping) {
-        String namespace = mapping.getKey().getNamespace();
-        String path = mapping.getKey().getPath();
-        if (path.contains("_pipe")) {
-            StringBuilder result;
-            boolean restrictive = path.contains("restrictive");
-            boolean fluid = path.contains("fluid");
-            String[] split = path.substring(0, path.length() - (fluid ? 11 : 10)).split("_");
-            if (restrictive) {
-                result = new StringBuilder(split[split.length - 2] + "_" + split[split.length - 1]);
-                for (int i = 0; i < split.length - 2; ++i) {
-                    result.append("_").append(split[i]);
-                }
-            } else {
-                result = new StringBuilder(split[split.length - 1]);
-                for (int i = 0; i < split.length - 1; ++i) {
-                    result.append("_").append(split[i]);
-                }
-            }
-            result.append("_pipe");
+    private static final String RESTRICTIVE_PART = "_restrictive";
+    private static final String PIPE_PART = "_pipe";
+    private static final String ITEM_PIPE_PART = "_item";
+    private static final String FLUID_PIPE_PART = "_fluid";
+    private static final Set<MaterialPipeStructure> PIPE_TYPES = PipeStructureRegistry
+            .getStructures(MaterialPipeStructure.class);
 
-            ResourceLocation newBlock = new ResourceLocation(namespace, result.toString());
-            IForgeRegistry<T> registry = RegistryManager.ACTIVE.getRegistry(mapping.getRegistry().getRegistryKey());
-            mapping.remap(registry.getValue(newBlock));
+    private static <T> void remapPipe(MissingMappingsEvent.Mapping<T> mapping) {
+        ResourceLocation id = mapping.getKey();
+
+        String path = id.getPath();
+        // check if the object's ID ends with "_pipe", strip that if so and return otherwise
+        if (path.endsWith(PIPE_PART)) {
+            path = path.substring(0, path.length() - PIPE_PART.length());
+        } else {
+            return;
         }
+        // do the same with "_item" and "_fluid"
+        if (path.endsWith(ITEM_PIPE_PART)) {
+            path = path.substring(0, path.length() - ITEM_PIPE_PART.length());
+        } else if (path.endsWith(FLUID_PIPE_PART)) {
+            path = path.substring(0, path.length() - FLUID_PIPE_PART.length());
+        } else {
+            return;
+        }
+
+        // and with all pipe size/restrictive combinations
+        MaterialPipeStructure pipeType = null;
+        for (MaterialPipeStructure type : PIPE_TYPES) {
+            String name = type.name();
+
+            if (path.endsWith(name)) {
+                pipeType = type;
+                path = path.substring(0, path.length() - name.length() - 1);
+                break;
+            }
+        }
+        if (pipeType == null) {
+            return;
+        }
+        String newPipeName = pipeType + path + PIPE_PART;
+
+        ResourceLocation newId = id.withPath(newPipeName);
+        IForgeRegistry<T> registry = RegistryManager.ACTIVE.getRegistry(mapping.getRegistry().getRegistryKey());
+        mapping.remap(registry.getValue(newId));
     }
 }

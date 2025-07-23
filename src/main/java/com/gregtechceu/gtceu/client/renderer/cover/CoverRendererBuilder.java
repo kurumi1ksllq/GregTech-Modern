@@ -10,8 +10,9 @@ import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
 import com.gregtechceu.gtceu.client.util.ModelUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
+import com.gregtechceu.gtceu.utils.memoization.GTMemoizer;
+import com.gregtechceu.gtceu.utils.memoization.MemoizedSupplier;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
@@ -23,6 +24,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.experimental.Tolerate;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -33,26 +35,26 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 @OnlyIn(Dist.CLIENT)
 @Accessors(chain = true)
 public class CoverRendererBuilder {
 
-    public static final ColorQuadCache[] PLATE_QUADS;
+    public static final MemoizedSupplier<ColorQuadCache[]> PLATE_QUADS = GTMemoizer.memoize(() -> {
+        ColorQuadCache[] plateQuads = new ColorQuadCache[GTValues.TIER_COUNT];
+        for (int i = 0; i < GTValues.TIER_COUNT; i++) {
+            plateQuads[i] = buildPlates(new SpriteInformation(plateSprite(i), 0));
+        }
+        return plateQuads;
+    });
     private static final EnumMap<Direction, SubListAddress> PLATE_COORDS = new EnumMap<>(Direction.class);
 
     protected static final UVMapper defaultMapper = UVMapper.standard(0);
 
-    static {
-        PLATE_QUADS = new ColorQuadCache[GTValues.TIER_COUNT];
-        for (int i = 0; i < GTValues.TIER_COUNT; i++) {
-            PLATE_QUADS[i] = buildPlates(new SpriteInformation(plateSprite(i), 0));
-        }
-    }
-
-    private static @NotNull TextureAtlasSprite plateSprite(int i) {
-        return Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
-                .apply(GTCEu.id("block/casings/voltage/%s/side".formatted(GTValues.VN[i].toLowerCase(Locale.ROOT))));
+    private static @NotNull TextureAtlasSprite plateSprite(int tier) {
+        return ModelUtils.getBlockSprite(
+                GTCEu.id("block/casings/voltage/%s/side".formatted(GTValues.VN[tier].toLowerCase(Locale.ROOT))));
     }
 
     public static ColorQuadCache buildPlates(SpriteInformation sprite) {
@@ -98,7 +100,7 @@ public class CoverRendererBuilder {
     protected @NotNull UVMapper mapperEmissive = defaultMapper;
 
     @Setter
-    protected ColorQuadCache plateQuads = PLATE_QUADS[GTValues.LV];
+    protected Supplier<ColorQuadCache> plateQuads = getPlateQuadCache(GTValues.LV);
 
     public CoverRendererBuilder(@Nullable ResourceLocation texture) {
         this(texture, null);
@@ -125,11 +127,25 @@ public class CoverRendererBuilder {
         });
     }
 
+    @Tolerate
+    public CoverRendererBuilder setPlateQuads(int tier) {
+        this.plateQuads = getPlateQuadCache(tier);
+        return this;
+    }
+
+    public static Supplier<ColorQuadCache> getPlateQuadCache(int tier) {
+        return () -> PLATE_QUADS.get()[tier];
+    }
+
     protected static List<BakedQuad> getPlates(Direction facing, ColorData data, ColorQuadCache plateQuads) {
         return PLATE_COORDS.get(facing).getSublist(plateQuads.getQuads(data));
     }
 
-    public CoverRenderer build() {
+    public final Supplier<CoverRenderer> build() {
+        return this::makeRenderer;
+    }
+
+    protected CoverRenderer makeRenderer() {
         EnumMap<Direction, Pair<BakedQuad, BakedQuad>> spriteQuads = texture != null ?
                 new EnumMap<>(Direction.class) : null;
         EnumMap<Direction, Pair<BakedQuad, BakedQuad>> spriteEmissiveQuads = textureEmissive != null ?
@@ -150,7 +166,7 @@ public class CoverRendererBuilder {
 
         return (quads, renderSide, attachedSide, level, pos, renderPlate, renderBackside, rand, modelData, colorData,
                 renderType) -> {
-            addPlates(quads, getPlates(attachedSide, colorData, plateQuads), renderPlate, renderSide);
+            addPlates(quads, getPlates(attachedSide, colorData, plateQuads.get()), renderPlate, renderSide);
             if (renderSide == null || renderSide == attachedSide) {
                 if (spriteQuads != null) {
                     quads.add(spriteQuads.get(attachedSide).getLeft());

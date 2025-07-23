@@ -182,7 +182,7 @@ public class FacadeCoverRenderer extends BaseBakedModel implements CoverRenderer
                          @NotNull Direction attachedSide, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos,
                          EnumSet<Direction> renderPlate, boolean renderBackside,
                          RandomSource rand, ModelData modelData, ColorData colorData, RenderType renderType) {
-        addPlates(quads, getPlates(attachedSide, colorData, PLATE_QUADS[GTValues.LV]), renderPlate, renderSide);
+        addPlates(quads, getPlates(attachedSide, colorData, PLATE_QUADS.get()[GTValues.LV]), renderPlate, renderSide);
 
         BlockState state = modelData.get(FacadeCover.FACADE_STATE_PROPERTY);
         if (state == null || state.getRenderShape() != RenderShape.MODEL) {

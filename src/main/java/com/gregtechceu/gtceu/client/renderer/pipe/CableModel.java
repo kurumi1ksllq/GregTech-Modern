@@ -13,15 +13,15 @@ import com.gregtechceu.gtceu.client.renderer.pipe.util.CacheKey;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.TextureInformation;
+import com.gregtechceu.gtceu.client.util.ModelUtils;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.client.model.ModelFactory;
-
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.model.data.ModelData;
 
@@ -47,9 +47,9 @@ public class CableModel extends AbstractPipeModel<CacheKey> {
         }
     }
 
-    private final TextureInformation wireTex;
-    private final TextureInformation insulationTex;
-    private final TextureInformation fullInsulationTex;
+    private final @NotNull TextureInformation wireTex;
+    private final @Nullable TextureInformation insulationTex;
+    private final @Nullable TextureInformation fullInsulationTex;
 
     private final Material material;
 
@@ -66,6 +66,20 @@ public class CableModel extends AbstractPipeModel<CacheKey> {
                 WIRE;
         this.insulationTex = insulationTex;
         this.fullInsulationTex = fullInsulationTex;
+
+        ModelUtils.registerAtlasStitchedEventListener(false, InventoryMenu.BLOCK_ATLAS, event -> {
+            var atlas = event.getAtlas();
+
+            if (fullInsulationTex != null) {
+                fullInsulationSprite = new SpriteInformation(atlas.getSprite(fullInsulationTex.texture()),
+                        fullInsulationTex.colorID());
+            }
+            if (insulationTex != null) {
+                insulationSprite = new SpriteInformation(atlas.getSprite(insulationTex.texture()),
+                        insulationTex.colorID());
+            }
+            wireSprite = new SpriteInformation(atlas.getSprite(wireTex.texture()), wireTex.colorID());
+        });
     }
 
     public CableModel(@NotNull Material material) {
@@ -103,18 +117,6 @@ public class CableModel extends AbstractPipeModel<CacheKey> {
 
     @Override
     protected StructureQuadCache constructForKey(CacheKey key) {
-        if (fullInsulationSprite == null && fullInsulationTex != null) {
-            fullInsulationSprite = new SpriteInformation(ModelFactory.getBlockSprite(fullInsulationTex.texture()),
-                    fullInsulationTex.colorID());
-        }
-        if (insulationSprite == null && insulationTex != null) {
-            insulationSprite = new SpriteInformation(ModelFactory.getBlockSprite(insulationTex.texture()),
-                    insulationTex.colorID());
-        }
-        if (wireSprite == null && wireTex != null) {
-            wireSprite = new SpriteInformation(ModelFactory.getBlockSprite(wireTex.texture()), wireTex.colorID());
-        }
-
         SpriteInformation sideTex = fullInsulationSprite != null ? fullInsulationSprite : wireSprite;
         if (insulationSprite == null) {
             return StructureQuadCache.create(PipeQuadHelper.create(key.getThickness()), wireSprite, sideTex);

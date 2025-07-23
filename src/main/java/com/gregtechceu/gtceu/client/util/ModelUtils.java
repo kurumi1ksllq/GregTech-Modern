@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.client.util;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.client.model.machine.MachineModel;
+import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererBuilder;
 import com.gregtechceu.gtceu.client.renderer.cover.CoverRendererPackage;
 
 import net.minecraft.ChatFormatting;
@@ -9,6 +10,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,6 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -48,6 +51,10 @@ public class ModelUtils {
 
     public static BakedModel getModelForState(BlockState state) {
         return Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
+    }
+
+    public static TextureAtlasSprite getBlockSprite(ResourceLocation texture) {
+        return Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
     }
 
     public static String getPropertyValueString(Map.Entry<Property<?>, Comparable<?>> entry) {
@@ -106,6 +113,7 @@ public class ModelUtils {
         if (atlas.location() == TextureAtlas.LOCATION_BLOCKS) {
             MachineModel.initSprites(atlas);
             CoverRendererPackage.initSprites(atlas);
+            CoverRendererBuilder.PLATE_QUADS.invalidate();
         }
 
         for (var listener : EVENT_LISTENERS) {

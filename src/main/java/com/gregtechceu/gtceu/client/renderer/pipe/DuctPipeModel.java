@@ -8,12 +8,13 @@ import com.gregtechceu.gtceu.client.renderer.pipe.quad.PipeQuadHelper;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.CacheKey;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
-
-import com.lowdragmc.lowdraglib.client.model.ModelFactory;
+import com.gregtechceu.gtceu.client.util.ModelUtils;
 
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.model.data.ModelData;
 
@@ -24,13 +25,19 @@ public class DuctPipeModel extends AbstractPipeModel<CacheKey> {
 
     private static final ResourceLocation loc = GTCEu.id("pipe_duct");
 
-    public static final DuctPipeModel INSTANCE = new DuctPipeModel();
-
     private static final ResourceLocation SIDE_TEXTURE = GTCEu.id("block/pipe/pipe_duct_side");
     private static final ResourceLocation END_TEXTURE = GTCEu.id("block/pipe/pipe_duct_in");
 
     private SpriteInformation sideSprite;
     private SpriteInformation endSprite;
+
+    public DuctPipeModel() {
+        ModelUtils.registerAtlasStitchedEventListener(false, InventoryMenu.BLOCK_ATLAS, event -> {
+            TextureAtlas atlas = event.getAtlas();
+            sideSprite = new SpriteInformation(atlas.getSprite(SIDE_TEXTURE), -1);
+            endSprite = new SpriteInformation(atlas.getSprite(END_TEXTURE), -1);
+        });
+    }
 
     @Override
     protected @NotNull CacheKey toKey(@NotNull ModelData state) {
@@ -39,13 +46,6 @@ public class DuctPipeModel extends AbstractPipeModel<CacheKey> {
 
     @Override
     protected StructureQuadCache constructForKey(CacheKey key) {
-        if (sideSprite == null) {
-            sideSprite = new SpriteInformation(ModelFactory.getBlockSprite(SIDE_TEXTURE), -1);
-        }
-        if (endSprite == null) {
-            endSprite = new SpriteInformation(ModelFactory.getBlockSprite(END_TEXTURE), -1);
-        }
-
         return StructureQuadCache.create(PipeQuadHelper.create(key.getThickness()), endSprite, sideSprite);
     }
 

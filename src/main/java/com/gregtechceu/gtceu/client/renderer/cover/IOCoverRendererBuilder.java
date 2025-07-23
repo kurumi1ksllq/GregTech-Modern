@@ -22,10 +22,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
+import java.util.function.Supplier;
 
 public class IOCoverRendererBuilder extends CoverRendererBuilder {
 
-    public static final CoverRenderer PUMP_LIKE_COVER_RENDERER = new IOCoverRendererBuilder(
+    public static final Supplier<CoverRenderer> PUMP_LIKE_COVER_RENDERER = new IOCoverRendererBuilder(
             GTCEu.id("block/cover/pump"), null,
             GTCEu.id("block/cover/pump_inverted"), null)
             .build();
@@ -77,12 +78,17 @@ public class IOCoverRendererBuilder extends CoverRendererBuilder {
     }
 
     @Override
-    public @NotNull IOCoverRendererBuilder setPlateQuads(ColorQuadCache plateQuads) {
+    public @NotNull IOCoverRendererBuilder setPlateQuads(Supplier<ColorQuadCache> plateQuads) {
         return (IOCoverRendererBuilder) super.setPlateQuads(plateQuads);
     }
 
     @Override
-    public CoverRenderer build() {
+    public IOCoverRendererBuilder setPlateQuads(int tier) {
+        return (IOCoverRendererBuilder) super.setPlateQuads(tier);
+    }
+
+    @Override
+    public CoverRenderer makeRenderer() {
         EnumMap<Direction, Pair<BakedQuad, BakedQuad>> spriteQuads = texture != null ?
                 new EnumMap<>(Direction.class) : null;
         EnumMap<Direction, Pair<BakedQuad, BakedQuad>> spriteEmissiveQuads = textureEmissive != null ?
@@ -124,7 +130,7 @@ public class IOCoverRendererBuilder extends CoverRendererBuilder {
                 renderType) -> {
             IO io = modelData.get(IIOCover.IO_PROPERTY);
 
-            addPlates(quads, getPlates(attachedSide, colorData, plateQuads), renderPlate, renderSide);
+            addPlates(quads, getPlates(attachedSide, colorData, plateQuads.get()), renderPlate, renderSide);
             if (renderSide == null || renderSide == attachedSide) {
                 boolean isInverted = io != null && io != IO.OUT;
 

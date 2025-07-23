@@ -22,9 +22,12 @@ public class UnbakedPipeModel implements IUnbakedGeometry<UnbakedPipeModel> {
     private final PipeModelRedirector model;
 
     @Override
-    public BakedModel bake(IGeometryBakingContext iGeometryBakingContext, ModelBaker baker,
-                           Function<Material, TextureAtlasSprite> function, ModelState arg2, ItemOverrides arg3,
-                           ResourceLocation arg4) {
+    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker,
+                           Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState,
+                           ItemOverrides overrides, ResourceLocation modelLocation) {
+        if (model.getDefaultParticleIcon() == null && context.hasMaterial("particle")) {
+            model.setDefaultParticleIcon(spriteGetter.apply(context.getMaterial("particle")));
+        }
         return model;
     }
 
@@ -37,8 +40,9 @@ public class UnbakedPipeModel implements IUnbakedGeometry<UnbakedPipeModel> {
         @Override
         public UnbakedPipeModel read(JsonObject jsonObject,
                                      JsonDeserializationContext deserializationContext) throws JsonParseException {
-            if (!jsonObject.has("model_id"))
-                throw new JsonParseException("An UnbakedPipeModel must have an \"model_id\" member.");
+            if (!jsonObject.has("model_id")) {
+                throw new JsonParseException("A pipe model must have a \"model_id\" field.");
+            }
 
             String[] id = GsonHelper.getAsString(jsonObject, "model_id").split("#");
             ResourceLocation modelId = new ModelResourceLocation(new ResourceLocation(id[0]),

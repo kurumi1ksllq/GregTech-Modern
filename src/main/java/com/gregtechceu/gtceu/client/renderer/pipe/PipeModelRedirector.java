@@ -6,10 +6,9 @@ import com.gregtechceu.gtceu.api.graphnet.pipenet.physical.block.PipeMaterialBlo
 import com.gregtechceu.gtceu.client.model.BaseBakedModel;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.MaterialModelSupplier;
 import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
+import com.gregtechceu.gtceu.client.util.ModelUtils;
 import com.gregtechceu.gtceu.client.util.RecolorableBakedQuad;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-
-import com.lowdragmc.lowdraglib.client.model.ModelFactory;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
@@ -28,6 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,6 +47,9 @@ public class PipeModelRedirector extends BaseBakedModel {
 
     @Getter
     private final ModelResourceLocation loc;
+    @Getter
+    @Setter
+    private TextureAtlasSprite defaultParticleIcon = null;
 
     private final FakeItemOverrides fakeItemOverrideList = new FakeItemOverrides();
 
@@ -80,8 +83,6 @@ public class PipeModelRedirector extends BaseBakedModel {
             mat = block.material;
         }
         AbstractPipeModel<?> model = supplier.getModel(mat);
-        // this can happen when transferring old data, apparently.
-        // noinspection ConstantValue
         if (model == null) {
             return Collections.emptyList();
         }
@@ -113,11 +114,18 @@ public class PipeModelRedirector extends BaseBakedModel {
 
     @Override
     public @NotNull TextureAtlasSprite getParticleIcon() {
-        return ModelFactory.getBlockSprite(GTCEu.id("block/cable/wire"));
+        AbstractPipeModel<?> model = supplier.getModel(GTMaterials.NULL);
+        if (model != null) {
+            return model.getParticleIcon(ModelData.EMPTY);
+        } else if (defaultParticleIcon != null) {
+            return defaultParticleIcon;
+        } else {
+            return ModelUtils.getBlockSprite(GTCEu.id("block/pipe/pipe_side"));
+        }
     }
 
     @Override
-    public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
+    public @NotNull TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
         Material mat = Objects.requireNonNullElse(data.get(PipeRenderProperties.MATERIAL_PROPERTY), GTMaterials.NULL);
         BlockState state = data.get(MODEL_DATA_STATE);
 
@@ -125,7 +133,11 @@ public class PipeModelRedirector extends BaseBakedModel {
             mat = block.material;
         }
         AbstractPipeModel<?> model = supplier.getModel(mat);
-        return model.getParticleIcon(data);
+        if (model != null) {
+            return model.getParticleIcon(data);
+        } else {
+            return getParticleIcon();
+        }
     }
 
     @Override

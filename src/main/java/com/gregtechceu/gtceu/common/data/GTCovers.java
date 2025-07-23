@@ -36,7 +36,7 @@ public class GTCovers {
     }
 
     public static final CoverDefinition FACADE = register("facade", FacadeCover::new,
-            () -> () -> FacadeCoverRenderer.INSTANCE);
+            () -> FacadeCoverRenderer.INSTANCE);
 
     public static final CoverDefinition ITEM_FILTER = register("item_filter", ItemFilterCover::new);
     public static final CoverDefinition FLUID_FILTER = register("fluid_filter", FluidFilterCover::new);
@@ -47,7 +47,7 @@ public class GTCovers {
     public static final CoverDefinition STORAGE = register("storage", StorageCover::new);
 
     public static final CoverDefinition[] CONVEYORS = registerTiered("conveyor", ConveyorCover::new,
-            () -> tier -> new IOCoverRendererBuilder(
+            tier -> new IOCoverRendererBuilder(
                     GTCEu.id("block/cover/conveyor"),
                     GTCEu.id("block/cover/conveyor_emissive"),
                     null,
@@ -56,7 +56,7 @@ public class GTCovers {
             ALL_TIERS);
 
     public static final CoverDefinition[] ROBOT_ARMS = registerTiered("robot_arm", RobotArmCover::new,
-            () -> tier -> new IOCoverRendererBuilder(
+            tier -> new IOCoverRendererBuilder(
                     GTCEu.id("block/cover/arm"),
                     GTCEu.id("block/cover/arm_emissive"),
                     null,
@@ -65,10 +65,10 @@ public class GTCovers {
             ALL_TIERS);
 
     public static final CoverDefinition[] PUMPS = registerTiered("pump", PumpCover::new,
-            () -> tier -> IOCoverRendererBuilder.PUMP_LIKE_COVER_RENDERER, ALL_TIERS);
+            tier -> IOCoverRendererBuilder.PUMP_LIKE_COVER_RENDERER, ALL_TIERS);
 
     public static final CoverDefinition[] FLUID_REGULATORS = registerTiered("fluid_regulator", FluidRegulatorCover::new,
-            () -> tier -> IOCoverRendererBuilder.PUMP_LIKE_COVER_RENDERER, ALL_TIERS);
+            tier -> IOCoverRendererBuilder.PUMP_LIKE_COVER_RENDERER, ALL_TIERS);
 
     public static final CoverDefinition COMPUTER_MONITOR = register("computer_monitor", ComputerMonitorCover::new);
     public static final CoverDefinition MACHINE_CONTROLLER = register("machine_controller",
@@ -101,24 +101,23 @@ public class GTCovers {
     // Solar Panels
     public static final CoverDefinition SOLAR_PANEL_BASIC = register("solar_panel", CoverSolarPanel::new);
     public static final CoverDefinition[] SOLAR_PANEL = registerTiered("solar_panel", CoverSolarPanel::new,
-            () -> tier -> new CoverRendererBuilder(GTCEu.id("block/cover/solar_panel")).build(), ALL_TIERS_WITH_ULV);
+            tier -> new CoverRendererBuilder(GTCEu.id("block/cover/solar_panel")).build(), ALL_TIERS_WITH_ULV);
 
     ///////////////////////////////////////////////
     // *********** UTIL METHODS ***********//
     ///////////////////////////////////////////////
 
     private static CoverDefinition register(String id, CoverDefinition.CoverBehaviourProvider behaviorCreator) {
-        return register(id, behaviorCreator,
-                () -> () -> new CoverRendererBuilder(GTCEu.id("block/cover/" + id)).build());
+        return register(id, behaviorCreator, new CoverRendererBuilder(GTCEu.id("block/cover/" + id)).build());
     }
 
     private static CoverDefinition register(String id, CoverDefinition.CoverBehaviourProvider behaviorCreator,
-                                            Supplier<Supplier<CoverRenderer>> coverRenderer) {
+                                            Supplier<CoverRenderer> coverRenderer) {
         return register(GTCEu.id(id), behaviorCreator, coverRenderer);
     }
 
     public static CoverDefinition register(ResourceLocation id, CoverDefinition.CoverBehaviourProvider behaviorCreator,
-                                           Supplier<Supplier<CoverRenderer>> coverRenderer) {
+                                           Supplier<CoverRenderer> coverRenderer) {
         var definition = new CoverDefinition(id, behaviorCreator, coverRenderer);
         GTRegistries.COVERS.register(definition.getId(), definition);
         return definition;
@@ -126,12 +125,13 @@ public class GTCovers {
 
     private static CoverDefinition[] registerTiered(String id,
                                                     CoverDefinition.TieredCoverBehaviourProvider behaviorCreator,
-                                                    Supplier<IntFunction<CoverRenderer>> coverRenderer,
+                                                    IntFunction<Supplier<CoverRenderer>> coverRenderer,
                                                     int... tiers) {
         return Arrays.stream(tiers).mapToObj(tier -> {
             var name = id + "." + GTValues.VN[tier].toLowerCase(Locale.ROOT);
-            return register(name, (def, coverable, side) -> behaviorCreator.create(def, coverable, side, tier),
-                    () -> () -> coverRenderer.get().apply(tier));
+            return register(name,
+                    (def, coverable, side) -> behaviorCreator.create(def, coverable, side, tier),
+                    coverRenderer.apply(tier));
         }).toArray(CoverDefinition[]::new);
     }
 

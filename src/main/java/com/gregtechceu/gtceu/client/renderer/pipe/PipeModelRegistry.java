@@ -19,6 +19,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 import java.util.HashMap;
@@ -183,8 +184,8 @@ public final class PipeModelRegistry {
         array[1] = new PipeModel(pipeSmallWood, pipeSideWood, false);
         array[2] = new PipeModel(pipeNormalWood, pipeSideWood, false);
         array[3] = new PipeModel(pipeLargeWood, pipeSideWood, false);
-        registerPipeOverride(
-                new MaterialModelOverride.StandardOverride<>(array, m -> m != null && m.hasProperty(PropertyKey.WOOD)));
+        registerPipeOverride(new MaterialModelOverride.StandardOverride<>(array,
+                m -> !m.isNull() && m.hasProperty(PropertyKey.WOOD)));
 
         array = new PipeModel[PIPE_MODEL_COUNT];
         array[0] = new PipeModel(pipeTiny, pipeSide, true);
@@ -205,7 +206,7 @@ public final class PipeModelRegistry {
         }
     }
 
-    private static PipeModel getOrCachePipeModel(@NotNull Material m, int i) {
+    private static @Nullable PipeModel getOrCachePipeModel(@NotNull Material m, int i) {
         PipeModel[] cached = PIPE.computeIfAbsent(m, k -> new PipeModel[PIPE_MODEL_COUNT]);
         PipeModel selected = cached[i];
         if (selected == null) {
@@ -218,7 +219,7 @@ public final class PipeModelRegistry {
         return selected;
     }
 
-    private static PipeModel getOrCachePipeRestrictiveModel(@NotNull Material m, int i) {
+    private static @Nullable PipeModel getOrCachePipeRestrictiveModel(@NotNull Material m, int i) {
         PipeModel[] cached = PIPE_RESTRICTIVE.computeIfAbsent(m, k -> new PipeModel[PIPE_MODEL_COUNT]);
         PipeModel selected = cached[i];
         if (selected == null) {
@@ -247,7 +248,7 @@ public final class PipeModelRegistry {
         }
     }
 
-    private static CableModel getOrCacheCableModel(@NotNull Material m, int i) {
+    private static @Nullable CableModel getOrCacheCableModel(@NotNull Material m, int i) {
         CableModel[] cached = CABLE.computeIfAbsent(m, k -> new CableModel[CABLE_MODEL_COUNT]);
         CableModel selected = cached[i];
         if (selected == null) {

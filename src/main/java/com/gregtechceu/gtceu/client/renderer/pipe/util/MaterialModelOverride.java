@@ -21,7 +21,7 @@ public interface MaterialModelOverride<T extends AbstractPipeModel<?>> {
 
         @Override
         public @Nullable T getModel(@NotNull Material material, int i) {
-            if (material.isNull() || !predicate.test(material)) return null;
+            if (!predicate.test(material)) return null;
             else return models[i];
         }
     }
@@ -33,7 +33,7 @@ public interface MaterialModelOverride<T extends AbstractPipeModel<?>> {
 
         @Override
         public @Nullable T getModel(@NotNull Material material, int i) {
-            if (material.isNull() || !predicate.test(material)) return null;
+            if (!predicate.test(material)) return null;
             if (!models.contains(material, i)) {
                 T model = createFunction.apply(material, i);
                 models.put(material, i, model);

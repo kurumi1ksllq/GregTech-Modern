@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.client.model;
 
+import com.gregtechceu.gtceu.client.util.ModelUtils;
+
 import com.lowdragmc.lowdraglib.client.model.ModelFactory;
 
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -35,7 +37,7 @@ public interface ItemBakedModel extends BakedModel {
 
     @Override
     default TextureAtlasSprite getParticleIcon() {
-        return ModelFactory.getBlockSprite(MissingTextureAtlasSprite.getLocation());
+        return ModelUtils.getBlockSprite(MissingTextureAtlasSprite.getLocation());
     }
 
     @Override

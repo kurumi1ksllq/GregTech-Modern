@@ -13,12 +13,13 @@ import com.gregtechceu.gtceu.client.renderer.pipe.util.CacheKey;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.TextureInformation;
+import com.gregtechceu.gtceu.client.util.ModelUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.client.model.ModelFactory;
-
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.model.data.ModelData;
 
@@ -44,6 +45,18 @@ public class PipeModel extends AbstractPipeModel<CacheKey> {
         this.sideTex = sideTex;
         this.restrictiveTex = restrictiveTex;
         this.blockedTex = blockedTex;
+
+        ModelUtils.registerAtlasStitchedEventListener(false, InventoryMenu.BLOCK_ATLAS, event -> {
+            TextureAtlas atlas = event.getAtlas();
+
+            inSprite = new SpriteInformation(atlas.getSprite(inTex.texture()), inTex.colorID());
+            sideSprite = new SpriteInformation(atlas.getSprite(sideTex.texture()), sideTex.colorID());
+            if (restrictiveTex != null) {
+                restrictiveSprite = new SpriteInformation(atlas.getSprite(restrictiveTex.texture()),
+                        restrictiveTex.colorID());
+            }
+            blockedSprite = new SpriteInformation(atlas.getSprite(blockedTex.texture()), blockedTex.colorID());
+        });
     }
 
     public PipeModel(@NotNull TextureInformation inTex, @NotNull TextureInformation sideTex,
@@ -64,21 +77,6 @@ public class PipeModel extends AbstractPipeModel<CacheKey> {
 
     @Override
     protected StructureQuadCache constructForKey(CacheKey key) {
-        if (inSprite == null) {
-            inSprite = new SpriteInformation(ModelFactory.getBlockSprite(inTex.texture()), inTex.colorID());
-        }
-        if (sideSprite == null) {
-            sideSprite = new SpriteInformation(ModelFactory.getBlockSprite(sideTex.texture()), sideTex.colorID());
-        }
-        if (restrictiveSprite == null && restrictiveTex != null) {
-            restrictiveSprite = new SpriteInformation(ModelFactory.getBlockSprite(restrictiveTex.texture()),
-                    restrictiveTex.colorID());
-        }
-        if (blockedSprite == null) {
-            blockedSprite = new SpriteInformation(ModelFactory.getBlockSprite(blockedTex.texture()),
-                    blockedTex.colorID());
-        }
-
         if (restrictiveTex != null) {
             return RestrictiveSQC.create(PipeQuadHelper.create(key.getThickness()), inSprite, sideSprite,
                     blockedSprite, restrictiveSprite);

@@ -10,11 +10,11 @@ import com.gregtechceu.gtceu.client.renderer.pipe.util.ActivableCacheKey;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.ColorData;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.SpriteInformation;
 import com.gregtechceu.gtceu.client.renderer.pipe.util.TextureInformation;
+import com.gregtechceu.gtceu.client.util.ModelUtils;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.client.bakedpipeline.Quad;
-import com.lowdragmc.lowdraglib.client.model.ModelFactory;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
@@ -23,6 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraftforge.api.distmarker.Dist;
@@ -58,6 +59,16 @@ public class ActivablePipeModel extends AbstractPipeModel<ActivableCacheKey> {
         this.overlayTex = overlayTex;
         this.overlayActiveTex = overlayActiveTex;
         this.emissiveActive = emissiveActive;
+
+        ModelUtils.registerAtlasStitchedEventListener(false, InventoryMenu.BLOCK_ATLAS, event -> {
+            var atlas = event.getAtlas();
+
+            inSprite = new SpriteInformation(atlas.getSprite(inTex.texture()), inTex.colorID());
+            sideSprite = new SpriteInformation(atlas.getSprite(sideTex.texture()), sideTex.colorID());
+            overlaySprite = new SpriteInformation(atlas.getSprite(overlayTex.texture()), overlayTex.colorID());
+            overlayActiveSprite = new SpriteInformation(atlas.getSprite(overlayActiveTex.texture()),
+                    overlayActiveTex.colorID());
+        });
     }
 
     @Override
@@ -100,21 +111,6 @@ public class ActivablePipeModel extends AbstractPipeModel<ActivableCacheKey> {
 
     @Override
     protected StructureQuadCache constructForKey(ActivableCacheKey key) {
-        if (inSprite == null) {
-            inSprite = new SpriteInformation(ModelFactory.getBlockSprite(inTex.texture()), inTex.colorID());
-        }
-        if (sideSprite == null) {
-            sideSprite = new SpriteInformation(ModelFactory.getBlockSprite(sideTex.texture()), sideTex.colorID());
-        }
-        if (overlaySprite == null) {
-            overlaySprite = new SpriteInformation(ModelFactory.getBlockSprite(overlayTex.texture()),
-                    overlayTex.colorID());
-        }
-        if (overlayActiveSprite == null) {
-            overlayActiveSprite = new SpriteInformation(ModelFactory.getBlockSprite(overlayActiveTex.texture()),
-                    overlayActiveTex.colorID());
-        }
-
         return ActivableSQC.create(PipeQuadHelper.create(key.getThickness()), inSprite, sideSprite,
                 overlaySprite, overlayActiveSprite);
     }

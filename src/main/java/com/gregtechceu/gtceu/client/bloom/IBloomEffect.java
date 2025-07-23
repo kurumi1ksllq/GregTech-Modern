@@ -1,7 +1,5 @@
 package com.gregtechceu.gtceu.client.bloom;
 
-import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
-
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

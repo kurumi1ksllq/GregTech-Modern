@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.client.bloom.shader;
+package com.gregtechceu.gtceu.client.bloom;
 
 public enum BloomAlgorithm {
 

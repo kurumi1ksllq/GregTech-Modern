@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.config;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
+import com.gregtechceu.gtceu.client.bloom.BloomAlgorithm;
 
 import net.minecraft.commands.Commands;
 

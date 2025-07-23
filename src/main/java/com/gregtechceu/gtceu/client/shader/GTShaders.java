@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.client.shader;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
+import com.gregtechceu.gtceu.client.bloom.BloomAlgorithm;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.irisshaders.iris.api.v0.IrisApi;

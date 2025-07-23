@@ -67,6 +67,10 @@ configurations {
         canBeConsumed = false
         canBeResolved = true
     }
+
+    renderNurseCfg {
+        canBeConsumed = false
+    }
 }
 
 afterEvaluate {

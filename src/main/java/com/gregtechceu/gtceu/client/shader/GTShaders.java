@@ -22,6 +22,7 @@ import com.mojang.blaze3d.vertex.VertexBuffer;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @OnlyIn(Dist.CLIENT)
 public class GTShaders {
@@ -33,7 +34,7 @@ public class GTShaders {
     public static RenderTarget BLOOM_TARGET = null;
 
     public static Map<BlockPos, VertexBuffer> BLOOM_BUFFERS = new HashMap<>();
-    public static Map<BlockPos, BufferBuilder> BLOOM_BUFFER_BUILDERS = new HashMap<>();
+    public static Map<BlockPos, BufferBuilder> BLOOM_BUFFER_BUILDERS = new ConcurrentHashMap<>();
     public static Map<BlockPos, BufferBuilder.SortState> BLOOM_BUFFER_SORT_STATES = new HashMap<>();
 
     public static void onRegisterShaders(RegisterShadersEvent event) {
@@ -88,7 +89,7 @@ public class GTShaders {
     }
 
     public static boolean allowedShader() {
-        return BLOOM_CHAIN != null && innerAllowedShader();
+        return BLOOM_CHAIN != null && BLOOM_TARGET != null && innerAllowedShader();
     }
 
     private static boolean innerAllowedShader() {

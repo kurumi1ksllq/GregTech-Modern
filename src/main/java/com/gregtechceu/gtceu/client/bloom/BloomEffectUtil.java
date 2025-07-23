@@ -31,7 +31,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ForgeHooksClient;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -41,8 +40,8 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -52,7 +51,7 @@ public class BloomEffectUtil {
     private static final Map<BloomRenderKey, List<BloomRenderTicket>> BLOOM_RENDERS = new Object2ObjectOpenHashMap<>();
     private static final List<BloomRenderTicket> SCHEDULED_BLOOM_RENDERS = new ArrayList<>();
 
-    private static final ReentrantLock BLOOM_RENDER_LOCK = new ReentrantLock();
+    private static final ReadWriteLock BLOOM_RENDER_LOCK = new ReentrantReadWriteLock();
 
     /**
      * <p>
@@ -185,11 +184,11 @@ public class BloomEffectUtil {
         if (!GTShaders.allowedShader()) return BloomRenderTicket.INVALID;
         if (algorithm == BloomAlgorithm.DISABLED) return BloomRenderTicket.INVALID;
         BloomRenderTicket ticket = new BloomRenderTicket(setup, algorithm, render, validityChecker, worldContext);
-        BLOOM_RENDER_LOCK.lock();
+        BLOOM_RENDER_LOCK.writeLock().lock();
         try {
             SCHEDULED_BLOOM_RENDERS.add(ticket);
         } finally {
-            BLOOM_RENDER_LOCK.unlock();
+            BLOOM_RENDER_LOCK.writeLock().unlock();
         }
         return ticket;
     }
@@ -201,7 +200,7 @@ public class BloomEffectUtil {
      */
     public static void invalidateLevelTickets(@NotNull LevelAccessor level) {
         Objects.requireNonNull(level, "level == null");
-        BLOOM_RENDER_LOCK.lock();
+        BLOOM_RENDER_LOCK.readLock().lock();
         try {
             for (BloomRenderTicket ticket : SCHEDULED_BLOOM_RENDERS) {
                 if (ticket.isValid() && ticket.worldContext != null && ticket.worldContext.get() == level) {
@@ -217,13 +216,11 @@ public class BloomEffectUtil {
                 }
             }
         } finally {
-            BLOOM_RENDER_LOCK.unlock();
+            BLOOM_RENDER_LOCK.readLock().lock();
         }
     }
 
     public static void init() {}
-
-    public static final AtomicBoolean isDrawingBlockBloom = new AtomicBoolean(false);
 
     public static void renderBloom(Camera camera, @NotNull Entity entity, LevelRenderer levelRenderer,
                                    PoseStack poseStack, Matrix4f projectionMatrix, Frustum frustum,
@@ -234,7 +231,7 @@ public class BloomEffectUtil {
         Vec3 camPos = camera.getPosition();
         Minecraft.getInstance().getProfiler().popPush("gtceu_block_bloom");
 
-        BLOOM_RENDER_LOCK.lock();
+        BLOOM_RENDER_LOCK.writeLock().lock();
         try {
             preDraw();
 
@@ -254,13 +251,11 @@ public class BloomEffectUtil {
                         draw(poseStack, buffer, context, list);
                     }
                 }
-
                 RenderSystem.depthMask(false);
                 postDraw();
 
-                render(partialTicks, poseStack, projectionMatrix, camPos);
-
-                postDraw();
+                setupRenderState(false);
+                render(partialTicks, poseStack, projectionMatrix, levelRenderer, camera, frustum);
                 VertexBuffer.unbind();
                 Minecraft.getInstance().getProfiler().pop();
 
@@ -282,29 +277,19 @@ public class BloomEffectUtil {
 
             RenderSystem.depthMask(true);
             if (!BLOOM_RENDERS.isEmpty()) {
-                for (var e : BLOOM_RENDERS.entrySet()) {
-                    List<BloomRenderTicket> list = e.getValue();
+                for (List<BloomRenderTicket> list : BLOOM_RENDERS.values()) {
                     BufferBuilder buffer = Tesselator.getInstance().getBuilder();
                     draw(poseStack, buffer, context, list);
                 }
             }
             RenderSystem.depthMask(false);
-
-            isDrawingBlockBloom.set(true);
-            render(partialTicks, poseStack, projectionMatrix, camPos);
-            isDrawingBlockBloom.set(false);
-
             postDraw();
-            VertexBuffer.unbind();
-            Minecraft.getInstance().getProfiler().pop();
 
-            //noinspection UnstableApiUsage
-            ForgeHooksClient.dispatchRenderStage(GTRenderTypes.getBloom(), levelRenderer,
-                    poseStack, projectionMatrix, levelRenderer.getTicks(), camera, frustum);
-
-            GTRenderTypes.getBloom().clearRenderState();
+            setupRenderState(true);
+            drawBlockBloom(poseStack, projectionMatrix, camPos);
+            render(partialTicks, poseStack, projectionMatrix, levelRenderer, camera, frustum);
         } finally {
-            BLOOM_RENDER_LOCK.unlock();
+            BLOOM_RENDER_LOCK.writeLock().unlock();
         }
     }
 
@@ -432,17 +417,17 @@ public class BloomEffectUtil {
     private static final String BLOOM_THRESHOLD_DOWN_UNIFORM = "BloomThresholdDown";
     private static final String BLUR_DIR_UNIFORM = "BlurDir";
 
-    private static void render(float partialTicks, PoseStack poseStack, Matrix4f projectionMatrix, Vec3 camPos) {
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.enableDepthTest();
+    private static void setupRenderState(boolean drawBlockBloom) {
+        // RenderSystem.enableDepthTest();
+        // RenderSystem.enableBlend();
+        // RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         // Forcefully insert config values to shader
         List<PostPass> passes = ((PostChainAccessor) GTShaders.BLOOM_CHAIN).getPasses();
         for (PostPass pass : passes) {
             EffectInstance shader = pass.getEffect();
             String name = shader.getName();
 
-            shader.safeGetUniform("EnableFilter").set(BloomEffectUtil.isDrawingBlockBloom.get() ? 1 : 0);
+            shader.safeGetUniform("EnableFilter").set(drawBlockBloom ? 1 : 0);
 
             if (GTShaders.BLOOM_TYPE == BloomAlgorithm.UNREAL && name.equals(SEPERABLE_BLUR_SHADER_NAME)) {
                 int index = passes.indexOf(pass);
@@ -459,30 +444,55 @@ public class BloomEffectUtil {
                 shader.safeGetUniform(BLOOM_THRESHOLD_DOWN_UNIFORM).set(BloomEffect.lowBrightnessThreshold);
             }
         }
+    }
 
-        for (var entry : GTShaders.BLOOM_BUFFERS.entrySet()) {
+    private static void drawBlockBloom(PoseStack poseStack, Matrix4f projectionMatrix, Vec3 camPos) {
+        for (var it = GTShaders.BLOOM_BUFFERS.entrySet().iterator(); it.hasNext();) {
+            var entry = it.next();
+            BlockPos pos = entry.getKey();
+
             // return early if buffer is invalid or has no vertex data bound
             // VertexBuffer#mode's nullness is the easiest way to check this.
-            if (entry.getValue().isInvalid() || ((VertexBufferAccessor) entry.getValue()).getMode() == null) {
-                continue;
+            try {
+                if (entry.getValue().isInvalid() || ((VertexBufferAccessor) entry.getValue()).getMode() == null) {
+                    continue;
+                }
+                entry.getValue().bind();
+
+                poseStack.pushPose();
+                poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
+                poseStack.translate(-camPos.x(), -camPos.y(), -camPos.z());
+
+                entry.getValue().drawWithShader(poseStack.last().pose(), projectionMatrix,
+                        GameRenderer.getRendertypeTranslucentShader());
+                poseStack.popPose();
+            } finally {
+                entry.getValue().close();
+                GTShaders.BLOOM_BUFFER_BUILDERS.remove(pos);
+                GTShaders.BLOOM_BUFFER_SORT_STATES.remove(pos);
+                it.remove();
             }
-            entry.getValue().bind();
-            poseStack.pushPose();
-            poseStack.translate(entry.getKey().getX(), entry.getKey().getY(), entry.getKey().getZ());
-            poseStack.translate(-camPos.x(), -camPos.y(), -camPos.z());
-
-            entry.getValue().drawWithShader(poseStack.last().pose(), projectionMatrix, GameRenderer.getRendertypeTranslucentShader());
-
-            poseStack.popPose();
         }
+    }
 
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableDepthTest();
+    private static void render(float partialTicks, PoseStack poseStack, Matrix4f projectionMatrix,
+                                   LevelRenderer levelRenderer, Camera camera, Frustum frustum) {
+        // RenderSystem.disableDepthTest();
+        // RenderSystem.disableBlend();
+        // RenderSystem.defaultBlendFunc();
         RenderSystem.resetTextureMatrix();
-        GTShaders.BLOOM_CHAIN.process(partialTicks);
 
+        GTShaders.BLOOM_CHAIN.process(partialTicks);
         Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+
+        VertexBuffer.unbind();
+        Minecraft.getInstance().getProfiler().pop();
+
+        //noinspection UnstableApiUsage
+        ForgeHooksClient.dispatchRenderStage(GTRenderTypes.getBloom(), levelRenderer,
+                poseStack, projectionMatrix, levelRenderer.getTicks(), camera, frustum);
+
+        GTRenderTypes.getBloom().clearRenderState();
     }
 
     private static double xBloomOld;

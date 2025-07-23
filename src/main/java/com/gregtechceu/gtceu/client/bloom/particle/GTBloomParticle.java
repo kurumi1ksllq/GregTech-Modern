@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.client.bloom.particle;
 
+import com.gregtechceu.gtceu.client.bloom.BloomAlgorithm;
 import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 import com.gregtechceu.gtceu.client.bloom.IBloomEffect;
 import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
 import com.gregtechceu.gtceu.client.particle.GTParticle;
 
 import org.jetbrains.annotations.NotNull;

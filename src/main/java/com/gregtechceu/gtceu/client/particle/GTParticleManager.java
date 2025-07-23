@@ -10,11 +10,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -32,13 +32,10 @@ import java.util.*;
 /**
  * Singleton class responsible for managing, updating and rendering {@link GTParticle} instances.
  */
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = GTCEu.MOD_ID)
+@Mod.EventBusSubscriber(modid = GTCEu.MOD_ID, value = Dist.CLIENT)
 public class GTParticleManager {
 
     public static final GTParticleManager INSTANCE = new GTParticleManager();
-
-    @Nullable
-    private static Level currentWorld = null;
 
     private final Map<@Nullable IRenderSetup, ArrayDeque<GTParticle>> depthEnabledParticles = new Object2ObjectLinkedOpenHashMap<>();
     private final Map<@Nullable IRenderSetup, ArrayDeque<GTParticle>> depthDisabledParticles = new Object2ObjectLinkedOpenHashMap<>();
@@ -131,24 +128,20 @@ public class GTParticleManager {
 
         if (!depthDisabledParticles.isEmpty()) {
             RenderSystem.depthMask(false);
-
-            renderGlParticlesInLayer(poseStack, depthDisabledParticles, instance);
-
+            renderParticlesInLayer(poseStack, depthDisabledParticles, instance);
             RenderSystem.depthMask(true);
         }
-
-        renderGlParticlesInLayer(poseStack, depthEnabledParticles, instance);
+        renderParticlesInLayer(poseStack, depthEnabledParticles, instance);
 
         RenderSystem.disableBlend();
     }
 
-    private static void renderGlParticlesInLayer(@NotNull PoseStack poseStack,
-                                                 @NotNull Map<@Nullable IRenderSetup, ArrayDeque<GTParticle>> renderQueue,
-                                                 @NotNull EffectRenderContext context) {
-        for (var e : renderQueue.entrySet()) {
-            @Nullable
-            IRenderSetup handler = e.getKey();
-            ArrayDeque<GTParticle> particles = e.getValue();
+    private static void renderParticlesInLayer(@NotNull PoseStack poseStack,
+                                               @NotNull Map<@Nullable IRenderSetup, ArrayDeque<GTParticle>> renderQueue,
+                                               @NotNull EffectRenderContext context) {
+        for (var entry : renderQueue.entrySet()) {
+            IRenderSetup handler = entry.getKey();
+            ArrayDeque<GTParticle> particles = entry.getValue();
             if (particles.isEmpty()) continue;
 
             boolean initialized = false;
@@ -176,19 +169,24 @@ public class GTParticleManager {
     }
 
     @SubscribeEvent
-    public static void clientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || Minecraft.getInstance().isPaused()) {
+    public static void onClientLevelLoad(LevelEvent.Load event) {
+        if (!(event.getLevel() instanceof ClientLevel newLevel)) {
             return;
         }
-
-        ClientLevel world = Minecraft.getInstance().level;
-        if (currentWorld != world) {
-            INSTANCE.clearAllEffects(currentWorld != null);
-            currentWorld = world;
+        ClientLevel oldLevel = Minecraft.getInstance().level;
+        if (oldLevel != newLevel) {
+            INSTANCE.clearAllEffects(oldLevel != null);
         }
 
-        if (currentWorld != null) {
+        if (oldLevel != null) {
             INSTANCE.updateEffects();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClientLevelUnload(ClientPlayerNetworkEvent.LoggingOut event) {
+        if (event.getPlayer() != null) {
+            INSTANCE.clearAllEffects(true);
         }
     }
 
@@ -196,8 +194,13 @@ public class GTParticleManager {
     public static void renderWorld(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS) {
             Entity entity = Minecraft.getInstance().getCameraEntity();
-            INSTANCE.renderParticles(event.getPoseStack(), entity == null ? Minecraft.getInstance().player : entity,
-                    event.getCamera(), event.getFrustum(), event.getPartialTick());
+            if (entity == null) {
+                entity = Minecraft.getInstance().player;
+            }
+            if (entity != null) {
+                INSTANCE.renderParticles(event.getPoseStack(), entity,
+                        event.getCamera(), event.getFrustum(), event.getPartialTick());
+            }
         }
     }
 

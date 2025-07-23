@@ -106,6 +106,7 @@ public class ForgeClientEventListener {
     @SubscribeEvent
     public static void onLevelUnload(LevelEvent.Unload event) {
         BloomUtil.invalidateLevelTickets(event.getLevel());
+        FacadeCoverRenderer.clearItemModelCache();
     }
 
     private static final Map<UUID, ResourceLocation> DEFAULT_CAPES = new Object2ObjectOpenHashMap<>();
@@ -151,11 +152,6 @@ public class ForgeClientEventListener {
             EnvironmentalHazardClientHandler.INSTANCE.onClientTick();
             GTValues.CLIENT_TIME++;
         }
-    }
-
-    @SubscribeEvent
-    public static void onLevelUnloadEvent(LevelEvent.Unload event) {
-        FacadeCoverRenderer.clearItemModelCache();
     }
 
     private static final String BLOCK_INFO_LINE_START = ChatFormatting.UNDERLINE + "Targeted Block: ";

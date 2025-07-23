@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.client.bloom.EffectRenderContext;
 import com.gregtechceu.gtceu.client.bloom.IBloomEffect;
 import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
 import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomEffect;
 import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
@@ -160,11 +159,11 @@ public class FusionRingRender extends DynamicRender<FusionReactorMachine, Fusion
         public void preDraw(@NotNull BufferBuilder buffer) {
             var config = ConfigHolder.INSTANCE.client.shader.fusionBloom;
 
-            BloomEffect.strength = config.strength;
-            BloomEffect.baseBrightness = config.baseBrightness;
-            BloomEffect.highBrightnessThreshold = config.highBrightnessThreshold;
-            BloomEffect.lowBrightnessThreshold = config.lowBrightnessThreshold;
-            BloomEffect.step = 1;
+            BloomUtil.strength = config.strength;
+            BloomUtil.baseBrightness = config.baseBrightness;
+            BloomUtil.highBrightnessThreshold = config.highBrightnessThreshold;
+            BloomUtil.lowBrightnessThreshold = config.lowBrightnessThreshold;
+            BloomUtil.step = 1;
 
             RenderSystem.setShaderColor(1, 1, 1, 1);
         }

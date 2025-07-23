@@ -1,11 +1,11 @@
 package com.gregtechceu.gtceu.client.particle;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 import com.gregtechceu.gtceu.client.bloom.EffectRenderContext;
 import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
 import com.gregtechceu.gtceu.client.bloom.particle.GTBloomParticle;
 import com.gregtechceu.gtceu.client.bloom.shader.BloomAlgorithm;
-import com.gregtechceu.gtceu.client.bloom.shader.BloomEffect;
 import com.gregtechceu.gtceu.client.util.RenderBufferHelper;
 import com.gregtechceu.gtceu.client.util.RenderUtil;
 import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
@@ -291,11 +291,11 @@ public class GTOverheatParticle extends GTBloomParticle {
         public void preDraw(@NotNull BufferBuilder buffer) {
             var config = ConfigHolder.INSTANCE.client.shader.heatEffectBloom;
 
-            BloomEffect.strength = config.strength;
-            BloomEffect.baseBrightness = config.baseBrightness;
-            BloomEffect.highBrightnessThreshold = config.highBrightnessThreshold;
-            BloomEffect.lowBrightnessThreshold = config.lowBrightnessThreshold;
-            BloomEffect.step = 1;
+            BloomUtil.strength = config.strength;
+            BloomUtil.baseBrightness = config.baseBrightness;
+            BloomUtil.highBrightnessThreshold = config.highBrightnessThreshold;
+            BloomUtil.lowBrightnessThreshold = config.lowBrightnessThreshold;
+            BloomUtil.step = 1;
 
             RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.enableBlend();

@@ -48,6 +48,12 @@ import java.util.function.Supplier;
 @OnlyIn(Dist.CLIENT)
 public class BloomUtil {
 
+    public static float strength = ConfigHolder.INSTANCE.client.shader.strength;
+    public static float baseBrightness = ConfigHolder.INSTANCE.client.shader.baseBrightness;
+    public static float highBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.highBrightnessThreshold;
+    public static float lowBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.lowBrightnessThreshold;
+    public static float step = ConfigHolder.INSTANCE.client.shader.step;
+
     private static final Map<BloomRenderKey, List<BloomRenderTicket>> BLOOM_RENDERS = new Object2ObjectOpenHashMap<>();
     private static final List<BloomRenderTicket> SCHEDULED_BLOOM_RENDERS = new ArrayList<>();
 
@@ -267,11 +273,11 @@ public class BloomUtil {
                 return;
             }
 
-            BloomEffect.strength = ConfigHolder.INSTANCE.client.shader.strength;
-            BloomEffect.baseBrightness = ConfigHolder.INSTANCE.client.shader.baseBrightness;
-            BloomEffect.highBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.highBrightnessThreshold;
-            BloomEffect.lowBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.lowBrightnessThreshold;
-            BloomEffect.step = ConfigHolder.INSTANCE.client.shader.step;
+            strength = ConfigHolder.INSTANCE.client.shader.strength;
+            baseBrightness = ConfigHolder.INSTANCE.client.shader.baseBrightness;
+            highBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.highBrightnessThreshold;
+            lowBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.lowBrightnessThreshold;
+            step = ConfigHolder.INSTANCE.client.shader.step;
 
             // ********** render custom bloom ************
 
@@ -432,16 +438,16 @@ public class BloomUtil {
             if (GTShaders.BLOOM_TYPE == BloomAlgorithm.UNREAL && name.equals(SEPERABLE_BLUR_SHADER_NAME)) {
                 int index = passes.indexOf(pass);
                 if (index % 2 == 0) {
-                    shader.safeGetUniform(BLUR_DIR_UNIFORM).set(0.0f, BloomEffect.step);
+                    shader.safeGetUniform(BLUR_DIR_UNIFORM).set(0.0f, step);
                 } else {
-                    shader.safeGetUniform(BLUR_DIR_UNIFORM).set(BloomEffect.step, 0.0f);
+                    shader.safeGetUniform(BLUR_DIR_UNIFORM).set(step, 0.0f);
                 }
             }
             if (name.equals(UNITY_COMPOSITE_SHADER_NAME) || name.equals(UNREAL_COMPOSITE_SHADER_NAME)) {
-                shader.safeGetUniform(BLOOM_INTENSIVE_UNIFORM).set(BloomEffect.strength);
-                shader.safeGetUniform(BLOOM_BASE_UNIFORM).set(BloomEffect.baseBrightness);
-                shader.safeGetUniform(BLOOM_THRESHOLD_UP_UNIFORM).set(BloomEffect.highBrightnessThreshold);
-                shader.safeGetUniform(BLOOM_THRESHOLD_DOWN_UNIFORM).set(BloomEffect.lowBrightnessThreshold);
+                shader.safeGetUniform(BLOOM_INTENSIVE_UNIFORM).set(strength);
+                shader.safeGetUniform(BLOOM_BASE_UNIFORM).set(baseBrightness);
+                shader.safeGetUniform(BLOOM_THRESHOLD_UP_UNIFORM).set(highBrightnessThreshold);
+                shader.safeGetUniform(BLOOM_THRESHOLD_DOWN_UNIFORM).set(lowBrightnessThreshold);
             }
         }
     }

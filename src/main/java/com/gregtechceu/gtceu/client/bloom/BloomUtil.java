@@ -38,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -58,9 +59,9 @@ public class BloomUtil {
 
     private static final ReadWriteLock BLOOM_RENDER_LOCK = new ReentrantReadWriteLock();
 
-    public static Map<BlockPos, VertexBuffer> BLOOM_BUFFERS = new HashMap<>();
+    public static Map<BlockPos, VertexBuffer> BLOOM_BUFFERS = new ConcurrentHashMap<>();
     public static Map<BlockPos, BufferBuilder> BLOOM_BUFFER_BUILDERS = new ConcurrentHashMap<>();
-    public static Map<BlockPos, BufferBuilder.SortState> BLOOM_BUFFER_SORT_STATES = new HashMap<>();
+    public static Map<BlockPos, BufferBuilder.SortState> BLOOM_BUFFER_SORT_STATES = new ConcurrentHashMap<>();
 
     /**
      * <p>
@@ -242,38 +243,18 @@ public class BloomUtil {
 
         BLOOM_RENDER_LOCK.writeLock().lock();
         try {
-            preDraw();
-
-            GTShaders.BLOOM_TARGET.bindWrite(false);
-
-            EffectRenderContext context = EffectRenderContext.getInstance()
-                    .update(entity, camPos, frustum, partialTicks);
-
             GTRenderTypes.getBloom().setupRenderState();
 
-            if (!ConfigHolder.INSTANCE.client.shader.emissiveTexturesBloom) {
-                RenderSystem.depthMask(true);
+            preDraw();
+            if (!BLOOM_RENDERS.isEmpty()) {
+                EffectRenderContext context = EffectRenderContext.getInstance()
+                        .update(entity, camPos, frustum, partialTicks);
 
-                if (!BLOOM_RENDERS.isEmpty()) {
-                    for (List<BloomRenderTicket> list : BLOOM_RENDERS.values()) {
-                        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
-                        draw(poseStack, buffer, context, list);
-                    }
+                for (List<BloomRenderTicket> list : BLOOM_RENDERS.values()) {
+                    BufferBuilder buffer = Tesselator.getInstance().getBuilder();
+                    draw(poseStack, buffer, context, list);
                 }
-                RenderSystem.depthMask(false);
                 postDraw();
-
-                setupRenderState(false);
-                render(partialTicks, poseStack, projectionMatrix, levelRenderer, camera, frustum);
-                VertexBuffer.unbind();
-                Minecraft.getInstance().getProfiler().pop();
-
-                // noinspection UnstableApiUsage
-                ForgeHooksClient.dispatchRenderStage(GTRenderTypes.getBloom(), levelRenderer,
-                        poseStack, projectionMatrix, levelRenderer.getTicks(), camera, frustum);
-
-                GTRenderTypes.getBloom().clearRenderState();
-                return;
             }
 
             strength = ConfigHolder.INSTANCE.client.shader.strength;
@@ -282,20 +263,13 @@ public class BloomUtil {
             lowBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.minBrightness;
             step = ConfigHolder.INSTANCE.client.shader.step;
 
-            // ********** render custom bloom ************
-
-            RenderSystem.depthMask(true);
-            if (!BLOOM_RENDERS.isEmpty()) {
-                for (List<BloomRenderTicket> list : BLOOM_RENDERS.values()) {
-                    BufferBuilder buffer = Tesselator.getInstance().getBuilder();
-                    draw(poseStack, buffer, context, list);
-                }
+            if (ConfigHolder.INSTANCE.client.shader.emissiveTexturesHaveBloom) {
+                setupBloomUniforms(true);
+                drawBlockBloom(poseStack, projectionMatrix, camPos);
+            } else {
+                setupBloomUniforms(false);
             }
-            RenderSystem.depthMask(false);
-            postDraw();
 
-            setupRenderState(true);
-            drawBlockBloom(poseStack, projectionMatrix, camPos);
             render(partialTicks, poseStack, projectionMatrix, levelRenderer, camera, frustum);
         } finally {
             BLOOM_RENDER_LOCK.writeLock().unlock();
@@ -382,6 +356,7 @@ public class BloomUtil {
 
     public static void removeBloomChunk(BlockPos origin) {
         BLOOM_BUFFER_BUILDERS.remove(origin);
+        BLOOM_BUFFER_SORT_STATES.remove(origin);
         VertexBuffer buffer = BLOOM_BUFFERS.remove(origin);
         if (buffer != null) {
             if (!RenderSystem.isOnRenderThread()) {
@@ -450,31 +425,23 @@ public class BloomUtil {
     }
 
     private static void drawBlockBloom(PoseStack poseStack, Matrix4f projectionMatrix, Vec3 camPos) {
-        for (var it = BLOOM_BUFFERS.entrySet().iterator(); it.hasNext();) {
-            var entry = it.next();
+        for (var entry : BLOOM_BUFFERS.entrySet()) {
             BlockPos pos = entry.getKey();
 
             // return early if buffer is invalid or has no vertex data bound
             // VertexBuffer#mode's nullness is the easiest way to check this.
-            try {
-                if (entry.getValue().isInvalid() || ((VertexBufferAccessor) entry.getValue()).getMode() == null) {
-                    continue;
-                }
-                entry.getValue().bind();
-
-                poseStack.pushPose();
-                poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
-                poseStack.translate(-camPos.x(), -camPos.y(), -camPos.z());
-
-                entry.getValue().drawWithShader(poseStack.last().pose(), projectionMatrix,
-                        GameRenderer.getRendertypeTranslucentShader());
-                poseStack.popPose();
-            } finally {
-                entry.getValue().close();
-                BLOOM_BUFFER_BUILDERS.remove(pos);
-                BLOOM_BUFFER_SORT_STATES.remove(pos);
-                it.remove();
+            if (entry.getValue().isInvalid() || ((VertexBufferAccessor) entry.getValue()).getMode() == null) {
+                continue;
             }
+            entry.getValue().bind();
+
+            poseStack.pushPose();
+            poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
+            poseStack.translate(-camPos.x(), -camPos.y(), -camPos.z());
+
+            entry.getValue().drawWithShader(poseStack.last().pose(), projectionMatrix,
+                    GameRenderer.getRendertypeCutoutShader());
+            poseStack.popPose();
         }
     }
 
@@ -498,10 +465,10 @@ public class BloomUtil {
     private static double zBloomOld;
 
     public static void resortBloomTransparency(Vec3 camPos, LevelRenderer renderer) {
-        Minecraft.getInstance().getProfiler().push("translucent_sort");
+        Minecraft.getInstance().getProfiler().push("bloom_sort");
 
         for (BlockPos pos : getVisibleRenderRegions(camPos, renderer)) {
-            Util.backgroundExecutor().submit(() -> BloomUtil.resortTransparencyInner(pos, camPos));
+            CompletableFuture.runAsync(() -> BloomUtil.resortTransparencyInner(pos, camPos), Util.backgroundExecutor());
         }
 
         Minecraft.getInstance().getProfiler().pop();

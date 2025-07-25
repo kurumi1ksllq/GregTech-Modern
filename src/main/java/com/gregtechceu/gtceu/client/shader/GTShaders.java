@@ -67,9 +67,6 @@ public class GTShaders {
             BLOOM_CHAIN = new PostChain(mc.getTextureManager(), mc.getResourceManager(), mc.getMainRenderTarget(), id);
             BLOOM_CHAIN.resize(mc.getWindow().getWidth(), mc.getWindow().getHeight());
             BLOOM_TARGET = BLOOM_CHAIN.getTempTarget("final");
-            if (!BLOOM_TARGET.isStencilEnabled()) {
-                BLOOM_TARGET.enableStencil();
-            }
         } catch (IOException ioexception) {
             GTCEu.LOGGER.error("Failed to load shader: {}", id, ioexception);
             BLOOM_CHAIN = null;

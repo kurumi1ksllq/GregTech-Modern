@@ -1,24 +1,19 @@
 package com.gregtechceu.gtceu.client.bloom;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.client.model.BloomMetadataSection;
 import com.gregtechceu.gtceu.client.particle.GTParticle;
 import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
 import com.gregtechceu.gtceu.client.shader.GTShaders;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import com.gregtechceu.gtceu.core.mixins.client.LevelRendererAccessor;
 import com.gregtechceu.gtceu.core.mixins.client.PostChainAccessor;
 import com.gregtechceu.gtceu.core.mixins.client.VertexBufferAccessor;
-import com.gregtechceu.gtceu.integration.embeddium.GTEmbeddiumCompat;
 
-import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -38,7 +33,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -458,71 +452,6 @@ public class BloomUtil {
                 poseStack, projectionMatrix, levelRenderer.getTicks(), camera, frustum);
 
         GTRenderTypes.getBloom().clearRenderState();
-    }
-
-    private static double xBloomOld;
-    private static double yBloomOld;
-    private static double zBloomOld;
-
-    public static void resortBloomTransparency(Vec3 camPos, LevelRenderer renderer) {
-        Minecraft.getInstance().getProfiler().push("bloom_sort");
-
-        for (BlockPos pos : getVisibleRenderRegions(camPos, renderer)) {
-            CompletableFuture.runAsync(() -> BloomUtil.resortTransparencyInner(pos, camPos), Util.backgroundExecutor());
-        }
-
-        Minecraft.getInstance().getProfiler().pop();
-    }
-
-    private static void resortTransparencyInner(BlockPos pos, Vec3 camPos) {
-        BufferBuilder builder = getOrStartBloomBuffer(pos);
-        builder.restoreSortState(BLOOM_BUFFER_SORT_STATES.get(pos));
-        builder.setQuadSorting(VertexSorting.byDistance((float) camPos.x() - pos.getX(),
-                (float) camPos.y() - pos.getY(), (float) camPos.z() - pos.getZ()));
-        finishBloomBuffer(pos, builder);
-    }
-
-    private static List<BlockPos> getVisibleRenderRegions(Vec3 camPos, LevelRenderer renderer) {
-        if (GTCEu.Mods.isSodiumEmbeddiumLoaded()) {
-            return GTEmbeddiumCompat.getVisibleRenderSections(camPos);
-        } else {
-            List<BlockPos> result = new ArrayList<>();
-
-            for (var chunkInfo : ((LevelRendererAccessor) renderer).gtceu$getRenderChunksInFrustum()) {
-                double dx = camPos.x - xBloomOld;
-                double dy = camPos.y - yBloomOld;
-                double dz = camPos.z - zBloomOld;
-
-                double camDelta = (dx * dx) + (dy * dy) + (dz * dz);
-
-                if (camDelta < 1) {
-                    // Didn't move enough, ignore
-                    continue;
-                }
-
-                int camSectionX = SectionPos.posToSectionCoord(camPos.x);
-                int camSectionY = SectionPos.posToSectionCoord(camPos.y);
-                int camSectionZ = SectionPos.posToSectionCoord(camPos.z);
-
-                boolean posChanged = camSectionX != SectionPos.posToSectionCoord(xBloomOld) ||
-                        camSectionY != SectionPos.posToSectionCoord(yBloomOld) ||
-                        camSectionZ != SectionPos.posToSectionCoord(zBloomOld);
-                xBloomOld = camPos.x;
-                yBloomOld = camPos.y;
-                zBloomOld = camPos.z;
-
-                BlockPos pos = SectionPos.of(camSectionX, camSectionY, camSectionZ).origin();
-                if (!BLOOM_BUFFERS.containsKey(pos) || !BLOOM_BUFFER_SORT_STATES.containsKey(pos)) {
-                    continue;
-                }
-
-                if (posChanged || chunkInfo.isAxisAlignedWith(camSectionX, camSectionY, camSectionZ)) {
-                    result.add(pos);
-                }
-            }
-
-            return result;
-        }
     }
 
     public static void copyToBloomBuffer(VertexConsumer consumer, PoseStack.Pose pose, BakedQuad quad,

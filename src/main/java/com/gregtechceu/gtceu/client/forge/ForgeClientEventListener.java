@@ -69,8 +69,6 @@ public class ForgeClientEventListener {
             // so it can be seen through the transparent blocks.
             MultiblockInWorldPreviewRenderer.renderInWorldPreview(poseStack, camera, partialTick);
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
-            BloomUtil.resortBloomTransparency(camera.getPosition(), levelRenderer);
-
             BloomUtil.renderBloom(camera, camera.getEntity(), levelRenderer,
                     poseStack, event.getProjectionMatrix(), event.getFrustum(), partialTick);
         }

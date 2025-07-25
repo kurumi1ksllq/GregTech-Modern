@@ -770,16 +770,12 @@ public class ConfigHolder {
         public static class ShaderOptions {
 
             @Configurable
-            @Configurable.Comment("Particle config option for the Assembly Line")
-            public boolean assemblyLineParticles = true;
-
-            @Configurable
             @Configurable.Comment({ "Whether to use custom shaders for bloom", "Default: true" })
-            public boolean useShader = true;
+            public boolean enableBloom = true;
 
             @Configurable
             @Configurable.Comment({ "Whether or not to add bloom to emissive textures", "Default: true" })
-            public boolean emissiveTexturesBloom = true;
+            public boolean emissiveTexturesHaveBloom = true;
 
             @Configurable
             @Configurable.Comment({ "Bloom Algorithm",
@@ -795,7 +791,7 @@ public class ConfigHolder {
                     "OUTPUT = BACKGROUND + BLOOM * strength * (base + LT + (1 - BACKGROUND_BRIGHTNESS)*({HT}-LT)))",
                     "This value should be greater than lowBrightnessThreshold.", "Default: 0.5" })
             @Configurable.DecimalRange(min = 0)
-            public float highBrightnessThreshold = 0.5f;
+            public float maxBrightness = 0.5f;
 
             @Configurable
             @Configurable.Comment({
@@ -803,7 +799,7 @@ public class ConfigHolder {
                     "OUTPUT = BACKGROUND + BLOOM * strength * (base + {LT} + (1 - BACKGROUND_BRIGHTNESS)*(HT-{LT})))",
                     "This value should be smaller than highBrightnessThreshold.", "Default: 0.2" })
             @Configurable.DecimalRange(min = 0)
-            public float lowBrightnessThreshold = 0.2f;
+            public float minBrightness = 0.2f;
 
             @Configurable
             @Configurable.Comment({ "The base brightness of the bloom.", "It is similar to strength",

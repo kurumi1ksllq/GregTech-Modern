@@ -86,7 +86,7 @@ public class GTShaders {
     }
 
     private static boolean innerAllowedShader() {
-        return ConfigHolder.INSTANCE.client.shader.useShader &&
+        return ConfigHolder.INSTANCE.client.shader.enableBloom &&
                 !GTCEu.isModLoaded(GTValues.MODID_OPTIFINE) &&
                 !(GTCEu.Mods.isIrisOculusLoaded() && IrisCallWrapper.isShaderActive());
     }

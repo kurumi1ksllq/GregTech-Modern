@@ -48,7 +48,7 @@ public record BloomMetadataSection(boolean bloom) {
         if (hasBloom(quad.getSprite())) {
             return true;
         }
-        return ConfigHolder.INSTANCE.client.shader.emissiveTexturesBloom && isEmissive(quad, ambientPackedLights);
+        return ConfigHolder.INSTANCE.client.shader.emissiveTexturesHaveBloom && isEmissive(quad, ambientPackedLights);
     }
 
     public static boolean isEmissive(BakedQuad quad, int[] ambientPackedLights) {

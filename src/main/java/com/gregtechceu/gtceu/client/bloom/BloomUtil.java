@@ -49,8 +49,8 @@ public class BloomUtil {
 
     public static float strength = ConfigHolder.INSTANCE.client.shader.strength;
     public static float baseBrightness = ConfigHolder.INSTANCE.client.shader.baseBrightness;
-    public static float highBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.highBrightnessThreshold;
-    public static float lowBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.lowBrightnessThreshold;
+    public static float highBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.maxBrightness;
+    public static float lowBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.minBrightness;
     public static float step = ConfigHolder.INSTANCE.client.shader.step;
 
     private static final Map<BloomRenderKey, List<BloomRenderTicket>> BLOOM_RENDERS = new Object2ObjectOpenHashMap<>();
@@ -278,8 +278,8 @@ public class BloomUtil {
 
             strength = ConfigHolder.INSTANCE.client.shader.strength;
             baseBrightness = ConfigHolder.INSTANCE.client.shader.baseBrightness;
-            highBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.highBrightnessThreshold;
-            lowBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.lowBrightnessThreshold;
+            highBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.maxBrightness;
+            lowBrightnessThreshold = ConfigHolder.INSTANCE.client.shader.minBrightness;
             step = ConfigHolder.INSTANCE.client.shader.step;
 
             // ********** render custom bloom ************

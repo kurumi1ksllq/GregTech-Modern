@@ -418,19 +418,14 @@ public class BloomUtil {
 
     public static ThreadLocal<BlockPos> CURRENT_RENDERING_CHUNK_POS = new ThreadLocal<>();
 
-    private static final String UNREAL_COMPOSITE_SHADER_NAME = "gtceu:unreal_composite";
-    private static final String UNITY_COMPOSITE_SHADER_NAME = "gtceu:unity_composite";
-    private static final String SEPERABLE_BLUR_SHADER_NAME = "gtceu:seperable_blur";
-    private static final String BLOOM_INTENSIVE_UNIFORM = "BloomIntensive";
-    private static final String BLOOM_BASE_UNIFORM = "BloomBase";
-    private static final String BLOOM_THRESHOLD_UP_UNIFORM = "BloomThresholdUp";
-    private static final String BLOOM_THRESHOLD_DOWN_UNIFORM = "BloomThresholdDown";
+    private static final String BLUR_SHADER_NAME = "blur";
+    private static final String BLOOM_STRENGTH_UNIFORM = "BloomStrength";
+    private static final String BASE_BRIGHTNESS_UNIFORM = "BaseBrightness";
+    private static final String MAX_BRIGHTNESS_UNIFORM = "MaxBrightness";
+    private static final String MIN_BRIGHTNESS_UNIFORM = "MinBrightness";
     private static final String BLUR_DIR_UNIFORM = "BlurDir";
 
-    private static void setupRenderState(boolean drawBlockBloom) {
-        // RenderSystem.enableDepthTest();
-        // RenderSystem.enableBlend();
-        // RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+    private static void setupBloomUniforms(boolean drawBlockBloom) {
         // Forcefully insert config values to shader
         List<PostPass> passes = ((PostChainAccessor) GTShaders.BLOOM_CHAIN).getPasses();
         for (PostPass pass : passes) {
@@ -439,7 +434,7 @@ public class BloomUtil {
 
             shader.safeGetUniform("EnableFilter").set(drawBlockBloom ? 1 : 0);
 
-            if (GTShaders.BLOOM_TYPE == BloomAlgorithm.UNREAL && name.equals(SEPERABLE_BLUR_SHADER_NAME)) {
+            if (name.contains(BLUR_SHADER_NAME)) {
                 int index = passes.indexOf(pass);
                 if (index % 2 == 0) {
                     shader.safeGetUniform(BLUR_DIR_UNIFORM).set(0.0f, step);
@@ -447,12 +442,10 @@ public class BloomUtil {
                     shader.safeGetUniform(BLUR_DIR_UNIFORM).set(step, 0.0f);
                 }
             }
-            if (name.equals(UNITY_COMPOSITE_SHADER_NAME) || name.equals(UNREAL_COMPOSITE_SHADER_NAME)) {
-                shader.safeGetUniform(BLOOM_INTENSIVE_UNIFORM).set(strength);
-                shader.safeGetUniform(BLOOM_BASE_UNIFORM).set(baseBrightness);
-                shader.safeGetUniform(BLOOM_THRESHOLD_UP_UNIFORM).set(highBrightnessThreshold);
-                shader.safeGetUniform(BLOOM_THRESHOLD_DOWN_UNIFORM).set(lowBrightnessThreshold);
-            }
+            shader.safeGetUniform(BLOOM_STRENGTH_UNIFORM).set(strength);
+            shader.safeGetUniform(BASE_BRIGHTNESS_UNIFORM).set(baseBrightness);
+            shader.safeGetUniform(MAX_BRIGHTNESS_UNIFORM).set(highBrightnessThreshold);
+            shader.safeGetUniform(MIN_BRIGHTNESS_UNIFORM).set(lowBrightnessThreshold);
         }
     }
 
@@ -487,15 +480,10 @@ public class BloomUtil {
 
     private static void render(float partialTicks, PoseStack poseStack, Matrix4f projectionMatrix,
                                LevelRenderer levelRenderer, Camera camera, Frustum frustum) {
-        // RenderSystem.disableDepthTest();
-        // RenderSystem.disableBlend();
-        // RenderSystem.defaultBlendFunc();
-        RenderSystem.resetTextureMatrix();
-
         GTShaders.BLOOM_CHAIN.process(partialTicks);
         Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
-
         VertexBuffer.unbind();
+
         Minecraft.getInstance().getProfiler().pop();
 
         // noinspection UnstableApiUsage

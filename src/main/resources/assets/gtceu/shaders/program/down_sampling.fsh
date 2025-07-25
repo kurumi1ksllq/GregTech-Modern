@@ -5,43 +5,56 @@ uniform vec2 OutSize;
 uniform vec2 InSize;
 
 in vec2 texCoord;
+in vec2 oneTexel;
+
 out vec4 fragColor;
 
-vec4 four_k(vec3 textel, vec2 uv) {
-    return (texture(DiffuseSampler, uv + textel.xx) //1 1
-    + texture(DiffuseSampler, uv + textel.xy) // 1 -1
-    + texture(DiffuseSampler, uv + textel.yx) // -1 1
-    + texture(DiffuseSampler, uv + textel.yy)) * 0.25; // -1 -1
+vec2 inTexel = oneTexel;
+vec2 inTexelNegX = vec2(-inTexel.x, inTexel.y);
+vec2 inTexelNegY = vec2(inTexel.x, -inTexel.y);
+
+vec2 outTexel = 1.0 / OutSize;
+vec2 outTexelX = vec2(outTexel.x, 0.0);
+vec2 outTexelY = vec2(0.0, outTexel.y);
+vec2 outTexelNegX = vec2(-outTexel.x, outTexel.y);
+vec2 outTexelNegY = vec2(outTexel.x, -outTexel.y);
+
+vec4 four_k(vec2 uv) {
+    return 0.25 * (
+      texture(DiffuseSampler, uv + inTexel)     //  1  1
+    + texture(DiffuseSampler, uv + inTexelNegX) // -1  1
+    + texture(DiffuseSampler, uv + inTexelNegY) //  1 -1
+    + texture(DiffuseSampler, uv - inTexel));   // -1 -1
 }
 
 void main() {
-    vec3 textel1 = vec3(1., -1., 0.) / InSize.xyx;
-    vec3 textel2 = vec3(1., -1., 0.) / OutSize.xyx;
+    fragColor = 0.25 * 0.125 * (
+      four_k(texCoord - outTexel)  // -1 -1
+    + four_k(texCoord - outTexelX) // -1  0
+    + four_k(texCoord - outTexelY) //  0 -1
+    + four_k(texCoord));           //  0  0
 
-    vec4 out_colour = (four_k(textel1, texCoord + textel2.yy) // -1 -1
-    + four_k(textel1, texCoord + textel2.zy) // 0 -1
-    + four_k(textel1, texCoord + textel2.yz) // -1 0
-    + four_k(textel1, texCoord)) * 0.25 * 0.125; // 0 0
+    fragColor += 0.25 * 0.125 * (
+      four_k(texCoord + outTexelNegY) //  1 -1
+    + four_k(texCoord - outTexelY)    //  0 -1
+    + four_k(texCoord + outTexelX)    //  1  0
+    + four_k(texCoord));              //  0  0
 
-    out_colour += (four_k(textel1, texCoord + textel2.xy) // 1 -1
-    + four_k(textel1, texCoord + textel2.zy) // 0 -1
-    + four_k(textel1, texCoord + textel2.xz) // 1 0
-    + four_k(textel1, texCoord)) * 0.25 * 0.125; // 0 0
+    fragColor += 0.25 * 0.125 * (
+      four_k(texCoord + outTexelNegX) // -1  1
+    + four_k(texCoord - outTexelX)    // -1  0
+    + four_k(texCoord + outTexelY)    //  0  1
+    + four_k(texCoord));              //  0  0
 
-    out_colour += (four_k(textel1, texCoord + textel2.yx) //  -1 1
-    + four_k(textel1, texCoord + textel2.yz) // -1 0
-    + four_k(textel1, texCoord + textel2.zx) // 0 1
-    + four_k(textel1, texCoord)) * 0.25 * 0.125; // 0 0
+    fragColor += 0.25 * 0.125 * (
+      four_k(texCoord + outTexel)  //  1  1
+    + four_k(texCoord + outTexelX) //  1  0
+    + four_k(texCoord + outTexelY) //  0  1
+    + four_k(texCoord));           //  0  0
 
-    out_colour += (four_k(textel1, texCoord + textel2.xx) // 1 1
-    + four_k(textel1, texCoord + textel2.xz) // 1 0
-    + four_k(textel1, texCoord + textel2.zx) // 0 1
-    + four_k(textel1, texCoord)) * 0.25 * 0.125; // 0 0
-
-    out_colour += (four_k(textel1, texCoord + textel1.xx) // 1 1
-    + four_k(textel1, texCoord + textel1.xy) // 1 -1
-    + four_k(textel1, texCoord + textel1.yx) // -1 1
-    + four_k(textel1, texCoord + textel1.yy)) * 0.25 * 0.5; // -1 -1
-
-    fragColor = vec4(out_colour.rgb, 1.);
+    fragColor += 0.25 * 0.125 * (
+      four_k(texCoord + outTexel)     //  1  1
+    + four_k(texCoord + outTexelNegX) // -1  1
+    + four_k(texCoord + outTexelNegY) //  1 -1
+    + four_k(texCoord - outTexel));   // -1 -1
 }

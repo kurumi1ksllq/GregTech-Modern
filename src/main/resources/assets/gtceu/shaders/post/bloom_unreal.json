@@ -1,17 +1,10 @@
 {
   "targets": [
-    {
-      "name": "gtceu:filter_temp",
-      "blit": true,
-      "scaleSize": {
-        "width": 1,
-        "height": 1
-      }
-    },
+    "gtceu:filter_temp",
     {
       "name": "swap2a",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.5,
         "height": 0.5
       }
@@ -19,7 +12,7 @@
     {
       "name": "swap4a",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.25,
         "height": 0.25
       }
@@ -27,7 +20,7 @@
     {
       "name": "swap8a",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.125,
         "height": 0.125
       }
@@ -35,7 +28,7 @@
     {
       "name": "swap16a",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.0625,
         "height": 0.0625
       }
@@ -43,7 +36,7 @@
     {
       "name": "swap2b",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.5,
         "height": 0.5
       }
@@ -51,7 +44,7 @@
     {
       "name": "swap4b",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.25,
         "height": 0.25
       }
@@ -59,7 +52,7 @@
     {
       "name": "swap8b",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.125,
         "height": 0.125
       }
@@ -67,7 +60,7 @@
     {
       "name": "swap16b",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.0625,
         "height": 0.0625
       }
@@ -80,11 +73,22 @@
       "intarget": "final",
       "outtarget": "gtceu:filter_temp",
       "auxtargets": [
-        {"id": "minecraft:main", "name": "MainSampler"}
+        {
+          "name": "DiffuseDepthSampler",
+          "id": "final:depth"
+        },
+        {
+          "name": "MainSampler",
+          "id": "minecraft:main"
+        },
+        {
+          "name": "MainDepthSampler",
+          "id": "minecraft:main:depth"
+        }
       ]
     },
     {
-      "name": "gtceu:seperable_blur",
+      "name": "blur",
       "intarget": "gtceu:filter_temp",
       "outtarget": "swap2a",
       "uniforms": [
@@ -99,7 +103,7 @@
       ]
     },
     {
-      "name": "gtceu:seperable_blur",
+      "name": "blur",
       "intarget": "swap2a",
       "outtarget": "swap2b",
       "uniforms": [
@@ -114,7 +118,7 @@
       ]
     },
     {
-      "name": "gtceu:seperable_blur",
+      "name": "blur",
       "intarget": "swap2b",
       "outtarget": "swap4a",
       "uniforms": [
@@ -129,7 +133,7 @@
       ]
     },
     {
-      "name": "gtceu:seperable_blur",
+      "name": "blur",
       "intarget": "swap4a",
       "outtarget": "swap4b",
       "uniforms": [
@@ -144,7 +148,7 @@
       ]
     },
     {
-      "name": "gtceu:seperable_blur",
+      "name": "blur",
       "intarget": "swap4b",
       "outtarget": "swap8a",
       "uniforms": [
@@ -159,7 +163,7 @@
       ]
     },
     {
-      "name": "gtceu:seperable_blur",
+      "name": "blur",
       "intarget": "swap8a",
       "outtarget": "swap8b",
       "uniforms": [
@@ -174,7 +178,7 @@
       ]
     },
     {
-      "name": "gtceu:seperable_blur",
+      "name": "blur",
       "intarget": "swap8b",
       "outtarget": "swap16a",
       "uniforms": [
@@ -189,7 +193,7 @@
       ]
     },
     {
-      "name": "gtceu:seperable_blur",
+      "name": "blur",
       "intarget": "swap16a",
       "outtarget": "swap16b",
       "uniforms": [
@@ -208,17 +212,14 @@
       "intarget": "minecraft:main",
       "outtarget": "final",
       "auxtargets": [
-        { "id":"gtceu:filter_temp", "name":"HighLight" },
-        { "id":"swap2b", "name":"BlurTexture1" },
-        { "id":"swap4b", "name":"BlurTexture2" },
-        { "id":"swap8b", "name":"BlurTexture3" },
-        { "id":"swap16b", "name":"BlurTexture4" }
+        { "id": "gtceu:filter_temp", "name": "HighlightSampler" },
+        { "id": "swap2b",            "name": "BlurTexture1" },
+        { "id": "swap4b",            "name": "BlurTexture2" },
+        { "id": "swap8b",            "name": "BlurTexture3" },
+        { "id": "swap16b",           "name": "BlurTexture4" }
       ],
       "uniforms": [
-        {
-          "name": "BloomRadius",
-          "values": [1.0]
-        }
+        { "name": "BloomRadius", "values": [1.0] }
       ]
     },
     {

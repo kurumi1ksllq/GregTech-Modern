@@ -23,6 +23,7 @@
         "client.MultiPlayerGameModeMixin",
         "client.PlayerInfoAccessor",
         "client.PostChainAccessor",
+        "client.PostChainMixin",
         "client.RebuildTaskMixin",
         "client.VariantDeserializerMixin",
         "client.VertexBufferAccessor",

@@ -27,8 +27,8 @@ public class GTRenderTypes extends RenderType {
                 }
             });
 
-    private static final RenderType LIGHT_RING = RenderType.create("light_ring",
-            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_STRIP, 131072, false, false,
+    private static final RenderType LIGHT_RING = RenderType.create("light_ring", DefaultVertexFormat.POSITION_COLOR,
+            VertexFormat.Mode.TRIANGLE_STRIP, RenderType.SMALL_BUFFER_SIZE, false, false,
             RenderType.CompositeState.builder()
                     .setCullState(RenderStateShard.NO_CULL)
                     .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
@@ -36,11 +36,10 @@ public class GTRenderTypes extends RenderType {
                     .createCompositeState(false));
 
     private static final RenderType BLOOM = RenderType.create("gtceu_bloom", DefaultVertexFormat.BLOCK,
-            VertexFormat.Mode.QUADS,
-            2097152, false, true,
+            VertexFormat.Mode.QUADS, RenderType.BIG_BUFFER_SIZE, false, true,
             RenderType.CompositeState.builder()
                     .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_MIPPED_SHADER)
+                    .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_SHADER)
                     .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
                     .setOutputState(BLOOM_TARGET)
                     .createCompositeState(false));

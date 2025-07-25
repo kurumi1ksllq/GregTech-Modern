@@ -1,9 +1,10 @@
 {
   "targets": [
+    "gtceu:filter_temp",
     {
       "name": "swap2a",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.5,
         "height": 0.5
       }
@@ -11,7 +12,7 @@
     {
       "name": "swap4a",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.25,
         "height": 0.25
       }
@@ -19,7 +20,7 @@
     {
       "name": "swap8a",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.125,
         "height": 0.125
       }
@@ -27,7 +28,7 @@
     {
       "name": "swap16a",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.0625,
         "height": 0.0625
       }
@@ -35,7 +36,7 @@
     {
       "name": "swap2b",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.5,
         "height": 0.5
       }
@@ -43,7 +44,7 @@
     {
       "name": "swap4b",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.25,
         "height": 0.25
       }
@@ -51,16 +52,36 @@
     {
       "name": "swap8b",
       "bilinear": true,
-      "scaleSize": {
+      "scale": {
         "width": 0.125,
         "height": 0.125
       }
     },
-    "final"
+    "final",
+    "swap"
   ],
   "passes": [
     {
-      "name": "gtceu:down_sampling",
+      "name": "gtceu:filter_bloom_color",
+      "intarget": "final",
+      "outtarget": "gtceu:filter_temp",
+      "auxtargets": [
+        {
+          "name": "DiffuseDepthSampler",
+          "id": "final:depth"
+        },
+        {
+          "name": "MainSampler",
+          "id": "minecraft:main"
+        },
+        {
+          "name": "MainDepthSampler",
+          "id": "minecraft:main:depth"
+        }
+      ]
+    },
+    {
+      "name": "blit",
       "intarget": "final",
       "outtarget": "swap2a"
     },
@@ -80,11 +101,11 @@
       "outtarget": "swap16a"
     },
     {
-      "name": "gtceu:blit",
+      "name": "blit",
       "intarget": "swap16a",
       "outtarget": "swap8b",
       "auxtargets": [
-        { "id":"swap8a", "name":"DownTexture" }
+        { "id": "swap8a", "name": "DownTexture" }
       ]
     },
     {
@@ -92,7 +113,7 @@
       "intarget": "swap8b",
       "outtarget": "swap4b",
       "auxtargets": [
-        { "id":"swap4a", "name":"DownTexture" }
+        { "id": "swap4a", "name": "DownTexture" }
       ]
     },
     {
@@ -100,16 +121,24 @@
       "intarget": "swap4b",
       "outtarget": "swap2b",
       "auxtargets": [
-        { "id":"swap2a", "name":"DownTexture" }
+        { "id": "swap2a", "name": "DownTexture" }
+      ]
+    },
+    {
+      "name": "gtceu:up_sampling",
+      "intarget": "swap2b",
+      "outtarget": "swap",
+      "auxtargets": [
+        { "id": "gtceu:filter_temp", "name": "DownTexture" }
       ]
     },
     {
       "name": "gtceu:unity_composite",
-      "intarget": "swap2b",
+      "intarget": "swap",
       "outtarget": "final",
       "auxtargets": [
-        { "id":"minecraft:main", "name":"DownTexture" },
-        { "id":"minecraft:main", "name":"Background" }
+        { "id": "gtceu:filter_temp", "name": "HighlightSampler" },
+        { "id": "minecraft:main", "name": "MainSampler" }
       ]
     },
     {

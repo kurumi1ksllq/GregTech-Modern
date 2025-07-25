@@ -18,9 +18,12 @@ public class BloomMeshAppender implements MeshAppender {
         if (!GTShaders.allowedShader()) {
             return;
         }
+        BlockPos chunkOrigin = context.sectionOrigin().origin();
+        if (!BloomUtil.BLOOM_BUFFER_BUILDERS.containsKey(chunkOrigin)) {
+            return;
+        }
 
         Vec3 camPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        BlockPos chunkOrigin = context.sectionOrigin().origin();
         BloomUtil.CURRENT_RENDERING_CHUNK_POS.set(chunkOrigin);
         BloomUtil.bakeBloomChunkBuffers(chunkOrigin, camPos);
     }

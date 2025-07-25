@@ -4,19 +4,19 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "gtceu:blit",
+    "vertex": "blit",
     "fragment": "gtceu:vanilla_composite",
     "attributes": [ "Position" ],
     "samplers": [
         { "name": "DiffuseSampler" },
-        { "name": "HighLight" },
+        { "name": "HighlightSampler" },
         { "name": "BlurTexture" }
     ],
     "uniforms": [
-        { "name": "OutSize","type": "float","count": 2, "values": [ 1.0, 1.0 ] },
-        { "name": "BloomIntensive","type": "float","count": 1, "values": [ 1.7 ] },
-        { "name": "BloomBase","type": "float","count": 1, "values": [ 0.1 ] },
-        { "name": "BloomThresholdUp","type": "float","count": 1, "values": [ 0.7 ] },
-        { "name": "BloomThresholdDown","type": "float","count": 1, "values": [ 0.2 ] }
+        { "name": "OutSize",        "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
+        { "name": "BloomStrength",  "type": "float", "count": 1, "values": [ 1.7 ] },
+        { "name": "BaseBrightness", "type": "float", "count": 1, "values": [ 0.1 ] },
+        { "name": "MaxBrightness",  "type": "float", "count": 1, "values": [ 0.7 ] },
+        { "name": "MinBrightness",  "type": "float", "count": 1, "values": [ 0.2 ] }
     ]
 }

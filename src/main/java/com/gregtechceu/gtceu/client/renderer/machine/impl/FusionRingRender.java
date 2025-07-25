@@ -9,12 +9,15 @@ import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
 import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
+import com.gregtechceu.gtceu.client.shader.GTShaders;
 import com.gregtechceu.gtceu.client.util.RenderBufferHelper;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.FusionReactorMachine;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -66,13 +69,16 @@ public class FusionRingRender extends DynamicRender<FusionReactorMachine, Fusion
             return;
         }
 
-        if (!machine.isRegisteredBloomTicket()) {
-            machine.setRegisteredBloomTicket(true);
-            BloomUtil.registerBloomRender(FusionBloomSetup.INSTANCE, getBloomType(),
-                    new FusionBloomEffect(machine), machine.getHolder().self());
+        BloomAlgorithm bloomAlgorithm = getBloomType();
+        if (bloomAlgorithm != BloomAlgorithm.DISABLED) {
+            if (!machine.isRegisteredBloomTicket()) {
+                machine.setRegisteredBloomTicket(true);
+                BloomUtil.registerBloomRender(FusionBloomSetup.INSTANCE, bloomAlgorithm,
+                        new FusionBloomEffect(machine), machine.getHolder().self());
+            }
+        } else {
+            renderLightRing(machine, partialTick, poseStack, buffer.getBuffer(GTRenderTypes.getLightRing()));
         }
-        // TODO fix bloom on fusion reactor light
-        renderLightRing(machine, partialTick, poseStack, buffer.getBuffer(GTRenderTypes.getLightRing()));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -117,7 +123,7 @@ public class FusionRingRender extends DynamicRender<FusionReactorMachine, Fusion
 
     private static BloomAlgorithm getBloomType() {
         var config = ConfigHolder.INSTANCE.client.shader.fusionBloom;
-        return config.useShader ? config.bloomAlgorithm : BloomAlgorithm.DISABLED;
+        return GTShaders.allowedShader() && config.useShader ? config.bloomAlgorithm : BloomAlgorithm.DISABLED;
     }
 
     @RequiredArgsConstructor
@@ -141,7 +147,12 @@ public class FusionRingRender extends DynamicRender<FusionReactorMachine, Fusion
 
             poseStack.popPose();
 
+            ShaderInstance lastShader = RenderSystem.getShader();
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
             BufferUploader.drawWithShader(lightRingBuffer.end());
+
+            RenderSystem.setShader(() -> lastShader);
         }
 
         @Override

@@ -35,27 +35,15 @@
     },
     {
       "name": "swap2b",
-      "bilinear": true,
-      "scale": {
-        "width": 0.5,
-        "height": 0.5
-      }
+      "bilinear": true
     },
     {
       "name": "swap4b",
-      "bilinear": true,
-      "scale": {
-        "width": 0.25,
-        "height": 0.25
-      }
+      "bilinear": true
     },
     {
       "name": "swap8b",
-      "bilinear": true,
-      "scale": {
-        "width": 0.125,
-        "height": 0.125
-      }
+      "bilinear": true
     },
     "final",
     "swap"
@@ -66,18 +54,7 @@
       "intarget": "final",
       "outtarget": "gtceu:filter_temp",
       "auxtargets": [
-        {
-          "name": "DiffuseDepthSampler",
-          "id": "final:depth"
-        },
-        {
-          "name": "MainSampler",
-          "id": "minecraft:main"
-        },
-        {
-          "name": "MainDepthSampler",
-          "id": "minecraft:main:depth"
-        }
+        { "id": "minecraft:main", "name": "MainSampler" }
       ]
     },
     {

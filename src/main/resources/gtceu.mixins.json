@@ -28,7 +28,6 @@
         "client.VariantDeserializerMixin",
         "client.VertexBufferAccessor",
         "embeddium.BlockRendererMixin",
-        "embeddium.SodiumWorldRendererAccessor",
         "forge.QuadLighterMixin",
         "ftbchunks.FTBChunksClientMixin",
         "ftbchunks.LargeMapScreenMixin",

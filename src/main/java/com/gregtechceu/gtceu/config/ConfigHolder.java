@@ -965,5 +965,4 @@ public class ConfigHolder {
         @Configurable.Comment({ "Dump all registered GT models/blockstates/etc?", "Default: false" })
         public boolean dumpAssets = false;
     }
-
 }

@@ -10,7 +10,7 @@ public class ScaledTextureTarget extends TextureTarget {
 
     public ScaledTextureTarget(float widthScale, float heightScale, int width, int height,
                                boolean useDepth, boolean clearError) {
-        super((int) (width * widthScale), (int) (height * heightScale), useDepth, clearError);
+        super(width, height, useDepth, clearError);
         this.widthScale = widthScale;
         this.heightScale = heightScale;
         this.isInit = true;
@@ -19,10 +19,16 @@ public class ScaledTextureTarget extends TextureTarget {
 
     @Override
     public void resize(int width, int height, boolean clearError) {
-        if (!isInit) {
-            super.resize(width, height, clearError);
-            return;
+        int renderWidth = width;
+        int renderHeight = height;
+        if (isInit) {
+            renderWidth *= widthScale;
+            renderHeight *= heightScale;
         }
-        super.resize(Math.max((int) (width * widthScale), 1), Math.max((int) (height * heightScale), 1), clearError);
+        super.resize(renderWidth, renderHeight, clearError);
+
+        // set the screen width/height back to the actual values
+        this.viewWidth = width;
+        this.viewHeight = height;
     }
 }

@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.core.mixins.client;
 
-import com.gregtechceu.gtceu.client.shader.GTShaders;
 import com.gregtechceu.gtceu.client.shader.rendertarget.ScaledTextureTarget;
 
 import net.minecraft.client.renderer.PostChain;
@@ -10,7 +9,6 @@ import com.google.gson.JsonObject;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
@@ -45,15 +43,10 @@ public class PostChainMixin {
     @WrapOperation(method = "addTempTarget",
                    at = @At(value = "NEW", target = "com/mojang/blaze3d/pipeline/TextureTarget"))
     private TextureTarget gtceu$wrapScaledTextureTarget(int width, int height, boolean useDepth, boolean clearError,
-                                                        Operation<TextureTarget> original,
-                                                        @Local(ordinal = 0, argsOnly = true) LocalIntRef widthRef,
-                                                        @Local(ordinal = 1, argsOnly = true) LocalIntRef heightRef) {
+                                                        Operation<TextureTarget> original) {
         TextureTarget target;
 
-        if (gtceu$widthScale > 0.0f && gtceu$heightScale > 0.0f) {
-            widthRef.set((int) (width * gtceu$widthScale));
-            heightRef.set((int) (height * gtceu$heightScale));
-
+        if (gtceu$widthScale > 0 && gtceu$heightScale > 0) {
             target = new ScaledTextureTarget(gtceu$widthScale, gtceu$heightScale, width, height, useDepth, clearError);
             gtceu$widthScale = -1;
             gtceu$heightScale = -1;

@@ -1,15 +1,12 @@
 package com.gregtechceu.gtceu.client.particle;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.client.bloom.BloomAlgorithm;
-import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 import com.gregtechceu.gtceu.client.bloom.EffectRenderContext;
 import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
 import com.gregtechceu.gtceu.client.bloom.particle.GTBloomParticle;
 import com.gregtechceu.gtceu.client.util.RenderBufferHelper;
 import com.gregtechceu.gtceu.client.util.RenderUtil;
 import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
-import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -240,9 +237,8 @@ public class GTOverheatParticle extends GTBloomParticle {
                 '}';
     }
 
-    @Nullable
     @Override
-    public IRenderSetup getRenderSetup() {
+    public @Nullable IRenderSetup getRenderSetup() {
         return SETUP;
     }
 
@@ -257,17 +253,9 @@ public class GTOverheatParticle extends GTBloomParticle {
         return true;
     }
 
-    @Nullable
     @Override
-    protected IRenderSetup getBloomRenderSetup() {
+    protected @Nullable IRenderSetup getBloomRenderSetup() {
         return SETUP;
-    }
-
-    @NotNull
-    @Override
-    protected BloomAlgorithm getBloomType() {
-        var config = ConfigHolder.INSTANCE.client.shader.heatEffectBloom;
-        return config.useShader ? config.bloomAlgorithm : BloomAlgorithm.DISABLED;
     }
 
     public void renderBloomEffect(@NotNull PoseStack poseStack, @NotNull BufferBuilder buffer,
@@ -289,14 +277,6 @@ public class GTOverheatParticle extends GTBloomParticle {
         @Override
         @OnlyIn(Dist.CLIENT)
         public void preDraw(@NotNull BufferBuilder buffer) {
-            var config = ConfigHolder.INSTANCE.client.shader.heatEffectBloom;
-
-            BloomUtil.strength = config.strength;
-            BloomUtil.baseBrightness = config.baseBrightness;
-            BloomUtil.highBrightnessThreshold = config.highBrightnessThreshold;
-            BloomUtil.lowBrightnessThreshold = config.lowBrightnessThreshold;
-            BloomUtil.step = 1;
-
             RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.enableBlend();
             buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);

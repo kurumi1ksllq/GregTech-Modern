@@ -1,18 +1,14 @@
 package com.gregtechceu.gtceu.client.renderer.machine.impl;
 
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
-import com.gregtechceu.gtceu.client.bloom.BloomAlgorithm;
 import com.gregtechceu.gtceu.client.bloom.BloomUtil;
 import com.gregtechceu.gtceu.client.bloom.EffectRenderContext;
 import com.gregtechceu.gtceu.client.bloom.IBloomEffect;
-import com.gregtechceu.gtceu.client.bloom.IRenderSetup;
 import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
-import com.gregtechceu.gtceu.client.shader.GTShaders;
 import com.gregtechceu.gtceu.client.util.RenderBufferHelper;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.FusionReactorMachine;
-import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -69,16 +65,14 @@ public class FusionRingRender extends DynamicRender<FusionReactorMachine, Fusion
             return;
         }
 
-        BloomAlgorithm bloomAlgorithm = getBloomType();
-        if (bloomAlgorithm != BloomAlgorithm.DISABLED) {
-            if (!machine.isRegisteredBloomTicket()) {
-                machine.setRegisteredBloomTicket(true);
-                BloomUtil.registerBloomRender(FusionBloomSetup.INSTANCE, bloomAlgorithm,
-                        new FusionBloomEffect(machine), machine.getHolder().self());
-            }
-        } else {
-            renderLightRing(machine, partialTick, poseStack, buffer.getBuffer(GTRenderTypes.getLightRing()));
+        if (machine.isRegisteredBloomTicket() && !machine.isFormed()) {
+            machine.setRegisteredBloomTicket(false);
         }
+        if (!machine.isRegisteredBloomTicket()) {
+            machine.setRegisteredBloomTicket(true);
+            BloomUtil.registerBloomRender(null, new FusionBloomEffect(machine), machine.getHolder().self());
+        }
+        renderLightRing(machine, partialTick, poseStack, buffer.getBuffer(GTRenderTypes.getLightRing()));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -121,11 +115,6 @@ public class FusionRingRender extends DynamicRender<FusionReactorMachine, Fusion
         return new AABB(machine.getPos()).inflate(getViewDistance() / 2.0D);
     }
 
-    private static BloomAlgorithm getBloomType() {
-        var config = ConfigHolder.INSTANCE.client.shader.fusionBloom;
-        return GTShaders.allowedShader() && config.useShader ? config.bloomAlgorithm : BloomAlgorithm.DISABLED;
-    }
-
     @RequiredArgsConstructor
     private final class FusionBloomEffect implements IBloomEffect {
 
@@ -157,29 +146,8 @@ public class FusionRingRender extends DynamicRender<FusionReactorMachine, Fusion
 
         @Override
         public boolean shouldRenderBloomEffect(@NotNull EffectRenderContext context) {
-            return machine.recipeLogic.isWorking() && delta > 0 &&
+            return (machine.recipeLogic.isWorking() || delta > 0) &&
                     context.frustum().isVisible(FusionRingRender.this.getRenderBoundingBox(machine));
         }
-    }
-
-    private static final class FusionBloomSetup implements IRenderSetup {
-
-        private static final FusionBloomSetup INSTANCE = new FusionBloomSetup();
-
-        @Override
-        public void preDraw(@NotNull BufferBuilder buffer) {
-            var config = ConfigHolder.INSTANCE.client.shader.fusionBloom;
-
-            BloomUtil.strength = config.strength;
-            BloomUtil.baseBrightness = config.baseBrightness;
-            BloomUtil.highBrightnessThreshold = config.highBrightnessThreshold;
-            BloomUtil.lowBrightnessThreshold = config.lowBrightnessThreshold;
-            BloomUtil.step = 1;
-
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-        }
-
-        @Override
-        public void postDraw(@NotNull BufferBuilder buffer) {}
     }
 }

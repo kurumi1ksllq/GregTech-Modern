@@ -111,8 +111,7 @@ public abstract class GTParticle {
     /**
      * @return Render setup for this particle, if exists
      */
-    @Nullable
-    public IRenderSetup getRenderSetup() {
+    public @Nullable IRenderSetup getRenderSetup() {
         return null;
     }
 }

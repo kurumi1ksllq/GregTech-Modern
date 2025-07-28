@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 

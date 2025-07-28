@@ -19,7 +19,7 @@ The `@SyncToClient` annotation defines a field with a value that should be synce
 
 Annotating a `@SyncToClient` field with `@RerenderOnChanged` will cause clients to rerender the block entity when this field changes.
 
-!!! warning "Client sync fields **do not** automatically detect changes. When changing a client sync field, call `ISyncManaged.getSyncDataHolder().markClientSyncFieldDirty(FIELD_NAME)"
+!!! warning "Client sync fields **do not** automatically detect changes. When changing a client sync field, call `ISyncManaged.getSyncDataHolder().markClientSyncFieldDirty(FIELD_NAME)`"
 ```java
 @SaveField(nbtKey="nbtKeyToSaveTo")
 @SyncToClient
@@ -28,6 +28,19 @@ public int mySaveAndSyncInt = 10;
 @SyncToClient
 @RerenderOnChanged
 public long mySyncRerenderLong = 10000L;
+
+public void serverTick() {
+    int newIntValue = getNewIntValue();
+    long newLongValue = getNewLongValue();
+    if (mySaveAndSyncInt != newIntValue) {
+        mySaveAndSyncInt = newIntValue;
+        getSyncDataHolder().markClientSyncFieldDirty("mySaveAndSyncInt");
+    }
+    if (mySyncRerenderLong != newLongValue) {
+        mySyncRerenderLong = newLongValue;
+        getSyncDataHolder().markClientSyncFieldDirty("mySyncRerenderLong");
+    }
+}
 ```
 
 ### `@ClientFieldChangeListener`
@@ -54,8 +67,8 @@ The `@CustomDataField`annotation defines a field with a type too complex to be s
 Field data modifiers on non-custom fields will be applied *after* standard serialisation/deserialisation, and will be called with an argument containing the current tag.
 
 ```java
-
 @CustomDataField
+@SaveField
 public VeryComplexType myVeryComplexValue = new VeryComplexType();
 
 @FieldDataModifier(fieldName="myVeryComplexValue", target=FieldDataModifier.MODIFY_TARGET.LOAD_NBT)
@@ -69,6 +82,4 @@ public Tag saveVeryComplexValue() {
     // Create tag here.
     return new CompoundTag();
 }
-
-
 ```

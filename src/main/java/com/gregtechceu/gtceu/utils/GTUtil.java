@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,6 +24,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Tuple;
@@ -33,6 +36,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SnowLayerBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.common.ForgeHooks;
@@ -40,6 +47,7 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
@@ -57,6 +65,16 @@ import static com.gregtechceu.gtceu.api.data.chemical.material.properties.Proper
 public class GTUtil {
 
     public static final Direction[] DIRECTIONS = Direction.values();
+
+    @SuppressWarnings("UnstableApiUsage")
+    public static final ImmutableList<BlockPos> NON_CORNER_NEIGHBOURS = Util.make(() -> {
+        var builder = ImmutableList.<BlockPos>builderWithExpectedSize(18);
+        BlockPos.betweenClosedStream(-1, -1, -1, 1, 1, 1)
+                .filter((pos) -> (pos.getX() == 0 || pos.getY() == 0 || pos.getZ() == 0) && !pos.equals(BlockPos.ZERO))
+                .map(BlockPos::immutable)
+                .forEach(builder::add);
+        return builder.build();
+    });
 
     private static final Object2IntMap<String> RVN = new Object2IntArrayMap<>(GTValues.VN, GTValues.ALL_TIERS);
 
@@ -440,6 +458,45 @@ public class GTUtil {
         } else return world.isDay();
     }
 
+    /**
+     * @param state the blockstate to check
+     * @return if the block is a snow layer or snow block
+     */
+    public static boolean isBlockSnow(@NotNull BlockState state) {
+        return state.is(Blocks.SNOW) || state.is(Blocks.SNOW_BLOCK);
+    }
+
+    /**
+     * Attempt to break a (single) snow layer at the given BlockPos.
+     * Will also turn snow blocks into snow layers at height 7.
+     *
+     * @return true if the passed IBlockState was valid snow block
+     */
+    public static boolean tryBreakSnow(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state,
+                                       boolean playSound) {
+        boolean success = false;
+        if (state.is(Blocks.SNOW_BLOCK)) {
+            level.setBlock(pos, Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, 7),
+                    Block.UPDATE_ALL_IMMEDIATE);
+            success = true;
+        } else if (state.getBlock() == Blocks.SNOW) {
+            int layers = state.getValue(SnowLayerBlock.LAYERS);
+            if (layers == 1) {
+                level.destroyBlock(pos, false);
+            } else {
+                level.setBlock(pos, Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, layers - 1),
+                        Block.UPDATE_ALL_IMMEDIATE);
+            }
+            success = true;
+        }
+
+        if (success && playSound) {
+            level.playSound(null, pos, SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 1.0f, 1.0f);
+        }
+
+        return success;
+    }
+
     public static void appendHazardTooltips(Material material, List<Component> tooltipComponents) {
         if (!ConfigHolder.INSTANCE.gameplay.hazardsEnabled || !material.hasProperty(HAZARD)) return;
 
@@ -478,7 +535,7 @@ public class GTUtil {
                 }
             }
 
-            if (stack.getItem().canBeDepleted()) {
+            if (stack.isDamageableItem()) {
                 stack.setDamageValue(stack.getDamageValue());
             }
             return stack;

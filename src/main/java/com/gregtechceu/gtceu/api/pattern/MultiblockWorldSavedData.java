@@ -19,11 +19,9 @@ import java.util.concurrent.*;
 
 public class MultiblockWorldSavedData extends SavedData {
 
-    private final ServerLevel serverLevel;
-
     public static MultiblockWorldSavedData getOrCreate(ServerLevel serverLevel) {
-        return serverLevel.getDataStorage().computeIfAbsent(tag -> new MultiblockWorldSavedData(serverLevel, tag),
-                () -> new MultiblockWorldSavedData(serverLevel), "gtceu_multiblock");
+        return serverLevel.getDataStorage()
+                .computeIfAbsent(MultiblockWorldSavedData::new, MultiblockWorldSavedData::new, "gtceu_multiblock");
     }
 
     /**
@@ -35,18 +33,17 @@ public class MultiblockWorldSavedData extends SavedData {
      */
     public final Map<ChunkPos, Set<MultiblockState>> chunkPosMapping;
 
-    private MultiblockWorldSavedData(ServerLevel serverLevel) {
-        this.serverLevel = serverLevel;
+    private MultiblockWorldSavedData() {
         this.mapping = new Object2ObjectOpenHashMap<>();
         this.chunkPosMapping = new HashMap<>();
     }
 
-    private MultiblockWorldSavedData(ServerLevel serverLevel, CompoundTag tag) {
-        this(serverLevel);
+    private MultiblockWorldSavedData(CompoundTag tag) {
+        this();
     }
 
-    public MultiblockState[] getControllerInChunk(ChunkPos chunkPos) {
-        return chunkPosMapping.getOrDefault(chunkPos, Collections.emptySet()).toArray(MultiblockState[]::new);
+    public Set<MultiblockState> getControllersInChunk(ChunkPos chunkPos) {
+        return chunkPosMapping.getOrDefault(chunkPos, Collections.emptySet());
     }
 
     public void addMapping(MultiblockState state) {
@@ -54,7 +51,6 @@ public class MultiblockWorldSavedData extends SavedData {
         for (BlockPos blockPos : state.getCache()) {
             chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c -> new HashSet<>()).add(state);
         }
-        setDirty(true);
     }
 
     public void removeMapping(MultiblockState state) {
@@ -62,7 +58,6 @@ public class MultiblockWorldSavedData extends SavedData {
         for (Set<MultiblockState> set : chunkPosMapping.values()) {
             set.remove(state);
         }
-        setDirty(true);
     }
 
     @NotNull

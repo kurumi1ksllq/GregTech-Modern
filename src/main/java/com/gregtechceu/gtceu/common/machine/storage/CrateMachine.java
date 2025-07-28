@@ -33,6 +33,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
 import lombok.Getter;
@@ -50,6 +51,8 @@ public class CrateMachine extends MetaMachine implements IMuiMachine, IMachineLi
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(CrateMachine.class,
             MetaMachine.MANAGED_FIELD_HOLDER);
+
+    public static final BooleanProperty TAPED_PROPERTY = BooleanProperty.create("taped");
 
     @Override
     public ManagedFieldHolder getFieldHolder() {
@@ -120,7 +123,8 @@ public class CrateMachine extends MetaMachine implements IMuiMachine, IMachineLi
                     stack.shrink(1);
                 }
                 isTaped = true;
-                return InteractionResult.SUCCESS;
+                setRenderState(getRenderState().setValue(TAPED_PROPERTY, isTaped));
+                return InteractionResult.sidedSuccess(world.isClientSide);
             }
         }
         return IInteractedMachine.super.onUse(state, world, pos, player, hand, hit);
@@ -138,6 +142,7 @@ public class CrateMachine extends MetaMachine implements IMuiMachine, IMachineLi
 
             tag.remove("taped");
             this.isTaped = false;
+            setRenderState(getRenderState().setValue(TAPED_PROPERTY, isTaped));
         }
         stack.setTag(null);
     }

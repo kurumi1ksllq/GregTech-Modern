@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.api.machine;
 
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
+import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.pattern.BlockPattern;
 import com.gregtechceu.gtceu.api.pattern.MultiblockShapeInfo;
 
@@ -20,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class MultiblockMachineDefinition extends MachineDefinition {
@@ -47,7 +49,7 @@ public class MultiblockMachineDefinition extends MachineDefinition {
     private Supplier<ItemStack[]> recoveryItems;
     @Setter
     @Getter
-    private Comparator<IMultiPart> partSorter;
+    private Function<MultiblockControllerMachine, Comparator<IMultiPart>> partSorter;
     @Getter
     @Setter
     private TriFunction<IMultiController, IMultiPart, Direction, BlockState> partAppearance;
@@ -55,12 +57,8 @@ public class MultiblockMachineDefinition extends MachineDefinition {
     @Setter
     private BiConsumer<IMultiController, List<Component>> additionalDisplay;
 
-    protected MultiblockMachineDefinition(ResourceLocation id) {
+    public MultiblockMachineDefinition(ResourceLocation id) {
         super(id);
-    }
-
-    public static MultiblockMachineDefinition createDefinition(ResourceLocation id) {
-        return new MultiblockMachineDefinition(id);
     }
 
     public List<MultiblockShapeInfo> getMatchingShapes() {

@@ -24,13 +24,14 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.RegistryObject;
 
 import com.mojang.datafixers.util.Pair;
-import com.tterrag.registrate.util.entry.BlockEntry;
+import com.tterrag.registrate.util.entry.RegistryEntry;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -78,11 +79,8 @@ public class ItemMaterialData {
                                              @NotNull MaterialEntry materialEntry) {
         registerItemEntry(supplier, materialEntry);
         ITEM_MATERIAL_ENTRY.add(Pair.of(() -> supplier.get().asItem(), materialEntry));
-        if (supplier instanceof RegistryObject<? extends ItemLike> registryObject) {
-            registerRegistryObjectEntry(registryObject, materialEntry);
-        } else if (supplier instanceof BlockEntry<?> entry) {
-            registerBlockEntry(entry, materialEntry);
-        } else if (supplier instanceof MemoizedBlockSupplier<?> blockSupplier) {
+        var blockSupplier = convertToBlock(supplier);
+        if (blockSupplier != null) {
             registerBlockEntry(blockSupplier, materialEntry);
         }
     }
@@ -131,19 +129,28 @@ public class ItemMaterialData {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static void registerRegistryObjectEntry(@NotNull RegistryObject<? extends ItemLike> registryObject,
-                                                    @NotNull MaterialEntry materialEntry) {
-        var key = registryObject.getKey();
-        if (key != null && key.isFor(Registries.BLOCK)) {
-            registerBlockEntry((Supplier<? extends Block>) registryObject, materialEntry);
-        }
-    }
-
     private static void registerBlockEntry(@NotNull Supplier<? extends Block> supplier,
                                            @NotNull MaterialEntry materialEntry) {
         MATERIAL_ENTRY_BLOCK_MAP.computeIfAbsent(materialEntry, k -> new ArrayList<>())
                 .add(supplier);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static @Nullable Supplier<? extends Block> convertToBlock(@NotNull Supplier<? extends ItemLike> supplier) {
+        if (supplier instanceof RegistryObject<? extends ItemLike> registryObject) {
+            var key = registryObject.getKey();
+            if (key != null && key.isFor(Registries.BLOCK)) {
+                return (Supplier<? extends Block>) registryObject;
+            }
+        } else if (supplier instanceof RegistryEntry<? extends ItemLike> entry) {
+            var key = entry.getKey();
+            if (key.isFor(Registries.BLOCK)) {
+                return (Supplier<? extends Block>) entry;
+            }
+        } else if (supplier instanceof MemoizedBlockSupplier<?> blockSupplier) {
+            return blockSupplier;
+        }
+        return null;
     }
 
     public static void reinitializeMaterialData() {
@@ -166,28 +173,43 @@ public class ItemMaterialData {
 
     @ApiStatus.Internal
     public static void resolveItemMaterialInfos(Consumer<FinishedRecipe> provider) {
-        for (var entry : UNRESOLVED_ITEM_MATERIAL_INFO.entrySet()) {
-            List<MaterialStack> stacks = new ArrayList<>();
+        for (var iter = UNRESOLVED_ITEM_MATERIAL_INFO.entrySet().iterator(); iter.hasNext();) {
+            var entry = iter.next();
             var stack = entry.getKey();
-            var count = stack.getCount();
-            for (var input : entry.getValue()) {
-                var matStack = getMaterialInfo(input.getItem());
-                if (matStack != null) {
-                    matStack.getMaterials()
-                            .forEach(ms -> stacks.add(new MaterialStack(ms.material(), ms.amount() / count)));
+            var existingMaterialInfo = recurseFindMaterialInfo(ITEM_MATERIAL_INFO.get(stack.getItem()), stack);
+            if (existingMaterialInfo != null) {
+                RecyclingRecipes.registerRecyclingRecipes(provider, stack.copyWithCount(1),
+                        existingMaterialInfo.getMaterials(), false, null);
+            }
+            iter.remove();
+        }
+    }
+
+    private static ItemMaterialInfo recurseFindMaterialInfo(ItemMaterialInfo info, ItemStack stack) {
+        // grab material info from each input
+        for (var input : UNRESOLVED_ITEM_MATERIAL_INFO.get(stack)) {
+            // recurse if its nested inputs, not yet resolved
+            if (UNRESOLVED_ITEM_MATERIAL_INFO.containsKey(input)) {
+                info = recurseFindMaterialInfo(info, input);
+            } else {
+                // add the info from an item that is resolved (or not in the map to begin with)
+                var singularMatInfo = getMaterialInfo(input.getItem());
+                int inputCount = input.getCount();
+                int outputCount = stack.getCount();
+                if (singularMatInfo != null) { // if that material info exists
+                    List<MaterialStack> stackList = new ArrayList<>();
+                    for (var matStack : singularMatInfo.getMaterials()) {
+                        stackList.add(matStack.multiply(inputCount).divide(outputCount));
+                    }
+                    if (info == null) { // if the info isn't set initialize it
+                        info = new ItemMaterialInfo(stackList);
+                        ITEM_MATERIAL_INFO.put(stack.getItem(), info);
+                    } else { // otherwise, add to it
+                        info.addMaterialStacks(stackList);
+                    }
                 }
             }
-            if (stacks.isEmpty()) continue;
-            var matInfo = ITEM_MATERIAL_INFO.get(stack.getItem());
-            if (matInfo == null) {
-                matInfo = new ItemMaterialInfo(stacks);
-                ITEM_MATERIAL_INFO.put(stack.getItem(), matInfo);
-            } else {
-                matInfo.addMaterialStacks(stacks);
-            }
-            RecyclingRecipes.registerRecyclingRecipes(provider, entry.getKey().copyWithCount(1),
-                    matInfo.getMaterials(), false, null);
         }
-        UNRESOLVED_ITEM_MATERIAL_INFO.clear();
+        return info;
     }
 }

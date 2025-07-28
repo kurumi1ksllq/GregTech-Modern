@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -79,22 +80,28 @@ public class GTDynamicDataPack implements PackResources {
             writeJson(recipeId, "recipes", parent, recipeBytes);
         }
         addToData(getRecipeLocation(recipeId), recipeBytes);
-        JsonObject advancementJson = recipe.serializeAdvancement();
-        if (advancementJson != null) {
-            addAdvancement(Objects.requireNonNull(recipe.getAdvancementId()), advancementJson);
+
+        if (recipe.serializeAdvancement() != null) {
+            JsonObject advancement = recipe.serializeAdvancement();
+            byte[] advancementBytes = advancement.toString().getBytes(StandardCharsets.UTF_8);
+            if (ConfigHolder.INSTANCE.dev.dumpRecipes) {
+                writeJson(recipe.getAdvancementId(), "advancements", parent, advancementBytes);
+            }
+            addToData(getAdvancementLocation(Objects.requireNonNull(recipe.getAdvancementId())),
+                    advancementBytes);
         }
     }
 
     /**
      * if subdir is null, no file ending is appended.
-     * 
+     *
      * @param id     the resource location of the file to be written.
      * @param subdir a nullable subdirectory for the data.
      * @param parent the parent folder where to write data to.
-     * @param bytes  the bytes to write.
+     * @param json   the json to write.
      */
     @ApiStatus.Internal
-    public static void writeJson(ResourceLocation id, @Nullable String subdir, Path parent, byte[] bytes) {
+    public static void writeJson(ResourceLocation id, @Nullable String subdir, Path parent, byte[] json) {
         try {
             Path file;
             if (subdir != null) {
@@ -106,10 +113,10 @@ public class GTDynamicDataPack implements PackResources {
             }
             Files.createDirectories(file.getParent());
             try (OutputStream output = Files.newOutputStream(file)) {
-                output.write(bytes);
+                output.write(json);
             }
         } catch (IOException e) {
-            GTCEu.LOGGER.error("Failed to save data JSON for id {} to disk.", id, e);
+            GTCEu.LOGGER.error("Failed to write JSON export for file {}", id, e);
         }
     }
 
@@ -123,13 +130,18 @@ public class GTDynamicDataPack implements PackResources {
         addToData(l, advancementBytes);
     }
 
+    @Nullable
     @Override
-    public @Nullable IoSupplier<InputStream> getRootResource(String... elements) {
+    public IoSupplier<InputStream> getRootResource(String... elements) {
+        if (elements.length > 0 && elements[0].equals("pack.png")) {
+            return () -> GTCEu.class.getResourceAsStream("/icon.png");
+        }
         return null;
     }
 
+    @Nullable
     @Override
-    public @Nullable IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
+    public IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
         if (type == PackType.SERVER_DATA) {
             return CONTENTS.getResource(location);
         } else {
@@ -149,9 +161,9 @@ public class GTDynamicDataPack implements PackResources {
         return type == PackType.SERVER_DATA ? SERVER_DOMAINS : Set.of();
     }
 
-    @SuppressWarnings("unchecked")
+    @Nullable
     @Override
-    public <T> @Nullable T getMetadataSection(MetadataSectionSerializer<T> metaReader) {
+    public <T> T getMetadataSection(MetadataSectionSerializer<T> metaReader) {
         if (metaReader == PackMetadataSection.TYPE) {
             return (T) new PackMetadataSection(Component.literal("GTCEu dynamic data"),
                     SharedConstants.getCurrentVersion().getPackVersion(PackType.SERVER_DATA));
@@ -171,8 +183,12 @@ public class GTDynamicDataPack implements PackResources {
     }
 
     @Override
-    public String packId() {
+    public @NotNull String packId() {
         return this.name;
+    }
+
+    public boolean isBuiltin() {
+        return true;
     }
 
     @Override

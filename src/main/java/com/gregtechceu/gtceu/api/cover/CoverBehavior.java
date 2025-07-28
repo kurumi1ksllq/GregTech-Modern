@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfigurator;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.IToolGridHighlight;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.cover.ICoverRenderer;
 import com.gregtechceu.gtceu.common.mui.factory.CoverUIFactory;
@@ -38,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -100,8 +100,9 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
     @MustBeInvokedByOverriders
     public boolean canAttach() {
         var machine = MetaMachine.getMachine(coverHolder.getLevel(), coverHolder.getPos());
-        return machine == null || !machine.hasFrontFacing() || coverHolder.getFrontFacing() != attachedSide ||
-                machine instanceof IMultiController;
+        return machine == null ||
+                (machine.getDefinition().isAllowCoverOnFront() || !machine.hasFrontFacing() ||
+                        coverHolder.getFrontFacing() != attachedSide);
     }
 
     /**
@@ -167,8 +168,7 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
             if (player instanceof ServerPlayer serverPlayer) {
                 com.gregtechceu.gtceu.api.gui.factory.CoverUIFactory.INSTANCE.openUI(this, serverPlayer);
             }
-            player.swing(hand);
-            return InteractionResult.CONSUME;
+            return InteractionResult.sidedSuccess(player.level().isClientSide);
         }
         return InteractionResult.PASS;
     }
@@ -191,7 +191,7 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighli
         return true;
     }
 
-    public ICoverRenderer getCoverRenderer() {
+    public @Nullable Supplier<ICoverRenderer> getCoverRenderer() {
         return coverDefinition.getCoverRenderer();
     }
 

@@ -6,8 +6,6 @@ import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.common.data.GTRecipeConditions;
 
-import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
-
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
@@ -59,7 +57,8 @@ public class BiomeCondition extends RecipeCondition {
     @Override
     public Component getTooltips() {
         return Component.translatable("recipe.condition.biome.tooltip",
-                LocalizationUtils.format(biome.location().toLanguageKey("biome")));
+                Component.translatableWithFallback(biome.location().toLanguageKey("biome"),
+                        biome.location().toString()));
     }
 
     @Override
@@ -79,7 +78,7 @@ public class BiomeCondition extends RecipeCondition {
     @Override
     public JsonObject serialize() {
         JsonObject config = super.serialize();
-        config.addProperty("biome", biome.toString());
+        config.addProperty("biome", biome.location().toString());
         return config;
     }
 

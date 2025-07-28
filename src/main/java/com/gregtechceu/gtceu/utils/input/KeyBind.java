@@ -24,6 +24,7 @@ import it.unimi.dsi.fastutil.booleans.BooleanBooleanMutablePair;
 import java.util.*;
 import java.util.function.Supplier;
 
+@Deprecated
 @Mod.EventBusSubscriber(modid = GTCEu.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public enum KeyBind {
 
@@ -68,7 +69,7 @@ public enum KeyBind {
         }
         if (!updating.isEmpty()) {
             try {
-                GTNetwork.NETWORK.sendToServer(new CPacketKeysPressed(updating));
+                GTNetwork.sendToServer(new CPacketKeysPressed(updating));
             } catch (NullPointerException exception) {
                 GTCEu.LOGGER.error("Keys pressed packet failed to send with an exception", exception);
             }

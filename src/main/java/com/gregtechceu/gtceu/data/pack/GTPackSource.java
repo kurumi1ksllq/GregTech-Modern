@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.data.pack;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
@@ -9,6 +10,7 @@ import net.minecraft.server.packs.repository.RepositorySource;
 import lombok.RequiredArgsConstructor;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 @RequiredArgsConstructor
 public class GTPackSource implements RepositorySource {
@@ -16,20 +18,23 @@ public class GTPackSource implements RepositorySource {
     private final String name;
     private final PackType type;
     private final Pack.Position position;
-    private final Pack.ResourcesSupplier resources;
+    private final Function<String, PackResources> resources;
 
-    @SuppressWarnings("DataFlowIssue")
     @Override
     public void loadPacks(Consumer<Pack> onLoad) {
-        Pack.Info info = Pack.readPackInfo(name, resources);
-        onLoad.accept(Pack.create(name,
+        onLoad.accept(readMetaAndCreate(name,
                 Component.literal(name),
                 true,
-                resources,
-                info,
+                resources::apply,
                 type,
                 position,
-                true,
                 PackSource.BUILT_IN));
+    }
+
+    public static Pack readMetaAndCreate(String id, Component title, boolean required, Pack.ResourcesSupplier resources,
+                                         PackType packType, Pack.Position defaultPosition, PackSource packSource) {
+        Pack.Info info = Pack.readPackInfo(id, resources);
+        return info != null ? Pack.create(id, title, required, resources,
+                info, packType, defaultPosition, true, packSource) : null;
     }
 }

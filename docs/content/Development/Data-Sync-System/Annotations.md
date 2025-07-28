@@ -19,7 +19,8 @@ The `@SyncToClient` annotation defines a field with a value that should be synce
 
 Annotating a `@SyncToClient` field with `@RerenderOnChanged` will cause clients to rerender the block entity when this field changes.
 
-!!! warning "Client sync fields **do not** automatically detect changes. When changing a client sync field, call `ISyncManaged.getSyncDataHolder().markClientSyncFieldDirty(FIELD_NAME)`"
+!!! warning 
+    Client sync fields **do not** automatically detect changes. When changing a client sync field, call `ISyncManaged.getSyncDataHolder().markClientSyncFieldDirty(FIELD_NAME)`
 ```java
 @SaveField(nbtKey="nbtKeyToSaveTo")
 @SyncToClient

@@ -9,7 +9,8 @@ title: "Usage"
 At the core of the system is the interface `ISyncManaged`, which represents a class that to be synchronised with the client or saved.
 All block entities which should be synchronised or saved must extend the abstract class `ManagedSyncBlockEntity`.
 
-!!! warning "Block entities that inherit `ManagedSyncBlockEntity` must call `BlockEntity::setChanged`***every tick*** within their ticker, or they will not be saved."
+!!! warning 
+  Block entities that inherit `ManagedSyncBlockEntity` must call `BlockEntity::setChanged`***every tick*** within their ticker, or they will not be saved.
 
 ```java
 class MySyncObject implements ISyncManaged {

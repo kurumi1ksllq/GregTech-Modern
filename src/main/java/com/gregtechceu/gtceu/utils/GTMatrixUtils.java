@@ -12,7 +12,6 @@ import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import com.mojang.blaze3d.platform.GlUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.math.Transformation;
 import org.jetbrains.annotations.Contract;
 import org.joml.*;
 import org.lwjgl.opengl.GL11;

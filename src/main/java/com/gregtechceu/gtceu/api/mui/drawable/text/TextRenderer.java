@@ -5,7 +5,7 @@ import com.gregtechceu.gtceu.api.mui.drawable.Stencil;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
-import com.gregtechceu.gtceu.core.mixins.StringSplitterAccessor;
+import com.gregtechceu.gtceu.core.mixins.client.StringSplitterAccessor;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;

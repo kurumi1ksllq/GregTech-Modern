@@ -59,9 +59,9 @@ public class FusionRingRender extends DynamicRender<FusionReactorMachine, Fusion
         if (GTCEu.Mods.isShimmerLoaded()) {
             PoseStack finalStack = RenderUtils.copyPoseStack(poseStack);
             BloomUtils.entityBloom(source -> renderLightRing(machine, partialTick, finalStack,
-                    source.getBuffer(GTRenderTypes.getLightRing())));
+                    source.getBuffer(GTRenderTypes.lightRing())));
         } else {
-            renderLightRing(machine, partialTick, poseStack, buffer.getBuffer(GTRenderTypes.getLightRing()));
+            renderLightRing(machine, partialTick, poseStack, buffer.getBuffer(GTRenderTypes.lightRing()));
         }
     }
 

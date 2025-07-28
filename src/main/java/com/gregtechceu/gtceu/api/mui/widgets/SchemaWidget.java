@@ -4,10 +4,10 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.base.widget.Interactable;
 import com.gregtechceu.gtceu.api.mui.drawable.GuiTextures;
-import com.gregtechceu.gtceu.utils.VectorUtil;
-import com.gregtechceu.gtceu.utils.fakelevel.ISchema;
 import com.gregtechceu.gtceu.api.mui.drawable.SchemaRenderer;
 import com.gregtechceu.gtceu.api.mui.widget.Widget;
+import com.gregtechceu.gtceu.utils.VectorUtil;
+import com.gregtechceu.gtceu.utils.fakelevel.ISchema;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;

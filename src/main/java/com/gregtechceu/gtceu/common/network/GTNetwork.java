@@ -9,9 +9,9 @@ import com.gregtechceu.gtceu.common.network.packets.hazard.SPacketSyncLevelHazar
 import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectBedrockFluid;
 import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectBedrockOre;
 import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectOre;
-
 import com.gregtechceu.gtceu.common.network.packets.ui.OpenGuiPacket;
 import com.gregtechceu.gtceu.common.network.packets.ui.SyncHandlerPacket;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -99,7 +99,9 @@ public class GTNetwork {
         register(SPacketNotifyCapeChange.class, SPacketNotifyCapeChange::new, NetworkDirection.PLAY_TO_CLIENT);
         register(SCPacketShareProspection.class, SCPacketShareProspection::new, null);
 
-        NETWORK.registerS2C(OpenGuiPacket.class);
-        NETWORK.registerS2C(SyncHandlerPacket.class);
+        register(OpenGuiPacket.class, OpenGuiPacket::new, NetworkDirection.PLAY_TO_CLIENT);
+        register(SyncHandlerPacket.class, SyncHandlerPacket::new, NetworkDirection.PLAY_TO_CLIENT);
+        // NETWORK.registerS2C(OpenGuiPacket.class);
+        // NETWORK.registerS2C(SyncHandlerPacket.class);
     }
 }

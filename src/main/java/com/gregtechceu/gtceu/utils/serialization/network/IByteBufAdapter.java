@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.utils.serialization.network;
 
 import com.gregtechceu.gtceu.utils.EqualityTest;
+
 import net.minecraft.network.FriendlyByteBuf;
 
 import org.jetbrains.annotations.NotNull;

@@ -10,7 +10,7 @@ import com.gregtechceu.gtceu.api.mui.widget.WidgetTree;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ModularSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.common.data.GTMenuTypes;
-import com.gregtechceu.gtceu.core.mixins.AbstractContainerMenuAccessor;
+import com.gregtechceu.gtceu.core.mixins.client.AbstractContainerMenuAccessor;
 import com.gregtechceu.gtceu.utils.NetworkUtils;
 
 import net.minecraft.client.Minecraft;

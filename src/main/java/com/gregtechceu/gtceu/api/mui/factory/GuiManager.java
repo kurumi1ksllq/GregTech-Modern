@@ -88,7 +88,7 @@ public class GuiManager {
         // sync to client
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         factory.writeGuiData(guiData, buffer);
-        GTNetwork.NETWORK.sendToPlayer(new OpenGuiPacket<>(windowId, factory, buffer), player);
+        GTNetwork.sendToPlayer(player, new OpenGuiPacket(windowId, factory, buffer));
         // open the menu // this mimics forge behaviour
         player.containerMenu = container;
         player.containerMenu.addSlotListener(((ServerPlayerAccessor) player).getContainerListener());

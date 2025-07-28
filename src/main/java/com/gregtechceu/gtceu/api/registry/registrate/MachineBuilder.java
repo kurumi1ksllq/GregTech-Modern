@@ -78,7 +78,7 @@ import java.util.function.*;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.gregtechceu.gtceu.common.data.models.GTMachineModels.*;
-import static com.gregtechceu.gtceu.integration.kjs.GregTechKubeJSPlugin.RUNTIME_BLOCKSTATE_PROVIDER;
+import static com.gregtechceu.gtceu.integration.kjs.GTKubeJSPlugin.RUNTIME_BLOCKSTATE_PROVIDER;
 
 @SuppressWarnings("unused")
 @ParametersAreNonnullByDefault

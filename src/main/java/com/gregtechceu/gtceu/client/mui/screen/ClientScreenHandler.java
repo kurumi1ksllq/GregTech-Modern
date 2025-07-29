@@ -169,7 +169,7 @@ public class ClientScreenHandler {
             return;
         }
         if (currentScreen != null && currentScreen.handleDraggableInput(mouseX, mouseY, button, true) ||
-                doAction(currentScreen, ms -> ms.onMouseReleased(mouseX, mouseY, button))) {
+                doAction(currentScreen, ms -> ms.onMousePressed(mouseX, mouseY, button))) {
             RecipeViewerHandler.getCurrent().setSearchFocused(false);
             event.setCanceled(true);
         }

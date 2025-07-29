@@ -16,6 +16,7 @@ import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTItems;
+import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTGuis;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
@@ -103,14 +104,16 @@ public class CrateMachine extends MetaMachine implements IMuiMachine, IMachineLi
                 widgets.get(i).add(new ItemSlot().slot(SyncHandlers.itemSlot(inventory, index).slotGroup("item_inv")));
             }
         }
+
         return GTGuis.createPanel(this, rowLength * 18 + 14, 18 + 4 * 18 + 5 + 14 + 18 * rows)
+                .background(GTGuiTextures.BACKGROUND_STEEL)
                 .child(IKey.lang(getBlockState().getBlock().getName()).asWidget().pos(5, 5))
-                .bindPlayerInventory()
                 .child(new Grid()
                         .top(18).left(7).right(7).height(rows * 18)
                         .minElementMargin(0, 0)
                         .minColWidth(18).minRowHeight(18)
-                        .matrix(widgets));
+                        .matrix(widgets))
+                .bindPlayerInventory();
     }
 
     @Override

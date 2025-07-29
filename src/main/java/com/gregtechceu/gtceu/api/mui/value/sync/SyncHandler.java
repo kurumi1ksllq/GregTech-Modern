@@ -166,7 +166,8 @@ public abstract class SyncHandler {
         if (!syncHandler.isValid()) {
             throw new IllegalStateException();
         }
-        GTNetwork.sendToPlayer((ServerPlayer) syncHandler.syncManager.getPlayer(), new SyncHandlerPacket(panel, syncHandler.getKey(), buffer));
+        GTNetwork.sendToPlayer((ServerPlayer) syncHandler.syncManager.getPlayer(),
+                new SyncHandlerPacket(panel, syncHandler.getKey(), buffer));
     }
 
     public static void sendToServer(String panel, FriendlyByteBuf buffer, SyncHandler syncHandler) {

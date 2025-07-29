@@ -69,7 +69,7 @@ public abstract class AbstractDefaultTheme implements ITheme {
     @Override
     public int getOpenCloseAnimationOverride() {
         // convert 1/60s to ms
-        return (int) (ConfigHolder.INSTANCE.client.ui.animationTime * 37.5f);
+        return (int) (ConfigHolder.INSTANCE.client.ui.animationTime * 16.66f);
     }
 
     @Override

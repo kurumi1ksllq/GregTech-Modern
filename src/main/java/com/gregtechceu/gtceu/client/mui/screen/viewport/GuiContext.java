@@ -35,8 +35,7 @@ public class GuiContext extends GuiViewportStack {
     private final Area screenArea = new Area();
     @Getter
     @Setter(onMethod_ = @ApiStatus.Internal)
-    private GuiGraphics graphics = new GuiGraphics(Minecraft.getInstance(),
-            Minecraft.getInstance().renderBuffers().bufferSource());
+    private GuiGraphics graphics = null;
 
     /* Mouse states */
     /**

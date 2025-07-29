@@ -398,7 +398,9 @@ public class GTMachineUtils {
     public static MachineDefinition registerCrate(Material material, int capacity, int rowLength, String lang) {
         final boolean wooden = material.hasProperty(PropertyKey.WOOD);
 
-        return REGISTRATE.machine(material.getName() + "_crate", holder -> new CrateMachine(holder, material, rowLength, capacity))
+        return REGISTRATE
+                .machine(material.getName() + "_crate",
+                        holder -> new CrateMachine(holder, material, capacity, rowLength))
                 .langValue(lang)
                 .rotationState(RotationState.NONE)
                 .tooltips(Component.translatable("gtceu.universal.tooltip.item_storage_capacity", capacity))

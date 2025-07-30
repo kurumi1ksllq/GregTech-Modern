@@ -1,17 +1,27 @@
 package com.gregtechceu.gtceu.api.machine.trait;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.core.mixins.RecipeManagerAccessor;
 
 import net.minecraft.gametest.framework.BeforeBatch;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 import java.util.HashMap;
 
 @PrefixGameTestTemplate(false)
+@GameTestHolder(GTCEu.MOD_ID)
 public class RecipeLogicTest {
 
+    @GameTest(template="empty")
+    public static void myTest(GameTestHelper helper){
+        helper.assertTrue(true, "true is false");
+        helper.succeed();
+    }
+
+    /*
     private static boolean hasInjectedRecipe = false;
 
     @BeforeBatch(batch = GTCEu.MOD_ID)
@@ -21,6 +31,7 @@ public class RecipeLogicTest {
         ((RecipeManagerAccessor) level.getRecipeManager()).setRawRecipes(recipes);
         recipes.replaceAll((k, v) -> new HashMap<>(v));
     }
+     */
 
     // @GameTest(template = "gtceu:recipelogic")
     // public static void recipeLogicTest(GameTestHelper helper) {

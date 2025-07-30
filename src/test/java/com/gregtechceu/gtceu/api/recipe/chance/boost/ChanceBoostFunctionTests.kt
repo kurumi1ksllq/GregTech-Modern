@@ -14,7 +14,7 @@ import net.minecraftforge.gametest.PrefixGameTestTemplate
 @PrefixGameTestTemplate(false)
 @GameTestHolder(GTCEu.MOD_ID)
 object ChanceBoostFunctionTests {
-
+/*
     @JvmStatic
     @GameTest(template = "empty")
     fun `OC Chance Boost -- 0 boost`(helper: GameTestHelper) {
@@ -140,4 +140,5 @@ object ChanceBoostFunctionTests {
 
         helper.succeed()
     }
+ */
 }

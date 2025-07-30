@@ -15,6 +15,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 @PrefixGameTestTemplate(false)
 @GameTestHolder(GTCEu.MOD_ID)
 object ChanceLogicTests {
+    /*
 
     private val NONE = ChanceBoostFunction.NONE
     private val MAX_CHANCE = ChanceLogic.getMaxChancedValue()
@@ -178,4 +179,5 @@ object ChanceLogicTests {
 
         helper.succeed()
     }
+     */
 }

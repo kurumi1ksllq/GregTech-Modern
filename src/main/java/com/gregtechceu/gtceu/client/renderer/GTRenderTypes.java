@@ -55,7 +55,7 @@ public class GTRenderTypes extends RenderType {
         super(name, format, mode, bufferSize, affectsCrumbling, sortOnUpload, setupState, clearState);
     }
 
-    public static RenderType getLightRing() {
+    public static RenderType lightRing() {
         return LIGHT_RING;
     }
 

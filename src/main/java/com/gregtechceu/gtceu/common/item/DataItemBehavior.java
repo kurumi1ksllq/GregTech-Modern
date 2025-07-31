@@ -64,6 +64,11 @@ public class DataItemBehavior implements IInteractionItem, IAddInformation, IDat
     }
 
     @Override
+    public int getCapacity() {
+        return capacity;
+    }
+
+    @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                 TooltipFlag isAdvanced) {
         if (stack.getOrCreateTag().contains("boundPlayerName")) {

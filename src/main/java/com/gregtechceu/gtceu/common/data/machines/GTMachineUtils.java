@@ -478,15 +478,15 @@ public class GTMachineUtils {
                 HIGH_TIERS);
     }
 
-    public static MachineDefinition registerCrate(Material material, int capacity, String lang) {
-        return registerCrate(REGISTRATE, material, capacity, lang);
+    public static MachineDefinition registerCrate(Material material, int capacity, int rowLength, String lang) {
+        return registerCrate(REGISTRATE, material, capacity, rowLength, lang);
     }
 
-    public static MachineDefinition registerCrate(GTRegistrate registrate, Material material, int capacity,
+    public static MachineDefinition registerCrate(GTRegistrate registrate, Material material, int capacity, int rowLength,
                                                   String lang) {
         final boolean wooden = material.hasProperty(PropertyKey.WOOD);
 
-        return registrate.machine(material.getName() + "_crate", holder -> new CrateMachine(holder, material, capacity))
+        return registrate.machine(material.getName() + "_crate", holder -> new CrateMachine(holder, material, capacity, rowLength))
                 .langValue(lang)
                 .rotationState(RotationState.NONE)
                 .tooltips(Component.translatable("gtceu.universal.tooltip.item_storage_capacity", capacity))
@@ -850,9 +850,9 @@ public class GTMachineUtils {
                         .where('R',
                                 new TraceabilityPredicate(
                                         new SimplePredicate(
-                                                state -> MetaMachine.getMachine(state.getWorld(),
+                                                state -> MetaMachine.getMachine(state.getLevel(),
                                                         state.getPos()) instanceof IRotorHolderMachine rotorHolder &&
-                                                        state.getWorld()
+                                                        state.getLevel()
                                                                 .getBlockState(state.getPos()
                                                                         .relative(rotorHolder.self().getFrontFacing()))
                                                                 .isAir(),

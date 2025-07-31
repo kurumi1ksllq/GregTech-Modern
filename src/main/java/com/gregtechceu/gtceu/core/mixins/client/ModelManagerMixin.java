@@ -8,7 +8,7 @@ import com.gregtechceu.gtceu.client.renderer.item.ArmorItemRenderer;
 import com.gregtechceu.gtceu.client.renderer.item.TagPrefixItemRenderer;
 import com.gregtechceu.gtceu.client.renderer.item.ToolItemRenderer;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
-import com.gregtechceu.gtceu.integration.kjs.GregTechKubeJSPlugin;
+import com.gregtechceu.gtceu.integration.kjs.GTKubeJSPlugin;
 import com.gregtechceu.gtceu.integration.modernfix.GTModernFixIntegration;
 
 import net.minecraft.client.resources.model.ModelManager;
@@ -46,7 +46,7 @@ public abstract class ModelManagerMixin {
         GTModels.registerMaterialFluidModels();
 
         if (GTCEu.Mods.isKubeJSLoaded()) {
-            GregTechKubeJSPlugin.generateMachineBlockModels();
+            GTKubeJSPlugin.generateMachineBlockModels();
         }
         if (GTCEu.Mods.isModernFixLoaded()) {
             GTModernFixIntegration.setAsLast();

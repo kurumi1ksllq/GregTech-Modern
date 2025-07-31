@@ -225,7 +225,7 @@ public class GTKubeJSPlugin extends KubeJSPlugin {
                 builderBase.generateAssetJsons(null);
             } catch (IllegalStateException ignored) {}
         });
-        GregTechKubeJSPlugin.RUNTIME_BLOCKSTATE_PROVIDER.run();
+        GTKubeJSPlugin.RUNTIME_BLOCKSTATE_PROVIDER.run();
     }
 
     @Override

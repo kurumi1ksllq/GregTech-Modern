@@ -14,10 +14,8 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.jei.IngredientIO;
 
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +25,6 @@ import net.minecraft.world.level.block.Blocks;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,18 +33,17 @@ public class DimensionCondition extends RecipeCondition {
 
     public static final Codec<DimensionCondition> CODEC = RecordCodecBuilder
             .create(instance -> RecipeCondition.isReverse(instance)
-                    .and(Level.RESOURCE_KEY_CODEC.fieldOf("dimension").forGetter(val -> val.dimension))
+                    .and(ResourceLocation.CODEC.fieldOf("dimension").forGetter(val -> val.dimension))
                     .apply(instance, DimensionCondition::new));
 
     public final static DimensionCondition INSTANCE = new DimensionCondition();
-    @Getter
-    private ResourceKey<Level> dimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("dummy"));
+    private ResourceLocation dimension = new ResourceLocation("dummy");
 
-    public DimensionCondition(ResourceKey<Level> dimension) {
+    public DimensionCondition(ResourceLocation dimension) {
         this.dimension = dimension;
     }
 
-    public DimensionCondition(boolean isReverse, ResourceKey<Level> dimension) {
+    public DimensionCondition(boolean isReverse, ResourceLocation dimension) {
         super(isReverse);
         this.dimension = dimension;
     }
@@ -64,11 +60,11 @@ public class DimensionCondition extends RecipeCondition {
 
     @Override
     public Component getTooltips() {
-        return Component.translatable("recipe.condition.dimension.tooltip", dimension.location().toString());
+        return Component.translatable("recipe.condition.dimension.tooltip", dimension);
     }
 
     public SlotWidget setupDimensionMarkers(int xOffset, int yOffset) {
-        DimensionMarker dimMarker = GTRegistries.DIMENSION_MARKERS.getOrDefault(this.dimension.location(),
+        DimensionMarker dimMarker = GTRegistries.DIMENSION_MARKERS.getOrDefault(this.dimension,
                 new DimensionMarker(DimensionMarker.MAX_TIER, () -> Blocks.BARRIER, this.dimension.toString()));
         ItemStack icon = dimMarker.getIcon();
         CustomItemStackHandler handler = new CustomItemStackHandler(1);
@@ -81,6 +77,10 @@ public class DimensionCondition extends RecipeCondition {
                             .scale(0.75f).transform(-3.0f, 5.0f));
         }
         return dimSlot;
+    }
+
+    public ResourceLocation getDimension() {
+        return dimension;
     }
 
     @Override
@@ -105,21 +105,21 @@ public class DimensionCondition extends RecipeCondition {
     @Override
     public RecipeCondition deserialize(@NotNull JsonObject config) {
         super.deserialize(config);
-        dimension = ResourceKey.create(Registries.DIMENSION,
-                new ResourceLocation(GsonHelper.getAsString(config, "dimension", "dummy")));
+        dimension = new ResourceLocation(
+                GsonHelper.getAsString(config, "dimension", "dummy"));
         return this;
     }
 
     @Override
     public RecipeCondition fromNetwork(FriendlyByteBuf buf) {
         super.fromNetwork(buf);
-        dimension = buf.readResourceKey(Registries.DIMENSION);
+        dimension = new ResourceLocation(buf.readUtf());
         return this;
     }
 
     @Override
     public void toNetwork(FriendlyByteBuf buf) {
         super.toNetwork(buf);
-        buf.writeResourceKey(dimension);
+        buf.writeUtf(dimension.toString());
     }
 }

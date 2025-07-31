@@ -20,8 +20,8 @@ import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiContext;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.LocatedWidget;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import com.gregtechceu.gtceu.core.mixins.AbstractContainerScreenAccessor;
-import com.gregtechceu.gtceu.core.mixins.ScreenAccessor;
+import com.gregtechceu.gtceu.core.mixins.client.AbstractContainerScreenAccessor;
+import com.gregtechceu.gtceu.core.mixins.client.ScreenAccessor;
 import com.gregtechceu.gtceu.integration.xei.handlers.RecipeViewerHandler;
 
 import net.minecraft.ChatFormatting;
@@ -169,7 +169,7 @@ public class ClientScreenHandler {
             return;
         }
         if (currentScreen != null && currentScreen.handleDraggableInput(mouseX, mouseY, button, true) ||
-                doAction(currentScreen, ms -> ms.onMouseReleased(mouseX, mouseY, button))) {
+                doAction(currentScreen, ms -> ms.onMousePressed(mouseX, mouseY, button))) {
             RecipeViewerHandler.getCurrent().setSearchFocused(false);
             event.setCanceled(true);
         }

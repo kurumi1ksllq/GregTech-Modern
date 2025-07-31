@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.api.mui.value.sync;
 
+import com.gregtechceu.gtceu.utils.EqualityTest;
 import com.gregtechceu.gtceu.utils.serialization.network.IByteBufAdapter;
 import com.gregtechceu.gtceu.utils.serialization.network.IByteBufDeserializer;
 import com.gregtechceu.gtceu.utils.serialization.network.IByteBufSerializer;
-import com.gregtechceu.gtceu.utils.EqualityTest;
 
 import net.minecraft.network.FriendlyByteBuf;
 

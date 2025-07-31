@@ -4,7 +4,7 @@ import com.gregtechceu.gtceu.api.mui.holoui.HoloScreenEntity;
 import com.gregtechceu.gtceu.api.mui.holoui.Plane3D;
 import com.gregtechceu.gtceu.api.mui.holoui.ScreenOrientation;
 import com.gregtechceu.gtceu.client.mui.screen.ContainerScreenWrapper;
-import com.gregtechceu.gtceu.core.mixins.GuiGraphicsAccessor;
+import com.gregtechceu.gtceu.core.mixins.client.GuiGraphicsAccessor;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

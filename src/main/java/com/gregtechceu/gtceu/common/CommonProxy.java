@@ -27,6 +27,7 @@ import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.fluid.*;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.item.*;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.data.*;
+import com.gregtechceu.gtceu.common.data.GTPlaceholders;
 import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils;
 import com.gregtechceu.gtceu.common.data.materials.GTFoods;
 import com.gregtechceu.gtceu.common.item.tool.rotation.CustomBlockRotations;
@@ -48,7 +49,9 @@ import com.gregtechceu.gtceu.data.pack.GTDynamicResourcePack;
 import com.gregtechceu.gtceu.data.pack.GTPackSource;
 import com.gregtechceu.gtceu.data.recipe.GTCraftingComponents;
 import com.gregtechceu.gtceu.forge.AlloyBlastPropertyAddition;
+import com.gregtechceu.gtceu.integration.ae2.GTAEPlaceholders;
 import com.gregtechceu.gtceu.integration.cctweaked.CCTweakedPlugin;
+import com.gregtechceu.gtceu.integration.create.GTCreateIntegration;
 import com.gregtechceu.gtceu.integration.kjs.GTCEuStartupEvents;
 import com.gregtechceu.gtceu.integration.kjs.GTRegistryInfo;
 import com.gregtechceu.gtceu.integration.kjs.events.MaterialModificationEventJS;
@@ -142,6 +145,11 @@ public class CommonProxy {
         TagPrefix.init();
         GTSoundEntries.init();
         GTDamageTypes.init();
+        GTPlaceholders.initPlaceholders();
+        if (GTCEu.Mods.isCreateLoaded()) {
+            GTCreateIntegration.init();
+            GTAEPlaceholders.init();
+        }
         GTCovers.init();
         GTFluids.init();
         GTCreativeModeTabs.init();

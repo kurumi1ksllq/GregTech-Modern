@@ -1,11 +1,13 @@
 package com.gregtechceu.gtceu.utils;
 
 import com.gregtechceu.gtceu.utils.math.ParseResult;
+import com.gregtechceu.gtceu.utils.math.ParseResult;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.item.ItemStack;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.mariuszgromada.math.mxparser.Constant;
 import org.jetbrains.annotations.Nullable;
 import org.mariuszgromada.math.mxparser.Constant;
 import org.mariuszgromada.math.mxparser.Expression;
@@ -79,6 +81,15 @@ public class GTMath {
 
     public static float ratio(BigInteger a, BigInteger b) {
         return new BigDecimal(a).divide(new BigDecimal(b), MathContext.DECIMAL32).floatValue();
+    }
+
+    public static int ceilDiv(int x, int y) {
+        final int q = x / y;
+        // if the signs are the same and modulo not zero, round up
+        if ((x ^ y) >= 0 && (q * y != x)) {
+            return q + 1;
+        }
+        return q;
     }
 
     public static ParseResult parseExpression(@Nullable String expression) {

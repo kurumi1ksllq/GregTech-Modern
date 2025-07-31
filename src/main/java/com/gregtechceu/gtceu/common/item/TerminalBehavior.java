@@ -50,8 +50,8 @@ public class TerminalBehavior implements IInteractionItem, IItemUIFactory {
                     }
                 }
                 for (var block : blockFailedMap.entrySet()) {
-                    if (!predicateInfoMap.containsKey(block.getKey().getSecond())) {
-                        predicateBlockCount.merge(block.getKey().getFirst(), 1, Integer::sum);
+                    if (!predicateInfoMap.containsKey(block.getKey().right())) {
+                        predicateBlockCount.merge(block.getKey().left(), 1, Integer::sum);
                     }
                 }
 

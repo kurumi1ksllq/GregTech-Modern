@@ -23,8 +23,8 @@ import com.gregtechceu.gtceu.api.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.tag.TagUtil;
 import com.gregtechceu.gtceu.common.item.armor.*;
 import com.gregtechceu.gtceu.common.item.behavior.*;
-import com.gregtechceu.gtceu.common.item.behavior.LighterBehavior;
-import com.gregtechceu.gtceu.common.item.behavior.MetaMachineConfigCopyBehaviour;
+import com.gregtechceu.gtceu.common.item.behavior.modules.*;
+import com.gregtechceu.gtceu.common.item.datacomponents.DataItem;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.cover.GTCovers;
 import com.gregtechceu.gtceu.data.datagen.lang.LangHandler;
@@ -1431,15 +1431,15 @@ public class GTItems {
 
     public static ItemEntry<ComponentItem> TOOL_DATA_STICK = REGISTRATE.item("data_stick", ComponentItem::new)
             .lang("Data Stick").onRegister(attach(DataItemBehavior.INSTANCE))
-            .properties(p -> p.component(GTDataComponents.DATA_ITEM, false))
+            .properties(p -> p.component(GTDataComponents.DATA_ITEM, new DataItem(false, 8)))
             .register();
     public static ItemEntry<ComponentItem> TOOL_DATA_ORB = REGISTRATE.item("data_orb", ComponentItem::new)
             .lang("Data Orb").onRegister(attach(DataItemBehavior.INSTANCE))
-            .properties(p -> p.component(GTDataComponents.DATA_ITEM, false))
+            .properties(p -> p.component(GTDataComponents.DATA_ITEM, new DataItem(false, 64)))
             .register();
     public static ItemEntry<ComponentItem> TOOL_DATA_MODULE = REGISTRATE.item("data_module", ComponentItem::new)
             .lang("Data Module").onRegister(attach(DataItemBehavior.INSTANCE))
-            .properties(p -> p.component(GTDataComponents.DATA_ITEM, true))
+            .properties(p -> p.component(GTDataComponents.DATA_ITEM, new DataItem(true, 256)))
             .register();
 
     public static final Map<MarkerMaterial, ItemEntry<Item>> GLASS_LENSES = new HashMap<>();
@@ -1800,6 +1800,11 @@ public class GTItems {
             .onRegister(attach(new FluidFilterBehaviour(TagFluidFilter::loadFilter),
                     new CoverPlaceBehavior(GTCovers.FLUID_FILTER)))
             .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Zinc, GTValues.M * 3 / 2))))
+            .register();
+    public static ItemEntry<ComponentItem> COVER_WIRELESS_TRANSMITTER = REGISTRATE
+            .item("wireless_transmitter_cover", ComponentItem::new)
+            .lang("Wireless Transmitter")
+            .onRegister(attach(new CoverPlaceBehavior(GTCovers.WIRELESS_TRANSMITTER)))
             .register();
 
     public static ItemEntry<ComponentItem> COVER_MACHINE_CONTROLLER = REGISTRATE
@@ -2536,6 +2541,14 @@ public class GTItems {
             .item("treated_wood_chest_boat",
                     p -> new BoatItem(true, GTEnumProxies.TREATED_WOOD_BOAT_PROXY.getValue(), p))
             .lang("Treated Wood Boat with Chest")
+            .register();
+
+    public static ItemEntry<ComponentItem> TEXT_MODULE = REGISTRATE.item("text_module", ComponentItem::new)
+            .onRegister(attach(new TextModuleBehaviour()))
+            .register();
+
+    public static ItemEntry<ComponentItem> IMAGE_MODULE = REGISTRATE.item("image_module", ComponentItem::new)
+            .onRegister(attach(new ImageModuleBehaviour()))
             .register();
 
     public static void init() {}

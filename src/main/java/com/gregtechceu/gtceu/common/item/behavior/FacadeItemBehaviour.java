@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.common.item.behavior;
 
 import com.gregtechceu.gtceu.api.item.component.ICustomDescriptionId;
 import com.gregtechceu.gtceu.api.item.component.ISubItemHandler;
-import com.gregtechceu.gtceu.api.item.datacomponents.FacadeWrapper;
 import com.gregtechceu.gtceu.data.block.GTBlocks;
 import com.gregtechceu.gtceu.data.item.GTDataComponents;
 import com.gregtechceu.gtceu.utils.memoization.GTMemoizer;
@@ -53,7 +52,7 @@ public class FacadeItemBehaviour implements ISubItemHandler, ICustomDescriptionI
         if (!isValidFacade(state)) {
             state = Blocks.STONE.defaultBlockState();
         }
-        itemStack.set(GTDataComponents.FACADE, new FacadeWrapper(state));
+        itemStack.set(GTDataComponents.FACADE, state);
     }
 
     public static boolean isValidFacade(ItemStack itemStack) {
@@ -89,10 +88,9 @@ public class FacadeItemBehaviour implements ISubItemHandler, ICustomDescriptionI
         if (facade == null) {
             return null;
         }
-        BlockState facadeStack = facade.state();
-        if (facadeStack.isEmpty() || !isValidFacade(facadeStack)) {
+        if (facade.isEmpty() || !isValidFacade(facade)) {
             return null;
         }
-        return facadeStack;
+        return facade;
     }
 }

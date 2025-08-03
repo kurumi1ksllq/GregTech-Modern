@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.item.tool.IToolGridHighLight;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.cover.ICoverRenderer;
+import com.gregtechceu.gtceu.client.renderer.cover.IDynamicCoverRenderer;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.syncdata.IEnhancedManaged;
@@ -215,6 +216,10 @@ public abstract class CoverBehavior implements IEnhancedManaged, IToolGridHighLi
     @Nullable
     public BlockState getAppearance(@Nullable BlockState sourceState, @Nullable BlockPos sourcePos) {
         return null;
+    }
+
+    public Supplier<IDynamicCoverRenderer> getDynamicRenderer() {
+        return () -> null;
     }
 
     //////////////////////////////////////

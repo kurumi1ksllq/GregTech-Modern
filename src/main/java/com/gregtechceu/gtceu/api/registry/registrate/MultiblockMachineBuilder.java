@@ -14,6 +14,7 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
+import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.multiblock.BlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
@@ -88,7 +89,7 @@ public class MultiblockMachineBuilder extends MachineBuilder<MultiblockMachineDe
         allowExtendedFacing(true);
         allowCoverOnFront(true);
         // always add the formed property to multi controllers
-        modelProperty(IMultiController.IS_FORMED_PROPERTY, false);
+        modelProperty(GTMachineModelProperties.IS_FORMED, false);
     }
 
     public MultiblockMachineBuilder shapeInfo(Function<MultiblockMachineDefinition, MultiblockShapeInfo> shape) {

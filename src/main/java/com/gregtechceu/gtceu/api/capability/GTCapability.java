@@ -38,4 +38,6 @@ public class GTCapability {
             .createSided(GTCEu.id("data_access"), IDataAccessHatch.class);
     public static final BlockCapability<IHazardParticleContainer, Direction> CAPABILITY_HAZARD_CONTAINER = BlockCapability
             .createSided(GTCEu.id("hazard_particle_container"), IHazardParticleContainer.class);
+    public static final BlockCapability<IMonitorComponent, Direction> CAPABILITY_MONITOR_COMPONENT = BlockCapability
+            .createSided(GTCEu.id("monitor_component"), IMonitorComponent.class);
 }

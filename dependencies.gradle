@@ -26,6 +26,11 @@ dependencies {
     compileOnly(forge.ae2)
     compileOnly(forge.ae2wtlib)
 
+    // Create
+    compileOnly(forge.ponder)
+    compileOnly(variantOf(forge.create) { classifier("slim") })
+    compileOnly(forge.flywheel.forge.api)
+
     // KJS
     compileOnly(forge.bundles.kjs)
 
@@ -71,6 +76,7 @@ dependencies {
     // Client-only runtime mods //
     clientLocalRuntime(forge.sodium)
     clientLocalRuntime(forge.iris)
+    renderNurseCfg(libs.renderNurse)
 
     //////////////////////////////////////////////////////
     // Runtime mods for dev testing with unclean client //
@@ -79,7 +85,7 @@ dependencies {
     extraLocalRuntime(forge.trenzalore)
     extraLocalRuntime(forge.curios)
 //    extraLocalRuntime(forge.worldstripper)
-    extraLocalRuntime(forge.cc.tweaked.forge.impl)
+//    extraLocalRuntime(forge.cc.tweaked.forge.impl) for some reason this breaks create
 
     extraLocalRuntime(forge.bundles.kjs)
 
@@ -106,5 +112,7 @@ dependencies {
     extraLocalRuntime(forge.observable)
     //////////////////////////
 
-    testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    extraLocalRuntime(forge.ponder)
+    extraLocalRuntime(variantOf(forge.create) { classifier("slim") })
+    extraLocalRuntime(forge.flywheel.forge)
 }

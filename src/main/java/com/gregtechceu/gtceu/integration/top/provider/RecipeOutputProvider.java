@@ -14,7 +14,9 @@ import com.gregtechceu.gtceu.integration.top.element.FluidStyle;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -113,11 +115,13 @@ public class RecipeOutputProvider extends CapabilityInfoProvider<RecipeLogic> {
 
                 IProbeInfo horizontalPane = verticalPane
                         .horizontal(verticalPane.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER));
-                String spacer = " ";
+                MutableComponent spacer = CommonComponents.space();
 
                 if (itemOutput.getContainedCustom() instanceof IntProviderIngredient provider) {
-                    spacer += provider.getCountProvider().getMinValue() + "-" +
-                            provider.getCountProvider().getMaxValue() + " ";
+                    spacer = spacer.append(Component.translatable("gtceu.gui.content.range",
+                            String.valueOf(provider.getCountProvider().getMinValue()),
+                            String.valueOf(provider.getCountProvider().getMaxValue())))
+                            .append(CommonComponents.SPACE);
                     provider.setItemStacks(null); // no roll
                     provider.setSampledCount(1);
                 }
@@ -136,13 +140,13 @@ public class RecipeOutputProvider extends CapabilityInfoProvider<RecipeLogic> {
 
                 IProbeInfo horizontalPane = verticalPane
                         .horizontal(verticalPane.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER));
-                String spacer = " ";
+                MutableComponent spacer = CommonComponents.space();
 
                 if (fluidOutput.ingredient() instanceof IntProviderFluidIngredient provider) {
-                    spacer += provider.getCountProvider().getMinValue() + "-" +
-                            provider.getCountProvider().getMaxValue() + " ";
-                    provider.setFluidStacks(null); // no roll
-                    provider.setSampledCount(1);
+                    spacer = spacer.append(Component.translatable("gtceu.gui.content.range",
+                            String.valueOf(provider.getCountProvider().getMinValue()),
+                            String.valueOf(provider.getCountProvider().getMaxValue())))
+                            .append(CommonComponents.SPACE);
                     stack.setAmount(provider.getCountProvider().getMaxValue()); // no roll
                 }
                 horizontalPane.element(new FluidStackElement(stack, new FluidStyle()))

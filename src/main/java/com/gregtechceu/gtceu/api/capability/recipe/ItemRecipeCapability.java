@@ -578,4 +578,10 @@ public class ItemRecipeCapability extends RecipeCapability<SizedIngredient> {
          */
         int limitItemParallel(GTRecipe recipe, int multiplier, boolean tick);
     }
+
+    // Items should be respected for distinct checks
+    @Override
+    public boolean shouldBypassDistinct() {
+        return false;
+    }
 }

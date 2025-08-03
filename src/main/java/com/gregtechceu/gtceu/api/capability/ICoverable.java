@@ -209,11 +209,28 @@ public interface ICoverable extends ITickSubscription, IAppearance {
 
     @Nullable
     static Direction rayTraceCoverableSide(ICoverable coverable, Player player) {
-        HitResult rayTrace = ToolHelper.getPlayerDefaultRaytrace(player);
+        BlockHitResult rayTrace = ToolHelper.getPlayerDefaultRaytrace(player);
         if (rayTrace.getType() != HitResult.Type.BLOCK) {
             return null;
         }
-        return traceCoverSide((BlockHitResult) rayTrace);
+        return traceCoverSide(rayTrace);
+    }
+
+    default boolean hasDynamicCovers() {
+        for (Direction face : GTUtil.DIRECTIONS) {
+            CoverBehavior cover = this.getCoverAtSide(face);
+            if (cover != null && cover.getDynamicRenderer().get() != null) return true;
+        }
+        return false;
+    }
+
+    class PrimaryBoxData {
+
+        public final boolean usePlacementGrid;
+
+        public PrimaryBoxData(boolean usePlacementGrid) {
+            this.usePlacementGrid = usePlacementGrid;
+        }
     }
 
     @Nullable

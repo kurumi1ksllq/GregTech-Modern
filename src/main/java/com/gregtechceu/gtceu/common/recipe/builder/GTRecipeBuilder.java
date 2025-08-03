@@ -163,6 +163,7 @@ public class GTRecipeBuilder {
     }
 
     public GTRecipeBuilder copyFrom(GTRecipeBuilder builder) {
+        recipeType.setMinRecipeConditions(builder.conditions.size());
         return builder.copy(builder.id).onSave(null).recipeType(recipeType).category(recipeCategory);
     }
 
@@ -202,6 +203,7 @@ public class GTRecipeBuilder {
 
     public GTRecipeBuilder addCondition(RecipeCondition<?> condition) {
         conditions.add(condition);
+        recipeType.setMinRecipeConditions(conditions.size());
         return this;
     }
 
@@ -1491,7 +1493,7 @@ public class GTRecipeBuilder {
      */
     public record ResearchRecipeEntry(@NotNull String researchId,
                                       @NotNull ItemStack researchItem, @NotNull FluidStack researchFluid,
-                                      @NotNull ItemStack dataStack, int duration, int EUt, int CWUt) {
+                                      @NotNull ItemStack dataStack, int duration, EnergyStack EUt, int CWUt) {
 
     }
 }

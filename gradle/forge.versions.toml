@@ -1,7 +1,7 @@
 [versions]
 ldlib = "1.0.35.a"
 registrate = "MC1.21-1.3.0+67"
-configuration = "3.1.0-neoforge"
+configuration = "3.1.1-neoforge"
 
 jei = "19.21.0.247"
 rei = "16.0.799"
@@ -28,6 +28,9 @@ ae2wtlib = "19.2.2"
 argonauts = "1.2.4"
 # FIXME for some reason their maven only has versions up to 1.1.10?
 heracles = "1.1.10"
+create = "6.0.7-115"
+ponder = "1.0.61"
+flywheel = "1.0.4-27"
 
 ## modrinth maven ##
 jade = "15.10.0+neoforge"
@@ -48,7 +51,6 @@ ftblibrary-cm = "6304123"
 ftbteams-cm = "6119437"
 ftbquests-cm = "6371007"
 ftbchunks-cm = "6295696"
-
 
 [libraries]
 ldlib               = { module = "com.lowdragmc.ldlib:ldlib-neoforge-1.21.1", version.ref = "ldlib" }
@@ -84,6 +86,11 @@ ae2wtlib            = { module = "de.mari_023:ae2wtlib", version.ref = "ae2wtlib
 # TODO update these once there's 1.21 versions
 argonauts           = { module = "earth.terrarium.argonauts:argonauts-neoforge-1.20.4", version.ref = "argonauts" }
 heracles            = { module = "earth.terrarium.heracles:heracles-forge-1.20.1", version.ref = "heracles" }
+
+create              = { module = "com.simibubi.create:create-1.21.1", version.ref = "create" }
+ponder              = { module = "net.createmod.ponder:Ponder-NeoForge-1.21.1", version.ref = "ponder" }
+flywheel-forge-api  = { module = "dev.engine-room.flywheel:flywheel-neoforge-api-1.21.1", version.ref = "flywheel" }
+flywheel-forge      = { module = "dev.engine-room.flywheel:flywheel-neoforge-1.21.1", version.ref = "flywheel" }
 
 jade                = { module = "maven.modrinth:jade", version.ref = "jade" }
 sodium              = { module = "maven.modrinth:sodium", version.ref = "sodium" }

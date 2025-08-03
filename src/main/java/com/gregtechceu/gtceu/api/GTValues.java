@@ -120,7 +120,8 @@ public class GTValues {
             MODID_HERACLES = "heracles",
             MODID_GAMESTAGES = "gamestages",
             MODID_FTB_QUEST = "ftbquests",
-            MODID_CCTWEAKED = "computercraft";
+            MODID_CCTWEAKED = "computercraft",
+            MODID_CREATE = "create";
 
     /**
      * Spray painting compat modids

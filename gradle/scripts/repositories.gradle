@@ -17,9 +17,13 @@ repositories {
         url = "https://maven.firstdarkdev.xyz/snapshots/"
     }
 
+    maven { url = "https://maven.createmod.net" }
+
 
     exclusiveContent { // Create, Ponder, Flywheel
-        forRepository { maven { url = "https://maven.createmod.net" } }
+        forRepository {
+            maven { url = "https://maven.createmod.net" }
+        }
         filter {
             includeGroup("net.createmod.ponder")
             includeGroup("com.simibubi.create")

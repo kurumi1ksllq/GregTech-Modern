@@ -16,8 +16,11 @@ import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.client.renderer.cover.CoverTextRenderer;
 import com.gregtechceu.gtceu.client.renderer.cover.IDynamicCoverRenderer;
 import com.gregtechceu.gtceu.data.datagen.lang.LangHandler;
+import com.gregtechceu.gtceu.common.item.datacomponents.ComputerMonitorConfig;
+import com.gregtechceu.gtceu.data.item.GTDataComponents;
 import com.gregtechceu.gtceu.utils.GTStringUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
+import com.gregtechceu.gtceu.integration.create.GTCreateIntegration;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceBorderTexture;
 import com.lowdragmc.lowdraglib.gui.widget.*;
@@ -27,12 +30,7 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.world.InteractionResult;
@@ -42,6 +40,7 @@ import net.minecraft.world.item.ItemStack;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static com.gregtechceu.gtceu.data.item.GTDataComponents.MONITOR_COVER_CONFIG;
 
@@ -58,7 +57,7 @@ public class ComputerMonitorCover extends CoverBehavior
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(ComputerMonitorCover.class,
             CoverBehavior.MANAGED_FIELD_HOLDER);
 
-    private TickableSubscription subscription;
+    private @Nullable TickableSubscription subscription;
     private final CoverTextRenderer renderer;
     @Persisted
     private final List<String> formatStringArgs = new ArrayList<>(8);
@@ -69,7 +68,7 @@ public class ComputerMonitorCover extends CoverBehavior
     @Getter
     private List<MutableComponent> text = new ArrayList<>();
     @Persisted
-    public final CustomItemStackHandler itemStackHandler = new CustomItemStackHandler(8);
+    public final CustomItemStackHandler itemHandler = new CustomItemStackHandler(8);
     @Setter
     private String placeholderSearch = "";
     @Setter
@@ -86,7 +85,7 @@ public class ComputerMonitorCover extends CoverBehavior
     public ComputerMonitorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
         renderer = new CoverTextRenderer(this::getText);
-        for (int i = 0; i < 100; i++) createDisplayTargetBuffer.add(MutableComponent.create(PlainTextContents.EMPTY));
+        for (int i = 0; i < 100; i++) createDisplayTargetBuffer.add(Component.empty());
     }
 
     public List<MutableComponent> getRenderedText() {
@@ -95,7 +94,7 @@ public class ComputerMonitorCover extends CoverBehavior
         tmp = tmp.stream().map(str -> '{' + str + '}').toList();
         return PlaceholderHandler.processPlaceholders(
                 GTStringUtils.replace(s, "\\{}", tmp),
-                new PlaceholderContext(coverHolder.getLevel(), coverHolder.getPos(), attachedSide, itemStackHandler,
+                new PlaceholderContext(coverHolder.getLevel(), coverHolder.getPos(), attachedSide, itemHandler,
                         this, new MultiLineComponent(text)));
     }
 
@@ -137,7 +136,7 @@ public class ComputerMonitorCover extends CoverBehavior
             formatStringInput.setTextResponder((s) -> formatStringLines.set(finalI, s));
             mainPage.addWidget(formatStringInput);
             SlotWidget slot = new com.gregtechceu.gtceu.api.gui.widget.SlotWidget(
-                    itemStackHandler,
+                    itemHandler,
                     i,
                     horizontalPadding + 50,
                     20 * i);
@@ -209,13 +208,13 @@ public class ComputerMonitorCover extends CoverBehavior
         ticksSincePlaced++;
         if (coverHolder.getOffsetTimer() % updateInterval == 0) {
             try {
-                // if (GTCEu.Mods.isCreateLoaded())
-                //     GTCreateIntegration.TemporaryRedstoneLinkTransmitter.destroyAll();
+                if (GTCEu.Mods.isCreateLoaded())
+                    GTCreateIntegration.TemporaryRedstoneLinkTransmitter.destroyAll();
                 setRedstoneSignalOutput(0);
                 text = getRenderedText();
             } catch (RuntimeException e) {
-                text = GTUtil
-                        .list(Component.translatable("gtceu.computer_monitor_cover.error.exception", e.getMessage()));
+                text = GTUtil.list(
+                        Component.translatable("gtceu.computer_monitor_cover.error.exception", e.getMessage()));
             }
         }
     }
@@ -237,34 +236,31 @@ public class ComputerMonitorCover extends CoverBehavior
     public List<ItemStack> getAdditionalDrops() {
         List<ItemStack> drops = super.getAdditionalDrops();
         for (int i = 0; i < 8; i++) {
-            if (!itemStackHandler.getStackInSlot(i).isEmpty())
-                drops.add(itemStackHandler.getStackInSlot(i));
+            if (!itemHandler.getStackInSlot(i).isEmpty()) {
+                drops.add(itemHandler.getStackInSlot(i));
+            }
         }
         return drops;
     }
 
     @Override
     public InteractionResult onDataStickUse(Player player, ItemStack dataStick) {
-        MonitorCoverConfig tag = dataStick.getOrDefault(MONITOR_COVER_CONFIG, null);
-        if (tag == null) return InteractionResult.FAIL;
-        List<String> stringLines = tag.getLines();
+        ComputerMonitorConfig config = dataStick.get(GTDataComponents.COMPUTER_MONITOR_CONFIG);
+        if (config == null) return InteractionResult.FAIL;
+
         formatStringLines.clear();
-        formatStringLines.addAll(stringLines);
-        List<String> stringArgs = tag.getArgs();
+        formatStringLines.addAll(config.lines());
+
         formatStringArgs.clear();
-        formatStringArgs.addAll(stringArgs);
-        updateInterval = tag.getUpdateInterval();
-        return InteractionResult.SUCCESS;
+        formatStringArgs.addAll(config.args());
+        updateInterval = config.updateInterval();
+        return InteractionResult.sidedSuccess(player.level().isClientSide);
     }
 
     @Override
     public InteractionResult onDataStickShiftUse(Player player, ItemStack dataStick) {
-        List<String> lines = new ArrayList<String>();
-        formatStringLines.forEach(line -> lines.add(line));
-        List<String> args = new ArrayList<String>();
-        formatStringArgs.forEach(line -> args.add(line));
-        MonitorCoverConfig tag = dataStick.getOrDefault(MONITOR_COVER_CONFIG, new MonitorCoverConfig(lines, args, updateInterval));
-        dataStick.set(MONITOR_COVER_CONFIG, tag);
-        return InteractionResult.SUCCESS;
+        dataStick.set(GTDataComponents.COMPUTER_MONITOR_CONFIG,
+                new ComputerMonitorConfig(formatStringLines, formatStringArgs, updateInterval));
+        return InteractionResult.sidedSuccess(player.level().isClientSide);
     }
 }

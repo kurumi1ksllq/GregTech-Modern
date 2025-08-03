@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.item.LampBlockItem.LampData;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
-import com.gregtechceu.gtceu.api.item.component.IDataItem;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
@@ -42,20 +41,11 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 import java.util.UUID;
 
-public class DataItemBehavior implements IInteractionItem, IAddInformation, IDataItem {
-    private final boolean requireDataBank;
-    @Getter
-    private final int capacity;
+public class DataItemBehavior implements IInteractionItem, IAddInformation {
 
-    @Override
-    public boolean requireDataBank() {
-        return requireDataBank;
-    }
+    public static final DataItemBehavior INSTANCE = new DataItemBehavior();
 
-    public DataItemBehavior(boolean requireDataBank, int capacity) {
-        this.requireDataBank = requireDataBank;
-        this.capacity = capacity;
-    }
+    protected DataItemBehavior() {}
 
     @Override
     public InteractionResultHolder<ItemStack> use(ItemStack item, Level level, Player player, InteractionHand usedHand) {
@@ -93,12 +83,11 @@ public class DataItemBehavior implements IInteractionItem, IAddInformation, IDat
         if (conf != null) {
             tooltipComponents.add(Component.translatable("gtceu.tooltip.computer_monitor_config"));
         }
-        var coverData = stack.getOrDefault(GTDataComponents.COMPUTER_MONITOR_COVER_DATA, null);
+        var coverData = stack.getOrDefault(GTDataComponents.COMPUTER_MONITOR_DATA, null);
         if (coverData != null) {
             tooltipComponents.add(
                     Component.translatable("gtceu.tooltip.computer_monitor_data",
-                            GTStringUtils.toComponent(
-                                    coverData)));
+                            coverData));
         }
         ResearchManager.ResearchItem researchData = stack.get(GTDataComponents.RESEARCH_ITEM);
         if (researchData == null) {

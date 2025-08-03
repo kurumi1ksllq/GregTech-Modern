@@ -3,8 +3,10 @@ package com.gregtechceu.gtceu.utils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
+import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.resources.ResourceLocation;
@@ -222,6 +224,32 @@ public class GTStringUtils {
             for (int i = arr.size() - 2; i < arr.size(); i++) {
                 component.append(Component.literal('"' + arr.get(i) + '"').withStyle(ChatFormatting.DARK_AQUA));
                 if (i != arr.size() - 1) component.append(", ");
+            }
+        }
+        component.append("]");
+        return component;
+    }
+
+    public static Component toCompactedComponent(List<String> list) {
+        MutableComponent component = Component.literal("[");
+        if (list.size() <= 5) {
+            for (int i = 0; i < list.size(); i++) {
+                component.append(Component.literal('"' + list.get(i) + '"').withStyle(ChatFormatting.DARK_AQUA));
+                if (i != list.size() - 1) {
+                    component.append(ComponentUtils.DEFAULT_NO_STYLE_SEPARATOR);
+                }
+            }
+        } else {
+            for (int i = 0; i < 2; i++) {
+                component.append(Component.literal('"' + list.get(i) + '"').withStyle(ChatFormatting.DARK_AQUA));
+                component.append(ComponentUtils.DEFAULT_NO_STYLE_SEPARATOR);
+            }
+            component.append(CommonComponents.ELLIPSIS).append(ComponentUtils.DEFAULT_NO_STYLE_SEPARATOR);
+            for (int i = list.size() - 2; i < list.size(); i++) {
+                component.append(Component.literal('"' + list.get(i) + '"').withStyle(ChatFormatting.DARK_AQUA));
+                if (i != list.size() - 1) {
+                    component.append(ComponentUtils.DEFAULT_NO_STYLE_SEPARATOR);
+                }
             }
         }
         component.append("]");

@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeSerializer;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.kind.GTRecipe;
+import com.gregtechceu.gtceu.common.item.datacomponents.DataItem;
 import com.gregtechceu.gtceu.common.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
@@ -63,8 +64,8 @@ public final class ResearchManager {
      */
     public static boolean isStackDataItem(@NotNull ItemStack stack, boolean isDataBank) {
         @Nullable
-        Boolean dataItem = stack.get(GTDataComponents.DATA_ITEM);
-        return dataItem != null && !dataItem || isDataBank;
+        DataItem dataItem = stack.get(GTDataComponents.DATA_ITEM);
+        return dataItem != null && dataItem.requireDataBank() || isDataBank;
     }
 
     /**

@@ -93,6 +93,7 @@ import com.gregtechceu.gtceu.integration.kjs.GTKubeJSPlugin;
 import com.gregtechceu.gtceu.integration.kjs.events.MaterialModificationKubeEvent;
 import com.gregtechceu.gtceu.integration.map.WaypointManager;
 import com.gregtechceu.gtceu.integration.top.TheOneProbePlugin;
+import com.gregtechceu.gtceu.integration.create.GTCreateIntegration;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
 
 import com.lowdragmc.lowdraglib.gui.factory.UIFactory;
@@ -191,6 +192,10 @@ public class CommonInit {
             return;
         }
         didRunRegistration = true;
+
+        if (GTCEu.Mods.isCreateLoaded()) {
+            GTCreateIntegration.init();
+        }
 
         GTElements.init();
         MaterialIconSet.init();

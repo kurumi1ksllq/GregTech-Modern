@@ -1,18 +1,17 @@
-package com.gregtechceu.gtceu.common.data;
+package com.gregtechceu.gtceu.data.placeholder;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.cover.filter.ItemFilter;
-import com.gregtechceu.gtceu.api.item.ComponentItem;
-import com.gregtechceu.gtceu.api.item.component.IDataItem;
-import com.gregtechceu.gtceu.api.item.component.IItemComponent;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
 import com.gregtechceu.gtceu.api.placeholder.*;
 import com.gregtechceu.gtceu.api.placeholder.exceptions.*;
 import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
-import com.gregtechceu.gtceu.common.item.behavior.DataItemBehavior;
+import com.gregtechceu.gtceu.common.item.datacomponents.BindingData;
+import com.gregtechceu.gtceu.common.item.datacomponents.DataItem;
+import com.gregtechceu.gtceu.common.item.datacomponents.FormatStringList;
 import com.gregtechceu.gtceu.data.item.GTDataComponents;
 import com.gregtechceu.gtceu.utils.GTStringUtils;
 
@@ -21,14 +20,11 @@ import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -36,7 +32,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import static com.gregtechceu.gtceu.data.item.GTDataComponents.*;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,13 +54,16 @@ public class GTPlaceholders {
 
     public static int countFluids(@Nullable String id, @Nullable IFluidHandler fluidHandler) {
         if (fluidHandler == null) return 0;
-        int cnt = 0;
+        int count = 0;
         for (int i = 0; i < fluidHandler.getTanks(); i++) {
             FluidStack fluidStack = fluidHandler.getFluidInTank(i);
             String fluidId = Objects.requireNonNull(BuiltInRegistries.FLUID.getKey(fluidStack.getFluid())).toString();
-            if (id == null || fluidId.equals(id)) cnt += fluidStack.getAmount();
+
+            if (id == null || fluidId.equals(id)) {
+                count += fluidStack.getAmount();
+            }
         }
-        return cnt;
+        return count;
     }
 
     public static int countItems(@Nullable ItemFilter filter, @Nullable IItemHandler itemHandler) {
@@ -115,15 +113,20 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 IItemHandler itemHandler = GTCapabilityHelper.getItemHandler(ctx.level(), ctx.pos(), ctx.side());
-                if (args.isEmpty()) return MultiLineComponent.literal(countItems((ItemFilter) null, itemHandler));
-                if (args.size() == 1) return MultiLineComponent
-                        .literal(countItems(GTStringUtils.componentsToString(args.get(0)), itemHandler));
-                if (GTStringUtils.equals(args.get(0), "filter")) {
+                if (args.isEmpty()) {
+                    return MultiLineComponent.literal(countItems((ItemFilter) null, itemHandler));
+                }
+                if (args.size() == 1) {
+                    return MultiLineComponent.literal(countItems(
+                            GTStringUtils.componentsToString(args.getFirst()), itemHandler));
+                }
+                if (GTStringUtils.equals(args.getFirst(), "filter")) {
                     int slot = PlaceholderUtils.toInt(args.get(1));
                     PlaceholderUtils.checkRange("slot index", 1, 8, slot);
                     try {
-                        if (ctx.itemStackHandler() == null)
+                        if (ctx.itemStackHandler() == null) {
                             throw new NotSupportedException();
+                        }
                         return MultiLineComponent.literal(countItems(
                                 ItemFilter.loadFilter(ctx.itemStackHandler().getStackInSlot(slot - 1)), itemHandler));
                     } catch (NullPointerException e) {
@@ -142,7 +145,7 @@ public class GTPlaceholders {
                 if (args.isEmpty()) return MultiLineComponent.literal(countFluids(null, fluidHandler));
                 if (args.size() == 1)
                     return MultiLineComponent
-                            .literal(countFluids(GTStringUtils.componentsToString(args.get(0)), fluidHandler));
+                            .literal(countFluids(GTStringUtils.componentsToString(args.getFirst()), fluidHandler));
                 PlaceholderUtils.checkArgs(args, 1);
                 return MultiLineComponent.empty(); // unreachable
             }
@@ -154,7 +157,7 @@ public class GTPlaceholders {
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 2, true);
                 try {
-                    if (GTStringUtils.toDouble(args.get(0)) != 0) {
+                    if (GTStringUtils.toDouble(args.getFirst()) != 0) {
                         return args.get(1);
                     } else if (args.size() > 2) return args.get(2);
                     else return MultiLineComponent.empty();
@@ -169,7 +172,7 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 2);
-                ChatFormatting color = ChatFormatting.getByName(GTStringUtils.componentsToString(args.get(0)));
+                ChatFormatting color = ChatFormatting.getByName(GTStringUtils.componentsToString(args.getFirst()));
                 if (color == null) throw new InvalidArgsException();
                 return new MultiLineComponent(args.get(1).stream().map(c -> c.withStyle(color)).toList());
             }
@@ -181,7 +184,7 @@ public class GTPlaceholders {
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 1);
                 return new MultiLineComponent(
-                        args.get(0).stream().map(c -> c.withStyle(ChatFormatting.UNDERLINE)).toList());
+                        args.getFirst().stream().map(c -> c.withStyle(ChatFormatting.UNDERLINE)).toList());
             }
         });
         PlaceholderHandler.addPlaceholder(new Placeholder("strike") {
@@ -191,7 +194,7 @@ public class GTPlaceholders {
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 1);
                 return new MultiLineComponent(
-                        args.get(0).stream().map(c -> c.withStyle(ChatFormatting.STRIKETHROUGH)).toList());
+                        args.getFirst().stream().map(c -> c.withStyle(ChatFormatting.STRIKETHROUGH)).toList());
             }
         });
         PlaceholderHandler.addPlaceholder(new Placeholder("obf") {
@@ -201,7 +204,7 @@ public class GTPlaceholders {
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 1);
                 return new MultiLineComponent(
-                        args.get(0).stream().map(c -> c.withStyle(ChatFormatting.OBFUSCATED)).toList());
+                        args.getFirst().stream().map(c -> c.withStyle(ChatFormatting.OBFUSCATED)).toList());
             }
         });
         PlaceholderHandler.addPlaceholder(new Placeholder("random") {
@@ -211,7 +214,7 @@ public class GTPlaceholders {
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 2);
                 return MultiLineComponent.literal(GTValues.RNG.nextIntBetweenInclusive(
-                        PlaceholderUtils.toInt(args.get(0)), PlaceholderUtils.toInt(args.get(1))));
+                        PlaceholderUtils.toInt(args.getFirst()), PlaceholderUtils.toInt(args.get(1))));
             }
         });
         PlaceholderHandler.addPlaceholder(new Placeholder("repeat") {
@@ -220,7 +223,7 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 2);
-                int count = PlaceholderUtils.toInt(args.get(0));
+                int count = PlaceholderUtils.toInt(args.getFirst());
                 MultiLineComponent out = MultiLineComponent.empty();
                 for (int i = 0; i < count; i++) out.append(args.get(1));
                 return out;
@@ -252,7 +255,7 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 1, true);
-                int i = PlaceholderUtils.toInt(args.get(0));
+                int i = PlaceholderUtils.toInt(args.getFirst());
                 PlaceholderUtils.checkArgs(args, i + 2);
                 return args.get(i + 1);
             }
@@ -263,7 +266,7 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 2, true);
-                if (GTStringUtils.equals(args.get(0), "get")) {
+                if (GTStringUtils.equals(args.getFirst(), "get")) {
                     Direction direction = Direction.byName(GTStringUtils.componentsToString(args.get(1)));
                     if (direction == null)
                         throw new InvalidArgsException();
@@ -285,7 +288,7 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 1);
-                int i = PlaceholderUtils.toInt(args.get(0));
+                int i = PlaceholderUtils.toInt(args.getFirst());
                 if (ctx.previousText() == null) throw new NotSupportedException();
                 PlaceholderUtils.checkRange("line", 1, ctx.previousText().size(), i);
                 return MultiLineComponent.of(ctx.previousText().get(i - 1));
@@ -369,7 +372,7 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 1, true);
-                String arg1 = GTStringUtils.componentsToString(args.get(0));
+                String arg1 = GTStringUtils.componentsToString(args.getFirst());
                 int cnt = -1;
                 for (List<MutableComponent> arg : args) {
                     if (GTStringUtils.equals(arg, arg1)) cnt++;
@@ -387,42 +390,48 @@ public class GTPlaceholders {
                     int slot = PlaceholderUtils.toInt(args.get(1));
                     PlaceholderUtils.checkRange("slot index", 1, 8, slot);
                     if (ctx.itemStackHandler() == null) throw new NotSupportedException();
+
                     ItemStack stack = ctx.itemStackHandler().getStackInSlot(slot - 1);
-                    int capacity = -1;
-                    if (stack.getItem() instanceof ComponentItem componentItem) {
-                        for (IItemComponent component : componentItem.getComponents()) {
-                            // component
-                            if (component instanceof IDataItem dataComponent) {
-                                capacity = dataComponent.getCapacity();
-                                break;
-                            }
-                        }
+                    DataItem component = stack.get(GTDataComponents.DATA_ITEM);
+                    if (component == null) {
+                        throw new MissingItemException("any data item", slot);
                     }
-                    if (capacity == -1) throw new MissingItemException("any data item", slot);
+                    int capacity = component.capacity();
+
                     PlaceholderUtils.checkRange("index", 0, capacity - 1, PlaceholderUtils.toInt(args.get(2)));
-                    List<String> data = stack.get(COMPUTER_MONITOR_COVER_DATA.get());
-                    while (data.size() <= PlaceholderUtils.toInt(args.get(2))) data.add("");
-                    int p = stack.get(COMPUTER_MONITOR_COVER_P.get());
-                    if (GTStringUtils.equals(args.get(2), "")) args.set(2, MultiLineComponent.literal(p));
-                    if (GTStringUtils.equals(args.get(0), "get"))
-                        return MultiLineComponent
-                                .literal(data.get(PlaceholderUtils.toInt(args.get(2)) % capacity));
-                    else if (args.get(0).equalsString("set")) {
-                        data.set(PlaceholderUtils.toInt(args.get(2)) % capacity,
-                                args.get(3).toString());
-                        stack.set(COMPUTER_MONITOR_COVER_DATA, data);
+
+                    FormatStringList immutableData = stack.get(GTDataComponents.COMPUTER_MONITOR_DATA);
+                    if (immutableData == null) {
+                        throw new MissingItemException("any data item", slot);
+                    }
+                    FormatStringList.Mutable monitorData = immutableData.mutable();
+                    while (monitorData.size() <= PlaceholderUtils.toInt(args.get(2))) {
+                        monitorData.add("");
+                    }
+
+                    int p = stack.getOrDefault(GTDataComponents.COMPUTER_MONITOR_P, 0);
+                    if (GTStringUtils.equals(args.get(2), "")) {
+                        args.set(2, MultiLineComponent.literal(p));
+                    }
+                    if (GTStringUtils.equals(args.getFirst(), "get")) {
+                        return MultiLineComponent.literal(
+                                monitorData.get(PlaceholderUtils.toInt(args.get(2)) % capacity));
+                    } else if (args.getFirst().equalsString("set")) {
+                        monitorData.set(PlaceholderUtils.toInt(args.get(2)) % capacity, args.get(3).toString());
+                        stack.set(GTDataComponents.COMPUTER_MONITOR_DATA, monitorData.toImmutable());
                         return MultiLineComponent.empty();
-                    } else if (args.get(0).equalsString("setp")) {
-                        stack.set(COMPUTER_MONITOR_COVER_P,
-                                PlaceholderUtils.toInt(args.get(3)) % capacity);
+                    } else if (args.getFirst().equalsString("setp")) {
+                        stack.set(GTDataComponents.COMPUTER_MONITOR_P, PlaceholderUtils.toInt(args.get(3)) % capacity);
                         return MultiLineComponent.empty();
-                    } else if (args.get(0).equalsString("inc")) {
-                        stack.set(COMPUTER_MONITOR_COVER_P, (p + 1) % capacity);
+                    } else if (args.getFirst().equalsString("inc")) {
+                        stack.set(GTDataComponents.COMPUTER_MONITOR_P, (p + 1) % capacity);
                         return MultiLineComponent.empty();
-                    } else if (args.get(0).equalsString("dec")) {
-                        stack.set(COMPUTER_MONITOR_COVER_P, p == 0 ? capacity - 1 : p - 1);
+                    } else if (args.getFirst().equalsString("dec")) {
+                        stack.set(GTDataComponents.COMPUTER_MONITOR_P, p == 0 ? capacity - 1 : p - 1);
                         return MultiLineComponent.empty();
-                    } else throw new InvalidArgsException();
+                    } else {
+                        throw new InvalidArgsException();
+                    }
                 } catch (IndexOutOfBoundsException e) {
                     throw new InvalidArgsException();
                 }
@@ -446,7 +455,7 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 1);
-                int slot = GTStringUtils.toInt(args.get(0));
+                int slot = GTStringUtils.toInt(args.getFirst());
                 PlaceholderUtils.checkRange("slot index", 1, 8, slot);
                 if (ctx.itemStackHandler() == null) throw new NotSupportedException();
                 return MultiLineComponent
@@ -459,9 +468,10 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 1);
-                if (args.get(0).isEmpty()) return MultiLineComponent.empty();
+                if (args.getFirst().isEmpty()) return MultiLineComponent.empty();
                 StringBuilder out = new StringBuilder();
-                for (char c : GTStringUtils.componentsToString(args.get(0)).toCharArray()) out.append(c).append(' ');
+                for (char c : GTStringUtils.componentsToString(args.getFirst()).toCharArray())
+                    out.append(c).append(' ');
                 return MultiLineComponent.literal(out.substring(0, out.length() - 2));
             }
         });
@@ -471,7 +481,7 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 1);
-                String arg = args.get(0).toString();
+                String arg = args.getFirst().toString();
                 if (arg.length() != 1) throw new InvalidArgsException();
                 return MultiLineComponent.literal((int) arg.toCharArray()[0]);
             }
@@ -482,7 +492,7 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 1);
-                return MultiLineComponent.literal((char) PlaceholderUtils.toInt(args.get(0)));
+                return MultiLineComponent.literal((char) PlaceholderUtils.toInt(args.getFirst()));
             }
         });
         PlaceholderHandler.addPlaceholder(new Placeholder("subList") {
@@ -491,7 +501,7 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 2, true);
-                int l = PlaceholderUtils.toInt(args.get(0));
+                int l = PlaceholderUtils.toInt(args.getFirst());
                 int r = PlaceholderUtils.toInt(args.get(1));
                 PlaceholderUtils.checkRange("start index", 0, args.size(), l);
                 PlaceholderUtils.checkRange("end index", 0, args.size(), r);
@@ -507,7 +517,7 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 3);
-                double a = PlaceholderUtils.toDouble(args.get(0));
+                double a = PlaceholderUtils.toDouble(args.getFirst());
                 double b = PlaceholderUtils.toDouble(args.get(2));
                 return switch (args.get(1).toString()) {
                     case ">" -> MultiLineComponent.literal(a > b ? 1 : 0);
@@ -526,40 +536,43 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 2);
-                int slot = PlaceholderUtils.toInt(args.get(0));
+                int slot = PlaceholderUtils.toInt(args.getFirst());
                 PlaceholderUtils.checkRange("slot index", 1, 8, slot);
                 if (ctx.itemStackHandler() == null) throw new NotSupportedException();
+
                 ItemStack stack = ctx.itemStackHandler().getStackInSlot(slot - 1);
-                int capacity = -1;
-                if (stack.getItem() instanceof ComponentItem componentItem) {
-                    for (IItemComponent component : componentItem.getComponents()) {
-                        if (component instanceof IDataItem dataComponent) {
-                            capacity = dataComponent.getCapacity();
-                            break;
-                        }
-                    }
+                FormatStringList immutableData = stack.get(GTDataComponents.COMPUTER_MONITOR_DATA);
+                if (immutableData == null) {
+                    throw new MissingItemException("any data item", slot);
                 }
-                if (capacity == -1) throw new MissingItemException("any data item", slot);
-                List<String> tag = stack.get(GTDataComponents.COMPUTER_MONITOR_COVER_DATA);
+                FormatStringList.Mutable monitorData = immutableData.mutable();
+
                 int operationsLeft = 1000;
                 int p = 0;
                 String code = args.get(1).toString();
                 Stack<Integer> loops = new Stack<>();
                 for (int i = 0; i < code.length() && operationsLeft > 0; i++) {
-                    while (tag.size() <= p) tag.add("0");
-                    if (tag.get(p).isEmpty()) tag.set(i, "0");
+                    while (monitorData.size() <= p) {
+                        monitorData.add("0");
+                    }
+                    if (monitorData.get(p).isEmpty()) {
+                        monitorData.set(i, "0");
+                    }
                     try {
                         switch (code.charAt(i)) {
-                            case '+' -> tag.set(p,
-                                    String.valueOf(Integer.parseInt(tag.get(p)) + 1));
-                            case '-' -> tag.set(p,
-                                    String.valueOf(Integer.parseInt(tag.get(p)) - 1));
+                            case '+' -> monitorData.set(p,
+                                    String.valueOf(Integer.parseInt(monitorData.get(p)) + 1));
+                            case '-' -> monitorData.set(p,
+                                    String.valueOf(Integer.parseInt(monitorData.get(p)) - 1));
                             case '>' -> p++;
                             case '<' -> p--;
                             case '[' -> loops.push(i);
                             case ']' -> {
-                                if (Integer.parseInt(tag.get(p)) == 0) loops.pop();
-                                else i = loops.peek();
+                                if (Integer.parseInt(monitorData.get(p)) == 0) {
+                                    loops.pop();
+                                } else {
+                                    i = loops.peek();
+                                }
                             }
                             default -> throw new PlaceholderException(Component
                                     .translatable("gtceu.computer_monitor_cover.error.bf_invalid", i).getString());
@@ -580,52 +593,62 @@ public class GTPlaceholders {
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 2);
                 if (ctx.itemStackHandler() == null) throw new NotSupportedException();
-                int slot = PlaceholderUtils.toInt(args.get(0));
+                int slot = PlaceholderUtils.toInt(args.getFirst());
                 PlaceholderUtils.checkRange("slot index", 1, 8, slot);
                 ItemStack stack = ctx.itemStackHandler().getStackInSlot(slot - 1);
-                var component = stack.getOrDefault(GTDataComponents.DATA_BOUND_PLAYER, null);
-                if (component == null)
+
+                BindingData bindingData = stack.get(GTDataComponents.BINDING_DATA);
+                if (bindingData == null) {
                     throw new MissingItemException("any data item bound to player", slot);
-                if (ctx.level() instanceof ServerLevel serverLevel) {
-                    MinecraftServer server = serverLevel.getServer();
-                    MultiLineComponent output = MultiLineComponent.empty();
-                    ServerPlayer player = component.uuid() == null ? null : server.getPlayerList().getPlayer(component.uuid());
-                    CommandSource customSource = new CommandSource() {
+                }
 
-                        @Override
-                        public void sendSystemMessage(@NotNull Component message) {
-                            output.append(List.of(message));
-                            output.appendNewline();
-                        }
+                Component displayName = bindingData.getBoundPlayerName(ctx.level());
+                if (displayName == null) {
+                    displayName = Component.translatable("gtceu.tooltip.player_name.placeholder_processor");
+                }
 
-                        @Override
-                        public boolean acceptsSuccess() {
-                            return true;
-                        }
+                if (!(ctx.level() instanceof ServerLevel serverLevel)) {
+                    throw new NotSupportedException();
+                }
+                MinecraftServer server = serverLevel.getServer();
+                Player player = ctx.level().getPlayerByUUID(bindingData.uuid());
 
-                        @Override
-                        public boolean acceptsFailure() {
-                            return true;
-                        }
+                MultiLineComponent output = MultiLineComponent.empty();
+                CommandSource customSource = new CommandSource() {
 
-                        @Override
-                        public boolean shouldInformAdmins() {
-                            return false;
-                        }
-                    };
-                    CommandSourceStack source = new CommandSourceStack(
-                            customSource,
-                            ctx.pos() == null ? Vec3.ZERO : ctx.pos().getCenter(),
-                            Vec2.ZERO,
-                            serverLevel,
-                            component.perm(),
-                            component.displayName().getString(),
-                            component.displayName(),
-                            server,
-                            player);
-                    server.getCommands().performPrefixedCommand(source, args.get(1).toString());
-                    return output;
-                } else throw new NotSupportedException();
+                    @Override
+                    public void sendSystemMessage(@NotNull Component message) {
+                        output.append(List.of(message)).appendNewline();
+                    }
+
+                    @Override
+                    public boolean acceptsSuccess() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean acceptsFailure() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean shouldInformAdmins() {
+                        return false;
+                    }
+                };
+
+                CommandSourceStack source = new CommandSourceStack(
+                        customSource,
+                        ctx.pos() == null ? Vec3.ZERO : ctx.pos().getCenter(),
+                        Vec2.ZERO,
+                        serverLevel,
+                        bindingData.permissionLevel(),
+                        displayName.getString(),
+                        displayName,
+                        server,
+                        player);
+                server.getCommands().performPrefixedCommand(source, args.get(1).toString());
+                return output;
             }
         });
         PlaceholderHandler.addPlaceholder(new Placeholder("tm") {
@@ -641,7 +664,7 @@ public class GTPlaceholders {
             public MultiLineComponent apply(PlaceholderContext ctx,
                                             List<MultiLineComponent> args) throws PlaceholderException {
                 PlaceholderUtils.checkArgs(args, 1);
-                long n = PlaceholderUtils.toLong(args.get(0));
+                long n = PlaceholderUtils.toLong(args.getFirst());
                 Map<Long, String> suffixes = Map.of(
                         1L, "",
                         1000L, "K",

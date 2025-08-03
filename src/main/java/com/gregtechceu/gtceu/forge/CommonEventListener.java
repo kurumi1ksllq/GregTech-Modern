@@ -29,6 +29,7 @@ import com.gregtechceu.gtceu.common.item.armor.IJetpack;
 import com.gregtechceu.gtceu.common.item.armor.IStepAssist;
 import com.gregtechceu.gtceu.common.item.armor.QuarkTechSuite;
 import com.gregtechceu.gtceu.common.item.behavior.ToggleEnergyConsumerBehavior;
+import com.gregtechceu.gtceu.common.item.datacomponents.FormatStringList;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.common.network.packets.SPacketSendWorldID;
 import com.gregtechceu.gtceu.common.network.packets.hazard.SPacketAddHazardZone;
@@ -44,8 +45,10 @@ import com.gregtechceu.gtceu.data.tag.CustomTags;
 import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
 import com.gregtechceu.gtceu.integration.map.WaypointManager;
 import com.gregtechceu.gtceu.integration.map.cache.server.ServerCache;
+import com.gregtechceu.gtceu.utils.GTStringUtils;
 import com.gregtechceu.gtceu.utils.TaskHandler;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
@@ -381,6 +384,19 @@ public class CommonEventListener {
     public static void onAttributeTooltipEvent(AddAttributeTooltipsEvent event) {
         ItemStack stack = event.getStack();
 
+        if (stack.has(GTDataComponents.BINDING_DATA)) {
+            stack.addToTooltip(GTDataComponents.BINDING_DATA, event.getContext(),
+                    event::addTooltipLines, event.getContext().flag());
+        }
+        if (stack.has(GTDataComponents.COMPUTER_MONITOR_CONFIG)) {
+            stack.addToTooltip(GTDataComponents.COMPUTER_MONITOR_CONFIG, event.getContext(),
+                    event::addTooltipLines, event.getContext().flag());
+        }
+        if (stack.has(GTDataComponents.COMPUTER_MONITOR_DATA)) {
+            FormatStringList list = stack.getOrDefault(GTDataComponents.COMPUTER_MONITOR_DATA, FormatStringList.EMPTY);
+            event.addTooltipLines(Component.translatable("gtceu.tooltip.computer_monitor_data",
+                    GTStringUtils.toCompactedComponent(list.lines())));
+        }
         if (!stack.has(GTDataComponents.DATA_COPY_POS)) {
             stack.addToTooltip(GTDataComponents.RESEARCH_ITEM, event.getContext(),
                     event::addTooltipLines, event.getContext().flag());

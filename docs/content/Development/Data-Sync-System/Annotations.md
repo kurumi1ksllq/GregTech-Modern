@@ -78,7 +78,7 @@ public void loadVeryComplexValue(CompoundTag tag) {
     myVeryComplexValue = new VeryComplexType();
 }
 
-@FieldDataModifier(fieldName="myVeryComplexValue", target=FieldDataModifier.MODIFY_TARGET.LOAD_NBT)
+@FieldDataModifier(fieldName="myVeryComplexValue", target=FieldDataModifier.MODIFY_TARGET.SAVE_NBT)
 public Tag saveVeryComplexValue() {
     // Create tag here.
     return new CompoundTag();

@@ -1420,6 +1420,8 @@ public class LangHandler {
         provider.add("gtceu.tooltip.wireless_transmitter_bind", "Binding to a transmitter cover at %s %s %s facing %s");
         provider.add("gtceu.tooltip.computer_monitor_config", "Storing computer monitor cover configuration data");
         provider.add("gtceu.tooltip.computer_monitor_data", "Storing data: %s");
+        provider.add("gtceu.tooltip.player_name.placeholder_processor", "Placeholder processor");
+        provider.add("gtceu.tooltip.player_name.unknown", "Unknown player");
 
         provider.add("gtceu.display_source.computer_monitor_cover", "Computer Monitor Cover");
         provider.add("gtceu.display_target.computer_monitor_cover", "Computer Monitor Cover");

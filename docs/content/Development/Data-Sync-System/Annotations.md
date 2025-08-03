@@ -10,7 +10,7 @@ The following annotations define the sync/save behaviour for an `ISyncManaged` o
 The `@SaveField` annotation defines a field that should be saved to the server. `nbtKey` is optional, the key will default to the field name.
 ```java
 @SaveField(nbtKey="nbtKeyToSaveTo")
-public int mySyncInt = 10;
+public int mySaveInt = 10;
 ```
 
 ### `@SyncToClient`

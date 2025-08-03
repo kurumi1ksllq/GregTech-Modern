@@ -16,30 +16,30 @@ import org.jetbrains.annotations.ApiStatus;
 public interface XeiSettings {
 
     /**
-     * Force JEI to be enabled
+     * Force XEI to be enabled
      */
     void forceEnabled();
 
     /**
-     * Force JEI to be disabled
+     * Force XEI to be disabled
      */
     void forceDisabled();
 
     /**
-     * Only enabled JEI in synced GUIs
+     * Only enabled XEI in synced GUIs
      */
     void defaultXei();
 
     /**
-     * Checks if JEI is enabled for a given screen
+     * Checks if XEI is enabled for a given screen
      *
      * @param screen modular screen
-     * @return true if jei is enabled
+     * @return true if xei is enabled
      */
     boolean isEnabled(ModularScreen screen);
 
     /**
-     * Adds an exclusion zone. JEI will always try to avoid exclusion zones. <br>
+     * Adds an exclusion zone. XEI will always try to avoid exclusion zones. <br>
      * <b>If a widgets wishes to have an exclusion zone it should use {@link #addExclusionArea(IWidget)}!</b>
      *
      * @param area exclusion area
@@ -54,7 +54,7 @@ public interface XeiSettings {
     void removeExclusionArea(Rectangle area);
 
     /**
-     * Adds an exclusion zone of a widget. JEI will always try to avoid exclusion zones. <br>
+     * Adds an exclusion zone of a widget. XEI will always try to avoid exclusion zones. <br>
      * Useful when a widget is outside its panel.
      *
      * @param area widget
@@ -69,7 +69,7 @@ public interface XeiSettings {
     void removeExclusionArea(IWidget area);
 
     /**
-     * Adds a JEI ghost slot. Ghost slots can display an ingredient, but the ingredient does not really exist.
+     * Adds a XEI ghost slot. Ghost slots can display an ingredient, but the ingredient does not really exist.
      * By calling this method users will be able to drag ingredients from JEI into the slot.
      *
      * @param slot slot widget
@@ -78,7 +78,7 @@ public interface XeiSettings {
     <W extends IWidget & GhostIngredientSlot<?>> void addGhostIngredientSlot(W slot);
 
     /**
-     * Removes a JEI ghost slot.
+     * Removes a XEI ghost slot.
      *
      * @param slot slot widget
      * @param <W>  slot widget type

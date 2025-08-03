@@ -216,16 +216,16 @@ public interface IKey extends IDrawable, IJsonSerializable<IKey> {
     /**
      * Set text formatting to this key. If {@link IKey#RESET} is used, then that's applied first and then all other
      * formatting of this key.
-     * With {@link null}, you can remove a color formatting. No matter the parents color, the default color will be
+     * With {@code null}, you can remove a color formatting. No matter the parents color, the default color will be
      * used.
      *
-     * @param formatting a formatting rul
+     * @param formatting a formatting rule
      * @return this
      */
     IKey style(@Nullable ChatFormatting formatting);
 
     default IKey style(ChatFormatting... formatting) {
-        for (ChatFormatting tf : formatting) style(tf);
+        for (ChatFormatting cf : formatting) style(cf);
         return this;
     }
 

@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 /**
  * This class contains all the info from {@link GuiContext} and additional MUI specific info like the current
  * {@link ModularScreen},
- * current hovered widget, current dragged widget, current focused widget and JEI settings.
+ * current hovered widget, current dragged widget, current focused widget and XEI settings.
  * An instance can only be obtained from {@link ModularScreen#getContext()}. One instance is created every time a
  * {@link ModularScreen}
  * is created.
@@ -78,6 +78,7 @@ public class ModularGuiContext extends GuiContext {
      * @return true if the widget is hovered for at least a certain number of ticks
      */
     public boolean isHoveredFor(IGuiElement guiElement, int ticks) {
+        // convert from frames per second to ticks per second
         return isHovered(guiElement) && this.timeHovered / 3 >= ticks;
     }
 

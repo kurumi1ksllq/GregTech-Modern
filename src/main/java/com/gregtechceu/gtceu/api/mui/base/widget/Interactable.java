@@ -64,8 +64,8 @@ public interface Interactable {
      * Called when a key over this widget is pressed.
      *
      * @param keyCode   key that was pressed.
-     * @param scanCode
-     * @param modifiers
+     * @param scanCode  character that was pressed.
+     * @param modifiers any modifiers that were used.
      * @return result that determines what happens to other widgets
      *         {@link #onKeyTapped(int, int, int)} is only called if this returns {@link Result#ACCEPT} or
      *         {@link Result#SUCCESS}
@@ -79,9 +79,9 @@ public interface Interactable {
      * Called when a key was released over this widget.
      *
      * @param keyCode   key that was pressed.
-     * @param scanCode
-     * @param modifiers
-     * @return whether other widgets should get called to. If this returns false, {@link #onKeyTapped(int, int, int)}
+     * @param scanCode  character that was pressed.
+     * @param modifiers any modifiers that were used.
+     * @return whether other widgets should get called too. If this returns false, {@link #onKeyTapped(int, int, int)}
      *         will NOT be called.
      */
     default boolean onKeyReleased(int keyCode, int scanCode, int modifiers) {
@@ -92,8 +92,8 @@ public interface Interactable {
      * Called when this widget was pressed and then released within a certain time frame.
      *
      * @param keyCode   key that was pressed.
-     * @param scanCode
-     * @param modifiers
+     * @param scanCode  character that was pressed.
+     * @param modifiers any modifiers that were used.
      * @return result that determines if other widgets should get tapped to
      *         {@link Result#IGNORE} and {@link Result#ACCEPT} will both "ignore" the result and {@link Result#STOP} and
      *         {@link Result#SUCCESS} will both stop other widgets from getting tapped.
@@ -107,7 +107,7 @@ public interface Interactable {
      * Called when a key over this widget is pressed.
      *
      * @param codePoint character that was typed
-     * @param modifiers
+     * @param modifiers any modifiers that were used.
      * @return result that determines what happens to other widgets
      *         {@link #onKeyTapped(int, int, int)} is only called if this returns {@link Result#ACCEPT} or
      *         {@link Result#SUCCESS}

@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.client.mui.screen.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -57,11 +58,9 @@ public interface UIFactory<D extends GuiData> {
      * @param screen    the screen which was created in {@link #createScreen(GuiData, ModularPanel)}
      * @return new screen wrapper
      * @throws IllegalStateException if the wrapping screen is not a
-     *                               {@link net.minecraft.world.inventory.AbstractContainerMenu AbstractContainerMenu}
-     *                               or if the
-     *                               container inside is not the same as the one passed to this method. This method is
-     *                               not the thrower, but the
-     *                               caller of this method.
+     *                               {@link AbstractContainerMenu AbstractContainerMenu}
+     *                               or if the container inside is not the same as the one passed to this method.
+     *                               This method is not the thrower, but the caller of this method.
      */
     @OnlyIn(Dist.CLIENT)
     @ApiStatus.OverrideOnly

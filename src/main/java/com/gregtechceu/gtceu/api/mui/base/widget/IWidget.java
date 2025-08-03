@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * A widget in a Gui
+ * A widget in a GUI
  */
 public interface IWidget extends IGuiElement {
 
@@ -88,7 +88,7 @@ public interface IWidget extends IGuiElement {
     void draw(ModularGuiContext context, WidgetTheme widgetTheme);
 
     /**
-     * Draws the overlay of this theme.
+     * Draws the overlay of this widget.
      *
      * @param context     gui context
      * @param widgetTheme widget theme
@@ -178,8 +178,6 @@ public interface IWidget extends IGuiElement {
 
     /**
      * Returns if this element is enabled. Disabled elements are not drawn and can not be interacted with.
-     *
-     * @return if this element is enabled
      */
     @Override
     boolean isEnabled();

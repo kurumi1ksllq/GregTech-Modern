@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.client.mui.screen.viewport.TransformationMatrix;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 /**
@@ -112,13 +113,15 @@ public interface IViewportStack {
      */
     void scale(float x, float y);
 
+    void multiply(Matrix4f matrix);
+
     /**
      * Resets the top matrix to the matrix below.
      */
     void resetCurrent();
 
     /**
-     * Transforms the x component of a position withe current matrix transformations.
+     * Transforms the x component of a position with the current matrix transformations.
      *
      * @param x x component of position
      * @param y y component of position
@@ -127,7 +130,7 @@ public interface IViewportStack {
     int transformX(float x, float y);
 
     /**
-     * Transforms the y component of a position withe current matrix transformations.
+     * Transforms the y component of a position with the current matrix transformations.
      *
      * @param x x component of position
      * @param y y component of position

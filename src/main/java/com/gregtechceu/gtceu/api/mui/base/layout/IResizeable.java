@@ -33,7 +33,7 @@ public interface IResizeable {
 
     /**
      * Called after all elements in the tree are resized and the absolute positions needs to be calculated from the
-     * relative postion.
+     * relative position.
      *
      * @param guiElement element that was resized
      */

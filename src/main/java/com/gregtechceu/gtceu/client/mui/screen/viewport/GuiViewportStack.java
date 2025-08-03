@@ -94,8 +94,8 @@ public class GuiViewportStack implements IViewportStack {
     }
 
     public void push(TransformationMatrix transformationMatrix) {
-        this.viewportStack
-                .push(new TransformationMatrix(transformationMatrix, this.top == null ? null : this.top.getMatrix()));
+        this.viewportStack.push(new TransformationMatrix(transformationMatrix,
+                this.top == null ? null : this.top.getMatrix()));
         updateViewport(false);
         if (this.top.isViewportMatrix()) {
             this.topViewport = this.top;

@@ -31,6 +31,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -69,11 +70,34 @@ public class ClientScreenHandler {
     private static ModularScreen currentScreen = null;
     @Getter
     private static long ticks = 0L;
+    private static IMuiScreen lastMui;
 
     @SubscribeEvent
     public static void onOpenScreen(ScreenEvent.Opening event) {
+        Screen newGui = event.getNewScreen();
         defaultContext.reset();
-        if (event.getNewScreen() instanceof IMuiScreen muiScreen) {
+
+        if(lastMui != null && newGui == null) {
+            if(lastMui.getScreen().getPanelManager().isOpen()) {
+                lastMui.getScreen().getPanelManager().closeAll();
+            }
+            lastMui.getScreen().getPanelManager().dispose();
+            lastMui = null;
+        } else if(newGui instanceof IMuiScreen screenWrapper) {
+            if(lastMui == null) {
+                lastMui = screenWrapper;
+            } else if(lastMui == newGui) {
+                lastMui.getScreen().getPanelManager().reopen();
+            } else {
+                if(lastMui.getScreen().getPanelManager().isOpen()) {
+                    lastMui.getScreen().getPanelManager().closeAll();
+                }
+                lastMui.getScreen().getPanelManager().dispose();
+                lastMui = screenWrapper;
+            }
+        }
+
+        if (newGui instanceof IMuiScreen muiScreen) {
             Objects.requireNonNull(muiScreen.getScreen(), "ModularScreen must not be null!");
             if (currentScreen == muiScreen.getScreen()) {
                 currentScreen.getPanelManager().reopen();
@@ -85,7 +109,7 @@ public class ClientScreenHandler {
                 currentScreen = muiScreen.getScreen();
                 fpsCounter.reset();
             }
-        } else if (hasScreen() && event.getNewScreen() != event.getCurrentScreen()) {
+        } else if (hasScreen() && event.getCurrentScreen() != null && newGui != event.getCurrentScreen()) {
             currentScreen.onCloseParent();
             currentScreen.getPanelManager().dispose();
             currentScreen = null;

@@ -23,8 +23,6 @@ public interface IGuiElement {
 
     /**
      * Returns if this element has a parent. This is the case when the widget is valid, but never if it's root widget.
-     *
-     * @return if this element has a parent
      */
     boolean hasParent();
 
@@ -69,10 +67,9 @@ public interface IGuiElement {
     }
 
     /**
-     * Returns if this element is right blow the mouse for a certain amount of time
      *
      * @param ticks time in ticks
-     * @return if this element is right blow the mouse for a certain amount of time
+     * @return if this element is right below the mouse for a certain amount of time
      */
     default boolean isHoveringFor(int ticks) {
         return getScreen().getContext().isHoveredFor(this, ticks);
@@ -90,8 +87,6 @@ public interface IGuiElement {
 
     /**
      * Returns if this element is enabled. Disabled elements are not drawn and can not be interacted with.
-     *
-     * @return if this element is enabled
      */
     boolean isEnabled();
 

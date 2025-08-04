@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeCapabilityHolder;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroup;
+import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroupColor;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroupDistinctness;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
 import com.gregtechceu.gtceu.api.recipe.chance.boost.ChanceBoostFunction;
@@ -163,13 +164,15 @@ public class RecipeRunner {
             }
             // If we're already in the bypass_distinct group, don't check it twice.
             if (handlerListEntry.getKey() != RecipeHandlerGroupDistinctness.BYPASS_DISTINCT) {
-                for (RecipeHandlerList bypassHandler : handlerGroups.getOrDefault(
-                        RecipeHandlerGroupDistinctness.BYPASS_DISTINCT,
-                        Collections.emptyList())) {
-                    copiedRecipeContents = bypassHandler.handleRecipe(io, recipe, copiedRecipeContents, true);
-                    if (copiedRecipeContents.isEmpty()) {
-                        found = true;
-                        break;
+                if(handlerListEntry.getKey() instanceof  RecipeHandlerGroupColor color && color.color() != -1) {
+                    for (RecipeHandlerList bypassHandler : handlerGroups.getOrDefault(
+                            RecipeHandlerGroupDistinctness.BYPASS_DISTINCT,
+                            Collections.emptyList())) {
+                        copiedRecipeContents = bypassHandler.handleRecipe(io, recipe, copiedRecipeContents, true);
+                        if (copiedRecipeContents.isEmpty()) {
+                            found = true;
+                            break;
+                        }
                     }
                 }
             }

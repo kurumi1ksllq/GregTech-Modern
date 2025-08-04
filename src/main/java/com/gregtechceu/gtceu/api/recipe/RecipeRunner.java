@@ -193,13 +193,15 @@ public class RecipeRunner {
             // Then go through the handlers that bypass the distinctness system and empty those
             // If we're already in the bypass_distinct group, don't check it twice.
             if (handlerListEntry.getKey() != RecipeHandlerGroupDistinctness.BYPASS_DISTINCT) {
-                for (RecipeHandlerList bypassHandler : handlerGroups.getOrDefault(
-                        RecipeHandlerGroupDistinctness.BYPASS_DISTINCT,
-                        Collections.emptyList())) {
-                    copiedRecipeContents = bypassHandler.handleRecipe(io, recipe, copiedRecipeContents, false);
-                    if (copiedRecipeContents.isEmpty()) {
-                        recipeContents.clear();
-                        return ActionResult.SUCCESS;
+                if (!handlerListEntry.getKey().equals(UNDYED)) {
+                    for (RecipeHandlerList bypassHandler : handlerGroups.getOrDefault(
+                            RecipeHandlerGroupDistinctness.BYPASS_DISTINCT,
+                            Collections.emptyList())) {
+                        copiedRecipeContents = bypassHandler.handleRecipe(io, recipe, copiedRecipeContents, false);
+                        if (copiedRecipeContents.isEmpty()) {
+                            recipeContents.clear();
+                            return ActionResult.SUCCESS;
+                        }
                     }
                 }
             }

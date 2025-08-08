@@ -234,7 +234,11 @@ public class WidgetTree {
 
     public static void resize(IWidget parent) {
         if (!GTCEu.isClientThread()) return;
-        // TODO check if widget has a parent which depends on its children
+
+        while(!(parent instanceof ModularPanel) && (parent.getParent() instanceof ILayoutWidget ||
+                parent.getParent().flex().dependsOnChildren())) {
+            parent = parent.getParent();
+        }
         // resize each widget and calculate their relative pos
         if (!resizeWidget(parent, true) && !resizeWidget(parent, false)) {
             throw new IllegalStateException("Failed to resize widgets");

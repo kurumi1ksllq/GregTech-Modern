@@ -128,7 +128,7 @@ public class Area extends Rectangle implements IUnResizeable {
     }
 
     /**
-     * Calculate X based on anchor value
+     * Calculate Y based on anchor value
      */
     public int y(float anchor) {
         return this.y + (int) (this.height * anchor);

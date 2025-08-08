@@ -57,7 +57,7 @@ public class RichTextWidget extends Widget<RichTextWidget> implements IRichTextB
         Object o = this.text.getHoveringElement(getContext().getFont(), getContext().getMouseX(),
                 getContext().getMouseY());
         if (o instanceof Interactable interactable) {
-            return interactable.onMousePressed(mouseY, mouseY, button);
+            return interactable.onMousePressed(mouseX, mouseY, button);
         }
         return Result.ACCEPT;
     }

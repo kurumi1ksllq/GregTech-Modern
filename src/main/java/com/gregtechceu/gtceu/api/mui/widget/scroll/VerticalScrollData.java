@@ -8,7 +8,7 @@ public class VerticalScrollData extends ScrollData {
 
     /**
      * Creates vertical scroll data which handles scrolling and scroll bar.
-     * Scrollbar is 4 pixel wide and is placed on the right.
+     * Scrollbar is 4 pixels wide and is placed on the right.
      */
     public VerticalScrollData() {
         this(false, DEFAULT_THICKNESS);
@@ -16,7 +16,7 @@ public class VerticalScrollData extends ScrollData {
 
     /**
      * Creates vertical scroll data which handles scrolling and scroll bar.
-     * Scrollbar is 4 pixel wide.
+     * Scrollbar is 4 pixels wide.
      *
      * @param leftAlignment if the scroll bar should be placed on the left
      */

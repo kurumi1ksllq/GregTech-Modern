@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.utils.Point;
 import com.gregtechceu.gtceu.api.mui.utils.PointF;
 
+import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -27,7 +28,9 @@ import java.util.List;
 public class TextFieldRenderer extends TextRenderer {
 
     protected final TextFieldHandler handler;
+    @Setter
     protected int markedColor = 0x2F72A8;
+    @Setter
     protected int cursorColor = 0xFFFFFFFF;
     protected boolean renderCursor = false;
 
@@ -41,14 +44,6 @@ public class TextFieldRenderer extends TextRenderer {
 
     public void setCursor(boolean active) {
         this.renderCursor = active;
-    }
-
-    public void setMarkedColor(int markedColor) {
-        this.markedColor = markedColor;
-    }
-
-    public void setCursorColor(int cursorColor) {
-        this.cursorColor = cursorColor;
     }
 
     @Override
@@ -164,16 +159,9 @@ public class TextFieldRenderer extends TextRenderer {
         float alpha = Color.getAlphaF(this.markedColor);
         if (alpha == 0)
             alpha = 1f;
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.getBuilder();
+
         graphics.setColor(red, green, blue, alpha);
-        RenderSystem.setShader(GameRenderer::getPositionShader);
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        bufferbuilder.vertex(x0, y1, 0.0D).endVertex();
-        bufferbuilder.vertex(x1, y1, 0.0D).endVertex();
-        bufferbuilder.vertex(x1, y0, 0.0D).endVertex();
-        bufferbuilder.vertex(x0, y0, 0.0D).endVertex();
-        tesselator.end();
+        drawRect(x0, y0, x1, y1, red, green, blue, alpha);
         RenderSystem.disableColorLogicOp();
         graphics.setColor(1, 1, 1, 1);
     }
@@ -190,13 +178,22 @@ public class TextFieldRenderer extends TextRenderer {
         float alpha = Color.getAlphaF(this.cursorColor);
         if (alpha == 0)
             alpha = 1f;
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.getBuilder();
 
         RenderSystem.disableBlend();
         graphics.pose().pushPose();
         graphics.pose().scale(this.scale, this.scale, 0);
         graphics.setColor(red, green, blue, alpha);
+        drawRect(x0, y0, x1, y1, red, green, blue, alpha);
+        graphics.setColor(1, 1, 1, 1);
+
+        graphics.pose().popPose();
+        RenderSystem.enableBlend();
+    }
+
+    private static void drawRect(float x0, float y0, float x1, float y1, float red, float green, float blue, float alpha) {
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferbuilder = tesselator.getBuilder();
+
         RenderSystem.setShader(GameRenderer::getPositionShader);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
         bufferbuilder.vertex(x0, y1, 0.0D).endVertex();
@@ -204,9 +201,5 @@ public class TextFieldRenderer extends TextRenderer {
         bufferbuilder.vertex(x1, y0, 0.0D).endVertex();
         bufferbuilder.vertex(x0, y0, 0.0D).endVertex();
         tesselator.end();
-        graphics.setColor(1, 1, 1, 1);
-
-        graphics.pose().popPose();
-        RenderSystem.enableBlend();
     }
 }

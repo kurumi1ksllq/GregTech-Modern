@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
 
     private IStringValue<?> stringValue;
-    @Setter
     private Function<String, String> validator = val -> val;
     private boolean numbers = false;
     @Getter
@@ -167,6 +166,11 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
 
     public TextFieldWidget setPattern(Pattern pattern) {
         this.handler.setPattern(pattern);
+        return this;
+    }
+
+    public TextFieldWidget setValidator(Function<String, String> validator) {
+        this.validator = validator;
         return this;
     }
 

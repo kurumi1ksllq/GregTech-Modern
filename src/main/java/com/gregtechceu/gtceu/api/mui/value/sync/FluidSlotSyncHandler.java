@@ -223,7 +223,7 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack> {
                     }
                 } else {
                     if (this.canDrainSlot) {
-                        this.fluidTank.drain(mouseData.shift() ? Integer.MAX_VALUE : 1000,
+                        this.fluidTank.drain(mouseData.shift() ? Integer.MAX_VALUE : FluidType.BUCKET_VOLUME,
                                 IFluidHandler.FluidAction.EXECUTE);
                     }
                 }
@@ -238,12 +238,12 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack> {
                     }
                 } else if (this.lastStoredPhantomFluid != null) {
                     FluidStack toFill = this.lastStoredPhantomFluid.copy();
-                    toFill.setAmount(this.controlsAmount ? 1000 : 1);
+                    toFill.setAmount(this.controlsAmount ? FluidType.BUCKET_VOLUME : 1);
                     this.fluidTank.fill(toFill, IFluidHandler.FluidAction.EXECUTE);
                 }
             }
         } else if (mouseData.mouseButton() == 2 && !currentFluid.isEmpty() && this.canDrainSlot) {
-            this.fluidTank.drain(mouseData.shift() ? Integer.MAX_VALUE : 1000, IFluidHandler.FluidAction.EXECUTE);
+            this.fluidTank.drain(mouseData.shift() ? Integer.MAX_VALUE : FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE);
         }
     }
 
@@ -282,14 +282,6 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack> {
         if (sound == null) return;
         player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), sound, SoundSource.BLOCKS,
                 1.0F, 1.0F);
-    }
-
-    public IFluidTank getFluidTank() {
-        return this.fluidTank;
-    }
-
-    public boolean isPhantom() {
-        return this.phantom;
     }
 
     public FluidSlotSyncHandler controlsAmount(boolean controlsAmount) {

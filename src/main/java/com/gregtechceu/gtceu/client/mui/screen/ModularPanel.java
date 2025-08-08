@@ -22,6 +22,8 @@ import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiViewportStack;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.LocatedWidget;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 
+import com.lowdragmc.lowdraglib.jei.ModularUIJeiHandler;
+import lombok.Setter;
 import net.minecraft.Util;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -61,6 +63,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     @Getter
     private final @NotNull String name;
     private ModularScreen screen;
+    @Setter
     private IPanelHandler panelHandler;
     @Getter
     private State state = State.IDLE;
@@ -144,10 +147,6 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
 
     public void animateClose() {
         closeIfOpen(true);
-    }
-
-    void setPanelHandler(IPanelHandler panelHandler) {
-        this.panelHandler = panelHandler;
     }
 
     @Override
@@ -381,7 +380,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
                 }
             }
             // nothing worked, but since the pressed widget is still hovered we assume success
-            // otherwise JEI tries to pull some weird shit
+            // otherwise JEI tries to pull some weird stuff
             if (lastPressedIsHovered) {
                 this.mouse.reset();
                 return true;
@@ -480,7 +479,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
                 }
             }
             // nothing worked, but since the pressed widget is still hovered we assume success
-            // otherwise JEI tries to pull some weird shit
+            // otherwise JEI tries to pull some weird stuff
             if (lastPressedIsHovered) {
                 this.keyboard.reset();
                 return true;
@@ -494,7 +493,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
                                   Interactable interactable) {
         boolean stop = false;
         widget.applyMatrix(getContext());
-        if (tryTap && this.mouse.acceptedInteractions.remove(interactable)) {
+        if (tryTap && this.keyboard.acceptedInteractions.remove(interactable)) {
             Interactable.Result tabResult = interactable.onKeyTapped(keyCode, scanCode, modifiers);
             if (tabResult.stops) {
                 stop = true;
@@ -506,7 +505,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
         }
         widget.unapplyMatrix(getContext());
         if (stop) {
-            this.mouse.reset();
+            this.keyboard.reset();
             return true;
         }
         return false;
@@ -631,10 +630,17 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
 
     @Nullable
     public LocatedWidget getTopHoveringLocated(boolean debug) {
-        for (LocatedWidget widget : this.hovering) {
+        int i = 0;
+        while (i < this.hovering.size()) {
+            LocatedWidget widget = this.hovering.get(i);
+            if (!widget.getElement().isValid()) {
+               this.hovering.remove(i);
+               continue;
+            }
             if (debug || widget.getElement().canHover()) {
                 return widget;
             }
+            i++;
         }
         return null;
     }

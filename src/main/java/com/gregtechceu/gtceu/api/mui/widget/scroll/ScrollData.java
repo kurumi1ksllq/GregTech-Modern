@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class ScrollData {
 
     /**
-     * Creates scroll data which handles scrolling and scroll bar. Scrollbar is 4 pixel thick
+     * Creates scroll data which handles scrolling and scroll bar. Scrollbar is 4 pixels thick
      * and will be at the end of the cross axis (bottom/right).
      *
      * @param axis axis on which to scroll
@@ -28,7 +28,7 @@ public abstract class ScrollData {
     }
 
     /**
-     * Creates scroll data which handles scrolling and scroll bar. Scrollbar is 4 pixel thick.
+     * Creates scroll data which handles scrolling and scroll bar. Scrollbar is 4 pixels thick.
      *
      * @param axis      axis on which to scroll
      * @param axisStart if the scroll bar should be at the start of the cross axis (left/top)
@@ -89,7 +89,7 @@ public abstract class ScrollData {
     protected ScrollData(GuiAxis axis, boolean axisStart, int thickness) {
         this.axis = axis;
         this.axisStart = axisStart;
-        this.thickness = thickness <= 0 ? 4 : thickness;
+        this.thickness = thickness <= 0 ? DEFAULT_THICKNESS : thickness;
     }
 
     public boolean isVertical() {
@@ -202,7 +202,7 @@ public abstract class ScrollData {
         boolean isOtherActive = isOtherScrollBarActive(area, false);
         int length = (int) (getVisibleSize(area, isOtherActive) * getFullVisibleSize(area, isOtherActive) /
                 (float) this.scrollSize);
-        return Math.max(length, 4); // min length of 4
+        return Math.max(length, DEFAULT_THICKNESS); // min length of 4
     }
 
     public abstract boolean isInsideScrollbarArea(ScrollArea area, int x, int y);

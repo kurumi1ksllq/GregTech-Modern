@@ -226,6 +226,11 @@ public class SliderWidget extends Widget<SliderWidget> implements Interactable {
         return this;
     }
 
+    public SliderWidget setAxis(GuiAxis axis) {
+        this.axis = axis;
+        return this;
+    }
+
     public SliderWidget sliderWidth(int w) {
         this.sliderWidth.setValue(w);
         this.sliderWidth.setMeasure(Unit.Measure.PIXEL);

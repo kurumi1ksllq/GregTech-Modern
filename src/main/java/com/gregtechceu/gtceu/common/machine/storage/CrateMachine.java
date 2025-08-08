@@ -102,7 +102,9 @@ public class CrateMachine extends MetaMachine implements IMuiMachine, IMachineLi
             widgets.add(new ArrayList<>());
             for (int j = 0; j < this.rowLength; j++) {
                 int index = i * rowLength + j;
-                widgets.get(i).add(new ItemSlot().slot(SyncHandlers.itemSlot(inventory, index).slotGroup("item_inv")));
+                widgets.get(i).add(new ItemSlot()
+                        .slot(SyncHandlers.itemSlot(inventory, index).slotGroup("item_inv"))
+                        .background(GTGuiTextures.SLOT));
             }
         }
 

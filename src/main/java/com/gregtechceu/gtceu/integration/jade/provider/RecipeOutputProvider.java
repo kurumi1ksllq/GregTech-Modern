@@ -80,7 +80,7 @@ public class RecipeOutputProvider extends CapabilityBlockProvider<RecipeLogic> {
                         GTUtil.saveItemStack(stack, itemTag);
                         if (item.chance < item.maxChance) {
                             int count = stack.getCount();
-                            double countD = (double) count * recipe.parallels *
+                            double countD = (double) count * recipe.parallels * recipe.batchParallels *
                                     function.getBoostedChance(item, recipeTier, chanceTier) / item.maxChance;
                             count = countD < 1 ? 1 : (int) Math.round(countD);
                             itemTag.putInt("Count", count);
@@ -108,7 +108,7 @@ public class RecipeOutputProvider extends CapabilityBlockProvider<RecipeLogic> {
 
                         if (fluid.chance < fluid.maxChance) {
                             int amount = stacks[0].getAmount();
-                            double amountD = (double) amount * recipe.parallels *
+                            double amountD = (double) amount * recipe.parallels * recipe.batchParallels *
                                     function.getBoostedChance(fluid, recipeTier, chanceTier) / fluid.maxChance;
                             amount = amountD < 1 ? 1 : (int) Math.round(amountD);
                             fluidTag.putInt("Amount", amount);

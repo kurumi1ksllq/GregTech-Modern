@@ -185,6 +185,7 @@ public class PanelManager {
         if (this.state.isOpen) {
             this.panels.forEach(this::finalizePanel);
             setState(State.CLOSED);
+            this.screen.onClose();
             return true;
         }
         return false;

@@ -185,6 +185,11 @@ public class ProgressWidget extends Widget<ProgressWidget> {
         return texture(texture.getSubArea(0, 0, 1, 0.5f), texture.getSubArea(0, 0.5f, 1, 1), imageSize);
     }
 
+    public ProgressWidget direction(Direction direction) {
+        this.direction = direction;
+        return this;
+    }
+
     public enum Direction {
         LEFT,
         RIGHT,

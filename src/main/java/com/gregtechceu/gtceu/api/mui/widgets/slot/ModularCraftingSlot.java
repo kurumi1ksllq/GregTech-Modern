@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ModularCraftingSlot extends ModularSlot {
 
+    private CraftingContainerWrapper craftMatrix;
     @Setter
     private CraftingContainer craftSlots;
     private int amountCrafted;

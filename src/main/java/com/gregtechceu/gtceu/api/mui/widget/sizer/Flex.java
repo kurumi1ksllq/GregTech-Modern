@@ -227,16 +227,14 @@ public class Flex implements IResizeable, IPositioned<Flex> {
     }
 
     public Flex anchor(Alignment alignment) {
-        if (this.x.hasStart()) {
+        if (this.x.hasStart() || !this.x.hasEnd()) {
             anchorLeft(alignment.x);
-        }
-        if (this.x.hasEnd()) {
+        } else if (this.x.hasEnd()) {
             anchorRight(alignment.x);
         }
-        if (this.y.hasStart()) {
+        if (this.y.hasStart() || !this.y.hasEnd()) {
             anchorTop(alignment.y);
-        }
-        if (this.y.hasEnd()) {
+        } else if (this.y.hasEnd()) {
             anchorBottom(alignment.y);
         }
         return this;
@@ -278,6 +276,10 @@ public class Flex implements IResizeable, IPositioned<Flex> {
 
     public boolean yAxisDependsOnChildren() {
         return this.y.dependsOnChildren();
+    }
+
+    public boolean dependsOnChildren() {
+        return xAxisDependsOnChildren() || yAxisDependsOnChildren();
     }
 
     public boolean dependsOnChildren(GuiAxis axis) {
@@ -361,7 +363,7 @@ public class Flex implements IResizeable, IPositioned<Flex> {
         // we try to wrap all edges as close as possible to all widgets
         // this means for each edge there is at least one widget that touches it (plus padding and margin)
 
-        // children are now calculated and now this area can be calculated if it requires childrens area
+        // children are now calculated and now this area can be calculated if it requires children's area
         List<IWidget> children = widget.getChildren();
         int moveChildrenX = 0, moveChildrenY = 0;
 
@@ -398,7 +400,7 @@ public class Flex implements IResizeable, IPositioned<Flex> {
             x1 = x0 + w; // we found at least one widget which was wider than what was calculated by start and end pos
         if (h > y1 - y0) y1 = y0 + h;
 
-        // now calculate new x, y, width and height based on the childrens area
+        // now calculate new x, y, width and height based on the children's area
         Area relativeTo = getRelativeTo().getArea();
         if (this.x.dependsOnChildren()) {
             // apply the size to this widget

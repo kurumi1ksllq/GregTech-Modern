@@ -16,6 +16,7 @@ import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.api.mui.widget.wrapper.WidgetWrapper;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -51,7 +52,7 @@ import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
 /**
- * This is the base class for all modular ui's. It only exists on client side.
+ * This is the base class for all modular UIs. It only exists on client side.
  * It handles drawing the screen, all panels and widget interactions.
  */
 @OnlyIn(Dist.CLIENT)
@@ -77,8 +78,16 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         return null;
     }
 
+    /**
+     * The owner of this screen. Usually a modid. This is mainly used to find theme overrides.
+     */
     @Getter
     private final String owner;
+    /**
+     * The name of this screen, which is also the name of the panel. Every UI under one owner should have a different name.
+     * Unfortunately there is no good way to verify this, so it's the UI implementors responsibility to set a proper name for the main panel.
+     * This is mainly used to find theme overrides.
+     */
     @Getter
     private final String name;
     @Getter
@@ -94,6 +103,9 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
     private ITheme currentTheme;
     @Getter
     private IMuiScreen screenWrapper;
+    /**
+     * true if this is an overlay for another screen
+     */
     @Getter
     private boolean overlay = false;
 
@@ -152,6 +164,11 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Should be called in custom {@link ScreenWrapper GuiScreen} constructors which implement {@link IMuiScreen}.
+     *
+     * @param wrapper the gui screen wrapping this screen
+     */
     @MustBeInvokedByOverriders
     public void construct(IMuiScreen wrapper) {
         if (this.screenWrapper != null) throw new IllegalStateException("ModularScreen is already constructed!");
@@ -175,6 +192,15 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         this.overlay = true;
     }
 
+    /**
+     * Called everytime the Game window changes its size. Overriding for additional logic is allowed, but super must be called.
+     * This method resizes the entire widget tree of every panel currently open and then updates the size of the {@link IMuiScreen} wrapper.
+     * <p>
+     * Do not call this method except in an override!
+     *
+     * @param width  with of the resized game window
+     * @param height height of the resized game window
+     */
     @MustBeInvokedByOverriders
     public void onResize(int width, int height) {
         this.context.updateScreenArea(width, height);
@@ -239,6 +265,9 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         return this.panelManager.hasOpenPanel(panel);
     }
 
+    /**
+     * Called at the start of every client tick (20 times per second).
+     */
     @MustBeInvokedByOverriders
     public void onUpdate() {
         for (ModularPanel panel : this.panelManager.getOpenPanels()) {
@@ -246,6 +275,9 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         }
     }
 
+    /**
+     * Called 60 times per second in custom ticks. This logic is separate from rendering.
+     */
     @MustBeInvokedByOverriders
     public void onFrameUpdate() {
         this.panelManager.checkDirty();
@@ -261,6 +293,11 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         this.context.onFrameUpdate();
     }
 
+    /**
+     * Draws this screen and all open panels with their whole widget tree.
+     * <p>
+     * Do not call, only override!
+     */
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         Lighting.setupForFlatItems();
@@ -283,6 +320,11 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         Lighting.setupFor3DItems();
     }
 
+    /**
+     * Called after all panels with their whole widget trees and potential additional elements are drawn.
+     * <p>
+     * Do not call, only override!
+     */
     public void drawForeground(GuiGraphics guiGraphics, float partialTicks) {
         Lighting.setupForFlatItems();
         RenderSystem.disableDepthTest();
@@ -290,6 +332,7 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         this.context.reset();
         this.context.pushViewport(null, this.context.getScreenArea());
         for (ModularPanel panel : this.panelManager.getReverseOpenPanels()) {
+            this.context.updateZ(100 + panel.getArea().getPanelLayer() * 20);
             if (panel.isEnabled()) {
                 WidgetTree.drawTreeForeground(panel, this.context);
             }
@@ -300,6 +343,9 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         Lighting.setupFor3DItems();
     }
 
+    /**
+     * Called when a mouse button is pressed or released. Used to handle dropping of currently dragged elements.
+     */
     public boolean handleDraggableInput(double mouseX, double mouseY, int button, boolean pressed) {
         if (this.context.hasDraggable()) {
             if (pressed) {
@@ -312,6 +358,17 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         return false;
     }
 
+    /**
+     * Called when a mouse button is pressed. Tries to invoke
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onMousePressed(double, double, int) Interactable#onMousePressed(double, double, int)} on every widget under
+     * the mouse after gui action listeners have been called. Will try to focus widgets that have been interacted with.
+     * Focused widgets will be interacted with first in other interaction methods (mouse scroll, release and drag, key press and release).
+     *
+     * @param mouseX mouse x-coordinate
+     * @param mouseY mouse y-coordinate
+     * @param button mouse button (0 = left button, 1 = right button, 2 = scroll button, 4 and 5 = side buttons)
+     * @return true if the action was consumed and further processing should be canceled
+     */
     public boolean onMousePressed(double mouseX, double mouseY, int button) {
         for (IGuiAction.MousePressed action : getGuiActionListeners(IGuiAction.MousePressed.class)) {
             action.press(mouseX, mouseY, button);
@@ -330,24 +387,16 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         return false;
     }
 
-    public boolean onMouseReleased(double mouseX, double mouseY, int button) {
-        for (IGuiAction.MouseReleased action : getGuiActionListeners(IGuiAction.MouseReleased.class)) {
-            action.release(mouseX, mouseY, button);
-        }
-        if (this.context.onMouseReleased(mouseX, mouseY, button)) {
-            return true;
-        }
-        for (ModularPanel panel : this.panelManager.getOpenPanels()) {
-            if (panel.onMouseReleased(mouseX, mouseY, button)) {
-                return true;
-            }
-            if (panel.disablePanelsBelow()) {
-                break;
-            }
-        }
-        return false;
-    }
-
+    /**
+     * Called when a mouse button is released. Tries to invoke
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onMouseReleased(double, double, int) Interactable#onMouseRelease(int)} on every widget under
+     * the mouse after gui action listeners have been called.
+     *
+     * @param mouseX mouse x-coordinate
+     * @param mouseY mouse y-coordinate
+     * @param button mouse button (0 = left button, 1 = right button, 2 = scroll button, 4 and 5 = side buttons)
+     * @return true if the action was consumed and further processing should be canceled
+     */
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         for (IGuiAction.MouseReleased action : getGuiActionListeners(IGuiAction.MouseReleased.class)) {
@@ -367,6 +416,16 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         return false;
     }
 
+    /**
+     * Called when a keyboard key is pressed. Tries to invoke
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onKeyPressed(int, int, int) Interactable#onKeyPressed(int, int, int)} on every
+     * widget under the mouse after gui action listeners have been called.
+     *
+     * @param keyCode   the key code of the pressed key (see constants at {@link InputConstants})
+     * @param scanCode  the character of the pressed key or {@link Character#MIN_VALUE} for keys without a character
+     * @param modifiers the key modifiers of the pressed key (see modifiers at {@link InputConstants})
+     * @return true if the action was consumed and further processing should be canceled
+     */
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         for (IGuiAction.KeyPressed action : getGuiActionListeners(IGuiAction.KeyPressed.class)) {
@@ -383,6 +442,16 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         return false;
     }
 
+    /**
+     * Called when a keyboard key is released. Tries to invoke
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onKeyReleased(int, int, int) Interactable#onKeyRelease(int, int, int)} on every
+     * widget under the mouse after gui action listeners have been called.
+     *
+     * @param keyCode   the key code of the pressed key (see constants at {@link InputConstants})
+     * @param scanCode  the character of the pressed key or {@link Character#MIN_VALUE} for keys without a character
+     * @param modifiers the key modifiers of the pressed key (see modifiers at {@link InputConstants})
+     * @return true if the action was consumed and further processing should be canceled
+     */
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         for (IGuiAction.KeyReleased action : getGuiActionListeners(IGuiAction.KeyReleased.class)) {
@@ -399,6 +468,15 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         return false;
     }
 
+    /**
+     * Called when a keyboard key is released. Tries to invoke
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onCharTyped(char, int) Interactable#onCharTyped(char, int)} on every
+     * widget under the mouse after gui action listeners have been called.
+     *
+     * @param codePoint   the character of the pressed key
+     * @param modifiers     the key modifiers of the pressed key (see modifiers at {@link InputConstants})
+     * @return true if the action was consumed and further processing should be canceled
+     */
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
         for (IGuiAction.CharTyped action : getGuiActionListeners(IGuiAction.CharTyped.class)) {
@@ -415,6 +493,16 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         return false;
     }
 
+    /**
+     * Called when a mouse button is released. Tries to invoke
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onMouseScrolled(double, double, double) Interactable#onMouseScrolled(double, double, double)} on every widget under
+     * the mouse after gui action listeners have been called.
+     *
+     * @param mouseX mouse x-coordinate
+     * @param mouseY mouse y-coordinate
+     * @param delta the direction and speed of the scroll
+     * @return true if the action was consumed and further processing should be canceled
+     */
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         for (IGuiAction.MouseScroll action : getGuiActionListeners(IGuiAction.MouseScroll.class)) {
@@ -431,6 +519,18 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         return false;
     }
 
+    /**
+     * Called every time the mouse pos changes and a mouse button is held down. Invokes
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onMouseDrag(double, double, int, double, double) Interactable#onMouseDrag(double, double, int, double, double)} on every widget
+     * under the mouse after gui action listeners have been called.
+     *
+     * @param mouseX    starting mouse x-coordinate
+     * @param mouseY    starting mouse y-coordinate
+     * @param button    mouse button that is held down (0 = left button, 1 = right button, 2 = scroll button, 4 and 5 = side buttons)
+     * @param dragX     ending mouse y-coordinate
+     * @param dragY     ending mouse y-coordinate
+     * @return true if the action was consumed and further processing should be canceled
+     */
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         for (IGuiAction.MouseDrag action : getGuiActionListeners(IGuiAction.MouseDrag.class)) {
@@ -447,6 +547,13 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         return false;
     }
 
+    /**
+     * Called with {@code true} after a widget which implements {@link com.gregtechceu.gtceu.api.mui.base.widget.IFocusedWidget IFocusedWidget}
+     * has consumed a mouse press and called with {@code false} if a widget is currently focused and anything else has consumed a mouse
+     * press. This is required for other mods like JEI/EMI to not interfere with inputs.
+     *
+     * @param focus true if the gui screen will be focused
+     */
     @ApiStatus.Internal
     public void setFocused(boolean focus) {
         this.screenWrapper.getWrappedScreen().setFocused(focus);
@@ -457,10 +564,18 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         return this.screenWrapper.getWrappedScreen().isFocused();
     }
 
+    /**
+     * @return true if this screen is currently open and displayed on the screen
+     */
     public boolean isActive() {
         return getCurrent() == this;
     }
 
+    /**
+     * @return the owner and name as a {@link ResourceLocation}
+     * @see #getOwner()
+     * @see #getName()
+     */
     public ResourceLocation getResourceLocation() {
         return new ResourceLocation(this.owner, this.name);
     }
@@ -574,11 +689,25 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
         throw new IllegalArgumentException();
     }
 
+    /**
+     * Tries to use a specific theme for this screen. If the theme for this screen has been overriden via resource packs, this method does
+     * nothing.
+     *
+     * @param theme id of theme to use
+     * @return this for builder like usage
+     */
     public ModularScreen useTheme(String theme) {
         this.currentTheme = IThemeApi.get().getThemeForScreen(this, theme);
         return this;
     }
 
+    /**
+     * Sets if the gui should pause the game in the background. Pausing means every ticking will halt. If the client is connected to a
+     * dedicated server the UI will NEVER pause the game.
+     *
+     * @param pausesGame true if the ui should pause the game in the background.
+     * @return this for builder like usage
+     */
     public ModularScreen pausesGame(boolean pausesGame) {
         this.pauseScreen = pausesGame;
         return this;

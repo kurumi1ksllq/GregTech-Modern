@@ -190,13 +190,13 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
                 if (screenWidth - mouseX < mouseX) { // check if left side has more space
                     x -= mouseOffset * 2 + width; // flip side of cursor if other side has more space
                     if (x < padding) {
-                        x = padding; // went of screen
+                        x = padding; // went off-screen
                     }
-                    width = mouseX - 12 - x; // max space on left side
+                    width = mouseX - mouseOffset - x; // max space on left side
                 } else {
                     width = screenWidth - padding - x; // max space on right side
                 }
-                // recalculate with and height
+                // recalculate width and height
                 renderer.setPos(x, y);
                 renderer.setAlignment(this.text.getAlignment(), width, -1);
                 this.text.compileAndDraw(renderer, context, true);

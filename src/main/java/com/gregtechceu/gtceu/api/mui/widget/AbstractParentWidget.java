@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.mui.widgets.VoidWidget;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +23,29 @@ public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWid
 
     private final List<I> children = new ArrayList<>();
 
+    /**
+     * A list of all children of this widget. The list is modifiable contrary to the annotation.
+     * This just means that you shouldn't carelessly modify the list. Adding to the list also requires initialising the new child.
+     * Removing requires disposing the old child.
+     *
+     * @return a view of all children.
+     */
+    @SuppressWarnings("unchecked")
+    @UnmodifiableView
     @NotNull
     @Override
     public List<IWidget> getChildren() {
         return (List<IWidget>) this.children;
     }
 
+    /**
+     * A list of all children of this widget with the given children type {@link I}. The list is modifiable contrary to the annotation.
+     * This just means that you shouldn't carelessly modify the list. Adding to the list also requires initialising the new child.
+     * Removing requires disposing the old child.
+     *
+     * @return a view of all children.
+     */
+    @UnmodifiableView
     public List<I> getTypeChildren() {
         return children;
     }

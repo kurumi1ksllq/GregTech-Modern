@@ -156,12 +156,15 @@ public class ModularContainerMenu extends AbstractContainerMenu {
 
     @ApiStatus.Internal
     public void registerSlot(String panelName, ModularSlot slot) {
-        if (this.slots.contains(slot)) {
-            throw new IllegalArgumentException("Tried to register slot which already exists!");
-        }
         if (slot.isPhantom()) {
+            if(this.phantomSlots.contains(slot)) {
+                throw new IllegalArgumentException("Tried to register slot which already exists!");
+            }
             this.phantomSlots.add(slot);
         } else {
+            if (this.slots.contains(slot)) {
+                throw new IllegalArgumentException("Tried to register slot which already exists!");
+            }
             addSlot(slot);
         }
         if (slot.getSlotGroupName() != null) {
@@ -298,9 +301,8 @@ public class ModularContainerMenu extends AbstractContainerMenu {
                     }
                 } else if (clickedSlot.mayPickup(player)) {
                     if (heldStack.isEmpty() && !slotStack.isEmpty()) {
-                        int s = Math.min(slotStack.getCount(), slotStack.getMaxStackSize()); // checking max stack size
-                                                                                             // here, probably for
-                                                                                             // oversized slots
+                        // checking max stack size here, probably for oversized slots
+                        int s = Math.min(slotStack.getCount(), slotStack.getMaxStackSize());
                         int toRemove = mouseButton == LEFT_MOUSE ? s : (s + 1) / 2;
                         this.setCarried(slotStack.split(toRemove));
                         clickedSlot.setByPlayer(slotStack);
@@ -323,19 +325,19 @@ public class ModularContainerMenu extends AbstractContainerMenu {
                         }
                     } else if (heldStack.getMaxStackSize() > 1 &&
                             ItemStack.isSameItemSameTags(slotStack, heldStack) && !slotStack.isEmpty()) {
-                                int stackCount = slotStack.getCount();
+                        int stackCount = slotStack.getCount();
 
-                                if (stackCount + heldStack.getCount() <= heldStack.getMaxStackSize()) {
-                                    heldStack.grow(stackCount);
-                                    slotStack = clickedSlot.remove(stackCount);
+                        if (stackCount + heldStack.getCount() <= heldStack.getMaxStackSize()) {
+                            heldStack.grow(stackCount);
+                            slotStack = clickedSlot.remove(stackCount);
 
-                                    if (slotStack.isEmpty()) {
-                                        clickedSlot.setByPlayer(ItemStack.EMPTY);
-                                    }
-
-                                    clickedSlot.onTake(player, this.getCarried());
-                                }
+                            if (slotStack.isEmpty()) {
+                                clickedSlot.setByPlayer(ItemStack.EMPTY);
                             }
+
+                            clickedSlot.onTake(player, this.getCarried());
+                        }
+                    }
                 }
                 clickedSlot.setChanged();
             }
@@ -427,8 +429,8 @@ public class ModularContainerMenu extends AbstractContainerMenu {
                 ItemStack toStack = toSlot.getItem().copy();
                 if (!fromSlot.isPhantom() && ItemHandlerHelper.canItemStacksStack(fromStack, toStack)) {
                     int j = toStack.getCount() + fromStack.getCount();
-                    int maxSize = toSlot.getMaxStackSize(fromStack);// Math.min(toSlot.getMaxStackSize(),
-                                                                    // fromStack.getMaxStackSize());
+                    // Math.min(toSlot.getMaxStackSize(), fromStack.getMaxStackSize());
+                    int maxSize = toSlot.getMaxStackSize(fromStack);
 
                     if (j <= maxSize) {
                         fromStack.setCount(0);

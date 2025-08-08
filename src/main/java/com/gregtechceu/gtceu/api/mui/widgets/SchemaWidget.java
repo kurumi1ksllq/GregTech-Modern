@@ -69,7 +69,7 @@ public class SchemaWidget extends Widget<SchemaWidget> implements Interactable {
             yaw = (yaw + dx * moveScale + TWO_PI) % TWO_PI;
             pitch = Mth.clamp(pitch + dy * moveScale, -TWO_PI / 4 + 0.001f, TWO_PI / 4 - 0.001f);
         } else if (mouseX == 2 && this.enableTranslation) {
-            // the idea is to construct a vector which points upwards from the camerae pov (y-axis on screen)
+            // the idea is to construct a vector which points upwards from the camera pov (y-axis on screen)
             // this vector determines the amount of z offset from mouse movement in y
             float y = (float) Math.cos(pitch);
             float moveScale = 0.06f;

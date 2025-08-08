@@ -1,8 +1,10 @@
 package com.gregtechceu.gtceu.api.mui.value.sync;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.client.mui.screen.ModularContainerMenu;
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -18,6 +20,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
+import java.util.Set;
 
 public class ModularSyncManager {
 
@@ -26,6 +29,9 @@ public class ModularSyncManager {
     private static final String CURSOR_KEY = makeSyncKey("cursor_slot", 255255);
 
     private final Map<String, PanelSyncManager> panelSyncManagerMap = new Object2ObjectOpenHashMap<>();
+    // A set of all panels which have been opened during the ui. May also contain closed panels.
+    // This is used to detect if
+    private final Set<String> panelHistory = new ObjectOpenHashSet<>();
     @Getter
     private PanelSyncManager mainPSM;
     @Getter
@@ -83,6 +89,7 @@ public class ModularSyncManager {
 
     public void open(String name, PanelSyncManager syncManager) {
         this.panelSyncManagerMap.put(name, syncManager);
+        this.panelHistory.add(name);
         syncManager.initialize(name, this);
     }
 
@@ -96,7 +103,14 @@ public class ModularSyncManager {
     }
 
     public void receiveWidgetUpdate(String panelName, String mapKey, int id, FriendlyByteBuf buf) {
-        getPanelSyncManager(panelName).receiveWidgetUpdate(mapKey, id, buf);
+        PanelSyncManager psm = this.panelSyncManagerMap.get(panelName);
+        if(psm != null) {
+            psm.receiveWidgetUpdate(mapKey, id, buf);
+        } else if(!this.panelHistory.contains(panelName)) {
+            GTCEu.LOGGER.throwing(new IllegalStateException("A packet was send to panel '\" + panelName + \"' which was not opened yet!"));
+        }
+        // else the panel was open at some point
+        // we simply discard the packet silently and assume the packet was correctly send, but the panel closed earlier
     }
 
     public Player getPlayer() {

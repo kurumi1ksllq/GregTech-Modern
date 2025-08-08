@@ -8,7 +8,7 @@ public class HorizontalScrollData extends ScrollData {
 
     /**
      * Creates horizontal scroll data which handles scrolling and scroll bar.
-     * Scrollbar is 4 pixel high and is placed at the bottom.
+     * Scrollbar is 4 pixels high and is placed at the bottom.
      */
     public HorizontalScrollData() {
         this(false, DEFAULT_THICKNESS);
@@ -16,7 +16,7 @@ public class HorizontalScrollData extends ScrollData {
 
     /**
      * Creates horizontal scroll data which handles scrolling and scroll bar.
-     * Scrollbar is 4 pixel high.
+     * Scrollbar is 4 pixels high.
      *
      * @param topAlignment if the scroll bar should be placed at the top
      */
@@ -28,7 +28,7 @@ public class HorizontalScrollData extends ScrollData {
      * Creates horizontal scroll data which handles scrolling and scroll bar.
      *
      * @param topAlignment if the scroll bar should be placed at the top
-     * @param thickness    height of the scroll bar in pixel
+     * @param thickness    height of the scroll bar in pixels
      */
     public HorizontalScrollData(boolean topAlignment, int thickness) {
         super(GuiAxis.X, topAlignment, thickness);

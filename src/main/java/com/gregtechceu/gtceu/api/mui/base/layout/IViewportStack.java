@@ -113,8 +113,6 @@ public interface IViewportStack {
      */
     void scale(float x, float y);
 
-    void multiply(Matrix4f matrix);
-
     /**
      * Resets the top matrix to the matrix below.
      */

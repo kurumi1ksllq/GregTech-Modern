@@ -1,8 +1,11 @@
 package com.gregtechceu.gtceu.gametest.util;
 
+import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class TestUtils {
 
@@ -17,5 +20,10 @@ public class TestUtils {
     public static void formMultiblock(MultiblockControllerMachine controller) {
         controller.getPattern().checkPatternAt(controller.getMultiblockState(), false);
         controller.onStructureFormed();
+    }
+
+    //Gets a MetaMachine from a block Entity to run tests in
+    public static MetaMachine getMetaMachine(BlockEntity entity) {
+        return ((MetaMachineBlockEntity) entity).getMetaMachine();
     }
 }

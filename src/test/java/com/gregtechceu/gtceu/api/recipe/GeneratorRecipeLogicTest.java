@@ -54,16 +54,17 @@ public class GeneratorRecipeLogicTest {
         fluidIn.setFluidInTank(0, Naphtha.getFluid(1));
 
 
-        helper.succeedOnTickWhen(12, () -> {
+        // 1 tick to turn on, 5 ticks to run
+        helper.succeedOnTickWhen(6, () -> {
 
             long energyCreated = energyOut.getEnergyStored();
             long energyNeeded = 160;
             // test is we do the right eu generation
             helper.assertTrue( energyCreated == energyNeeded, "Recipe did not create the right amount of EU ");
 
-            // use the right amount of fluid
+            // use the right amount of fluid, namely the 1 in the slot, so it's empty after
             int fluidAmount = fluidIn.getFluidInTank(0).getAmount();
-            helper.assertTrue( fluidAmount == 10, "Recipe did not use the proper amount of FLUID");
+            helper.assertTrue( fluidAmount == 0, "Recipe did not use the proper amount of FLUID");
 
         });
         //

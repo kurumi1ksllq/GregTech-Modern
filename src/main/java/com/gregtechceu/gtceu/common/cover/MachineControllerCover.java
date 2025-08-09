@@ -5,14 +5,26 @@ import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
+import com.gregtechceu.gtceu.api.cover.IMuiCover;
 import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.PhantomSlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
+import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
+import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
+import com.gregtechceu.gtceu.api.mui.factory.SidedPosGuiData;
+import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
+import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
+import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
+import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.cover.data.ControllerMode;
 
+import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
+import com.gregtechceu.gtceu.common.mui.GTGuis;
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -45,7 +57,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class MachineControllerCover extends CoverBehavior implements IUICover {
+public class MachineControllerCover extends CoverBehavior implements IMuiCover {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MachineControllerCover.class,
             CoverBehavior.MANAGED_FIELD_HOLDER);
@@ -198,7 +210,24 @@ public class MachineControllerCover extends CoverBehavior implements IUICover {
     // *********** GUI ***********//
     //////////////////////////////////////
 
+
     @Override
+    public ModularPanel buildUI(SidedPosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+
+        return GTGuis.createPanel(this, 176, 164)
+                .bindPlayerInventory()
+                .child(createUIWidget())
+                .background(GTGuiTextures.BACKGROUND_BRONZE);
+    }
+
+    @Override
+    public IWidget createUIWidget() {
+        ParentWidget<?> slots = new ParentWidget<>();
+        slots.child(new TextWidget(IKey.str("Machine Controller Cover")).top(20).left(5).width(80).color(0xff00ff));
+        return slots;
+    }
+
+    /*@Override
     public Widget createUIWidget() {
         if (controllerMode != null && getControllable(controllerMode.side) == null) {
             setControllerMode(null);
@@ -233,7 +262,7 @@ public class MachineControllerCover extends CoverBehavior implements IUICover {
         updateUI();
 
         return group;
-    }
+    }*/
 
     private void selectNextMode() {
         var allowedModes = getAllowedModes();

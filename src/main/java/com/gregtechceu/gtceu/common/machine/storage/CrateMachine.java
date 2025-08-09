@@ -12,6 +12,7 @@ import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Grid;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
@@ -96,26 +97,24 @@ public class CrateMachine extends MetaMachine implements IMuiMachine, IMachineLi
     public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
         syncManager.registerSlotGroup("item_inv", inventorySize);
 
+        syncManager.registerSlotGroup("item_inv", inventorySize);
+
         int rows = inventorySize / rowLength;
-        List<List<IWidget>> widgets = new ArrayList<>();
+        ParentWidget<?> slots = new ParentWidget<>();
         for (int i = 0; i < rows; i++) {
-            widgets.add(new ArrayList<>());
             for (int j = 0; j < this.rowLength; j++) {
                 int index = i * rowLength + j;
-                widgets.get(i).add(new ItemSlot()
+                slots.child(new ItemSlot()
                         .slot(SyncHandlers.itemSlot(inventory, index).slotGroup("item_inv"))
-                        .background(GTGuiTextures.SLOT));
+                        .left(18 * j)
+                        .top(18 * i));
             }
         }
 
         return GTGuis.createPanel(this, rowLength * 18 + 14, 18 + 4 * 18 + 5 + 14 + 18 * rows)
                 .background(GTGuiTextures.BACKGROUND_STEEL)
                 .child(IKey.lang(getBlockState().getBlock().getName()).asWidget().pos(5, 5))
-                .child(new Grid()
-                        .top(18).left(7).right(7).height(rows * 18)
-                        .minElementMargin(0, 0)
-                        .minColWidth(18).minRowHeight(18)
-                        .matrix(widgets))
+                .child(slots.top(18).left(7).right(7).height(rows * 18))
                 .bindPlayerInventory();
     }
 

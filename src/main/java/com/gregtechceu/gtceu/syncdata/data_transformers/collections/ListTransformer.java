@@ -4,7 +4,9 @@ import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListTransformer<T> implements IValueTransformer<List<T>> {
@@ -16,17 +18,36 @@ public class ListTransformer<T> implements IValueTransformer<List<T>> {
     }
 
     @Override
-    public Tag serializeNBT(List<T> value, boolean isSync, boolean isFullSync) {
-        ListTag list = new ListTag();
-        for (var obj : value) {
-            list.add(elementTransformer.serializeNBT(obj, isSync, isFullSync));
+    public void writeToBuffer(List<T> value, FriendlyByteBuf buf) {
+        buf.writeInt(value.size());
+        for (var obj: value) {
+            elementTransformer.writeToBuffer(obj, buf);
+        }
+    }
+
+    @Override
+    public List<T> readFromBuffer(FriendlyByteBuf buf, List<T> currentValue) {
+        var size = buf.readInt();
+        List<T> list = new ArrayList<>();
+        for (int i=0; i<size; i++) {
+            var newVal = elementTransformer.readFromBuffer(buf, null);
+            list.add(newVal);
         }
         return list;
     }
 
     @Override
-    public List<T> deserializeNBT(Tag tag, List<T> current, boolean isSync) {
+    public Tag serializeNBT(List<T> value) {
+        ListTag list = new ListTag();
+        for (var obj : value) {
+            list.add(elementTransformer.serializeNBT(obj));
+        }
+        return list;
+    }
+
+    @Override
+    public List<T> deserializeNBT(Tag tag, List<T> current) {
         if (!(tag instanceof ListTag listTag)) return List.of();
-        return listTag.stream().map((t) -> elementTransformer.deserializeNBT(t, null, isSync)).toList();
+        return listTag.stream().map((t) -> elementTransformer.deserializeNBT(t, null)).toList();
     }
 }

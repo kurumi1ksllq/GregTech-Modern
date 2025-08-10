@@ -6,16 +6,27 @@ import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class MaterialTransformer implements IValueTransformer<Material> {
 
     @Override
-    public Tag serializeNBT(Material currentValue, boolean isSync, boolean isFullSync) {
+    public void writeToBuffer(Material value, FriendlyByteBuf buf) {
+        buf.writeResourceLocation(value.getResourceLocation());
+    }
+
+    @Override
+    public Material readFromBuffer(FriendlyByteBuf buf, Material currentValue) {
+        return GTCEuAPI.materialManager.getMaterial(buf.readResourceLocation().toString());
+    }
+
+    @Override
+    public Tag serializeNBT(Material currentValue) {
         return StringTag.valueOf(currentValue.getResourceLocation().toString());
     }
 
     @Override
-    public Material deserializeNBT(Tag tag, Material currentValue, boolean isSync) {
+    public Material deserializeNBT(Tag tag, Material currentValue) {
         return GTCEuAPI.materialManager.getMaterial(tag.getAsString());
     }
 }

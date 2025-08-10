@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
+import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Nullable;
 
 public class SyncManagedTransformer implements IValueTransformer<ISyncManaged> {
@@ -16,18 +17,24 @@ public class SyncManagedTransformer implements IValueTransformer<ISyncManaged> {
     }
 
     @Override
-    public Tag serializeNBT(ISyncManaged value, boolean isSync, boolean isFullSync) {
-        return isSync ? value.getSyncDataHolder().getClientSyncNBT(isFullSync) : value.getSyncDataHolder().saveNBT();
+    public void writeToBuffer(ISyncManaged value, FriendlyByteBuf buf) {
+        value.getSyncDataHolder().writeToNetworkBuffer(buf);
     }
 
     @Override
-    public ISyncManaged deserializeNBT(Tag tag, @Nullable ISyncManaged currentVal, boolean isSync) {
+    public ISyncManaged readFromBuffer(FriendlyByteBuf buf, ISyncManaged currentValue) {
+        return currentValue.getSyncDataHolder().readFromNetworkBuffer(buf);
+    }
+
+    @Override
+    public Tag serializeNBT(ISyncManaged value) {
+        return value.getSyncDataHolder().serializeNBT();
+    }
+
+    @Override
+    public ISyncManaged deserializeNBT(Tag tag, @Nullable ISyncManaged currentVal) {
         if (!(tag instanceof CompoundTag compound) || currentVal == null) return currentVal;
-        if (isSync) {
-            currentVal.getSyncDataHolder().loadClientSyncNBT(compound);
-        } else {
-            currentVal.getSyncDataHolder().loadFromNBT(compound);
-        }
+        currentVal.getSyncDataHolder().deserializeNBT(compound);
         return currentVal;
     }
 }

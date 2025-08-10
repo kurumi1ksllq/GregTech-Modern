@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.syncdata;
 
 import net.minecraft.nbt.Tag;
 
+import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -14,7 +15,11 @@ public interface IValueTransformer<T> {
         return false;
     }
 
-    Tag serializeNBT(T value, boolean isSync, boolean isFullSync);
+    void writeToBuffer(T value, FriendlyByteBuf buf);
 
-    T deserializeNBT(Tag tag, @Nullable T currentVal, boolean isSync);
+    T readFromBuffer(FriendlyByteBuf buf, T currentValue);
+
+    Tag serializeNBT(T value);
+
+    T deserializeNBT(Tag tag, @Nullable T currentVal);
 }

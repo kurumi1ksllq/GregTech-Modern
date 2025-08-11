@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.cover.ICoverRenderer;
 import com.gregtechceu.gtceu.syncdata.ISyncManaged;
+import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
@@ -78,10 +79,8 @@ public abstract class CoverBehavior implements ISyncManaged, IToolGridHighlight 
 
     @Override
     public void markAsChanged() {
-        var level = coverHolder.getLevel();
-        if (level instanceof ServerLevel sLvl) {
-            sLvl.sendBlockUpdated(coverHolder.getPos(), coverHolder.getState(), coverHolder.getState(),
-                    Block.UPDATE_CLIENTS);
+        if (coverHolder instanceof ManagedSyncBlockEntity syncEntity) {
+            syncEntity.markAsChanged();
         }
     }
 

@@ -1,22 +1,17 @@
 package com.gregtechceu.gtceu.syncdata;
 
+import com.gregtechceu.gtceu.common.network.GTNetwork;
+import com.gregtechceu.gtceu.syncdata.network.SPacketUpdateBESyncValue;
+import lombok.Setter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -31,6 +26,9 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
 
     @Getter
     protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
+    @Getter
+    @Setter
+    private boolean isDirty;
 
     public ManagedSyncBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -45,55 +43,49 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
     @Override
     protected final void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        Arrays.stream(getSyncObjects()).map(obj -> obj.getSyncDataHolder().saveNBT()).forEach(tag::merge);
+        for (ISyncManaged obj: getSyncObjects()) {
+            tag.merge(obj.getSyncDataHolder().serializeNBT(false));
+        }
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadFromNBT(tag));
+        for (ISyncManaged obj: getSyncObjects()) {
+            obj.getSyncDataHolder().deserializeNBT(tag, false);
+        }
     }
 
     // Called when a client loads this BlockEntity
 
     @Override
-    public final CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
-        Arrays.stream(getSyncObjects()).map(obj -> obj.getSyncDataHolder().getClientSyncNBT(true)).forEach(tag::merge);
+        for (ISyncManaged obj: getSyncObjects()) {
+            tag.merge(obj.getSyncDataHolder().serializeNBT(true));
+        }
         return tag;
     }
 
     @Override
-    public final void handleUpdateTag(CompoundTag tag) {
-        Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadClientSyncNBT(tag));
-    }
-
-    // Called when this BlockEntity has changed and must send changes to client.
-
-    @Override
-    public final Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this, (entity) -> {
-            if (!(entity instanceof ManagedSyncBlockEntity syncEntity)) return new CompoundTag();
-            var tag = new CompoundTag();
-            Arrays.stream(syncEntity.getSyncObjects()).map(obj -> obj.getSyncDataHolder().getClientSyncNBT(false))
-                    .forEach(tag::merge);
-            return tag;
-        });
-    }
-
-    @Override
-    public final void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        CompoundTag compound = pkt.getTag();
-        if (compound != null) {
-            Arrays.stream(getSyncObjects()).forEach(obj -> obj.getSyncDataHolder().loadClientSyncNBT(compound));
+    public void handleUpdateTag(CompoundTag tag) {
+        for (ISyncManaged obj: getSyncObjects()) {
+            obj.getSyncDataHolder().deserializeNBT(tag, true);
         }
     }
 
     @Override
     public final void markAsChanged() {
-        var level = getLevel();
-        if (level instanceof ServerLevel sLvl) {
-            sLvl.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+        isDirty = true;
+    }
+
+    public final void updateTick() {
+        setChanged();
+        if (isDirty) {
+            var level = getLevel();
+            if (level == null) return;
+            GTNetwork.sendToAllPlayersTrackingChunk(level.getChunkAt(getBlockPos()), new SPacketUpdateBESyncValue(this));
+            isDirty = false;
         }
     }
 }

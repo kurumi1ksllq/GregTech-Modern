@@ -27,21 +27,17 @@ public final class ClassSyncData {
         }
     };
 
-    public final FieldSyncData[] clientSyncFields;
-    public final FieldSyncData[] serverSaveFields;
+    public final Map<String, FieldSyncData> clientSyncFields = new HashMap<>();
+    public final Map<String, FieldSyncData> serverSaveFields = new HashMap<>();
 
     private ClassSyncData(@NotNull Class<?> clazz) {
         MethodHandles.Lookup privateLookup;
         try {
             privateLookup = MethodHandles.privateLookupIn(clazz, LOOKUP);
         } catch (IllegalAccessException ignored) {
-            clientSyncFields = new FieldSyncData[0];
-            serverSaveFields = new FieldSyncData[0];
             return;
         }
 
-        ArrayList<FieldSyncData> foundSyncFields = new ArrayList<>();
-        ArrayList<FieldSyncData> foundSaveFields = new ArrayList<>();
         Map<String, MethodInfo> annotatedMethods = new HashMap<>();
 
         for (Method method : clazz.getDeclaredMethods()) {
@@ -91,19 +87,16 @@ public final class ClassSyncData {
             }
 
             FieldSyncData syncData = new FieldSyncData(field, handle, annotatedMethods.get(field.getName()));
-            if (hasClientSync) foundSyncFields.add(syncData);
-            if (hasSaveField) foundSaveFields.add(syncData);
+            if (hasClientSync) clientSyncFields.put(field.getName(), syncData);
+            if (hasSaveField) serverSaveFields.put(field.getName(), syncData);
         }
 
         Class<?> parent = clazz.getSuperclass();
         if (parent != Object.class) {
             ClassSyncData parentHandles = CACHE.get(parent);
-            foundSyncFields.addAll(List.of(parentHandles.clientSyncFields));
-            foundSaveFields.addAll(List.of(parentHandles.serverSaveFields));
+            clientSyncFields.putAll(parentHandles.clientSyncFields);
+            serverSaveFields.putAll(parentHandles.serverSaveFields);
         }
-
-        serverSaveFields = foundSaveFields.toArray(FieldSyncData[]::new);
-        clientSyncFields = foundSyncFields.toArray(FieldSyncData[]::new);
     }
 
     public static final class FieldSyncData {

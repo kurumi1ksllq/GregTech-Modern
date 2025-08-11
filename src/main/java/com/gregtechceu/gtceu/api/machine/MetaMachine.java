@@ -32,6 +32,7 @@ import com.gregtechceu.gtceu.common.item.tool.behavior.ToolModeSwitchBehavior;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.common.machine.owner.PlayerOwner;
 import com.gregtechceu.gtceu.syncdata.ISyncManaged;
+import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
@@ -132,9 +133,8 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
 
     @Override
     public void markAsChanged() {
-        var level = getLevel();
-        if (level instanceof ServerLevel sLvl) {
-            sLvl.sendBlockUpdated(getPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+        if (getHolder() instanceof ManagedSyncBlockEntity syncBlockEntity) {
+            syncBlockEntity.markAsChanged();
         }
     }
 

@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 
+import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -67,6 +68,9 @@ public interface IMachineBlock extends EntityBlock {
                     pTile.setChanged();
                     if (pTile instanceof IMachineBlockEntity metaMachine) {
                         metaMachine.getMetaMachine().serverTick();
+                    }
+                    if (pTile instanceof ManagedSyncBlockEntity syncObj) {
+                        syncObj.updateTick();
                     }
                 };
             } else {

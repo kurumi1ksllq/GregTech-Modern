@@ -20,6 +20,7 @@ import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.item.CoverPlaceBehavior;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
+import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.client.renderer.IBlockRendererProvider;
@@ -434,9 +435,11 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         if (blockEntityType == getBlockEntityType()) {
             if (!level.isClientSide) {
                 return (pLevel, pPos, pState, pTile) -> {
-                    pTile.setChanged();
                     if (pTile instanceof IPipeNode<?, ?> pipeNode) {
                         pipeNode.serverTick();
+                    }
+                    if (pTile instanceof ManagedSyncBlockEntity syncObj) {
+                        syncObj.updateTick();
                     }
                 };
             }

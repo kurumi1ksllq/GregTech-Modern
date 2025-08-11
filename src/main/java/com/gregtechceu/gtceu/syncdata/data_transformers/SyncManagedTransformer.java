@@ -23,18 +23,31 @@ public class SyncManagedTransformer implements IValueTransformer<ISyncManaged> {
 
     @Override
     public ISyncManaged readFromBuffer(FriendlyByteBuf buf, ISyncManaged currentValue) {
-        return currentValue.getSyncDataHolder().readFromNetworkBuffer(buf);
+        currentValue.getSyncDataHolder().readFromNetworkBuffer(buf);
+        return currentValue;
+    }
+
+    @Override
+    public Tag serializeClientChunkPayload(ISyncManaged value) {
+        return value.getSyncDataHolder().serializeNBT(true);
+    }
+
+    @Override
+    public ISyncManaged deserializeClientChunkPayload(Tag tag, @Nullable ISyncManaged currentVal) {
+        if (!(tag instanceof CompoundTag compound) || currentVal == null) return currentVal;
+        currentVal.getSyncDataHolder().deserializeNBT(compound, true);
+        return currentVal;
     }
 
     @Override
     public Tag serializeNBT(ISyncManaged value) {
-        return value.getSyncDataHolder().serializeNBT();
+        return value.getSyncDataHolder().serializeNBT(false);
     }
 
     @Override
     public ISyncManaged deserializeNBT(Tag tag, @Nullable ISyncManaged currentVal) {
         if (!(tag instanceof CompoundTag compound) || currentVal == null) return currentVal;
-        currentVal.getSyncDataHolder().deserializeNBT(compound);
+        currentVal.getSyncDataHolder().deserializeNBT(compound, false);
         return currentVal;
     }
 }

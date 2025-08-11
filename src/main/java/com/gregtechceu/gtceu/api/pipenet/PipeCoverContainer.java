@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.common.blockentity.FluidPipeBlockEntity;
 import com.gregtechceu.gtceu.common.blockentity.ItemPipeBlockEntity;
 import com.gregtechceu.gtceu.syncdata.ISyncManaged;
+import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
@@ -48,9 +49,8 @@ public class PipeCoverContainer implements ICoverable, ISyncManaged {
 
     @Override
     public void markAsChanged() {
-        var level = getLevel();
-        if (level instanceof ServerLevel sLvl) {
-            sLvl.sendBlockUpdated(getPos(), pipeTile.getState(), pipeTile.getState(), Block.UPDATE_CLIENTS);
+        if (pipeTile instanceof ManagedSyncBlockEntity syncBlockEntity) {
+            syncBlockEntity.markAsChanged();
         }
     }
 

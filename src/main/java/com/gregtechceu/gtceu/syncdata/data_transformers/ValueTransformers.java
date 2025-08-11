@@ -69,7 +69,6 @@ public final class ValueTransformers {
             }
 
             if (type.isArray()) {
-                GTCEu.LOGGER.info("Array: {}", type);
                 Class<?> componentType = type.getComponentType();
                 IValueTransformer<?> componentTx = get(componentType);
                 if (componentTx != null) return new ObjectArrayTransformer<>(componentTx);
@@ -152,7 +151,6 @@ public final class ValueTransformers {
 
         // Interfaces
 
-        registerInterfaceTransformer(ISyncManaged.class, new SyncManagedTransformer());
         registerInterfaceTransformer(INBTSerializable.class, new NBTSerialisableTransformer());
         registerInterfaceTransformer(Component.class, new CommonClassTransformers.ComponentTransformer());
 

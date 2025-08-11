@@ -38,6 +38,7 @@ public class SPacketUpdateBESyncValue implements GTNetwork.INetPacket {
         if (entityLvl == null) return;
         buffer.writeResourceKey(entityLvl.dimension());
         buffer.writeBlockPos(entityPos);
+        blockEntity.writeToDataBuffer(buffer);
     }
 
     @Override

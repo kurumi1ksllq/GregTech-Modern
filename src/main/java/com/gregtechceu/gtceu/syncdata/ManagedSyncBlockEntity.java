@@ -6,6 +6,7 @@ import lombok.Setter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -86,6 +87,12 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
             if (level == null) return;
             GTNetwork.sendToAllPlayersTrackingChunk(level.getChunkAt(getBlockPos()), new SPacketUpdateBESyncValue(this));
             isDirty = false;
+        }
+    }
+
+    public final void writeToDataBuffer(FriendlyByteBuf buf) {
+        for (ISyncManaged syncObj: getSyncObjects()) {
+            syncObj.getSyncDataHolder().writeToNetworkBuffer(buf);
         }
     }
 }

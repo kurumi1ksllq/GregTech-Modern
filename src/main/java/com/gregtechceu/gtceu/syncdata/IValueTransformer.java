@@ -19,14 +19,6 @@ public interface IValueTransformer<T> {
 
     T readFromBuffer(FriendlyByteBuf buf, T currentValue);
 
-    default Tag serializeClientChunkPayload(T value) {
-        return serializeNBT(value);
-    }
-
-    default T deserializeClientChunkPayload(Tag tag, @Nullable T currentVal) {
-        return deserializeNBT(tag, currentVal);
-    }
-
     Tag serializeNBT(T value);
 
     T deserializeNBT(Tag tag, @Nullable T currentVal);

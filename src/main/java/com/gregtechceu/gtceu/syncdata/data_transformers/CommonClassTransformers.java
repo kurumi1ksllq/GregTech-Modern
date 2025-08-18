@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.syncdata.data_transformers;
 
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
-import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;

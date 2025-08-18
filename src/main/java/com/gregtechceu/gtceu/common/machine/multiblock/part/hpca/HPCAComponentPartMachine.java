@@ -1,11 +1,11 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.part.hpca;
 
 import com.gregtechceu.gtceu.api.capability.IHPCAComponentHatch;
-import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineModifyDrops;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IWorkableMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
+import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
@@ -65,11 +65,6 @@ public abstract class HPCAComponentPartMachine extends MultiblockPartMachine
     }
 
     @Override
-    public boolean replacePartModelWhenFormed() {
-        return false;
-    }
-
-    @Override
     public boolean isDamaged() {
         return canBeDamaged() && damaged;
     }
@@ -81,8 +76,8 @@ public abstract class HPCAComponentPartMachine extends MultiblockPartMachine
             this.damaged = damaged;
             if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("damaged");
             MachineRenderState state = getRenderState();
-            if (state.hasProperty(HPCA_PART_DAMAGED_PROPERTY)) {
-                setRenderState(state.setValue(HPCA_PART_DAMAGED_PROPERTY, damaged));
+            if (state.hasProperty(GTMachineModelProperties.IS_HPCA_PART_DAMAGED)) {
+                setRenderState(state.setValue(GTMachineModelProperties.IS_HPCA_PART_DAMAGED, damaged));
             }
         }
     }
@@ -90,8 +85,8 @@ public abstract class HPCAComponentPartMachine extends MultiblockPartMachine
     @Override
     public boolean beforeWorking(IWorkableMultiController controller) {
         MachineRenderState state = getRenderState();
-        if (state.hasProperty(IWorkable.ACTIVE_PROPERTY)) {
-            setRenderState(state.setValue(IWorkable.ACTIVE_PROPERTY, true));
+        if (state.hasProperty(GTMachineModelProperties.IS_ACTIVE)) {
+            setRenderState(state.setValue(GTMachineModelProperties.IS_ACTIVE, true));
         }
         return super.beforeWorking(controller);
     }
@@ -99,8 +94,8 @@ public abstract class HPCAComponentPartMachine extends MultiblockPartMachine
     @Override
     public boolean afterWorking(IWorkableMultiController controller) {
         MachineRenderState state = getRenderState();
-        if (state.hasProperty(IWorkable.ACTIVE_PROPERTY)) {
-            setRenderState(state.setValue(IWorkable.ACTIVE_PROPERTY, false));
+        if (state.hasProperty(GTMachineModelProperties.IS_ACTIVE)) {
+            setRenderState(state.setValue(GTMachineModelProperties.IS_ACTIVE, false));
         }
         return super.afterWorking(controller);
     }

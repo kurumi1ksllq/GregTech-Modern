@@ -63,6 +63,10 @@ public class GTNetwork {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), packet);
     }
 
+    public static void reply(NetworkEvent.Context context, INetPacket packet) {
+        INSTANCE.reply(packet, context);
+    }
+
     public interface INetPacket {
 
         void encode(FriendlyByteBuf buffer);
@@ -79,6 +83,10 @@ public class GTNetwork {
     }
 
     public static void init() {
+        register(SCPacketMonitorGroupNBTChange.class, SCPacketMonitorGroupNBTChange::new, null);
+        register(CPacketImageRequest.class, CPacketImageRequest::new, NetworkDirection.PLAY_TO_SERVER);
+        register(SPacketImageResponse.class, SPacketImageResponse::new, NetworkDirection.PLAY_TO_CLIENT);
+
         register(CPacketKeysPressed.class, CPacketKeysPressed::new, NetworkDirection.PLAY_TO_SERVER);
         register(CPacketKeyDown.class, CPacketKeyDown::new, NetworkDirection.PLAY_TO_SERVER);
 

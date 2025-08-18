@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
+import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.syncdata.annotations.ClientFieldChangeListener;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
@@ -27,7 +28,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class TransformerMachine extends TieredEnergyMachine implements IControllable {
 
-    public static final BooleanProperty TRANSFORM_UP_PROPERTY = BooleanProperty.create("transform_up");
+    public static final BooleanProperty TRANSFORM_UP_PROPERTY = GTMachineModelProperties.IS_TRANSFORM_UP;
 
     @SaveField
     @SyncToClient
@@ -112,7 +113,7 @@ public class TransformerMachine extends TieredEnergyMachine implements IControll
             this.isTransformUp = isTransformUp;
             syncDataHolder.markClientSyncFieldDirty("isTransformUp");
             updateEnergyContainer(isTransformUp);
-            setRenderState(getRenderState().setValue(TRANSFORM_UP_PROPERTY, isTransformUp));
+            setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_TRANSFORM_UP, isTransformUp));
         }
     }
 

@@ -40,6 +40,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import static com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties.*;
+
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class RotorHolderPartMachine extends TieredPartMachine
@@ -133,13 +135,13 @@ public class RotorHolderPartMachine extends TieredPartMachine
             boolean emissive = this.rotorMaterial.hasProperty(PropertyKey.ORE) &&
                     this.rotorMaterial.getProperty(PropertyKey.ORE).isEmissive();
             setRenderState(getRenderState()
-                    .setValue(HAS_ROTOR_PROPERTY, true)
-                    .setValue(EMISSIVE_ROTOR_PROPERTY, emissive));
+                    .setValue(HAS_ROTOR, true)
+                    .setValue(IS_EMISSIVE_ROTOR, emissive));
         } else {
             this.rotorMaterial = GTMaterials.NULL;
             setRenderState(getRenderState()
-                    .setValue(HAS_ROTOR_PROPERTY, false)
-                    .setValue(EMISSIVE_ROTOR_PROPERTY, false));
+                    .setValue(HAS_ROTOR, false)
+                    .setValue(IS_EMISSIVE_ROTOR, false));
         }
         if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("rotorMaterial");
     }
@@ -172,7 +174,7 @@ public class RotorHolderPartMachine extends TieredPartMachine
 
     public void setRotorSpeed(int rotorSpeed) {
         if ((this.rotorSpeed > 0 && rotorSpeed <= 0) || (this.rotorSpeed <= 0 && rotorSpeed > 0)) {
-            setRenderState(getRenderState().setValue(ROTOR_SPINNING_PROPERTY, rotorSpeed > 0));
+            setRenderState(getRenderState().setValue(IS_ROTOR_SPINNING, rotorSpeed > 0));
         }
         this.rotorSpeed = rotorSpeed;
         if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("rotorSpeed");

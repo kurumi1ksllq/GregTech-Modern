@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.gui.fancy.IFancyTooltip;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
+import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.recipe.ActionResult;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
@@ -56,8 +57,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
         }
     }
 
-    public static final EnumProperty<RecipeLogic.Status> STATUS_PROPERTY = EnumProperty.create("recipe_logic_status",
-            RecipeLogic.Status.class);
+    public static final EnumProperty<RecipeLogic.Status> STATUS_PROPERTY = GTMachineModelProperties.RECIPE_LOGIC_STATUS;
 
     public final IRecipeLogicMachine machine;
     public List<GTRecipe> lastFailedMatches;
@@ -108,7 +108,6 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
     @SaveField
     @Getter
     protected long totalContinuousRunningTime;
-    @SaveField
     protected int runAttempt = 0;
     protected int runDelay = 0;
     @SaveField
@@ -270,13 +269,13 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
                 setWaiting(handleTick.reason());
 
                 // Machine isn't getting enough power, suspend after 5 attempts.
-                if (conditionResult.io() == IO.IN && conditionResult.capability() == EURecipeCapability.CAP) {
+                if (handleTick.io() == IO.IN && handleTick.capability() == EURecipeCapability.CAP) {
                     runAttempt++;
                     if (runAttempt > 5) {
                         runAttempt = 0;
                         setStatus(Status.SUSPEND);
                     }
-                    runDelay = runAttempt * 10;
+                    runDelay = runAttempt * 60;
                 }
             }
         } else {
@@ -377,7 +376,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
             machine.notifyStatusChanged(this.status, status);
             this.status = status;
             getSyncDataHolder().markClientSyncFieldDirty("status");
-            setRenderState(getRenderState().setValue(STATUS_PROPERTY, status));
+            setRenderState(getRenderState().setValue(GTMachineModelProperties.RECIPE_LOGIC_STATUS, status));
             updateTickSubscription();
             if (this.status != Status.WAITING) {
                 waitingReason = null;
@@ -421,12 +420,16 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
 
     @Override
     public void setWorkingEnabled(boolean isWorkingAllowed) {
-        setSuspendAfterFinish(!isWorkingAllowed);
-        if (isWorkingAllowed) {
-            if (lastRecipe != null && duration > 0) {
-                setStatus(Status.WORKING);
-            } else {
-                setStatus(Status.IDLE);
+        if (!isWorkingAllowed && getStatus() == Status.IDLE) {
+            setStatus(Status.SUSPEND);
+        } else {
+            setSuspendAfterFinish(!isWorkingAllowed);
+            if (isWorkingAllowed) {
+                if (lastRecipe != null && duration > 0) {
+                    setStatus(Status.WORKING);
+                } else {
+                    setStatus(Status.IDLE);
+                }
             }
         }
     }

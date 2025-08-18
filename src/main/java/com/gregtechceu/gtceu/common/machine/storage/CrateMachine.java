@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.*;
+import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
@@ -40,7 +41,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLife,
                           IDropSaveMachine, IInteractedMachine {
 
-    public static final BooleanProperty TAPED_PROPERTY = BooleanProperty.create("taped");
+
+    public static final BooleanProperty TAPED_PROPERTY = GTMachineModelProperties.IS_TAPED;
 
     @Getter
     private final Material material;
@@ -97,8 +99,8 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
                     stack.shrink(1);
                 }
                 isTaped = true;
+                setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_TAPED, isTaped));
                 if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isTaped");
-                setRenderState(getRenderState().setValue(TAPED_PROPERTY, isTaped));
                 return InteractionResult.sidedSuccess(world.isClientSide);
             }
         }
@@ -117,8 +119,8 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
 
             tag.remove("taped");
             this.isTaped = false;
+            setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_TAPED, isTaped));
             if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isTaped");
-            setRenderState(getRenderState().setValue(TAPED_PROPERTY, isTaped));
         }
         stack.setTag(null);
     }

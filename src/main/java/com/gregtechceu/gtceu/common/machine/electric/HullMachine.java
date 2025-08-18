@@ -2,6 +2,8 @@ package com.gregtechceu.gtceu.common.machine.electric;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.IMonitorComponent;
+import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
@@ -9,6 +11,10 @@ import com.gregtechceu.gtceu.integration.ae2.machine.trait.GridNodeHostTrait;
 import com.gregtechceu.gtceu.syncdata.annotations.CustomDataField;
 import com.gregtechceu.gtceu.syncdata.annotations.FieldDataModifier;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
@@ -23,7 +29,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class HullMachine extends TieredPartMachine {
+public class HullMachine extends TieredPartMachine implements IMonitorComponent {
 
     @CustomDataField
     @SaveField(nbtKey = "grid_node")
@@ -103,5 +109,10 @@ public class HullMachine extends TieredPartMachine {
             return GTValues.VC[getTier()];
         }
         return super.tintColor(index);
+    }
+
+    @Override
+    public IGuiTexture getComponentIcon() {
+        return GuiTextures.BUTTON_CHECK; // temporary (until there's a texture that is not fully 16x16 for this)
     }
 }

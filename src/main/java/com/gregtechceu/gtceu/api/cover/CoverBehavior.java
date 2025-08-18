@@ -14,6 +14,7 @@ import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
+import com.gregtechceu.gtceu.client.renderer.cover.IDynamicCoverRenderer;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 
@@ -210,6 +211,10 @@ public abstract class CoverBehavior implements ISyncManaged, IToolGridHighlight 
     @Nullable
     public BlockState getAppearance(BlockState sourceState, BlockPos sourcePos) {
         return null;
+    }
+
+    public Supplier<IDynamicCoverRenderer> getDynamicRenderer() {
+        return () -> null;
     }
 
     //////////////////////////////////////

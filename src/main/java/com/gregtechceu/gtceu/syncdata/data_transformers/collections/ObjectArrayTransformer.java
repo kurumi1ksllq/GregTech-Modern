@@ -30,8 +30,9 @@ public class ObjectArrayTransformer<T> implements IValueTransformer<T[]> {
     @Override
     public T[] readFromBuffer(FriendlyByteBuf buf, T[] currentValue) {
         var length = buf.readInt();
-        if (currentValue.length != length) throw new IllegalStateException("Attempting to read server sync array: Mismatch in array lengths.");
-        for (int i=0; i<length; i++) {
+        if (currentValue.length != length)
+            throw new IllegalStateException("Attempting to read server sync array: Mismatch in array lengths.");
+        for (int i = 0; i < length; i++) {
             currentValue[i] = elementTransformer.readFromBuffer(buf, null);
         }
         return currentValue;

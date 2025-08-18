@@ -4,9 +4,9 @@ import com.gregtechceu.gtceu.GTCEu;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 
 import lombok.SneakyThrows;
-import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
@@ -39,19 +39,20 @@ public class SyncDataHolder {
 
     @SuppressWarnings("unchecked")
     public void writeToNetworkBuffer(FriendlyByteBuf buf) {
-        for (String fieldName: dirtySyncFields) {
+        for (String fieldName : dirtySyncFields) {
             var field = syncData.clientSyncFields.get(fieldName);
             if (field == null) continue;
             if (field.isCustomData) throw new IllegalStateException("Cannot send custom data fields across network");
 
             if (field.isComplex) {
-                ISyncManaged currentValue = (ISyncManaged)field.handle.get(holder);
+                ISyncManaged currentValue = (ISyncManaged) field.handle.get(holder);
                 if (currentValue != null) {
                     buf.writeUtf(fieldName);
                     currentValue.getSyncDataHolder().writeToNetworkBuffer(buf);
-                };
+                } ;
             } else {
-                if (field.transformer == null) throw new IllegalStateException("Missing value transformer for field %s".formatted(field.fieldName));
+                if (field.transformer == null) throw new IllegalStateException(
+                        "Missing value transformer for field %s".formatted(field.fieldName));
                 IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
                 Object result = field.handle.get(holder);
                 buf.writeUtf(fieldName);
@@ -66,13 +67,15 @@ public class SyncDataHolder {
         while (buf.isReadable()) {
             var updatedField = buf.readUtf();
             var field = syncData.clientSyncFields.get(updatedField);
-            if (field == null) throw new IllegalStateException("Recieved update info for unknown field: " + updatedField);
+            if (field == null)
+                throw new IllegalStateException("Recieved update info for unknown field: " + updatedField);
 
             if (field.isComplex) {
-                ISyncManaged currentValue = (ISyncManaged)field.handle.get(holder);
+                ISyncManaged currentValue = (ISyncManaged) field.handle.get(holder);
                 currentValue.getSyncDataHolder().readFromNetworkBuffer(buf);
             } else {
-                if (field.transformer == null) throw new IllegalStateException("Missing value transformer for field %s".formatted(field.fieldName));
+                if (field.transformer == null) throw new IllegalStateException(
+                        "Missing value transformer for field %s".formatted(field.fieldName));
                 IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
                 if (transformer.mustProvideObject()) {
                     transformer.readFromBuffer(buf, field.handle.get(holder));
@@ -88,7 +91,8 @@ public class SyncDataHolder {
     public CompoundTag serializeNBT(boolean writeClientFields) {
         CompoundTag tag = new CompoundTag();
 
-        Map<String, ClassSyncData.FieldSyncData> fieldsToSerialize = (writeClientFields ? syncData.clientSyncFields : syncData.serverSaveFields);
+        Map<String, ClassSyncData.FieldSyncData> fieldsToSerialize = (writeClientFields ? syncData.clientSyncFields :
+                syncData.serverSaveFields);
 
         for (var fieldEntry : fieldsToSerialize.entrySet()) {
             var field = fieldEntry.getValue();
@@ -128,11 +132,13 @@ public class SyncDataHolder {
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public void deserializeNBT(CompoundTag tag, boolean readingClientFields) {
-        Map<String, ClassSyncData.FieldSyncData> fieldsToCheck = readingClientFields ? syncData.clientSyncFields : syncData.serverSaveFields;
+        Map<String, ClassSyncData.FieldSyncData> fieldsToCheck = readingClientFields ? syncData.clientSyncFields :
+                syncData.serverSaveFields;
         for (var fieldEntry : fieldsToCheck.entrySet()) {
             var field = fieldEntry.getValue();
             if (field.isCustomData) {
-                if (readingClientFields) throw new IllegalStateException("Cannot send custom data fields across network");
+                if (readingClientFields)
+                    throw new IllegalStateException("Cannot send custom data fields across network");
                 field.nbtLoadModifiers[0].invoke(holder, tag);
                 continue;
             }

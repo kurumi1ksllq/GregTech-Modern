@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.syncdata;
 
 import com.gregtechceu.gtceu.common.network.GTNetwork;
 import com.gregtechceu.gtceu.syncdata.network.SPacketUpdateBESyncValue;
-import lombok.Setter;
+
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -44,7 +45,7 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
     @Override
     protected final void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        for (ISyncManaged obj: getSyncObjects()) {
+        for (ISyncManaged obj : getSyncObjects()) {
             tag.merge(obj.getSyncDataHolder().serializeNBT(false));
         }
     }
@@ -52,7 +53,7 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        for (ISyncManaged obj: getSyncObjects()) {
+        for (ISyncManaged obj : getSyncObjects()) {
             obj.getSyncDataHolder().deserializeNBT(tag, false);
         }
     }
@@ -62,7 +63,7 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
     @Override
     public CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
-        for (ISyncManaged obj: getSyncObjects()) {
+        for (ISyncManaged obj : getSyncObjects()) {
             tag.merge(obj.getSyncDataHolder().serializeNBT(true));
         }
         return tag;
@@ -70,7 +71,7 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
 
     @Override
     public void handleUpdateTag(CompoundTag tag) {
-        for (ISyncManaged obj: getSyncObjects()) {
+        for (ISyncManaged obj : getSyncObjects()) {
             obj.getSyncDataHolder().deserializeNBT(tag, true);
         }
     }
@@ -85,13 +86,14 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
         if (isDirty) {
             var level = getLevel();
             if (level == null) return;
-            GTNetwork.sendToAllPlayersTrackingChunk(level.getChunkAt(getBlockPos()), new SPacketUpdateBESyncValue(this));
+            GTNetwork.sendToAllPlayersTrackingChunk(level.getChunkAt(getBlockPos()),
+                    new SPacketUpdateBESyncValue(this));
             isDirty = false;
         }
     }
 
     public final void writeToDataBuffer(FriendlyByteBuf buf) {
-        for (ISyncManaged syncObj: getSyncObjects()) {
+        for (ISyncManaged syncObj : getSyncObjects()) {
             syncObj.getSyncDataHolder().writeToNetworkBuffer(buf);
         }
     }

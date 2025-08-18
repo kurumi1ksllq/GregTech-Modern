@@ -41,7 +41,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLife,
                           IDropSaveMachine, IInteractedMachine {
 
-
     public static final BooleanProperty TAPED_PROPERTY = GTMachineModelProperties.IS_TAPED;
 
     @Getter

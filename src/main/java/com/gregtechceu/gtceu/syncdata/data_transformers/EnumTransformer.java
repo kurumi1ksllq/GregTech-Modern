@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+
 import org.jetbrains.annotations.Nullable;
 
 public class EnumTransformer<E extends Enum<E>> implements IValueTransformer<E> {

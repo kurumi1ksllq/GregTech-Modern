@@ -7,8 +7,8 @@ import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-
 import net.minecraft.network.FriendlyByteBuf;
+
 import org.jetbrains.annotations.Nullable;
 
 public class MachineRenderStateTransformer implements IValueTransformer<MachineRenderState> {

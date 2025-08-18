@@ -1,12 +1,16 @@
 package com.gregtechceu.gtceu.syncdata.data_transformers;
 
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
+
 import net.minecraft.nbt.*;
 import net.minecraft.network.FriendlyByteBuf;
+
 import org.jetbrains.annotations.Nullable;
 
 public class PrimitiveTransformers {
+
     public static class IntTransformer implements IValueTransformer<Integer> {
+
         @Override
         public void writeToBuffer(Integer value, FriendlyByteBuf buf) {
             buf.writeVarInt(value);
@@ -29,6 +33,7 @@ public class PrimitiveTransformers {
     }
 
     public static class LongTransformer implements IValueTransformer<Long> {
+
         @Override
         public void writeToBuffer(Long value, FriendlyByteBuf buf) {
             buf.writeLong(value);
@@ -51,6 +56,7 @@ public class PrimitiveTransformers {
     }
 
     public static class FloatTransformer implements IValueTransformer<Float> {
+
         @Override
         public void writeToBuffer(Float value, FriendlyByteBuf buf) {
             buf.writeFloat(value);
@@ -73,6 +79,7 @@ public class PrimitiveTransformers {
     }
 
     public static class DoubleTransformer implements IValueTransformer<Double> {
+
         @Override
         public void writeToBuffer(Double value, FriendlyByteBuf buf) {
             buf.writeDouble(value);
@@ -95,6 +102,7 @@ public class PrimitiveTransformers {
     }
 
     public static class ShortTransformer implements IValueTransformer<Short> {
+
         @Override
         public void writeToBuffer(Short value, FriendlyByteBuf buf) {
             buf.writeShort(value);
@@ -117,6 +125,7 @@ public class PrimitiveTransformers {
     }
 
     public static class ByteTransformer implements IValueTransformer<Byte> {
+
         @Override
         public void writeToBuffer(Byte value, FriendlyByteBuf buf) {
             buf.writeByte(value);
@@ -139,6 +148,7 @@ public class PrimitiveTransformers {
     }
 
     public static class CharacterTransformer implements IValueTransformer<Character> {
+
         @Override
         public void writeToBuffer(Character value, FriendlyByteBuf buf) {
             buf.writeChar(value);
@@ -151,16 +161,17 @@ public class PrimitiveTransformers {
 
         @Override
         public Tag serializeNBT(Character value) {
-            return IntTag.valueOf((int)value);
+            return IntTag.valueOf((int) value);
         }
 
         @Override
         public Character deserializeNBT(Tag tag, @Nullable Character currentVal) {
-            return (tag instanceof IntTag intTag) ? (char)intTag.getAsInt() : 0;
+            return (tag instanceof IntTag intTag) ? (char) intTag.getAsInt() : 0;
         }
     }
 
     public static class BooleanTransformer implements IValueTransformer<Boolean> {
+
         @Override
         public void writeToBuffer(Boolean value, FriendlyByteBuf buf) {
             buf.writeBoolean(value);

@@ -5,6 +5,8 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.capability.IMonitorComponent;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,20 +26,34 @@ import java.util.function.UnaryOperator;
 
 public class MonitorGroup {
 
+    @SyncToClient
+    @SaveField
     private final Set<BlockPos> monitorPositions = new HashSet<>();
     @Getter
+    @SyncToClient
+    @SaveField
     private final String name;
     @Getter
+    @SyncToClient
+    @SaveField
     private final CustomItemStackHandler itemStackHandler;
     @Getter
+    @SyncToClient
+    @SaveField
     private final CustomItemStackHandler placeholderSlotsHandler;
     @Setter
+    @SaveField
+    @SyncToClient
     private @Nullable BlockPos target;
     @Setter
     @Getter
+    @SyncToClient
+    @SaveField
     private @Nullable Direction targetCoverSide;
     @Setter
     @Getter
+    @SyncToClient
+    @SaveField
     private int dataSlot = 0;
 
     public MonitorGroup(String name) {

@@ -21,7 +21,7 @@ public class SetTransformer<T> implements IValueTransformer<Set<T>> {
     @Override
     public void writeToBuffer(Set<T> value, FriendlyByteBuf buf) {
         buf.writeInt(value.size());
-        for (T elem: value) {
+        for (T elem : value) {
             elementTransformer.writeToBuffer(elem, buf);
         }
     }
@@ -30,7 +30,7 @@ public class SetTransformer<T> implements IValueTransformer<Set<T>> {
     public Set<T> readFromBuffer(FriendlyByteBuf buf, Set<T> currentValue) {
         Set<T> set = new HashSet<>();
         var size = buf.readInt();
-        for (int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             set.add(elementTransformer.readFromBuffer(buf, null));
         }
         return set;

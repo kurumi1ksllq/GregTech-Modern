@@ -38,7 +38,7 @@ public class MapTransformer<K, V> implements IValueTransformer<Map<K, V>> {
         if (currentValue == null) return null;
         currentValue.clear();
         var size = buf.readInt();
-        for (int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             var key = keyTransformer.readFromBuffer(buf, null);
             var value = valueTransformer.readFromBuffer(buf, null);
             currentValue.put(key, value);

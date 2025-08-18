@@ -20,7 +20,7 @@ public class ListTransformer<T> implements IValueTransformer<List<T>> {
     @Override
     public void writeToBuffer(List<T> value, FriendlyByteBuf buf) {
         buf.writeInt(value.size());
-        for (var obj: value) {
+        for (var obj : value) {
             elementTransformer.writeToBuffer(obj, buf);
         }
     }
@@ -29,7 +29,7 @@ public class ListTransformer<T> implements IValueTransformer<List<T>> {
     public List<T> readFromBuffer(FriendlyByteBuf buf, List<T> currentValue) {
         var size = buf.readInt();
         List<T> list = new ArrayList<>();
-        for (int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             var newVal = elementTransformer.readFromBuffer(buf, null);
             list.add(newVal);
         }

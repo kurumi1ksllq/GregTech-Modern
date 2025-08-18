@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.syncdata.network;
 
 import com.gregtechceu.gtceu.common.network.GTNetwork;
 import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -13,6 +14,7 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
 public class SPacketUpdateBESyncValue implements GTNetwork.INetPacket {
+
     private ManagedSyncBlockEntity blockEntity = null;
     private final BlockPos entityPos;
     private ResourceKey<Level> dimension = null;

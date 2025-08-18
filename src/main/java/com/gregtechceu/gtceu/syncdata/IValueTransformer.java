@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.syncdata;
 
 import net.minecraft.nbt.Tag;
-
 import net.minecraft.network.FriendlyByteBuf;
+
 import org.jetbrains.annotations.Nullable;
 
 /**

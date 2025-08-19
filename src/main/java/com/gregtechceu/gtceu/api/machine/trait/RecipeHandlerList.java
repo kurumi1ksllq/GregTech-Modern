@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IRecipeHandler;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
+import com.gregtechceu.gtceu.api.recipe.RecipeRunner;
 import com.lowdragmc.lowdraglib.syncdata.ISubscription;
 
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
@@ -41,6 +42,9 @@ public class RecipeHandlerList {
     @Getter
     @NotNull
     private RecipeHandlerGroup group = RecipeHandlerGroupColor.UNDYED;
+
+    @Setter
+    private RecipeRunner currentRunner;
 
     protected RecipeHandlerList(IO handlerIO) {
         this.handlerIO = handlerIO;
@@ -184,6 +188,7 @@ public class RecipeHandlerList {
             var entry = it.next();
             var handlerList = getCapability(entry.getKey());
             for (var handler : handlerList) {
+                handler.setRecipeRunner(currentRunner);
                 var left = handler.handleRecipe(io, recipe, entry.getValue(), simulate);
                 if (left == null) {
                     it.remove();

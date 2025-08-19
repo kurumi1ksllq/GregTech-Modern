@@ -301,7 +301,7 @@ public class GCYMMachines {
                     .where('X', blocks(CASING_LARGE_SCALE_ASSEMBLING.get()).setMinGlobalLimited(40)
                             .or(Predicates.autoAbilities(definition.getRecipeTypes(), false, false, true, true, true,
                                     true))
-                            .or(Predicates.abilities(INPUT_ENERGY).setExactLimit(1))
+                            .or(Predicates.abilities(INPUT_ENERGY))
                             .or(Predicates.autoAbilities(true, false, true)))
                     .where('G', Predicates.blocks(CASING_TEMPERED_GLASS.get()))
                     .where('A', Predicates.air())

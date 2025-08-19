@@ -10,10 +10,19 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
+import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
+import com.gregtechceu.gtceu.api.machine.WorkableTieredMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IExplosionMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
+import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
+import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
+import com.gregtechceu.gtceu.common.machine.multiblock.part.EnergyHatchPartMachine;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -314,9 +323,28 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Ener
             }
 
             // Check if recipe voltage is less than or equal to handler voltage
-            long maxVoltage = io == IO.IN ? this.getInputVoltage() : this.getOutputVoltage();
-            if (stack.voltage() > maxVoltage) {
-                continue;
+            // only if the machine has a singular notifiable energy container (mostly single block machines)
+            long maxVoltage = io == IO.IN ? this.getInputVoltage() * this.getInputAmperage() : this.getOutputVoltage() * this.getOutputAmperage();
+            if (simulate) {
+                if(getRecipeRunner() != null) {
+                    Object holder = getRecipeRunner().getHolder();
+                    if (holder instanceof TieredEnergyMachine && maxVoltage < stack.voltage()) {
+                        continue;
+                    }
+                    if (machine instanceof EnergyHatchPartMachine energyHatch && holder instanceof IMultiController holderCont) {
+                        var controller = energyHatch.getControllers().stream()
+                                .filter(c -> c.equals(holderCont))
+                                .findFirst();
+                        if (controller.isPresent() && controller.get() instanceof WorkableElectricMultiblockMachine wemm) {
+                            var containerList = wemm.getEnergyContainer();
+                            if (containerList.getInputVoltage() * containerList.getInputAmperage() < stack.voltage()) {
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+
             }
 
             long totalEU = stack.getTotalEU();

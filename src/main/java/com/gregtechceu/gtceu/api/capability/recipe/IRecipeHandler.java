@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.api.capability.recipe;
 
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
+import com.gregtechceu.gtceu.api.recipe.RecipeRunner;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,6 +48,9 @@ public interface IRecipeHandler<K> extends IFilteredHandler<K> {
     List<Object> getContents();
 
     double getTotalContentAmount();
+
+    default RecipeRunner getRecipeRunner() { return null; }
+    default void setRecipeRunner(RecipeRunner runner) {}
 
     /**
      * Whether the content of same capability can only be handled distinct.

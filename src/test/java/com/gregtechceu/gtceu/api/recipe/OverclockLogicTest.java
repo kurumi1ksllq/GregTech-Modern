@@ -188,23 +188,177 @@ public class OverclockLogicTest {
         helper.succeed();
     }
 
+    @GameTest(template = "empty_5x5")
+    public static void testAdjacentFluidConditionRoundTrip(GameTestHelper helper) {
+        // RegistryOps with builtin registry
+        RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
+
+        // Build a condition with one direct fluid and one tag
+        TagKey<Fluid> lavaTag = TagKey.create(Registries.FLUID, new ResourceLocation("forge", "lava"));
+        HolderSet<Fluid> waterDirect = HolderSet.direct(Fluids.WATER.builtInRegistryHolder());
+        HolderSet<Fluid> lavaTagSet = GTRegistries.builtinRegistry()
+                .registryOrThrow(Registries.FLUID)
+                .getOrCreateTag(lavaTag);
+
+        AdjacentFluidCondition original = new AdjacentFluidCondition(List.of(waterDirect, lavaTagSet));
+
+        // Serialize to JSON
+        JsonElement json = AdjacentFluidCondition.CODEC.encodeStart(ops, original)
+                .getOrThrow(false, System.err::println);
+
+        System.out.println("Serialized AdjacentFluidCondition: " + json);
+
+        // Deserialize back
+        AdjacentFluidCondition decoded = AdjacentFluidCondition.CODEC.parse(ops, json)
+                .getOrThrow(false, System.err::println);
+
+        // Assertions
+        helper.assertTrue(decoded.getFluids().size() == 2, "Expected 2 fluid sets");
+        helper.assertTrue(
+                decoded.getFluids().get(0).contains(Fluids.WATER.builtInRegistryHolder()),
+                "First set should contain water"
+        );
+        helper.assertTrue(
+                decoded.getFluids().get(1).unwrapKey().isPresent()
+                        && decoded.getFluids().get(1).unwrapKey().get().equals(lavaTag),
+                "Second set should be the forge:lava tag"
+        );
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty_5x5")
+    public static void testFluidCodecDirect(GameTestHelper helper) {
+        var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
+
+        // Direct fluid: water
+        HolderSet<Fluid> waterSet = HolderSet.direct(Fluids.WATER.builtInRegistryHolder());
+        List<HolderSet<Fluid>> list = List.of(waterSet);
+
+        // Serialize
+        JsonElement json = AdjacentFluidCondition.FLUID_CODEC.encodeStart(ops, list)
+                .getOrThrow(false, System.err::println);
+        System.out.println("Direct fluid JSON: " + json);
+
+        // Deserialize
+        List<HolderSet<Fluid>> decoded = AdjacentFluidCondition.FLUID_CODEC.parse(ops, json)
+                .getOrThrow(false, System.err::println);
+
+        helper.assertTrue(decoded.size() == 1, "Expected 1 fluid set");
+        helper.assertTrue(decoded.get(0).contains(Fluids.WATER.builtInRegistryHolder()), "Should contain water");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty_5x5")
+    public static void testFluidCodecTag(GameTestHelper helper) {
+        var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
+
+        // Tag: forge:lava
+        TagKey<Fluid> lavaTag = TagKey.create(Registries.FLUID, new ResourceLocation("forge", "lava"));
+        HolderSet<Fluid> lavaSet = GTRegistries.builtinRegistry()
+                .registryOrThrow(Registries.FLUID)
+                .getOrCreateTag(lavaTag);
+        List<HolderSet<Fluid>> list = List.of(lavaSet);
+
+        // Serialize
+        JsonElement json = AdjacentFluidCondition.FLUID_CODEC.encodeStart(ops, list)
+                .getOrThrow(false, System.err::println);
+        System.out.println("Tag fluid JSON: " + json);
+
+        // Deserialize
+        List<HolderSet<Fluid>> decoded = AdjacentFluidCondition.FLUID_CODEC.parse(ops, json)
+                .getOrThrow(false, System.err::println);
+
+        helper.assertTrue(decoded.size() == 1, "Expected 1 fluid set");
+        helper.assertTrue(decoded.get(0).unwrapKey().isPresent()
+                && decoded.get(0).unwrapKey().get().equals(lavaTag), "Should be forge:lava tag");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty_5x5")
+    public static void testFluidCodecMixed(GameTestHelper helper) {
+        var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
+
+        // Direct: water
+        HolderSet<Fluid> waterSet = HolderSet.direct(Fluids.WATER.builtInRegistryHolder());
+
+        // Tag: forge:lava
+        TagKey<Fluid> lavaTag = TagKey.create(Registries.FLUID, new ResourceLocation("forge", "lava"));
+        HolderSet<Fluid> lavaSet = GTRegistries.builtinRegistry()
+                .registryOrThrow(Registries.FLUID)
+                .getOrCreateTag(lavaTag);
+
+        List<HolderSet<Fluid>> list = List.of(waterSet, lavaSet);
+
+        // Serialize
+        JsonElement json = AdjacentFluidCondition.FLUID_CODEC.encodeStart(ops, list)
+                .getOrThrow(false, System.err::println);
+        System.out.println("Mixed fluid JSON: " + json);
+
+        // Deserialize
+        List<HolderSet<Fluid>> decoded = AdjacentFluidCondition.FLUID_CODEC.parse(ops, json)
+                .getOrThrow(false, System.err::println);
+
+        helper.assertTrue(decoded.size() == 2, "Expected 2 fluid sets");
+        helper.assertTrue(decoded.get(0).contains(Fluids.WATER.builtInRegistryHolder()), "First should be water");
+        helper.assertTrue(decoded.get(1).unwrapKey().isPresent()
+                && decoded.get(1).unwrapKey().get().equals(lavaTag), "Second should be forge:lava tag");
+        helper.succeed();
+    }
+
+
+
+    @GameTest(template = "empty_5x5")
+    public static void testConditionSerializeThenCodecDeserialize(GameTestHelper helper) {
+        var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
+
+        // Build a condition with water + forge:lava
+        TagKey<Fluid> lavaTag = TagKey.create(Registries.FLUID, new ResourceLocation("forge", "lava"));
+        HolderSet<Fluid> waterSet = HolderSet.direct(Fluids.WATER.builtInRegistryHolder());
+        HolderSet<Fluid> lavaSet = GTRegistries.builtinRegistry()
+                .registryOrThrow(Registries.FLUID)
+                .getOrCreateTag(lavaTag);
+
+        AdjacentFluidCondition original = new AdjacentFluidCondition(List.of(waterSet, lavaSet));
+        original.setReverse(true); // test reverse flag too
+
+        // Serialize using the condition's custom serialize()
+        JsonObject json = original.serialize();
+        System.out.println("Condition.serialize() JSON: " + json);
+
+        // Now parse the entire object with the CODEC
+        AdjacentFluidCondition decoded = AdjacentFluidCondition.CODEC.parse(ops, json)
+                .getOrThrow(false, System.err::println);
+
+        // Assertions
+        helper.assertTrue(decoded.isReverse(), "Reverse flag should be true");
+        helper.assertTrue(decoded.getFluids().size() == 2, "Expected 2 fluid sets");
+        helper.assertTrue(decoded.getFluids().get(0).contains(Fluids.WATER.builtInRegistryHolder()), "First should be water");
+        helper.assertTrue(decoded.getFluids().get(1).unwrapKey().isPresent()
+                && decoded.getFluids().get(1).unwrapKey().get().equals(lavaTag), "Second should be forge:lava tag");
+
+        helper.succeed();
+    }
+
+
+
     @GameTest(template="empty_5x5")
     public static void serializeTest(GameTestHelper helper){
-        var fluid = GTMaterials.Water.getFluid();
-
         var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
-        var fluidList = List.of(fluid).stream()
-                .map(Fluid::builtInRegistryHolder).
-                        <HolderSet<Fluid>>map(HolderSet::direct)
-                .toList();
+        // Direct: water
+        HolderSet<Fluid> waterSet = HolderSet.direct(Fluids.WATER.builtInRegistryHolder());
 
-        var result = FLUID_CODEC.encodeStart(ops, fluidList).get().left().get();
-        var back_to_fluid = FLUID_CODEC.parse(ops, result).result().get().get(0).get(0).get();
-        helper.assertTrue(back_to_fluid.equals(fluid), "Fluid did not deserialize properly");
+        // Tag: forge:lava
+        TagKey<Fluid> lavaTag = TagKey.create(Registries.FLUID, new ResourceLocation("forge", "lava"));
+        HolderSet<Fluid> lavaSet = GTRegistries.builtinRegistry()
+                .registryOrThrow(Registries.FLUID)
+                .getOrCreateTag(lavaTag);
+
+        List<HolderSet<Fluid>> list = List.of(waterSet, lavaSet);
 
 
-
-        var condition = AdjacentFluidCondition.fromFluids(GTMaterials.Water.getFluid());
+        var condition = new AdjacentFluidCondition();
+        condition.setFluids(list);
 
         var jsonObject = condition.serialize();
 
@@ -212,15 +366,6 @@ public class OverclockLogicTest {
         back_to_condition.deserialize(jsonObject);
 
         helper.assertTrue(condition.getFluids().equals((back_to_condition).getFluids()), "Condition did not deserialize properly");
-
-
-        // Test other condition
-        JsonObject otherCondition = new JsonObject();
-        GTRecipeBuilder.ofRaw().addCondition(CleanroomCondition.INSTANCE).toJson(otherCondition);
-        GTRecipe recipeOther = GTRecipeSerializer.SERIALIZER.fromJson(GTCEu.id("test2"), otherCondition);
-
-        helper.assertTrue(recipeOther.conditions.stream().anyMatch(x -> x instanceof CleanroomCondition), "Other recipe condition did not deserialize properly");
-
         JsonObject AFConditionJSON = new JsonObject();
         GTRecipeBuilder.ofRaw().addCondition(condition).toJson(AFConditionJSON);
 

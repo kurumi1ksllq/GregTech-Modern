@@ -178,7 +178,7 @@ public class AdjacentFluidCondition extends RecipeCondition {
         var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
         JsonElement fluidsJson = Util.getOrThrow(FLUID_CODEC.encodeStart(ops, this.fluids), IllegalStateException::new);
 
-        config.add("fluids", expandShorthand(fluidsJson));
+        config.add("fluids", fluidsJson);
 
         return config;
     }
@@ -189,9 +189,9 @@ public class AdjacentFluidCondition extends RecipeCondition {
     public RecipeCondition deserialize(@NotNull JsonObject config) {
         super.deserialize(config);
         var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
-        var optionalList = FLUID_CODEC.parse(ops, config.get("fluids")).result();
-        if(optionalList.isPresent()){
-            this.fluids = optionalList.get();
+        var optionalList = FLUID_CODEC.parse(ops, config.get("fluids"));
+        if(optionalList.result().isPresent()){
+            this.fluids = optionalList.result().get();
         } else {
             GTCEu.LOGGER.error("Failed deserializing AdjacentFluidCondition");
             this.fluids = new ArrayList<>();

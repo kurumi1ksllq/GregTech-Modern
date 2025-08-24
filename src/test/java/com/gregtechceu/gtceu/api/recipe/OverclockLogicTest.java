@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.api.recipe;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
@@ -22,19 +24,25 @@ import com.gregtechceu.gtceu.common.recipe.condition.CleanroomCondition;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.gametest.util.TestUtils;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.BeforeBatch;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
@@ -131,6 +139,55 @@ public class OverclockLogicTest {
         return new BusHolder(inputBus1, inputBus2, outputBus1, outputHatch1, controller);
     }
 
+
+    private static final Codec<HolderSet<Fluid>> FLUID_SET_CODEC =
+            net.minecraft.core.RegistryCodecs.homogeneousList(Registries.FLUID);
+
+    @GameTest(template="empty_5x5")
+    public static void GPT_tests(GameTestHelper helper){
+            var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
+
+            // Create a HolderSet with a direct fluid (water)
+            HolderSet<Fluid> directSet = HolderSet.direct(Fluids.WATER.builtInRegistryHolder());
+
+            // Serialize to JSON
+            JsonElement json = FLUID_SET_CODEC.encodeStart(ops, directSet)
+                    .getOrThrow(false, System.err::println);
+
+            System.out.println("Serialized direct fluid: " + json);
+
+            // Deserialize back
+            HolderSet<Fluid> decoded = FLUID_SET_CODEC.parse(ops, json)
+                    .getOrThrow(false, System.err::println);
+
+            // Assert round-trip works
+            helper.assertTrue(decoded.contains(Fluids.WATER.builtInRegistryHolder()), "a");
+            helper.succeed();
+    }
+
+    @GameTest(template="empty_5x5")
+    public static void GPT_tests_2(GameTestHelper helper){
+        var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
+
+        // Create a HolderSet with a tag (forge:water)
+        TagKey<Fluid> waterTag = TagKey.create(Registries.FLUID, new ResourceLocation("forge", "water"));
+        HolderSet<Fluid> tagSet =  GTRegistries.builtinRegistry().registryOrThrow(Registries.FLUID).getOrCreateTag(waterTag);
+
+        // Serialize to JSON
+        JsonElement json = FLUID_SET_CODEC.encodeStart(ops, tagSet)
+                .getOrThrow(false, System.err::println);
+
+            System.out.println("Serialized tag fluid: " + json);
+
+        // Deserialize back
+        HolderSet<Fluid> decoded = FLUID_SET_CODEC.parse(ops, json)
+                .getOrThrow(false, System.err::println);
+
+        // Assert round-trip works
+        helper.assertTrue(decoded.unwrapKey().isPresent() && decoded.unwrapKey().get().equals(waterTag), "b");
+        helper.succeed();
+    }
+
     @GameTest(template="empty_5x5")
     public static void serializeTest(GameTestHelper helper){
         var fluid = GTMaterials.Water.getFluid();
@@ -150,9 +207,11 @@ public class OverclockLogicTest {
         var condition = AdjacentFluidCondition.fromFluids(GTMaterials.Water.getFluid());
 
         var jsonObject = condition.serialize();
-        var back_to_condition = condition.deserialize(jsonObject);
 
-        helper.assertTrue(condition.getFluids().equals(((AdjacentFluidCondition) back_to_condition).getFluids()), "Condition did not deserialize properly");
+        var back_to_condition = new AdjacentFluidCondition();
+        back_to_condition.deserialize(jsonObject);
+
+        helper.assertTrue(condition.getFluids().equals((back_to_condition).getFluids()), "Condition did not deserialize properly");
 
 
         // Test other condition
@@ -166,6 +225,8 @@ public class OverclockLogicTest {
         GTRecipeBuilder.ofRaw().addCondition(condition).toJson(AFConditionJSON);
 
         GTRecipe recipe = GTRecipeSerializer.SERIALIZER.fromJson(GTCEu.id("test"), AFConditionJSON);
+
+        AFConditionJSON.get("config");
 
         helper.assertTrue(recipe.conditions.stream().anyMatch(x -> x instanceof AdjacentFluidCondition), "Fluid recipe condition did not deserialize properly");
         helper.succeed();

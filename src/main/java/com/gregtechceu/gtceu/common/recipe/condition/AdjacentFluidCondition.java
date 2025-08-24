@@ -44,7 +44,7 @@ public class AdjacentFluidCondition extends RecipeCondition {
 
     // spotless:off
     public static final Codec<List<HolderSet<Fluid>>> FLUID_CODEC = ExtraCodecs.lazyInitializedCodec(
-            () -> RegistryCodecs.homogeneousList(Registries.FLUID).listOf()
+            () -> RegistryCodecs.homogeneousList(Registries.FLUID, true).listOf()
     );
 
     public static final Codec<AdjacentFluidCondition> CODEC = RecordCodecBuilder.create(instance -> RecipeCondition.isReverse(instance).and(
@@ -140,6 +140,7 @@ public class AdjacentFluidCondition extends RecipeCondition {
         return this.fluids;
     }
 
+
     @Override
     public RecipeCondition createTemplate() {
         return new AdjacentFluidCondition();
@@ -148,15 +149,21 @@ public class AdjacentFluidCondition extends RecipeCondition {
 
     private static JsonElement expandShorthand(JsonElement element) {
         if (element.isJsonArray()) {
-            JsonArray arr = new JsonArray();
+            var arr = new JsonArray();
             for (JsonElement e : element.getAsJsonArray()) {
                 arr.add(expandShorthand(e));
             }
             return arr;
-        } else if (element.isJsonPrimitive() && element.getAsString().startsWith("#")) {
-            String tag = element.getAsString().substring(1);
-            JsonObject obj = new JsonObject();
-            obj.addProperty("tag", tag);
+        } else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+            String s = element.getAsString();
+            var obj = new JsonObject();
+            if (s.startsWith("#")) {
+                // Tag reference
+                obj.addProperty("tag", s.substring(1));
+            } else {
+                // Direct fluid ID
+                obj.addProperty("id", s);
+            }
             return obj;
         }
         return element;

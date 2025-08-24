@@ -1,35 +1,51 @@
 package com.gregtechceu.gtceu.api.recipe;
 
+import com.google.gson.JsonObject;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
+import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
+import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
+import com.gregtechceu.gtceu.common.recipe.condition.AdjacentFluidCondition;
+import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.gametest.util.TestUtils;
 
+import com.mojang.serialization.JsonOps;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderSet;
 import net.minecraft.gametest.framework.BeforeBatch;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.gregtechceu.gtceu.api.recipe.OverclockingLogic.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeModifiers.*;
+import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLY_LINE_RECIPES;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.LARGE_CHEMICAL_RECIPES;
+import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.RESEARCH_STATION_RECIPES;
+import static com.gregtechceu.gtceu.common.recipe.condition.AdjacentFluidCondition.FLUID_CODEC;
 
 @PrefixGameTestTemplate(false)
 @GameTestHolder(GTCEu.MOD_ID)
@@ -112,6 +128,38 @@ public class OverclockLogicTest {
         FluidHatchPartMachine outputHatch1 = (FluidHatchPartMachine) getMetaMachine(
                 helper.getBlockEntity(new BlockPos(0, 2, 0)));
         return new BusHolder(inputBus1, inputBus2, outputBus1, outputHatch1, controller);
+    }
+
+    @GameTest(template="empty_5x5")
+    public static void serializeTest(GameTestHelper helper){
+        var fluid = GTMaterials.Water.getFluid();
+
+        var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
+        var fluidList = List.of(fluid).stream()
+                .map(Fluid::builtInRegistryHolder).
+                        <HolderSet<Fluid>>map(HolderSet::direct)
+                .toList();
+
+        var result = FLUID_CODEC.encodeStart(ops, fluidList).get().left().get();
+        var back_to_fluid = FLUID_CODEC.parse(ops, result).result().get().get(0).get(0).get();
+        helper.assertTrue(back_to_fluid.equals(fluid), "Fluid did not deserialize properly");
+
+
+
+        var condition = AdjacentFluidCondition.fromFluids(GTMaterials.Water.getFluid());
+
+        var jsonObject = condition.serialize();
+        var back_to_condition = condition.deserialize(jsonObject);
+
+        helper.assertTrue(condition.getFluids().equals(((AdjacentFluidCondition) back_to_condition).getFluids()), "Condition did not deserialize properly");
+
+        JsonObject object = new JsonObject();
+        GTRecipeBuilder.ofRaw().addCondition(condition).toJson(object);
+
+        GTRecipe recipe = GTRecipeSerializer.SERIALIZER.fromJson(GTCEu.id("test"), object);
+
+        helper.assertTrue(recipe.conditions.contains(condition), "Recipe condition did not deserialize properly");
+        helper.succeed();
     }
 
     // Test for running HV recipe at HV

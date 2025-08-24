@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.common.recipe.condition;
 
+import com.google.gson.JsonArray;
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
@@ -41,7 +43,7 @@ import java.util.*;
 public class AdjacentFluidCondition extends RecipeCondition {
 
     // spotless:off
-    private static final Codec<List<HolderSet<Fluid>>> FLUID_CODEC = ExtraCodecs.lazyInitializedCodec(
+    public static final Codec<List<HolderSet<Fluid>>> FLUID_CODEC = ExtraCodecs.lazyInitializedCodec(
             () -> RegistryCodecs.homogeneousList(Registries.FLUID).listOf()
     );
 
@@ -143,6 +145,24 @@ public class AdjacentFluidCondition extends RecipeCondition {
         return new AdjacentFluidCondition();
     }
 
+
+    private static JsonElement expandShorthand(JsonElement element) {
+        if (element.isJsonArray()) {
+            JsonArray arr = new JsonArray();
+            for (JsonElement e : element.getAsJsonArray()) {
+                arr.add(expandShorthand(e));
+            }
+            return arr;
+        } else if (element.isJsonPrimitive() && element.getAsString().startsWith("#")) {
+            String tag = element.getAsString().substring(1);
+            JsonObject obj = new JsonObject();
+            obj.addProperty("tag", tag);
+            return obj;
+        }
+        return element;
+    }
+
+
     @NotNull
     @Override
     public JsonObject serialize() {
@@ -150,16 +170,25 @@ public class AdjacentFluidCondition extends RecipeCondition {
 
         var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
         JsonElement fluidsJson = Util.getOrThrow(FLUID_CODEC.encodeStart(ops, this.fluids), IllegalStateException::new);
-        config.add("fluids", fluidsJson);
+
+        config.add("fluids", expandShorthand(fluidsJson));
 
         return config;
     }
+
+
 
     @Override
     public RecipeCondition deserialize(@NotNull JsonObject config) {
         super.deserialize(config);
         var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
-        this.fluids = FLUID_CODEC.parse(ops, config.get("fluids")).result().orElse(new ArrayList<>());
+        var optionalList = FLUID_CODEC.parse(ops, config.get("fluids")).result();
+        if(optionalList.isPresent()){
+            this.fluids = optionalList.get();
+        } else {
+            GTCEu.LOGGER.error("Failed deserializing AdjacentFluidCondition");
+            this.fluids = new ArrayList<>();
+        }
         return this;
     }
 

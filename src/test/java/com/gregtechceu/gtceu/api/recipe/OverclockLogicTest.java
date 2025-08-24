@@ -18,6 +18,7 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
 import com.gregtechceu.gtceu.common.recipe.condition.AdjacentFluidCondition;
+import com.gregtechceu.gtceu.common.recipe.condition.CleanroomCondition;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.gametest.util.TestUtils;
 
@@ -153,12 +154,20 @@ public class OverclockLogicTest {
 
         helper.assertTrue(condition.getFluids().equals(((AdjacentFluidCondition) back_to_condition).getFluids()), "Condition did not deserialize properly");
 
-        JsonObject object = new JsonObject();
-        GTRecipeBuilder.ofRaw().addCondition(condition).toJson(object);
 
-        GTRecipe recipe = GTRecipeSerializer.SERIALIZER.fromJson(GTCEu.id("test"), object);
+        // Test other condition
+        JsonObject otherCondition = new JsonObject();
+        GTRecipeBuilder.ofRaw().addCondition(CleanroomCondition.INSTANCE).toJson(otherCondition);
+        GTRecipe recipeOther = GTRecipeSerializer.SERIALIZER.fromJson(GTCEu.id("test2"), otherCondition);
 
-        helper.assertTrue(recipe.conditions.contains(condition), "Recipe condition did not deserialize properly");
+        helper.assertTrue(recipeOther.conditions.stream().anyMatch(x -> x instanceof CleanroomCondition), "Other recipe condition did not deserialize properly");
+
+        JsonObject AFConditionJSON = new JsonObject();
+        GTRecipeBuilder.ofRaw().addCondition(condition).toJson(AFConditionJSON);
+
+        GTRecipe recipe = GTRecipeSerializer.SERIALIZER.fromJson(GTCEu.id("test"), AFConditionJSON);
+
+        helper.assertTrue(recipe.conditions.stream().anyMatch(x -> x instanceof AdjacentFluidCondition), "Fluid recipe condition did not deserialize properly");
         helper.succeed();
     }
 

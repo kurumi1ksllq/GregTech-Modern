@@ -274,11 +274,11 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
     @Override
     public void addDisplayText(List<Component> textList) {
         MultiblockDisplayText.builder(textList, isFormed())
-                .setWorkingStatus(true, hpcaHandler.getAllocatedCWUt() > 0) // transform into two-state system for
+                .setWorkingStatus(isWorkingEnabled(), hpcaHandler.getAllocatedCWUt() > 0) // transform into two-state system for
                                                                             // display
                 .setWorkingStatusKeys(
                         "gtceu.multiblock.idling",
-                        "gtceu.multiblock.idling",
+                        "gtceu.multiblock.work_paused",
                         "gtceu.multiblock.data_bank.providing")
                 .addCustom(tl -> {
                     if (isFormed()) {
@@ -297,6 +297,22 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
                         tl.add(Component.translatable(
                                 "gtceu.multiblock.hpca.computation",
                                 cwutInfo).withStyle(ChatFormatting.GRAY));
+                    }
+                })
+                .addCustom(cl -> {
+                    cl.add(Component.translatable("gtceu.multiblock.hpca.temperature",
+                            Component.literal(FormattingUtil.formatNumber2Places(temperature))
+                                    .withStyle(getDisplayTemperatureColor())));
+                    if(temperature >= DAMAGE_TEMPERATURE) {
+                        cl.add(Component.translatable("gtceu.multiblock.hpca.error_temperature").withStyle(ChatFormatting.RED));
+                    } else if(temperature >= (DAMAGE_TEMPERATURE / 2)) {
+                        cl.add(Component.translatable("gtceu.multiblock.hpca.warning_temperature").withStyle(ChatFormatting.YELLOW));
+                    }
+
+                    hpcaHandler.addWarnings(cl);
+                    hpcaHandler.addErrors(cl);
+                    if(hasNotEnoughEnergy) {
+                        cl.add(Component.translatable("gtceu.multiblock.not_enough_energy").withStyle(ChatFormatting.RED));
                     }
                 })
                 .addWorkingStatusLine();

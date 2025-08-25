@@ -44,7 +44,7 @@ public class AdjacentFluidCondition extends RecipeCondition {
 
     // spotless:off
     public static final Codec<List<HolderSet<Fluid>>> FLUID_CODEC = ExtraCodecs.lazyInitializedCodec(
-            () -> RegistryCodecs.homogeneousList(Registries.FLUID, true).listOf()
+            () -> RegistryCodecs.homogeneousList(Registries.FLUID).listOf()
     );
 
     public static final Codec<AdjacentFluidCondition> CODEC = RecordCodecBuilder.create(instance -> RecipeCondition.isReverse(instance).and(
@@ -147,6 +147,7 @@ public class AdjacentFluidCondition extends RecipeCondition {
     }
 
 
+    // Not in use, maybe delete if this ends up not needed
     private static JsonElement expandShorthand(JsonElement element) {
         if (element.isJsonArray()) {
             var arr = new JsonArray();

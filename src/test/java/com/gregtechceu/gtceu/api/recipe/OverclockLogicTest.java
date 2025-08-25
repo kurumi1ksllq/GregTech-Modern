@@ -27,6 +27,7 @@ import com.gregtechceu.gtceu.gametest.util.TestUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -46,7 +47,10 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.gregtechceu.gtceu.api.recipe.OverclockingLogic.*;
@@ -341,10 +345,49 @@ public class OverclockLogicTest {
     }
 
 
+    public static boolean equalFluidSets(List<HolderSet<Fluid>> a, List<HolderSet<Fluid>> b) {
+        if (a.size() != b.size()) return false;
+
+        // Convert list B into a mutable set for matching
+        Set<HolderSet<Fluid>> unmatched = new HashSet<>(b);
+
+        outer:
+        for (HolderSet<Fluid> setA : a) {
+            for (HolderSet<Fluid> setB : unmatched) {
+                if (holderSetEquals(setA, setB)) {
+                    unmatched.remove(setB);
+                    continue outer;
+                }
+            }
+            // No match found for setA
+            return false;
+        }
+
+        // All matched
+        return unmatched.isEmpty();
+    }
+
+    private static boolean holderSetEquals(HolderSet<Fluid> a, HolderSet<Fluid> b) {
+        // Case 1: both are Named (tags)
+        if (a.unwrapKey().isPresent() && b.unwrapKey().isPresent()) {
+            TagKey<Fluid> tagA = a.unwrapKey().get();
+            TagKey<Fluid> tagB = b.unwrapKey().get();
+            return Objects.equals(tagA, tagB);
+        }
+
+        // Case 2: both are Direct
+        if (!a.unwrapKey().isPresent() && !b.unwrapKey().isPresent()) {
+            Set<Holder<Fluid>> setA = new HashSet<>(a.stream().toList());
+            Set<Holder<Fluid>> setB = new HashSet<>(b.stream().toList());
+            return setA.equals(setB);
+        }
+
+        // One is Named, the other is Direct → not equal
+        return false;
+    }
 
     @GameTest(template="empty_5x5")
     public static void serializeTest(GameTestHelper helper){
-        var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
         // Direct: water
         HolderSet<Fluid> waterSet = HolderSet.direct(Fluids.WATER.builtInRegistryHolder());
 
@@ -365,7 +408,7 @@ public class OverclockLogicTest {
         var back_to_condition = new AdjacentFluidCondition();
         back_to_condition.deserialize(jsonObject);
 
-        helper.assertTrue(condition.getFluids().equals((back_to_condition).getFluids()), "Condition did not deserialize properly");
+        helper.assertTrue(equalFluidSets(condition.getFluids(), (back_to_condition).getFluids()), "Condition did not deserialize properly");
         JsonObject AFConditionJSON = new JsonObject();
         GTRecipeBuilder.ofRaw().addCondition(condition).toJson(AFConditionJSON);
 

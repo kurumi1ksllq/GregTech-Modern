@@ -44,6 +44,40 @@ public final class GTQuadTransformers {
         };
     }
 
+    public static IQuadTransformer scale(float by) {
+        return scale(by, by, by);
+    }
+
+    public static IQuadTransformer scale(float xScale, float yScale, float zScale) {
+        if (xScale == 1.0f && yScale == 1.0f && zScale == 1.0f) return QuadTransformers.empty();
+
+        return quad -> {
+            int[] vertices = quad.getVertices();
+            Direction direction = quad.getDirection();
+            FaceInfo faceInfo = FaceInfo.fromFacing(direction);
+
+            for (int i = 0; i < 4; i++) {
+                FaceInfo.VertexInfo normal = faceInfo.getVertexInfo(i);
+                int xNormal = Direction.from3DDataValue(normal.xFace).getStepX();
+                int yNormal = Direction.from3DDataValue(normal.yFace).getStepY();
+                int zNormal = Direction.from3DDataValue(normal.zFace).getStepZ();
+
+                int offset = i * IQuadTransformer.STRIDE + IQuadTransformer.POSITION;
+                float x = Float.intBitsToFloat(vertices[offset]);
+                float y = Float.intBitsToFloat(vertices[offset + 1]);
+                float z = Float.intBitsToFloat(vertices[offset + 2]);
+
+                if (xNormal == 0) x *= xScale;
+                if (yNormal == 0) y *= yScale;
+                if (zNormal == 0) z *= zScale;
+
+                vertices[offset] = Float.floatToRawIntBits(x);
+                vertices[offset + 1] = Float.floatToRawIntBits(y);
+                vertices[offset + 2] = Float.floatToRawIntBits(z);
+            }
+        };
+    }
+
     public static BakedQuad setSprite(BakedQuad quad, TextureAtlasSprite sprite) {
         TextureAtlasSprite oldSprite = quad.getSprite();
         int[] vertices = quad.getVertices().clone();

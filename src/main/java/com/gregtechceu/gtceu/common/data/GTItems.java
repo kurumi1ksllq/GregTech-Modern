@@ -1943,6 +1943,11 @@ public class GTItems {
             .model(NonNullBiConsumer.noop())
             .register();
 
+    public static ItemEntry<ComponentItem> COVER_MULTI = REGISTRATE.item("multi_cover", ComponentItem::create)
+            .lang("Multicover")
+            .onRegister(attach(new CoverPlaceBehavior(GTCovers.MULTICOVER)))
+            .register();
+
     // Solar Panels: ID 331-346
     public static ItemEntry<ComponentItem> COVER_SOLAR_PANEL = REGISTRATE.item("solar_panel", ComponentItem::create)
             .lang("Solar Panel").onRegister(attach(new TooltipBehavior(lines -> {

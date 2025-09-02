@@ -592,8 +592,8 @@ public class GTUtil {
 
     public static MutableComponent translatable(String key, Object... args) {
         if (GTValues.FOOLS.getAsBoolean() && Language.getInstance().has(key + "_fools")) {
-            return GTUtil.translatable(key + "_fools", args);
+            return Component.translatable(key + "_fools", args);
         }
-        return GTUtil.translatable(key, args);
+        return Component.translatable(key, args);
     }
 }

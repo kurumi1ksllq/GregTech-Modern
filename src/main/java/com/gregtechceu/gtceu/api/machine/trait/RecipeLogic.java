@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.machine.trait;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -18,6 +19,7 @@ import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.sound.AutoReleasedSound;
 import com.gregtechceu.gtceu.common.cover.MachineControllerCover;
+import com.gregtechceu.gtceu.common.data.GTSoundEntries;
 import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -537,9 +539,11 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
     @OnlyIn(Dist.CLIENT)
     public void updateSound() {
         if (isWorking() && machine.shouldWorkingPlaySound()) {
-            var sound = machine.getRecipeType().getSound();
+            boolean amogus = GTValues.FOOLS.getAsBoolean() && GTValues.RNG.nextInt(100) == 1;
+            var sound = amogus ? GTSoundEntries.SUS_RECORD : machine.getRecipeType().getSound();
             if (workingSound instanceof AutoReleasedSound soundEntry) {
-                if (soundEntry.soundEntry == sound && !soundEntry.isStopped()) {
+                if ((soundEntry.soundEntry == sound || soundEntry.soundEntry == GTSoundEntries.SUS_RECORD) &&
+                        !soundEntry.isStopped()) {
                     return;
                 }
                 soundEntry.release();

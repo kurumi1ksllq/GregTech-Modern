@@ -596,4 +596,9 @@ public class GTUtil {
         }
         return Component.translatable(key, args);
     }
+
+    public static MutableComponent translatableWithFallback(String key, String fallback) {
+        if (Language.getInstance().has(key)) return translatable(key);
+        else return Component.literal(fallback);
+    }
 }

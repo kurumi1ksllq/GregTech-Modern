@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
@@ -34,6 +35,6 @@ public class GTOreVeinEmiCategory extends EmiRecipeCategory {
 
     @Override
     public Component getName() {
-        return Component.translatable("gtceu.jei.ore_vein_diagram");
+        return GTUtil.translatable("gtceu.jei.ore_vein_diagram");
     }
 }

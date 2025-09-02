@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.item.IGTTool;
 import com.gregtechceu.gtceu.api.sound.SoundEntry;
 import com.gregtechceu.gtceu.client.renderer.item.ToolItemRenderer;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -96,7 +97,7 @@ public class GTToolItem extends DiggerItem implements IGTTool {
 
     @Override
     public Component getDescription() {
-        return Component.translatable(toolType.getUnlocalizedName(), material.getLocalizedName());
+        return GTUtil.translatable(toolType.getUnlocalizedName(), material.getLocalizedName());
     }
 
     @Override

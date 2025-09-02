@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.AppearanceBlock;
 import com.gregtechceu.gtceu.api.machine.multiblock.IBatteryData;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
@@ -36,9 +37,9 @@ public class BatteryBlock extends AppearanceBlock {
                                 TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
         if (this.data.getTier() == -1) {
-            tooltip.add(Component.translatable("block.gtceu.substation_capacitor.tooltip_empty"));
+            tooltip.add(GTUtil.translatable("block.gtceu.substation_capacitor.tooltip_empty"));
         } else {
-            tooltip.add(Component.translatable("block.gtceu.substation_capacitor.tooltip_filled",
+            tooltip.add(GTUtil.translatable("block.gtceu.substation_capacitor.tooltip_filled",
                     FormattingUtil.formatNumbers(this.data.getCapacity())));
         }
     }

@@ -24,6 +24,7 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
@@ -206,7 +207,7 @@ public class LargeCombustionEngineMachine extends WorkableElectricMultiblockMach
         if (isFormed && isOxygenBoosted) {
             final var key = isExtreme() ? "gtceu.multiblock.large_combustion_engine.liquid_oxygen_boosted" :
                     "gtceu.multiblock.large_combustion_engine.oxygen_boosted";
-            builder.addCustom(tl -> tl.add(Component.translatable(key).withStyle(ChatFormatting.AQUA)));
+            builder.addCustom(tl -> tl.add(GTUtil.translatable(key).withStyle(ChatFormatting.AQUA)));
         }
 
         builder.addWorkingStatusLine();
@@ -233,7 +234,7 @@ public class LargeCombustionEngineMachine extends WorkableElectricMultiblockMach
         super.attachTooltips(tooltipsPanel);
         tooltipsPanel.attachTooltips(new IFancyTooltip.Basic(
                 () -> GuiTextures.INDICATOR_NO_STEAM.get(false),
-                () -> List.of(Component.translatable("gtceu.multiblock.large_combustion_engine.obstructed")
+                () -> List.of(GTUtil.translatable("gtceu.multiblock.large_combustion_engine.obstructed")
                         .setStyle(Style.EMPTY.withColor(ChatFormatting.RED))),
                 this::isIntakesObstructed,
                 () -> null));

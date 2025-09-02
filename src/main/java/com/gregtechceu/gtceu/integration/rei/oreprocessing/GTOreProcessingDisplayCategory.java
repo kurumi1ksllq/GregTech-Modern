@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib.rei.IGui2Renderer;
@@ -58,7 +59,7 @@ public class GTOreProcessingDisplayCategory extends ModularUIDisplayCategory<GTO
     @NotNull
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.jei.ore_processing_diagram");
+        return GTUtil.translatable("gtceu.jei.ore_processing_diagram");
     }
 
     public static void registerDisplays(DisplayRegistry registry) {

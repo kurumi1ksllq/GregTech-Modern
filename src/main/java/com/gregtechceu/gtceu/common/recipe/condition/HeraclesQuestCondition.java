@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.common.data.GTRecipeConditions;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -49,9 +50,9 @@ public class HeraclesQuestCondition extends RecipeCondition {
         String questTitle = QuestHandler.get(questId).display().title().toString();
 
         if (isReverse) {
-            return Component.translatable("recipe.condition.quest.not_completed.tooltip", questTitle);
+            return GTUtil.translatable("recipe.condition.quest.not_completed.tooltip", questTitle);
         } else {
-            return Component.translatable("recipe.condition.quest.completed.tooltip", questTitle);
+            return GTUtil.translatable("recipe.condition.quest.completed.tooltip", questTitle);
         }
     }
 

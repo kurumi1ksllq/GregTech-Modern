@@ -1,12 +1,12 @@
 package com.gregtechceu.gtceu.common.item.armor;
 
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
 
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -172,7 +172,7 @@ public interface IJetpack {
         CompoundTag tag = stack.getOrCreateTag();
         tag.putBoolean("enabled", true);
         tag.putBoolean("hover", true);
-        player.displayClientMessage(Component.translatable("metaarmor.jetpack.emergency_hover_mode"), true);
+        player.displayClientMessage(GTUtil.translatable("metaarmor.jetpack.emergency_hover_mode"), true);
         player.fallDistance = 0;
 
         if (!player.level().isClientSide) {

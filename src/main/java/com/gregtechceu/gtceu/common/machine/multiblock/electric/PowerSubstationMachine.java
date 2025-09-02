@@ -22,6 +22,7 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.*;
@@ -200,22 +201,22 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
         IDisplayUIMachine.super.addDisplayText(textList);
         if (isFormed()) {
             if (!isWorkingEnabled()) {
-                textList.add(Component.translatable("gtceu.multiblock.work_paused"));
+                textList.add(GTUtil.translatable("gtceu.multiblock.work_paused"));
 
             } else if (isActive()) {
-                textList.add(Component.translatable("gtceu.multiblock.running"));
+                textList.add(GTUtil.translatable("gtceu.multiblock.running"));
                 int currentProgress = (int) (recipeLogic.getProgressPercent() * 100);
                 double maxInSec = (float) recipeLogic.getDuration() / 20.0f;
                 double currentInSec = (float) recipeLogic.getProgress() / 20.0f;
                 textList.add(
-                        Component.translatable("gtceu.multiblock.progress", String.format("%.2f", (float) currentInSec),
+                        GTUtil.translatable("gtceu.multiblock.progress", String.format("%.2f", (float) currentInSec),
                                 String.format("%.2f", (float) maxInSec), currentProgress));
             } else {
-                textList.add(Component.translatable("gtceu.multiblock.idling"));
+                textList.add(GTUtil.translatable("gtceu.multiblock.idling"));
             }
 
             if (recipeLogic.isWaiting()) {
-                textList.add(Component.translatable("gtceu.multiblock.waiting")
+                textList.add(GTUtil.translatable("gtceu.multiblock.waiting")
                         .setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
             }
 
@@ -229,40 +230,38 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
                 var STYLE_RED = Style.EMPTY.withColor(ChatFormatting.RED);
 
                 var storedComponent = Component.literal(FormattingUtil.formatNumbers(energyStored));
-                textList.add(Component.translatable("gtceu.multiblock.power_substation.stored",
+                textList.add(GTUtil.translatable("gtceu.multiblock.power_substation.stored",
                         storedComponent.setStyle(STYLE_GOLD)));
 
                 var capacityComponent = Component.literal(FormattingUtil.formatNumbers(energyCapacity));
-                textList.add(Component.translatable("gtceu.multiblock.power_substation.capacity",
+                textList.add(GTUtil.translatable("gtceu.multiblock.power_substation.capacity",
                         capacityComponent.setStyle(STYLE_GOLD)));
 
                 var passiveDrainComponent = Component.literal(FormattingUtil.formatNumbers(getPassiveDrain()));
-                textList.add(Component.translatable("gtceu.multiblock.power_substation.passive_drain",
+                textList.add(GTUtil.translatable("gtceu.multiblock.power_substation.passive_drain",
                         passiveDrainComponent.setStyle(STYLE_DARK_RED)));
 
                 var avgInComponent = Component.literal(FormattingUtil.formatNumbers(inputPerSec / 20));
-                textList.add(Component
-                        .translatable("gtceu.multiblock.power_substation.average_in",
-                                avgInComponent.setStyle(STYLE_GREEN))
+                textList.add(GTUtil.translatable("gtceu.multiblock.power_substation.average_in",
+                        avgInComponent.setStyle(STYLE_GREEN))
                         .withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                Component.translatable("gtceu.multiblock.power_substation.average_in_hover")))));
+                                GTUtil.translatable("gtceu.multiblock.power_substation.average_in_hover")))));
 
                 var avgOutComponent = Component.literal(FormattingUtil.formatNumbers(Math.abs(outputPerSec / 20)));
-                textList.add(Component
-                        .translatable("gtceu.multiblock.power_substation.average_out",
-                                avgOutComponent.setStyle(STYLE_RED))
+                textList.add(GTUtil.translatable("gtceu.multiblock.power_substation.average_out",
+                        avgOutComponent.setStyle(STYLE_RED))
                         .withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                Component.translatable("gtceu.multiblock.power_substation.average_out_hover")))));
+                                GTUtil.translatable("gtceu.multiblock.power_substation.average_out_hover")))));
 
                 if (inputPerSec > outputPerSec) {
                     BigInteger timeToFillSeconds = energyCapacity.subtract(energyStored)
                             .divide(BigInteger.valueOf(inputPerSec - outputPerSec));
-                    textList.add(Component.translatable("gtceu.multiblock.power_substation.time_to_fill",
+                    textList.add(GTUtil.translatable("gtceu.multiblock.power_substation.time_to_fill",
                             getTimeToFillDrainText(timeToFillSeconds).setStyle(STYLE_GREEN)));
                 } else if (inputPerSec < outputPerSec) {
                     BigInteger timeToDrainSeconds = energyStored
                             .divide(BigInteger.valueOf(outputPerSec - inputPerSec));
-                    textList.add(Component.translatable("gtceu.multiblock.power_substation.time_to_drain",
+                    textList.add(GTUtil.translatable("gtceu.multiblock.power_substation.time_to_drain",
                             getTimeToFillDrainText(timeToDrainSeconds).setStyle(STYLE_RED)));
                 }
             }
@@ -295,10 +294,10 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
             fillTime = duration.toDays() / 365;
             key = "gtceu.multiblock.power_substation.time_years";
         } else {
-            return Component.translatable("gtceu.multiblock.power_substation.time_forever");
+            return GTUtil.translatable("gtceu.multiblock.power_substation.time_forever");
         }
 
-        return Component.translatable(key, FormattingUtil.formatNumbers(fillTime));
+        return GTUtil.translatable(key, FormattingUtil.formatNumbers(fillTime));
     }
 
     public long getPassiveDrain() {

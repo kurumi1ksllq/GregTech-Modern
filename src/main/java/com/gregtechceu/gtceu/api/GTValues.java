@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.api;
 
+import com.gregtechceu.gtceu.config.ConfigHolder;
+
 import net.minecraft.util.RandomSource;
 
 import java.time.LocalDate;
@@ -300,6 +302,8 @@ public class GTValues {
     public static boolean HT = false;
 
     public static BooleanSupplier FOOLS = () -> {
+        if (ConfigHolder.INSTANCE.client.aprilFoolsMode)
+            return true;
         var now = LocalDate.now();
         return now.getMonth() == Month.APRIL && now.getDayOfMonth() == 1;
     };

@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
@@ -12,7 +13,6 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -88,7 +88,7 @@ public abstract class DetectorCover extends CoverBehavior implements IControllab
 
             String translationKey = isInverted() ? "cover.detector_base.message_inverted_state" :
                     "cover.detector_base.message_normal_state";
-            playerIn.sendSystemMessage(Component.translatable(translationKey));
+            playerIn.sendSystemMessage(GTUtil.translatable(translationKey));
         }
 
         return InteractionResult.SUCCESS;

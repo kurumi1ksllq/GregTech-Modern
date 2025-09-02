@@ -4,11 +4,11 @@ import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IMedicalConditionTracker;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.common.commands.arguments.MedicalConditionArgument;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -25,9 +25,9 @@ import static net.minecraft.commands.Commands.*;
 public class MedicalConditionCommands {
 
     private static final SimpleCommandExceptionType ERROR_CLEAR_EVERYTHING_FAILED = new SimpleCommandExceptionType(
-            Component.translatable("commands.effect.clear.everything.failed"));
+            GTUtil.translatable("commands.effect.clear.everything.failed"));
     private static final SimpleCommandExceptionType ERROR_GIVE_FAILED = new SimpleCommandExceptionType(
-            Component.translatable("commands.effect.give.failed"));
+            GTUtil.translatable("commands.effect.give.failed"));
 
     // spotless:off
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
@@ -93,10 +93,10 @@ public class MedicalConditionCommands {
         int count = tracker.getMedicalConditions().size();
         if (count == 0) {
             target.sendSystemMessage(
-                    Component.translatable("command.gtceu.medical_condition.get.empty", target.getName()));
+                    GTUtil.translatable("command.gtceu.medical_condition.get.empty", target.getName()));
         } else {
             target.sendSystemMessage(
-                    Component.translatable("command.gtceu.medical_condition.get", target.getName()));
+                    GTUtil.translatable("command.gtceu.medical_condition.get", target.getName()));
         }
         for (var entry : tracker.getMedicalConditions().object2FloatEntrySet()) {
             String langKey = "command.gtceu.medical_condition.get.element";
@@ -106,8 +106,8 @@ public class MedicalConditionCommands {
             }
             float time = entry.getFloatValue();
             target.sendSystemMessage(
-                    Component.translatable(langKey,
-                            Component.translatable("gtceu.medical_condition." + entry.getKey().name),
+                    GTUtil.translatable(langKey,
+                            GTUtil.translatable("gtceu.medical_condition." + entry.getKey().name),
                             (int) (time / 60), (int) (time % 60)));
         }
         return count;

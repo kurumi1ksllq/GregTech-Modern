@@ -12,6 +12,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.utils.GTStringUtils;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.ResearchManager;
 
 import net.minecraft.ChatFormatting;
@@ -72,11 +73,10 @@ public class DataItemBehavior implements IInteractionItem, IAddInformation, IDat
                                 TooltipFlag isAdvanced) {
         if (stack.getOrCreateTag().contains("boundPlayerName")) {
             MutableComponent name = Component.Serializer.fromJson(stack.getOrCreateTag().getString("boundPlayerName"));
-            tooltipComponents.add(Component.translatable("gtceu.tooltip.player_bind", name));
+            tooltipComponents.add(GTUtil.translatable("gtceu.tooltip.player_bind", name));
         }
         if (stack.getOrCreateTag().contains("targetX")) {
-            tooltipComponents.add(Component.translatable(
-                    "gtceu.tooltip.wireless_transmitter_bind",
+            tooltipComponents.add(GTUtil.translatable("gtceu.tooltip.wireless_transmitter_bind",
                     Component.literal("" + stack.getOrCreateTag().getInt("targetX")).withStyle(ChatFormatting.GOLD),
                     Component.literal("" + stack.getOrCreateTag().getInt("targetY")).withStyle(ChatFormatting.GOLD),
                     Component.literal("" + stack.getOrCreateTag().getInt("targetZ")).withStyle(ChatFormatting.GOLD),
@@ -84,11 +84,11 @@ public class DataItemBehavior implements IInteractionItem, IAddInformation, IDat
                     Component.literal(stack.getOrCreateTag().getString("dim")).withStyle(ChatFormatting.GREEN)));
         }
         if (stack.getOrCreateTag().contains("computer_monitor_cover_config")) {
-            tooltipComponents.add(Component.translatable("gtceu.tooltip.computer_monitor_config"));
+            tooltipComponents.add(GTUtil.translatable("gtceu.tooltip.computer_monitor_config"));
         }
         if (stack.getOrCreateTag().contains("computer_monitor_cover_data")) {
             tooltipComponents.add(
-                    Component.translatable("gtceu.tooltip.computer_monitor_data",
+                    GTUtil.translatable("gtceu.tooltip.computer_monitor_data",
                             GTStringUtils.toComponent(
                                     stack.getOrCreateTag().getList("computer_monitor_cover_data", Tag.TAG_STRING))));
         }
@@ -96,8 +96,7 @@ public class DataItemBehavior implements IInteractionItem, IAddInformation, IDat
         if (researchData == null) {
             if (stack.getOrCreateTag().contains("pos", Tag.TAG_INT_ARRAY) && stack.hasTag()) {
                 int[] posArray = stack.getOrCreateTag().getIntArray("pos");
-                tooltipComponents.add(Component.translatable(
-                        "gtceu.tooltip.proxy_bind",
+                tooltipComponents.add(GTUtil.translatable("gtceu.tooltip.proxy_bind",
                         Component.literal("" + posArray[0]).withStyle(ChatFormatting.LIGHT_PURPLE),
                         Component.literal("" + posArray[1]).withStyle(ChatFormatting.LIGHT_PURPLE),
                         Component.literal("" + posArray[2]).withStyle(ChatFormatting.LIGHT_PURPLE)));
@@ -105,8 +104,8 @@ public class DataItemBehavior implements IInteractionItem, IAddInformation, IDat
         } else {
             Collection<GTRecipe> recipes = researchData.recipeType().getDataStickEntry(researchData.researchId());
             if (recipes != null && !recipes.isEmpty()) {
-                tooltipComponents.add(Component.translatable("behavior.data_item.title",
-                        Component.translatable(researchData.recipeType().registryName.toLanguageKey())));
+                tooltipComponents.add(GTUtil.translatable("behavior.data_item.title",
+                        GTUtil.translatable(researchData.recipeType().registryName.toLanguageKey())));
                 Collection<ItemStack> addedItems = new ObjectOpenHashSet<>();
                 Collection<FluidStack> addedFluids = new ObjectOpenHashSet<>();
                 outerItems:
@@ -120,7 +119,7 @@ public class DataItemBehavior implements IInteractionItem, IAddInformation, IDat
                     }
                     if (addedItems.add(outputItems)) {
                         tooltipComponents.add(
-                                Component.translatable("behavior.data_item.data",
+                                GTUtil.translatable("behavior.data_item.data",
                                         outputItems.getDisplayName()));
                     }
                 }
@@ -135,7 +134,7 @@ public class DataItemBehavior implements IInteractionItem, IAddInformation, IDat
                     }
                     if (addedFluids.add(outputFluids)) {
                         tooltipComponents.add(
-                                Component.translatable("behavior.data_item.data",
+                                GTUtil.translatable("behavior.data_item.data",
                                         outputFluids.getDisplayName()));
                     }
                 }

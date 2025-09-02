@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.integration.rei.circuit;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.integration.xei.widgets.GTProgrammedCircuitWidget;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -43,7 +44,7 @@ public class GTProgrammedCircuitCategory extends
 
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.jei.programmed_circuit");
+        return GTUtil.translatable("gtceu.jei.programmed_circuit");
     }
 
     @Override

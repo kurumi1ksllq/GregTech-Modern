@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.client.util.TooltipHelper;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEPatternBufferPartMachine;
 import com.gregtechceu.gtceu.integration.jade.GTElementHelper;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -33,7 +34,7 @@ public class MEPatternBufferProvider implements IBlockComponentProvider, IServer
                 CompoundTag serverData = blockAccessor.getServerData();
                 if (!serverData.getBoolean("formed")) return;
 
-                iTooltip.add(Component.translatable("gtceu.top.proxies_bound", serverData.getInt("proxies"))
+                iTooltip.add(GTUtil.translatable("gtceu.top.proxies_bound", serverData.getInt("proxies"))
                         .withStyle(TooltipHelper.RAINBOW_HSL_SLOW));
                 readBufferTag(iTooltip, serverData);
             }

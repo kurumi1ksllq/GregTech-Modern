@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.item.tool.behavior.IToolBehavior;
 import com.gregtechceu.gtceu.common.data.GTSoundEntries;
 import com.gregtechceu.gtceu.common.data.item.GTToolActions;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -99,7 +100,7 @@ public class ToolModeSwitchBehavior implements IToolBehavior {
             if (toolTypes.contains(GTToolType.WRENCH)) {
                 tagCompound.putByte("Mode",
                         (byte) ((tagCompound.getByte("Mode") + 1) % WrenchModeType.values().length));
-                player.displayClientMessage(Component.translatable("metaitem.machine_configuration.mode",
+                player.displayClientMessage(GTUtil.translatable("metaitem.machine_configuration.mode",
                         WrenchModeType.values()[tagCompound.getByte("Mode")].getName()), true);
             }
             return InteractionResultHolder.success(itemStack);
@@ -115,7 +116,7 @@ public class ToolModeSwitchBehavior implements IToolBehavior {
 
         var toolTypes = ToolHelper.getToolTypes(stack);
         if (toolTypes.contains(GTToolType.WRENCH)) {
-            tooltip.add(Component.translatable("metaitem.machine_configuration.mode",
+            tooltip.add(GTUtil.translatable("metaitem.machine_configuration.mode",
                     WrenchModeType.values()[tagCompound.getByte("Mode")].getName()));
         }
     }
@@ -123,9 +124,9 @@ public class ToolModeSwitchBehavior implements IToolBehavior {
     @Getter
     public enum WrenchModeType {
 
-        ITEM(Component.translatable("gtceu.mode.item")),
-        FLUID(Component.translatable("gtceu.mode.fluid")),
-        BOTH(Component.translatable("gtceu.mode.both"));
+        ITEM(GTUtil.translatable("gtceu.mode.item")),
+        FLUID(GTUtil.translatable("gtceu.mode.fluid")),
+        BOTH(GTUtil.translatable("gtceu.mode.both"));
 
         private final Component name;
 

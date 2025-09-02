@@ -45,6 +45,7 @@ public class MachineLang {
 
         provider.add("gtceu.machine.combustion_generator.tooltip", "§7Requires flammable Liquids");
         provider.add("gtceu.machine.steam_turbine.tooltip", "§7Converts Steam into EU");
+        provider.add("gtceu.machine.steam_turbine.tooltip_fools", "§7Converts Steam into Vis");
         provider.add("gtceu.machine.gas_turbine.tooltip", "§7Requires flammable Gases");
 
         provider.add("gtceu.machine.block_breaker.tooltip",
@@ -309,18 +310,28 @@ public class MachineLang {
         provider.add("gtceu.machine.hull.tooltip",
                 "§7You just need §5I§dm§4a§cg§ei§an§ba§3t§7i§1o§5n§7 to use this");
         provider.add("gtceu.battery_buffer.average_input", "Average input: %s EU/t");
+        provider.add("gtceu.battery_buffer.average_input_fools", "Average input: %s Vis/t");
         provider.add("gtceu.battery_buffer.average_output", "Average output: %s EU/t");
+        provider.add("gtceu.battery_buffer.average_output_fools", "Average output: %s Vis/t");
         provider.add("gtceu.machine.transformer.description", "§7Transforms Energy between voltage tiers");
         provider.add("gtceu.machine.transformer.tooltip_tool_usage",
                 "Starts as §fTransform Down§7, use Screwdriver to change");
         provider.add("gtceu.machine.transformer.tooltip_transform_down",
                 "§aTransform Down: §f%dA %s EU (%s§f) -> %dA %s EU (%s§f)");
+        provider.add("gtceu.machine.transformer.tooltip_transform_down_fools",
+                "§aTransform Down: §f%dA %s Vis (%s§f) -> %dA %s Vis (%s§f)");
         provider.add("gtceu.machine.transformer.message_transform_down",
                 "Transforming Down, In: %s EU %dA, Out: %s EU %dA");
+        provider.add("gtceu.machine.transformer.message_transform_down_fools",
+                "Transforming Down, In: %s Vis %dA, Out: %s Vis %dA");
         provider.add("gtceu.machine.transformer.tooltip_transform_up",
                 "§cTransform Up: §f%dA %s EU (%s§f) -> %dA %s EU (%s§f)");
+        provider.add("gtceu.machine.transformer.tooltip_transform_up_fools",
+                "§cTransform Up: §f%dA %s Vis (%s§f) -> %dA %s Vis (%s§f)");
         provider.add("gtceu.machine.transformer.message_transform_up",
                 "Transforming Up, In: %s EU %dA, Out: %s EU %dA");
+        provider.add("gtceu.machine.transformer.message_transform_up_fools",
+                "Transforming Up, In: %s Vis %dA, Out: %s Vis %dA");
 
         provider.add("gtceu.machine.diode.message", "Max Amperage throughput: %s");
         provider.add("gtceu.machine.diode.tooltip_tool_usage",
@@ -329,16 +340,25 @@ public class MachineLang {
                 "Allows Energy Flow in one direction and limits Amperage");
         provider.add("gtceu.machine.diode.tooltip_starts_at", "Starts as §f1A§7, use Soft Mallet to change");
         provider.add("gtceu.machine.energy_converter.description", "Converts Energy between EU and FE");
+        provider.add("gtceu.machine.energy_converter.description_fools", "Converts Energy between Vis and FE");
         provider.add("gtceu.machine.energy_converter.tooltip_tool_usage",
                 "Starts as §fFE Converter§7, use Soft Mallet to change");
         provider.add("gtceu.machine.energy_converter.tooltip_conversion_native",
                 "§cNative Conversion: §f%d FE -> %dA %d EU (%s§f)");
+        provider.add("gtceu.machine.energy_converter.tooltip_conversion_native_fools",
+                "§cNative Conversion: §f%d FE -> %dA %d Vis (%s§f)");
         provider.add("gtceu.machine.energy_converter.message_conversion_native",
                 "Converting Native Energy, In: %d FE, Out: %dA %d EU");
+        provider.add("gtceu.machine.energy_converter.message_conversion_native_fools",
+                "Converting Native Energy, In: %d FE, Out: %dA %d Vis");
         provider.add("gtceu.machine.energy_converter.tooltip_conversion_eu",
                 "§aEU Conversion: §f%dA %d EU (%s§f) -> %d Native");
+        provider.add("gtceu.machine.energy_converter.tooltip_conversion_eu_fools",
+                "§aVis Conversion: §f%dA %d Vis (%s§f) -> %d Native");
         provider.add("gtceu.machine.energy_converter.message_conversion_eu",
                 "Converting EU, In: %dA %d EU, Out: %d Native");
+        provider.add("gtceu.machine.energy_converter.message_conversion_eu_fools",
+                "Converting Vis, In: %dA %d Vis, Out: %d Native");
         provider.add("gtceu.machine.pump.tooltip", "§7The best way to empty Oceans!");
         provider.add("gtceu.machine.pump.tooltip_buckets", "§f%d §7ticks per Bucket");
         provider.add("gtceu.machine.item_collector.gui.collect_range",
@@ -437,7 +457,9 @@ public class MachineLang {
                 "It only cost an arm and a leg");
 
         provider.add("gtceu.machine.hpca.component_general.upkeep_eut", "§eUpkeep Energy: §f%d EU/t");
+        provider.add("gtceu.machine.hpca.component_general.upkeep_eut_fools", "§eUpkeep Energy: §f%d Vis/t");
         provider.add("gtceu.machine.hpca.component_general.max_eut", "§6Max Energy: §f%d EU/t");
+        provider.add("gtceu.machine.hpca.component_general.max_eut_fools", "§6Max Energy: §f%d Vis/t");
         provider.add("gtceu.machine.hpca.component_type.cooler_passive", "§bCooler Type: §fPassive");
         provider.add("gtceu.machine.hpca.component_type.cooler_active", "§bCooler Type: §fActive");
         provider.add("gtceu.machine.hpca.component_type.cooler_cooling", "§aProvides: §f%d Cooling");
@@ -461,10 +483,15 @@ public class MachineLang {
 
         provider.add("gtceu.machine.large_combustion_engine.tooltip.boost_regular",
                 "Supply §f20 mB/s§7 of Oxygen to produce up to §f%s EU/t§7 at §f2x§7 fuel consumption.");
+        provider.add("gtceu.machine.large_combustion_engine.tooltip.boost_regular_fools",
+                "Supply §f20 mB/s§7 of Oxygen to produce up to §f%s Vis/t§7 at §f2x§7 fuel consumption.");
         provider.add("gtceu.machine.large_combustion_engine.tooltip.boost_extreme",
                 "Supply §f80 mB/s§7 of Liquid Oxygen to produce up to §f%s EU/t§7 at §f2x§7 fuel consumption.");
+        provider.add("gtceu.machine.large_combustion_engine.tooltip.boost_extreme_fools",
+                "Supply §f80 mB/s§7 of Liquid Oxygen to produce up to §f%s Vis/t§7 at §f2x§7 fuel consumption.");
 
         provider.add("gtceu.machine.fusion_reactor.capacity", "§7Maximum Energy Storage: §e%sM EU");
+        provider.add("gtceu.machine.fusion_reactor.capacity_fools", "§7Maximum Energy Storage: §e%sM Vis");
         provider.add("gtceu.machine.fusion_reactor.overclocking",
                 "Overclocks double energy and halve duration.");
         // Miner
@@ -584,11 +611,18 @@ public class MachineLang {
                 "The Assembly Line is a large multiblock structure consisting of 5 to 16 \"slices\". In theory, it's large Assembling Machine, used for creating advanced crafting components.");
         provider.add("gtceu.multiblock.luv_fusion_reactor.description",
                 "The Fusion Reactor MK 1 is a large multiblock structure used for fusing elements into heavier ones. It can only use LuV, ZPM, and UV Energy Hatches. For every Hatch it has, its buffer increases by 10M EU, and has a maximum of 160M.");
+        provider.add("gtceu.multiblock.luv_fusion_reactor.description_fools",
+                "The Fusion Reactor MK 1 is a large multiblock structure used for fusing elements into heavier ones. It can only use LuV, ZPM, and UV Energy Hatches. For every Hatch it has, its buffer increases by 10M Vis, and has a maximum of 160M.");
         provider.add("gtceu.multiblock.zpm_fusion_reactor.description",
                 "The Fusion Reactor MK 2 is a large multiblock structure used for fusing elements into heavier ones. It can only use ZPM and UV Energy Hatches. For every Hatch it has, its buffer increases by 20M EU, and has a maximum of 320M.");
+        provider.add("gtceu.multiblock.zpm_fusion_reactor.description_fools",
+                "The Fusion Reactor MK 2 is a large multiblock structure used for fusing elements into heavier ones. It can only use ZPM and UV Energy Hatches. For every Hatch it has, its buffer increases by 20M Vis, and has a maximum of 320M.");
         provider.add("gtceu.multiblock.uv_fusion_reactor.description",
                 "The Fusion Reactor MK 3 is a large multiblock structure used for fusing elements into heavier ones. It can only use UV Energy Hatches. For every Hatch it has, its buffer increases by 40M EU, and has a maximum of 640M.");
+        provider.add("gtceu.multiblock.uv_fusion_reactor.description_fools",
+                "The Fusion Reactor MK 3 is a large multiblock structure used for fusing elements into heavier ones. It can only use UV Energy Hatches. For every Hatch it has, its buffer increases by 40M Vis, and has a maximum of 640M.");
         provider.add("gtceu.multiblock.fusion_reactor.energy", "EU: %d / %d");
+        provider.add("gtceu.multiblock.fusion_reactor.energy_fools", "Vis: %d / %d");
         provider.add("gtceu.multiblock.fusion_reactor.heat", "Heat: %d");
         provider.add("gtceu.multiblock.large_chemical_reactor.description",
                 "The Large Chemical Reactor performs chemical reactions at 100%% energy efficiency. Overclocks multiply both speed and energy by 4. The multiblock requires exactly 1 Cupronickel Coil Block, which must be placed adjacent to the PTFE Pipe casing located in the center.");
@@ -871,6 +905,7 @@ public class MachineLang {
         provider.add("gtceu.multiblock.blast_furnace.max_temperature", "Heat Capacity: %s");
         provider.add("gtceu.multiblock.multi_furnace.heating_coil_level", "Heating Coil Level: %s");
         provider.add("gtceu.multiblock.multi_furnace.heating_coil_discount", "Heating Coil EU Boost: %sx");
+        provider.add("gtceu.multiblock.multi_furnace.heating_coil_discount_fools", "Heating Coil Vis Boost: %sx");
         provider.add("gtceu.multiblock.distillation_tower.distilling_fluid", "Distilling %s");
         provider.add("gtceu.multiblock.large_combustion_engine.lubricant_amount", "Lubricant Amount: %sL");
         provider.add("gtceu.multiblock.large_combustion_engine.oxygen_amount", "Oxygen Amount: %sL");
@@ -891,10 +926,14 @@ public class MachineLang {
         provider.add("gtceu.multiblock.turbine.rotor_durability", "Rotor Durability: %s%%");
         provider.add("gtceu.multiblock.turbine.efficiency", "Turbine Efficiency: %s%%");
         provider.add("gtceu.multiblock.turbine.energy_per_tick", "Energy Output: %s/%s EU/t");
+        provider.add("gtceu.multiblock.turbine.energy_per_tick_fools", "Energy Output: %s/%s Vis/t");
         provider.add("gtceu.multiblock.turbine.energy_per_tick_maxed", "Energy Output: %s EU/t");
+        provider.add("gtceu.multiblock.turbine.energy_per_tick_maxed_fools", "Energy Output: %s Vis/t");
         provider.add("gtceu.multiblock.turbine.obstructed", "Turbine Face Obstructed");
         provider.add("gtceu.multiblock.turbine.efficiency_tooltip",
                 "Each Rotor Holder above %s§7 adds §f10%% efficiency and multiplies EU/t by 2§7.");
+        provider.add("gtceu.multiblock.turbine.efficiency_tooltip_fools",
+                "Each Rotor Holder above %s§7 adds §f10%% efficiency and multiplies Vis/t by 2§7.");
         provider.add("gtceu.multiblock.turbine.fuel_needed", "Consumes %s per %s ticks");
         provider.add("gtceu.multiblock.large_boiler.max_temperature",
                 "Max Temperature: %dK, Steam Production: %dmB/t");
@@ -930,14 +969,23 @@ public class MachineLang {
         provider.add("gtceu.multiblock.pyrolyse_oven.speed", "Processing Speed: %s%%");
         provider.add("gtceu.multiblock.cracking_unit.energy", "Energy Usage: %s%%");
         provider.add("gtceu.multiblock.power_substation.stored", "§7Stored: %s §7EU");
+        provider.add("gtceu.multiblock.power_substation.stored_fools", "§7Stored: %s §7Vis");
         provider.add("gtceu.multiblock.power_substation.capacity", "§7Capacity: %s §7EU");
+        provider.add("gtceu.multiblock.power_substation.capacity_fools", "§7Capacity: %s §7Vis");
         provider.add("gtceu.multiblock.power_substation.passive_drain", "§7Passive Drain: %s §7EU/t");
+        provider.add("gtceu.multiblock.power_substation.passive_drain_fools", "§7Passive Drain: %s §7Vis/t");
         provider.add("gtceu.multiblock.power_substation.average_in", "§7Avg. Input: %s §7EU/t");
+        provider.add("gtceu.multiblock.power_substation.average_in_fools", "§7Avg. Input: %s §7Vis/t");
         provider.add("gtceu.multiblock.power_substation.average_in_hover",
                 "The average inserted EU into the Power Substation's internal energy bank");
+        provider.add("gtceu.multiblock.power_substation.average_in_hover_fools",
+                "The average inserted Vis into the Power Substation's internal energy bank");
         provider.add("gtceu.multiblock.power_substation.average_out", "§7Avg. Output: %s §7EU/t");
+        provider.add("gtceu.multiblock.power_substation.average_out_fools", "§7Avg. Output: %s §7Vis/t");
         provider.add("gtceu.multiblock.power_substation.average_out_hover",
                 "The average extracted EU out of the Power Substation's internal energy bank");
+        provider.add("gtceu.multiblock.power_substation.average_out_hover_fools",
+                "The average extracted Vis out of the Power Substation's internal energy bank");
         provider.add("gtceu.multiblock.power_substation.time_to_fill", "§7Time to fill: %s");
         provider.add("gtceu.multiblock.power_substation.time_to_drain", "§7Time to drain: %s");
         provider.add("gtceu.multiblock.power_substation.time_seconds", "%s Seconds");
@@ -949,13 +997,18 @@ public class MachineLang {
         provider.add("gtceu.multiblock.power_substation.under_one_hour_left",
                 "Less than 1 hour until fully drained!");
         provider.add("gtceu.multiblock.active_transformer.average_in", "§bAvg. Input: §f%s EU/t");
+        provider.add("gtceu.multiblock.active_transformer.average_in_fools", "§bAvg. Input: §f%s Vis/t");
         provider.add("gtceu.multiblock.active_transformer.average_out", "§bAvg. Output: §f%s EU/t");
+        provider.add("gtceu.multiblock.active_transformer.average_out_fools", "§bAvg. Output: §f%s Vis/t");
         provider.add("gtceu.multiblock.active_transformer.max_input", "§aMax Input: §f%s EU/t");
+        provider.add("gtceu.multiblock.active_transformer.max_input_fools", "§aMax Input: §f%s Vis/t");
         provider.add("gtceu.multiblock.active_transformer.max_output", "§cMax Output: §f%s EU/t");
+        provider.add("gtceu.multiblock.active_transformer.max_output_fools", "§cMax Output: §f%s Vis/t");
         provider.add("gtceu.multiblock.active_transformer.danger_enabled", "§c§bDANGER: Explosive");
         provider.add("gtceu.multiblock.data_bank.providing", "Providing data.");
         provider.add("gtceu.multiblock.hpca.computation", "Providing: %s");
         provider.add("gtceu.multiblock.hpca.energy", "Using: %s / %s EU/t (%s)");
+        provider.add("gtceu.multiblock.hpca.energy_fools", "Using: %s / %s Vis/t (%s)");
         provider.add("gtceu.multiblock.hpca.temperature", "Temperature: %s");
         provider.add("gtceu.multiblock.hpca.hover_for_info", "Hover for details");
         provider.add("gtceu.multiblock.hpca.error_damaged", "Damaged component in structure!");

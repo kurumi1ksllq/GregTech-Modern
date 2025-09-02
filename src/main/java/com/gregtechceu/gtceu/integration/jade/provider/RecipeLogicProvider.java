@@ -83,18 +83,17 @@ public class RecipeLogicProvider extends CapabilityBlockProvider<RecipeLogic> {
                     MutableComponent text;
 
                     if (isSteam) {
-                        text = Component.translatable("gtceu.jade.fluid_use", FormattingUtil.formatNumbers(EUt))
+                        text = GTUtil.translatable("gtceu.jade.fluid_use", FormattingUtil.formatNumbers(EUt))
                                 .withStyle(ChatFormatting.GREEN);
                     } else {
                         var voltage = recipeInfo.getLong("voltage");
                         var tier = GTUtil.getTierByVoltage(voltage);
                         float minAmperage = (float) EUt / GTValues.V[tier];
 
-                        text = Component
-                                .translatable("gtceu.jade.amperage_use",
-                                        FormattingUtil.formatNumber2Places(minAmperage))
+                        text = GTUtil.translatable("gtceu.jade.amperage_use",
+                                FormattingUtil.formatNumber2Places(minAmperage))
                                 .withStyle(ChatFormatting.RED)
-                                .append(Component.translatable("gtceu.jade.at").withStyle(ChatFormatting.GREEN));
+                                .append(GTUtil.translatable("gtceu.jade.at").withStyle(ChatFormatting.GREEN));
                         if (tier < GTValues.TIER_COUNT) {
                             text = text.append(Component.literal(GTValues.VNF[tier])
                                     .withStyle(style -> style.withColor(GTValues.VC[tier])));
@@ -107,16 +106,16 @@ public class RecipeLogicProvider extends CapabilityBlockProvider<RecipeLogic> {
                                             .append(FormattingUtil.formatNumbers(speed))));
 
                         }
-                        text.append(Component.translatable("gtceu.universal.padded_parentheses",
-                                (Component.translatable("gtceu.recipe.eu.total",
+                        text.append(GTUtil.translatable("gtceu.universal.padded_parentheses",
+                                (GTUtil.translatable("gtceu.recipe.eu.total",
                                         FormattingUtil.formatNumbers(EUt))))
                                 .withStyle(ChatFormatting.WHITE));
                     }
 
                     if (isInput) {
-                        tooltip.add(Component.translatable("gtceu.top.energy_consumption").append(" ").append(text));
+                        tooltip.add(GTUtil.translatable("gtceu.top.energy_consumption").append(" ").append(text));
                     } else {
-                        tooltip.add(Component.translatable("gtceu.top.energy_production").append(" ").append(text));
+                        tooltip.add(GTUtil.translatable("gtceu.top.energy_production").append(" ").append(text));
                     }
                 }
             }

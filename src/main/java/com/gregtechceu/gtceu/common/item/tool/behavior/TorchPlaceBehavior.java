@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.item.tool.behavior;
 import com.gregtechceu.gtceu.api.data.tag.TagUtil;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.item.tool.behavior.IToolBehavior;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -124,6 +125,6 @@ public class TorchPlaceBehavior implements IToolBehavior {
     @Override
     public void addInformation(@NotNull ItemStack stack, @Nullable Level Level, @NotNull List<Component> tooltip,
                                @NotNull TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.gtceu.tool.behavior.torch_place"));
+        tooltip.add(GTUtil.translatable("item.gtceu.tool.behavior.torch_place"));
     }
 }

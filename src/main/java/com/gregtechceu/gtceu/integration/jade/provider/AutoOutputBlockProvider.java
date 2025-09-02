@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IAutoOutputFluid;
 import com.gregtechceu.gtceu.api.machine.feature.IAutoOutputItem;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -86,7 +87,7 @@ public class AutoOutputBlockProvider implements IBlockComponentProvider, IServer
         boolean allowInput = compoundTag.getBoolean("allowInput");
         boolean auto = compoundTag.getBoolean("auto");
         if (direction != null) {
-            iTooltip.add(Component.translatable(text, StringUtils.capitalize(direction.getName())));
+            iTooltip.add(GTUtil.translatable(text, StringUtils.capitalize(direction.getName())));
             if (blockAccessor.showDetails()) {
                 var block = BuiltInRegistries.BLOCK.get(new ResourceLocation(compoundTag.getString("block"))).asItem()
                         .getDefaultInstance();
@@ -98,7 +99,7 @@ public class AutoOutputBlockProvider implements IBlockComponentProvider, IServer
             if (allowInput || auto) {
                 var component = Component.literal(" (");
                 if (auto) {
-                    component.append(Component.translatable("gtceu.top.auto_output"));
+                    component.append(GTUtil.translatable("gtceu.top.auto_output"));
                 }
 
                 if (allowInput && auto) {
@@ -106,7 +107,7 @@ public class AutoOutputBlockProvider implements IBlockComponentProvider, IServer
                 }
 
                 if (allowInput) {
-                    component.append(Component.translatable("gtceu.top.allow_output_input"));
+                    component.append(GTUtil.translatable("gtceu.top.allow_output_input"));
                 }
                 component.append(")");
                 iTooltip.append(component);

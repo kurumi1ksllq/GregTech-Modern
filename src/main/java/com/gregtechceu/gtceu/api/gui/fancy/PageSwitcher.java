@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.gui.fancy;
 
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
@@ -90,7 +91,7 @@ public class PageSwitcher implements IFancyUIProvider {
 
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.gui.title_bar.page_switcher");
+        return GTUtil.translatable("gtceu.gui.title_bar.page_switcher");
     }
 
     @Override

@@ -154,7 +154,7 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
                     (cd, p) -> batchEnabled = p)
                     .setTooltipsSupplier(
                             p -> List.of(
-                                    Component.translatable("gtceu.machine.batch_" + (p ? "enabled" : "disabled")))));
+                                    GTUtil.translatable("gtceu.machine.batch_" + (p ? "enabled" : "disabled")))));
         }
 
         IFancyUIMachine.super.attachConfigurators(configuratorPanel);

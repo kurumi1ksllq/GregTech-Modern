@@ -19,7 +19,6 @@ import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -221,11 +220,11 @@ public final class ResearchManager {
         @Override
         public void buildRepresentativeRecipes() {
             ItemStack copiedStick = GTItems.TOOL_DATA_STICK.asStack();
-            copiedStick.setHoverName(Component.translatable("gtceu.scanner.copy_stick_from"));
+            copiedStick.setHoverName(GTUtil.translatable("gtceu.scanner.copy_stick_from"));
             ItemStack emptyStick = GTItems.TOOL_DATA_STICK.asStack();
-            emptyStick.setHoverName(Component.translatable("gtceu.scanner.copy_stick_empty"));
+            emptyStick.setHoverName(GTUtil.translatable("gtceu.scanner.copy_stick_empty"));
             ItemStack resultStick = GTItems.TOOL_DATA_STICK.asStack();
-            resultStick.setHoverName(Component.translatable("gtceu.scanner.copy_stick_to"));
+            resultStick.setHoverName(GTUtil.translatable("gtceu.scanner.copy_stick_to"));
 
             GTRecipe recipe = GTRecipeTypes.SCANNER_RECIPES
                     .recipeBuilder("copy_" + GTStringUtils.itemStackToString(copiedStick))

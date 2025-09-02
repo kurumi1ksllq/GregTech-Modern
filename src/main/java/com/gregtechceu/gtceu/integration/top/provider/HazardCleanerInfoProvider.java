@@ -3,10 +3,10 @@ package com.gregtechceu.gtceu.integration.top.provider;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardCleaner;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -35,7 +35,7 @@ public class HazardCleanerInfoProvider extends CapabilityInfoProvider<IEnvironme
     protected void addProbeInfo(IEnvironmentalHazardCleaner capability, IProbeInfo probeInfo, Player player,
                                 BlockEntity blockEntity, IProbeHitData data) {
         float cleaned = capability.getRemovedLastSecond();
-        probeInfo.element(new ElementText(Component.translatable("gtceu.jade.cleaned_this_second", cleaned),
+        probeInfo.element(new ElementText(GTUtil.translatable("gtceu.jade.cleaned_this_second", cleaned),
                 probeInfo.defaultTextStyle()));
     }
 }

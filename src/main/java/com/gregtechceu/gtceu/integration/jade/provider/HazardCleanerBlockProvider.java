@@ -3,11 +3,11 @@ package com.gregtechceu.gtceu.integration.jade.provider;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardCleaner;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -39,7 +39,7 @@ public class HazardCleanerBlockProvider extends CapabilityBlockProvider<IEnviron
                               BlockEntity blockEntity, IPluginConfig config) {
         float cleaned = capData.getFloat("Cleaned");
         if (cleaned > 0) {
-            tooltip.add(Component.translatable("gtceu.jade.cleaned_this_second", cleaned));
+            tooltip.add(GTUtil.translatable("gtceu.jade.cleaned_this_second", cleaned));
         }
     }
 }

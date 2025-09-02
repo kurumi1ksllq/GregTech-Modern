@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.common.block.explosive;
 
 import com.gregtechceu.gtceu.common.entity.GTExplosiveEntity;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -172,10 +173,10 @@ public abstract class GTExplosiveBlock extends Block {
                                 TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
         if (explodeOnMine) {
-            tooltip.add(Component.translatable("block.gtceu.explosive.breaking_tooltip"));
+            tooltip.add(GTUtil.translatable("block.gtceu.explosive.breaking_tooltip"));
         }
         if (!canRedstoneActivate) {
-            tooltip.add(Component.translatable("block.gtceu.explosive.lighting_tooltip"));
+            tooltip.add(GTUtil.translatable("block.gtceu.explosive.lighting_tooltip"));
         }
     }
 }

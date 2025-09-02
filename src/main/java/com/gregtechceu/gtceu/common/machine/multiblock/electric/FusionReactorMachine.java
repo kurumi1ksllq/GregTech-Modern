@@ -213,7 +213,7 @@ public class FusionReactorMachine extends WorkableElectricMultiblockMachine impl
             long heatDiff = recipe.data.getLong("eu_to_start") - this.heat;
             // if the remaining energy needed is more than stored, do not run
             if (heatDiff > 0) {
-                recipeLogic.setWaiting(Component.translatable("gtceu.recipe_logic.insufficient_fuel"));
+                recipeLogic.setWaiting(GTUtil.translatable("gtceu.recipe_logic.insufficient_fuel"));
 
                 // if the remaining energy needed is more than stored, do not run
                 if (this.energyContainer.getEnergyStored() < heatDiff)
@@ -281,9 +281,9 @@ public class FusionReactorMachine extends WorkableElectricMultiblockMachine impl
     public void addDisplayText(List<Component> textList) {
         super.addDisplayText(textList);
         if (isFormed()) {
-            textList.add(Component.translatable("gtceu.multiblock.fusion_reactor.energy",
+            textList.add(GTUtil.translatable("gtceu.multiblock.fusion_reactor.energy",
                     this.energyContainer.getEnergyStored(), this.energyContainer.getEnergyCapacity()));
-            textList.add(Component.translatable("gtceu.multiblock.fusion_reactor.heat", heat));
+            textList.add(GTUtil.translatable("gtceu.multiblock.fusion_reactor.heat", heat));
         }
     }
 

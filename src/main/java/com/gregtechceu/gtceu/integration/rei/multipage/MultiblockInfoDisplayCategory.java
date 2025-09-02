@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.data.machines.GTMultiMachines;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib.rei.IGui2Renderer;
@@ -51,7 +52,7 @@ public class MultiblockInfoDisplayCategory extends ModularUIDisplayCategory<Mult
 
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.jei.multiblock_info");
+        return GTUtil.translatable("gtceu.jei.multiblock_info");
     }
 
     @Override

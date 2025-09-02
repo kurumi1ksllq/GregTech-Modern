@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.pattern.error.PatternStringError;
 import com.gregtechceu.gtceu.api.pattern.error.SinglePredicateError;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
@@ -84,9 +85,9 @@ public class SimplePredicate {
             result.addAll(toolTips);
         }
         if (minCount == maxCount && maxCount != -1) {
-            result.add(Component.translatable("gtceu.multiblock.pattern.error.limited_exact", minCount));
+            result.add(GTUtil.translatable("gtceu.multiblock.pattern.error.limited_exact", minCount));
         } else if (minCount != maxCount && minCount != -1 && maxCount != -1) {
-            result.add(Component.translatable("gtceu.multiblock.pattern.error.limited_within", minCount, maxCount));
+            result.add(GTUtil.translatable("gtceu.multiblock.pattern.error.limited_within", minCount, maxCount));
         } else {
             if (minCount != -1) {
                 result.add(LangHandler.getFromMultiLang("gtceu.multiblock.pattern.error.limited", 1, minCount));
@@ -97,10 +98,10 @@ public class SimplePredicate {
         }
         if (predicates == null) return result;
         if (predicates.isSingle()) {
-            result.add(Component.translatable("gtceu.multiblock.pattern.single"));
+            result.add(GTUtil.translatable("gtceu.multiblock.pattern.single"));
         }
         if (predicates.hasAir()) {
-            result.add(Component.translatable("gtceu.multiblock.pattern.replaceable_air"));
+            result.add(GTUtil.translatable("gtceu.multiblock.pattern.replaceable_air"));
         }
         return result;
     }

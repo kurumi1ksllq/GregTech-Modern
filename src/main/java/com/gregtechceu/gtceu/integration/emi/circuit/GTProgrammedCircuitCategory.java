@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.integration.xei.widgets.GTProgrammedCircuitWidget;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.emi.ModularEmiRecipe;
 
@@ -32,7 +33,7 @@ public class GTProgrammedCircuitCategory extends EmiRecipeCategory {
 
     @Override
     public Component getName() {
-        return Component.translatable("gtceu.jei.programmed_circuit");
+        return GTUtil.translatable("gtceu.jei.programmed_circuit");
     }
 
     public static class GTProgrammedCircuitWrapper extends ModularEmiRecipe<GTProgrammedCircuitWidget> {

@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.emi.IGui2Renderable;
 
@@ -60,6 +61,6 @@ public class GTRecipeEMICategory extends EmiRecipeCategory {
 
     @Override
     public Component getName() {
-        return Component.translatable(category.getLanguageKey());
+        return GTUtil.translatable(category.getLanguageKey());
     }
 }

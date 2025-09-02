@@ -4,9 +4,9 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -35,7 +35,7 @@ public class MachineModeProvider implements IProbeInfoProvider {
                 if (blockEntity.getMetaMachine() instanceof IRecipeLogicMachine recipeLogicMachine) {
                     GTRecipeType currentRecipeType = recipeLogicMachine.getRecipeType();
                     if (player.isShiftKeyDown()) {
-                        iProbeInfo.text(Component.translatable("gtceu.top.machine_mode"));
+                        iProbeInfo.text(GTUtil.translatable("gtceu.top.machine_mode"));
 
                         for (GTRecipeType recipeType : recipeTypes) {
                             IProbeInfo horizontalPane = iProbeInfo.horizontal(
@@ -52,8 +52,8 @@ public class MachineModeProvider implements IProbeInfoProvider {
                             }
                         }
                     } else {
-                        iProbeInfo.text(Component.translatable("gtceu.top.machine_mode")
-                                .append(Component.translatable(currentRecipeType.registryName.toLanguageKey())));
+                        iProbeInfo.text(GTUtil.translatable("gtceu.top.machine_mode")
+                                .append(GTUtil.translatable(currentRecipeType.registryName.toLanguageKey())));
                     }
                 }
             }

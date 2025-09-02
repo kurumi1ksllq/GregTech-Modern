@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.nbt.CompoundTag;
@@ -71,7 +72,7 @@ public interface IMaterialPartItem extends IItemComponent, IDurabilityBar, IAddI
     @Nullable
     default Component getItemName(ItemStack stack) {
         var material = getPartMaterial(stack);
-        return Component.translatable(stack.getDescriptionId(), material.getLocalizedName());
+        return GTUtil.translatable(stack.getDescriptionId(), material.getLocalizedName());
     }
 
     @Override
@@ -81,9 +82,9 @@ public interface IMaterialPartItem extends IItemComponent, IDurabilityBar, IAddI
         var maxDurability = getPartMaxDurability(stack);
         var damage = getPartDamage(stack);
         tooltipComponents
-                .add(Component.translatable("metaitem.tool.tooltip.durability", maxDurability - damage, maxDurability));
+                .add(GTUtil.translatable("metaitem.tool.tooltip.durability", maxDurability - damage, maxDurability));
         tooltipComponents
-                .add(Component.translatable("metaitem.tool.tooltip.primary_material", material.getLocalizedName()));
+                .add(GTUtil.translatable("metaitem.tool.tooltip.primary_material", material.getLocalizedName()));
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -28,7 +28,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -203,7 +202,7 @@ public class MinerLogic extends RecipeLogic implements IRecipeCapabilityHolder {
             } else {
                 // the miner cannot drain, therefore it is inactive
                 if (this.isWorking()) {
-                    setWaiting(Component.translatable("gtceu.recipe_logic.insufficient_out").append(": ")
+                    setWaiting(GTUtil.translatable("gtceu.recipe_logic.insufficient_out").append(": ")
                             .append(ItemRecipeCapability.CAP.getName()));
                 }
             }

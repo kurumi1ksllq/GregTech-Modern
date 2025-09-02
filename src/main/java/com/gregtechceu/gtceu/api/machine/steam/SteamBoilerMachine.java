@@ -20,6 +20,7 @@ import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
@@ -368,7 +369,7 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
     public List<Component> getDataInfo(PortableScannerBehavior.DisplayMode mode) {
         if (mode == PortableScannerBehavior.DisplayMode.SHOW_ALL ||
                 mode == PortableScannerBehavior.DisplayMode.SHOW_MACHINE_INFO) {
-            return Collections.singletonList(Component.translatable("gtceu.machine.steam_boiler.heat_amount",
+            return Collections.singletonList(GTUtil.translatable("gtceu.machine.steam_boiler.heat_amount",
                     FormattingUtil.formatNumbers((int) (getTemperaturePercent() * 100))));
         }
         return new ArrayList<>();

@@ -20,6 +20,7 @@ import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.research.DataBankMachine;
 import com.gregtechceu.gtceu.common.recipe.condition.ResearchCondition;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
 import com.gregtechceu.gtceu.utils.ResearchManager;
 
@@ -158,8 +159,8 @@ public class DataAccessHatchMachine extends TieredPartMachine
                 return Collections.emptyList();
             List<Component> list = new ArrayList<>();
 
-            list.add(Component.translatable("behavior.data_item.title",
-                    Component.translatable(GTRecipeTypes.ASSEMBLY_LINE_RECIPES.registryName.toLanguageKey())));
+            list.add(GTUtil.translatable("behavior.data_item.title",
+                    GTUtil.translatable(GTRecipeTypes.ASSEMBLY_LINE_RECIPES.registryName.toLanguageKey())));
             list.add(Component.empty());
             Collection<ItemStack> itemsAdded = new ObjectOpenCustomHashSet<>(ItemStackHashStrategy.comparingAll());
             for (GTRecipe recipe : recipes) {
@@ -167,7 +168,7 @@ public class DataAccessHatchMachine extends TieredPartMachine
                         .of(recipe.getOutputContents(ItemRecipeCapability.CAP).get(0).content).getItems()[0];
                 if (!itemsAdded.contains(stack)) {
                     itemsAdded.add(stack);
-                    list.add(Component.translatable("behavior.data_item.data", stack.getDisplayName()));
+                    list.add(GTUtil.translatable("behavior.data_item.data", stack.getDisplayName()));
                 }
             }
             return list;

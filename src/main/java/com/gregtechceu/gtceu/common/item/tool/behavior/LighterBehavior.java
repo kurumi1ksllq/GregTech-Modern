@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.common.block.explosive.GTExplosiveBlock;
 import com.gregtechceu.gtceu.common.block.explosive.IndustrialTNTBlock;
 import com.gregtechceu.gtceu.common.block.explosive.PowderbarrelBlock;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.GradientUtil;
 
 import net.minecraft.advancements.CriteriaTriggers;
@@ -246,11 +247,11 @@ public class LighterBehavior implements IDurabilityBar, IInteractionItem, IAddIn
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level,
                                 List<Component> tooltipComponents, TooltipFlag isAdvanced) {
-        tooltipComponents.add(Component
+        tooltipComponents.add(GTUtil
                 .translatable(usesFluid ? "behaviour.lighter.fluid.tooltip" : "behaviour.lighter.tooltip.description"));
-        tooltipComponents.add(Component.translatable("behaviour.lighter.tooltip.usage"));
+        tooltipComponents.add(GTUtil.translatable("behaviour.lighter.tooltip.usage"));
         if (hasMultipleUses && !usesFluid) {
-            tooltipComponents.add(Component.translatable("behaviour.lighter.uses", getUsesLeft(stack)));
+            tooltipComponents.add(GTUtil.translatable("behaviour.lighter.uses", getUsesLeft(stack)));
         }
     }
 

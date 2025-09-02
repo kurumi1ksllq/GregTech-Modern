@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.common.data.GTRecipeConditions;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
@@ -35,9 +36,9 @@ public class DaytimeCondition extends RecipeCondition {
     @Override
     public Component getTooltips() {
         if (isReverse) {
-            return Component.translatable("recipe.condition.daytime.night.tooltip");
+            return GTUtil.translatable("recipe.condition.daytime.night.tooltip");
         } else {
-            return Component.translatable("recipe.condition.daytime.day.tooltip");
+            return GTUtil.translatable("recipe.condition.daytime.day.tooltip");
         }
     }
 

@@ -23,6 +23,7 @@ import com.gregtechceu.gtceu.integration.xei.entry.fluid.FluidTagList;
 import com.gregtechceu.gtceu.integration.xei.handlers.fluid.CycleFluidEntryHandler;
 import com.gregtechceu.gtceu.integration.xei.widgets.GTRecipeWidget;
 import com.gregtechceu.gtceu.utils.GTMath;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -30,7 +31,6 @@ import com.lowdragmc.lowdraglib.jei.IngredientIO;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.fluids.FluidStack;
@@ -388,7 +388,7 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
                     }
                     if (ingredient instanceof IntProviderFluidIngredient provider) {
                         IntProvider countProvider = provider.getCountProvider();
-                        tooltips.add(Component.translatable("gtceu.gui.content.fluid_range",
+                        tooltips.add(GTUtil.translatable("gtceu.gui.content.fluid_range",
                                 countProvider.getMinValue(), countProvider.getMaxValue())
                                 .withStyle(ChatFormatting.GOLD));
                     }
@@ -396,7 +396,7 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
                             recipe.getChanceLogicForCapability(this, io, isTickSlot(index, io, recipe)),
                             tooltips, recipeTier, chanceTier, recipeType.getChanceFunction());
                     if (isTickSlot(index, io, recipe)) {
-                        tooltips.add(Component.translatable("gtceu.gui.content.per_tick"));
+                        tooltips.add(GTUtil.translatable("gtceu.gui.content.per_tick"));
                     }
                 });
                 if (io == IO.IN && (content.chance == 0)) {

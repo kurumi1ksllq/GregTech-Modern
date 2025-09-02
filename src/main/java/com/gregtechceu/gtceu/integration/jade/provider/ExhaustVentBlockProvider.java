@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.integration.jade.provider;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IExhaustVentMachine;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -61,7 +62,7 @@ public class ExhaustVentBlockProvider extends BlockInfoProvider<IExhaustVentMach
                               BlockEntity blockEntity, IPluginConfig iPluginConfig) {
         var direction = Direction.byName(compoundTag.getString("ventDirection"));
         if (direction != null) {
-            iTooltip.add(Component.translatable("gtceu.top.exhaust_vent_direction",
+            iTooltip.add(GTUtil.translatable("gtceu.top.exhaust_vent_direction",
                     StringUtils.capitalize(direction.getName())));
             if (!compoundTag.getBoolean("ventBlocked")) return;
 
@@ -73,7 +74,7 @@ public class ExhaustVentBlockProvider extends BlockInfoProvider<IExhaustVentMach
 
             if (compoundTag.getBoolean("needsVenting")) {
                 iTooltip.append(Component.literal(" ("));
-                iTooltip.append(Component.translatable("gtceu.top.exhaust_vent_blocked").withStyle(ChatFormatting.RED)
+                iTooltip.append(GTUtil.translatable("gtceu.top.exhaust_vent_blocked").withStyle(ChatFormatting.RED)
                         .append(Component.literal(")").withStyle(ChatFormatting.GRAY)));
             }
         }

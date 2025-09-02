@@ -17,6 +17,7 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
 import com.gregtechceu.gtceu.common.machine.trait.miner.SteamMinerLogic;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.ComponentPanelWidget;
@@ -198,33 +199,33 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
 
     void addDisplayText(List<Component> textList) {
         int workingArea = IMiner.getWorkingArea(getRecipeLogic().getCurrentRadius());
-        textList.add(Component.translatable("gtceu.machine.miner.startx", this.getRecipeLogic().getX()));
-        textList.add(Component.translatable("gtceu.machine.miner.starty", this.getRecipeLogic().getY()));
-        textList.add(Component.translatable("gtceu.machine.miner.startz", this.getRecipeLogic().getZ()));
-        textList.add(Component.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
+        textList.add(GTUtil.translatable("gtceu.machine.miner.startx", this.getRecipeLogic().getX()));
+        textList.add(GTUtil.translatable("gtceu.machine.miner.starty", this.getRecipeLogic().getY()));
+        textList.add(GTUtil.translatable("gtceu.machine.miner.startz", this.getRecipeLogic().getZ()));
+        textList.add(GTUtil.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
         if (this.getRecipeLogic().isDone())
-            textList.add(Component.translatable("gtceu.multiblock.large_miner.done")
+            textList.add(GTUtil.translatable("gtceu.multiblock.large_miner.done")
                     .withStyle(ChatFormatting.GREEN));
         else if (this.getRecipeLogic().isWorking())
-            textList.add(Component.translatable("gtceu.multiblock.large_miner.working")
+            textList.add(GTUtil.translatable("gtceu.multiblock.large_miner.working")
                     .withStyle(ChatFormatting.GOLD));
         else if (!this.isWorkingEnabled())
-            textList.add(Component.translatable("gtceu.multiblock.work_paused"));
+            textList.add(GTUtil.translatable("gtceu.multiblock.work_paused"));
         if (getRecipeLogic().isInventoryFull())
-            textList.add(Component.translatable("gtceu.multiblock.large_miner.invfull")
+            textList.add(GTUtil.translatable("gtceu.multiblock.large_miner.invfull")
                     .withStyle(ChatFormatting.RED));
         if (isVentingBlocked())
-            textList.add(Component.translatable("gtceu.multiblock.large_miner.vent")
+            textList.add(GTUtil.translatable("gtceu.multiblock.large_miner.vent")
                     .withStyle(ChatFormatting.RED));
         else if (!drainInput(true))
-            textList.add(Component.translatable("gtceu.multiblock.large_miner.steam")
+            textList.add(GTUtil.translatable("gtceu.multiblock.large_miner.steam")
                     .withStyle(ChatFormatting.RED));
     }
 
     void addDisplayText2(List<Component> textList) {
-        textList.add(Component.translatable("gtceu.machine.miner.minex", this.getRecipeLogic().getMineX()));
-        textList.add(Component.translatable("gtceu.machine.miner.miney", this.getRecipeLogic().getMineY()));
-        textList.add(Component.translatable("gtceu.machine.miner.minez", this.getRecipeLogic().getMineZ()));
+        textList.add(GTUtil.translatable("gtceu.machine.miner.minex", this.getRecipeLogic().getMineX()));
+        textList.add(GTUtil.translatable("gtceu.machine.miner.miney", this.getRecipeLogic().getMineY()));
+        textList.add(GTUtil.translatable("gtceu.machine.miner.minez", this.getRecipeLogic().getMineZ()));
     }
 
     public boolean drainInput(boolean simulate) {
@@ -259,7 +260,7 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
                 mode == PortableScannerBehavior.DisplayMode.SHOW_MACHINE_INFO) {
             int workingArea = IMiner.getWorkingArea(getRecipeLogic().getCurrentRadius());
             return Collections.singletonList(
-                    Component.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
+                    GTUtil.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
         }
         return new ArrayList<>();
     }

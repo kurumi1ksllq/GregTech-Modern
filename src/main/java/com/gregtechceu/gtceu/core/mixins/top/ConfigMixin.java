@@ -6,8 +6,8 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.MaterialToolTier;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -38,7 +38,7 @@ public class ConfigMixin {
         for (GTToolType type : GTToolType.getTypes().values()) {
             for (TagKey<Item> tag : type.itemTags) {
                 if (!tooltypeTagsSet.containsKey(tag.location())) tooltypeTagsSet.put(tag.location(),
-                        Component.translatable("gtceu.tool.class." + type.name).getString());
+                        GTUtil.translatable("gtceu.tool.class." + type.name).getString());
             }
         }
     }

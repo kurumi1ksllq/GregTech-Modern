@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.rei.IGui2Renderer;
 import com.lowdragmc.lowdraglib.rei.ModularUIDisplayCategory;
@@ -90,6 +91,6 @@ public class GTRecipeREICategory extends ModularUIDisplayCategory<GTRecipeDispla
     @NotNull
     @Override
     public Component getTitle() {
-        return Component.translatable(category.getLanguageKey());
+        return GTUtil.translatable(category.getLanguageKey());
     }
 }

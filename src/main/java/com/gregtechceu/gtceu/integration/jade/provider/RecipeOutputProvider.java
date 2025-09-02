@@ -184,7 +184,7 @@ public class RecipeOutputProvider extends CapabilityBlockProvider<RecipeLogic> {
                 }
             }
             if (!outputItems.isEmpty() || !outputFluids.isEmpty()) {
-                tooltip.add(Component.translatable("gtceu.top.recipe_output"));
+                tooltip.add(GTUtil.translatable("gtceu.top.recipe_output"));
             }
             addItemTooltips(tooltip, outputItems);
             addFluidTooltips(tooltip, outputFluids);
@@ -199,7 +199,7 @@ public class RecipeOutputProvider extends CapabilityBlockProvider<RecipeLogic> {
                 MutableComponent text = CommonComponents.space();
                 if (itemOutput instanceof IntProviderIngredient provider) {
                     item = provider.getInner().getItems()[0];
-                    text = text.append(Component.translatable("gtceu.gui.content.range",
+                    text = text.append(GTUtil.translatable("gtceu.gui.content.range",
                             String.valueOf(provider.getCountProvider().getMinValue()),
                             String.valueOf(provider.getCountProvider().getMaxValue())));
                 } else {
@@ -207,7 +207,7 @@ public class RecipeOutputProvider extends CapabilityBlockProvider<RecipeLogic> {
                     text.append(String.valueOf(item.getCount()));
                     item.setCount(1);
                 }
-                text.append(Component.translatable("gtceu.gui.content.times_item",
+                text.append(GTUtil.translatable("gtceu.gui.content.times_item",
                         getItemName(item))
                         .withStyle(ChatFormatting.WHITE));
 
@@ -224,7 +224,7 @@ public class RecipeOutputProvider extends CapabilityBlockProvider<RecipeLogic> {
                 MutableComponent text = CommonComponents.space();
                 if (fluidOutput instanceof IntProviderFluidIngredient provider) {
                     stack = provider.getInner().getStacks()[0];
-                    text.append(Component.translatable("gtceu.gui.content.range",
+                    text.append(GTUtil.translatable("gtceu.gui.content.range",
                             FluidTextHelper.getUnicodeMillibuckets(provider.getCountProvider().getMinValue(), true),
                             FluidTextHelper.getUnicodeMillibuckets(provider.getCountProvider().getMaxValue(), true)));
                 } else {

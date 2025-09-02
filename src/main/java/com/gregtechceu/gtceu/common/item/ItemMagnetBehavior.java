@@ -15,6 +15,7 @@ import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.item.component.IItemLifeCycle;
 import com.gregtechceu.gtceu.api.item.component.IItemUIFactory;
 import com.gregtechceu.gtceu.common.data.GTItems;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.factory.HeldItemUIFactory;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
@@ -113,7 +114,7 @@ public class ItemMagnetBehavior implements IInteractionItem, IItemLifeCycle, IAd
     public InteractionResultHolder<ItemStack> use(Item item, Level world, @NotNull Player player,
                                                   InteractionHand hand) {
         if (!player.level().isClientSide && player.isShiftKeyDown()) {
-            player.displayClientMessage(Component.translatable(toggleActive(player.getItemInHand(hand)) ?
+            player.displayClientMessage(GTUtil.translatable(toggleActive(player.getItemInHand(hand)) ?
                     "behavior.item_magnet.enabled" : "behavior.item_magnet.disabled"), true);
         } else {
             IItemUIFactory.super.use(item, world, player, hand);
@@ -274,7 +275,7 @@ public class ItemMagnetBehavior implements IInteractionItem, IItemLifeCycle, IAd
     @Override
     public void appendHoverText(ItemStack itemStack, @Nullable Level level, List<Component> lines,
                                 TooltipFlag isAdvanced) {
-        lines.add(Component
+        lines.add(GTUtil
                 .translatable(isActive(itemStack) ? "behavior.item_magnet.enabled" : "behavior.item_magnet.disabled"));
     }
 

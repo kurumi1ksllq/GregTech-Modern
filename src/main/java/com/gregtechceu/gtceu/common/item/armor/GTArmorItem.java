@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.item.armor;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.ArmorProperty;
 import com.gregtechceu.gtceu.client.renderer.item.ArmorItemRenderer;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.Platform;
 
@@ -56,7 +57,7 @@ public class GTArmorItem extends ArmorItem {
 
     @Override
     public @NotNull Component getDescription() {
-        return Component.translatable(getDescriptionId(), material.getLocalizedName());
+        return GTUtil.translatable(getDescriptionId(), material.getLocalizedName());
     }
 
     @Override

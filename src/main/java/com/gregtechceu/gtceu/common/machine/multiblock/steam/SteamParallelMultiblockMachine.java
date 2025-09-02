@@ -21,6 +21,7 @@ import com.gregtechceu.gtceu.api.recipe.modifier.ParallelLogic;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -132,28 +133,28 @@ public class SteamParallelMultiblockMachine extends WorkableMultiblockMachine im
         if (isFormed()) {
             if (steamEnergy != null && steamEnergy.getCapacity() > 0) {
                 long steamStored = steamEnergy.getStored();
-                textList.add(Component.translatable("gtceu.multiblock.steam.steam_stored", steamStored,
+                textList.add(GTUtil.translatable("gtceu.multiblock.steam.steam_stored", steamStored,
                         steamEnergy.getCapacity()));
             }
 
             if (!isWorkingEnabled()) {
-                textList.add(Component.translatable("gtceu.multiblock.work_paused"));
+                textList.add(GTUtil.translatable("gtceu.multiblock.work_paused"));
 
             } else if (isActive()) {
-                textList.add(Component.translatable("gtceu.multiblock.running"));
-                if (maxParallels > 1) textList.add(Component.translatable("gtceu.multiblock.parallel", maxParallels));
+                textList.add(GTUtil.translatable("gtceu.multiblock.running"));
+                if (maxParallels > 1) textList.add(GTUtil.translatable("gtceu.multiblock.parallel", maxParallels));
                 int currentProgress = (int) (recipeLogic.getProgressPercent() * 100);
                 double maxInSec = (float) recipeLogic.getDuration() / 20.0f;
                 double currentInSec = (float) recipeLogic.getProgress() / 20.0f;
                 textList.add(
-                        Component.translatable("gtceu.multiblock.progress", String.format("%.2f", (float) currentInSec),
+                        GTUtil.translatable("gtceu.multiblock.progress", String.format("%.2f", (float) currentInSec),
                                 String.format("%.2f", (float) maxInSec), currentProgress));
             } else {
-                textList.add(Component.translatable("gtceu.multiblock.idling"));
+                textList.add(GTUtil.translatable("gtceu.multiblock.idling"));
             }
 
             if (recipeLogic.isWaiting()) {
-                textList.add(Component.translatable("gtceu.multiblock.steam.low_steam")
+                textList.add(GTUtil.translatable("gtceu.multiblock.steam.low_steam")
                         .setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
             }
         }

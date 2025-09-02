@@ -15,6 +15,7 @@ import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemList;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemSlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAESlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlotList;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DropSaved;
@@ -24,7 +25,6 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -285,10 +285,10 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
             setAutoPull(!autoPull);
             if (autoPull) {
                 playerIn.sendSystemMessage(
-                        Component.translatable("gtceu.machine.me.stocking_auto_pull_enabled"));
+                        GTUtil.translatable("gtceu.machine.me.stocking_auto_pull_enabled"));
             } else {
                 playerIn.sendSystemMessage(
-                        Component.translatable("gtceu.machine.me.stocking_auto_pull_disabled"));
+                        GTUtil.translatable("gtceu.machine.me.stocking_auto_pull_disabled"));
             }
         }
         return InteractionResult.sidedSuccess(isRemote());

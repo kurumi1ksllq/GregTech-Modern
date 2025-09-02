@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.item.tool.aoe.AoESymmetrical;
 import com.gregtechceu.gtceu.api.item.tool.behavior.IToolBehavior;
 import com.gregtechceu.gtceu.common.data.item.GTToolActions;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -111,6 +112,6 @@ public class HarvestCropsBehavior implements IToolBehavior {
     @Override
     public void addInformation(@NotNull ItemStack stack, @Nullable Level world, @NotNull List<Component> tooltip,
                                @NotNull TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.gtceu.tool.behavior.crop_harvesting"));
+        tooltip.add(GTUtil.translatable("item.gtceu.tool.behavior.crop_harvesting"));
     }
 }

@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.item;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.fluids.GTFluid;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -68,7 +69,7 @@ public class GTBucketItem extends BucketItem {
     @Override
     public Component getDescription() {
         Component materialName = material.getLocalizedName();
-        return Component.translatable("item.gtceu.bucket", Component.translatable(this.langKey, materialName));
+        return GTUtil.translatable("item.gtceu.bucket", GTUtil.translatable(this.langKey, materialName));
     }
 
     @Override

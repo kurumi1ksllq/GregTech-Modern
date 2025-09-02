@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.common.blockentity.ItemPipeBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.pipelike.item.ItemPipeType;
 import com.gregtechceu.gtceu.common.pipelike.item.LevelItemPipeNet;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
@@ -69,14 +70,14 @@ public class ItemPipeBlock extends MaterialPipeBlock<ItemPipeType, ItemPipePrope
         ItemPipeProperties properties = createProperties(defaultBlockState(), stack);
 
         if (properties.getTransferRate() % 1 != 0) {
-            tooltip.add(Component.translatable("gtceu.universal.tooltip.item_transfer_rate",
+            tooltip.add(GTUtil.translatable("gtceu.universal.tooltip.item_transfer_rate",
                     (int) ((properties.getTransferRate() * 64) + 0.5)));
         } else {
-            tooltip.add(Component.translatable("gtceu.universal.tooltip.item_transfer_rate_stacks",
+            tooltip.add(GTUtil.translatable("gtceu.universal.tooltip.item_transfer_rate_stacks",
                     (int) properties.getTransferRate()));
         }
 
-        tooltip.add(Component.translatable("gtceu.item_pipe.priority", properties.getPriority()));
+        tooltip.add(GTUtil.translatable("gtceu.item_pipe.priority", properties.getPriority()));
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.common.data.GTRecipeConditions;
 import com.gregtechceu.gtceu.common.machine.owner.FTBOwner;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.network.chat.Component;
 
@@ -56,9 +57,9 @@ public class FTBQuestCondition extends RecipeCondition {
         Component questTitle = getQuest().getTitle();
 
         if (isReverse) {
-            return Component.translatable("recipe.condition.quest.not_completed.tooltip", questTitle);
+            return GTUtil.translatable("recipe.condition.quest.not_completed.tooltip", questTitle);
         } else {
-            return Component.translatable("recipe.condition.quest.completed.tooltip", questTitle);
+            return GTUtil.translatable("recipe.condition.quest.completed.tooltip", questTitle);
         }
     }
 

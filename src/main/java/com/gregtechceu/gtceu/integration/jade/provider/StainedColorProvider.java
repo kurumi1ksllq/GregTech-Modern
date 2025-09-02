@@ -2,9 +2,9 @@ package com.gregtechceu.gtceu.integration.jade.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.IPaintable;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import snownee.jade.api.BlockAccessor;
@@ -20,7 +20,7 @@ public class StainedColorProvider implements IBlockComponentProvider, IServerDat
         if (blockAccessor.getServerData().contains("StainedColor")) {
             int paintingColor = blockAccessor.getServerData().getInt("StainedColor");
             if (paintingColor != IPaintable.UNPAINTED_COLOR) {
-                iTooltip.add(Component.translatable("gtceu.top.stained", String.format("#%06X", paintingColor))
+                iTooltip.add(GTUtil.translatable("gtceu.top.stained", String.format("#%06X", paintingColor))
                         .withStyle(style -> style.withColor(paintingColor)));
             }
         }

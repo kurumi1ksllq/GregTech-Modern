@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.steam.SteamBoilerMachine;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -48,10 +49,10 @@ public class SteamBoilerInfoProvider extends CapabilityInfoProvider<SteamBoilerM
         MutableComponent root;
         if (isBurning && temperature < maxTemperature) {
             // Heating up
-            root = Component.translatable("gtceu.machine.boiler.info.heating.up");
+            root = GTUtil.translatable("gtceu.machine.boiler.info.heating.up");
         } else if (!isBurning && temperature > 0) {
             // Cooling down
-            root = Component.translatable("gtceu.machine.boiler.info.cooling.down");
+            root = GTUtil.translatable("gtceu.machine.boiler.info.cooling.down");
         } else {
             root = null; // neither heating nor cooling, is either max temperature or temperature of zero
         }
@@ -60,7 +61,7 @@ public class SteamBoilerInfoProvider extends CapabilityInfoProvider<SteamBoilerM
         MutableComponent extra;
         if (makingSteam) {
             // Producing some amount of steam
-            extra = Component.translatable("gtceu.machine.boiler.info.production.data",
+            extra = GTUtil.translatable("gtceu.machine.boiler.info.production.data",
                     Component.literal(FormattingUtil.formatNumbers(production / 10))
                             .withStyle(ChatFormatting.GREEN));
             if (root != null) {

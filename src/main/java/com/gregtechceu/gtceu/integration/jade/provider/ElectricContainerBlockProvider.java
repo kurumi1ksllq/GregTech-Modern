@@ -4,12 +4,12 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IEnergyInfoProvider;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -59,7 +59,7 @@ public class ElectricContainerBlockProvider extends CapabilityBlockProvider<IEne
         tooltip.add(
                 helper.progress(
                         progress,
-                        Component.translatable("gtceu.jade.energy_stored", energyStr, maxEnergyStr),
+                        GTUtil.translatable("gtceu.jade.energy_stored", energyStr, maxEnergyStr),
                         helper.progressStyle().color(0xFFEEE600, 0xFFEEE600).textColor(-1),
                         Util.make(BoxStyle.DEFAULT, style -> style.borderColor = 0xFF555555),
                         true));

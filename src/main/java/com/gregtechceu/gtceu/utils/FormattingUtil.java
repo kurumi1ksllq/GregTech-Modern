@@ -263,7 +263,7 @@ public class FormattingUtil {
     }
 
     public static Component formatPercentage2Places(String langKey, float percentage) {
-        return Component.translatable(langKey, formatNumber2Places(percentage)).withStyle(YELLOW);
+        return GTUtil.translatable(langKey, formatNumber2Places(percentage)).withStyle(YELLOW);
     }
 
     public static void combineComponents(MutableComponent c1, Component c2) {

@@ -8,10 +8,10 @@ import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.item.TurbineRotorBehaviour;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -214,7 +214,7 @@ public interface IRotorHolderMachine extends IMultiPart {
     default void attachTooltips(TooltipsPanel tooltipsPanel) {
         tooltipsPanel.attachTooltips(new IFancyTooltip.Basic(
                 () -> GuiTextures.INDICATOR_NO_STEAM.get(false),
-                () -> List.of(Component.translatable("gtceu.multiblock.universal.rotor_obstructed")
+                () -> List.of(GTUtil.translatable("gtceu.multiblock.universal.rotor_obstructed")
                         .setStyle(Style.EMPTY.withColor(ChatFormatting.RED))),
                 () -> !isFrontFaceFree(),
                 () -> null));

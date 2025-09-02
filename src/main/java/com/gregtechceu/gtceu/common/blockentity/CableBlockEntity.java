@@ -349,11 +349,11 @@ public class CableBlockEntity extends PipeBlockEntity<Insulation, WireProperties
 
         if (mode == PortableScannerBehavior.DisplayMode.SHOW_ALL ||
                 mode == PortableScannerBehavior.DisplayMode.SHOW_ELECTRICAL_INFO) {
-            list.add(Component.translatable("behavior.portable_scanner.eu_per_sec",
-                    Component.translatable(FormattingUtil.formatNumbers(getAverageVoltage()))
+            list.add(GTUtil.translatable("behavior.portable_scanner.eu_per_sec",
+                    GTUtil.translatable(FormattingUtil.formatNumbers(getAverageVoltage()))
                             .withStyle(ChatFormatting.RED)));
-            list.add(Component.translatable("behavior.portable_scanner.amp_per_sec",
-                    Component.translatable(FormattingUtil.formatNumbers(getAverageAmperage()))
+            list.add(GTUtil.translatable("behavior.portable_scanner.amp_per_sec",
+                    GTUtil.translatable(FormattingUtil.formatNumbers(getAverageAmperage()))
                             .withStyle(ChatFormatting.RED)));
         }
 

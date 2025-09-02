@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.integration.xei.widgets.GTOreVeinWidget;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.jei.ModularUIRecipeCategory;
 
@@ -55,6 +56,6 @@ public class GTBedrockOreInfoCategory extends ModularUIRecipeCategory<GTBedrockO
     @NotNull
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.jei.bedrock_ore_diagram");
+        return GTUtil.translatable("gtceu.jei.bedrock_ore_diagram");
     }
 }

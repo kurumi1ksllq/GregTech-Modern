@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.integration.map.WaypointManager;
 import com.gregtechceu.gtceu.integration.map.cache.client.GTClientCache;
 import com.gregtechceu.gtceu.integration.map.cache.server.ServerCache;
 import com.gregtechceu.gtceu.integration.map.layer.builtin.OreRenderLayer;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.editor.ColorPattern;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -241,7 +242,7 @@ public class ProspectingMapWidget extends WidgetGroup implements SearchComponent
         if (cX >= 0 && cZ >= 0 && cX < chunkRadius * 2 - 1 && cZ < chunkRadius * 2 - 1) {
             // draw hover layer
             List<Component> tooltips = new ArrayList<>();
-            tooltips.add(Component.translatable(mode.unlocalizedName));
+            tooltips.add(GTUtil.translatable(mode.unlocalizedName));
             List<Object[]> items = new ArrayList<>();
             for (int i = 0; i < mode.cellSize; i++) {
                 for (int j = 0; j < mode.cellSize; j++) {
@@ -272,7 +273,7 @@ public class ProspectingMapWidget extends WidgetGroup implements SearchComponent
                 gui.entityPlayer.level().dimension(),
                 clickedItem.position.getX(), clickedItem.position.getY(), clickedItem.position.getZ());
         gui.entityPlayer.displayClientMessage(
-                Component.translatable("behavior.prospector.added_waypoint", veinName), false);
+                GTUtil.translatable("behavior.prospector.added_waypoint", veinName), false);
         playButtonClickSound();
         return true;
     }
@@ -303,7 +304,7 @@ public class ProspectingMapWidget extends WidgetGroup implements SearchComponent
         if (!texture.getSelected().equals(ProspectingTexture.SELECTED_ALL)) {
             for (var item : items) {
                 if (!texture.getSelected().equals(mode.getUniqueID(item))) continue;
-                var name = Component.translatable(mode.getDescriptionId(item)).getString();
+                var name = GTUtil.translatable(mode.getDescriptionId(item)).getString();
                 var color = mode.getItemColor(item);
                 return new WaypointItem(blockPos, name, color);
             }
@@ -313,7 +314,7 @@ public class ProspectingMapWidget extends WidgetGroup implements SearchComponent
         var hoveredItem = texture.data[cX * mode.cellSize + (offsetX * mode.cellSize / 16)][cZ * mode.cellSize +
                 (offsetZ * mode.cellSize / 16)];
         if (hoveredItem != null && hoveredItem.length != 0) {
-            var name = Component.translatable(mode.getDescriptionId(hoveredItem[0])).getString();
+            var name = GTUtil.translatable(mode.getDescriptionId(hoveredItem[0])).getString();
             var color = mode.getItemColor(hoveredItem[0]);
             return new WaypointItem(blockPos, name, color);
         }

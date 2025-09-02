@@ -9,13 +9,13 @@ import com.gregtechceu.gtceu.api.recipe.content.IContentSerializer;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.AbstractMapIngredient;
 import com.gregtechceu.gtceu.api.recipe.ui.GTRecipeTypeUI;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 import com.mojang.serialization.Codec;
@@ -104,7 +104,7 @@ public abstract class RecipeCapability<T> {
     }
 
     public MutableComponent getName() {
-        return Component.translatable("recipe.capability.%s.name".formatted(name));
+        return GTUtil.translatable("recipe.capability.%s.name".formatted(name));
     }
 
     public MutableComponent getColoredName() {

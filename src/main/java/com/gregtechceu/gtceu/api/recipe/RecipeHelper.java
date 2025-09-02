@@ -15,7 +15,6 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -225,10 +224,10 @@ public class RecipeHelper {
 
         if (!simulated && ConfigHolder.INSTANCE.dev.debug) {
             GTCEu.LOGGER.warn("IO {} Error while handling recipe {} outputs for {}",
-                    Component.translatable(io.tooltip).getString(), recipe, holder);
+                    GTUtil.translatable(io.tooltip).getString(), recipe, holder);
         }
         String key = "gtceu.recipe_logic.insufficient_" + (io == IO.IN ? "in" : "out");
-        return ActionResult.fail(Component.translatable(key)
+        return ActionResult.fail(GTUtil.translatable(key)
                 .append(": ").append(result.capability().getName()), result.capability(), io);
     }
 
@@ -253,7 +252,7 @@ public class RecipeHelper {
             if (condition.isOr()) {
                 or.computeIfAbsent(condition.getType(), type -> new ArrayList<>()).add(condition);
             } else if (!condition.check(recipe, recipeLogic)) {
-                return ActionResult.fail(Component.translatable("gtceu.recipe_logic.condition_fails")
+                return ActionResult.fail(GTUtil.translatable("gtceu.recipe_logic.condition_fails")
                         .append(": ")
                         .append(condition.getTooltips()), null, null);
             }
@@ -261,7 +260,7 @@ public class RecipeHelper {
 
         for (List<RecipeCondition> conditions : or.values()) {
             boolean passed = conditions.isEmpty();
-            MutableComponent component = Component.translatable("gtceu.recipe_logic.condition_fails")
+            MutableComponent component = GTUtil.translatable("gtceu.recipe_logic.condition_fails")
                     .append(": ");
             for (RecipeCondition condition : conditions) {
                 passed = condition.check(recipe, recipeLogic);

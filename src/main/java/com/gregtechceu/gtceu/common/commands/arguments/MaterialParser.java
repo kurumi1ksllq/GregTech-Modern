@@ -2,9 +2,9 @@ package com.gregtechceu.gtceu.common.commands.arguments;
 
 import com.gregtechceu.gtceu.api.data.chemical.material.IMaterialRegistryManager;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import com.mojang.brigadier.StringReader;
@@ -21,11 +21,11 @@ import java.util.function.Function;
 public class MaterialParser {
 
     private static final SimpleCommandExceptionType ERROR_NO_TAGS_ALLOWED = new SimpleCommandExceptionType(
-            Component.translatable("argument.item.tag.disallowed"));
+            GTUtil.translatable("argument.item.tag.disallowed"));
     private static final DynamicCommandExceptionType ERROR_UNKNOWN_ITEM = new DynamicCommandExceptionType(
-            id -> Component.translatable("argument.item.id.invalid", id));
+            id -> GTUtil.translatable("argument.item.id.invalid", id));
     private static final DynamicCommandExceptionType ERROR_UNKNOWN_TAG = new DynamicCommandExceptionType(
-            tag -> Component.translatable("arguments.item.tag.unknown", tag));
+            tag -> GTUtil.translatable("arguments.item.tag.unknown", tag));
     private static final char SYNTAX_START_NBT = '{';
     private static final char SYNTAX_TAG = '#';
     private static final Function<SuggestionsBuilder, CompletableFuture<Suggestions>> SUGGEST_NOTHING = SuggestionsBuilder::buildFuture;

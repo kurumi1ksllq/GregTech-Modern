@@ -63,7 +63,7 @@ public class TooltipsHandler {
         if (translationKey.startsWith(ITEM_PREFIX) || translationKey.startsWith(BLOCK_PREFIX)) {
             String tooltipKey = translationKey + ".tooltip";
             if (Language.getInstance().has(tooltipKey)) {
-                tooltips.add(1, Component.translatable(tooltipKey));
+                tooltips.add(1, GTUtil.translatable(tooltipKey));
             } else {
                 List<MutableComponent> multiLang = LangHandler.getMultiLang(tooltipKey);
                 if (multiLang != null && !multiLang.isEmpty()) {
@@ -107,7 +107,7 @@ public class TooltipsHandler {
                     if (remainder != 0) {
                         fluidAmount += String.format(" + %d mB", remainder);
                     }
-                    tooltips.accept(Component.translatable("gtceu.gui.fluid_amount").withStyle(ChatFormatting.GRAY)
+                    tooltips.accept(GTUtil.translatable("gtceu.gui.fluid_amount").withStyle(ChatFormatting.GRAY)
                             .append(Component.literal(fluidAmount)));
                 }
             }
@@ -116,19 +116,19 @@ public class TooltipsHandler {
         if (fluid instanceof GTFluid attributedFluid) {
             FluidState state = attributedFluid.getState();
             switch (state) {
-                case LIQUID -> tooltips.accept(Component.translatable("gtceu.fluid.state_liquid"));
-                case GAS -> tooltips.accept(Component.translatable("gtceu.fluid.state_gas"));
-                case PLASMA -> tooltips.accept(Component.translatable("gtceu.fluid.state_plasma"));
+                case LIQUID -> tooltips.accept(GTUtil.translatable("gtceu.fluid.state_liquid"));
+                case GAS -> tooltips.accept(GTUtil.translatable("gtceu.fluid.state_gas"));
+                case PLASMA -> tooltips.accept(GTUtil.translatable("gtceu.fluid.state_plasma"));
             }
             attributedFluid.getAttributes().forEach(a -> a.appendFluidTooltips(tooltips));
         } else {
             String key = "gtceu.fluid.state_" + (fluidType.isLighterThanAir() ? "gas" : "liquid");
-            tooltips.accept(Component.translatable(key));
+            tooltips.accept(GTUtil.translatable(key));
         }
 
-        tooltips.accept(Component.translatable("gtceu.fluid.temperature", fluidType.getTemperature()));
+        tooltips.accept(GTUtil.translatable("gtceu.fluid.temperature", fluidType.getTemperature()));
         if (fluidType.getTemperature() < FluidConstants.CRYOGENIC_FLUID_THRESHOLD) {
-            tooltips.accept(Component.translatable("gtceu.fluid.temperature.cryogenic"));
+            tooltips.accept(GTUtil.translatable("gtceu.fluid.temperature.cryogenic"));
         }
     }
 }

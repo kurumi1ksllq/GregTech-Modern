@@ -22,8 +22,8 @@ import com.gregtechceu.gtceu.common.data.GTMedicalConditions;
 import com.gregtechceu.gtceu.integration.kjs.helpers.MaterialStackWrapper;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -501,7 +501,7 @@ public class Material implements Comparable<Material> {
     }
 
     public MutableComponent getLocalizedName() {
-        return Component.translatable(getUnlocalizedName());
+        return GTUtil.translatable(getUnlocalizedName());
     }
 
     @Override

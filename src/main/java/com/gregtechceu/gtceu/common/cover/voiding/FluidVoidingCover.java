@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.common.cover.PumpCover;
 import com.gregtechceu.gtceu.utils.GTMath;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
@@ -18,7 +19,6 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -116,7 +116,7 @@ public class FluidVoidingCover extends PumpCover {
     public InteractionResult onSoftMalletClick(Player playerIn, InteractionHand hand, BlockHitResult hitResult) {
         if (!isRemote()) {
             setWorkingEnabled(!isWorkingEnabled);
-            playerIn.sendSystemMessage(Component.translatable(isWorkingEnabled() ?
+            playerIn.sendSystemMessage(GTUtil.translatable(isWorkingEnabled() ?
                     "cover.voiding.message.enabled" : "cover.voiding.message.disabled"));
         }
         return InteractionResult.sidedSuccess(playerIn.level().isClientSide);

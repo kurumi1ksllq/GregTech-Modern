@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.pattern.error;
 import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -50,6 +51,6 @@ public class PatternError {
             }
         }
         builder.append("...");
-        return Component.translatable("gtceu.multiblock.pattern.error", builder.toString(), worldState.getPos());
+        return GTUtil.translatable("gtceu.multiblock.pattern.error", builder.toString(), worldState.getPos());
     }
 }

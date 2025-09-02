@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.item.component.IItemUIFactory;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.factory.HeldItemUIFactory;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
@@ -78,12 +79,12 @@ public class ProspectorScannerBehavior implements IItemUIFactory, IInteractionIt
             if (!level.isClientSide) {
                 setNextMode(heldItem);
                 var mode = getMode(heldItem);
-                player.sendSystemMessage(Component.translatable(mode.unlocalizedName));
+                player.sendSystemMessage(GTUtil.translatable(mode.unlocalizedName));
             }
             return InteractionResultHolder.success(heldItem);
         }
         if (!player.isCreative() && !drainEnergy(heldItem, true)) {
-            player.sendSystemMessage(Component.translatable("behavior.prospector.not_enough_energy"));
+            player.sendSystemMessage(GTUtil.translatable("behavior.prospector.not_enough_energy"));
             return InteractionResultHolder.success(heldItem);
         }
         return IItemUIFactory.super.use(item, level, player, usedHand);
@@ -109,10 +110,10 @@ public class ProspectorScannerBehavior implements IItemUIFactory, IInteractionIt
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                 TooltipFlag isAdvanced) {
-        tooltipComponents.add(Component.translatable("metaitem.prospector.tooltip.radius", radius));
-        tooltipComponents.add(Component.translatable("metaitem.prospector.tooltip.modes"));
+        tooltipComponents.add(GTUtil.translatable("metaitem.prospector.tooltip.radius", radius));
+        tooltipComponents.add(GTUtil.translatable("metaitem.prospector.tooltip.modes"));
         for (ProspectorMode<?> mode : modes) {
-            tooltipComponents.add(Component.literal(" -").append(Component.translatable(mode.unlocalizedName))
+            tooltipComponents.add(Component.literal(" -").append(GTUtil.translatable(mode.unlocalizedName))
                     .withStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
         }
     }

@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.core.IFireImmuneEntity;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -85,7 +86,7 @@ public class AdvancedQuarkTechSuite extends QuarkTechSuite implements IJetpack {
 
             if (messageKey != null) {
                 toggleTimer = 5;
-                if (!world.isClientSide) player.displayClientMessage(Component.translatable(messageKey), true);
+                if (!world.isClientSide) player.displayClientMessage(GTUtil.translatable(messageKey), true);
             }
         }
 
@@ -153,20 +154,20 @@ public class AdvancedQuarkTechSuite extends QuarkTechSuite implements IJetpack {
         CompoundTag data = itemStack.getOrCreateTag();
         Component state;
         boolean enabled = !data.contains("enabled") || data.getBoolean("enabled");
-        state = enabled ? Component.translatable("metaarmor.hud.status.enabled") :
-                Component.translatable("metaarmor.hud.status.disabled");
-        lines.add(Component.translatable("metaarmor.hud.engine_enabled", state));
+        state = enabled ? GTUtil.translatable("metaarmor.hud.status.enabled") :
+                GTUtil.translatable("metaarmor.hud.status.disabled");
+        lines.add(GTUtil.translatable("metaarmor.hud.engine_enabled", state));
 
         boolean canShare = data.contains("canShare") && data.getBoolean("canShare");
-        state = canShare ? Component.translatable("metaarmor.hud.status.enabled") :
-                Component.translatable("metaarmor.hud.status.disabled");
-        lines.add(Component.translatable("metaarmor.energy_share.tooltip", state));
-        lines.add(Component.translatable("metaarmor.energy_share.tooltip.guide"));
+        state = canShare ? GTUtil.translatable("metaarmor.hud.status.enabled") :
+                GTUtil.translatable("metaarmor.hud.status.disabled");
+        lines.add(GTUtil.translatable("metaarmor.energy_share.tooltip", state));
+        lines.add(GTUtil.translatable("metaarmor.energy_share.tooltip.guide"));
 
         boolean hover = data.contains("hover") && data.getBoolean("hover");
-        state = hover ? Component.translatable("metaarmor.hud.status.enabled") :
-                Component.translatable("metaarmor.hud.status.disabled");
-        lines.add(Component.translatable("metaarmor.hud.hover_mode", state));
+        state = hover ? GTUtil.translatable("metaarmor.hud.status.enabled") :
+                GTUtil.translatable("metaarmor.hud.status.disabled");
+        lines.add(GTUtil.translatable("metaarmor.hud.hover_mode", state));
     }
 
     @Override
@@ -183,11 +184,11 @@ public class AdvancedQuarkTechSuite extends QuarkTechSuite implements IJetpack {
             canShare = !canShare;
             if (!world.isClientSide) {
                 if (canShare && cont.getCharge() == 0) {
-                    player.sendSystemMessage(Component.translatable("metaarmor.energy_share.error"));
+                    player.sendSystemMessage(GTUtil.translatable("metaarmor.energy_share.error"));
                 } else if (canShare) {
-                    player.sendSystemMessage(Component.translatable("metaarmor.energy_share.enable"));
+                    player.sendSystemMessage(GTUtil.translatable("metaarmor.energy_share.enable"));
                 } else {
-                    player.sendSystemMessage(Component.translatable("metaarmor.energy_share.disable"));
+                    player.sendSystemMessage(GTUtil.translatable("metaarmor.energy_share.disable"));
                 }
             }
 
@@ -210,21 +211,21 @@ public class AdvancedQuarkTechSuite extends QuarkTechSuite implements IJetpack {
         if (data != null) {
             if (data.contains("enabled")) {
                 Component status = (data.getBoolean("enabled") ?
-                        Component.translatable("metaarmor.hud.status.enabled") :
-                        Component.translatable("metaarmor.hud.status.disabled"));
-                Component result = Component.translatable("metaarmor.hud.engine_enabled", status);
+                        GTUtil.translatable("metaarmor.hud.status.enabled") :
+                        GTUtil.translatable("metaarmor.hud.status.disabled"));
+                Component result = GTUtil.translatable("metaarmor.hud.engine_enabled", status);
                 this.HUD.newString(result);
             }
             if (data.contains("canShare")) {
                 String status = data.getBoolean("canShare") ? "metaarmor.hud.status.enabled" :
                         "metaarmor.hud.status.disabled";
-                this.HUD.newString(Component.translatable("mataarmor.hud.supply_mode", Component.translatable(status)));
+                this.HUD.newString(GTUtil.translatable("mataarmor.hud.supply_mode", GTUtil.translatable(status)));
             }
 
             if (data.contains("hover")) {
                 String status = data.getBoolean("hover") ? "metaarmor.hud.status.enabled" :
                         "metaarmor.hud.status.disabled";
-                this.HUD.newString(Component.translatable("metaarmor.hud.hover_mode", Component.translatable(status)));
+                this.HUD.newString(GTUtil.translatable("metaarmor.hud.hover_mode", GTUtil.translatable(status)));
             }
         }
         this.HUD.draw(guiGraphics);

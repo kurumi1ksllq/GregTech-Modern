@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.client.util.DrawUtil;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.map.ftbchunks.FTBChunksOptions;
 import com.gregtechceu.gtceu.integration.map.layer.builtin.OreRenderLayer;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -86,15 +87,15 @@ public class OreVeinIcon implements MapIcon {
     private void openContextMenu(LargeMapScreen screen) {
         var title = Component.literal(getName());
         if (veinMetadata.depleted()) {
-            title.append(" (").append(Component.translatable("gtceu.minimap.ore_vein.depleted")).append(")");
+            title.append(" (").append(GTUtil.translatable("gtceu.minimap.ore_vein.depleted")).append(")");
         }
-        var markDepleted = new ContextMenuItem(Component.translatable("button.gtceu.mark_as_depleted.name"),
+        var markDepleted = new ContextMenuItem(GTUtil.translatable("button.gtceu.mark_as_depleted.name"),
                 Icons.REMOVE,
                 b -> veinMetadata.depleted(!veinMetadata.depleted()));
         var material = getMaterial();
         var color = material.isNull() ? Color4I.rgba(0xFFFFFFFF) : Color4I.rgba(material.getMaterialARGB());
         var waypointIcon = WaypointType.DEFAULT.getIcon().withColor(color);
-        var toggleWaypoint = new ContextMenuItem(Component.translatable("button.gtceu.toggle_waypoint.name"),
+        var toggleWaypoint = new ContextMenuItem(GTUtil.translatable("button.gtceu.toggle_waypoint.name"),
                 waypointIcon,
                 b -> toggleWaypoint(screen));
         var contextMenu = List.of(

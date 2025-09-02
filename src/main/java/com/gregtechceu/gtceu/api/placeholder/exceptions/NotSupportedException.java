@@ -1,10 +1,10 @@
 package com.gregtechceu.gtceu.api.placeholder.exceptions;
 
-import net.minecraft.network.chat.Component;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 public class NotSupportedException extends PlaceholderException {
 
     public NotSupportedException() {
-        super(Component.translatable("gtceu.computer_monitor_cover.error.not_supported").getString());
+        super(GTUtil.translatable("gtceu.computer_monitor_cover.error.not_supported").getString());
     }
 }

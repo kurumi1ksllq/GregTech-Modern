@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.common.data.GTFluids;
 import com.gregtechceu.gtceu.core.mixins.forge.StrictNBTIngredientAccessor;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -110,10 +111,10 @@ public class PotionFluidHelper {
         List<MobEffectInstance> list = PotionUtils.getAllEffects(fs.getOrCreateTag());
         List<Tuple<String, AttributeModifier>> modifiers = Lists.newArrayList();
         if (list.isEmpty()) {
-            tooltip.accept(Component.translatable("effect.none").withStyle(ChatFormatting.GRAY));
+            tooltip.accept(GTUtil.translatable("effect.none").withStyle(ChatFormatting.GRAY));
         } else {
             for (MobEffectInstance effectInstance : list) {
-                MutableComponent name = Component.translatable(effectInstance.getDescriptionId());
+                MutableComponent name = GTUtil.translatable(effectInstance.getDescriptionId());
                 MobEffect effect = effectInstance.getEffect();
                 Map<Attribute, AttributeModifier> map = effect.getAttributeModifiers();
                 if (!map.isEmpty()) {
@@ -129,12 +130,12 @@ public class PotionFluidHelper {
                 }
 
                 if (effectInstance.getAmplifier() > 0) {
-                    name = Component.translatable("potion.withAmplifier", name,
-                            Component.translatable("potion.potency." + effectInstance.getAmplifier()));;
+                    name = GTUtil.translatable("potion.withAmplifier", name,
+                            GTUtil.translatable("potion.potency." + effectInstance.getAmplifier()));;
                 }
 
                 if (!effectInstance.endsWithin(20)) {
-                    name = Component.translatable("potion.withDuration", name,
+                    name = GTUtil.translatable("potion.withDuration", name,
                             MobEffectUtil.formatDuration(effectInstance, 1.0f));
 
                 }
@@ -146,7 +147,7 @@ public class PotionFluidHelper {
 
         if (!modifiers.isEmpty()) {
             tooltip.accept(Component.empty());
-            tooltip.accept(Component.translatable("potion.whenDrank").withStyle(ChatFormatting.DARK_PURPLE));
+            tooltip.accept(GTUtil.translatable("potion.whenDrank").withStyle(ChatFormatting.DARK_PURPLE));
 
             for (Tuple<String, AttributeModifier> tuple : modifiers) {
                 AttributeModifier modifier2 = tuple.getB();
@@ -160,19 +161,17 @@ public class PotionFluidHelper {
                 }
 
                 if (d0 > 0.0D) {
-                    tooltip.accept(Component.translatable(
-                            "attribute.modifier.plus." + modifier2.getOperation()
-                                    .toValue(),
+                    tooltip.accept(GTUtil.translatable("attribute.modifier.plus." + modifier2.getOperation()
+                            .toValue(),
                             ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(d1),
-                            Component.translatable(tuple.getA()))
+                            GTUtil.translatable(tuple.getA()))
                             .withStyle(ChatFormatting.BLUE));
                 } else if (d0 < 0.0D) {
                     d1 = d1 * -1.0D;
-                    tooltip.accept(Component.translatable(
-                            "attribute.modifier.take." + modifier2.getOperation()
-                                    .toValue(),
+                    tooltip.accept(GTUtil.translatable("attribute.modifier.take." + modifier2.getOperation()
+                            .toValue(),
                             ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(d1),
-                            Component.translatable(tuple.getA()))
+                            GTUtil.translatable(tuple.getA()))
                             .withStyle(ChatFormatting.RED));
                 }
             }
@@ -181,7 +180,7 @@ public class PotionFluidHelper {
 
     public static Component formatDuration(MobEffectInstance effect) {
         if (effect.isInfiniteDuration()) {
-            return Component.translatable("effect.duration.infinite");
+            return GTUtil.translatable("effect.duration.infinite");
         } else {
             int time = effect.getDuration();
             Instant start = Instant.now();
@@ -192,13 +191,13 @@ public class PotionFluidHelper {
 
             if (durationMax.getSeconds() <= 60) {
                 time = GTMath.saturatedCast(durationMax.getSeconds());
-                unit = Component.translatable("item.gtceu.battery.charge_unit.second");
+                unit = GTUtil.translatable("item.gtceu.battery.charge_unit.second");
             } else if (durationMax.toMinutes() <= 60) {
                 time = GTMath.saturatedCast(durationMax.toMinutes());
-                unit = Component.translatable("item.gtceu.battery.charge_unit.minute");
+                unit = GTUtil.translatable("item.gtceu.battery.charge_unit.minute");
             } else {
                 time = GTMath.saturatedCast(durationMax.toHours());
-                unit = Component.translatable("item.gtceu.battery.charge_unit.hour");
+                unit = GTUtil.translatable("item.gtceu.battery.charge_unit.hour");
             }
 
             return Component.literal(FormattingUtil.formatNumbers(time)).append(unit);

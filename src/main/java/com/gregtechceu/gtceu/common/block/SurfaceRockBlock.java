@@ -5,13 +5,13 @@ import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.item.SurfaceRockBlockItem;
 import com.gregtechceu.gtceu.client.renderer.block.SurfaceRockRenderer;
 import com.gregtechceu.gtceu.integration.map.cache.server.ServerCache;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -183,6 +183,6 @@ public class SurfaceRockBlock extends Block {
 
     @Override
     public MutableComponent getName() {
-        return Component.translatable("block.surface_rock", material.getLocalizedName());
+        return GTUtil.translatable("block.surface_rock", material.getLocalizedName());
     }
 }

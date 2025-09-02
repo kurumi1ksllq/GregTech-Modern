@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.common.data.GTRecipeConditions;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.network.chat.Component;
 
@@ -47,7 +48,7 @@ public class CleanroomCondition extends RecipeCondition {
     @Override
     public Component getTooltips() {
         return cleanroom == null ? null :
-                Component.translatable("gtceu.recipe.cleanroom", Component.translatable(cleanroom.getTranslationKey()));
+                GTUtil.translatable("gtceu.recipe.cleanroom", GTUtil.translatable(cleanroom.getTranslationKey()));
     }
 
     @Override

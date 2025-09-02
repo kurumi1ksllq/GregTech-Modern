@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IMufflableMachine;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -51,18 +52,18 @@ public class MetaMachineConfigCopyBehaviour implements IInteractionItem, IAddInf
     public static final String INPUT_FROM_OUTPUT_SIDE = "in_from_out";
     public static final String MUFFLED = "muffled";
 
-    public static final Component ENABLED = Component.translatable("cover.voiding.label.enabled")
+    public static final Component ENABLED = GTUtil.translatable("cover.voiding.label.enabled")
             .withStyle(ChatFormatting.GREEN);
-    public static final Component DISABLED = Component.translatable("cover.voiding.label.disabled")
+    public static final Component DISABLED = GTUtil.translatable("cover.voiding.label.disabled")
             .withStyle(ChatFormatting.RED);
 
     public static final Component[] DIRECTION_TOOLTIPS = {
-            Component.translatable("gtceu.direction.tooltip.up").withStyle(ChatFormatting.YELLOW),
-            Component.translatable("gtceu.direction.tooltip.down").withStyle(ChatFormatting.YELLOW),
-            Component.translatable("gtceu.direction.tooltip.left").withStyle(ChatFormatting.YELLOW),
-            Component.translatable("gtceu.direction.tooltip.right").withStyle(ChatFormatting.YELLOW),
-            Component.translatable("gtceu.direction.tooltip.front").withStyle(ChatFormatting.YELLOW),
-            Component.translatable("gtceu.direction.tooltip.back").withStyle(ChatFormatting.YELLOW),
+            GTUtil.translatable("gtceu.direction.tooltip.up").withStyle(ChatFormatting.YELLOW),
+            GTUtil.translatable("gtceu.direction.tooltip.down").withStyle(ChatFormatting.YELLOW),
+            GTUtil.translatable("gtceu.direction.tooltip.left").withStyle(ChatFormatting.YELLOW),
+            GTUtil.translatable("gtceu.direction.tooltip.right").withStyle(ChatFormatting.YELLOW),
+            GTUtil.translatable("gtceu.direction.tooltip.front").withStyle(ChatFormatting.YELLOW),
+            GTUtil.translatable("gtceu.direction.tooltip.back").withStyle(ChatFormatting.YELLOW),
     };
 
     public static String directionToString(@Nullable Direction direction) {
@@ -162,8 +163,8 @@ public class MetaMachineConfigCopyBehaviour implements IInteractionItem, IAddInf
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                 TooltipFlag isAdvanced) {
-        tooltipComponents.add(Component.translatable("behaviour.meta.machine.config.copy.tooltip"));
-        tooltipComponents.add(Component.translatable("behaviour.meta.machine.config.paste.tooltip"));
+        tooltipComponents.add(GTUtil.translatable("behaviour.meta.machine.config.copy.tooltip"));
+        tooltipComponents.add(GTUtil.translatable("behaviour.meta.machine.config.paste.tooltip"));
         CompoundTag data = stack.getTagElement(CONFIG_DATA);
         if (data == null) return;
         if (Screen.hasShiftDown()) {
@@ -178,21 +179,21 @@ public class MetaMachineConfigCopyBehaviour implements IInteractionItem, IAddInf
                 }
             }
             if (data.contains(MUFFLED)) {
-                tooltipComponents.add(Component.translatable("behaviour.setting.muffled.tooltip",
+                tooltipComponents.add(GTUtil.translatable("behaviour.setting.muffled.tooltip",
                         data.getBoolean(MUFFLED) ? ENABLED : DISABLED));
             }
         } else {
-            tooltipComponents.add(Component.translatable("item.toggle.advanced.info.tooltip"));
+            tooltipComponents.add(GTUtil.translatable("item.toggle.advanced.info.tooltip"));
         }
     }
 
     private static void addConfigTypeTooltips(List<Component> tooltip, Component baseComponent,
                                               CompoundTag data, Direction origFront) {
-        tooltip.add(Component.translatable("behaviour.setting.output.direction.tooltip",
+        tooltip.add(GTUtil.translatable("behaviour.setting.output.direction.tooltip",
                 baseComponent, relativeDirectionComponent(origFront, tagToDirection(data.get(DIRECTION)))));
-        tooltip.add(Component.translatable("behaviour.setting.item_auto_output.tooltip", baseComponent,
+        tooltip.add(GTUtil.translatable("behaviour.setting.item_auto_output.tooltip", baseComponent,
                 data.getBoolean(AUTO) ? ENABLED : DISABLED));
-        tooltip.add(Component.translatable("behaviour.setting.allow.input.from.output.tooltip", baseComponent,
+        tooltip.add(GTUtil.translatable("behaviour.setting.allow.input.from.output.tooltip", baseComponent,
                 data.getBoolean(INPUT_FROM_OUTPUT_SIDE) ? ENABLED : DISABLED));
     }
 

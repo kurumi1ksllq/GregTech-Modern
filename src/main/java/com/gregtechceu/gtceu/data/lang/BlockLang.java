@@ -32,6 +32,7 @@ public class BlockLang {
         // Substation capacitors
         provider.add("block.gtceu.substation_capacitor.tooltip_empty", "§7For filling space in your Power Substation");
         provider.add("block.gtceu.substation_capacitor.tooltip_filled", "§cEnergy Capacity: §f%d EU");
+        provider.add("block.gtceu.substation_capacitor.tooltip_filled_fools", "§cEnergy Capacity: §f%d Vis");
 
         // Casings
         replace(provider, "block.gtceu.bronze_brick_casing", "Bricked Bronze Casing");

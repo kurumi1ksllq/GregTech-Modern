@@ -5,9 +5,9 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.primitive.PrimitivePumpMachine;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import snownee.jade.api.BlockAccessor;
@@ -24,7 +24,7 @@ public class PrimitivePumpBlockProvider implements IBlockComponentProvider, ISer
             MetaMachine machine = blockEntity.getMetaMachine();
             if (machine instanceof PrimitivePumpMachine pump) {
                 long water = blockAccessor.getServerData().getLong("waterProduced");
-                iTooltip.add(Component.translatable("gtceu.top.primitive_pump_production",
+                iTooltip.add(GTUtil.translatable("gtceu.top.primitive_pump_production",
                         FormattingUtil.formatNumbers(water)));
             }
         }

@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.network.packets;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.common.network.GTNetwork;
 import com.gregtechceu.gtceu.integration.map.ClientCacheManager;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
@@ -72,8 +73,8 @@ public class SCPacketShareProspection implements GTNetwork.INetPacket {
                         Component.literal(senderInfo.getProfile().getName());
 
                 assert Minecraft.getInstance().player != null;
-                Minecraft.getInstance().player.sendSystemMessage(Component
-                        .translatable("command.gtceu.share_prospection_data.notification", playerName));
+                Minecraft.getInstance().player.sendSystemMessage(
+                        GTUtil.translatable("command.gtceu.share_prospection_data.notification", playerName));
             }
             ClientCacheManager.processProspectionShare(cacheName, key, isDimCache, dimension, data);
         } else {

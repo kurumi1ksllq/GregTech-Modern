@@ -153,7 +153,7 @@ public abstract class ProspectorMode<T> {
                 }
             }
             counter.forEach((item, count) -> tooltips
-                    .add(Component.translatable(getDescriptionId(item)).append(" --- " + count)));
+                    .add(GTUtil.translatable(getDescriptionId(item)).append(" --- " + count)));
         }
     };
 
@@ -255,7 +255,7 @@ public abstract class ProspectorMode<T> {
         public void appendTooltips(List<FluidInfo[]> items, List<Component> tooltips, String selected) {
             for (var array : items) {
                 for (FluidInfo item : array) {
-                    tooltips.add(Component.translatable(getDescriptionId(item))
+                    tooltips.add(GTUtil.translatable(getDescriptionId(item))
                             .append(" --- %s (%s%%)".formatted(item.yield, item.left)));
                 }
             }
@@ -359,8 +359,8 @@ public abstract class ProspectorMode<T> {
                 int totalWeight = Arrays.stream(array).mapToInt(OreInfo::weight).sum();
                 for (OreInfo item : array) {
                     float chance = (float) item.weight / totalWeight * 100;
-                    tooltips.add(Component.translatable(getDescriptionId(item)).append(" (")
-                            .append(Component.translatable("gtceu.gui.content.chance_base",
+                    tooltips.add(GTUtil.translatable(getDescriptionId(item)).append(" (")
+                            .append(GTUtil.translatable("gtceu.gui.content.chance_base",
                                     FormattingUtil.formatNumber2Places(chance)))
                             .append(") --- %s (%s%%)".formatted(item.yield, item.left)));
                 }

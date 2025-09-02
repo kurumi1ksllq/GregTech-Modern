@@ -100,7 +100,7 @@ public class AdjacentBlockCondition extends RecipeCondition {
 
     @Override
     public Component getTooltips() {
-        return Component.translatable("recipe.condition.adjacent_block.tooltip");
+        return GTUtil.translatable("recipe.condition.adjacent_block.tooltip");
     }
 
     @Override

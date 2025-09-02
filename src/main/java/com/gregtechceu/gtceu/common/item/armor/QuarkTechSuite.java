@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.item.armor.ArmorLogicSuite;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.core.IFireImmuneEntity;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
 import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
 
@@ -97,10 +98,11 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
                 toggleTimer = 5;
                 if (item.getCharge() < ArmorUtils.MIN_NIGHTVISION_CHARGE) {
                     nightVision = false;
-                    player.displayClientMessage(Component.translatable("metaarmor.nms.nightvision.error"), true);
+                    player.displayClientMessage(GTUtil.translatable("metaarmor.nms.nightvision.error"), true);
                 } else {
-                    player.displayClientMessage(Component
-                            .translatable("metaarmor.nms.nightvision." + (nightVision ? "enabled" : "disabled")), true);
+                    player.displayClientMessage(
+                            GTUtil.translatable("metaarmor.nms.nightvision." + (nightVision ? "enabled" : "disabled")),
+                            true);
                 }
             }
 
@@ -164,8 +166,9 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
             if (boostedJumpTimer == 0 && KeyBind.BOOTS_ENABLE.isKeyDown(player)) {
                 boostedJump = !boostedJump;
                 boostedJumpTimer = JUMPING_TIMER;
-                player.displayClientMessage(Component
-                        .translatable("metaarmor.nms.boosted_jump." + (boostedJump ? "enabled" : "disabled")), true);
+                player.displayClientMessage(
+                        GTUtil.translatable("metaarmor.nms.boosted_jump." + (boostedJump ? "enabled" : "disabled")),
+                        true);
             }
             if (boostedJump) {
                 if (!world.isClientSide) {
@@ -343,22 +346,22 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
             CompoundTag nbtData = itemStack.getOrCreateTag();
             boolean nv = nbtData.getBoolean("nightVision");
             if (nv) {
-                lines.add(Component.translatable("metaarmor.message.nightvision.enabled"));
+                lines.add(GTUtil.translatable("metaarmor.message.nightvision.enabled"));
             } else {
-                lines.add(Component.translatable("metaarmor.message.nightvision.disabled"));
+                lines.add(GTUtil.translatable("metaarmor.message.nightvision.disabled"));
             }
-            lines.add(Component.translatable("metaarmor.tooltip.potions"));
-            lines.add(Component.translatable("metaarmor.tooltip.breath"));
-            lines.add(Component.translatable("metaarmor.tooltip.autoeat"));
+            lines.add(GTUtil.translatable("metaarmor.tooltip.potions"));
+            lines.add(GTUtil.translatable("metaarmor.tooltip.breath"));
+            lines.add(GTUtil.translatable("metaarmor.tooltip.autoeat"));
         } else if (type == ArmorItem.Type.CHESTPLATE) {
-            lines.add(Component.translatable("metaarmor.tooltip.burning"));
-            lines.add(Component.translatable("metaarmor.tooltip.freezing"));
+            lines.add(GTUtil.translatable("metaarmor.tooltip.burning"));
+            lines.add(GTUtil.translatable("metaarmor.tooltip.freezing"));
         } else if (type == ArmorItem.Type.LEGGINGS) {
-            lines.add(Component.translatable("metaarmor.tooltip.speed"));
+            lines.add(GTUtil.translatable("metaarmor.tooltip.speed"));
         } else if (type == ArmorItem.Type.BOOTS) {
-            lines.add(Component.translatable("metaarmor.tooltip.stepassist"));
-            lines.add(Component.translatable("metaarmor.tooltip.falldamage"));
-            lines.add(Component.translatable("metaarmor.tooltip.jump"));
+            lines.add(GTUtil.translatable("metaarmor.tooltip.stepassist"));
+            lines.add(GTUtil.translatable("metaarmor.tooltip.falldamage"));
+            lines.add(GTUtil.translatable("metaarmor.tooltip.jump"));
         }
     }
 

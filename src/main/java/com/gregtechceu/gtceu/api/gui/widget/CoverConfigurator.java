@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfigurator;
 import com.gregtechceu.gtceu.common.data.GTItems;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
@@ -32,7 +33,7 @@ public class CoverConfigurator implements IFancyConfigurator {
 
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.gui.cover_setting.title");
+        return GTUtil.translatable("gtceu.gui.cover_setting.title");
     }
 
     @Override

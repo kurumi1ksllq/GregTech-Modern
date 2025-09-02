@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidDefiniti
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.network.chat.Component;
 
@@ -33,6 +34,6 @@ public class GTBedrockFluidEmiCategory extends EmiRecipeCategory {
 
     @Override
     public Component getName() {
-        return Component.translatable("gtceu.jei.bedrock_fluid_diagram");
+        return GTUtil.translatable("gtceu.jei.bedrock_fluid_diagram");
     }
 }

@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.common.commands.arguments;
 
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import com.mojang.brigadier.StringReader;
@@ -19,7 +19,7 @@ import java.util.function.Function;
 public class MedicalConditionParser {
 
     private static final DynamicCommandExceptionType ERROR_UNKNOWN_ITEM = new DynamicCommandExceptionType(
-            id -> Component.translatable("argument.item.id.invalid", id));
+            id -> GTUtil.translatable("argument.item.id.invalid", id));
     private static final Function<SuggestionsBuilder, CompletableFuture<Suggestions>> SUGGEST_NOTHING = SuggestionsBuilder::buildFuture;
     private final StringReader reader;
     private MedicalCondition result;

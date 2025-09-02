@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -53,7 +54,7 @@ public class ParallelProvider implements IProbeInfoProvider {
                         .withStyle(ChatFormatting.DARK_PURPLE);
                 String key = "gtceu.multiblock.parallel";
                 if (exact) key += ".exact";
-                iProbeInfo.text(Component.translatable(key, parallels));
+                iProbeInfo.text(GTUtil.translatable(key, parallels));
             }
         }
     }

@@ -679,36 +679,36 @@ public interface IGTTool extends HeldItemUIFactory.IHeldItemUIHolder, ItemLike, 
             // show this
             int damageRemaining = tool.getTotalMaxDurability(stack) - stack.getDamageValue() + 1;
             if (toolStats.isSuitableForCrafting(stack)) {
-                tooltip.add(Component.translatable("item.gtceu.tool.tooltip.crafting_uses", FormattingUtil
+                tooltip.add(GTUtil.translatable("item.gtceu.tool.tooltip.crafting_uses", FormattingUtil
                         .formatNumbers(damageRemaining / Math.max(1, toolStats.getToolDamagePerCraft(stack)))));
             }
-            tooltip.add(Component.translatable("item.gtceu.tool.tooltip.max_uses",
+            tooltip.add(GTUtil.translatable("item.gtceu.tool.tooltip.max_uses",
                     FormattingUtil.formatNumbers(tool.getTotalMaxDurability(stack))));
-            tooltip.add(Component.translatable("item.gtceu.tool.tooltip.general_uses",
+            tooltip.add(GTUtil.translatable("item.gtceu.tool.tooltip.general_uses",
                     FormattingUtil.formatNumbers(damageRemaining)));
 
         }
 
         // attack info
         if (toolStats.isSuitableForAttacking(stack)) {
-            tooltip.add(Component.translatable("item.gtceu.tool.tooltip.attack_damage",
+            tooltip.add(GTUtil.translatable("item.gtceu.tool.tooltip.attack_damage",
                     FormattingUtil.formatNumbers(2 + tool.getTotalAttackDamage(stack))));
-            tooltip.add(Component.translatable("item.gtceu.tool.tooltip.attack_speed",
+            tooltip.add(GTUtil.translatable("item.gtceu.tool.tooltip.attack_speed",
                     FormattingUtil.formatNumbers(4 + tool.getTotalAttackSpeed(stack))));
         }
 
         // mining info
         if (toolStats.isSuitableForBlockBreak(stack)) {
-            tooltip.add(Component.translatable("item.gtceu.tool.tooltip.mining_speed",
+            tooltip.add(GTUtil.translatable("item.gtceu.tool.tooltip.mining_speed",
                     FormattingUtil.formatNumbers(tool.getTotalToolSpeed(stack))));
 
             int harvestLevel = tool.getTotalHarvestLevel(stack);
             String harvestName = "item.gtceu.tool.harvest_level." + harvestLevel;
             if (Language.getInstance().has(harvestName)) { // if there's a defined name for the harvest level, use it
-                tooltip.add(Component.translatable("item.gtceu.tool.tooltip.harvest_level_extra", harvestLevel,
-                        Component.translatable(harvestName)));
+                tooltip.add(GTUtil.translatable("item.gtceu.tool.tooltip.harvest_level_extra", harvestLevel,
+                        GTUtil.translatable(harvestName)));
             } else {
-                tooltip.add(Component.translatable("item.gtceu.tool.tooltip.harvest_level", harvestLevel));
+                tooltip.add(GTUtil.translatable("item.gtceu.tool.tooltip.harvest_level", harvestLevel));
             }
         }
 
@@ -718,7 +718,7 @@ public interface IGTTool extends HeldItemUIFactory.IHeldItemUIHolder, ItemLike, 
 
         if (!aoeDefinition.isZero()) {
             addedBehaviorNewLine = tooltip.add(CommonComponents.EMPTY);
-            tooltip.add(Component.translatable("item.gtceu.tool.behavior.aoe_mining",
+            tooltip.add(GTUtil.translatable("item.gtceu.tool.behavior.aoe_mining",
                     aoeDefinition.column * 2 + 1, aoeDefinition.row * 2 + 1, aoeDefinition.layer + 1));
         }
 
@@ -728,7 +728,7 @@ public interface IGTTool extends HeldItemUIFactory.IHeldItemUIHolder, ItemLike, 
                 addedBehaviorNewLine = true;
                 tooltip.add(CommonComponents.EMPTY);
             }
-            tooltip.add(Component.translatable("item.gtceu.tool.behavior.relocate_mining"));
+            tooltip.add(GTUtil.translatable("item.gtceu.tool.behavior.relocate_mining"));
         }
 
         if (!addedBehaviorNewLine && !toolStats.getBehaviors().isEmpty()) {
@@ -740,14 +740,14 @@ public interface IGTTool extends HeldItemUIFactory.IHeldItemUIHolder, ItemLike, 
         String uniqueTooltip = this.getToolType().getUnlocalizedName() + ".tooltip";
         if (Language.getInstance().has(uniqueTooltip)) {
             tooltip.add(CommonComponents.EMPTY);
-            tooltip.add(Component.translatable(uniqueTooltip));
+            tooltip.add(GTUtil.translatable(uniqueTooltip));
         }
 
         tooltip.add(CommonComponents.EMPTY);
 
         var defaultEnchants = getDefaultEnchantments(stack);
         if (!defaultEnchants.isEmpty()) {
-            tooltip.add(Component.translatable("item.gtceu.tool.tooltip.default_enchantments"));
+            tooltip.add(GTUtil.translatable("item.gtceu.tool.tooltip.default_enchantments"));
             for (var entry : defaultEnchants.entrySet()) {
                 Enchantment enchant = entry.getKey();
                 if (enchant == null) continue;
@@ -759,10 +759,10 @@ public interface IGTTool extends HeldItemUIFactory.IHeldItemUIHolder, ItemLike, 
         tooltip.add(CommonComponents.EMPTY);
 
         // valid tools
-        tooltip.add(Component.translatable("item.gtceu.tool.usable_as",
+        tooltip.add(GTUtil.translatable("item.gtceu.tool.usable_as",
                 getToolClassNames(stack).stream()
                         .filter(s -> Language.getInstance().has("gtceu.tool.class." + s))
-                        .map(s -> Component.translatable("gtceu.tool.class." + s))
+                        .map(s -> GTUtil.translatable("gtceu.tool.class." + s))
                         .collect(Component::empty, FormattingUtil::combineComponents,
                                 FormattingUtil::combineComponents)));
 
@@ -783,16 +783,16 @@ public interface IGTTool extends HeldItemUIFactory.IHeldItemUIHolder, ItemLike, 
                     repairItems.add(TagPrefix.plate.getLocalizedName(material));
                 }
                 if (!repairItems.isEmpty()) {
-                    tooltip.add(Component.translatable("item.gtceu.tool.tooltip.repair_material", repairItems.stream()
+                    tooltip.add(GTUtil.translatable("item.gtceu.tool.tooltip.repair_material", repairItems.stream()
                             .collect(Component::empty, FormattingUtil::combineComponents,
                                     FormattingUtil::combineComponents)));
                 }
             } else {
-                tooltip.add(Component.translatable("item.gtceu.tool.tooltip.repair_info"));
+                tooltip.add(GTUtil.translatable("item.gtceu.tool.tooltip.repair_info"));
             }
         }
         if (this.isElectric()) {
-            tooltip.add(Component.translatable("item.gtceu.tool.replace_tool_head"));
+            tooltip.add(GTUtil.translatable("item.gtceu.tool.replace_tool_head"));
         }
     }
 

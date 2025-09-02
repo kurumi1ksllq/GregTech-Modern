@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.machine.owner;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -54,7 +55,7 @@ public abstract sealed class MachineOwner permits PlayerOwner, FTBOwner, Argonau
     }
 
     public void displayInfo(List<Component> compList) {
-        compList.add(Component.translatable("behavior.portable_scanner.machine_ownership", getTypeDisplayName()));
+        compList.add(GTUtil.translatable("behavior.portable_scanner.machine_ownership", getTypeDisplayName()));
     }
 
     @UnmodifiableView
@@ -115,8 +116,8 @@ public abstract sealed class MachineOwner permits PlayerOwner, FTBOwner, Argonau
         } else {
             online += ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(playerUUID) != null;
         }
-        compList.add(Component.translatable("behavior.portable_scanner.player_name",
-                playerName, Component.translatable(online)));
+        compList.add(GTUtil.translatable("behavior.portable_scanner.player_name",
+                playerName, GTUtil.translatable(online)));
     }
 
     @Override

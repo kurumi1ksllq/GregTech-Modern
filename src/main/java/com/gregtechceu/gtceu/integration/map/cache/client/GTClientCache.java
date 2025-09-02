@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.integration.map.cache.GridCache;
 import com.gregtechceu.gtceu.integration.map.cache.WorldCache;
 import com.gregtechceu.gtceu.integration.map.cache.fluid.FluidCache;
 import com.gregtechceu.gtceu.integration.map.layer.builtin.OreRenderLayer;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -35,7 +36,7 @@ public class GTClientCache extends WorldCache implements IClientCache {
 
         for (var vein : veins) {
             var veinId = vein.id().toString();
-            var name = Component.translatable(veinId.replace("gtceu:", "gtceu.jei.ore_vein."));
+            var name = GTUtil.translatable(veinId.replace("gtceu:", "gtceu.jei.ore_vein."));
             var material = OreRenderLayer.getMaterial(vein);
 
             if (!material.isNull()) {
@@ -44,7 +45,7 @@ public class GTClientCache extends WorldCache implements IClientCache {
                         HoverEvent.Action.SHOW_TEXT,
                         Component.literal("(%d, %d, %d)".formatted(center.getX(), center.getY(), center.getZ())))));
             }
-            player.sendSystemMessage(Component.translatable("message.gtceu.new_veins.name", name));
+            player.sendSystemMessage(GTUtil.translatable("message.gtceu.new_veins.name", name));
         }
     }
 

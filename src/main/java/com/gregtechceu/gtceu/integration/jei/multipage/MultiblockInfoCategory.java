@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.data.machines.GTMultiMachines;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.jei.ModularUIRecipeCategory;
 
@@ -47,7 +48,7 @@ public class MultiblockInfoCategory extends ModularUIRecipeCategory<MultiblockIn
     @NotNull
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.jei.multiblock_info");
+        return GTUtil.translatable("gtceu.jei.multiblock_info");
     }
 
     @NotNull

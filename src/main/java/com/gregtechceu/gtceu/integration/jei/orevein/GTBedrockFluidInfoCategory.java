@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.integration.xei.widgets.GTOreVeinWidget;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.jei.ModularUIRecipeCategory;
 
@@ -52,7 +53,7 @@ public class GTBedrockFluidInfoCategory extends ModularUIRecipeCategory<GTBedroc
     @NotNull
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.jei.bedrock_fluid_diagram");
+        return GTUtil.translatable("gtceu.jei.bedrock_fluid_diagram");
     }
 
     @NotNull

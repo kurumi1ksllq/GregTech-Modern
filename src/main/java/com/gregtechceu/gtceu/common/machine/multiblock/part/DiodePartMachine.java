@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
@@ -14,7 +15,6 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -140,7 +140,7 @@ public class DiodePartMachine extends TieredIOPartMachine {
         cycleAmpMode();
         if (!isRemote()) {
             this.scheduleRenderUpdate();
-            playerIn.sendSystemMessage(Component.translatable("gtceu.machine.diode.message", amps));
+            playerIn.sendSystemMessage(GTUtil.translatable("gtceu.machine.diode.message", amps));
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.CONSUME;

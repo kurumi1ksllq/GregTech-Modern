@@ -26,6 +26,7 @@ import com.gregtechceu.gtceu.common.pipelike.laser.LaserPipeType;
 import com.gregtechceu.gtceu.common.pipelike.optical.OpticalPipeType;
 import com.gregtechceu.gtceu.core.mixins.BlockPropertiesAccessor;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.memoization.GTMemoizer;
 
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
@@ -1184,8 +1185,8 @@ public class GTBlocks {
                 public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                             TooltipFlag isAdvanced) {
                     super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
-                    tooltipComponents.add(1, Component.translatable("tile.gtceu.brittle_charcoal.tooltip.0"));
-                    tooltipComponents.add(2, Component.translatable("tile.gtceu.brittle_charcoal.tooltip.1"));
+                    tooltipComponents.add(1, GTUtil.translatable("tile.gtceu.brittle_charcoal.tooltip.0"));
+                    tooltipComponents.add(2, GTUtil.translatable("tile.gtceu.brittle_charcoal.tooltip.1"));
                 }
             })
             .build()

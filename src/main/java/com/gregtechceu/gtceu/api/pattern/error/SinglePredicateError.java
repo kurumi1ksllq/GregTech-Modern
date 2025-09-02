@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.pattern.error;
 
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -38,6 +39,6 @@ public class SinglePredicateError extends PatternError {
         if (type == 3) {
             number = predicate.minLayerCount;
         }
-        return Component.translatable("gtceu.multiblock.pattern.error.limited." + type, number);
+        return GTUtil.translatable("gtceu.multiblock.pattern.error.limited." + type, number);
     }
 }

@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.integration.jei.circuit;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.integration.xei.widgets.GTProgrammedCircuitWidget;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.jei.ModularUIRecipeCategory;
 import com.lowdragmc.lowdraglib.jei.ModularWrapper;
@@ -35,7 +36,7 @@ public class GTProgrammedCircuitCategory extends
 
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.jei.programmed_circuit");
+        return GTUtil.translatable("gtceu.jei.programmed_circuit");
     }
 
     @Override

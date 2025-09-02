@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.integration.xei.widgets.GTOreVeinWidget;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.jei.ModularUIRecipeCategory;
 
@@ -65,7 +66,7 @@ public class GTOreVeinInfoCategory extends ModularUIRecipeCategory<GTOreVeinInfo
     @NotNull
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.jei.ore_vein_diagram");
+        return GTUtil.translatable("gtceu.jei.ore_vein_diagram");
     }
 
     @NotNull

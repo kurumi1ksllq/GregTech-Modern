@@ -4,10 +4,10 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IAutoOutputFluid;
 import com.gregtechceu.gtceu.api.machine.feature.IAutoOutputItem;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -55,7 +55,7 @@ public class AutoOutputInfoProvider implements IProbeInfoProvider {
             IProbeInfo horizontalPane = iProbeInfo
                     .horizontal(iProbeInfo.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER));
             horizontalPane.text(CompoundText.create()
-                    .info(Component.translatable(text, StringUtils.capitalize(direction.getName()) + " ")));
+                    .info(GTUtil.translatable(text, StringUtils.capitalize(direction.getName()) + " ")));
             if (player.isShiftKeyDown()) {
                 if (level != null) {
                     var pos = blockPos.relative(direction);
@@ -69,7 +69,7 @@ public class AutoOutputInfoProvider implements IProbeInfoProvider {
             if (allowInput || auto) {
                 var compoundText = CompoundText.create().text("(");
                 if (auto) {
-                    compoundText.ok(Component.translatable("gtceu.top.auto_output"));
+                    compoundText.ok(GTUtil.translatable("gtceu.top.auto_output"));
                 }
 
                 if (allowInput && auto) {
@@ -77,7 +77,7 @@ public class AutoOutputInfoProvider implements IProbeInfoProvider {
                 }
 
                 if (allowInput) {
-                    compoundText.ok(Component.translatable("gtceu.top.allow_output_input"));
+                    compoundText.ok(GTUtil.translatable("gtceu.top.allow_output_input"));
                 }
                 compoundText.style(TextStyleClass.INFO).text(")");
                 horizontalPane.text(compoundText);

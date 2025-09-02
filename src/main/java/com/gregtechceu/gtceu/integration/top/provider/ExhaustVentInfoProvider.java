@@ -3,10 +3,10 @@ package com.gregtechceu.gtceu.integration.top.provider;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IExhaustVentMachine;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -43,7 +43,7 @@ public class ExhaustVentInfoProvider extends CapabilityInfoProvider<IExhaustVent
         IProbeInfo horizontalPane = iProbeInfo
                 .horizontal(iProbeInfo.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER));
         var direction = iExhaustVentMachine.getVentingDirection();
-        horizontalPane.text(CompoundText.create().info(Component.translatable("gtceu.top.exhaust_vent_direction",
+        horizontalPane.text(CompoundText.create().info(GTUtil.translatable("gtceu.top.exhaust_vent_direction",
                 StringUtils.capitalize(direction.getName()) + " ")));
         if (!iExhaustVentMachine.isVentingBlocked()) return;
 
@@ -57,7 +57,7 @@ public class ExhaustVentInfoProvider extends CapabilityInfoProvider<IExhaustVent
         }
         if (iExhaustVentMachine.isNeedsVenting()) {
             horizontalPane.text(
-                    CompoundText.create().text("(").error(Component.translatable("gtceu.top.exhaust_vent_blocked"))
+                    CompoundText.create().text("(").error(GTUtil.translatable("gtceu.top.exhaust_vent_blocked"))
                             .style(TextStyleClass.INFO).text(")"));
         }
     }

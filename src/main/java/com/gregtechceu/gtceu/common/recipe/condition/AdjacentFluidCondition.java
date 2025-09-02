@@ -100,7 +100,7 @@ public class AdjacentFluidCondition extends RecipeCondition {
 
     @Override
     public Component getTooltips() {
-        return Component.translatable("recipe.condition.adjacent_fluid.tooltip");
+        return GTUtil.translatable("recipe.condition.adjacent_fluid.tooltip");
     }
 
     @Override

@@ -55,7 +55,9 @@ public class IntegrationLang {
         provider.add("gtceu.top.transform_input", "§6Input:§r %s");
         provider.add("gtceu.top.transform_output", "§9Output:§r %s");
         provider.add("gtceu.top.convert_eu", "Converting §eEU§r -> §cFE§r");
+        provider.add("gtceu.top.convert_eu_fools", "Converting §eVis§r -> §cFE§r");
         provider.add("gtceu.top.convert_fe", "Converting §cFE§r -> §eEU§r");
+        provider.add("gtceu.top.convert_fe_fools", "Converting §cFE§r -> §eVis§r");
         provider.add("gtceu.top.fuel_min_consume", "Needs");
         provider.add("gtceu.top.fuel_none", "No fuel");
         provider.add("gtceu.top.invalid_structure", "Structure Incomplete");
@@ -93,6 +95,7 @@ public class IntegrationLang {
         provider.add("gtceu.top.proxies_bound", "Buffer Proxies Bound: %s");
 
         provider.add("gtceu.jade.energy_stored", "%d / %d EU");
+        provider.add("gtceu.jade.energy_stored_fools", "%d / %d Vis");
         provider.add("gtceu.jade.progress_computation", "%s / %s CWU");
         provider.add("gtceu.jade.progress_sec", "%s / %s s");
         provider.add("gtceu.jade.progress_tick", "%s / %s t");
@@ -102,6 +105,7 @@ public class IntegrationLang {
         provider.add("gtceu.jade.at", " @ ");
 
         provider.add("gtceu.top.energy_stored", " / %d EU");
+        provider.add("gtceu.top.energy_stored_fools", " / %d Vis");
         provider.add("gtceu.top.progress_computation", " / %s CWU");
         provider.add("gtceu.top.progress_sec", " / %s s");
         provider.add("gtceu.top.progress_tick", " / %s t");

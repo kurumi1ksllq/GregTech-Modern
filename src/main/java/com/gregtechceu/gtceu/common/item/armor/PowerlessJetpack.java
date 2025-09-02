@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.GradientUtil;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
 
@@ -89,7 +90,7 @@ public class PowerlessJetpack implements IArmorLogic, IJetpack, IItemHUDProvider
 
             if (messageKey != null) {
                 toggleTimer = 5;
-                if (!world.isClientSide) player.displayClientMessage(Component.translatable(messageKey), true);
+                if (!world.isClientSide) player.displayClientMessage(GTUtil.translatable(messageKey), true);
             }
         }
 
@@ -131,22 +132,22 @@ public class PowerlessJetpack implements IArmorLogic, IJetpack, IItemHUDProvider
             if (tank.getFluidInTank(0).getAmount() == 0) return;
             String formated = String.format("%.1f",
                     (tank.getFluidInTank(0).getAmount() * 100.0F / tank.getTankCapacity(0)));
-            this.HUD.newString(Component.translatable("metaarmor.hud.fuel_lvl", formated + "%"));
+            this.HUD.newString(GTUtil.translatable("metaarmor.hud.fuel_lvl", formated + "%"));
             CompoundTag data = item.getTag();
 
             if (data != null) {
                 if (data.contains("enabled")) {
                     Component status = (data.getBoolean("enabled") ?
-                            Component.translatable("metaarmor.hud.status.enabled") :
-                            Component.translatable("metaarmor.hud.status.disabled"));
-                    Component result = Component.translatable("metaarmor.hud.engine_enabled", status);
+                            GTUtil.translatable("metaarmor.hud.status.enabled") :
+                            GTUtil.translatable("metaarmor.hud.status.disabled"));
+                    Component result = GTUtil.translatable("metaarmor.hud.engine_enabled", status);
                     this.HUD.newString(result);
                 }
                 if (data.contains("hover")) {
                     Component status = (data.getBoolean("hover") ?
-                            Component.translatable("metaarmor.hud.status.enabled") :
-                            Component.translatable("metaarmor.hud.status.disabled"));
-                    Component result = Component.translatable("metaarmor.hud.hover_mode", status);
+                            GTUtil.translatable("metaarmor.hud.status.enabled") :
+                            GTUtil.translatable("metaarmor.hud.status.disabled"));
+                    Component result = GTUtil.translatable("metaarmor.hud.hover_mode", status);
                     this.HUD.newString(result);
                 }
             }
@@ -260,14 +261,14 @@ public class PowerlessJetpack implements IArmorLogic, IJetpack, IItemHUDProvider
             CompoundTag data = stack.getOrCreateTag();
             Component state;
             boolean enabled = !data.contains("enabled") || data.getBoolean("enabled");
-            state = enabled ? Component.translatable("metaarmor.hud.status.enabled") :
-                    Component.translatable("metaarmor.hud.status.disabled");
-            tooltipComponents.add(Component.translatable("metaarmor.hud.engine_enabled", state));
+            state = enabled ? GTUtil.translatable("metaarmor.hud.status.enabled") :
+                    GTUtil.translatable("metaarmor.hud.status.disabled");
+            tooltipComponents.add(GTUtil.translatable("metaarmor.hud.engine_enabled", state));
 
             boolean hover = data.contains("hover") && data.getBoolean("hover");
-            state = hover ? Component.translatable("metaarmor.hud.status.enabled") :
-                    Component.translatable("metaarmor.hud.status.disabled");
-            tooltipComponents.add(Component.translatable("metaarmor.hud.hover_mode", state));
+            state = hover ? GTUtil.translatable("metaarmor.hud.status.enabled") :
+                    GTUtil.translatable("metaarmor.hud.status.disabled");
+            tooltipComponents.add(GTUtil.translatable("metaarmor.hud.hover_mode", state));
         }
 
         @Override

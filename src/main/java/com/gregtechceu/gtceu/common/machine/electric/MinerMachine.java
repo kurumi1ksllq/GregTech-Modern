@@ -25,6 +25,7 @@ import com.gregtechceu.gtceu.common.machine.trait.miner.MinerLogic;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.widget.ComponentPanelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.DraggableScrollableWidgetGroup;
@@ -340,26 +341,26 @@ public class MinerMachine extends WorkableTieredMachine
 
     private void addDisplayText(@NotNull List<Component> textList) {
         int workingArea = IMiner.getWorkingArea(getRecipeLogic().getCurrentRadius());
-        textList.add(Component.translatable("gtceu.machine.miner.startx", getRecipeLogic().getX()).append(" ")
-                .append(Component.translatable("gtceu.machine.miner.minex", getRecipeLogic().getMineX())));
-        textList.add(Component.translatable("gtceu.machine.miner.starty", getRecipeLogic().getY()).append(" ")
-                .append(Component.translatable("gtceu.machine.miner.miney", getRecipeLogic().getMineY())));
-        textList.add(Component.translatable("gtceu.machine.miner.startz", getRecipeLogic().getZ()).append(" ")
-                .append(Component.translatable("gtceu.machine.miner.minez", getRecipeLogic().getMineZ())));
-        textList.add(Component.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
+        textList.add(GTUtil.translatable("gtceu.machine.miner.startx", getRecipeLogic().getX()).append(" ")
+                .append(GTUtil.translatable("gtceu.machine.miner.minex", getRecipeLogic().getMineX())));
+        textList.add(GTUtil.translatable("gtceu.machine.miner.starty", getRecipeLogic().getY()).append(" ")
+                .append(GTUtil.translatable("gtceu.machine.miner.miney", getRecipeLogic().getMineY())));
+        textList.add(GTUtil.translatable("gtceu.machine.miner.startz", getRecipeLogic().getZ()).append(" ")
+                .append(GTUtil.translatable("gtceu.machine.miner.minez", getRecipeLogic().getMineZ())));
+        textList.add(GTUtil.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
         if (getRecipeLogic().isDone())
-            textList.add(Component.translatable("gtceu.multiblock.large_miner.done")
+            textList.add(GTUtil.translatable("gtceu.multiblock.large_miner.done")
                     .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
         else if (getRecipeLogic().isWorking())
-            textList.add(Component.translatable("gtceu.multiblock.large_miner.working")
+            textList.add(GTUtil.translatable("gtceu.multiblock.large_miner.working")
                     .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)));
         else if (!this.isWorkingEnabled())
-            textList.add(Component.translatable("gtceu.multiblock.work_paused"));
+            textList.add(GTUtil.translatable("gtceu.multiblock.work_paused"));
         if (getRecipeLogic().isInventoryFull())
-            textList.add(Component.translatable("gtceu.multiblock.large_miner.invfull")
+            textList.add(GTUtil.translatable("gtceu.multiblock.large_miner.invfull")
                     .setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
         if (!drainInput(true))
-            textList.add(Component.translatable("gtceu.multiblock.large_miner.needspower")
+            textList.add(GTUtil.translatable("gtceu.multiblock.large_miner.needspower")
                     .setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
     }
 
@@ -395,9 +396,9 @@ public class MinerMachine extends WorkableTieredMachine
 
             int workingArea = IMiner.getWorkingArea(getRecipeLogic().getCurrentRadius());
             playerIn.sendSystemMessage(
-                    Component.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
+                    GTUtil.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
         } else {
-            playerIn.sendSystemMessage(Component.translatable("gtceu.multiblock.large_miner.errorradius"));
+            playerIn.sendSystemMessage(GTUtil.translatable("gtceu.multiblock.large_miner.errorradius"));
         }
         return InteractionResult.SUCCESS;
     }
@@ -409,7 +410,7 @@ public class MinerMachine extends WorkableTieredMachine
                 mode == PortableScannerBehavior.DisplayMode.SHOW_MACHINE_INFO) {
             int workingArea = IMiner.getWorkingArea(getRecipeLogic().getCurrentRadius());
             return Collections.singletonList(
-                    Component.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
+                    GTUtil.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
         }
         return new ArrayList<>();
     }

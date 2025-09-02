@@ -21,6 +21,7 @@ import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.editor.Icons;
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
@@ -35,7 +36,6 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -327,13 +327,13 @@ public class QuantumChestMachine extends TieredMachine implements IAutoOutputIte
                 if (isAllowInputFromOutputSideItems()) {
                     setAllowInputFromOutputSideItems(false);
                     playerIn.sendSystemMessage(
-                            Component.translatable("gtceu.machine.basic.input_from_output_side.disallow")
-                                    .append(Component.translatable("gtceu.creative.chest.item")));
+                            GTUtil.translatable("gtceu.machine.basic.input_from_output_side.disallow")
+                                    .append(GTUtil.translatable("gtceu.creative.chest.item")));
                 } else {
                     setAllowInputFromOutputSideItems(true);
                     playerIn.sendSystemMessage(
-                            Component.translatable("gtceu.machine.basic.input_from_output_side.allow")
-                                    .append(Component.translatable("gtceu.creative.chest.item")));
+                            GTUtil.translatable("gtceu.machine.basic.input_from_output_side.allow")
+                                    .append(GTUtil.translatable("gtceu.creative.chest.item")));
                 }
             }
             return InteractionResult.SUCCESS;

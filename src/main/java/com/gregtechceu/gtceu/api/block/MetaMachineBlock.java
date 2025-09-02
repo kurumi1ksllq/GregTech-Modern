@@ -197,13 +197,13 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
                 if (pattern != null) {
                     var aisleDims = pattern.getDimensions();
                     assert aisleDims.length == 3;
-                    tooltip.add(Component.translatable("gtceu.multiblock.dimension", aisleDims[0], aisleDims[1],
+                    tooltip.add(GTUtil.translatable("gtceu.multiblock.dimension", aisleDims[0], aisleDims[1],
                             aisleDims[2]));
                 }
             }
         }
         if (Language.getInstance().has(mainKey)) {
-            tooltip.add(1, Component.translatable(mainKey));
+            tooltip.add(1, GTUtil.translatable(mainKey));
         }
     }
 

@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -29,7 +30,7 @@ public class ParallelProvider implements IBlockComponentProvider, IServerDataPro
                         .withStyle(ChatFormatting.DARK_PURPLE);
                 String key = "gtceu.multiblock.parallel";
                 if (blockAccessor.getServerData().getBoolean("exact")) key += ".exact";
-                iTooltip.add(Component.translatable(key, parallels));
+                iTooltip.add(GTUtil.translatable(key, parallels));
             }
         }
     }

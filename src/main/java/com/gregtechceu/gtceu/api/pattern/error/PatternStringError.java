@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.api.pattern.error;
 
+import com.gregtechceu.gtceu.utils.GTUtil;
+
 import net.minecraft.network.chat.Component;
 
 public class PatternStringError extends PatternError {
@@ -12,6 +14,6 @@ public class PatternStringError extends PatternError {
 
     @Override
     public Component getErrorInfo() {
-        return Component.translatable(translateKey);
+        return GTUtil.translatable(translateKey);
     }
 }

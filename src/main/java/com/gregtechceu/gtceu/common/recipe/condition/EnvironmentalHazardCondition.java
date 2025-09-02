@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
 import com.gregtechceu.gtceu.common.data.GTMedicalConditions;
 import com.gregtechceu.gtceu.common.data.GTRecipeConditions;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -46,10 +47,10 @@ public class EnvironmentalHazardCondition extends RecipeCondition {
     @Override
     public Component getTooltips() {
         return isReverse ?
-                Component.translatable("gtceu.recipe.environmental_hazard.reverse",
-                        Component.translatable("gtceu.medical_condition." + condition.name)) :
-                Component.translatable("gtceu.recipe.environmental_hazard",
-                        Component.translatable("gtceu.medical_condition." + condition.name));
+                GTUtil.translatable("gtceu.recipe.environmental_hazard.reverse",
+                        GTUtil.translatable("gtceu.medical_condition." + condition.name)) :
+                GTUtil.translatable("gtceu.recipe.environmental_hazard",
+                        GTUtil.translatable("gtceu.medical_condition." + condition.name));
     }
 
     @Override

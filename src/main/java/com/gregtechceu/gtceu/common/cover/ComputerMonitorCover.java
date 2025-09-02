@@ -32,7 +32,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionResult;
@@ -192,11 +191,11 @@ public class ComputerMonitorCover extends CoverBehavior
         updateIntervalInput.setMin(1);
         updateIntervalInput.setMax(60 * 20);
         updateIntervalInput
-                .setHoverTooltips(Component.translatable("gtceu.gui.computer_monitor_cover.update_interval"));
+                .setHoverTooltips(GTUtil.translatable("gtceu.gui.computer_monitor_cover.update_interval"));
         mainPage.addWidget(updateIntervalInput);
         switchToFormatStringArgsPageButton
-                .setHoverTooltips(Component.translatable("gtceu.gui.computer_monitor_cover.edit_blank_placeholders"));
-        switchBack.setHoverTooltips(Component.translatable("gtceu.gui.computer_monitor_cover.edit_displayed_text"));
+                .setHoverTooltips(GTUtil.translatable("gtceu.gui.computer_monitor_cover.edit_blank_placeholders"));
+        switchBack.setHoverTooltips(GTUtil.translatable("gtceu.gui.computer_monitor_cover.edit_displayed_text"));
         mainPage.addWidget(switchToFormatStringArgsPageButton);
         formatStringArgsPage.addWidget(switchBack);
         group.addWidget(mainPage);
@@ -219,7 +218,7 @@ public class ComputerMonitorCover extends CoverBehavior
                 text = getRenderedText();
             } catch (RuntimeException e) {
                 text = GTUtil
-                        .list(Component.translatable("gtceu.computer_monitor_cover.error.exception", e.getMessage()));
+                        .list(GTUtil.translatable("gtceu.computer_monitor_cover.error.exception", e.getMessage()));
             }
         }
     }

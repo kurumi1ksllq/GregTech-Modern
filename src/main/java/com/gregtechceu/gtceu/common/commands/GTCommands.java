@@ -16,13 +16,13 @@ import com.gregtechceu.gtceu.data.loader.BedrockFluidLoader;
 import com.gregtechceu.gtceu.data.loader.BedrockOreLoader;
 import com.gregtechceu.gtceu.data.loader.GTOreLoader;
 import com.gregtechceu.gtceu.data.pack.GTDynamicDataPack;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.commands.*;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -59,14 +59,14 @@ public class GTCommands {
         return SharedSuggestionProvider.suggestResource(findNotOwnedCapesFor(ctx), builder);
     };
     public static final DynamicCommandExceptionType ERROR_NO_SUCH_CAPE = new DynamicCommandExceptionType(
-            id -> Component.translatable("command.gtceu.cape.failure.does_not_exist", id));
+            id -> GTUtil.translatable("command.gtceu.cape.failure.does_not_exist", id));
 
     private static final SimpleCommandExceptionType ERROR_GIVE_FAILED = new SimpleCommandExceptionType(
-            Component.translatable("command.gtceu.cape.give.failed"));
+            GTUtil.translatable("command.gtceu.cape.give.failed"));
     private static final SimpleCommandExceptionType ERROR_TAKE_FAILED = new SimpleCommandExceptionType(
-            Component.translatable("command.gtceu.cape.take.failed"));
+            GTUtil.translatable("command.gtceu.cape.take.failed"));
     private static final Dynamic2CommandExceptionType ERROR_USE_FAILED = new Dynamic2CommandExceptionType(
-            (player, cape) -> Component.translatable("command.gtceu.cape.use.failed", player, cape));
+            (player, cape) -> GTUtil.translatable("command.gtceu.cape.use.failed", player, cape));
 
     // spotless:off
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
@@ -222,7 +222,7 @@ public class GTCommands {
                 }
             }
             if (playerSuccesses > 0) {
-                player.sendSystemMessage(Component.translatable("gtceu.chat.cape"));
+                player.sendSystemMessage(GTUtil.translatable("gtceu.chat.cape"));
             }
         }
 
@@ -230,13 +230,12 @@ public class GTCommands {
             throw ERROR_GIVE_FAILED.create();
         }
         if (targets.size() == 1) {
-            source.sendSuccess(() -> Component.translatable(
-                    "command.gtceu.cape.give.success.single", capes.size(),
+            source.sendSuccess(() -> GTUtil.translatable("command.gtceu.cape.give.success.single", capes.size(),
                     targets.iterator().next().getDisplayName()),
                     true);
         } else {
-            source.sendSuccess(() -> Component.translatable(
-                    "command.gtceu.cape.give.success.multiple", capes.size(), targets.size()),
+            source.sendSuccess(
+                    () -> GTUtil.translatable("command.gtceu.cape.give.success.multiple", capes.size(), targets.size()),
                     true);
         }
         CapeRegistry.save();
@@ -260,13 +259,12 @@ public class GTCommands {
             throw ERROR_TAKE_FAILED.create();
         }
         if (targets.size() == 1) {
-            source.sendSuccess(() -> Component.translatable(
-                    "command.gtceu.cape.take.success.single", capes.size(),
+            source.sendSuccess(() -> GTUtil.translatable("command.gtceu.cape.take.success.single", capes.size(),
                     targets.iterator().next().getDisplayName()),
                     true);
         } else {
-            source.sendSuccess(() -> Component.translatable(
-                    "command.gtceu.cape.take.success.multiple", capes.size(), targets.size()),
+            source.sendSuccess(
+                    () -> GTUtil.translatable("command.gtceu.cape.take.success.multiple", capes.size(), targets.size()),
                     true);
         }
         CapeRegistry.save();
@@ -277,12 +275,13 @@ public class GTCommands {
                                                                                                             throws CommandSyntaxException {
         if (CapeRegistry.setActiveCape(player.getUUID(), cape)) {
             if (cape != null) {
-                source.sendSuccess(() -> Component.translatable(
-                        "command.gtceu.cape.use.success", player.getDisplayName(), cape.toString()),
+                source.sendSuccess(
+                        () -> GTUtil.translatable("command.gtceu.cape.use.success", player.getDisplayName(),
+                                cape.toString()),
                         true);
             } else {
-                source.sendSuccess(() -> Component.translatable(
-                        "command.gtceu.cape.use.success.none", player.getDisplayName()),
+                source.sendSuccess(
+                        () -> GTUtil.translatable("command.gtceu.cape.use.success.none", player.getDisplayName()),
                         true);
             }
             return 1;
@@ -304,7 +303,7 @@ public class GTCommands {
         }
         final int result = dumpedCount;
         context.getSource().sendSuccess(
-                () -> Component.translatable("command.gtceu.dump_data.success", result,
+                () -> GTUtil.translatable("command.gtceu.dump_data.success", result,
                         registry.getRegistryName().toString(), parent.toString()),
                 true);
         return result;
@@ -327,14 +326,14 @@ public class GTCommands {
             var generated = generator.generateOres(new OreGenerator.VeinConfiguration(metadata, random), level,
                     chunkPos);
             if (generated.isEmpty()) {
-                throw new CommandRuntimeException(Component.translatable("command.gtceu.place_vein.failure",
+                throw new CommandRuntimeException(GTUtil.translatable("command.gtceu.place_vein.failure",
                         id.toString(), sourcePos.toString()));
             }
             for (ChunkPos pos : generated.get().getGeneratedChunks()) {
                 placer.placeVein(pos, random, access, generated.get(), AlwaysTrueTest.INSTANCE);
                 level.getChunk(pos.x, pos.z).setUnsaved(true);
             }
-            context.getSource().sendSuccess(() -> Component.translatable("command.gtceu.place_vein.success",
+            context.getSource().sendSuccess(() -> GTUtil.translatable("command.gtceu.place_vein.success",
                     id.toString(), sourcePos.toString()), true);
         }
 

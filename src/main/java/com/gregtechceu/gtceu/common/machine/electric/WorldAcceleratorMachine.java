@@ -24,7 +24,6 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -237,7 +236,7 @@ public class WorldAcceleratorMachine extends TieredEnergyMachine implements ICon
         if (controllable != null) {
             if (!isRemote()) {
                 controllable.setWorkingEnabled(!controllable.isWorkingEnabled());
-                playerIn.sendSystemMessage(Component.translatable(controllable.isWorkingEnabled() ?
+                playerIn.sendSystemMessage(GTUtil.translatable(controllable.isWorkingEnabled() ?
                         "behaviour.soft_hammer.enabled" : "behaviour.soft_hammer.disabled"));
             }
             return InteractionResult.CONSUME;
@@ -251,7 +250,7 @@ public class WorldAcceleratorMachine extends TieredEnergyMachine implements ICon
         if (!isRemote()) {
             isRandomTickMode = !isRandomTickMode;
             setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_RANDOM_TICK_MODE, isRandomTickMode));
-            playerIn.sendSystemMessage(Component.translatable(isRandomTickMode ?
+            playerIn.sendSystemMessage(GTUtil.translatable(isRandomTickMode ?
                     "gtceu.machine.world_accelerator.mode_entity" : "gtceu.machine.world_accelerator.mode_tile"));
             scheduleRenderUpdate();
         }

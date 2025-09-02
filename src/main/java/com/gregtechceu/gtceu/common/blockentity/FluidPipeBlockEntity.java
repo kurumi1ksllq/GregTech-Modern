@@ -547,10 +547,10 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
                         }
 
                         allTanksEmpty = false;
-                        list.add(Component.translatable("behavior.portable_scanner.tank", i,
-                                Component.translatable(FormattingUtil.formatNumbers(fluids[i].getAmount()))
+                        list.add(GTUtil.translatable("behavior.portable_scanner.tank", i,
+                                GTUtil.translatable(FormattingUtil.formatNumbers(fluids[i].getAmount()))
                                         .withStyle(ChatFormatting.GREEN),
-                                Component.translatable(FormattingUtil.formatNumbers(getCapacityPerTank()))
+                                GTUtil.translatable(FormattingUtil.formatNumbers(getCapacityPerTank()))
                                         .withStyle(ChatFormatting.YELLOW),
                                 fluids[i].getDisplayName().copy()
                                         .withStyle(ChatFormatting.GOLD)));
@@ -558,7 +558,7 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
                 }
 
                 if (allTanksEmpty) {
-                    list.add(Component.translatable("behavior.portable_scanner.tanks_empty"));
+                    list.add(GTUtil.translatable("behavior.portable_scanner.tanks_empty"));
                 }
             }
         }

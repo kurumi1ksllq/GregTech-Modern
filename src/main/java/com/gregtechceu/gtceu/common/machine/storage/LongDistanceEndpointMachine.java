@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.pipenet.longdistance.LongDistanceNetwork;
 import com.gregtechceu.gtceu.api.pipenet.longdistance.LongDistancePipeType;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
@@ -234,22 +235,22 @@ public abstract class LongDistanceEndpointMachine extends MetaMachine implements
                 mode == PortableScannerBehavior.DisplayMode.SHOW_MACHINE_INFO) {
             LongDistanceNetwork network = LongDistanceNetwork.get(getLevel(), getPos());
             if (network == null) {
-                textComponents.add(Component.translatable("block.gtceu.long_distance_item_pipeline_no_network"));
+                textComponents.add(GTUtil.translatable("block.gtceu.long_distance_item_pipeline_no_network"));
             } else {
-                textComponents.add(Component.translatable("block.gtceu.long_distance_item_pipeline_network_header"));
-                textComponents.add(Component.translatable("block.gtceu.long_distance_item_pipeline_pipe_count",
+                textComponents.add(GTUtil.translatable("block.gtceu.long_distance_item_pipeline_network_header"));
+                textComponents.add(GTUtil.translatable("block.gtceu.long_distance_item_pipeline_pipe_count",
                         FormattingUtil.formatNumbers(network.getTotalSize())));
                 ILDEndpoint in = network.getActiveInputIndex(), out = network.getActiveOutputIndex();
-                textComponents.add(Component.translatable("block.gtceu.long_distance_item_pipeline_input_pos",
+                textComponents.add(GTUtil.translatable("block.gtceu.long_distance_item_pipeline_input_pos",
                         Component.literal(in == null ? "none" : in.getPos().toString())));
-                textComponents.add(Component.translatable("block.gtceu.long_distance_item_pipeline_output_pos",
+                textComponents.add(GTUtil.translatable("block.gtceu.long_distance_item_pipeline_output_pos",
                         Component.literal(out == null ? "none" : out.getPos().toString())));
             }
             if (isInput()) {
-                textComponents.add(Component.translatable("block.gtceu.long_distance_item_pipeline_input_endpoint"));
+                textComponents.add(GTUtil.translatable("block.gtceu.long_distance_item_pipeline_input_endpoint"));
             }
             if (isOutput()) {
-                textComponents.add(Component.translatable("block.gtceu.long_distance_item_pipeline_output_endpoint"));
+                textComponents.add(GTUtil.translatable("block.gtceu.long_distance_item_pipeline_output_endpoint"));
             }
         }
 

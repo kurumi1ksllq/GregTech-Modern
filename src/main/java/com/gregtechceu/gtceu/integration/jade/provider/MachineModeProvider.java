@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -29,7 +30,7 @@ public class MachineModeProvider implements IBlockComponentProvider, IServerData
             int currentRecipeTypeIndex = serverData.getInt("CurrentRecipeType");
             ListTag recipeTypesTagList = serverData.getList("RecipeTypes", StringTag.TAG_STRING);
             if (blockAccessor.showDetails()) {
-                iTooltip.add(Component.translatable("gtceu.top.machine_mode"));
+                iTooltip.add(GTUtil.translatable("gtceu.top.machine_mode"));
                 for (int i = 0; i < recipeTypesTagList.size(); i++) {
                     ResourceLocation recipeType = new ResourceLocation(recipeTypesTagList.getString(i));
                     MutableComponent text;
@@ -39,14 +40,14 @@ public class MachineModeProvider implements IBlockComponentProvider, IServerData
                         text = Component.literal("   ");
                     }
                     text.append(
-                            Component.translatable("%s.%s".formatted(recipeType.getNamespace(), recipeType.getPath())));
+                            GTUtil.translatable("%s.%s".formatted(recipeType.getNamespace(), recipeType.getPath())));
                     iTooltip.add(text);
                 }
             } else {
                 ResourceLocation recipeType = new ResourceLocation(
                         recipeTypesTagList.getString(currentRecipeTypeIndex));
-                iTooltip.add(Component.translatable("gtceu.top.machine_mode").append(
-                        Component.translatable("%s.%s".formatted(recipeType.getNamespace(), recipeType.getPath()))));
+                iTooltip.add(GTUtil.translatable("gtceu.top.machine_mode").append(
+                        GTUtil.translatable("%s.%s".formatted(recipeType.getNamespace(), recipeType.getPath()))));
             }
         }
     }

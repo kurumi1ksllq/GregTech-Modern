@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IDropSaveMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.syncdata.ISubscription;
@@ -25,7 +26,6 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -217,7 +217,7 @@ public class DrumMachine extends MetaMachine implements IAutoOutputFluid, IDropS
         if (!isRemote()) {
             if (!playerIn.isShiftKeyDown()) {
                 setAutoOutputFluids(!isAutoOutputFluids());
-                playerIn.sendSystemMessage(Component
+                playerIn.sendSystemMessage(GTUtil
                         .translatable("gtceu.machine.drum." + (autoOutputFluids ? "enable" : "disable") + "_output"));
                 return InteractionResult.SUCCESS;
             }

@@ -750,6 +750,8 @@ public class ConfigHolder {
         @Configurable.Comment({ "Whether or not sounds should be played when crafting with tools.", "Default: true" })
         public boolean toolCraftingSounds = true;
         @Configurable
+        public boolean aprilFoolsMode = false;
+        @Configurable
         @Configurable.Comment({ "The default color to overlay onto machines.",
                 "#FFFFFF is no coloring (default).",
                 "#D2DCFF is the classic blue from GT5." })

@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.common.block.explosive;
 
 import com.gregtechceu.gtceu.common.entity.GTExplosiveEntity;
 import com.gregtechceu.gtceu.common.entity.IndustrialTNTEntity;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -26,7 +27,7 @@ public class IndustrialTNTBlock extends GTExplosiveBlock {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip,
                                 TooltipFlag flag) {
-        tooltip.add(Component.translatable("block.gtceu.itnt.drops_tooltip"));
+        tooltip.add(GTUtil.translatable("block.gtceu.itnt.drops_tooltip"));
         super.appendHoverText(stack, level, tooltip, flag);
     }
 

@@ -18,6 +18,7 @@ import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.editor.ColorPattern;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
@@ -33,7 +34,6 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -291,13 +291,13 @@ public class QuantumTankMachine extends TieredMachine implements IAutoOutputFlui
                 if (isAllowInputFromOutputSideFluids()) {
                     setAllowInputFromOutputSideFluids(false);
                     playerIn.sendSystemMessage(
-                            Component.translatable("gtceu.machine.basic.input_from_output_side.disallow")
-                                    .append(Component.translatable("gtceu.creative.tank.fluid")));
+                            GTUtil.translatable("gtceu.machine.basic.input_from_output_side.disallow")
+                                    .append(GTUtil.translatable("gtceu.creative.tank.fluid")));
                 } else {
                     setAllowInputFromOutputSideFluids(true);
                     playerIn.sendSystemMessage(
-                            Component.translatable("gtceu.machine.basic.input_from_output_side.allow")
-                                    .append(Component.translatable("gtceu.creative.tank.fluid")));
+                            GTUtil.translatable("gtceu.machine.basic.input_from_output_side.allow")
+                                    .append(GTUtil.translatable("gtceu.creative.tank.fluid")));
                 }
             }
             return InteractionResult.SUCCESS;

@@ -21,6 +21,7 @@ import com.gregtechceu.gtceu.api.transfer.fluid.ModifiableFluidHandlerWrapper;
 import com.gregtechceu.gtceu.common.cover.data.BucketMode;
 import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -291,7 +292,7 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
     @Override
     public Widget createUIWidget() {
         final var group = new WidgetGroup(0, 0, 176, 137);
-        group.addWidget(new LabelWidget(10, 5, Component.translatable(getUITitle(), GTValues.VN[tier]).getString()));
+        group.addWidget(new LabelWidget(10, 5, GTUtil.translatable(getUITitle(), GTValues.VN[tier]).getString()));
 
         transferRateWidget = new IntInputWidget(10, 20, 134, 20,
                 this::getCurrentBucketModeTransferRate, this::setCurrentBucketModeTransferRate).setMin(0);
@@ -319,7 +320,7 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
 
     private List<Component> getBucketModeTooltip(BucketMode mode, String langKey) {
         return List.of(
-                Component.translatable(langKey).append(Component.translatable("gtceu.gui.content.units.per_tick")));
+                GTUtil.translatable(langKey).append(GTUtil.translatable("gtceu.gui.content.units.per_tick")));
     }
 
     private int getCurrentBucketModeTransferRate() {

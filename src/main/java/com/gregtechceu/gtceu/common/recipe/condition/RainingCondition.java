@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.common.data.GTRecipeConditions;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
@@ -41,7 +42,7 @@ public class RainingCondition extends RecipeCondition {
 
     @Override
     public Component getTooltips() {
-        return Component.translatable("recipe.condition.rain.tooltip", level);
+        return GTUtil.translatable("recipe.condition.rain.tooltip", level);
     }
 
     public float getLevel() {

@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfigurator;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.MachineCoverContainer;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
@@ -102,7 +103,7 @@ public class StorageCover extends CoverBehavior implements IUICover {
 
         @Override
         public Component getTitle() {
-            return Component.translatable("cover.storage.title");
+            return GTUtil.translatable("cover.storage.title");
         }
 
         @Override

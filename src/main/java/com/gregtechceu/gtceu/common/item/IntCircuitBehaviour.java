@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.factory.HeldItemUIFactory;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
@@ -95,7 +96,7 @@ public class IntCircuitBehaviour implements IItemUIFactory, IAddInformation {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                 TooltipFlag isAdvanced) {
         int configuration = getCircuitConfiguration(stack);
-        tooltipComponents.add(Component.translatable("metaitem.int_circuit.configuration", configuration));
+        tooltipComponents.add(GTUtil.translatable("metaitem.int_circuit.configuration", configuration));
     }
 
     @Override

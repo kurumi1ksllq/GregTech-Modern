@@ -25,6 +25,7 @@ import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -39,7 +40,6 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.TickTask;
@@ -559,7 +559,7 @@ public class ItemCollectorMachine extends TieredEnergyMachine
         if (controllable != null) {
             if (!isRemote()) {
                 controllable.setWorkingEnabled(!controllable.isWorkingEnabled());
-                playerIn.sendSystemMessage(Component.translatable(controllable.isWorkingEnabled() ?
+                playerIn.sendSystemMessage(GTUtil.translatable(controllable.isWorkingEnabled() ?
                         "behaviour.soft_hammer.enabled" : "behaviour.soft_hammer.disabled"));
             }
             return InteractionResult.CONSUME;

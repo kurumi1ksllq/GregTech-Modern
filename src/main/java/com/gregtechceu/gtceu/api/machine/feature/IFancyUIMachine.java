@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.gui.fancy.*;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.fancyconfigurator.CombinedDirectionalFancyConfigurator;
 import com.gregtechceu.gtceu.api.machine.fancyconfigurator.MachineModeFancyConfigurator;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -116,7 +117,7 @@ public interface IFancyUIMachine extends IUIMachine, IFancyUIProvider {
                     GuiTextures.BUTTON_POWER.getSubTexture(0, 0.5, 1, 0.5),
                     controllable::isWorkingEnabled, (clickData, pressed) -> controllable.setWorkingEnabled(pressed))
                     .setTooltipsSupplier(pressed -> List.of(
-                            Component.translatable(
+                            GTUtil.translatable(
                                     pressed ? "behaviour.soft_hammer.enabled" : "behaviour.soft_hammer.disabled"))));
         }
         if (this instanceof MetaMachine machine) {
@@ -140,12 +141,12 @@ public interface IFancyUIMachine extends IUIMachine, IFancyUIProvider {
     @Override
     default List<Component> getTabTooltips() {
         var list = new ArrayList<Component>();
-        list.add(Component.translatable(self().getDefinition().getDescriptionId()));
+        list.add(GTUtil.translatable(self().getDefinition().getDescriptionId()));
         return list;
     }
 
     @Override
     default Component getTitle() {
-        return Component.translatable(self().getDefinition().getDescriptionId());
+        return GTUtil.translatable(self().getDefinition().getDescriptionId());
     }
 }

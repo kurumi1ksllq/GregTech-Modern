@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.data.lang;
 
 import com.gregtechceu.gtceu.common.data.GTBlocks;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -59,6 +60,7 @@ public class LangHandler {
         provider.add("recipe.condition.adjacent_fluid.tooltip", "Fluid blocks around");
         provider.add("recipe.condition.adjacent_block.tooltip", "Blocks around");
         provider.add("recipe.condition.eu_to_start.tooltip", "EU to Start: %d%s");
+        provider.add("recipe.condition.eu_to_start.tooltip_fools", "Vis to Start: %d%s");
         provider.add("recipe.condition.daytime.day.tooltip", "Requires day time to work");
         provider.add("recipe.condition.daytime.night.tooltip", "Requires night time to work");
         provider.add("recipe.condition.gamestage.unlocked_stage", "Unlocked at stage: %s");
@@ -86,7 +88,9 @@ public class LangHandler {
                 "§7Hold SHIFT to show Fluid Containment and Tool Info");
         provider.add("metaitem.generic.fluid_container.tooltip", "%d/%dL %s");
         provider.add("metaitem.generic.electric_item.tooltip", "%d/%d EU - Tier %s");
+        provider.add("metaitem.generic.electric_item.tooltip_fools", "%d/%d Vis - Tier %s");
         provider.add("metaitem.generic.electric_item.stored", "%d/%d EU (%s)");
+        provider.add("metaitem.generic.electric_item.stored_fools", "%d/%d Vis (%s)");
         provider.add("metaitem.electric.discharge_mode.enabled", "§eDischarge Mode Enabled");
         provider.add("metaitem.electric.discharge_mode.disabled", "§eDischarge Mode Disabled");
         provider.add("metaitem.electric.discharge_mode.tooltip", "Use while sneaking to toggle discharge mode");
@@ -768,9 +772,13 @@ public class LangHandler {
         provider.add("behavior.portable_scanner.debug_machine_valid", " valid");
         provider.add("behavior.portable_scanner.divider", "=========================");
         provider.add("behavior.portable_scanner.energy_container_in", "Max IN: %s (%s) EU at %s A");
+        provider.add("behavior.portable_scanner.energy_container_in_fools", "Max IN: %s (%s) Vis at %s A");
         provider.add("behavior.portable_scanner.energy_container_out", "Max OUT: %s (%s) EU at %s A");
+        provider.add("behavior.portable_scanner.energy_container_out_fools", "Max OUT: %s (%s) Vis at %s A");
         provider.add("behavior.portable_scanner.energy_container_storage", "Energy: %s EU / %s EU");
+        provider.add("behavior.portable_scanner.energy_container_storage_fools", "Energy: %s Vis / %s Vis");
         provider.add("behavior.portable_scanner.eu_per_sec", "Average (last second): %s EU/t");
+        provider.add("behavior.portable_scanner.eu_per_sec_fools", "Average (last second): %s Vis/t");
         provider.add("behavior.portable_scanner.amp_per_sec", "Average (last second): %s A");
         provider.add("behavior.portable_scanner.machine_disabled", "Disabled.");
         provider.add("behavior.portable_scanner.machine_front_facing", "Front Facing: %s");
@@ -782,10 +790,11 @@ public class LangHandler {
         provider.add("behavior.portable_scanner.machine_progress", "Progress/Load: %s / %s");
         provider.add("behavior.portable_scanner.machine_upwards_facing", "Upwards Facing: %s");
         provider.add("behavior.portable_scanner.muffled", "Muffled.");
-        provider.add("behavior.portable_scanner.multiblock_energy_input",
-                "Max Energy Income: %s EU/t Tier: %s");
-        provider.add("behavior.portable_scanner.multiblock_energy_output",
-                "Max Energy Output: %s EU/t Tier: %s");
+        provider.add("behavior.portable_scanner.multiblock_energy_input", "Max Energy Income: %s EU/t Tier: %s");
+        provider.add("behavior.portable_scanner.multiblock_energy_input_fools", "Max Energy Income: %s Vis/t Tier: %s");
+        provider.add("behavior.portable_scanner.multiblock_energy_output", "Max Energy Output: %s EU/t Tier: %s");
+        provider.add("behavior.portable_scanner.multiblock_energy_output_fools",
+                "Max Energy Output: %s Vis/t Tier: %s");
         provider.add("behavior.portable_scanner.multiblock_maintenance", "Problems: %s");
         provider.add("behavior.portable_scanner.multiblock_parallel", "Multi Processing: %s");
         provider.add("behavior.portable_scanner.position", "----- X: %s Y: %s Z: %s D: %s -----");
@@ -793,9 +802,12 @@ public class LangHandler {
         provider.add("behavior.portable_scanner.tank", "Tank %s: %s mB / %s mB %s");
         provider.add("behavior.portable_scanner.tanks_empty", "All Tanks Empty");
         provider.add("behavior.portable_scanner.workable_consumption", "Probably Uses: %s EU/t at %s A");
+        provider.add("behavior.portable_scanner.workable_consumption_fools", "Probably Uses: %s Vis/t at %s A");
         provider.add("behavior.portable_scanner.workable_production", "Probably Produces: %s EU/t at %s A");
+        provider.add("behavior.portable_scanner.workable_production_fools", "Probably Produces: %s Vis/t at %s A");
         provider.add("behavior.portable_scanner.workable_progress", "Progress: %s s / %s s");
         provider.add("behavior.portable_scanner.workable_stored_energy", "Stored Energy: %s EU / %s EU");
+        provider.add("behavior.portable_scanner.workable_stored_energy_fools", "Stored Energy: %s Vis / %s Vis");
         provider.add("behavior.portable_scanner.mode.caption", "Display mode: %s");
         provider.add("behavior.portable_scanner.mode.show_all_info", "Show all info");
         provider.add("behavior.portable_scanner.mode.show_block_info", "Show block info");
@@ -866,11 +878,15 @@ public class LangHandler {
         provider.add("gtceu.universal.padded_parentheses", " (%s) ");
         provider.add("gtceu.universal.padded_spaced_parentheses", " ( %s ) ");
         provider.add("gtceu.universal.tooltip.voltage_in", "§aVoltage IN: §f%d EU/t (%s§f)");
+        provider.add("gtceu.universal.tooltip.voltage_in_fools", "§aVoltage IN: §f%d Vis/t (%s§f)");
         provider.add("gtceu.universal.tooltip.max_voltage_in", "§aMax Voltage IN: §f%d (%s§f)");
         provider.add("gtceu.universal.tooltip.voltage_out", "§aVoltage OUT: §f%d EU/t (%s§f)");
+        provider.add("gtceu.universal.tooltip.voltage_out_fools", "§aVoltage OUT: §f%d Vis/t (%s§f)");
         provider.add("gtceu.universal.tooltip.max_voltage_out", "§aMax Voltage OUT: §f%d (%s§f)");
         provider.add("gtceu.universal.tooltip.voltage_in_out", "§aVoltage IN/OUT: §f%d EU/t (%s§f)");
+        provider.add("gtceu.universal.tooltip.voltage_in_out_fools", "§aVoltage IN/OUT: §f%d Vis/t (%s§f)");
         provider.add("gtceu.universal.tooltip.max_voltage_in_out", "§aMax Voltage IN/OUT: §f%d EU/t (%s§f)");
+        provider.add("gtceu.universal.tooltip.max_voltage_in_out_fools", "§aMax Voltage IN/OUT: §f%d Vis/t (%s§f)");
         provider.add("gtceu.universal.tooltip.amperage_in", "§eAmperage IN: §f%dA");
         provider.add("gtceu.universal.tooltip.amperage_in_till", "§eAmperage IN up to: §f%dA");
         provider.add("gtceu.universal.tooltip.amperage_out", "§eAmperage OUT: §f%dA");
@@ -878,6 +894,7 @@ public class LangHandler {
         provider.add("gtceu.universal.tooltip.amperage_in_out", "§eAmperage IN/OUT: §f%dA");
         provider.add("gtceu.universal.tooltip.amperage_in_out_till", "§eAmperage IN/OUT up to: §f%dA");
         provider.add("gtceu.universal.tooltip.energy_storage_capacity", "§cEnergy Capacity: §r%d EU");
+        provider.add("gtceu.universal.tooltip.energy_storage_capacity_fools", "§cEnergy Capacity: §r%d Vis");
         provider.add("gtceu.universal.tooltip.energy_tier_range", "§aAllowed Voltage Tiers: §f%s §f- %s");
         provider.add("gtceu.universal.tooltip.item_storage_capacity", "§6Item Slots: §f%d");
         provider.add("gtceu.universal.tooltip.item_storage_total", "§6Item Capacity: §f%d items");
@@ -897,12 +914,16 @@ public class LangHandler {
         provider.add("gtceu.universal.tooltip.working_area_max", "§bMax Working Area: §f%dx%d");
         provider.add("gtceu.universal.tooltip.working_area_chunks_max", "§bMax Working Area: §f%dx%d Chunks");
         provider.add("gtceu.universal.tooltip.uses_per_tick", "Uses §f%d EU/t §7while working");
+        provider.add("gtceu.universal.tooltip.uses_per_tick_fools", "Uses §f%d Vis/t §7while working");
         provider.add("gtceu.universal.tooltip.uses_per_tick_steam", "Uses §f%d mB/t §7of §fSteam §7while working");
         provider.add("gtceu.universal.tooltip.uses_per_hour_lubricant",
                 "Uses §f%d mB/hr §7of §6Lubricant §7while working");
         provider.add("gtceu.universal.tooltip.uses_per_second", "Uses §f%d EU/s §7while working");
+        provider.add("gtceu.universal.tooltip.uses_per_second_fools", "Uses §f%d Vis/s §7while working");
         provider.add("gtceu.universal.tooltip.uses_per_op", "Uses §f%d EU/operation");
+        provider.add("gtceu.universal.tooltip.uses_per_op_fools", "Uses §f%d Vis/operation");
         provider.add("gtceu.universal.tooltip.base_production_eut", "§eBase Production: §f%d EU/t");
+        provider.add("gtceu.universal.tooltip.base_production_eut_fools", "§eBase Production: §f%d Vis/t");
         provider.add("gtceu.universal.tooltip.base_production_fluid", "§eBase Production: §f%d mB/t");
         provider.add("gtceu.universal.tooltip.produces_fluid", "§eProduces: §f%d mB/t");
         provider.add("gtceu.universal.tooltip.terrain_resist",
@@ -911,19 +932,24 @@ public class LangHandler {
         provider.add("gtceu.universal.tooltip.deprecated",
                 "§4§lWARNING:§r§4 DEPRECATED. WILL BE REMOVED IN A FUTURE VERSION.§r");
         provider.add("gtceu.recipe.total", "Total: %s EU");
+        provider.add("gtceu.recipe.total_fools", "Total: %s Vis");
         provider.add("gtceu.recipe.max_eu", "Max. EU: %s EU");
+        provider.add("gtceu.recipe.max_eu_fools", "Max. Vis: %s Vis");
         provider.add("gtceu.recipe.eu", "Usage: %s A @ %s");
         provider.add("gtceu.recipe.eu_inverted", "Generation: %s A @ %s");
         provider.add("gtceu.recipe.eu.total", "%s EU/t");
+        provider.add("gtceu.recipe.eu.total_fools", "%s Vis/t");
         provider.add("gtceu.recipe.duration", "Duration: %s secs");
         provider.add("gtceu.recipe.voltage", "Usage: %s A @ %s");
         provider.add("gtceu.recipe.total_eu", "Total Usage: %s EU/t");
+        provider.add("gtceu.recipe.total_eu_fools", "Total Usage: %s Vis/t");
         provider.add("gtceu.recipe.not_consumed", "Does not get consumed in the process");
         provider.add("gtceu.recipe.chance", "Chance: %s +%s/tier");
         provider.add("gtceu.recipe.temperature", "Temp: %sK");
         provider.add("gtceu.recipe.coil.tier", "Coil: %s");
         provider.add("gtceu.recipe.explosive", "Explosive: %s");
         provider.add("gtceu.recipe.eu_to_start", "EU To Start: %sEU%s");
+        provider.add("gtceu.recipe.eu_to_start_fools", "Vis To Start: %sVis%s");
         provider.add("gtceu.recipe.dimensions", "Dimensions: %s");
         provider.add("gtceu.recipe.cleanroom", "Requires %s");
         provider.add("gtceu.recipe.environmental_hazard.reverse", "§cArea must be free of %s");
@@ -1062,6 +1088,7 @@ public class LangHandler {
         provider.add("gtceu.cable.voltage", "§aMax Voltage:§r §a%d §a(%s§a)");
         provider.add("gtceu.cable.amperage", "§eMax Amperage:§r §e%d");
         provider.add("gtceu.cable.loss_per_block", "§cLoss/Meter/Ampere:§r §c%d§7 EU-Volt");
+        provider.add("gtceu.cable.loss_per_block_fools", "§cLoss/Meter/Ampere:§r §c%d§7 Vis-Volt");
         provider.add("gtceu.cable.superconductor", "%s §dSuperconductor");
         provider.add("gtceu.fluid_pipe.capacity", "§9Capacity: §f%d mB");
         provider.add("gtceu.fluid_pipe.max_temperature", "§cTemperature Limit: §f%d K");
@@ -1096,11 +1123,17 @@ public class LangHandler {
         provider.add("gtceu.multiblock.max_recipe_tier", "Max Recipe Tier: %s");
         provider.add("gtceu.multiblock.max_recipe_tier_hover", "The maximum tier of recipes that can be run");
         provider.add("gtceu.multiblock.max_energy_per_tick", "Max EU/t: §a%s (%s§r)");
+        provider.add("gtceu.multiblock.max_energy_per_tick_fools", "Max Vis/t: §a%s (%s§r)");
         provider.add("gtceu.multiblock.max_energy_per_tick_hover",
                 "The maximum EU/t available for running recipes or overclocking");
+        provider.add("gtceu.multiblock.max_energy_per_tick_hover_fools",
+                "The maximum Vis/t available for running recipes or overclocking");
         provider.add("gtceu.multiblock.max_energy_per_tick_amps", "Max EU/t: %s (%sA %s)");
+        provider.add("gtceu.multiblock.max_energy_per_tick_amps_fools", "Max Vis/t: %s (%sA %s)");
         provider.add("gtceu.multiblock.energy_consumption", "Energy Usage: %s EU/t (%s)");
+        provider.add("gtceu.multiblock.energy_consumption_fools", "Energy Usage: %s Vis/t (%s)");
         provider.add("gtceu.multiblock.generation_eu", "Outputting: §a%s EU/t");
+        provider.add("gtceu.multiblock.generation_eu_fools", "Outputting: §a%s Vis/t");
         provider.add("gtceu.multiblock.universal.no_problems", "No Maintenance Problems!");
         provider.add("gtceu.multiblock.universal.has_problems", "Has Maintenance Problems!");
         provider.add("gtceu.multiblock.universal.has_problems_header",
@@ -1795,7 +1828,7 @@ public class LangHandler {
             outputKeys.add(next);
             next = getSubKey(key, ++i);
         }
-        return outputKeys.stream().map(k -> Component.translatable(k, args)).collect(Collectors.toList());
+        return outputKeys.stream().map(k -> GTUtil.translatable(k, args)).collect(Collectors.toList());
     }
 
     /**
@@ -1812,7 +1845,7 @@ public class LangHandler {
             return multiLang;
         }
 
-        return List.of(Component.translatable(key));
+        return List.of(GTUtil.translatable(key));
     }
 
     /**
@@ -1824,7 +1857,7 @@ public class LangHandler {
      * @return Returns a single translation from a multi lang.
      */
     public static MutableComponent getFromMultiLang(String key, int index) {
-        return Component.translatable(getSubKey(key, index));
+        return GTUtil.translatable(getSubKey(key, index));
     }
 
     /**
@@ -1837,7 +1870,7 @@ public class LangHandler {
      * @return Returns a single translation from a multi lang.
      */
     public static MutableComponent getFromMultiLang(String key, int index, Object... args) {
-        return Component.translatable(getSubKey(key, index), args);
+        return GTUtil.translatable(getSubKey(key, index), args);
     }
 
     /**

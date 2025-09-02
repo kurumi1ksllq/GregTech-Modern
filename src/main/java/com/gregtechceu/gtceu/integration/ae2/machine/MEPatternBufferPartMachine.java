@@ -25,6 +25,7 @@ import com.gregtechceu.gtceu.integration.ae2.gui.widget.AETextInputButtonWidget;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.slot.AEPatternViewSlotWidget;
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.InternalSlotRecipeHandler;
 import com.gregtechceu.gtceu.utils.GTMath;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
@@ -273,20 +274,20 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
     public void attachConfigurators(ConfiguratorPanel configuratorPanel) {
         configuratorPanel.attachConfigurators(new ButtonConfigurator(
                 new GuiTextureGroup(GuiTextures.BUTTON, GuiTextures.REFUND_OVERLAY), this::refundAll)
-                .setTooltips(List.of(Component.translatable("gui.gtceu.refund_all.desc"))));
+                .setTooltips(List.of(GTUtil.translatable("gui.gtceu.refund_all.desc"))));
         if (isHasCircuitSlot() && isCircuitSlotEnabled()) {
             configuratorPanel.attachConfigurators(new CircuitFancyConfigurator(circuitInventory.storage));
         }
         configuratorPanel.attachConfigurators(new FancyInvConfigurator(
-                shareInventory.storage, Component.translatable("gui.gtceu.share_inventory.title"))
+                shareInventory.storage, GTUtil.translatable("gui.gtceu.share_inventory.title"))
                 .setTooltips(List.of(
-                        Component.translatable("gui.gtceu.share_inventory.desc.0"),
-                        Component.translatable("gui.gtceu.share_inventory.desc.1"))));
+                        GTUtil.translatable("gui.gtceu.share_inventory.desc.0"),
+                        GTUtil.translatable("gui.gtceu.share_inventory.desc.1"))));
         configuratorPanel.attachConfigurators(new FancyTankConfigurator(
-                shareTank.getStorages(), Component.translatable("gui.gtceu.share_tank.title"))
+                shareTank.getStorages(), GTUtil.translatable("gui.gtceu.share_tank.title"))
                 .setTooltips(List.of(
-                        Component.translatable("gui.gtceu.share_tank.desc.0"),
-                        Component.translatable("gui.gtceu.share_inventory.desc.1"))));
+                        GTUtil.translatable("gui.gtceu.share_tank.desc.0"),
+                        GTUtil.translatable("gui.gtceu.share_inventory.desc.1"))));
     }
 
     @Override
@@ -323,7 +324,7 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
         group.addWidget(new AETextInputButtonWidget(18 * rowSize + 8 - 70, 2, 70, 10)
                 .setText(customName)
                 .setOnConfirm(this::setCustomName)
-                .setButtonTooltips(Component.translatable("gui.gtceu.rename.desc")));
+                .setButtonTooltips(GTUtil.translatable("gui.gtceu.rename.desc")));
 
         return group;
     }
@@ -398,9 +399,9 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                         IntCircuitBehaviour.getCircuitConfiguration(circuitStack);
 
                 Component groupName = circuitConfiguration != -1 ?
-                        Component.translatable(controllerDefinition.getDescriptionId())
+                        GTUtil.translatable(controllerDefinition.getDescriptionId())
                                 .append(" - " + circuitConfiguration) :
-                        Component.translatable(controllerDefinition.getDescriptionId());
+                        GTUtil.translatable(controllerDefinition.getDescriptionId());
 
                 return new PatternContainerGroup(
                         AEItemKey.of(controllerDefinition.asStack()), groupName, Collections.emptyList());

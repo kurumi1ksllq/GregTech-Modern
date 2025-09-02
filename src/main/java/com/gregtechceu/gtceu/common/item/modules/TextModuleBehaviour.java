@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.common.machine.multiblock.electric.CentralMonitorMa
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.monitor.MonitorGroup;
 import com.gregtechceu.gtceu.common.network.GTNetwork;
 import com.gregtechceu.gtceu.common.network.packets.SCPacketMonitorGroupNBTChange;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
@@ -22,7 +23,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
@@ -97,7 +97,7 @@ public class TextModuleBehaviour implements IMonitorModuleItem {
             return String.valueOf(Mth.clamp(stack.getOrCreateTag().getDouble("scale"), .0001, 1000));
         };
         scaleInput.setTextSupplier(scaleInputSupplier);
-        scaleInput.setHoverTooltips(Component.translatable("gtceu.gui.central_monitor.text_scale"));
+        scaleInput.setHoverTooltips(GTUtil.translatable("gtceu.gui.central_monitor.text_scale"));
         ListTag tag = stack.getOrCreateTag().getList("formatStringLines", Tag.TAG_STRING);
         List<String> formatStringLines = new ArrayList<>();
         for (Tag line : tag) formatStringLines.add(line.getAsString());

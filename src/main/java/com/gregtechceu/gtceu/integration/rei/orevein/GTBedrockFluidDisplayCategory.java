@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.integration.xei.widgets.GTOreVeinWidget;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib.rei.IGui2Renderer;
@@ -55,7 +56,7 @@ public class GTBedrockFluidDisplayCategory extends ModularUIDisplayCategory<GTBe
     @NotNull
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.jei.bedrock_fluid_diagram");
+        return GTUtil.translatable("gtceu.jei.bedrock_fluid_diagram");
     }
 
     public static void registerDisplays(DisplayRegistry registry) {

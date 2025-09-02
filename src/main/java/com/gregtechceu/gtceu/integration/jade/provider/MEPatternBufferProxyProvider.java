@@ -4,10 +4,10 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.client.util.TooltipHelper;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEPatternBufferProxyPartMachine;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import snownee.jade.api.BlockAccessor;
@@ -25,12 +25,12 @@ public class MEPatternBufferProxyProvider implements IBlockComponentProvider, IS
                 CompoundTag serverData = blockAccessor.getServerData();
                 if (!serverData.getBoolean("formed")) return;
                 if (!serverData.getBoolean("bound")) {
-                    iTooltip.add(Component.translatable("gtceu.top.buffer_not_bound").withStyle(ChatFormatting.RED));
+                    iTooltip.add(GTUtil.translatable("gtceu.top.buffer_not_bound").withStyle(ChatFormatting.RED));
                     return;
                 }
 
                 int[] pos = serverData.getIntArray("pos");
-                iTooltip.add(Component.translatable("gtceu.top.buffer_bound_pos", pos[0], pos[1], pos[2])
+                iTooltip.add(GTUtil.translatable("gtceu.top.buffer_bound_pos", pos[0], pos[1], pos[2])
                         .withStyle(TooltipHelper.RAINBOW_HSL_SLOW));
 
                 MEPatternBufferProvider.readBufferTag(iTooltip, serverData);

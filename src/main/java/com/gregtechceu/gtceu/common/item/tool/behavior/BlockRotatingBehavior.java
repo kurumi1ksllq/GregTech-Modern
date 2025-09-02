@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.common.data.item.GTToolActions;
 import com.gregtechceu.gtceu.common.item.tool.rotation.CustomBlockRotations;
 import com.gregtechceu.gtceu.common.item.tool.rotation.ICustomRotationBehavior;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.utils.RayTraceHelper;
 
@@ -87,7 +88,7 @@ public class BlockRotatingBehavior implements IToolBehavior {
     @Override
     public void addInformation(@NotNull ItemStack stack, @Nullable Level world, @NotNull List<Component> tooltip,
                                @NotNull TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.gtceu.tool.behavior.block_rotation"));
+        tooltip.add(GTUtil.translatable("item.gtceu.tool.behavior.block_rotation"));
     }
 
     public static BlockHitResult retraceBlock(BlockGetter level, Player player, BlockPos pos) {

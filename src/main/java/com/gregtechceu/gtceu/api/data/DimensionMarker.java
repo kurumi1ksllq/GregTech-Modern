@@ -3,11 +3,11 @@ package com.gregtechceu.gtceu.api.data;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.registry.registrate.BuilderBase;
 import com.gregtechceu.gtceu.integration.kjs.Validator;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.memoization.GTMemoizer;
 import com.gregtechceu.gtceu.utils.memoization.MemoizedSupplier;
 
 import net.minecraft.core.Holder;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -64,7 +64,7 @@ public class DimensionMarker {
     private ItemStack getStack(Item item) {
         ItemStack stack = new ItemStack(item);
         if (overrideName != null) {
-            stack.setHoverName(Component.translatable(overrideName));
+            stack.setHoverName(GTUtil.translatable(overrideName));
         }
         return stack;
     }

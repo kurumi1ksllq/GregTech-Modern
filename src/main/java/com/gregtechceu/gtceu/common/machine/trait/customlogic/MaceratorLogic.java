@@ -14,8 +14,8 @@ import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterialItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.item.TurbineRotorBehaviour;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.NotNull;
@@ -95,7 +95,7 @@ public enum MaceratorLogic implements GTRecipeType.ICustomRecipeLogic {
     @Override
     public void buildRepresentativeRecipes() {
         ItemStack stack = GTItems.TURBINE_ROTOR.asStack();
-        stack.setHoverName(Component.translatable("gtceu.auto_decomp.rotor"));
+        stack.setHoverName(GTUtil.translatable("gtceu.auto_decomp.rotor"));
         GTRecipe rotorRecipe;
         GTRecipe pickaxeRecipe;
         float durability = 0.75f;
@@ -111,7 +111,7 @@ public enum MaceratorLogic implements GTRecipeType.ICustomRecipeLogic {
 
         // noinspection DataFlowIssue
         stack = GTMaterialItems.TOOL_ITEMS.get(GTMaterials.Iron, GTToolType.PICKAXE).asStack();
-        stack.setHoverName(Component.translatable("gtceu.auto_decomp.tool"));
+        stack.setHoverName(GTUtil.translatable("gtceu.auto_decomp.tool"));
         stack.setDamageValue(79);
         pickaxeRecipe = applyDurabilityRecipe("tool_decomp", stack, GTMaterials.Iron,
                 (float) (GTToolType.PICKAXE.materialAmount / GTValues.M), durability,

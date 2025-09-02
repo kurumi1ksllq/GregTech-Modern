@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.ResearchData;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.common.data.GTRecipeConditions;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.network.chat.Component;
 
@@ -40,7 +41,7 @@ public class ResearchCondition extends RecipeCondition {
 
     @Override
     public Component getTooltips() {
-        return Component.translatable("gtceu.recipe.research");
+        return GTUtil.translatable("gtceu.recipe.research");
     }
 
     @Override

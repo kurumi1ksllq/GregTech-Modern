@@ -10,9 +10,9 @@ import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardEmitter;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.data.GTParticleTypes;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 
@@ -94,7 +94,7 @@ public interface IMufflerMachine extends IMultiPart, IEnvironmentalHazardEmitter
     default void attachTooltips(TooltipsPanel tooltipsPanel) {
         tooltipsPanel.attachTooltips(new IFancyTooltip.Basic(
                 () -> GuiTextures.INDICATOR_NO_STEAM.get(false),
-                () -> List.of(Component.translatable("gtceu.multiblock.universal.muffler_obstructed")
+                () -> List.of(GTUtil.translatable("gtceu.multiblock.universal.muffler_obstructed")
                         .setStyle(Style.EMPTY.withColor(ChatFormatting.RED))),
                 () -> !isFrontFaceFree(),
                 () -> null));

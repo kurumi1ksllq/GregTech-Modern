@@ -3,10 +3,10 @@ package com.gregtechceu.gtceu.integration.jade.provider;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import snownee.jade.api.BlockAccessor;
@@ -22,9 +22,9 @@ public class MultiblockStructureProvider implements IBlockComponentProvider, ISe
         if (blockAccessor.getServerData().contains("hasError")) {
             boolean hasError = blockAccessor.getServerData().getBoolean("hasError");
             if (hasError) {
-                iTooltip.add(Component.translatable("gtceu.top.invalid_structure").withStyle(ChatFormatting.RED));
+                iTooltip.add(GTUtil.translatable("gtceu.top.invalid_structure").withStyle(ChatFormatting.RED));
             } else {
-                iTooltip.add(Component.translatable("gtceu.top.valid_structure").withStyle(ChatFormatting.GREEN));
+                iTooltip.add(GTUtil.translatable("gtceu.top.valid_structure").withStyle(ChatFormatting.GREEN));
             }
         }
     }

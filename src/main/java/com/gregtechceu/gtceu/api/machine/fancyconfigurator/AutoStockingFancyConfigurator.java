@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEStockingBusPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.machine.feature.multiblock.IMEStockingPart;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
@@ -25,7 +26,7 @@ public class AutoStockingFancyConfigurator implements IFancyConfigurator {
 
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.gui.adv_stocking_config.title");
+        return GTUtil.translatable("gtceu.gui.adv_stocking_config.title");
     }
 
     @Override
@@ -42,11 +43,11 @@ public class AutoStockingFancyConfigurator implements IFancyConfigurator {
         group.addWidget(new LabelWidget(4, 2, "gtceu.gui.title.adv_stocking_config." + suffix));
         group.addWidget(new IntInputWidget(4, 12, 81, 14, machine::getMinStackSize,
                 machine::setMinStackSize).setMin(1)
-                .appendHoverTooltips(Component.translatable("gtceu.gui.adv_stocking_config." + suffix)));
+                .appendHoverTooltips(GTUtil.translatable("gtceu.gui.adv_stocking_config." + suffix)));
         group.addWidget(new LabelWidget(4, 36, "gtceu.gui.title.adv_stocking_config.ticks_per_cycle"));
         group.addWidget(new IntInputWidget(4, 46, 81, 14, machine::getTicksPerCycle,
                 machine::setTicksPerCycle).setMin(ConfigHolder.INSTANCE.compat.ae2.updateIntervals)
-                .setHoverTooltips(Component.translatable("gtceu.gui.adv_stocking_config.ticks_per_cycle")));
+                .setHoverTooltips(GTUtil.translatable("gtceu.gui.adv_stocking_config.ticks_per_cycle")));
 
         return group;
     }

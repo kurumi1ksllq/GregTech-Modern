@@ -134,7 +134,7 @@ public class NetworkSwitchMachine extends DataBankMachine implements IOpticalCom
      * protected void addWarningText(List<Component> textList) {
      * super.addWarningText(textList);
      * if (isFormed() && computationHandler.hasNonBridgingConnections()) {
-     * textList.add(Component.translatable("gtceu.multiblock.computation.non_bridging.detailed").withStyle(
+     * textList.add(GTUtil.translatable("gtceu.multiblock.computation.non_bridging.detailed").withStyle(
      * ChatFormatting.YELLOW));
      * }
      * }

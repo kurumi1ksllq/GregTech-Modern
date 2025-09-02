@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorLogicSuite;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -73,7 +74,7 @@ public class Jetpack extends ArmorLogicSuite implements IJetpack {
 
             if (messageKey != null) {
                 toggleTimer = 5;
-                if (!world.isClientSide) player.displayClientMessage(Component.translatable(messageKey), true);
+                if (!world.isClientSide) player.displayClientMessage(GTUtil.translatable(messageKey), true);
             }
         }
 
@@ -133,15 +134,15 @@ public class Jetpack extends ArmorLogicSuite implements IJetpack {
         if (data != null) {
             if (data.contains("enabled")) {
                 Component status = (data.getBoolean("enabled") ?
-                        Component.translatable("metaarmor.hud.status.enabled") :
-                        Component.translatable("metaarmor.hud.status.disabled"));
-                Component result = Component.translatable("metaarmor.hud.engine_enabled", status);
+                        GTUtil.translatable("metaarmor.hud.status.enabled") :
+                        GTUtil.translatable("metaarmor.hud.status.disabled"));
+                Component result = GTUtil.translatable("metaarmor.hud.engine_enabled", status);
                 this.HUD.newString(result);
             }
             if (data.contains("hover")) {
-                Component status = (data.getBoolean("hover") ? Component.translatable("metaarmor.hud.status.enabled") :
-                        Component.translatable("metaarmor.hud.status.disabled"));
-                Component result = Component.translatable("metaarmor.hud.hover_mode", status);
+                Component status = (data.getBoolean("hover") ? GTUtil.translatable("metaarmor.hud.status.enabled") :
+                        GTUtil.translatable("metaarmor.hud.status.disabled"));
+                Component result = GTUtil.translatable("metaarmor.hud.hover_mode", status);
                 this.HUD.newString(result);
             }
         }
@@ -156,14 +157,14 @@ public class Jetpack extends ArmorLogicSuite implements IJetpack {
 
         Component state;
         boolean enabled = !data.contains("enabled") || data.getBoolean("enabled");
-        state = enabled ? Component.translatable("metaarmor.hud.status.enabled") :
-                Component.translatable("metaarmor.hud.status.disabled");
-        lines.add(Component.translatable("metaarmor.hud.engine_enabled", state));
+        state = enabled ? GTUtil.translatable("metaarmor.hud.status.enabled") :
+                GTUtil.translatable("metaarmor.hud.status.disabled");
+        lines.add(GTUtil.translatable("metaarmor.hud.engine_enabled", state));
 
         boolean hover = data.contains("hover") && data.getBoolean("hover");
-        state = hover ? Component.translatable("metaarmor.hud.status.enabled") :
-                Component.translatable("metaarmor.hud.status.disabled");
-        lines.add(Component.translatable("metaarmor.hud.hover_mode", state));
+        state = hover ? GTUtil.translatable("metaarmor.hud.status.enabled") :
+                GTUtil.translatable("metaarmor.hud.status.disabled");
+        lines.add(GTUtil.translatable("metaarmor.hud.hover_mode", state));
     }
 
     @Override

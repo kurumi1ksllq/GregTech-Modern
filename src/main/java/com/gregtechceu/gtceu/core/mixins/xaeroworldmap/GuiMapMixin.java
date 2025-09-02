@@ -4,13 +4,13 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.map.ButtonState;
 import com.gregtechceu.gtceu.integration.map.xaeros.worldmap.gui.GuiTexturedButtonWithSize;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,7 +28,7 @@ public abstract class GuiMapMixin extends ScreenBase implements IRightClickableE
     public abstract <T extends GuiEventListener & Renderable & NarratableEntry> T addButton(T guiEventListener);
 
     protected GuiMapMixin(Screen parent, Screen escape, MapProcessor mapProcessor, Entity player) {
-        super(parent, escape, Component.translatable("gui.xaero_world_map_screen"));
+        super(parent, escape, GTUtil.translatable("gui.xaero_world_map_screen"));
     }
 
     @Inject(method = "init", at = @At("TAIL"), remap = true)

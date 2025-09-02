@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.common.machine.owner;
 
+import com.gregtechceu.gtceu.utils.GTUtil;
+
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.UsernameCache;
 
@@ -12,7 +14,7 @@ import java.util.UUID;
 
 public non-sealed class PlayerOwner extends MachineOwner {
 
-    private static final Component displayName = Component.translatable("gtceu.ownership.name.player");
+    private static final Component displayName = GTUtil.translatable("gtceu.ownership.name.player");
 
     public PlayerOwner(UUID playerUUID) {
         super(playerUUID);

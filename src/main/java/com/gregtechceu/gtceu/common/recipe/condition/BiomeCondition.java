@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.common.data.GTRecipeConditions;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -53,8 +54,8 @@ public class BiomeCondition extends RecipeCondition {
 
     @Override
     public Component getTooltips() {
-        return Component.translatable("recipe.condition.biome.tooltip",
-                Component.translatableWithFallback(biome.location().toLanguageKey("biome"),
+        return GTUtil.translatable("recipe.condition.biome.tooltip",
+                GTUtil.translatableWithFallback(biome.location().toLanguageKey("biome"),
                         biome.location().toString()));
     }
 

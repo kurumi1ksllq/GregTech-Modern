@@ -4,9 +4,9 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.common.machine.electric.TransformerMachine;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -31,12 +31,12 @@ public class TransformerInfoProvider implements IProbeInfoProvider {
 
             IProbeInfo verticalPane = iProbeInfo.vertical(iProbeInfo.defaultLayoutStyle().spacing(0));
             if (transformUp) {
-                verticalPane.text(Component.translatable("gtceu.top.transform_up",
+                verticalPane.text(GTUtil.translatable("gtceu.top.transform_up",
                         (GTValues.VNF[voltage] + " §r(" + amp * 4 + "A) -> " + GTValues.VNF[voltage + 1] + " §r(" +
                                 amp +
                                 "A)")));
             } else {
-                verticalPane.text(Component.translatable("gtceu.top.transform_down",
+                verticalPane.text(GTUtil.translatable("gtceu.top.transform_down",
                         (GTValues.VNF[voltage + 1] + " §r(" + amp + "A) -> " + GTValues.VNF[voltage] + " §r(" +
                                 amp * 4 +
                                 "A)")));
@@ -44,13 +44,11 @@ public class TransformerInfoProvider implements IProbeInfoProvider {
 
             if (iProbeHitData.getSideHit() == Direction.from3DDataValue(side)) {
                 verticalPane.text(
-                        Component.translatable(
-                                (transformUp ? "gtceu.top.transform_output" : "gtceu.top.transform_input"),
+                        GTUtil.translatable((transformUp ? "gtceu.top.transform_output" : "gtceu.top.transform_input"),
                                 (GTValues.VNF[voltage + 1] + " §r(" + amp + "A)")));
             } else {
                 verticalPane.text(
-                        Component.translatable(
-                                (transformUp ? "gtceu.top.transform_input" : "gtceu.top.transform_output"),
+                        GTUtil.translatable((transformUp ? "gtceu.top.transform_input" : "gtceu.top.transform_output"),
                                 (GTValues.VNF[voltage] + " §r(" + amp * 4 + "A)")));
             }
         }

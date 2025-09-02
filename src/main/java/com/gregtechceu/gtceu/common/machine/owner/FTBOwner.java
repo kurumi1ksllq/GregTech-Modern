@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.common.machine.owner;
 
+import com.gregtechceu.gtceu.utils.GTUtil;
+
 import net.minecraft.network.chat.Component;
 
 import dev.ftb.mods.ftbteams.api.FTBTeamsAPI;
@@ -16,7 +18,7 @@ import java.util.UUID;
 
 public non-sealed class FTBOwner extends MachineOwner {
 
-    private static final Component displayName = Component.translatable("gtceu.ownership.name.ftb");
+    private static final Component displayName = GTUtil.translatable("gtceu.ownership.name.ftb");
 
     public FTBOwner(UUID playerUUID) {
         super(playerUUID);
@@ -87,7 +89,7 @@ public non-sealed class FTBOwner extends MachineOwner {
     public String getName() {
         var team = getTeam();
         return team != null ? team.getName().getString() :
-                Component.translatable("gtceu.tooltip.status.trinary.unknown").getString();
+                GTUtil.translatable("gtceu.tooltip.status.trinary.unknown").getString();
     }
 
     @Override
@@ -98,7 +100,7 @@ public non-sealed class FTBOwner extends MachineOwner {
     @Override
     public void displayInfo(List<Component> compList) {
         super.displayInfo(compList);
-        compList.add(Component.translatable("behavior.portable_scanner.team_name", getName()));
+        compList.add(GTUtil.translatable("behavior.portable_scanner.team_name", getName()));
         MachineOwner.displayPlayerInfo(compList, playerUUID);
     }
 

@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -58,10 +57,10 @@ public class MaintenanceInfoProvider extends CapabilityInfoProvider<IMaintenance
                     }
                 }
             } else {
-                verticalPane.text(CompoundText.create().error(Component.translatable("gtceu.top.maintenance_broken")));
+                verticalPane.text(CompoundText.create().error(GTUtil.translatable("gtceu.top.maintenance_broken")));
             }
         } else {
-            verticalPane.text(CompoundText.create().ok(Component.translatable("gtceu.top.maintenance_fixed")));
+            verticalPane.text(CompoundText.create().ok(GTUtil.translatable("gtceu.top.maintenance_fixed")));
         }
     }
 

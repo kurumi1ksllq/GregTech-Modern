@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.item;
 import com.gregtechceu.gtceu.api.item.component.ICustomDescriptionId;
 import com.gregtechceu.gtceu.api.item.component.ISubItemHandler;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.memoization.GTMemoizer;
 
 import net.minecraft.core.NonNullList;
@@ -30,7 +31,7 @@ public class FacadeItemBehaviour implements ISubItemHandler, ICustomDescriptionI
     @Override
     public @Nullable Component getItemName(ItemStack stack) {
         BlockState facadeState = getFacadeState(stack);
-        return Component.translatable(stack.getDescriptionId(), facadeState.getBlock().getName());
+        return GTUtil.translatable(stack.getDescriptionId(), facadeState.getBlock().getName());
     }
 
     public static final Supplier<List<BlockState>> DEFAULT_FACADES = GTMemoizer.memoize(() -> {

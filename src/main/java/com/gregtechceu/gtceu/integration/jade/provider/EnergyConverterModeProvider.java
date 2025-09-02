@@ -3,9 +3,9 @@ package com.gregtechceu.gtceu.integration.jade.provider;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.common.machine.electric.ConverterMachine;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import snownee.jade.api.BlockAccessor;
@@ -21,9 +21,9 @@ public class EnergyConverterModeProvider implements IBlockComponentProvider, ISe
         if (blockAccessor.getServerData().contains("converterMode")) {
             boolean isFeToEu = blockAccessor.getServerData().getBoolean("converterMode");
             if (isFeToEu) {
-                iTooltip.add(Component.translatable("gtceu.top.convert_fe"));
+                iTooltip.add(GTUtil.translatable("gtceu.top.convert_fe"));
             } else {
-                iTooltip.add(Component.translatable("gtceu.top.convert_eu"));
+                iTooltip.add(GTUtil.translatable("gtceu.top.convert_eu"));
             }
         }
     }

@@ -360,7 +360,7 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
                 if (configGroup.get(0) != null) {
                     currentName = configGroup.get(0).getName();
                 }
-                return Component.translatable("gtceu.central_monitor.gui.currently_editing", currentName).getString();
+                return GTUtil.translatable("gtceu.central_monitor.gui.currently_editing", currentName).getString();
             }));
             for (int i = 0; i < 8; i++) {
                 SlotWidget slot = new SlotWidget(group.getPlaceholderSlotsHandler(), i, -38, 16 * i + 46);
@@ -447,7 +447,7 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
         ButtonWidget createGroupButton = new ButtonWidget(0, 0, 60, 20, null);
         createGroupButton.setOnPressCallback(click -> {
             MonitorGroup group = new MonitorGroup(
-                    Component.translatable("gtceu.gui.central_monitor.group_default_name", monitorGroups.size() + 1)
+                    GTUtil.translatable("gtceu.gui.central_monitor.group_default_name", monitorGroups.size() + 1)
                             .getString());
             for (IMonitorComponent component : selectedComponents) {
                 if (isInAnyGroup(component)) return;
@@ -582,12 +582,12 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
                         monitorGroups.forEach(group -> {
                             if (group.contains(component.getPos())) {
                                 img.setHoverTooltips(
-                                        Component.translatable("gtceu.gui.central_monitor.group", group.getName()));
+                                        GTUtil.translatable("gtceu.gui.central_monitor.group", group.getName()));
                             }
                         });
                     } else {
-                        img.setHoverTooltips(Component.translatable("gtceu.gui.central_monitor.group",
-                                Component.translatable("gtceu.gui.central_monitor.none")));
+                        img.setHoverTooltips(GTUtil.translatable("gtceu.gui.central_monitor.group",
+                                GTUtil.translatable("gtceu.gui.central_monitor.none")));
                     }
                 };
                 Runnable rightClickCallback = () -> {
@@ -639,11 +639,11 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
                 if (isInAnyGroup(component)) {
                     monitorGroups.forEach(group -> {
                         if (group.contains(component.getPos())) img.setHoverTooltips(
-                                Component.translatable("gtceu.gui.central_monitor.group", group.getName()));
+                                GTUtil.translatable("gtceu.gui.central_monitor.group", group.getName()));
                     });
                 } else {
-                    img.setHoverTooltips(Component.translatable("gtceu.gui.central_monitor.group",
-                            Component.translatable("gtceu.gui.central_monitor.none")));
+                    img.setHoverTooltips(GTUtil.translatable("gtceu.gui.central_monitor.group",
+                            GTUtil.translatable("gtceu.gui.central_monitor.none")));
                 }
                 img.setOnPressCallback(click -> {
                     if (click.button == 0) callback.accept(null);
@@ -666,12 +666,12 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
     @Override
     public @NotNull List<Component> getDebugInfo(Player player, int logLevel,
                                                  PortableScannerBehavior.DisplayMode mode) {
-        return List.of(Component.translatable("gtceu.central_monitor.size", leftDist, rightDist, upDist, downDist));
+        return List.of(GTUtil.translatable("gtceu.central_monitor.size", leftDist, rightDist, upDist, downDist));
     }
 
     @Override
     public @NotNull List<Component> getDataInfo(PortableScannerBehavior.DisplayMode mode) {
-        return List.of(Component.translatable("gtceu.central_monitor.size", leftDist, rightDist, upDist, downDist));
+        return List.of(GTUtil.translatable("gtceu.central_monitor.size", leftDist, rightDist, upDist, downDist));
     }
 
     @Override

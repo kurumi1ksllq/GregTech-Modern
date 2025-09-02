@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.common.item.tool.behavior;
 
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.item.tool.behavior.IToolBehavior;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -33,6 +34,6 @@ public class HarvestIceBehavior implements IToolBehavior {
     @Override
     public void addInformation(@NotNull ItemStack stack, @Nullable Level world, @NotNull List<Component> tooltip,
                                @NotNull TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.gtceu.tool.behavior.silk_ice"));
+        tooltip.add(GTUtil.translatable("item.gtceu.tool.behavior.silk_ice"));
     }
 }

@@ -55,7 +55,7 @@ public class RecipeLogicInfoProvider extends CapabilityInfoProvider<RecipeLogic>
                 if (blockEntity instanceof IMachineBlockEntity machineBlockEntity) {
                     var machine = machineBlockEntity.getMetaMachine();
                     if (machine instanceof SteamMachine) {
-                        text = Component.translatable("gtceu.jade.fluid_use", formatted)
+                        text = GTUtil.translatable("gtceu.jade.fluid_use", formatted)
                                 .withStyle(ChatFormatting.GREEN);
                     }
                 }
@@ -65,22 +65,22 @@ public class RecipeLogicInfoProvider extends CapabilityInfoProvider<RecipeLogic>
                     String minAmperage = FormattingUtil
                             .formatNumber2Places((float) (EUt.getTotalEU()) / GTValues.V[tier]) + TextStyleClass.INFO;
 
-                    text = Component.translatable("gtceu.jade.amperage_use", minAmperage).withStyle(ChatFormatting.RED)
-                            .append(Component.translatable("gtceu.jade.at").withStyle(ChatFormatting.GREEN))
+                    text = GTUtil.translatable("gtceu.jade.amperage_use", minAmperage).withStyle(ChatFormatting.RED)
+                            .append(GTUtil.translatable("gtceu.jade.at").withStyle(ChatFormatting.GREEN))
                             .append(GTValues.VNF[GTUtil.getTierByVoltage(EUt.voltage())])
-                            .append(Component.translatable("gtceu.universal.padded_parentheses",
-                                    (Component.translatable("gtceu.recipe.eu.total",
+                            .append(GTUtil.translatable("gtceu.universal.padded_parentheses",
+                                    (GTUtil.translatable("gtceu.recipe.eu.total",
                                             formatted)))
                                     .withStyle(ChatFormatting.WHITE));
                 }
 
                 if (EUt.isInput()) {
                     probeInfo.text(CompoundText.create()
-                            .text(Component.translatable("gtceu.top.energy_consumption").append(" ").append(text))
+                            .text(GTUtil.translatable("gtceu.top.energy_consumption").append(" ").append(text))
                             .style(TextStyleClass.INFO));
                 } else {
                     probeInfo.text(CompoundText.create()
-                            .text(Component.translatable("gtceu.top.energy_production").append(" ").append(text))
+                            .text(GTUtil.translatable("gtceu.top.energy_production").append(" ").append(text))
                             .style(TextStyleClass.INFO));
                 }
             }

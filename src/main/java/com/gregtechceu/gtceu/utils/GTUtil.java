@@ -18,6 +18,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.locale.Language;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -501,15 +502,15 @@ public class GTUtil {
         if (!ConfigHolder.INSTANCE.gameplay.hazardsEnabled || !material.hasProperty(HAZARD)) return;
 
         if (GTUtil.isShiftDown()) {
-            tooltipComponents.add(Component.translatable("gtceu.medical_condition.description_shift"));
-            tooltipComponents.add(Component
-                    .translatable("gtceu.medical_condition." + material.getProperty(HAZARD).condition.name));
-            tooltipComponents.add(Component.translatable("gtceu.hazard_trigger.description"));
-            tooltipComponents.add(Component
-                    .translatable("gtceu.hazard_trigger." + material.getProperty(HAZARD).hazardTrigger.name()));
+            tooltipComponents.add(GTUtil.translatable("gtceu.medical_condition.description_shift"));
+            tooltipComponents
+                    .add(GTUtil.translatable("gtceu.medical_condition." + material.getProperty(HAZARD).condition.name));
+            tooltipComponents.add(GTUtil.translatable("gtceu.hazard_trigger.description"));
+            tooltipComponents.add(
+                    GTUtil.translatable("gtceu.hazard_trigger." + material.getProperty(HAZARD).hazardTrigger.name()));
             return;
         }
-        tooltipComponents.add(Component.translatable("gtceu.medical_condition.description"));
+        tooltipComponents.add(GTUtil.translatable("gtceu.medical_condition.description"));
     }
 
     public static CompoundTag saveItemStack(ItemStack itemStack, CompoundTag compoundTag) {
@@ -548,31 +549,31 @@ public class GTUtil {
     public static Tuple<ItemStack, MutableComponent> getMaintenanceText(byte flag) {
         return switch (flag) {
             case 0 -> new Tuple<>(ToolItemHelper.getToolItem(GTToolType.WRENCH),
-                    Component.translatable("gtceu.top.maintenance.wrench"));
+                    GTUtil.translatable("gtceu.top.maintenance.wrench"));
             case 1 -> new Tuple<>(ToolItemHelper.getToolItem(GTToolType.SCREWDRIVER),
-                    Component.translatable("gtceu.top.maintenance.screwdriver"));
+                    GTUtil.translatable("gtceu.top.maintenance.screwdriver"));
             case 2 -> new Tuple<>(ToolItemHelper.getToolItem(GTToolType.SOFT_MALLET),
-                    Component.translatable("gtceu.top.maintenance.soft_mallet"));
+                    GTUtil.translatable("gtceu.top.maintenance.soft_mallet"));
             case 3 -> new Tuple<>(ToolItemHelper.getToolItem(GTToolType.HARD_HAMMER),
-                    Component.translatable("gtceu.top.maintenance.hard_hammer"));
+                    GTUtil.translatable("gtceu.top.maintenance.hard_hammer"));
             case 4 -> new Tuple<>(ToolItemHelper.getToolItem(GTToolType.WIRE_CUTTER),
-                    Component.translatable("gtceu.top.maintenance.wire_cutter"));
+                    GTUtil.translatable("gtceu.top.maintenance.wire_cutter"));
             default -> new Tuple<>(ToolItemHelper.getToolItem(GTToolType.CROWBAR),
-                    Component.translatable("gtceu.top.maintenance.crowbar"));
+                    GTUtil.translatable("gtceu.top.maintenance.crowbar"));
         };
     }
 
     public static void addPotionTooltip(List<Pair<MobEffectInstance, Float>> effects, List<Component> list) {
         if (!effects.isEmpty()) {
-            list.add(Component.translatable("gtceu.tooltip.potion.header"));
+            list.add(GTUtil.translatable("gtceu.tooltip.potion.header"));
         }
         effects.forEach(pair -> {
             var effect = pair.getFirst();
             float probability = pair.getSecond();
-            list.add(Component.translatable("gtceu.tooltip.potion.each",
-                    Component.translatable(effect.getDescriptionId())
+            list.add(GTUtil.translatable("gtceu.tooltip.potion.each",
+                    GTUtil.translatable(effect.getDescriptionId())
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW)),
-                    Component.translatable("enchantment.level." + (effect.getAmplifier() + 1))
+                    GTUtil.translatable("enchantment.level." + (effect.getAmplifier() + 1))
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW)),
                     Component.literal(String.valueOf(effect.getDuration()))
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.RED)),
@@ -587,5 +588,12 @@ public class GTUtil {
 
     public static <T> ArrayList<T> list(T obj) {
         return new ArrayList<>(List.of(obj));
+    }
+
+    public static MutableComponent translatable(String key, Object... args) {
+        if (GTValues.FOOLS.getAsBoolean() && Language.getInstance().has(key + "_fools")) {
+            return GTUtil.translatable(key + "_fools", args);
+        }
+        return GTUtil.translatable(key, args);
     }
 }

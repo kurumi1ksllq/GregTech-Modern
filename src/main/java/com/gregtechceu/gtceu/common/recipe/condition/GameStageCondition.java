@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.common.data.GTRecipeConditions;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.darkhax.gamestages.data.GameStageSaveHandler;
 import net.minecraft.network.chat.Component;
@@ -43,8 +44,8 @@ public class GameStageCondition extends RecipeCondition {
 
     @Override
     public Component getTooltips() {
-        if (isReverse) return Component.translatable("recipe.condition.gamestage.locked_stage", stageName);
-        return Component.translatable("recipe.condition.gamestage.unlocked_stage", stageName);
+        if (isReverse) return GTUtil.translatable("recipe.condition.gamestage.locked_stage", stageName);
+        return GTUtil.translatable("recipe.condition.gamestage.unlocked_stage", stageName);
     }
 
     @Override

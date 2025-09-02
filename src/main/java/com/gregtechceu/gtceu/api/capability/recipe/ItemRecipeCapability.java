@@ -35,7 +35,6 @@ import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.jei.IngredientIO;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -474,19 +473,19 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
                     // spotless:off
                     if (this.of(content.content) instanceof IntProviderIngredient ingredient) {
                         IntProvider countProvider = ingredient.getCountProvider();
-                        tooltips.add(Component.translatable("gtceu.gui.content.count_range",
-                                countProvider.getMinValue(), countProvider.getMaxValue())
+                        tooltips.add(GTUtil.translatable("gtceu.gui.content.count_range",
+                                        countProvider.getMinValue(), countProvider.getMaxValue())
                                 .withStyle(ChatFormatting.GOLD));
                     } else if (this.of(content.content) instanceof SizedIngredient sizedIngredient &&
                             sizedIngredient.getInner() instanceof IntProviderIngredient ingredient) {
                         IntProvider countProvider = ingredient.getCountProvider();
-                        tooltips.add(Component.translatable("gtceu.gui.content.count_range",
-                                countProvider.getMinValue(), countProvider.getMaxValue())
+                        tooltips.add(GTUtil.translatable("gtceu.gui.content.count_range",
+                                        countProvider.getMinValue(), countProvider.getMaxValue())
                                 .withStyle(ChatFormatting.GOLD));
                     }
                     // spotless:on
                     if (isTickSlot(index, io, recipe)) {
-                        tooltips.add(Component.translatable("gtceu.gui.content.per_tick"));
+                        tooltips.add(GTUtil.translatable("gtceu.gui.content.per_tick"));
                     }
                 });
                 if (io == IO.IN && (content.chance == 0 || this.of(content.content) instanceof IntCircuitIngredient)) {

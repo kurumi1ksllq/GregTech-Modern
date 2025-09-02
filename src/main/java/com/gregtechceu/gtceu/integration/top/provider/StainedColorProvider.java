@@ -2,8 +2,8 @@ package com.gregtechceu.gtceu.integration.top.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.IPaintable;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -35,7 +35,7 @@ public class StainedColorProvider implements IProbeInfoProvider {
 
         IProbeInfo horizontal = iProbeInfo.horizontal(iProbeInfo
                 .defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER));
-        horizontal.mcText(Component.translatable("gtceu.top.stained", String.format("#%06X", paintingColor))
+        horizontal.mcText(GTUtil.translatable("gtceu.top.stained", String.format("#%06X", paintingColor))
                 .withStyle(style -> style.withColor(paintingColor)));
     }
 }

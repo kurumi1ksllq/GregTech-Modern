@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.jei.ModularUIRecipeCategory;
 
@@ -63,7 +64,7 @@ public class GTOreProcessingInfoCategory extends ModularUIRecipeCategory<GTOrePr
     @NotNull
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.jei.ore_processing_diagram");
+        return GTUtil.translatable("gtceu.jei.ore_processing_diagram");
     }
 
     @NotNull

@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.common.data.GTSoundEntries;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.utils.BreadthFirstBlockSearch;
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.GradientUtil;
 
 import net.minecraft.core.BlockPos;
@@ -157,11 +158,11 @@ public class ColorSprayBehaviour implements IDurabilityBar, IInteractionItem, IA
         int remainingUses = getUsesLeft(stack);
         if (color != null) {
             tooltipComponents
-                    .add(Component.translatable("behaviour.paintspray." + this.color.getSerializedName() + ".tooltip"));
+                    .add(GTUtil.translatable("behaviour.paintspray." + this.color.getSerializedName() + ".tooltip"));
         } else {
-            tooltipComponents.add(Component.translatable("behaviour.paintspray.solvent.tooltip"));
+            tooltipComponents.add(GTUtil.translatable("behaviour.paintspray.solvent.tooltip"));
         }
-        tooltipComponents.add(Component.translatable("behaviour.paintspray.uses", remainingUses));
+        tooltipComponents.add(GTUtil.translatable("behaviour.paintspray.uses", remainingUses));
     }
 
     @Override

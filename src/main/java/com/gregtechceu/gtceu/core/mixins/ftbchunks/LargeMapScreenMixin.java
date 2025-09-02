@@ -3,8 +3,8 @@ package com.gregtechceu.gtceu.core.mixins.ftbchunks;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.map.ButtonState;
 import com.gregtechceu.gtceu.integration.map.ftbchunks.FTBChunksOptions;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
 
 import dev.ftb.mods.ftbchunks.client.gui.LargeMapScreen;
@@ -40,7 +40,7 @@ public abstract class LargeMapScreenMixin extends BaseScreen {
                 case "bedrock_fluids" -> ItemIcon.getItemIcon(Items.BUCKET);
                 default -> Icons.INFO;
             };
-            var buttonWidget = new SimpleButton(this, Component.translatable(prefix + button.name),
+            var buttonWidget = new SimpleButton(this, GTUtil.translatable(prefix + button.name),
                     icon, (b, m) -> {
                         ButtonState.toggleButton(button);
                         refreshWidgets();
@@ -48,7 +48,7 @@ public abstract class LargeMapScreenMixin extends BaseScreen {
             add(buttonWidget);
             gtceu$injectedWidgets.add(buttonWidget);
         }
-        var hideDepletedButton = new SimpleButton(this, Component.translatable("gtceu.button.hide_depleted"),
+        var hideDepletedButton = new SimpleButton(this, GTUtil.translatable("gtceu.button.hide_depleted"),
                 ItemIcon.getItemIcon(Items.SPYGLASS), (b, m) -> {
                     FTBChunksOptions.toggleLayer("hide_depleted", !FTBChunksOptions.showLayer("hide_depleted"));
                 }) {
@@ -56,7 +56,7 @@ public abstract class LargeMapScreenMixin extends BaseScreen {
             @Override
             public void addMouseOverText(TooltipList list) {
                 var lang = prefix + (FTBChunksOptions.hideDepleted() ? "show_depleted" : "hide_depleted");
-                list.add(Component.translatable(lang));
+                list.add(GTUtil.translatable(lang));
             }
         };
         add(hideDepletedButton);

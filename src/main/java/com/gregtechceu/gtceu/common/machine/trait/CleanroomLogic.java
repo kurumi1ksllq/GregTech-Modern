@@ -8,11 +8,11 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.CleanroomMachine;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 
@@ -77,7 +77,7 @@ public class CleanroomLogic extends RecipeLogic implements IWorkable {
                         adjustCleanAmount(true);
                     }
 
-                    setWaiting(Component.translatable("gtceu.recipe_logic.insufficient_in").append(": ")
+                    setWaiting(GTUtil.translatable("gtceu.recipe_logic.insufficient_in").append(": ")
                             .append(EURecipeCapability.CAP.getName()));
                     return;
                 }

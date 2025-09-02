@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.common.block.CableBlock;
 import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -33,7 +32,7 @@ public class CableInfoProvider implements IProbeInfoProvider {
                 double amperage = cable.getAverageAmperage();
                 IProbeInfo horizontalPane = iProbeInfo
                         .horizontal(iProbeInfo.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER));
-                horizontalPane.text(Component.translatable("gtceu.top.cable_voltage"));
+                horizontalPane.text(GTUtil.translatable("gtceu.top.cable_voltage"));
                 if (voltage != 0) {
                     horizontalPane.text(GTValues.VNF[GTUtil.getTierByVoltage(voltage)]).text(" / ");
                 }
@@ -41,7 +40,7 @@ public class CableInfoProvider implements IProbeInfoProvider {
 
                 horizontalPane = iProbeInfo
                         .horizontal(iProbeInfo.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER));
-                horizontalPane.text(Component.translatable("gtceu.top.cable_amperage"));
+                horizontalPane.text(GTUtil.translatable("gtceu.top.cable_amperage"));
                 if (amperage != 0) {
                     horizontalPane.text(DECIMAL_FORMAT_1F.format(cable.getAverageAmperage()) + "A / ");
                 }

@@ -5,10 +5,10 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.common.machine.electric.TransformerMachine;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import snownee.jade.api.BlockAccessor;
@@ -46,12 +46,12 @@ public class TransformerBlockProvider implements IBlockComponentProvider, IServe
                 int voltage = blockAccessor.getServerData().getInt("baseVoltage");
                 int amp = blockAccessor.getServerData().getInt("baseAmp");
                 if (transformUp) {
-                    tooltip.add(Component.translatable("gtceu.top.transform_up",
+                    tooltip.add(GTUtil.translatable("gtceu.top.transform_up",
                             (GTValues.VNF[voltage] + " §r(" + amp * 4 + "A) -> " + GTValues.VNF[voltage + 1] + " §r(" +
                                     amp +
                                     "A)")));
                 } else {
-                    tooltip.add(Component.translatable("gtceu.top.transform_down",
+                    tooltip.add(GTUtil.translatable("gtceu.top.transform_down",
                             (GTValues.VNF[voltage + 1] + " §r(" + amp + "A) -> " + GTValues.VNF[voltage] + " §r(" +
                                     amp * 4 +
                                     "A)")));
@@ -60,12 +60,12 @@ public class TransformerBlockProvider implements IBlockComponentProvider, IServe
                 if (blockAccessor.getHitResult().getDirection() ==
                         Direction.from3DDataValue(blockAccessor.getServerData().getInt("side"))) {
                     tooltip.add(
-                            Component.translatable(
+                            GTUtil.translatable(
                                     (transformUp ? "gtceu.top.transform_output" : "gtceu.top.transform_input"),
                                     (GTValues.VNF[voltage + 1] + " §r(" + amp + "A)")));
                 } else {
                     tooltip.add(
-                            Component.translatable(
+                            GTUtil.translatable(
                                     (transformUp ? "gtceu.top.transform_input" : "gtceu.top.transform_output"),
                                     (GTValues.VNF[voltage] + " §r(" + amp * 4 + "A)")));
                 }

@@ -12,6 +12,7 @@ import com.gregtechceu.gtceu.api.gui.widget.directional.handlers.CoverableConfig
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IAutoOutputFluid;
 import com.gregtechceu.gtceu.api.machine.feature.IAutoOutputItem;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -59,7 +60,7 @@ public class CombinedDirectionalFancyConfigurator implements IFancyUIProvider {
 
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.gui.directional_setting.title"); // TODO add this
+        return GTUtil.translatable("gtceu.gui.directional_setting.title"); // TODO add this
     }
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

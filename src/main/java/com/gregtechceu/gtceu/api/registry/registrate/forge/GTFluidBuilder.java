@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.fluids.GTFluid;
 import com.gregtechceu.gtceu.api.fluids.forge.GTFluidImpl;
 import com.gregtechceu.gtceu.api.item.GTBucketItem;
 import com.gregtechceu.gtceu.api.registry.registrate.IGTFluidBuilder;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -373,7 +374,7 @@ public class GTFluidBuilder<P> extends AbstractBuilder<Fluid, GTFluidImpl.Flowin
 
             @Override
             public Component getDescription() {
-                return Component.translatable(langKey, material.getLocalizedName());
+                return GTUtil.translatable(langKey, material.getLocalizedName());
             }
 
             @Override

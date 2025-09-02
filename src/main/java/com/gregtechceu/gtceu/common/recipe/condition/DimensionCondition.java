@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTRecipeConditions;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.jei.IngredientIO;
@@ -57,7 +58,7 @@ public class DimensionCondition extends RecipeCondition {
 
     @Override
     public Component getTooltips() {
-        return Component.translatable("recipe.condition.dimension.tooltip", dimension);
+        return GTUtil.translatable("recipe.condition.dimension.tooltip", dimension);
     }
 
     public SlotWidget setupDimensionMarkers(int xOffset, int yOffset) {

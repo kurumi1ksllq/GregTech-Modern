@@ -5,10 +5,10 @@ import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IEnergyInfoProvider;
 import com.gregtechceu.gtceu.integration.top.element.ProgressElement;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -48,7 +48,7 @@ public class ElectricContainerInfoProvider extends CapabilityInfoProvider<IEnerg
 
         probeInfo.element(new ProgressElement(
                 progress,
-                Component.translatable("gtceu.jade.energy_stored", energyStr, maxEnergyStr),
+                GTUtil.translatable("gtceu.jade.energy_stored", energyStr, maxEnergyStr),
                 probeInfo.defaultProgressStyle()
                         .filledColor(0xFFEEE600)
                         .alternateFilledColor(0xFFEEE600)

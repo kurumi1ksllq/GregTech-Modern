@@ -11,10 +11,10 @@ import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderFluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderIngredient;
 import com.gregtechceu.gtceu.integration.top.element.FluidStackElement;
 import com.gregtechceu.gtceu.integration.top.element.FluidStyle;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -107,7 +107,7 @@ public class RecipeOutputProvider extends CapabilityInfoProvider<RecipeLogic> {
                 if (!itemOutputs.isEmpty() || !fluidOutputs.isEmpty()) {
                     IProbeInfo verticalPane = iProbeInfo.vertical(iProbeInfo.defaultLayoutStyle().spacing(0));
                     verticalPane.text(
-                            CompoundText.create().info(Component.translatable("gtceu.top.recipe_output").append(" ")));
+                            CompoundText.create().info(GTUtil.translatable("gtceu.top.recipe_output").append(" ")));
                     addItemInfo(verticalPane, itemOutputs);
                     addFluidInfo(verticalPane, fluidOutputs);
                 }
@@ -123,7 +123,7 @@ public class RecipeOutputProvider extends CapabilityInfoProvider<RecipeLogic> {
                         .horizontal(verticalPane.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER));
                 String spacer = " ";
                 if (itemOutput instanceof IntProviderIngredient provider) {
-                    spacer += (Component.translatable("gtceu.gui.content.range",
+                    spacer += (GTUtil.translatable("gtceu.gui.content.range",
                             String.valueOf(provider.getCountProvider().getMinValue()),
                             String.valueOf(provider.getCountProvider().getMaxValue()))) + " ";
                     provider.setItemStacks(null); // no roll
@@ -145,7 +145,7 @@ public class RecipeOutputProvider extends CapabilityInfoProvider<RecipeLogic> {
                         .horizontal(verticalPane.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER));
                 String spacer = " ";
                 if (fluidOutput instanceof IntProviderFluidIngredient provider) {
-                    spacer += (Component.translatable("gtceu.gui.content.range",
+                    spacer += (GTUtil.translatable("gtceu.gui.content.range",
                             String.valueOf(provider.getCountProvider().getMinValue()),
                             String.valueOf(provider.getCountProvider().getMaxValue()))) + " ";
                     fluidOutput.setAmount(provider.getCountProvider().getMaxValue()); // no roll

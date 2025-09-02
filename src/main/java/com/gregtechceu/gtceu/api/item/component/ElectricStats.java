@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
 import com.gregtechceu.gtceu.client.renderer.item.ToolChargeBarRenderer;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
@@ -86,7 +87,7 @@ public class ElectricStats implements IInteractionItem, ISubItemHandler, IAddInf
             if (!level.isClientSide) {
                 boolean isInDischargeMode = isInDischargeMode(itemStack);
                 String locale = "metaitem.electric.discharge_mode." + (isInDischargeMode ? "disabled" : "enabled");
-                player.displayClientMessage(Component.translatable(locale), true);
+                player.displayClientMessage(GTUtil.translatable(locale), true);
                 setInDischargeMode(itemStack, !isInDischargeMode);
             }
             return InteractionResultHolder.success(itemStack);
@@ -183,7 +184,7 @@ public class ElectricStats implements IInteractionItem, ISubItemHandler, IAddInf
         addCurrentChargeTooltip(tooltipComponents, electricItem.getCharge(), electricItem.getMaxCharge(),
                 electricItem.getTier(), electricItem.canProvideChargeExternally());
         if (electricItem.canProvideChargeExternally()) {
-            tooltipComponents.add(Component.translatable("metaitem.electric.discharge_mode.tooltip"));
+            tooltipComponents.add(GTUtil.translatable("metaitem.electric.discharge_mode.tooltip"));
         }
     }
 
@@ -211,24 +212,24 @@ public class ElectricStats implements IInteractionItem, ISubItemHandler, IAddInf
             if (durationCurrent.getSeconds() <= 60) {
                 maxChargeTime = durationMax.getSeconds();
                 currentChargeTime = durationCurrent.toSeconds();
-                unit = Component.translatable("item.gtceu.battery.charge_unit.second");
+                unit = GTUtil.translatable("item.gtceu.battery.charge_unit.second");
             } else if (durationCurrent.toMinutes() <= 60) {
                 maxChargeTime = durationMax.toMinutes();
                 currentChargeTime = durationCurrent.toMinutes();
-                unit = Component.translatable("item.gtceu.battery.charge_unit.minute");
+                unit = GTUtil.translatable("item.gtceu.battery.charge_unit.minute");
             } else {
                 maxChargeTime = durationMax.toHours();
                 currentChargeTime = durationCurrent.toHours();
-                unit = Component.translatable("item.gtceu.battery.charge_unit.hour");
+                unit = GTUtil.translatable("item.gtceu.battery.charge_unit.hour");
             }
-            tooltip.add(Component.translatable("item.gtceu.battery.charge_detailed",
+            tooltip.add(GTUtil.translatable("item.gtceu.battery.charge_detailed",
                     FormattingUtil.formatNumbers(currentCharge), FormattingUtil.formatNumbers(maxCharge),
                     GTValues.VNF[tier],
                     FormattingUtil.formatNumbers(currentChargeTime), FormattingUtil.formatNumbers(maxChargeTime),
                     unit)
                     .withStyle(color));
         } else {
-            tooltip.add(Component.translatable("metaitem.generic.electric_item.tooltip",
+            tooltip.add(GTUtil.translatable("metaitem.generic.electric_item.tooltip",
                     FormattingUtil.formatNumbers(currentCharge), FormattingUtil.formatNumbers(maxCharge),
                     GTValues.VNF[tier]).withStyle(color));
         }

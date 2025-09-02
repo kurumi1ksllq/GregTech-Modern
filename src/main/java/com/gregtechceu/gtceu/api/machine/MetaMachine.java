@@ -32,6 +32,7 @@ import com.gregtechceu.gtceu.common.cover.ItemFilterCover;
 import com.gregtechceu.gtceu.common.item.tool.behavior.ToolModeSwitchBehavior;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.common.machine.owner.PlayerOwner;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
@@ -372,7 +373,7 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
         if (this instanceof IMufflableMachine mufflableMachine) {
             if (!isRemote()) {
                 mufflableMachine.setMuffled(!mufflableMachine.isMuffled());
-                playerIn.sendSystemMessage(Component.translatable(mufflableMachine.isMuffled() ?
+                playerIn.sendSystemMessage(GTUtil.translatable(mufflableMachine.isMuffled() ?
                         "gtceu.machine.muffle.on" : "gtceu.machine.muffle.off"));
             }
             return InteractionResult.sidedSuccess(playerIn.level().isClientSide);
@@ -425,7 +426,7 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
         if (controllable == null) return InteractionResult.PASS;
         if (!isRemote()) {
             controllable.setWorkingEnabled(!controllable.isWorkingEnabled());
-            playerIn.sendSystemMessage(Component.translatable(controllable.isWorkingEnabled() ?
+            playerIn.sendSystemMessage(GTUtil.translatable(controllable.isWorkingEnabled() ?
                     "behaviour.soft_hammer.enabled" : "behaviour.soft_hammer.disabled_cycle"));
         }
         return InteractionResult.sidedSuccess(playerIn.level().isClientSide);
@@ -439,10 +440,9 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
             if (this instanceof IAutoOutputItem autoOutputItem) {
                 if (autoOutputItem.getOutputFacingItems() == gridSide) {
                     autoOutputItem.setAllowInputFromOutputSideItems(!autoOutputItem.isAllowInputFromOutputSideItems());
-                    playerIn.displayClientMessage(Component
-                            .translatable("gtceu.machine.basic.input_from_output_side." +
-                                    (autoOutputItem.isAllowInputFromOutputSideItems() ? "allow" : "disallow"))
-                            .append(Component.translatable("gtceu.creative.chest.item")), true);
+                    playerIn.displayClientMessage(GTUtil.translatable("gtceu.machine.basic.input_from_output_side." +
+                            (autoOutputItem.isAllowInputFromOutputSideItems() ? "allow" : "disallow"))
+                            .append(GTUtil.translatable("gtceu.creative.chest.item")), true);
                     changed = true;
                 }
             }
@@ -450,10 +450,9 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
                 if (autoOutputFluid.getOutputFacingFluids() == gridSide) {
                     autoOutputFluid
                             .setAllowInputFromOutputSideFluids(!autoOutputFluid.isAllowInputFromOutputSideFluids());
-                    playerIn.displayClientMessage(Component
-                            .translatable("gtceu.machine.basic.input_from_output_side." +
-                                    (autoOutputFluid.isAllowInputFromOutputSideFluids() ? "allow" : "disallow"))
-                            .append(Component.translatable("gtceu.creative.tank.fluid")), true);
+                    playerIn.displayClientMessage(GTUtil.translatable("gtceu.machine.basic.input_from_output_side." +
+                            (autoOutputFluid.isAllowInputFromOutputSideFluids() ? "allow" : "disallow"))
+                            .append(GTUtil.translatable("gtceu.creative.tank.fluid")), true);
                     changed = true;
                 }
             }
@@ -837,7 +836,7 @@ public class MetaMachine implements IEnhancedManaged, IToolable, ITickSubscripti
         String mainKey = String.format("%s.machine.%s.tooltip", getDefinition().getId().getNamespace(),
                 getDefinition().getId().getPath());
         if (Language.getInstance().has(mainKey)) {
-            tooltips.add(0, Component.translatable(mainKey));
+            tooltips.add(0, GTUtil.translatable(mainKey));
         }
     }
 

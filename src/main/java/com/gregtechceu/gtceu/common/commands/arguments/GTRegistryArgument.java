@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.common.commands.arguments;
 
 import com.gregtechceu.gtceu.api.registry.GTRegistry;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.ResourceLocationException;
@@ -31,7 +32,7 @@ import java.util.function.Function;
 public class GTRegistryArgument<K, V> implements ArgumentType<V> {
 
     private static final SimpleCommandExceptionType ERROR_INVALID = new SimpleCommandExceptionType(
-            Component.translatable("argument.id.invalid"));
+            GTUtil.translatable("argument.id.invalid"));
 
     private static final Collection<String> EXAMPLES = Arrays.asList("gtceu:iron_vein", "gtceu:pitchblende_vein_end",
             "gtceu:lava_deposit");

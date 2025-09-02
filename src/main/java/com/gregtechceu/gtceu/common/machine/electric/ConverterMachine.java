@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.common.machine.trait.ConverterTrait;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
@@ -16,7 +17,6 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -81,7 +81,7 @@ public class ConverterMachine extends TieredEnergyMachine {
             if (getConverterTrait().isFeToEu()) {
                 setFeToEu(false);
                 playerIn.sendSystemMessage(
-                        Component.translatable("gtceu.machine.energy_converter.message_conversion_eu",
+                        GTUtil.translatable("gtceu.machine.energy_converter.message_conversion_eu",
                                 getConverterTrait().getAmps(), getConverterTrait().getVoltage(),
                                 FeCompat.toFeLong(
                                         getConverterTrait().getVoltage() * getConverterTrait().getAmps(),
@@ -89,7 +89,7 @@ public class ConverterMachine extends TieredEnergyMachine {
             } else {
                 setFeToEu(true);
                 playerIn.sendSystemMessage(
-                        Component.translatable("gtceu.machine.energy_converter.message_conversion_native",
+                        GTUtil.translatable("gtceu.machine.energy_converter.message_conversion_native",
                                 FeCompat.toFeLong(
                                         getConverterTrait().getVoltage() * getConverterTrait().getAmps(),
                                         FeCompat.ratio(true)),

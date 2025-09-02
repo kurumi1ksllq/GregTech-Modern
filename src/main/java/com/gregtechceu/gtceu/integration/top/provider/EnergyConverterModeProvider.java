@@ -3,8 +3,8 @@ package com.gregtechceu.gtceu.integration.top.provider;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.common.machine.electric.ConverterMachine;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -28,9 +28,9 @@ public class EnergyConverterModeProvider implements IProbeInfoProvider {
         if (level.getBlockEntity(iProbeHitData.getPos()) instanceof MetaMachineBlockEntity blockEntity &&
                 blockEntity.getMetaMachine() instanceof ConverterMachine converter) {
             if (converter.isFeToEu()) {
-                iProbeInfo.text(Component.translatable("gtceu.top.convert_fe"));
+                iProbeInfo.text(GTUtil.translatable("gtceu.top.convert_fe"));
             } else {
-                iProbeInfo.text(Component.translatable("gtceu.top.convert_eu"));
+                iProbeInfo.text(GTUtil.translatable("gtceu.top.convert_eu"));
             }
         }
     }

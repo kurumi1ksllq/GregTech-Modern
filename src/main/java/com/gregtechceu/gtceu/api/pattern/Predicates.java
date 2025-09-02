@@ -20,10 +20,10 @@ import com.gregtechceu.gtceu.common.block.CoilBlock;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.PowerSubstationMachine;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -212,7 +212,7 @@ public class Predicates {
                 .sorted(Comparator.comparingInt(value -> value.getKey().getTier()))
                 .map(coil -> BlockInfo.fromBlockState(coil.getValue().get().defaultBlockState()))
                 .toArray(BlockInfo[]::new))
-                .addTooltips(Component.translatable("gtceu.multiblock.pattern.error.coils"));
+                .addTooltips(GTUtil.translatable("gtceu.multiblock.pattern.error.coils"));
     }
 
     public static TraceabilityPredicate cleanroomFilters() {
@@ -233,7 +233,7 @@ public class Predicates {
         }, () -> GTCEuAPI.CLEANROOM_FILTERS.values().stream()
                 .map(blockSupplier -> BlockInfo.fromBlockState(blockSupplier.get().defaultBlockState()))
                 .toArray(BlockInfo[]::new))
-                .addTooltips(Component.translatable("gtceu.multiblock.pattern.error.filters"));
+                .addTooltips(GTUtil.translatable("gtceu.multiblock.pattern.error.filters"));
     }
 
     public static TraceabilityPredicate powerSubstationBatteries() {
@@ -258,7 +258,7 @@ public class Predicates {
                 .sorted(Comparator.comparingInt(entry -> entry.getKey().getTier()))
                 .map(entry -> new BlockInfo(entry.getValue().get().defaultBlockState(), null))
                 .toArray(BlockInfo[]::new))
-                .addTooltips(Component.translatable("gtceu.multiblock.pattern.error.batteries"));
+                .addTooltips(GTUtil.translatable("gtceu.multiblock.pattern.error.batteries"));
     }
 
     public static TraceabilityPredicate dataHatchPredicate(TraceabilityPredicate def) {

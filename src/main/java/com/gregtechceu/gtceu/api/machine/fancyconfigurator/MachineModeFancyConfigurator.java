@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.gui.fancy.FancyMachineUIWidget;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyUIProvider;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.common.data.GTItems;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.editor.ColorPattern;
 import com.lowdragmc.lowdraglib.gui.texture.*;
@@ -29,7 +30,7 @@ public class MachineModeFancyConfigurator implements IFancyUIProvider {
 
     @Override
     public Component getTitle() {
-        return Component.translatable("gtceu.gui.machinemode.title");
+        return GTUtil.translatable("gtceu.gui.machinemode.title");
     }
 
     @Override
@@ -59,7 +60,7 @@ public class MachineModeFancyConfigurator implements IFancyUIProvider {
     @Override
     public List<Component> getTabTooltips() {
         List<Component> tooltip = new ArrayList<>();
-        tooltip.add(Component.translatable("gtceu.gui.machinemode.tab_tooltip"));
+        tooltip.add(GTUtil.translatable("gtceu.gui.machinemode.tab_tooltip"));
         return tooltip;
     }
 

@@ -17,12 +17,12 @@ import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.modifier.ParallelLogic;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.network.chat.Component;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.VoidFluidHandler;
@@ -219,7 +219,7 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
             }
 
             if (!applyFluidOutputs(recipe, FluidAction.SIMULATE)) {
-                return ActionResult.fail(Component.translatable("gtceu.recipe_logic.insufficient_out")
+                return ActionResult.fail(GTUtil.translatable("gtceu.recipe_logic.insufficient_out")
                         .append(": ")
                         .append(FluidRecipeCapability.CAP.getName()), FluidRecipeCapability.CAP, IO.OUT);
             }
@@ -266,7 +266,7 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
                 return ActionResult.SUCCESS;
             }
 
-            return ActionResult.fail(Component.translatable("gtceu.recipe_logic.insufficient_out")
+            return ActionResult.fail(GTUtil.translatable("gtceu.recipe_logic.insufficient_out")
                     .append(": ")
                     .append(FluidRecipeCapability.CAP.getName()), FluidRecipeCapability.CAP, IO.OUT);
         }

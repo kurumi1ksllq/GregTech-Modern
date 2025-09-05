@@ -295,7 +295,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         if (pipeTile != null) {
             int activeConnections = pipeTile.getConnections();
             boolean isActiveNode = activeConnections != 0;
-            getWorldPipeNet(level).addNode(pos, createRawData(state, null), 0, activeConnections, isActiveNode);
+            getWorldPipeNet(level).addNode(pos, createRawData(state, null), activeConnections, isActiveNode);
             onActiveModeChange(level, pos, isActiveNode, true);
         }
     }

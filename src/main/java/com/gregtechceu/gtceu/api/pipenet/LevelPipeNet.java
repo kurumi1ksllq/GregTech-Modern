@@ -10,6 +10,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -44,15 +45,14 @@ public abstract class LevelPipeNet<NodeDataType, T extends PipeNet<NodeDataType>
         this.pipeNets.forEach(PipeNet::onNodeConnectionsUpdate);
     }
 
-    public void addNode(BlockPos nodePos, NodeDataType nodeData, int mark, int openConnections, boolean isActive) {
+    public void addNode(BlockPos nodePos, NodeDataType nodeData, int openConnections, boolean isActive) {
         T myPipeNet = null;
-        Node<NodeDataType> node = new Node<>(nodeData, openConnections, mark, isActive);
+        Node<NodeDataType> node = new Node<>(nodeData, openConnections, isActive);
         for (Direction facing : GTUtil.DIRECTIONS) {
             BlockPos offsetPos = nodePos.relative(facing);
             T pipeNet = getNetFromPos(offsetPos);
             Node<NodeDataType> secondNode = pipeNet == null ? null : pipeNet.getAllNodes().get(offsetPos);
-            if (pipeNet != null && pipeNet.canAttachNode(nodeData) &&
-                    pipeNet.canNodesConnect(secondNode, facing.getOpposite(), node, null)) {
+            if (pipeNet != null && pipeNet.canNodesConnect(secondNode, facing.getOpposite(), node, null)) {
                 if (myPipeNet == null) {
                     myPipeNet = pipeNet;
                     myPipeNet.addNode(nodePos, node);
@@ -77,7 +77,7 @@ public abstract class LevelPipeNet<NodeDataType, T extends PipeNet<NodeDataType>
     protected void removePipeNetFromChunk(ChunkPos chunkPos, T pipeNet) {
         List<T> list = this.pipeNetsByChunk.get(chunkPos);
         if (list != null) list.remove(pipeNet);
-        if (list.isEmpty()) this.pipeNetsByChunk.remove(chunkPos);
+        if (list != null && list.isEmpty()) this.pipeNetsByChunk.remove(chunkPos);
     }
 
     public void removeNode(BlockPos nodePos) {
@@ -92,20 +92,6 @@ public abstract class LevelPipeNet<NodeDataType, T extends PipeNet<NodeDataType>
         if (pipeNet != null) {
             pipeNet.updateBlockedConnections(nodePos, side, isBlocked);
             pipeNet.onPipeConnectionsUpdate();
-        }
-    }
-
-    public void updateData(BlockPos nodePos, NodeDataType data) {
-        T pipeNet = getNetFromPos(nodePos);
-        if (pipeNet != null) {
-            pipeNet.updateNodeData(nodePos, data);
-        }
-    }
-
-    public void updateMark(BlockPos nodePos, int newMark) {
-        T pipeNet = getNetFromPos(nodePos);
-        if (pipeNet != null) {
-            pipeNet.updateMark(nodePos, newMark);
         }
     }
 
@@ -138,7 +124,7 @@ public abstract class LevelPipeNet<NodeDataType, T extends PipeNet<NodeDataType>
     protected abstract T createNetInstance();
 
     @Override
-    public CompoundTag save(CompoundTag compound) {
+    public @NotNull CompoundTag save(@NotNull CompoundTag compound) {
         ListTag allPipeNets = new ListTag();
         for (T pipeNet : pipeNets) {
             CompoundTag pNetTag = pipeNet.serializeNBT();

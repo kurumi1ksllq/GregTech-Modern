@@ -10,16 +10,12 @@ public class LevelOpticalPipeNet extends LevelPipeNet<OpticalPipeProperties, Opt
     private static final String DATA_ID = "gtceu_optical_pipe_net";
 
     public static LevelOpticalPipeNet getOrCreate(ServerLevel serverLevel) {
-        return serverLevel.getDataStorage().computeIfAbsent(tag -> new LevelOpticalPipeNet(serverLevel, tag),
+        return serverLevel.getDataStorage().computeIfAbsent(tag -> new LevelOpticalPipeNet(serverLevel),
                 () -> new LevelOpticalPipeNet(serverLevel), DATA_ID);
     }
 
     public LevelOpticalPipeNet(ServerLevel level) {
         super(level);
-    }
-
-    public LevelOpticalPipeNet(ServerLevel serverLevel, CompoundTag tag) {
-        super(serverLevel, tag);
     }
 
     @Override

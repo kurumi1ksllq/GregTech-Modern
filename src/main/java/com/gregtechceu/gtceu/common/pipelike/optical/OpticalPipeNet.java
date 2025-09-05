@@ -53,12 +53,4 @@ public class OpticalPipeNet extends PipeNet<OpticalPipeProperties> {
         NET_DATA.clear();
         ((OpticalPipeNet) parentNet).NET_DATA.clear();
     }
-
-    @Override
-    protected void writeNodeData(OpticalPipeProperties nodeData, CompoundTag tagCompound) {}
-
-    @Override
-    protected OpticalPipeProperties readNodeData(CompoundTag tagCompound) {
-        return OpticalPipeProperties.INSTANCE;
-    }
 }

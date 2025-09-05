@@ -51,14 +51,6 @@ public class LaserPipeNet extends PipeNet<LaserPipeProperties> {
         netData.clear();
     }
 
-    @Override
-    protected void writeNodeData(LaserPipeProperties laserPipeProperties, CompoundTag compoundTag) {}
-
-    @Override
-    protected LaserPipeProperties readNodeData(CompoundTag tagCompound) {
-        return LaserPipeProperties.INSTANCE;
-    }
-
     @AllArgsConstructor
     public static class LaserData implements IAttachData {
 

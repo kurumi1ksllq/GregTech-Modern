@@ -49,13 +49,4 @@ public class DuctPipeNet extends PipeNet<DuctPipeProperties> {
         ((DuctPipeNet) parentNet).NET_DATA.clear();
     }
 
-    @Override
-    protected void writeNodeData(DuctPipeProperties nodeData, CompoundTag tagCompound) {
-        tagCompound.putFloat("Rate", nodeData.getTransferRate());
-    }
-
-    @Override
-    protected DuctPipeProperties readNodeData(CompoundTag tagCompound) {
-        return new DuctPipeProperties(tagCompound.getFloat("Rate"));
-    }
 }

@@ -12,7 +12,9 @@ import com.gregtechceu.gtceu.api.pattern.util.PatternMatchContext;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MultiblockState {
 
@@ -160,6 +163,15 @@ public class MultiblockState {
         return cache.longStream().mapToObj(BlockPos::of).collect(Collectors.toSet());
     }
 
+    public Stream<ChunkPos> streamCacheChunks() {
+        return cache.longStream()
+                .mapToObj(l -> {
+                    int x = SectionPos.blockToSectionCoord(BlockPos.getX(l));
+                    int z = SectionPos.blockToSectionCoord(BlockPos.getZ(l));
+                    return new ChunkPos(x, z);
+                });
+    }
+
     public void onBlockStateChanged(BlockPos pos, BlockState state) {
         if (world instanceof ServerLevel serverLevel) {
             if (pos.equals(controllerPos)) {
@@ -167,7 +179,7 @@ public class MultiblockState {
                     if (!state.is(lastController.self().getBlockState().getBlock())) {
                         lastController.onStructureInvalid();
                         var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-                        mwsd.removeMapping(this);
+                        mwsd.getTracker().stopTracking(this);
                     }
                 }
             } else {
@@ -190,8 +202,8 @@ public class MultiblockState {
                         controller.self().setFlipped(false);
                         controller.onStructureInvalid();
                         var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-                        mwsd.removeMapping(this);
-                        mwsd.addAsyncLogic(controller);
+                        mwsd.getTracker().stopTracking(this);
+                        mwsd.getChecker().scheduleChecking(controller);
                     }
                 }
             }

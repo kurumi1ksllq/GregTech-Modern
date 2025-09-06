@@ -105,12 +105,10 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
     MultiblockState getMultiblockState();
 
     /**
-     * Called in an async thread. It's unsafe, Don't modify anything of world but checking information.
-     * It will be called per 5 tick.
-     *
-     * @param periodID period Tick
+     * Called off-thread.
+     * This function must be read-only, it should not modify anything unless it is specifically thread-safe.
      */
-    void asyncCheckPattern(long periodID);
+    void checkPatternOffThread();
 
     /**
      * Called when structure is formed, have to be called after {@link #checkPattern()}. (server-side / fake scene only)

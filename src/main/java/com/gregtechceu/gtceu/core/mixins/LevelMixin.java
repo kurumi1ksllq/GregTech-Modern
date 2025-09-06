@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.core.mixins;
 
-import com.gregtechceu.gtceu.api.pattern.MultiblockState;
+import com.gregtechceu.gtceu.api.pattern.ConcurrentStructureChecker;
 import com.gregtechceu.gtceu.api.pattern.MultiblockWorldSavedData;
 
 import com.lowdragmc.lowdraglib.async.AsyncThreadData;
@@ -24,9 +24,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Mixin(Level.class)
 public abstract class LevelMixin implements LevelAccessor {
 
@@ -42,7 +39,7 @@ public abstract class LevelMixin implements LevelAccessor {
     private @Nullable ChunkAccess gtceu$maybeGetChunkAsync(int chunkX, int chunkZ) {
         if (this.isClientSide) return null;
         if (Thread.currentThread() == this.thread) return null;
-        if (!MultiblockWorldSavedData.isThreadService() && !AsyncThreadData.isThreadService()) return null;
+        if (!ConcurrentStructureChecker.isCurrentlyChecking() && !AsyncThreadData.isThreadService()) return null;
         if (!this.getChunkSource().hasChunk(chunkX, chunkZ)) return null;
 
         return this.getChunkSource().getChunkNow(chunkX, chunkZ);
@@ -76,8 +73,11 @@ public abstract class LevelMixin implements LevelAccessor {
         if (!(((Object) this) instanceof ServerLevel serverLevel)) return;
 
         MultiblockWorldSavedData mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-        Set<MultiblockState> defensiveCopy = new HashSet<>(mwsd.getControllersInChunk(chunk.getPos()));
-        for (MultiblockState structure : defensiveCopy) {
+        var structures = mwsd.getTracker().getStructuresInChunk(chunk.getPos());
+        if (structures == null) {
+            return;
+        }
+        for (var structure : structures) {
             if (structure.isPosInCache(pos)) {
                 serverLevel.getServer().executeBlocking(() -> structure.onBlockStateChanged(pos, newState));
             }

@@ -90,7 +90,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     public void onLoad() {
         super.onLoad();
         if (getLevel() instanceof ServerLevel serverLevel) {
-            MultiblockWorldSavedData.getOrCreate(serverLevel).addAsyncLogic(this);
+            MultiblockWorldSavedData.getOrCreate(serverLevel).getChecker().scheduleChecking(this);
         }
     }
 
@@ -98,7 +98,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     public void onUnload() {
         super.onUnload();
         if (getLevel() instanceof ServerLevel serverLevel) {
-            MultiblockWorldSavedData.getOrCreate(serverLevel).removeAsyncLogic(this);
+            MultiblockWorldSavedData.getOrCreate(serverLevel).getChecker().cancelChecking(this);
         }
     }
 
@@ -152,23 +152,30 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     private final Lock patternLock = new ReentrantLock();
 
     @Override
-    public void asyncCheckPattern(long periodID) {
-        if ((getMultiblockState().hasError() || !isFormed) && (getHolder().getOffset() + periodID) % 4 == 0 &&
-                checkPatternWithTryLock()) { // per second
-            if (getLevel() instanceof ServerLevel serverLevel) {
-                serverLevel.getServer().execute(() -> {
-                    patternLock.lock();
-                    if (checkPatternWithLock()) { // formed
-                        setFlipped(getMultiblockState().isNeededFlip());
-                        onStructureFormed();
-                        var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-                        mwsd.addMapping(getMultiblockState());
-                        mwsd.removeAsyncLogic(this);
-                    }
-                    patternLock.unlock();
-                });
-            }
+    public final void checkPatternOffThread() {
+        if (!getMultiblockState().hasError() && isFormed) {
+            return;
         }
+        if (!(getLevel() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (!checkPatternWithTryLock()) {
+            return;
+        }
+        serverLevel.getServer().execute(() -> {
+            patternLock.lock();
+            try {
+                if (checkPattern()) {
+                    setFlipped(getMultiblockState().isNeededFlip());
+                    onStructureFormed();
+                    var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
+                    mwsd.getTracker().trackPositions(getMultiblockState());
+                    mwsd.getChecker().cancelChecking(this);
+                }
+            } finally {
+                patternLock.unlock();
+            }
+        });
     }
 
     @Override
@@ -223,7 +230,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         parts.removeIf(part -> part.self().isInValid());
         getMultiblockState().setError(MultiblockState.UNLOAD_ERROR);
         if (getLevel() instanceof ServerLevel serverLevel) {
-            MultiblockWorldSavedData.getOrCreate(serverLevel).addAsyncLogic(this);
+            MultiblockWorldSavedData.getOrCreate(serverLevel).getChecker().scheduleChecking(this);
         }
         updatePartPositions();
     }
@@ -234,8 +241,8 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             // invalid structure
             this.onStructureInvalid();
             var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-            mwsd.removeMapping(getMultiblockState());
-            mwsd.addAsyncLogic(this);
+            mwsd.getTracker().stopTracking(getMultiblockState());
+            mwsd.getChecker().scheduleChecking(this);
         }
     }
 
@@ -260,7 +267,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             if (getLevel() != null && !getLevel().isClientSide) {
                 notifyBlockUpdate();
                 markDirty();
-                checkPattern();
+                checkPatternWithLock();
             }
         }
     }
@@ -290,7 +297,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         super.setFrontFacing(facing);
 
         if (getLevel() != null && !getLevel().isClientSide) {
-            checkPattern();
+            checkPatternWithLock();
         }
     }
 }

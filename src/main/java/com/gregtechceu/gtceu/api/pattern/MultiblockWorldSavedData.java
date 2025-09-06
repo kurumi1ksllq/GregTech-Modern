@@ -2,11 +2,11 @@ package com.gregtechceu.gtceu.api.pattern;
 
 import com.gregtechceu.gtceu.GTCEu;
 
-import lombok.Getter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 
+import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 

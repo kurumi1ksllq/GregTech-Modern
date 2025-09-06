@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.api.pattern;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
+
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 

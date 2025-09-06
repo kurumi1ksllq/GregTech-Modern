@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.gametest.util;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
@@ -27,6 +28,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedstoneLampBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.List;
@@ -208,11 +210,34 @@ public class TestUtils {
 
     /**
      * Helper function to succeed after the test is over
-     * 
+     *
      * @param helper  GameTestHelper
      * @param timeout Ticks to wait until succeeding
      */
     public static void succeedAfterTest(GameTestHelper helper, long timeout) {
         helper.runAtTickTime(timeout, helper::succeed);
+    }
+
+    /**
+     * Helper function to force a block update
+     *
+     * @param helper  GameTestHelper
+     * @param pos The position to force an update on
+     */
+    public static void forceBlockUpdate(GameTestHelper helper, BlockPos pos){
+        BlockState currentState = helper.getLevel().getBlockState(pos);
+        helper.getLevel().setBlock(pos, currentState, 3); // 3 for "UPDATE_CLIENTS | NEIGHBOR_CHANGE"
+        BlockEntity entity = helper.getBlockEntity(pos);
+        if (entity != null){
+            entity.setChanged();
+            helper.getLevel().sendBlockUpdated(entity.getBlockPos(), entity.getBlockState(), entity.getBlockState(), 3); // 3 for "UPDATE_CLIENTS | NEIGHBOR_CHANGE"
+        }
+        if(entity instanceof PipeBlockEntity<?,?> pipe){
+            pipe.setChanged();
+            pipe.notifyBlockUpdate();
+            var pipeBlock = pipe.getPipeBlock();
+            pipeBlock
+        }
+
     }
 }

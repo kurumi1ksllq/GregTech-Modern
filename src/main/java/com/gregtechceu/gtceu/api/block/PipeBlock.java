@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.api.item.PipeBlockItem;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
-import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
 import com.gregtechceu.gtceu.api.pipenet.IPipeType;
 import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 import com.gregtechceu.gtceu.api.pipenet.PipeNet;
@@ -123,7 +122,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         return pipeType.modifyProperties(createRawData(state, stack));
     }
 
-    public abstract NodeDataType createProperties(IPipeNode<PipeType, NodeDataType> pipeTile);
+    public abstract NodeDataType createProperties(PipeBlockEntity<PipeType, NodeDataType> pipeTile);
 
     /**
      * Sometimes some people
@@ -137,11 +136,11 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
     protected abstract PipeModel getPipeModel();
 
     public void updateActiveNodeStatus(@NotNull Level worldIn, BlockPos pos,
-                                       IPipeNode<PipeType, NodeDataType> pipeTile) {
+                                       PipeBlockEntity<PipeType, NodeDataType> pipeTile) {
         if (worldIn.isClientSide) return;
 
         PipeNet<NodeDataType> pipeNet = getWorldPipeNet((ServerLevel) worldIn).getNetFromPos(pos);
-        if (pipeNet != null && pipeTile != null) {
+        if (pipeNet != null) {
             int activeConnections = pipeTile.getConnections(); // remove blocked connections
             boolean isActiveNodeNow = activeConnections != 0;
             boolean modeChanged = pipeNet.markNodeAsActive(pos, isActiveNodeNow);
@@ -154,7 +153,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
     @Override
     public void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor) {
         if (level.isClientSide()) return;
-        IPipeNode<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
+        PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
 
         if (pipeTile != null) {
             Direction facing = GTUtil.getFacingToNeighbor(pos, neighbor);
@@ -183,10 +182,10 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    public IPipeNode<PipeType, NodeDataType> getPipeTile(BlockGetter level, BlockPos pos) {
-        if (level.getBlockEntity(pos) instanceof IPipeNode<?, ?> pipeTile &&
+    public PipeBlockEntity<PipeType, NodeDataType> getPipeTile(BlockGetter level, BlockPos pos) {
+        if (level.getBlockEntity(pos) instanceof PipeBlockEntity<?, ?> pipeTile &&
                 pipeTile.getPipeType().type().equals(pipeType.type())) {
-            return (IPipeNode<PipeType, NodeDataType>) pipeTile;
+            return (PipeBlockEntity<PipeType, NodeDataType>) pipeTile;
         }
         return null;
     }
@@ -197,7 +196,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
      */
     protected void onActiveModeChange(Level world, BlockPos pos, boolean isActiveNow, boolean isInitialChange) {}
 
-    public boolean canConnect(IPipeNode<PipeType, NodeDataType> selfTile, Direction facing) {
+    public boolean canConnect(PipeBlockEntity<PipeType, NodeDataType> selfTile, Direction facing) {
         if (selfTile.getLevel().getBlockState(selfTile.getBlockPos().relative(facing)).getBlock() == Blocks.AIR)
             return false;
         CoverBehavior cover = selfTile.getCoverContainer().getCoverAtSide(facing);
@@ -205,26 +204,26 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
             return false;
         }
         BlockEntity other = selfTile.getNeighbor(facing);
-        if (other instanceof IPipeNode<?, ?> node) {
+        if (other instanceof PipeBlockEntity<?, ?> node) {
             cover = node.getCoverContainer().getCoverAtSide(facing.getOpposite());
             if (cover != null && !cover.canPipePassThrough())
                 return false;
-            return canPipesConnect(selfTile, facing, (IPipeNode<PipeType, NodeDataType>) other);
+            return canPipesConnect(selfTile, facing, (PipeBlockEntity<PipeType, NodeDataType>) other);
         }
         return canPipeConnectToBlock(selfTile, facing, other);
     }
 
-    public abstract boolean canPipesConnect(IPipeNode<PipeType, NodeDataType> selfTile, Direction side,
-                                            IPipeNode<PipeType, NodeDataType> sideTile);
+    public abstract boolean canPipesConnect(PipeBlockEntity<PipeType, NodeDataType> selfTile, Direction side,
+                                            PipeBlockEntity<PipeType, NodeDataType> sideTile);
 
-    public abstract boolean canPipeConnectToBlock(IPipeNode<PipeType, NodeDataType> selfTile, Direction side,
+    public abstract boolean canPipeConnectToBlock(PipeBlockEntity<PipeType, NodeDataType> selfTile, Direction side,
                                                   @Nullable BlockEntity tile);
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer,
                             ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        IPipeNode<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
+        PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
         if (pipeTile != null) {
             // Color pipes/cables on place if holding spray can in off-hand
             if (placer instanceof Player player) {
@@ -250,7 +249,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos,
                                 boolean isMoving) {
         if (level.isClientSide) return;
-        IPipeNode<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
+        PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
         if (pipeTile != null) {
             Direction facing = GTUtil.getFacingToNeighbor(pos, fromPos);
             if (facing == null) return;
@@ -279,7 +278,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
 
     @Override
     public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
-        IPipeNode<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
+        PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
         if (pipeTile != null) {
             pipeTile.getCoverContainer().dropAllCovers();
         }
@@ -291,7 +290,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
 
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        IPipeNode<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
+        PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
         if (pipeTile != null) {
             int activeConnections = pipeTile.getConnections();
             boolean isActiveNode = activeConnections != 0;
@@ -414,7 +413,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
                 }
 
                 if ((player.isShiftKeyDown() && held.isEmpty() && coverable.hasAnyCover()) ||
-                        types.stream().anyMatch(type -> type.matchTags.stream().anyMatch(held::is)) ||
+                        types.stream().anyMatch(type -> type.itemTags.stream().anyMatch(held::is)) ||
                         CoverPlaceBehavior.isCoverBehaviorItem(held, coverable::hasAnyCover,
                                 coverDef -> ICoverable.canPlaceCover(coverDef, coverable)) ||
                         (held.getItem() instanceof BlockItem blockItem &&
@@ -435,7 +434,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         if (blockEntityType == getBlockEntityType()) {
             if (!level.isClientSide) {
                 return (pLevel, pPos, pState, pTile) -> {
-                    if (pTile instanceof IPipeNode<?, ?> pipeNode) {
+                    if (pTile instanceof PipeBlockEntity<?, ?> pipeNode) {
                         pipeNode.serverTick();
                     }
                     if (pTile instanceof ManagedSyncBlockEntity syncObj) {
@@ -464,7 +463,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         var context = builder.withParameter(LootContextParams.BLOCK_STATE, state).create(LootContextParamSets.BLOCK);
         BlockEntity tileEntity = context.getParamOrNull(LootContextParams.BLOCK_ENTITY);
         List<ItemStack> drops = new ArrayList<>(super.getDrops(state, builder));
-        if (tileEntity instanceof IPipeNode<?, ?> pipeTile) {
+        if (tileEntity instanceof PipeBlockEntity<?, ?> pipeTile) {
             if (!pipeTile.getFrameMaterial().isNull()) {
                 drops.addAll(GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, pipeTile.getFrameMaterial())
                         .getDefaultState().getDrops(builder));

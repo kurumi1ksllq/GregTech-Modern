@@ -96,18 +96,17 @@ public class DuctPipeBlockEntity extends PipeBlockEntity<DuctPipeType, DuctPipeP
             return null;
         }
         DuctPipeNet currentPipeNet = this.currentPipeNet.get();
-        if (currentPipeNet != null && currentPipeNet.isValid() && currentPipeNet.containsNode(this.getBlockPos())) {
+        if (currentPipeNet != null && currentPipeNet.isValid() && currentPipeNet.containsNode(getBlockPos())) {
             return currentPipeNet;
         }
-        LevelDuctPipeNet worldNet = (LevelDuctPipeNet) getPipeBlock().getWorldPipeNet((ServerLevel) this.getLevel());
-        currentPipeNet = worldNet.getNetFromPos(this.getBlockPos());
+        LevelDuctPipeNet worldNet = (LevelDuctPipeNet) getPipeBlock().getWorldPipeNet((ServerLevel) getLevel());
+        currentPipeNet = worldNet.getNetFromPos(getBlockPos());
         if (currentPipeNet != null) {
             this.currentPipeNet = new WeakReference<>(currentPipeNet);
         }
         return currentPipeNet;
     }
 
-    @Override
     public boolean canAttachTo(Direction side) {
         if (level != null) {
             if (level.getBlockEntity(getBlockPos().relative(side)) instanceof DuctPipeBlockEntity) {

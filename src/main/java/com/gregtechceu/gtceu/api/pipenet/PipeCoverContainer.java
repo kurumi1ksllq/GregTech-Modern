@@ -24,14 +24,14 @@ public class PipeCoverContainer implements ICoverable, ISyncManaged {
     @Getter
     private final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
 
-    private final IPipeNode<?, ?> pipeTile;
+    private final PipeBlockEntity<?, ?> pipeTile;
 
     @SyncToClient
     @SaveField
     @RerenderOnChanged
     private CoverBehavior up, down, north, south, west, east;
 
-    public PipeCoverContainer(IPipeNode<?, ?> pipeTile) {
+    public PipeCoverContainer(PipeBlockEntity<?, ?> pipeTile) {
         this.pipeTile = pipeTile;
     }
 

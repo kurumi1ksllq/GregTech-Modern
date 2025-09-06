@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.pipenet.Node;
 import com.gregtechceu.gtceu.api.pipenet.PipeNet;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 
 import java.util.*;
@@ -19,7 +18,7 @@ public class EnergyNet extends PipeNet<WireProperties> {
     private long energyFluxPerSec;
     private long lastTime;
 
-    protected EnergyNet(LevelPipeNet<WireProperties, ? extends EnergyNet> world) {
+    public EnergyNet(LevelPipeNet<WireProperties, ? extends EnergyNet> world) {
         super(world);
     }
 

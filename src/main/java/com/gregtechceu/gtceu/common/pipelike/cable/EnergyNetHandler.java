@@ -7,6 +7,8 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+
+import lombok.Getter;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
@@ -15,6 +17,7 @@ import java.util.Objects;
 
 public class EnergyNetHandler implements IEnergyContainer {
 
+    @Getter
     private EnergyNet net;
     private boolean transfer;
     private final CableBlockEntity cable;
@@ -24,10 +27,6 @@ public class EnergyNetHandler implements IEnergyContainer {
         this.net = Objects.requireNonNull(net);
         this.cable = Objects.requireNonNull(cable);
         this.facing = facing;
-    }
-
-    public EnergyNet getNet() {
-        return net;
     }
 
     public void updateNetwork(EnergyNet net) {
@@ -49,15 +48,11 @@ public class EnergyNetHandler implements IEnergyContainer {
 
         long amperesUsed = 0L;
         for (EnergyRoutePath path : net.getNetData(cable.getBlockPos())) {
-            if (path.getMaxLoss() >= voltage) {
-                // Will lose all the energy with this path, so don't use it
-                continue;
-            }
+            // Will lose all the energy with this path, so don't use it
+            if (path.getMaxLoss() >= voltage) continue;
 
-            if (cable.getBlockPos().equals(path.getTargetPipePos()) && side == path.getTargetFacing()) {
-                // Do not insert into source handler
-                continue;
-            }
+            // Do not insert into source handler
+            if (cable.getBlockPos().equals(path.getTargetPipePos()) && side == path.getTargetFacing()) continue;
 
             IEnergyContainer dest = path.getHandler(getNet().getLevel());
             if (dest == null) continue;
@@ -74,11 +69,8 @@ public class EnergyNetHandler implements IEnergyContainer {
                             45 + 36.5);
                     cable.applyHeat(heat);
 
-                    cableBroken = cable.isRemoved();
-                    if (cableBroken) {
-                        // a cable burned away (or insulation melted)
-                        break;
-                    }
+                        cableBroken = cable.isRemoved();
+                        if (cableBroken) break;
 
                     // limit transfer to cables max and void rest
                     pathVoltage = Math.min(cable.getMaxVoltage(), pathVoltage);

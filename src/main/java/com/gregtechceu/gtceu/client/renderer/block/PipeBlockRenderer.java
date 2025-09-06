@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.client.renderer.block;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
-import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
+import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.client.model.PipeModel;
 import com.gregtechceu.gtceu.client.renderer.cover.ICoverableRenderer;
 import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
@@ -82,7 +82,7 @@ public class PipeBlockRenderer implements IRenderer, ICoverableRenderer {
         if (level == null) {
             return pipeModel.bakeQuads(side, PipeModel.ITEM_CONNECTIONS, 0);
         }
-        if (!(level.getBlockEntity(pos) instanceof IPipeNode<?, ?> pipeNode)) {
+        if (!(level.getBlockEntity(pos) instanceof PipeBlockEntity<?, ?> pipeNode)) {
             return pipeModel.bakeQuads(side, 0, 0);
         }
         RenderType renderType = CURRENT_RENDER_TYPE.get();

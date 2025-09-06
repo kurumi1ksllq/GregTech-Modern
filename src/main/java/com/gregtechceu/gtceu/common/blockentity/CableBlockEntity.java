@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.common.blockentity;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
@@ -10,6 +9,8 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IDataInfoProvider;
+import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
+import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.common.block.CableBlock;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
@@ -89,7 +90,6 @@ public class CableBlockEntity extends PipeBlockEntity<Insulation, WireProperties
         return super.getCapability(cap, side);
     }
 
-    @Override
     public boolean canAttachTo(Direction side) {
         if (level != null) {
             if (level.getBlockEntity(getBlockPos().relative(side)) instanceof CableBlockEntity) {
@@ -109,7 +109,8 @@ public class CableBlockEntity extends PipeBlockEntity<Insulation, WireProperties
         if (currentEnergyNet != null && currentEnergyNet.isValid() &&
                 currentEnergyNet.containsNode(getBlockPos()))
             return currentEnergyNet; // return current net if it is still valid
-        LevelEnergyNet worldENet = LevelEnergyNet.getOrCreate(serverLevel);
+
+        LevelPipeNet<WireProperties, EnergyNet> worldENet = getPipeBlock().getWorldPipeNet(serverLevel);
         currentEnergyNet = worldENet.getNetFromPos(getBlockPos());
         if (currentEnergyNet != null) {
             this.currentEnergyNet = new WeakReference<>(currentEnergyNet);

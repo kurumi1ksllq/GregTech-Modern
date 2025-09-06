@@ -76,7 +76,7 @@ public class ItemNetHandler implements IItemHandlerModifiable {
         if (pipeCover instanceof ConveyorCover pipeConveyor) conveyor = pipeConveyor;
         if (tileCover instanceof ConveyorCover tileConveyor) conveyor = tileConveyor;
 
-        List<ItemRoutePath> routePaths = network.getNetData(pipe.getBlockPos(), facing, ItemRoutePathSet.FULL);
+        List<ItemRoutePath> routePaths = network.getNetData(pipe.getBlockPos(), facing);
         if (routePaths.isEmpty()) return stack;
         List<ItemRoutePath> routePathsCopy = new ArrayList<>(routePaths);
 

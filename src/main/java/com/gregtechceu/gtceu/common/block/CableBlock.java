@@ -3,14 +3,13 @@ package com.gregtechceu.gtceu.common.block;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.MaterialPipeBlock;
-import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.WireProperties;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
-import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
+import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.client.model.PipeModel;
 import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
@@ -81,13 +80,13 @@ public class CableBlock extends MaterialPipeBlock<Insulation, WireProperties, Le
     }
 
     @Override
-    public boolean canPipesConnect(IPipeNode<Insulation, WireProperties> selfTile, Direction side,
-                                   IPipeNode<Insulation, WireProperties> sideTile) {
+    public boolean canPipesConnect(PipeBlockEntity<Insulation, WireProperties> selfTile, Direction side,
+                                   PipeBlockEntity<Insulation, WireProperties> sideTile) {
         return selfTile instanceof CableBlockEntity && sideTile instanceof CableBlockEntity;
     }
 
     @Override
-    public boolean canPipeConnectToBlock(IPipeNode<Insulation, WireProperties> selfTile, Direction side,
+    public boolean canPipeConnectToBlock(PipeBlockEntity<Insulation, WireProperties> selfTile, Direction side,
                                          @Nullable BlockEntity tile) {
         return tile != null &&
                 tile.getCapability(GTCapability.CAPABILITY_ENERGY_CONTAINER, side.getOpposite()).isPresent();

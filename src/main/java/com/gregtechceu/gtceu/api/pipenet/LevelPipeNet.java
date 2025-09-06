@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -20,10 +21,6 @@ public abstract class LevelPipeNet<NodeDataType, T extends PipeNet<NodeDataType>
 
     public LevelPipeNet(ServerLevel serverLevel) {
         this.serverLevel = serverLevel;
-    }
-
-    public LevelPipeNet(ServerLevel serverLevel, CompoundTag tag) {
-        this(serverLevel);
     }
 
     public ServerLevel getWorld() {
@@ -65,14 +62,14 @@ public abstract class LevelPipeNet<NodeDataType, T extends PipeNet<NodeDataType>
     }
 
     public void removeNode(BlockPos nodePos) {
-        T pipeNet = getNetFromPos(nodePos);
+        PipeNet<?> pipeNet = getNetFromPos(nodePos);
         if (pipeNet != null) {
             pipeNet.removeNode(nodePos);
         }
     }
 
     public void updateBlockedConnections(BlockPos nodePos, Direction side, boolean isBlocked) {
-        T pipeNet = getNetFromPos(nodePos);
+        PipeNet<?> pipeNet = getNetFromPos(nodePos);
         if (pipeNet != null) {
             pipeNet.updateBlockedConnections(nodePos, side, isBlocked);
             pipeNet.onPipeConnectionsUpdate();

@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.common.pipelike.laser;
 
 import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 
 public class LevelLaserPipeNet extends LevelPipeNet<LaserPipeProperties, LaserPipeNet> {

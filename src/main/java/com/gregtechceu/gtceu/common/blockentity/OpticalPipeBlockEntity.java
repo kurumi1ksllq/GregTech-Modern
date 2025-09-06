@@ -126,7 +126,6 @@ public class OpticalPipeBlockEntity extends PipeBlockEntity<OpticalPipeType, Opt
         return currentPipeNet;
     }
 
-    @Override
     public boolean canAttachTo(Direction side) {
         return false;
     }
@@ -138,8 +137,8 @@ public class OpticalPipeBlockEntity extends PipeBlockEntity<OpticalPipeType, Opt
             if (getNumConnections() >= 2) return;
 
             // also check the other pipe
-            BlockEntity tile = getLevel().getBlockEntity(this.getBlockPos().relative(side));
-            if (tile instanceof IPipeNode<?, ?> pipeTile &&
+            BlockEntity tile = getLevel().getBlockEntity(getBlockPos().relative(side));
+            if (tile instanceof PipeBlockEntity<?, ?> pipeTile &&
                     pipeTile.getPipeType().getClass() == this.getPipeType().getClass()) {
                 if (pipeTile.getNumConnections() >= 2) return;
             }

@@ -1,12 +1,12 @@
 package com.gregtechceu.gtceu.api.block;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.PipeBlockItem;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
+import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.client.renderer.block.MaterialBlockRenderer;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.config.ConfigHolder;
@@ -256,8 +256,8 @@ public class MaterialBlock extends Block {
             BlockState original = level.getBlockState(context.getClickedPos());
             itemBlock.placeBlock(context, pipeState);
             var pipeTile = pipeBlock.getPipeTile(level, pos);
-            if (pipeTile instanceof PipeBlockEntity<?, ?> pipeBlockEntity) {
-                pipeBlockEntity.setFrameMaterial(material);
+            if (pipeTile != null) {
+                pipeTile.setFrameMaterial(material);
             } else {
                 // reset the state if we didn't place correctly
                 level.setBlockAndUpdate(context.getClickedPos(), original);

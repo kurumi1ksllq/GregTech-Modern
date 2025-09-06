@@ -12,11 +12,6 @@ public final class Node<NodeDataType> {
     public static final int ALL_CLOSED = 0b000000;
 
     public NodeDataType data;
-    /**
-     * Specifies bitmask of blocked connections
-     * Node will not connect in blocked direction in any case,
-     * even if neighbour node mark matches
-     */
     public int openConnections;
     public boolean isActive;
 

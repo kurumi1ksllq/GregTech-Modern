@@ -4,8 +4,6 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.FluidPipeProp
 import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 import com.gregtechceu.gtceu.api.pipenet.PipeNet;
 
-import net.minecraft.nbt.CompoundTag;
-
 public class FluidPipeNet extends PipeNet<FluidPipeProperties> {
 
     public FluidPipeNet(LevelPipeNet<FluidPipeProperties, FluidPipeNet> world) {
@@ -15,5 +13,4 @@ public class FluidPipeNet extends PipeNet<FluidPipeProperties> {
     /////////////////////////////////////
     // *********** NBT ***********//
     /////////////////////////////////////
-
 }

@@ -15,7 +15,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * Tracks which chunks contain potentially partial multiblock structures
  */
 @ApiStatus.Internal
-public class MultiblockChunkTracker {
+public final class MultiblockChunkTracker {
 
     private final Map<ChunkPos, Set<MultiblockState>> multiblockStates = new Object2ObjectOpenHashMap<>();
 

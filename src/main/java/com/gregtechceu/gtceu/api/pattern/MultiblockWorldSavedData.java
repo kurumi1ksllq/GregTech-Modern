@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * World-associated data to manage multiblock structure checks
  */
 @ApiStatus.Internal
-public class MultiblockWorldSavedData extends SavedData {
+public final class MultiblockWorldSavedData extends SavedData {
 
     @Getter
     private final MultiblockChunkTracker tracker = new MultiblockChunkTracker();

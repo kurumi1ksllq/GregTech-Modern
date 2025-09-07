@@ -139,7 +139,12 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         CompoundTag tag1 = stack.getTagElement("GTCEu_spoilable");
         CompoundTag tag2 = other.getTagElement("GTCEu_spoilable");
         boolean isSameItem = ItemStack.isSameItem(stack, other) && stack.areCapsCompatible(other);
-        if (tag1 != null && tag2 != null) {
+        CompoundTag modifiedTag1 = stack.getTag() == null ? null : stack.getTag().copy();
+        CompoundTag modifiedTag2 = other.getTag() == null ? null : other.getTag().copy();
+        if (modifiedTag1 != null) modifiedTag1.remove("GTCEu_spoilable");
+        if (modifiedTag2 != null) modifiedTag2.remove("GTCEu_spoilable");
+        isSameItem = isSameItem && Objects.equals(modifiedTag1, modifiedTag2);
+        if (isSameItem && tag1 != null && tag2 != null) {
             long tick1 = tag1.getLong("creation_tick");
             long tick2 = tag2.getLong("creation_tick");
             if (tick1 != tick2) {

@@ -180,7 +180,8 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
                     }
                 } else { // IO.OUT
                     ItemStack output = items[0].copyWithCount(amount);
-                    if (recipe.spoilableIngredientsAmount > 0 && output.getItem() instanceof ISpoilableItem item &&
+                    if (recipe.transferSpoilingProgress && recipe.spoilableIngredientsAmount > 0 &&
+                            output.getItem() instanceof ISpoilableItem item &&
                             item.shouldSpoil(output)) {
                         double spoilProgress = 1 - recipe.spoilProgress / recipe.spoilableIngredientsAmount;
                         item.setTicksUntilSpoiled(output, (long) (spoilProgress * item.getSpoilTicks(output)));

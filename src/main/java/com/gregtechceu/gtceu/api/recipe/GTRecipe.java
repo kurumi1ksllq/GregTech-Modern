@@ -53,6 +53,8 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
     public int parallels = 1;
     public int batchParallels = 1;
     public int ocLevel = 0;
+    public double spoilProgress = 0;
+    public int spoilableIngredientsAmount = 0;
     public final GTRecipeCategory recipeCategory;
     // Lazy fields, since we need the recipe EUt very often
     @Getter(lazy = true)

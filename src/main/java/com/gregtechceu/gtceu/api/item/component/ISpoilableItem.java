@@ -25,6 +25,14 @@ public interface ISpoilableItem extends IItemComponent {
      */
     long getSpoilTicks(ItemStack stack);
 
+    default long getTicksUntilSpoiled(ItemStack stack) {
+        return ((ISpoilableItemStack) (Object) stack).gtceu$getRemainingTicks(null);
+    }
+
+    default void setTicksUntilSpoiled(ItemStack stack, long value) {
+        ((ISpoilableItemStack) (Object) stack).gtceu$setRemainingTicks(null, value);
+    }
+
     /**
      * Should return the stack to replace the provided stack with when it spoils
      */

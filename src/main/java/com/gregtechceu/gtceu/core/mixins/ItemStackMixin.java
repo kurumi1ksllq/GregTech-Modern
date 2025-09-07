@@ -123,6 +123,14 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
 
     @Override
     @Unique
+    public void gtceu$setCreationTick(@Nullable Level level, long value) {
+        CompoundTag tag = getTagElement("GTCEu_spoilable");
+        if (tag == null) return;
+        tag.putLong("creation_tick", value);
+    }
+
+    @Override
+    @Unique
     public long gtceu$getRemainingTicks(@Nullable Level level) {
         gtceu$updateFreshness(level, false);
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
@@ -132,6 +140,17 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
                     gtceu$getCreationTick(level);
         if (getItem() instanceof ISpoilableItem spoilable) return spoilable.getSpoilTicks((ItemStack) (Object) this);
         return 0;
+    }
+
+    @Unique
+    @Override
+    public void gtceu$setRemainingTicks(@Nullable Level level, long value) {
+        gtceu$updateFreshness(level, false);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (level == null && server != null) level = server.overworld();
+        if (level != null && getTagElement("GTCEu_spoilable") != null && getItem() instanceof ISpoilableItem spoilable)
+            gtceu$setCreationTick(level,
+                    level.getGameTime() - spoilable.getSpoilTicks((ItemStack) (Object) this) + value);
     }
 
     @Inject(at = @At("HEAD"), method = "isSameItemSameTags", cancellable = true)

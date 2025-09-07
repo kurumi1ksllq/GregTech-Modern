@@ -44,10 +44,6 @@ public class SpoilableBehaviour implements ISpoilableItem, IAddInformation, IDur
         return true;
     }
 
-    public long getTicksUntilSpoiled(ItemStack stack) {
-        return ((ISpoilableItemStack) (Object) stack).gtceu$getRemainingTicks(null);
-    }
-
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                 TooltipFlag isAdvanced) {

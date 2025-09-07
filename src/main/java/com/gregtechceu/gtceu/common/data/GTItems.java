@@ -524,8 +524,7 @@ public class GTItems {
             .lang("Medium Sodium Battery")
             .model(overrideModel(GTCEu.id("battery"), 8))
             .onRegister(modelPredicate(GTCEu.id("battery"), ElectricStats::getStoredPredicate))
-            .onRegister(attach(ElectricStats.createRechargeableBattery(360000, GTValues.MV),
-                    new SpoilableBehaviour(400, Items.DIRT)))
+            .onRegister(attach(ElectricStats.createRechargeableBattery(360000, GTValues.MV)))
             .tag(CustomTags.MV_BATTERIES).register();
     public static ItemEntry<ComponentItem> BATTERY_HV_SODIUM = REGISTRATE
             .item("hv_sodium_battery", ComponentItem::create)

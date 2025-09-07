@@ -230,7 +230,7 @@ public class BatteryRecipes {
         EXTRACTOR_RECIPES.recipeBuilder("unpackage_mv_lithium_battery").inputItems(BATTERY_MV_LITHIUM)
                 .outputItems(BATTERY_HULL_MV).save(provider);
         EXTRACTOR_RECIPES.recipeBuilder("unpackage_mv_sodium_battery").inputItems(BATTERY_MV_SODIUM)
-                .outputItems(BATTERY_MV_SODIUM).save(provider);
+                .outputItems(BATTERY_HULL_MV).save(provider);
 
         EXTRACTOR_RECIPES.recipeBuilder("unpackage_hv_cadmium_battery").inputItems(BATTERY_HV_CADMIUM)
                 .outputItems(BATTERY_HULL_HV).save(provider);

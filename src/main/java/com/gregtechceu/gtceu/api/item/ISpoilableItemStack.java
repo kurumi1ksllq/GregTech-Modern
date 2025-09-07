@@ -8,5 +8,7 @@ public interface ISpoilableItemStack {
 
     long gtceu$getCreationTick(@Nullable Level level);
 
+    long gtceu$getRemainingTicks(@Nullable Level level);
+
     void gtceu$updateFreshness(@Nullable Level level, boolean createTag);
 }

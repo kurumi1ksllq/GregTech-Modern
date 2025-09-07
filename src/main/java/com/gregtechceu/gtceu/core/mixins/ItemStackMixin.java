@@ -36,7 +36,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
     @Shadow
     @Mutable
     @Final
-    @Deprecated
     @Nullable
     private Item item;
 
@@ -84,6 +83,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
             if (!tag.contains("creation_tick")) {
                 tag.putLong("creation_tick", level.getGameTime());
             }
+            @SuppressWarnings("DataFlowIssue")
             long spoilTicks = spoilable.getSpoilTicks((ItemStack) (Object) this);
             if (spoilTicks <= level.getGameTime() - tag.getLong("creation_tick")) {
                 @SuppressWarnings("DataFlowIssue")
@@ -113,7 +113,21 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
     @Override
     @Unique
     public long gtceu$getCreationTick(@Nullable Level level) {
-        if (getTagElement("GTCEu_spoilable") == null) return 0;
-        return getTagElement("GTCEu_spoilable").getLong("creation_tick");
+        CompoundTag tag = getTagElement("GTCEu_spoilable");
+        if (tag == null) return 0;
+        return tag.getLong("creation_tick");
+    }
+
+    @Override
+    @Unique
+    public long gtceu$getRemainingTicks(@Nullable Level level) {
+        gtceu$updateFreshness(level, false);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (level == null && server != null) level = server.overworld();
+        if (level != null && getTagElement("GTCEu_spoilable") != null && getItem() instanceof ISpoilableItem spoilable)
+            return spoilable.getSpoilTicks((ItemStack) (Object) this) - level.getGameTime() +
+                    gtceu$getCreationTick(level);
+        if (getItem() instanceof ISpoilableItem spoilable) return spoilable.getSpoilTicks((ItemStack) (Object) this);
+        return 0;
     }
 }

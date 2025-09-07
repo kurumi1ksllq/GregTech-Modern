@@ -5,14 +5,22 @@ import com.gregtechceu.gtceu.api.item.ISpoilableItemStack;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
+import javax.annotation.Nullable;
+
 public interface ISpoilableItem extends IItemComponent {
 
-    static void update(ItemStack stack, Level level) {
+    /**
+     * Initializes this ItemStack's spoilage timer if it wasn't initialized before.
+     * Should be called when it finishes crafting, for example.
+     * 
+     * @param level may be {@code null}, maybe even should be lol
+     */
+    static void update(ItemStack stack, @Nullable Level level) {
         ((ISpoilableItemStack) (Object) stack).gtceu$updateFreshness(level, true);
     }
 
     /**
-     * Should return the amount of ticks that this item can stay fresh
+     * Should return the amount of ticks that this item can stay fresh.
      * The result of this method shouldn't be based on the freshness of the provided stack
      */
     long getSpoilTicks(ItemStack stack);

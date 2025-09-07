@@ -19,6 +19,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Objects;
+
 import javax.annotation.Nullable;
 
 @Mixin(ItemStack.class)
@@ -129,5 +131,24 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
                     gtceu$getCreationTick(level);
         if (getItem() instanceof ISpoilableItem spoilable) return spoilable.getSpoilTicks((ItemStack) (Object) this);
         return 0;
+    }
+
+    @Inject(at = @At("HEAD"), method = "isSameItemSameTags", cancellable = true)
+    private static void mergeSpoilables(ItemStack stack, ItemStack other, CallbackInfoReturnable<Boolean> cir) {
+        CompoundTag tag1 = stack.getTagElement("GTCEu_spoilable");
+        CompoundTag tag2 = other.getTagElement("GTCEu_spoilable");
+        boolean isSameItem = ItemStack.isSameItem(stack, other) && stack.areCapsCompatible(other);
+        if (tag1 != null && tag2 != null) {
+            long tick1 = tag1.getLong("creation_tick");
+            long tick2 = tag2.getLong("creation_tick");
+            if (tick1 != tick2) {
+                long avg = (tick1 * stack.getCount() + tick2 * other.getCount()) /
+                        (stack.getCount() + other.getCount());
+                tag1.putLong("creation_tick", avg);
+                tag2.putLong("creation_tick", avg);
+            }
+        }
+        cir.setReturnValue(isSameItem && Objects.equals(tag1, tag2));
+        cir.cancel();
     }
 }

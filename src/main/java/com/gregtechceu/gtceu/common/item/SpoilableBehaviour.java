@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ItemLike;
@@ -67,7 +68,7 @@ public class SpoilableBehaviour implements ISpoilableItem, IAddInformation, IDur
 
     @Override
     public int getBarColor(ItemStack stack) {
-        return 0xFFFFFF;
+        return FastColor.ARGB32.color(255, 255, 255, 255);
     }
 
     @Override

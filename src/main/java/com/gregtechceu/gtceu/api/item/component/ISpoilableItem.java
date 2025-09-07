@@ -8,7 +8,7 @@ import net.minecraft.world.level.Level;
 public interface ISpoilableItem extends IItemComponent {
 
     static void update(ItemStack stack, Level level) {
-        ((ISpoilableItemStack) (Object) stack).gtceu$updateFreshness(level);
+        ((ISpoilableItemStack) (Object) stack).gtceu$updateFreshness(level, true);
     }
 
     /**

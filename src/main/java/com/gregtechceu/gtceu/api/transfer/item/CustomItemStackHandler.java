@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.api.transfer.item;
 
+import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
+
 import com.lowdragmc.lowdraglib.syncdata.IContentChangeAware;
 import com.lowdragmc.lowdraglib.syncdata.ITagSerializable;
 
@@ -48,6 +50,7 @@ public class CustomItemStackHandler extends ItemStackHandler
     @Override
     public void onContentsChanged(int slot) {
         onContentsChanged.run();
+        ISpoilableItem.update(getStackInSlot(slot), null);
     }
 
     public void clear() {

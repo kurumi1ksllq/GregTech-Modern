@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
-import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.recipe.DummyCraftingContainer;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
@@ -301,14 +300,12 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
 
     @Override
     public void setStackInSlot(int index, @NotNull ItemStack stack) {
-        ISpoilableItem.update(stack, getMachine().getLevel());
         storage.setStackInSlot(index, stack);
     }
 
     @NotNull
     @Override
     public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-        ISpoilableItem.update(stack, getMachine().getLevel());
         if (canCapInput()) {
             return storage.insertItem(slot, stack, simulate);
         }
@@ -316,7 +313,6 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
     }
 
     public ItemStack insertItemInternal(int slot, @NotNull ItemStack stack, boolean simulate) {
-        ISpoilableItem.update(stack, getMachine().getLevel());
         return storage.insertItem(slot, stack, simulate);
     }
 

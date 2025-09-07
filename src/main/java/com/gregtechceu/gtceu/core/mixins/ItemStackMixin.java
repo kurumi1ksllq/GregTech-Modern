@@ -5,19 +5,18 @@ import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
@@ -26,7 +25,7 @@ import javax.annotation.Nullable;
 public abstract class ItemStackMixin implements ISpoilableItemStack {
 
     @Unique
-    private boolean isUpdating = false;
+    private boolean gtceu$isUpdating = false;
 
     @Shadow
     public abstract CompoundTag getOrCreateTagElement(String key);
@@ -35,11 +34,15 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
     public abstract Item getItem();
 
     @Shadow
+    @Mutable
+    @Final
     @Deprecated
     @Nullable
     private Item item;
 
     @Shadow
+    @Mutable
+    @Final
     @Nullable
     private Holder.Reference<Item> delegate;
 
@@ -53,26 +56,36 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
     @Shadow
     public abstract boolean isEmpty();
 
+    @Shadow
+    @Nullable
+    public abstract CompoundTag getTagElement(String key);
+
     @Unique
     @Override
-    public void gtceu$updateFreshness(Level level) {
-        if (isUpdating) return;
-        isUpdating = true;
+    public void gtceu$updateFreshness(Level level, boolean createTag) {
+        if (gtceu$isUpdating) return;
+        gtceu$isUpdating = true;
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (level == null && server != null) level = server.overworld();
         if (getItem() instanceof ISpoilableItem spoilable) {
             if (spoilable.getSpoilTicks((ItemStack) (Object) this) < 0) {
-                isUpdating = false;
+                gtceu$isUpdating = false;
                 return;
             }
-            CompoundTag tag = getOrCreateTagElement("GTCEu_spoilable");
+            CompoundTag tag = createTag ? getOrCreateTagElement("GTCEu_spoilable") : getTagElement("GTCEu_spoilable");
+            if (tag == null) {
+                gtceu$isUpdating = false;
+                return;
+            }
+            if (level == null) {
+                gtceu$isUpdating = false;
+                return;
+            }
             if (!tag.contains("creation_tick")) {
-                if (level == null) {
-                    isUpdating = false;
-                    return;
-                }
                 tag.putLong("creation_tick", level.getGameTime());
             }
             long spoilTicks = spoilable.getSpoilTicks((ItemStack) (Object) this);
-            if (spoilTicks >= tag.getLong("creation_tick")) {
+            if (spoilTicks <= level.getGameTime() - tag.getLong("creation_tick")) {
                 @SuppressWarnings("DataFlowIssue")
                 ItemStack newStack = spoilable.spoilResult((ItemStack) (Object) this);
                 item = newStack.getItem();
@@ -81,26 +94,26 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
                 this.tag = newStack.getTag();
             }
         }
-        isUpdating = false;
+        gtceu$isUpdating = false;
     }
 
     @Inject(at = @At("HEAD"),
             method = { "getItem", "getCount", "getTag", "getOrCreateTag", "getTagElement", "getOrCreateTagElement",
                     "getItemHolder" })
     private void injectedFreshnessUpdate(CallbackInfoReturnable<Item> cir) {
-        gtceu$updateFreshness(null);
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        gtceu$updateFreshness(server == null ? null : server.overworld(), false);
     }
 
-    @Inject(at = @At("HEAD"), method = "use")
-    private void useFreshnessUpdate(Level level, Player player, InteractionHand usedHand,
-                                    CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
-        gtceu$updateFreshness(level);
+    @Inject(at = @At("HEAD"), method = "inventoryTick")
+    private void tickFreshness(Level level, Entity entity, int inventorySlot, boolean isCurrentItem, CallbackInfo ci) {
+        gtceu$updateFreshness(null, true);
     }
 
     @Override
     @Unique
     public long gtceu$getCreationTick(@Nullable Level level) {
-        gtceu$updateFreshness(level);
-        return getOrCreateTagElement("GTCEu_spoilable").getLong("creation_tick");
+        if (getTagElement("GTCEu_spoilable") == null) return 0;
+        return getTagElement("GTCEu_spoilable").getLong("creation_tick");
     }
 }

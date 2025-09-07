@@ -460,4 +460,13 @@ public class ComponentItem extends Item
         }
         return ItemStack.EMPTY;
     }
+
+    @Override
+    public boolean shouldSpoil(ItemStack stack) {
+        boolean out = false;
+        for (IItemComponent component : getComponents()) {
+            if (component instanceof ISpoilableItem spoilable) out = out || spoilable.shouldSpoil(stack);
+        }
+        return out;
+    }
 }

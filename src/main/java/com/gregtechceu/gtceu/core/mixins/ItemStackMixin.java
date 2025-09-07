@@ -68,7 +68,8 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         gtceu$isUpdating = true;
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (level == null && server != null) level = server.overworld();
-        if (getItem() instanceof ISpoilableItem spoilable) {
+        // noinspection ConstantValue
+        if (getItem() instanceof ISpoilableItem spoilable && spoilable.shouldSpoil((ItemStack) (Object) this)) {
             if (spoilable.getSpoilTicks((ItemStack) (Object) this) < 0) {
                 gtceu$isUpdating = false;
                 return;

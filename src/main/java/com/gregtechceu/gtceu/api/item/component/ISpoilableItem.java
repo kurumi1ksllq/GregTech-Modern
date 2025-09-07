@@ -29,4 +29,10 @@ public interface ISpoilableItem extends IItemComponent {
      * Should return the stack to replace the provided stack with when it spoils
      */
     ItemStack spoilResult(ItemStack stack);
+
+    /**
+     * Note: returning {@code false} in this method won't stop the item from spoiling if the spoiling NBT has already
+     * been initialized
+     */
+    boolean shouldSpoil(ItemStack stack);
 }

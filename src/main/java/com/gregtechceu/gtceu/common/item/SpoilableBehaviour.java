@@ -39,6 +39,11 @@ public class SpoilableBehaviour implements ISpoilableItem, IAddInformation, IDur
         return new ItemStack(spoilResult, stack.getCount());
     }
 
+    @Override
+    public boolean shouldSpoil(ItemStack stack) {
+        return true;
+    }
+
     public long getTicksUntilSpoiled(ItemStack stack) {
         return ((ISpoilableItemStack) (Object) stack).gtceu$getRemainingTicks(null);
     }

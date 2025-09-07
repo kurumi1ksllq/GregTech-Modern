@@ -149,7 +149,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
                 tag2.putLong("creation_tick", avg);
             }
         }
-        cir.setReturnValue(isSameItem && Objects.equals(tag1, tag2));
+        cir.setReturnValue(isSameItem && Objects.equals(stack.getTag(), other.getTag()));
         cir.cancel();
     }
 }

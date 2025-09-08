@@ -18,25 +18,44 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class SpoilableBehaviour implements ISpoilableItem, IAddInformation, IDurabilityBar {
 
-    private final long ticks;
-    private final ItemLike spoilResult;
+    private final Function<ItemStack, Long> ticks;
+    private final Function<ItemStack, ItemStack> spoilResult;
+    private final Function<ItemStack, Component> spoilsInto;
+
+    public SpoilableBehaviour(
+                              Function<ItemStack, Long> tickProvider,
+                              Function<ItemStack, ItemStack> spoilResultProvider,
+                              Function<ItemStack, Component> spoilsIntoTooltip) {
+        this.ticks = tickProvider;
+        this.spoilResult = spoilResultProvider;
+        this.spoilsInto = spoilsIntoTooltip;
+    }
+
+    public SpoilableBehaviour(Function<ItemStack, Long> tickProvider,
+                              Function<ItemStack, ItemStack> spoilResultProvider) {
+        this(tickProvider, spoilResultProvider, stack -> spoilResultProvider.apply(stack).getDisplayName());
+    }
+
+    public SpoilableBehaviour(long ticks, ItemStack spoilResult) {
+        this(stack -> ticks, stack -> spoilResult.copyWithCount(stack.getCount()));
+    }
 
     public SpoilableBehaviour(long ticks, ItemLike spoilResult) {
-        this.ticks = ticks;
-        this.spoilResult = spoilResult;
+        this(stack -> ticks, stack -> spoilResult.asItem().getDefaultInstance().copyWithCount(stack.getCount()));
     }
 
     @Override
     public long getSpoilTicks(ItemStack stack) {
-        return ticks;
+        return ticks.apply(stack);
     }
 
     @Override
     public ItemStack spoilResult(ItemStack stack) {
-        return new ItemStack(spoilResult, stack.getCount());
+        return spoilResult.apply(stack);
     }
 
     @Override
@@ -55,7 +74,7 @@ public class SpoilableBehaviour implements ISpoilableItem, IAddInformation, IDur
                         .withStyle(ChatFormatting.DARK_AQUA)));
         tooltipComponents.add(Component.translatable(
                 "gtceu.tooltip.spoils_into",
-                spoilResult(stack).getDisplayName()));
+                spoilsInto.apply(stack)));
         if (isAdvanced.isAdvanced()) {
             tooltipComponents.add(Component.translatable(
                     "gtceu.tooltip.spoil_time_total",

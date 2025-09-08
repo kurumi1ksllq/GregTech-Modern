@@ -317,7 +317,7 @@ public class GTValues {
      * inventory, JEI, EMI,
      * statistics menu, EVERYTHING.
      */
-    public static final boolean BREAK_EVERYTHING_LOL = true;
+    public static final boolean BREAK_EVERYTHING_LOL = false;
 
     public static final String CUSTOM_TAG_SOURCE = "GTCEu Custom Tags";
 }

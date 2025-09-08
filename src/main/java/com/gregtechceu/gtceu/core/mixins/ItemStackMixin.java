@@ -2,6 +2,8 @@ package com.gregtechceu.gtceu.core.mixins;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.ISpoilableItemStack;
+import com.gregtechceu.gtceu.api.item.component.IAddInformation;
+import com.gregtechceu.gtceu.api.item.component.IDurabilityBar;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
@@ -126,7 +128,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
                     "getItemHolder" })
     private void injectedFreshnessUpdate(CallbackInfoReturnable<Item> cir) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        gtceu$updateFreshness(server == null ? null : server.overworld(), false);
+        gtceu$updateFreshness(server == null ? null : server.overworld(), GTValues.BREAK_EVERYTHING_LOL);
     }
 
     @Inject(at = @At("HEAD"), method = "inventoryTick")
@@ -190,8 +192,11 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
             long tick1 = tag1.getLong("creation_tick");
             long tick2 = tag2.getLong("creation_tick");
             if (tick1 != tick2) {
-                long avg = (tick1 * stack.getCount() + tick2 * other.getCount()) /
-                        (stack.getCount() + other.getCount());
+                long avg;
+                if (stack.getCount() + other.getCount() > 0)
+                    avg = (tick1 * stack.getCount() + tick2 * other.getCount()) /
+                            (stack.getCount() + other.getCount());
+                else avg = tick1;
                 tag1.putLong("creation_tick", avg);
                 tag2.putLong("creation_tick", avg);
             }
@@ -206,7 +211,11 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
             locals = LocalCapture.CAPTURE_FAILSOFT)
     private void aprilFoolsTooltip(Player player, TooltipFlag isAdvanced, CallbackInfoReturnable<List<Component>> cir,
                                    List<Component> list) {
-        if (gtceu$fakeTooltip) {
+        ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable((ItemStack) (Object) this);
+        if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IAddInformation addInformation) {
+            addInformation.appendHoverText((ItemStack) (Object) this, player == null ? null : player.level(), list,
+                    isAdvanced);
+        } else if (gtceu$fakeTooltip) {
             list.add(Component.translatable(
                     "gtceu.tooltip.spoil_time_remaining",
                     Component.literal(FormattingUtil.formatTime(100)).withStyle(ChatFormatting.DARK_AQUA)));
@@ -218,7 +227,11 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
 
     @Inject(at = @At("HEAD"), method = "isBarVisible", cancellable = true)
     private void aprilFoolsBarVisible(CallbackInfoReturnable<Boolean> cir) {
-        if (gtceu$fakeTooltip) {
+        ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable((ItemStack) (Object) this);
+        if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
+            cir.setReturnValue(durabilityBar.isBarVisible((ItemStack) (Object) this));
+            cir.cancel();
+        } else if (gtceu$fakeTooltip) {
             cir.setReturnValue(true);
             cir.cancel();
         }
@@ -226,7 +239,11 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
 
     @Inject(at = @At("HEAD"), method = "getBarColor", cancellable = true)
     private void aprilFoolsBarColor(CallbackInfoReturnable<Integer> cir) {
-        if (gtceu$fakeTooltip) {
+        ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable((ItemStack) (Object) this);
+        if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
+            cir.setReturnValue(durabilityBar.getBarColor((ItemStack) (Object) this));
+            cir.cancel();
+        } else if (gtceu$fakeTooltip) {
             cir.setReturnValue(FastColor.ARGB32.color(255, 255, 255, 255));
             cir.cancel();
         }
@@ -234,7 +251,11 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
 
     @Inject(at = @At("HEAD"), method = "getBarWidth", cancellable = true)
     private void aprilFoolsBarWidth(CallbackInfoReturnable<Integer> cir) {
-        if (gtceu$fakeTooltip) {
+        ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable((ItemStack) (Object) this);
+        if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
+            cir.setReturnValue(durabilityBar.getBarWidth((ItemStack) (Object) this));
+            cir.cancel();
+        } else if (gtceu$fakeTooltip) {
             cir.setReturnValue(13);
             cir.cancel();
         }

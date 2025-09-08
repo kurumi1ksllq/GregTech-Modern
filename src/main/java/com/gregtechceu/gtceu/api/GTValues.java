@@ -312,5 +312,12 @@ public class GTValues {
         return now.getMonth() == Month.DECEMBER && (now.getDayOfMonth() == 24 || now.getDayOfMonth() == 25);
     };
 
+    /**
+     * Makes EVERY {@code ItemStack} spoilable. EVERY SINGLE ONE, even in recipe ingredients and results, creative
+     * inventory, JEI, EMI,
+     * statistics menu, EVERYTHING.
+     */
+    public static final boolean BREAK_EVERYTHING_LOL = true;
+
     public static final String CUSTOM_TAG_SOURCE = "GTCEu Custom Tags";
 }

@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.core.mixins;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.ISpoilableItemStack;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
+import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.ChatFormatting;
@@ -88,8 +89,8 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         gtceu$isUpdating = true;
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (level == null && server != null) level = server.overworld();
-        // noinspection ConstantValue
-        if (getItem() instanceof ISpoilableItem spoilable && spoilable.shouldSpoil((ItemStack) (Object) this)) {
+        ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable((ItemStack) (Object) this);
+        if (spoilable != null && spoilable.shouldSpoil((ItemStack) (Object) this)) {
             if (spoilable.getSpoilTicks((ItemStack) (Object) this) < 0) {
                 gtceu$isUpdating = false;
                 return;
@@ -155,10 +156,11 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         gtceu$updateFreshness(level, false);
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (level == null && server != null) level = server.overworld();
-        if (level != null && getTagElement("GTCEu_spoilable") != null && getItem() instanceof ISpoilableItem spoilable)
+        ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable((ItemStack) (Object) this);
+        if (level != null && getTagElement("GTCEu_spoilable") != null && spoilable != null)
             return spoilable.getSpoilTicks((ItemStack) (Object) this) - level.getGameTime() +
                     gtceu$getCreationTick(level);
-        if (getItem() instanceof ISpoilableItem spoilable) return spoilable.getSpoilTicks((ItemStack) (Object) this);
+        if (spoilable != null) return spoilable.getSpoilTicks((ItemStack) (Object) this);
         return 0;
     }
 
@@ -168,7 +170,8 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         gtceu$updateFreshness(level, false);
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (level == null && server != null) level = server.overworld();
-        if (level != null && getTagElement("GTCEu_spoilable") != null && getItem() instanceof ISpoilableItem spoilable)
+        ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable((ItemStack) (Object) this);
+        if (level != null && getTagElement("GTCEu_spoilable") != null && spoilable != null)
             gtceu$setCreationTick(level,
                     level.getGameTime() - spoilable.getSpoilTicks((ItemStack) (Object) this) + value);
     }

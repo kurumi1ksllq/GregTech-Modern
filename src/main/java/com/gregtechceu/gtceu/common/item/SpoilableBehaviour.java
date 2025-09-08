@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.utils.FormattingUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ItemLike;
@@ -17,10 +18,14 @@ import net.minecraft.world.level.Level;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public class SpoilableBehaviour implements ISpoilableItem, IAddInformation, IDurabilityBar {
+
+    private static final Map<Item, SpoilableBehaviour> ATTACHED_COMPONENTS = new HashMap<>();
 
     private final Function<ItemStack, Long> ticks;
     private final Function<ItemStack, ItemStack> spoilResult;
@@ -104,5 +109,20 @@ public class SpoilableBehaviour implements ISpoilableItem, IAddInformation, IDur
     @Override
     public float getDurabilityForDisplay(ItemStack stack) {
         return (float) getTicksUntilSpoiled(stack) / getSpoilTicks(stack);
+    }
+
+    public static @Nullable ISpoilableItem getSpoilable(ItemStack stack) {
+        Item item = stack.getItem();
+        if (item instanceof ISpoilableItem spoilable) return spoilable;
+        if (ATTACHED_COMPONENTS.containsKey(item)) return ATTACHED_COMPONENTS.get(item);
+        return null;
+    }
+
+    public static void unspoil(ItemLike item) {
+        ATTACHED_COMPONENTS.remove(item.asItem());
+    }
+
+    public void attachTo(ItemLike item) {
+        ATTACHED_COMPONENTS.put(item.asItem(), this);
     }
 }

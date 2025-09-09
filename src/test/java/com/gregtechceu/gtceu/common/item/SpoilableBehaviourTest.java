@@ -15,6 +15,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.BeforeBatch;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -179,5 +181,27 @@ public class SpoilableBehaviourTest {
             TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(stack), 40,
                     "recipe output didn't have correct ticks until spoiled");
         });
+    }
+
+    @GameTest(template = "empty_5x5", batch = "spoilageTests")
+    public static void droppedItemSpoils(GameTestHelper helper) {
+        makeSpoilables(helper);
+        ItemEntity item = helper.spawnItem(Items.JIGSAW, new BlockPos(1, 1, 1));
+        helper.runAtTickTime(10, () -> helper.assertTrue(TestUtils.isItemStackEqual(
+                item.getItem(),
+                Items.DIRT.getDefaultInstance()), "item didn't spoil when dropped"));
+    }
+
+    @GameTest(template = "empty_5x5", batch = "spoilageTests")
+    public static void itemSpoilsInInventory(GameTestHelper helper) {
+        makeSpoilables(helper);
+        Player player = helper.makeMockPlayer();
+        player.getInventory().setItem(0, Items.JIGSAW.getDefaultInstance());
+        player.tick();
+        helper.runAtTickTime(10, () -> helper.assertTrue(TestUtils.isItemStackEqual(
+                player.getInventory().getItem(0),
+                Items.DIRT.getDefaultInstance()),
+                "item didn't spoil in a player inventory (%s != %s)".formatted(player.getInventory().getItem(0),
+                        Items.DIRT.getDefaultInstance())));
     }
 }

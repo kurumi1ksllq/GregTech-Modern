@@ -12,7 +12,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
@@ -117,7 +116,9 @@ public class SpoilableBehaviour implements ISpoilableItem, IAddInformation, IDur
         Item item = stack.getItem();
         if (item instanceof ISpoilableItem spoilable) return spoilable;
         if (ATTACHED_COMPONENTS.containsKey(item)) return ATTACHED_COMPONENTS.get(item);
-        return GTValues.BREAK_EVERYTHING_LOL ? new SpoilableBehaviour(20 * 10, Items.DIRT) : null;
+        SpoilableBehaviour behaviour = GTValues.DEFAULT_SPOIL_BEHAVIOR.get();
+        if (behaviour != null) ATTACHED_COMPONENTS.put(item, behaviour);
+        return behaviour;
     }
 
     public static void unspoil(ItemLike item) {

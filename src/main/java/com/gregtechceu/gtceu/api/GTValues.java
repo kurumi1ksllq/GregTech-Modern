@@ -1,14 +1,18 @@
 package com.gregtechceu.gtceu.api;
 
+import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.util.RandomSource;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntFunction;
+import java.util.function.Supplier;
 
 import static net.minecraft.ChatFormatting.*;
 
@@ -317,7 +321,13 @@ public class GTValues {
      * inventory, JEI, EMI,
      * statistics menu, EVERYTHING.
      */
-    public static final boolean BREAK_EVERYTHING_LOL = false;
+    public static boolean BREAK_EVERYTHING_LOL = false;
+
+    /**
+     * Supplier to get the {@link SpoilableBehaviour} of an {@code Item} that doesn't have one attached
+     * Called once for every {@code Item}. Return {@code null} to not attach any {@link SpoilableBehaviour} (default).
+     */
+    public static @NotNull Supplier<SpoilableBehaviour> DEFAULT_SPOIL_BEHAVIOR = () -> null;
 
     public static final String CUSTOM_TAG_SOURCE = "GTCEu Custom Tags";
 }

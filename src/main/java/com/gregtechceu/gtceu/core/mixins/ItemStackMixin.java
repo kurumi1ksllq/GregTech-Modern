@@ -127,9 +127,12 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
                 if (newSpoilable != null && (this.tag == null || !this.tag.contains("GTCEu_spoilable"))) {
                     getOrCreateTagElement("GTCEu_spoilable").putLong("creation_tick",
                             level.getGameTime() - timeDifference);
-                    gtceu$isUpdating = false;
-                    gtceu$updateFreshness(null, false);
-                    gtceu$isUpdating = true;
+                    try {
+                        gtceu$isUpdating = false;
+                        gtceu$updateFreshness(null, false);
+                        gtceu$isUpdating = true;
+                    } catch (StackOverflowError ignored) {} // if some crazy pack dev makes an item spoil into a
+                                                            // spoilable that spoils into a spoilable 1000 times
                 }
             }
         }

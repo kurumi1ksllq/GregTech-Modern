@@ -33,6 +33,14 @@ public interface ISpoilableItem extends IItemComponent {
         ((ISpoilableItemStack) (Object) stack).gtceu$setRemainingTicks(null, value);
     }
 
+    default void freezeSpoiling(ItemStack stack) {
+        ((ISpoilableItemStack) (Object) stack).gtceu$setFreezeSpoiling(true);
+    }
+
+    default void unfreezeSpoiling(ItemStack stack) {
+        ((ISpoilableItemStack) (Object) stack).gtceu$setFreezeSpoiling(false);
+    }
+
     /**
      * Should return the stack to replace the provided stack with when it spoils
      */

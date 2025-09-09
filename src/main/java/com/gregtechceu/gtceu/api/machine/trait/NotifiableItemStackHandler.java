@@ -4,13 +4,14 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
-import com.gregtechceu.gtceu.api.item.ISpoilableItemStack;
+import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.recipe.DummyCraftingContainer;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
@@ -171,7 +172,8 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
                             changed = true;
                             visited[slot] = extracted.copyWithCount(count - extracted.getCount());
                             ItemStack copied = extracted.copy();
-                            ((ISpoilableItemStack) (Object) copied).gtceu$setFreezeSpoiling(true);
+                            ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(copied);
+                            if (spoilable != null) spoilable.freezeSpoiling(copied);
                             recipe.itemInputs.add(copied);
                         }
                         amount -= extracted.getCount();

@@ -18,6 +18,7 @@ import com.gregtechceu.gtceu.api.item.tool.IToolGridHighlight;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
+import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.syncsystem.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.syncsystem.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
@@ -38,6 +39,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -92,6 +94,9 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     @SaveField
     @NotNull
     private Material frameMaterial = GTMaterials.NULL;
+
+    private boolean attachedToNet = false;
+
     private final List<TickableSubscription> serverTicks;
     private final List<TickableSubscription> waitingToAdd;
 
@@ -102,6 +107,20 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
         this.waitingToAdd = new ArrayList<>();
     }
 
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        coverContainer.onUnload();
+        if (!isRemote()) {
+            var lvl = getLevel();
+            attachedToNet = false;
+            if (lvl instanceof ServerLevel serverLevel) {
+                getPipeBlock().getWorldPipeNet(serverLevel).removeNode(getBlockPos());
+            }
+        }
+    }
+
+
     //////////////////////////////////////
     // ***** Initialization ******//
     //////////////////////////////////////
@@ -110,11 +129,6 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
         return level == null ? offset : (level.getServer().getTickCount() + offset);
     }
 
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-        coverContainer.onUnload();
-    }
 
     @Override
     public void clearRemoved() {
@@ -216,6 +230,12 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     }
 
     public final void serverTick() {
+        if (!attachedToNet) {
+            int activeConnections = getConnections();
+            boolean isActiveNode = activeConnections != 0;
+            getPipeBlock().getWorldPipeNet((ServerLevel)level).addNode(getBlockPos(), getPipeBlock().createRawData(getBlockState(), null), activeConnections, isActiveNode);
+        }
+
         if (!waitingToAdd.isEmpty()) {
             serverTicks.addAll(waitingToAdd);
             waitingToAdd.clear();
@@ -244,6 +264,26 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     @Nullable
     public BlockEntity getNeighbor(Direction direction) {
         return getLevel().getBlockEntity(getBlockPos().relative(direction));
+    }
+
+
+    public void onNeighbourChange(BlockState state, BlockPos pos, BlockPos neighbor) {
+        Direction facing = GTUtil.getFacingToNeighbor(pos, neighbor);
+        if (facing == null) return;
+        CoverBehavior cover = getCoverContainer().getCoverAtSide(facing);
+        if (!ConfigHolder.INSTANCE.machines.gt6StylePipesCables) {
+            boolean open = isConnected(facing);
+            boolean canConnect = cover != null || getPipeBlock().canConnect(this, facing);
+            if (!open && canConnect)
+                setConnection(facing, true, false);
+            if (open && !canConnect)
+                setConnection(facing, false, false);
+        }
+        PipeNet<NodeDataType> net = getPipeNet();
+        if (net != null) {
+            getPipeNet().onNeighbourUpdate(neighbor);
+        }
+        if (cover != null) cover.onNeighborChanged(state.getBlock(), pos, false);
     }
 
     //////////////////////////////////////
@@ -334,7 +374,6 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
 
     public void notifyBlockUpdate() {
         getLevel().updateNeighborsAt(getBlockPos(), getPipeBlock());
-        getPipeBlock().updateActiveNodeStatus(getLevel(), getBlockPos(), this);
     }
 
     @Override

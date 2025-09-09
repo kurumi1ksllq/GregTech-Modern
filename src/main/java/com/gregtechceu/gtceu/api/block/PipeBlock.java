@@ -9,9 +9,7 @@ import com.gregtechceu.gtceu.api.item.PipeBlockItem;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
-import com.gregtechceu.gtceu.api.pipenet.IPipeType;
-import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
-import com.gregtechceu.gtceu.api.pipenet.PipeNet;
+import com.gregtechceu.gtceu.api.pipenet.*;
 import com.gregtechceu.gtceu.client.model.PipeModel;
 import com.gregtechceu.gtceu.client.renderer.block.PipeBlockRenderer;
 import com.gregtechceu.gtceu.common.data.GTItems;
@@ -109,6 +107,8 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         return getBlockEntityType().create(pos, state);
     }
 
+    public abstract PipeNetworkType getPipeType();
+
     public abstract WorldPipeNetType getWorldPipeNet(ServerLevel level);
 
     public abstract BlockEntityType<? extends PipeBlockEntity<PipeType, NodeDataType>> getBlockEntityType();
@@ -135,18 +135,13 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
 
     protected abstract PipeModel getPipeModel();
 
-    public void updateActiveNodeStatus(@NotNull Level worldIn, BlockPos pos,
-                                       PipeBlockEntity<PipeType, NodeDataType> pipeTile) {
-        if (worldIn.isClientSide) return;
-
-        PipeNet<NodeDataType> pipeNet = getWorldPipeNet((ServerLevel) worldIn).getNetFromPos(pos);
-        if (pipeNet != null) {
-            int activeConnections = pipeTile.getConnections(); // remove blocked connections
-            boolean isActiveNodeNow = activeConnections != 0;
-            boolean modeChanged = pipeNet.markNodeAsActive(pos, isActiveNodeNow);
-            if (modeChanged) {
-                onActiveModeChange(worldIn, pos, isActiveNodeNow, false);
-            }
+    @Override
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
+        super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
+        if (level.isClientSide()) return;
+        PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
+        if (pipeTile != null) {
+            pipeTile.onNeighbourChange(state, pos, neighborPos);
         }
     }
 
@@ -154,26 +149,8 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
     public void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor) {
         if (level.isClientSide()) return;
         PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
-
         if (pipeTile != null) {
-            Direction facing = GTUtil.getFacingToNeighbor(pos, neighbor);
-            if (facing == null) return;
-            CoverBehavior cover = pipeTile.getCoverContainer().getCoverAtSide(facing);
-            if (!ConfigHolder.INSTANCE.machines.gt6StylePipesCables) {
-                boolean open = pipeTile.isConnected(facing);
-                boolean canConnect = cover != null ||
-                        canConnect(pipeTile, facing);
-                if (!open && canConnect)
-                    pipeTile.setConnection(facing, true, false);
-                if (open && !canConnect)
-                    pipeTile.setConnection(facing, false, false);
-                updateActiveNodeStatus(pipeTile.getLevel(), pos, pipeTile);
-            }
-            PipeNet<NodeDataType> net = pipeTile.getPipeNet();
-            if (net != null) {
-                pipeTile.getPipeNet().onNeighbourUpdate(neighbor);
-            }
-            if (cover != null) cover.onNeighborChanged(state.getBlock(), pos, false);
+            pipeTile.onNeighbourChange(state, pos, neighbor);
         }
     }
 
@@ -189,12 +166,6 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         }
         return null;
     }
-
-    /**
-     * Can be used to update tile entity to tickable when node becomes active
-     * usable for fluid pipes, as example
-     */
-    protected void onActiveModeChange(Level world, BlockPos pos, boolean isActiveNow, boolean isInitialChange) {}
 
     public boolean canConnect(PipeBlockEntity<PipeType, NodeDataType> selfTile, Direction facing) {
         if (selfTile.getLevel().getBlockState(selfTile.getBlockPos().relative(facing)).getBlock() == Blocks.AIR)
@@ -213,11 +184,11 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         return canPipeConnectToBlock(selfTile, facing, other);
     }
 
-    public abstract boolean canPipesConnect(PipeBlockEntity<PipeType, NodeDataType> selfTile, Direction side,
-                                            PipeBlockEntity<PipeType, NodeDataType> sideTile);
+    public boolean canPipesConnect(PipeBlockEntity<PipeType, NodeDataType> selfTile, Direction side, PipeBlockEntity<PipeType, NodeDataType> sideTile) {
+        return selfTile.getPipeBlock().getPipeType() == sideTile.getPipeBlock().getPipeType();
+    }
 
-    public abstract boolean canPipeConnectToBlock(PipeBlockEntity<PipeType, NodeDataType> selfTile, Direction side,
-                                                  @Nullable BlockEntity tile);
+    public abstract boolean canPipeConnectToBlock(PipeBlockEntity<PipeType, NodeDataType> selfTile, Direction side, @Nullable BlockEntity tile);
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer,
@@ -240,62 +211,12 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         }
     }
 
-    @Override
-    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
-        level.scheduleTick(pos, this, 1);
-    }
-
-    @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos,
-                                boolean isMoving) {
-        if (level.isClientSide) return;
-        PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
-        if (pipeTile != null) {
-            Direction facing = GTUtil.getFacingToNeighbor(pos, fromPos);
-            if (facing == null) return;
-            if (!ConfigHolder.INSTANCE.machines.gt6StylePipesCables) {
-                boolean open = pipeTile.isConnected(facing);
-                boolean canConnect = pipeTile.getCoverContainer().getCoverAtSide(facing) != null ||
-                        this.canConnect(pipeTile, facing);
-                if (!open && canConnect && state.getBlock() != block)
-                    pipeTile.setConnection(facing, true, false);
-                if (open && !canConnect)
-                    pipeTile.setConnection(facing, false, false);
-                updateActiveNodeStatus(level, pos, pipeTile);
-            }
-        }
-    }
-
-    @Override
-    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (pState.hasBlockEntity() && !pState.is(pNewState.getBlock())) {
-            pLevel.removeBlockEntity(pPos);
-            if (pLevel instanceof ServerLevel serverLevel) {
-                getWorldPipeNet(serverLevel).removeNode(pPos);
-            }
-        }
-    }
 
     @Override
     public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
         PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
         if (pipeTile != null) {
             pipeTile.getCoverContainer().dropAllCovers();
-        }
-        super.destroy(level, pos, state);
-        if (level instanceof ServerLevel serverLevel) {
-            getWorldPipeNet(serverLevel).removeNode(pos);
-        }
-    }
-
-    @Override
-    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
-        if (pipeTile != null) {
-            int activeConnections = pipeTile.getConnections();
-            boolean isActiveNode = activeConnections != 0;
-            getWorldPipeNet(level).addNode(pos, createRawData(state, null), activeConnections, isActiveNode);
-            onActiveModeChange(level, pos, isActiveNode, true);
         }
     }
 
@@ -376,10 +297,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
     @Override
     public boolean isCollisionShapeFullBlock(BlockState state, BlockGetter level, BlockPos pos) {
         var pipeNode = getPipeTile(level, pos);
-        if (pipeNode != null && !pipeNode.getFrameMaterial().isNull()) {
-            return false;
-        }
-        return false;
+        return pipeNode != null && !pipeNode.getFrameMaterial().isNull();
     }
 
     @Override

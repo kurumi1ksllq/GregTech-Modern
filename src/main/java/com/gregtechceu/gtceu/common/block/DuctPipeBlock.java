@@ -6,10 +6,12 @@ import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardCleaner;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardEmitter;
+import com.gregtechceu.gtceu.api.pipenet.PipeNetworkType;
 import com.gregtechceu.gtceu.client.model.PipeModel;
 import com.gregtechceu.gtceu.client.renderer.block.PipeBlockRenderer;
 import com.gregtechceu.gtceu.common.blockentity.DuctPipeBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
+import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.duct.DuctPipeProperties;
 import com.gregtechceu.gtceu.common.pipelike.duct.DuctPipeType;
 import com.gregtechceu.gtceu.common.pipelike.duct.LevelDuctPipeNet;
@@ -69,6 +71,11 @@ public class DuctPipeBlock extends PipeBlock<DuctPipeType, DuctPipeProperties, L
     }
 
     @Override
+    public PipeNetworkType getPipeType() {
+        return GTPipeNetworks.DUCT;
+    }
+
+    @Override
     public DuctPipeProperties getFallbackType() {
         return properties;
     }
@@ -81,12 +88,6 @@ public class DuctPipeBlock extends PipeBlock<DuctPipeType, DuctPipeProperties, L
     @Override
     protected PipeModel getPipeModel() {
         return model;
-    }
-
-    @Override
-    public boolean canPipesConnect(PipeBlockEntity<DuctPipeType, DuctPipeProperties> selfTile, Direction side,
-                                   PipeBlockEntity<DuctPipeType, DuctPipeProperties> sideTile) {
-        return selfTile instanceof DuctPipeBlockEntity && sideTile instanceof DuctPipeBlockEntity;
     }
 
     @Override

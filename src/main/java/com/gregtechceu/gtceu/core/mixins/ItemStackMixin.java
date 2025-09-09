@@ -84,6 +84,10 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
     @Nullable
     public abstract CompoundTag getTagElement(String key);
 
+    @Shadow
+    @Nullable
+    private Entity entityRepresentation;
+
     @Unique
     @Override
     public void gtceu$updateFreshness(Level level, boolean createTag) {
@@ -128,7 +132,8 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
                     "getItemHolder" })
     private void injectedFreshnessUpdate(CallbackInfoReturnable<Item> cir) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        gtceu$updateFreshness(server == null ? null : server.overworld(), GTValues.BREAK_EVERYTHING_LOL);
+        gtceu$updateFreshness(server == null ? null : server.overworld(),
+                GTValues.BREAK_EVERYTHING_LOL || entityRepresentation != null);
     }
 
     @Inject(at = @At("HEAD"), method = "inventoryTick")

@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
-import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.recipe.DummyCraftingContainer;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
@@ -170,13 +169,13 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
                         if (!extracted.isEmpty()) {
                             changed = true;
                             visited[slot] = extracted.copyWithCount(count - extracted.getCount());
+                            recipe.itemInputs.add(extracted.copy());
                         }
                         amount -= extracted.getCount();
                     }
                 } else { // IO.OUT
                     ItemStack output = items[0].copyWithCount(amount);
                     recipe.mutateItemOutput(output);
-                    ISpoilableItem.update(output, null);
                     // Only try this slot if not visited or if visited with the same type of item
                     if (visited[slot] == null || ItemStack.isSameItemSameTags(visited[slot], output)) {
                         if (count < output.getMaxStackSize() && count < storage.getSlotLimit(slot)) {

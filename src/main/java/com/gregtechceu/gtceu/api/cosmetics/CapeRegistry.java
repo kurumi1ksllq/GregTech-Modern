@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.cosmetics;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.cosmetics.event.RegisterGTCapesEvent;
+import com.gregtechceu.gtceu.api.events.RegisterGTCapesEvent;
 import com.gregtechceu.gtceu.common.network.GTNetwork;
 import com.gregtechceu.gtceu.common.network.packets.SPacketNotifyCapeChange;
 import com.gregtechceu.gtceu.integration.kjs.GTCEuServerEvents;

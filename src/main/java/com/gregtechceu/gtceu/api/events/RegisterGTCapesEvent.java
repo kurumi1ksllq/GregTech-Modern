@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.api.cosmetics.event;
+package com.gregtechceu.gtceu.api.events;
 
 import com.gregtechceu.gtceu.api.cosmetics.CapeRegistry;
 

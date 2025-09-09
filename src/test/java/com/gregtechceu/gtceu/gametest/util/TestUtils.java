@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.gametest.util;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
@@ -28,6 +29,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedstoneLampBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.items.IItemHandler;
 
 import java.util.List;
 import java.util.Objects;
@@ -179,6 +181,10 @@ public class TestUtils {
                 "strings not equal: \"%s\" != \"%s\"".formatted(component.toString(), s));
     }
 
+    public static void assertEqual(GameTestHelper helper, long a, long b, String message) {
+        helper.assertTrue(a == b, "%s (%d != %d)".formatted(message, a, b));
+    }
+
     public static void assertLampOn(GameTestHelper helper, BlockPos pos) {
         helper.assertBlockProperty(pos, RedstoneLampBlock.LIT, true);
     }
@@ -214,5 +220,9 @@ public class TestUtils {
      */
     public static void succeedAfterTest(GameTestHelper helper, long timeout) {
         helper.runAtTickTime(timeout, helper::succeed);
+    }
+
+    public static IItemHandler getItemHandler(GameTestHelper helper, BlockPos pos) {
+        return GTCapabilityHelper.getItemHandler(helper.getLevel(), helper.absolutePos(pos), null);
     }
 }

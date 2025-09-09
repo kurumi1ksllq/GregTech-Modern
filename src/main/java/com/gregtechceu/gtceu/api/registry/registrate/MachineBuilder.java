@@ -28,6 +28,7 @@ import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.data.models.GTMachineModels;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.model.builder.MachineModelBuilder;
+import com.gregtechceu.gtceu.forge.ForgeCommonEventListener;
 import com.gregtechceu.gtceu.integration.kjs.GTCEuStartupEvents;
 import com.gregtechceu.gtceu.integration.kjs.events.RegisterGTMachineEventJS;
 
@@ -454,6 +455,11 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
         return this;
     }
 
+    public MachineBuilder<DEFINITION> addRecipeModifier(RecipeModifier recipeModifier) {
+        this.recipeModifier(new RecipeModifierList(this.recipeModifier, recipeModifier));
+        return this;
+    }
+
     public MachineBuilder<DEFINITION> recipeModifier(RecipeModifier recipeModifier, boolean alwaysTryModifyRecipe) {
         this.alwaysTryModifyRecipe = alwaysTryModifyRecipe;
         return this.recipeModifier(recipeModifier);
@@ -523,7 +529,9 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
 
     @HideFromJS
     public DEFINITION register() {
-        RegisterGTMachineEvent<DEFINITION> event = new RegisterGTMachineEvent<>(this);
+        RegisterGTMachineEvent event = new RegisterGTMachineEvent(this);
+        ForgeCommonEventListener.addSpoilTransferModifier(event); // this is a terrible way to do it, but I couldn't get
+                                                                  // the event to work
         MinecraftForge.EVENT_BUS.post(event);
         if (GTCEu.Mods.isKubeJSLoaded()) {
             KJSCallWrapper.fireKJSEvent(event);
@@ -703,8 +711,8 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
             }
         }
 
-        public static <T extends MachineDefinition> void fireKJSEvent(RegisterGTMachineEvent<T> event) {
-            GTCEuStartupEvents.REGISTER_GT_MACHINE.post(new RegisterGTMachineEventJS<T>(event));
+        public static <T extends MachineDefinition> void fireKJSEvent(RegisterGTMachineEvent event) {
+            GTCEuStartupEvents.REGISTER_GT_MACHINE.post(new RegisterGTMachineEventJS(event));
         }
     }
 }

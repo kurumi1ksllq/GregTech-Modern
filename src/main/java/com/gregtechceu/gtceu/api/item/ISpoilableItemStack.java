@@ -13,6 +13,8 @@ public interface ISpoilableItemStack {
 
     long gtceu$getRemainingTicks(@Nullable Level level);
 
+    void gtceu$setFreezeSpoiling(boolean freezeUpdates);
+
     void gtceu$updateFreshness(@Nullable Level level, boolean createTag);
 
     @Unique

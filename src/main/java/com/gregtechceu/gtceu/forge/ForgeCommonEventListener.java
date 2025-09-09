@@ -161,8 +161,8 @@ public class ForgeCommonEventListener {
     }
 
     @SubscribeEvent
-    public static void addSpoilTransferModifier(RegisterGTMachineEvent<?> event) {
-        event.getBuilder().recipeModifier(GTRecipeModifiers.SPOILAGE_TRANSFER);
+    public static void addSpoilTransferModifier(RegisterGTMachineEvent event) {
+        event.getBuilder().addRecipeModifier(GTRecipeModifiers.SPOILAGE_TRANSFER);
     }
 
     @SubscribeEvent

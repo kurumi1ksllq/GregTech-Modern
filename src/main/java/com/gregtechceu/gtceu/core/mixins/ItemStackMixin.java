@@ -88,6 +88,9 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
     @Nullable
     private Entity entityRepresentation;
 
+    @Shadow
+    public abstract void removeTagKey(String key);
+
     @Unique
     @Override
     public void gtceu$updateFreshness(Level level, boolean createTag) {
@@ -102,7 +105,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
                 return;
             }
             CompoundTag tag = createTag ? getOrCreateTagElement("GTCEu_spoilable") : getTagElement("GTCEu_spoilable");
-            if (tag == null) {
+            if (tag == null || tag.contains("frozenRemainingTicks")) {
                 gtceu$isUpdating = false;
                 return;
             }
@@ -181,9 +184,12 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (level == null && server != null) level = server.overworld();
         ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable((ItemStack) (Object) this);
-        if (level != null && getTagElement("GTCEu_spoilable") != null && spoilable != null)
+        CompoundTag spoilTag = getTagElement("GTCEu_spoilable");
+        if (level != null && spoilTag != null && spoilable != null) {
+            if (spoilTag.contains("frozenRemainingTicks")) return spoilTag.getLong("frozenRemainingTicks");
             return spoilable.getSpoilTicks((ItemStack) (Object) this) - level.getGameTime() +
                     gtceu$getCreationTick(level);
+        }
         if (spoilable != null) return spoilable.getSpoilTicks((ItemStack) (Object) this);
         return 0;
     }
@@ -198,6 +204,25 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         if (level != null && getTagElement("GTCEu_spoilable") != null && spoilable != null)
             gtceu$setCreationTick(level,
                     level.getGameTime() - spoilable.getSpoilTicks((ItemStack) (Object) this) + value);
+    }
+
+    @Unique
+    @Override
+    public void gtceu$setFreezeSpoiling(boolean freezeUpdates) {
+        if (SpoilableBehaviour.getSpoilable((ItemStack) (Object) this) == null) return;
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        Level level = server == null ? null : server.overworld();
+        if (level == null) return;
+        if (freezeUpdates) {
+            gtceu$updateFreshness(level, true);
+            getOrCreateTagElement("GTCEu_spoilable").putLong("frozenRemainingTicks", gtceu$getRemainingTicks(null));
+        } else {
+            CompoundTag spoilTag = getTagElement("GTCEu_spoilable");
+            if (spoilTag != null && spoilTag.contains("frozenRemainingTicks")) {
+                gtceu$setRemainingTicks(null, spoilTag.getLong("frozenRemainingTicks"));
+                spoilTag.remove("frozenRemainingTicks");
+            }
+        }
     }
 
     @Inject(at = @At("HEAD"), method = "isSameItemSameTags", cancellable = true)

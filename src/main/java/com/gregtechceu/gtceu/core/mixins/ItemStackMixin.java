@@ -141,6 +141,11 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         gtceu$updateFreshness(null, true);
     }
 
+    @Inject(at = @At("HEAD"), method = "onCraftedBy")
+    private void onCraftedUpdateFreshness(Level level, Player player, int amount, CallbackInfo ci) {
+        gtceu$updateFreshness(null, true);
+    }
+
     @Override
     @Unique
     public long gtceu$getCreationTick(@Nullable Level level) {

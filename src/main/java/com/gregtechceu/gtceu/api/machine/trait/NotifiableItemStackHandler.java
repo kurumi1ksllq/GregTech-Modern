@@ -170,6 +170,7 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
                         if (!extracted.isEmpty()) {
                             changed = true;
                             visited[slot] = extracted.copyWithCount(count - extracted.getCount());
+                            recipe.itemInputs.add(extracted.copy());
                             if (extracted.getItem() instanceof ISpoilableItem item && item.shouldSpoil(extracted)) {
                                 recipe.spoilProgress += (double) extracted.getCount() *
                                         item.getTicksUntilSpoiled(extracted) / item.getSpoilTicks(extracted);
@@ -180,6 +181,7 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
                     }
                 } else { // IO.OUT
                     ItemStack output = items[0].copyWithCount(amount);
+                    recipe.mutateItemOutput(output);
                     ISpoilableItem.update(output, null);
                     if (recipe.transferSpoilingProgress && recipe.spoilableIngredientsAmount > 0 &&
                             output.getItem() instanceof ISpoilableItem item &&

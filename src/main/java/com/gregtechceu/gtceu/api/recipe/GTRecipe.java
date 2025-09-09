@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
+import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.RegistryAccess;
@@ -22,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -56,6 +58,16 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
     public int ocLevel = 0;
     public double spoilProgress = 0;
     public int spoilableIngredientsAmount = 0;
+    /**
+     * Populated after the inputs are already consumed, but the recipe didn't start yet
+     * For use in {@link GTRecipe#itemOutputModifier}
+     */
+    public List<ItemStack> itemInputs = new ArrayList<>();
+    /**
+     * Called for each {@code ItemStack} output before it is inserted into the output container.
+     * Does nothing by default, to be modified with {@link BiConsumer#andThen(BiConsumer)} in {@link RecipeModifier}
+     */
+    public BiConsumer<GTRecipe, ItemStack> itemOutputModifier = (recipe, stack) -> {};
     public final GTRecipeCategory recipeCategory;
     // Lazy fields, since we need the recipe EUt very often
     @Getter(lazy = true)
@@ -248,5 +260,9 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
     @Override
     public String toString() {
         return id.toString();
+    }
+
+    public void mutateItemOutput(ItemStack stack) {
+        if (this.itemOutputModifier != null) itemOutputModifier.accept(this, stack);
     }
 }

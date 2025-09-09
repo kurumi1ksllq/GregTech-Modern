@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.IntFunction;
-import java.util.function.Supplier;
 
 import static net.minecraft.ChatFormatting.*;
 
@@ -272,6 +271,7 @@ public class GTValues {
             0x7EC3C4, 0x7EB07E, 0xBF74C0, 0x0B5CFE, 0x914E91, 0x488748, 0x8C0000, 0x2828F5 };
 
     // Main colour for each tier
+    @SuppressWarnings("DataFlowIssue")
     public static final int[] VCM = new int[] {
             DARK_GRAY.getColor(),
             GRAY.getColor(),

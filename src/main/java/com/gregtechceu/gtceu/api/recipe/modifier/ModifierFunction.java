@@ -9,6 +9,8 @@ import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
 
+import net.minecraft.world.item.ItemStack;
+
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.Contract;
@@ -20,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * Represents a function that accepts a GTRecipe and returns a modified version of the GTRecipe, or null.
@@ -42,7 +45,7 @@ public interface ModifierFunction {
     /**
      * Use this static to denote that the recipe doesn't get modified
      */
-    ModifierFunction IDENTITY = recipe -> recipe;
+    ModifierFunction IDENTITY = GTRecipe::copy;
 
     /**
      * Applies this modifier to the passed recipe
@@ -107,6 +110,7 @@ public interface ModifierFunction {
         private ContentModifier outputModifier = ContentModifier.IDENTITY;
         private ContentModifier tickInputModifier = ContentModifier.IDENTITY;
         private ContentModifier tickOutputModifier = ContentModifier.IDENTITY;
+        private BiConsumer<GTRecipe, ItemStack> itemOutputModifier = (recipe, stack) -> {};
         private final List<RecipeCondition> addedConditions = new ArrayList<>();
 
         public FunctionBuilder() {}
@@ -131,6 +135,11 @@ public interface ModifierFunction {
 
         public FunctionBuilder durationMultiplier(double multiplier) {
             durationModifier = ContentModifier.multiplier(multiplier);
+            return this;
+        }
+
+        public FunctionBuilder modifyItemOutputs(BiConsumer<GTRecipe, ItemStack> func) {
+            itemOutputModifier = itemOutputModifier.andThen(func);
             return this;
         }
 
@@ -172,6 +181,7 @@ public interface ModifierFunction {
                     EnergyStack eut = EURecipeCapability.CAP.copyWithModifier(preEUt.stack(), eutModifier);
                     EURecipeCapability.putEUContent(preEUt.isInput() ? copied.tickInputs : copied.tickOutputs, eut);
                 }
+                copied.itemOutputModifier = itemOutputModifier;
                 return copied;
             };
         }

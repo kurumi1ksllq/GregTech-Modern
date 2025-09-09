@@ -116,7 +116,7 @@ public class SpoilableBehaviour implements ISpoilableItem, IAddInformation, IDur
         Item item = stack.getItem();
         if (item instanceof ISpoilableItem spoilable) return spoilable;
         if (ATTACHED_COMPONENTS.containsKey(item)) return ATTACHED_COMPONENTS.get(item);
-        SpoilableBehaviour behaviour = GTValues.DEFAULT_SPOIL_BEHAVIOR.get();
+        SpoilableBehaviour behaviour = GTValues.DEFAULT_SPOIL_BEHAVIOR.apply(item);
         if (behaviour != null) ATTACHED_COMPONENTS.put(item, behaviour);
         return behaviour;
     }

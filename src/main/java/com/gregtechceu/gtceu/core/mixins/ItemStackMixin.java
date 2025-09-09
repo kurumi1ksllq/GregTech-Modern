@@ -115,13 +115,22 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
             }
             @SuppressWarnings("DataFlowIssue")
             long spoilTicks = spoilable.getSpoilTicks((ItemStack) (Object) this);
-            if (spoilTicks <= level.getGameTime() - tag.getLong("creation_tick")) {
+            long timeDifference = level.getGameTime() - tag.getLong("creation_tick") - spoilTicks;
+            if (timeDifference >= 0) {
                 @SuppressWarnings("DataFlowIssue")
                 ItemStack newStack = spoilable.spoilResult((ItemStack) (Object) this);
                 item = newStack.getItem();
                 delegate = ForgeRegistries.ITEMS.getDelegateOrThrow(item);
                 count = newStack.getCount();
                 this.tag = newStack.getTag();
+                ISpoilableItem newSpoilable = SpoilableBehaviour.getSpoilable((ItemStack) (Object) this);
+                if (newSpoilable != null && (this.tag == null || !this.tag.contains("GTCEu_spoilable"))) {
+                    getOrCreateTagElement("GTCEu_spoilable").putLong("creation_tick",
+                            level.getGameTime() - timeDifference);
+                    gtceu$isUpdating = false;
+                    gtceu$updateFreshness(null, false);
+                    gtceu$isUpdating = true;
+                }
             }
         }
         gtceu$isUpdating = false;

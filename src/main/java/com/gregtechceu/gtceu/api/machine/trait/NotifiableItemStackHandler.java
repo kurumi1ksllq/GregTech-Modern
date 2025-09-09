@@ -170,12 +170,6 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
                         if (!extracted.isEmpty()) {
                             changed = true;
                             visited[slot] = extracted.copyWithCount(count - extracted.getCount());
-                            recipe.itemInputs.add(extracted.copy());
-                            if (extracted.getItem() instanceof ISpoilableItem item && item.shouldSpoil(extracted)) {
-                                recipe.spoilProgress += (double) extracted.getCount() *
-                                        item.getTicksUntilSpoiled(extracted) / item.getSpoilTicks(extracted);
-                                recipe.spoilableIngredientsAmount += extracted.getCount();
-                            }
                         }
                         amount -= extracted.getCount();
                     }
@@ -183,12 +177,6 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
                     ItemStack output = items[0].copyWithCount(amount);
                     recipe.mutateItemOutput(output);
                     ISpoilableItem.update(output, null);
-                    if (recipe.transferSpoilingProgress && recipe.spoilableIngredientsAmount > 0 &&
-                            output.getItem() instanceof ISpoilableItem item &&
-                            item.shouldSpoil(output)) {
-                        double spoilProgress = recipe.spoilProgress / recipe.spoilableIngredientsAmount;
-                        item.setTicksUntilSpoiled(output, (long) (spoilProgress * item.getSpoilTicks(output)));
-                    }
                     // Only try this slot if not visited or if visited with the same type of item
                     if (visited[slot] == null || ItemStack.isSameItemSameTags(visited[slot], output)) {
                         if (count < output.getMaxStackSize() && count < storage.getSlotLimit(slot)) {

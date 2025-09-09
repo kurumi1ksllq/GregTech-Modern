@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.data;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
+import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
@@ -16,11 +17,13 @@ import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
 import com.gregtechceu.gtceu.api.recipe.modifier.ParallelLogic;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
+import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -48,6 +51,26 @@ public class GTRecipeModifiers {
     public static final RecipeModifier OC_NON_PERFECT = ELECTRIC_OVERCLOCK.apply(NON_PERFECT_OVERCLOCK);
     public static final RecipeModifier OC_PERFECT_SUBTICK = ELECTRIC_OVERCLOCK.apply(PERFECT_OVERCLOCK_SUBTICK);
     public static final RecipeModifier OC_NON_PERFECT_SUBTICK = ELECTRIC_OVERCLOCK.apply(NON_PERFECT_OVERCLOCK_SUBTICK);
+    public static final RecipeModifier SPOILAGE_TRANSFER = (machine, recipe) -> ModifierFunction.builder()
+            .modifyItemOutputs((r, stack) -> {
+                ISpoilableItem.update(stack, null);
+                if (!r.transferSpoilingProgress) return;
+                double spoilProgress = 0;
+                int spoilableCount = 0;
+                for (ItemStack in : r.itemInputs) {
+                    ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(in);
+                    if (spoilable != null && spoilable.shouldSpoil(in)) {
+                        spoilableCount += in.getCount();
+                        spoilProgress += in.getCount() * (double) spoilable.getTicksUntilSpoiled(in) /
+                                spoilable.getSpoilTicks(in);
+                    }
+                }
+                ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(stack);
+                if (spoilable != null && spoilable.shouldSpoil(stack) && spoilableCount > 0) {
+                    double spoiled = spoilProgress / spoilableCount;
+                    spoilable.setTicksUntilSpoiled(stack, (long) (spoiled * spoilable.getSpoilTicks(stack)));
+                }
+            }).build();
 
     public static final BiFunction<MedicalCondition, Integer, RecipeModifier> ENVIRONMENT_REQUIREMENT = Util
             .memoize((condition, maxAllowedStrength) -> (machine, recipe) -> {

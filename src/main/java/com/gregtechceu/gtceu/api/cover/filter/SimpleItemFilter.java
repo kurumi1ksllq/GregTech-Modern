@@ -46,6 +46,18 @@ public class SimpleItemFilter implements ItemFilter {
         return loadFilter(itemStack.getOrCreateTag(), filter -> itemStack.setTag(filter.saveFilter()));
     }
 
+    public static SimpleItemFilter forItems(ItemStack... items) {
+        SimpleItemFilter filter = new SimpleItemFilter();
+        filter.ignoreNbt = true;
+        filter.isBlackList = false;
+        int i = 0;
+        for (ItemStack item : items) {
+            filter.matches[i] = item.copy();
+            i++;
+        }
+        return filter;
+    }
+
     private static SimpleItemFilter loadFilter(CompoundTag tag, Consumer<ItemFilter> itemWriter) {
         var handler = new SimpleItemFilter();
         handler.itemWriter = itemWriter;

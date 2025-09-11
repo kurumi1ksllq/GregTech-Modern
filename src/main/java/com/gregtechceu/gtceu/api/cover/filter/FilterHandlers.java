@@ -11,7 +11,7 @@ public interface FilterHandlers {
         return new FilterHandler<>(container) {
 
             @Override
-            protected ItemFilter loadFilter(ItemStack filterItem) {
+            public ItemFilter loadFilter(ItemStack filterItem) {
                 return ItemFilter.loadFilter(filterItem);
             }
 
@@ -31,7 +31,7 @@ public interface FilterHandlers {
         return new FilterHandler<>(container) {
 
             @Override
-            protected FluidFilter loadFilter(ItemStack filterItem) {
+            public FluidFilter loadFilter(ItemStack filterItem) {
                 return FluidFilter.loadFilter(filterItem);
             }
 

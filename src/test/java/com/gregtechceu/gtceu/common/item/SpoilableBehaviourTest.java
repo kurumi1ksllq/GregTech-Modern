@@ -2,9 +2,12 @@ package com.gregtechceu.gtceu.common.item;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.cover.filter.SimpleItemFilter;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
+import com.gregtechceu.gtceu.common.cover.ConveyorCover;
+import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
@@ -12,9 +15,11 @@ import com.gregtechceu.gtceu.common.machine.storage.CrateMachine;
 import com.gregtechceu.gtceu.gametest.util.TestUtils;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.BeforeBatch;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -203,5 +208,32 @@ public class SpoilableBehaviourTest {
                 Items.DIRT.getDefaultInstance()),
                 "item didn't spoil in a player inventory (%s != %s)".formatted(player.getInventory().getItem(0),
                         Items.DIRT.getDefaultInstance())));
+    }
+
+    @GameTest(template = "empty_5x5", batch = "spoilageTests")
+    public static void spoilableFilteringTest(GameTestHelper helper) {
+        makeSpoilables(helper);
+        CrateMachine crate1 = (CrateMachine) TestUtils.setMachine(helper, new BlockPos(1, 1, 1),
+                GTMachines.STEEL_CRATE);
+        CrateMachine crate2 = (CrateMachine) TestUtils.setMachine(helper, new BlockPos(1, 2, 1),
+                GTMachines.STEEL_CRATE);
+        ConveyorCover cover = (ConveyorCover) TestUtils.placeCover(helper, crate1, GTItems.CONVEYOR_MODULE_HV.asStack(),
+                Direction.UP);
+        CompoundTag filterTag = SimpleItemFilter.forItems(Items.STRUCTURE_BLOCK.getDefaultInstance()).saveFilter();
+        ItemStack filter = GTItems.ITEM_FILTER.asStack();
+        filter.setTag(filterTag);
+        cover.getFilterHandler().loadFilter(filter);
+        cover.setWorkingEnabled(false);
+        crate1.inventory.setStackInSlot(0, Items.STRUCTURE_BLOCK.getDefaultInstance());
+        helper.runAtTickTime(10, () -> cover.setWorkingEnabled(true));
+        helper.runAtTickTime(20, () -> {
+            ItemStack stack = crate2.inventory.getStackInSlot(0);
+            ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(stack);
+            helper.assertTrue(TestUtils.isItemStackEqual(stack, Items.STRUCTURE_BLOCK.getDefaultInstance()),
+                    "wrong item");
+            helper.assertTrue(spoilable != null, "spoilable was null");
+            assert spoilable != null;
+            TestUtils.assertEqual(helper, 20, spoilable.getTicksUntilSpoiled(stack), "wrong ticks until spoiled");
+        });
     }
 }

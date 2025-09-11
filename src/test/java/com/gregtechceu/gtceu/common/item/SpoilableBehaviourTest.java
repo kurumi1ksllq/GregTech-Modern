@@ -236,4 +236,36 @@ public class SpoilableBehaviourTest {
             TestUtils.assertEqual(helper, 20, spoilable.getTicksUntilSpoiled(stack), "wrong ticks until spoiled");
         });
     }
+
+    @GameTest(template = "empty_5x5", batch = "spoilageTests")
+    public static void spoilableFilteringWithSpoilableTest(GameTestHelper helper) {
+        makeSpoilables(helper);
+        CrateMachine crate1 = (CrateMachine) TestUtils.setMachine(helper, new BlockPos(1, 1, 1),
+                GTMachines.STEEL_CRATE);
+        CrateMachine crate2 = (CrateMachine) TestUtils.setMachine(helper, new BlockPos(1, 2, 1),
+                GTMachines.STEEL_CRATE);
+        ConveyorCover cover = (ConveyorCover) TestUtils.placeCover(helper, crate1, GTItems.CONVEYOR_MODULE_HV.asStack(),
+                Direction.UP);
+        ItemStack itemForFilter = Items.STRUCTURE_BLOCK.getDefaultInstance();
+        ISpoilableItem filterSpoilable = SpoilableBehaviour.getSpoilable(itemForFilter);
+        assert filterSpoilable != null;
+        ISpoilableItem.update(itemForFilter, null);
+        filterSpoilable.setTicksUntilSpoiled(itemForFilter, 5);
+        CompoundTag filterTag = SimpleItemFilter.forItems(itemForFilter).saveFilter();
+        ItemStack filter = GTItems.ITEM_FILTER.asStack();
+        filter.setTag(filterTag);
+        cover.getFilterHandler().loadFilter(filter);
+        cover.setWorkingEnabled(false);
+        crate1.inventory.setStackInSlot(0, Items.STRUCTURE_BLOCK.getDefaultInstance());
+        helper.runAtTickTime(10, () -> cover.setWorkingEnabled(true));
+        helper.runAtTickTime(20, () -> {
+            ItemStack stack = crate2.inventory.getStackInSlot(0);
+            ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(stack);
+            helper.assertTrue(TestUtils.isItemStackEqual(stack, Items.STRUCTURE_BLOCK.getDefaultInstance()),
+                    "wrong item");
+            helper.assertTrue(spoilable != null, "spoilable was null");
+            assert spoilable != null;
+            TestUtils.assertEqual(helper, 20, spoilable.getTicksUntilSpoiled(stack), "wrong ticks until spoiled");
+        });
+    }
 }

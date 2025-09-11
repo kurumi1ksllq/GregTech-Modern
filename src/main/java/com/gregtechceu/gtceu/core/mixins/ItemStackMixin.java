@@ -235,7 +235,8 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         if (modifiedTag1 != null) modifiedTag1.remove("GTCEu_spoilable");
         if (modifiedTag2 != null) modifiedTag2.remove("GTCEu_spoilable");
         isSameItem = isSameItem && Objects.equals(modifiedTag1, modifiedTag2);
-        if (isSameItem && tag1 != null && tag2 != null) {
+        if (isSameItem && tag1 != null && tag2 != null &&
+                !(tag1.contains("frozenRemainingTicks") || tag2.contains("frozenRemainingTicks"))) {
             long tick1 = tag1.getLong("creation_tick");
             long tick2 = tag2.getLong("creation_tick");
             if (tick1 != tick2) {

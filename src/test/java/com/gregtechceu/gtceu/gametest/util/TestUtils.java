@@ -186,6 +186,7 @@ public class TestUtils {
     public static void assertEqual(GameTestHelper helper, long a, long b, String message) {
         helper.assertTrue(a == b, "%s (%d != %d)".formatted(message, a, b));
     }
+
     public static void assertEqual(GameTestHelper helper, ItemStack stack1, ItemStack stack2) {
         helper.assertTrue(isItemStackEqual(stack1, stack2),
                 "Item stacks not equal: \"%s\" != \"%s\"".formatted(stack1.toString(), stack2.toString()));

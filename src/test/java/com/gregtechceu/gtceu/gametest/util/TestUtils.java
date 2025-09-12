@@ -31,6 +31,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandler;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -184,6 +186,16 @@ public class TestUtils {
     public static void assertEqual(GameTestHelper helper, long a, long b, String message) {
         helper.assertTrue(a == b, "%s (%d != %d)".formatted(message, a, b));
     }
+    public static void assertEqual(GameTestHelper helper, ItemStack stack1, ItemStack stack2) {
+        helper.assertTrue(isItemStackEqual(stack1, stack2),
+                "Item stacks not equal: \"%s\" != \"%s\"".formatted(stack1.toString(), stack2.toString()));
+    }
+
+    public static void assertEqual(GameTestHelper helper, FluidStack stack1, FluidStack stack2) {
+        helper.assertTrue(isFluidStackEqual(stack1, stack2), "Fluid stacks not equal: \"%s %d\" != \"%s %d\"".formatted(
+                stack1.getDisplayName().getString(), stack1.getAmount(),
+                stack2.getDisplayName().getString(), stack2.getAmount()));
+    }
 
     public static void assertLampOn(GameTestHelper helper, BlockPos pos) {
         helper.assertBlockProperty(pos, RedstoneLampBlock.LIT, true);
@@ -224,5 +236,9 @@ public class TestUtils {
 
     public static IItemHandler getItemHandler(GameTestHelper helper, BlockPos pos) {
         return GTCapabilityHelper.getItemHandler(helper.getLevel(), helper.absolutePos(pos), null);
+    }
+
+    public static void assertEqual(GameTestHelper helper, @Nullable BlockPos pos1, @Nullable BlockPos pos2) {
+        helper.assertTrue(pos1 != null && pos1.equals(pos2), "Expected %s to equal to %s".formatted(pos1, pos2));
     }
 }

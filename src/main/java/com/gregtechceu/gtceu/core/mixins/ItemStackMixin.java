@@ -235,18 +235,27 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         if (modifiedTag1 != null) modifiedTag1.remove("GTCEu_spoilable");
         if (modifiedTag2 != null) modifiedTag2.remove("GTCEu_spoilable");
         isSameItem = isSameItem && Objects.equals(modifiedTag1, modifiedTag2);
-        if (isSameItem && tag1 != null && tag2 != null &&
-                !(tag1.contains("frozenRemainingTicks") || tag2.contains("frozenRemainingTicks"))) {
-            long tick1 = tag1.getLong("creation_tick");
-            long tick2 = tag2.getLong("creation_tick");
-            if (tick1 != tick2) {
-                long avg;
-                if (stack.getCount() + other.getCount() > 0)
-                    avg = (tick1 * stack.getCount() + tick2 * other.getCount()) /
-                            (stack.getCount() + other.getCount());
-                else avg = tick1;
-                tag1.putLong("creation_tick", avg);
-                tag2.putLong("creation_tick", avg);
+        if (isSameItem && tag1 != null && tag2 != null) {
+            if (tag1.contains("frozenRemainingTicks") || tag2.contains("frozenRemainingTicks")) {
+                ISpoilableItem spoilable1 = SpoilableBehaviour.getSpoilable(stack),
+                        spoilable2 = SpoilableBehaviour.getSpoilable(other);
+                if (spoilable1 != null && spoilable2 != null) {
+                    cir.setReturnValue(
+                            spoilable1.getTicksUntilSpoiled(stack) == spoilable2.getTicksUntilSpoiled(other));
+                    cir.cancel();
+                }
+            } else {
+                long tick1 = tag1.getLong("creation_tick");
+                long tick2 = tag2.getLong("creation_tick");
+                if (tick1 != tick2) {
+                    long avg;
+                    if (stack.getCount() + other.getCount() > 0)
+                        avg = (tick1 * stack.getCount() + tick2 * other.getCount()) /
+                                (stack.getCount() + other.getCount());
+                    else avg = tick1;
+                    tag1.putLong("creation_tick", avg);
+                    tag2.putLong("creation_tick", avg);
+                }
             }
         }
         cir.setReturnValue(isSameItem && Objects.equals(stack.getTag(), other.getTag()));

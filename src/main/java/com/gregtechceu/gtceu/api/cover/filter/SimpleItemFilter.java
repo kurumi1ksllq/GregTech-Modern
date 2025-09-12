@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.gui.widget.PhantomSlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
-import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
@@ -55,7 +54,7 @@ public class SimpleItemFilter implements ItemFilter {
         int i = 0;
         for (ItemStack item : items) {
             filter.matches[i] = item.copy();
-            ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(filter.matches[i]);
+            ISpoilableItem spoilable = ISpoilableItem.getSpoilable(filter.matches[i]);
             if (spoilable != null) spoilable.freezeSpoiling(filter.matches[i]);
             i++;
         }

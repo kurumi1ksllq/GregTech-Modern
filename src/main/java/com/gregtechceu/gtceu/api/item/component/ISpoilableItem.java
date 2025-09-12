@@ -1,13 +1,22 @@
 package com.gregtechceu.gtceu.api.item.component;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.ISpoilableItemStack;
+import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
 public interface ISpoilableItem extends IItemComponent {
+
+    Map<Item, ISpoilableItem> ATTACHED_COMPONENTS = new HashMap<>();
 
     /**
      * Initializes this ItemStack's spoilage timer if it wasn't initialized before.
@@ -17,6 +26,19 @@ public interface ISpoilableItem extends IItemComponent {
      */
     static void update(ItemStack stack, @Nullable Level level) {
         ((ISpoilableItemStack) (Object) stack).gtceu$updateFreshness(level, true);
+    }
+
+    static @org.jetbrains.annotations.Nullable ISpoilableItem getSpoilable(ItemStack stack) {
+        Item item = stack.getItem();
+        if (item instanceof ISpoilableItem spoilable) return spoilable;
+        if (ATTACHED_COMPONENTS.containsKey(item)) return ATTACHED_COMPONENTS.get(item);
+        SpoilableBehaviour behaviour = GTValues.DEFAULT_SPOIL_BEHAVIOR.apply(item);
+        if (behaviour != null) ATTACHED_COMPONENTS.put(item, behaviour);
+        return behaviour;
+    }
+
+    static void unspoil(ItemLike item) {
+        ATTACHED_COMPONENTS.remove(item.asItem());
     }
 
     /**

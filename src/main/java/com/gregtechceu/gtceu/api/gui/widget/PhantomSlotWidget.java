@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.api.gui.widget;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
-import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 
 import com.lowdragmc.lowdraglib.gui.editor.annotation.ConfigSetter;
 import com.lowdragmc.lowdraglib.gui.editor.annotation.Configurable;
@@ -88,7 +87,7 @@ public class PhantomSlotWidget extends SlotWidget implements IGhostIngredientTar
         if (slotReference != null && isMouseOverElement(mouseX, mouseY) && gui != null) {
             if (isClientSideWidget && !gui.getModularUIContainer().getCarried().isEmpty()) {
                 ItemStack carried = gui.getModularUIContainer().getCarried().copy();
-                ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(carried);
+                ISpoilableItem spoilable = ISpoilableItem.getSpoilable(carried);
                 if (spoilable != null) spoilable.freezeSpoiling(carried);
                 slotReference.set(carried);
             } else if (button == 1 && clearSlotOnRightClick && !slotReference.getItem().isEmpty()) {
@@ -253,7 +252,7 @@ public class PhantomSlotWidget extends SlotWidget implements IGhostIngredientTar
             stackSize = slot.getMaxStackSize();
         }
         ItemStack phantomStack = stackHeld.copy();
-        ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(phantomStack);
+        ISpoilableItem spoilable = ISpoilableItem.getSpoilable(phantomStack);
         if (spoilable != null) spoilable.freezeSpoiling(phantomStack);
         phantomStack.setCount(Math.min(maxStackSize, stackSize));
         if (validator.test(phantomStack)) slot.set(phantomStack);

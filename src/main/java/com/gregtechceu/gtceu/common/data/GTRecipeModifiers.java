@@ -17,7 +17,6 @@ import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
 import com.gregtechceu.gtceu.api.recipe.modifier.ParallelLogic;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
-import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.Util;
@@ -58,14 +57,14 @@ public class GTRecipeModifiers {
                 double spoilProgress = 0;
                 int spoilableCount = 0;
                 for (ItemStack in : r.itemInputs) {
-                    ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(in);
+                    ISpoilableItem spoilable = ISpoilableItem.getSpoilable(in);
                     if (spoilable != null && spoilable.shouldSpoil(in)) {
                         spoilableCount += in.getCount();
                         spoilProgress += in.getCount() * (double) spoilable.getTicksUntilSpoiled(in) /
                                 spoilable.getSpoilTicks(in);
                     }
                 }
-                ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(stack);
+                ISpoilableItem spoilable = ISpoilableItem.getSpoilable(stack);
                 if (spoilable != null && spoilable.shouldSpoil(stack) && spoilableCount > 0) {
                     double spoiled = spoilProgress / spoilableCount;
                     spoilable.setTicksUntilSpoiled(stack, (long) (spoiled * spoilable.getSpoilTicks(stack)));

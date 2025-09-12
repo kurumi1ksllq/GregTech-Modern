@@ -66,10 +66,10 @@ public class SpoilableBehaviourTest {
         new SpoilableBehaviour(40, Items.STRUCTURE_VOID).attachTo(Items.STRUCTURE_BLOCK);
         new SpoilableBehaviour(10, Items.JIGSAW).attachTo(Items.STRUCTURE_VOID);
         helper.runAtTickTime(100, () -> {
-            SpoilableBehaviour.unspoil(Items.JIGSAW);
-            SpoilableBehaviour.unspoil(Items.STRUCTURE_VOID);
-            SpoilableBehaviour.unspoil(Items.APPLE);
-            SpoilableBehaviour.unspoil(Items.STRUCTURE_BLOCK);
+            ISpoilableItem.unspoil(Items.JIGSAW);
+            ISpoilableItem.unspoil(Items.STRUCTURE_VOID);
+            ISpoilableItem.unspoil(Items.APPLE);
+            ISpoilableItem.unspoil(Items.STRUCTURE_BLOCK);
             helper.succeed();
         });
     }
@@ -128,7 +128,7 @@ public class SpoilableBehaviourTest {
             helper.assertTrue(TestUtils.isItemStackEqual(
                     Items.JIGSAW.getDefaultInstance().copyWithCount(23),
                     stack), "jigsaw spoiled 1 tick earlier");
-            ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(stack);
+            ISpoilableItem spoilable = ISpoilableItem.getSpoilable(stack);
             helper.assertTrue(spoilable != null, "spoilable was null when shouldn't have");
             assert spoilable != null;
             helper.assertTrue(spoilable.shouldSpoil(stack), "shouldSpoil returned false on spoilable item");
@@ -148,7 +148,7 @@ public class SpoilableBehaviourTest {
         BusHolder busHolder = getBussesAndForm(helper);
         ItemStack input = new ItemStack(Items.JIGSAW);
         ISpoilableItem.update(input, null);
-        Objects.requireNonNull(SpoilableBehaviour.getSpoilable(input)).setTicksUntilSpoiled(input, 8);
+        Objects.requireNonNull(ISpoilableItem.getSpoilable(input)).setTicksUntilSpoiled(input, 8);
         busHolder.inputBus1.getInventory().setStackInSlot(0, input);
         helper.runAtTickTime(21, () -> {
             ItemStack stack = busHolder.outputBus1.getInventory().getStackInSlot(0);
@@ -157,7 +157,7 @@ public class SpoilableBehaviourTest {
                     new ItemStack(Items.STRUCTURE_BLOCK)),
                     "incorrect recipe output (%s != %s)".formatted(stack.toString(),
                             new ItemStack(Items.STRUCTURE_BLOCK).toString()));
-            ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(stack);
+            ISpoilableItem spoilable = ISpoilableItem.getSpoilable(stack);
             helper.assertTrue(spoilable != null, "recipe output was not spoilable");
             assert spoilable != null;
             TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(stack), 27,
@@ -171,7 +171,7 @@ public class SpoilableBehaviourTest {
         BusHolder busHolder = getBussesAndForm(helper);
         ItemStack input = new ItemStack(Items.APPLE);
         ISpoilableItem.update(input, null);
-        Objects.requireNonNull(SpoilableBehaviour.getSpoilable(input)).setTicksUntilSpoiled(input, 8);
+        Objects.requireNonNull(ISpoilableItem.getSpoilable(input)).setTicksUntilSpoiled(input, 8);
         busHolder.inputBus1.getInventory().setStackInSlot(0, input);
         helper.runAtTickTime(21, () -> {
             ItemStack stack = busHolder.outputBus1.getInventory().getStackInSlot(0);
@@ -180,7 +180,7 @@ public class SpoilableBehaviourTest {
                     new ItemStack(Items.STRUCTURE_BLOCK)),
                     "incorrect recipe output (%s != %s)".formatted(stack.toString(),
                             new ItemStack(Items.STRUCTURE_BLOCK).toString()));
-            ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(stack);
+            ISpoilableItem spoilable = ISpoilableItem.getSpoilable(stack);
             helper.assertTrue(spoilable != null, "recipe output was not spoilable");
             assert spoilable != null;
             TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(stack), 40,
@@ -228,7 +228,7 @@ public class SpoilableBehaviourTest {
         helper.runAtTickTime(10, () -> cover.setWorkingEnabled(true));
         helper.runAtTickTime(20, () -> {
             ItemStack stack = crate2.inventory.getStackInSlot(0);
-            ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(stack);
+            ISpoilableItem spoilable = ISpoilableItem.getSpoilable(stack);
             helper.assertTrue(TestUtils.isItemStackEqual(stack, Items.STRUCTURE_BLOCK.getDefaultInstance()),
                     "wrong item");
             helper.assertTrue(spoilable != null, "spoilable was null");
@@ -247,7 +247,7 @@ public class SpoilableBehaviourTest {
         ConveyorCover cover = (ConveyorCover) TestUtils.placeCover(helper, crate1, GTItems.CONVEYOR_MODULE_HV.asStack(),
                 Direction.UP);
         ItemStack itemForFilter = Items.STRUCTURE_BLOCK.getDefaultInstance();
-        ISpoilableItem filterSpoilable = SpoilableBehaviour.getSpoilable(itemForFilter);
+        ISpoilableItem filterSpoilable = ISpoilableItem.getSpoilable(itemForFilter);
         assert filterSpoilable != null;
         ISpoilableItem.update(itemForFilter, null);
         filterSpoilable.setTicksUntilSpoiled(itemForFilter, 5);
@@ -260,7 +260,7 @@ public class SpoilableBehaviourTest {
         helper.runAtTickTime(10, () -> cover.setWorkingEnabled(true));
         helper.runAtTickTime(20, () -> {
             ItemStack stack = crate2.inventory.getStackInSlot(0);
-            ISpoilableItem spoilable = SpoilableBehaviour.getSpoilable(stack);
+            ISpoilableItem spoilable = ISpoilableItem.getSpoilable(stack);
             helper.assertTrue(TestUtils.isItemStackEqual(stack, Items.STRUCTURE_BLOCK.getDefaultInstance()),
                     "wrong item");
             helper.assertTrue(spoilable != null, "spoilable was null");

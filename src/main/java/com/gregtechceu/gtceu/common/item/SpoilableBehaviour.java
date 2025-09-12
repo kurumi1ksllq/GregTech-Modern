@@ -107,6 +107,7 @@ public class SpoilableBehaviour implements ISpoilableItem, IAddInformation, IDur
     }
 
     public void attachTo(ItemLike item) {
+        this.onAttached(item.asItem());
         ATTACHED_COMPONENTS.put(item.asItem(), this);
     }
 }

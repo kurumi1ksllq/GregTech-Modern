@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.common.machine.multiblock.electric;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.capability.ICentralMonitor;
 import com.gregtechceu.gtceu.api.capability.IMonitorComponent;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
@@ -62,7 +63,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
-                                   implements IMonitorComponent, IDataInfoProvider, IMachineLife {
+                                   implements IMonitorComponent, IDataInfoProvider, IMachineLife, ICentralMonitor {
 
     @SaveField
     @SyncToClient
@@ -94,6 +95,7 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
                             .setMaxGlobalLimited(4))
                     .or(Predicates.machines(GTMachines.HULL))
                     .or(Predicates.machines(GTMachines.MONITOR))
+                    .or(Predicates.machines(GTMachines.ADVANCED_MONITOR))
                     .or(Predicates.blocks(GTBlocks.CASING_ALUMINIUM_FROSTPROOF.get()));
         }
         return MULTI_PREDICATE;

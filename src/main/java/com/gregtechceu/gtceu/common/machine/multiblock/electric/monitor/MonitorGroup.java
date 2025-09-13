@@ -11,7 +11,10 @@ import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
@@ -136,5 +139,22 @@ public class MonitorGroup {
             return new BlockPos(x, y, z);
         }
         return target;
+    }
+
+    public Level getTargetLevel(Level level) {
+        if (target == null) return level;
+
+        IMonitorComponent component = GTCapabilityHelper.getMonitorComponent(level, target, null);
+        if (component != null && component.getDataItems() != null) {
+            ItemStack stack = component.getDataItems().getStackInSlot(dataSlot);
+            CompoundTag tag = stack.getTag();
+            if (tag == null || !tag.contains("dim")) {
+                return level;
+            }
+            if (level.getServer() == null) return level;
+            return level.getServer()
+                    .getLevel(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dim"))));
+        }
+        return level;
     }
 }

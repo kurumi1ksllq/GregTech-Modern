@@ -20,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -38,6 +39,7 @@ public class RobotArmCover extends ConveyorCover {
 
     @SaveField
     @Getter
+    @Setter
     protected int globalTransferLimit;
     protected int itemsTransferBuffered;
 
@@ -173,7 +175,7 @@ public class RobotArmCover extends ConveyorCover {
         group.addWidget(this.stackSizeInput);
     }
 
-    private void setTransferMode(TransferMode transferMode) {
+    public void setTransferMode(TransferMode transferMode) {
         this.transferMode = transferMode;
 
         configureStackSizeInput();

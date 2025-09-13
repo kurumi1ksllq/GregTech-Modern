@@ -110,7 +110,7 @@ public class SpoilableBehaviourTest {
         helper.setBlock(1, 1, 1, Blocks.CHEST);
         IItemHandler itemHandler = TestUtils.getItemHandler(helper, new BlockPos(1, 1, 1));
         ItemStack in = Items.APPLE.getDefaultInstance().copyWithCount(41);
-        ISpoilableItem.update(in, null);
+        ISpoilableItem.update(in);
         itemHandler.insertItem(0, in, false);
         helper.runAtTickTime(70, () -> helper.assertTrue(TestUtils.isItemStackEqual(
                 Items.DIRT.getDefaultInstance().copyWithCount(41),
@@ -147,7 +147,7 @@ public class SpoilableBehaviourTest {
         makeSpoilables(helper);
         BusHolder busHolder = getBussesAndForm(helper);
         ItemStack input = new ItemStack(Items.JIGSAW);
-        ISpoilableItem.update(input, null);
+        ISpoilableItem.update(input);
         Objects.requireNonNull(ISpoilableItem.getSpoilable(input)).setTicksUntilSpoiled(input, 8);
         busHolder.inputBus1.getInventory().setStackInSlot(0, input);
         helper.runAtTickTime(21, () -> {
@@ -170,7 +170,7 @@ public class SpoilableBehaviourTest {
         makeSpoilables(helper);
         BusHolder busHolder = getBussesAndForm(helper);
         ItemStack input = new ItemStack(Items.APPLE);
-        ISpoilableItem.update(input, null);
+        ISpoilableItem.update(input);
         Objects.requireNonNull(ISpoilableItem.getSpoilable(input)).setTicksUntilSpoiled(input, 8);
         busHolder.inputBus1.getInventory().setStackInSlot(0, input);
         helper.runAtTickTime(21, () -> {
@@ -249,7 +249,7 @@ public class SpoilableBehaviourTest {
         ItemStack itemForFilter = Items.STRUCTURE_BLOCK.getDefaultInstance();
         ISpoilableItem filterSpoilable = ISpoilableItem.getSpoilable(itemForFilter);
         assert filterSpoilable != null;
-        ISpoilableItem.update(itemForFilter, null);
+        ISpoilableItem.update(itemForFilter);
         filterSpoilable.setTicksUntilSpoiled(itemForFilter, 5);
         CompoundTag filterTag = SimpleItemFilter.forItems(itemForFilter).saveFilter();
         ItemStack filter = GTItems.ITEM_FILTER.asStack();

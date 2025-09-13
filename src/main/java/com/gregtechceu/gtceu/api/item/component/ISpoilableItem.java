@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.Level;
 
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.ApiStatus;
@@ -39,7 +38,7 @@ import javax.annotation.Nullable;
  * container)</li>
  * <li>It enters a player's inventory and gets ticked at least once</li>
  * <li>It is dropped (exists as an entity)</li>
- * <li>Any other mod calls {@link ISpoilableItem#update(ItemStack, Level)} on the item</li>
+ * <li>Any other mod calls {@link ISpoilableItem#update(ItemStack)} on the item</li>
  * </ul>
  * If you are a developer of a mod that adds any other way to obtain items, that doesn't involve
  * any of the conditions above being true at any tick, consider adding compatibility with this feature :)
@@ -96,6 +95,14 @@ public interface ISpoilableItem extends IItemComponent {
      */
     boolean BREAK_EVERYTHING = false;
     /**
+     * Consider frozen and non-frozen spoilables equal. This is done to allow filtering by ticks remaining until
+     * spoiled.<br>
+     * If you want the player to have frozen stacks in their inventory, set this to {@code false} to prevent players
+     * from
+     * entirely bypassing the spoilage system.
+     */
+    boolean FROZEN_EQUALITY = true;
+    /**
      * Supplier to get the {@link SpoilableBehaviour} of an {@code Item} that doesn't have one attached
      * Called once for every {@code Item}. Return {@code null} to not attach any {@link SpoilableBehaviour} (default).
      */
@@ -105,11 +112,9 @@ public interface ISpoilableItem extends IItemComponent {
     /**
      * Initializes this ItemStack's spoilage timer if it wasn't initialized before.
      * Should be called when it finishes crafting, for example.
-     * 
-     * @param level may be {@code null}, maybe even should be lol
      */
-    static void update(ItemStack stack, @Nullable Level level) {
-        ((ISpoilableItemStack) (Object) stack).gtceu$updateFreshness(level, true);
+    static void update(ItemStack stack) {
+        ((ISpoilableItemStack) (Object) stack).gtceu$updateFreshness(null, true);
     }
 
     /**

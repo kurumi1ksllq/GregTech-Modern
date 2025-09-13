@@ -236,8 +236,14 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         isSameItem = isSameItem && Objects.equals(modifiedTag1, modifiedTag2);
         if (isSameItem && tag1 != null && tag2 != null) {
             if (tag1.contains("frozenRemainingTicks") || tag2.contains("frozenRemainingTicks")) {
-                ISpoilableItem spoilable1 = ISpoilableItem.getSpoilable(stack),
-                        spoilable2 = ISpoilableItem.getSpoilable(other);
+                if (!ISpoilableItem.FROZEN_EQUALITY &&
+                        (tag1.contains("frozenRemainingTicks") ^ tag2.contains("frozenRemainingTicks"))) {
+                    cir.setReturnValue(false);
+                    cir.cancel();
+                    return;
+                }
+                ISpoilableItem spoilable1 = ISpoilableItem.getSpoilable(stack);
+                ISpoilableItem spoilable2 = ISpoilableItem.getSpoilable(other);
                 if (spoilable1 != null && spoilable2 != null) {
                     cir.setReturnValue(
                             spoilable1.getTicksUntilSpoiled(stack) == spoilable2.getTicksUntilSpoiled(other));

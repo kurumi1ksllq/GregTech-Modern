@@ -50,7 +50,7 @@ public class CustomItemStackHandler extends ItemStackHandler
     @Override
     public void onContentsChanged(int slot) {
         onContentsChanged.run();
-        ISpoilableItem.update(getStackInSlot(slot), null);
+        ISpoilableItem.update(getStackInSlot(slot));
     }
 
     public void clear() {

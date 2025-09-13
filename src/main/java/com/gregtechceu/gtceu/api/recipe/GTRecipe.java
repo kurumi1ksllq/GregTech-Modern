@@ -56,8 +56,6 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
     public int parallels = 1;
     public int batchParallels = 1;
     public int ocLevel = 0;
-    public double spoilProgress = 0;
-    public int spoilableIngredientsAmount = 0;
     /**
      * Populated after the inputs are already consumed, but the recipe didn't start yet
      * For use in {@link GTRecipe#itemOutputModifier}

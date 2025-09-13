@@ -147,7 +147,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
     private void injectedFreshnessUpdate(CallbackInfoReturnable<Item> cir) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         gtceu$updateFreshness(server == null ? null : server.overworld(),
-                GTValues.BREAK_EVERYTHING_LOL || entityRepresentation != null);
+                ISpoilableItem.BREAK_EVERYTHING || entityRepresentation != null);
     }
 
     @Inject(at = @At("HEAD"), method = "inventoryTick")

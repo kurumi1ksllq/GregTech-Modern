@@ -1,18 +1,13 @@
 package com.gregtechceu.gtceu.api;
 
-import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.Item;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.function.BooleanSupplier;
-import java.util.function.Function;
 import java.util.function.IntFunction;
 
 import static net.minecraft.ChatFormatting.*;
@@ -317,19 +312,6 @@ public class GTValues {
         var now = LocalDate.now();
         return now.getMonth() == Month.DECEMBER && (now.getDayOfMonth() == 24 || now.getDayOfMonth() == 25);
     };
-
-    /**
-     * Makes EVERY {@code ItemStack} spoilable. EVERY SINGLE ONE, even in recipe ingredients and results, creative
-     * inventory, JEI, EMI,
-     * statistics menu, EVERYTHING.
-     */
-    public static boolean BREAK_EVERYTHING_LOL = false;
-
-    /**
-     * Supplier to get the {@link SpoilableBehaviour} of an {@code Item} that doesn't have one attached
-     * Called once for every {@code Item}. Return {@code null} to not attach any {@link SpoilableBehaviour} (default).
-     */
-    public static @NotNull Function<Item, SpoilableBehaviour> DEFAULT_SPOIL_BEHAVIOR = item -> null;
 
     public static final String CUSTOM_TAG_SOURCE = "GTCEu Custom Tags";
 }

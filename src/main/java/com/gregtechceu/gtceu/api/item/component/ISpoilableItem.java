@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.item.component;
 
-import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.ISpoilableItemStack;
 import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 
@@ -17,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
@@ -89,6 +89,18 @@ public interface ISpoilableItem extends IItemComponent {
     @ApiStatus.Internal
     @HideFromJS
     Set<Item> UNSPOILED_ITEMS = new HashSet<>();
+    /**
+     * Makes EVERY {@code ItemStack} spoilable. EVERY SINGLE ONE, even in recipe ingredients and results, creative
+     * inventory, JEI, EMI,
+     * statistics menu, EVERYTHING.
+     */
+    boolean BREAK_EVERYTHING = false;
+    /**
+     * Supplier to get the {@link SpoilableBehaviour} of an {@code Item} that doesn't have one attached
+     * Called once for every {@code Item}. Return {@code null} to not attach any {@link SpoilableBehaviour} (default).
+     */
+    @NotNull
+    Function<Item, SpoilableBehaviour> DEFAULT_SPOIL_BEHAVIOR = item -> null;
 
     /**
      * Initializes this ItemStack's spoilage timer if it wasn't initialized before.
@@ -130,7 +142,7 @@ public interface ISpoilableItem extends IItemComponent {
         if (UNSPOILED_ITEMS.contains(item)) return null;
         if (ATTACHED_COMPONENTS.containsKey(item)) return ATTACHED_COMPONENTS.get(item);
         if (item instanceof ISpoilableItem spoilable) return spoilable;
-        SpoilableBehaviour behaviour = GTValues.DEFAULT_SPOIL_BEHAVIOR.apply(item);
+        SpoilableBehaviour behaviour = DEFAULT_SPOIL_BEHAVIOR.apply(item);
         if (behaviour != null) ATTACHED_COMPONENTS.put(item, behaviour);
         return behaviour;
     }

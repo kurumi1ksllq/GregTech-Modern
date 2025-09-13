@@ -34,6 +34,17 @@ public class EnumTransformer<E extends Enum<E>> implements IValueTransformer<E> 
 
     @Override
     public E deserializeNBT(Tag tag, @Nullable E currentVal) {
-        return Enum.valueOf(enumClass, tag.getAsString());
+        E value = null;
+        try {
+            value = Enum.valueOf(enumClass, tag.getAsString());
+        } catch (IllegalArgumentException e) {
+            for (E val: enumClass.getEnumConstants()) {
+                if (val.name().toLowerCase().equals(tag.getAsString())) value = val;
+            }
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("Unknown enum constant: %s[%s]".formatted(enumClass.getCanonicalName(), tag.getAsString()));
+        }
+        return value;
     }
 }

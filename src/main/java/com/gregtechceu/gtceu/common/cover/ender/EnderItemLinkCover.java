@@ -10,36 +10,35 @@ import com.gregtechceu.gtceu.api.misc.virtualregistry.EntryTypes;
 import com.gregtechceu.gtceu.api.misc.virtualregistry.VirtualEnderRegistry;
 import com.gregtechceu.gtceu.api.misc.virtualregistry.VirtualEntry;
 import com.gregtechceu.gtceu.api.misc.virtualregistry.entries.VirtualItemStorage;
+import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
+import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class EnderItemLinkCover extends AbstractEnderLinkCover<VirtualItemStorage> {
 
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(EnderItemLinkCover.class,
-            AbstractEnderLinkCover.MANAGED_FIELD_HOLDER);
+    @Getter
+    protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
 
     protected static final int TRANSFER_RATE = 8;
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected VirtualItemStorage storage;
     protected int itemsLeftToTransferLastSecond;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected FilterHandler<ItemStack, ItemFilter> filterHandler;
 
     public EnderItemLinkCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
@@ -112,10 +111,5 @@ public class EnderItemLinkCover extends AbstractEnderLinkCover<VirtualItemStorag
     @Override
     protected String getUITitle() {
         return "cover.ender_item_link.title";
-    }
-
-    @Override
-    public @NotNull ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 }

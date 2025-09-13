@@ -67,15 +67,13 @@ public class SyncDataHolder {
         while (buf.isReadable()) {
             var updatedField = buf.readUtf();
             var field = syncData.clientSyncFields.get(updatedField);
-            if (field == null)
-                throw new IllegalStateException("Recieved update info for unknown field: " + updatedField);
+            if (field == null) throw new IllegalStateException("Recieved update info for unknown field: " + updatedField);
 
             if (field.isComplex) {
                 ISyncManaged currentValue = (ISyncManaged) field.handle.get(holder);
                 currentValue.getSyncDataHolder().readFromNetworkBuffer(buf);
             } else {
-                if (field.transformer == null) throw new IllegalStateException(
-                        "Missing value transformer for field %s".formatted(field.fieldName));
+                if (field.transformer == null) throw new IllegalStateException("Missing value transformer for field %s".formatted(field.fieldName));
                 IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
                 if (transformer.mustProvideObject()) {
                     transformer.readFromBuffer(buf, field.handle.get(holder));
@@ -110,8 +108,7 @@ public class SyncDataHolder {
                 else nbtValue = new CompoundTag();
             } else {
                 if (field.transformer == null) {
-                    GTCEu.LOGGER.error("missing value transformer for field {}", field.fieldName);
-                    return new CompoundTag();
+                    throw new IllegalStateException("no value transformer for field: " + field.fieldName);
                 }
                 IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
                 Object result = field.handle.get(holder);
@@ -148,11 +145,11 @@ public class SyncDataHolder {
 
             if (field.isComplex && savedValue instanceof CompoundTag compound) {
                 ISyncManaged currentVal = (ISyncManaged) field.handle.get(holder);
+                if (currentVal == null) throw new IllegalArgumentException("Field %s is null and cannot be instantiated".formatted(field.fieldName));
                 currentVal.getSyncDataHolder().deserializeNBT(compound, readingClientFields);
             } else {
                 if (field.transformer == null) {
-                    GTCEu.LOGGER.error("no value transformer for field {}", field.fieldName);
-                    return;
+                    throw new IllegalStateException("no value transformer for field: " + field.fieldName);
                 }
                 IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
 
@@ -161,7 +158,6 @@ public class SyncDataHolder {
                 } else {
                     field.handle.set(holder, transformer.deserializeNBT(savedValue, null));
                 }
-
             }
             if (!readingClientFields) {
                 for (MethodHandle modifier : field.nbtLoadModifiers) {

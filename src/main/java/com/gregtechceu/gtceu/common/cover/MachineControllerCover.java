@@ -66,7 +66,7 @@ public class MachineControllerCover extends CoverBehavior implements IUICover {
 
     @Getter
     @Accessors(fluent = true)
-    @Persisted
+    @SaveField
     private boolean preventPowerFail = false;
 
     public MachineControllerCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {

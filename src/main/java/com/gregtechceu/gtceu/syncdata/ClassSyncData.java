@@ -62,11 +62,16 @@ public final class ClassSyncData {
 
             String fieldName = listener != null ? listener.fieldName() : modifier.fieldName();
             annotatedMethods.putIfAbsent(fieldName,
-                    new MethodInfo(new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
+                    new MethodInfo(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
             if (listener != null) annotatedMethods.get(fieldName).listeners.add(handle);
             else if (modifier.target() == FieldDataModifier.ModifyTarget.LOAD_NBT)
                 annotatedMethods.get(fieldName).nbtLoaders.add(handle);
-            else annotatedMethods.get(fieldName).nbtSavers.add(handle);
+            else if (modifier.target() == FieldDataModifier.ModifyTarget.SAVE_NBT)
+                annotatedMethods.get(fieldName).nbtSavers.add(handle);
+            else if (modifier.target() == FieldDataModifier.ModifyTarget.WRITE_BUF)
+                annotatedMethods.get(fieldName).bufWriters.add(handle);
+            else if (modifier.target() == FieldDataModifier.ModifyTarget.READ_BUF)
+                annotatedMethods.get(fieldName).bufReaders.add(handle);
         }
 
         for (Field field : clazz.getDeclaredFields()) {
@@ -105,7 +110,7 @@ public final class ClassSyncData {
         public final VarHandle handle;
         public final boolean triggerClientRerender, isCustomData, isComplex;
         public final IValueTransformer<?> transformer;
-        public final MethodHandle[] changeListenerHandles, nbtSaveModifiers, nbtLoadModifiers;
+        public final MethodHandle[] changeListenerHandles, nbtSaveModifiers, nbtLoadModifiers, bufWriteModifier, bufReadModifier;
 
         public FieldSyncData(@NotNull Field field, @NotNull VarHandle handle, MethodInfo appliedMethods) {
             this.fieldName = field.getName();
@@ -134,14 +139,18 @@ public final class ClassSyncData {
                 changeListenerHandles = appliedMethods.listeners.toArray(MethodHandle[]::new);
                 nbtSaveModifiers = appliedMethods.nbtSavers.toArray(MethodHandle[]::new);
                 nbtLoadModifiers = appliedMethods.nbtLoaders.toArray(MethodHandle[]::new);
+                bufReadModifier = appliedMethods.bufReaders.toArray(MethodHandle[]::new);
+                bufWriteModifier = appliedMethods.bufWriters.toArray(MethodHandle[]::new);
             } else {
                 changeListenerHandles = new MethodHandle[0];
                 nbtSaveModifiers = new MethodHandle[0];
                 nbtLoadModifiers = new MethodHandle[0];
+                bufWriteModifier = new MethodHandle[0];
+                bufReadModifier = new MethodHandle[0];
             }
         }
     }
 
     public record MethodInfo(List<MethodHandle> listeners, List<MethodHandle> nbtLoaders,
-                             List<MethodHandle> nbtSavers) {}
+                             List<MethodHandle> nbtSavers, List<MethodHandle> bufWriters, List<MethodHandle> bufReaders) {}
 }

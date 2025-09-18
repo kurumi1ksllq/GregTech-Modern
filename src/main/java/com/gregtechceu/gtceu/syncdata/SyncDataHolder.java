@@ -38,18 +38,21 @@ public class SyncDataHolder {
     }
 
     @SuppressWarnings("unchecked")
+    @SneakyThrows
     public void writeToNetworkBuffer(FriendlyByteBuf buf) {
         for (String fieldName : dirtySyncFields) {
             var field = syncData.clientSyncFields.get(fieldName);
             if (field == null) continue;
-            if (field.isCustomData) throw new IllegalStateException("Cannot send custom data fields across network");
+            if (field.isCustomData) {
+                field.bufWriteModifier[0].invoke(holder, buf);
+            }
 
             if (field.isComplex) {
                 ISyncManaged currentValue = (ISyncManaged) field.handle.get(holder);
                 if (currentValue != null) {
                     buf.writeUtf(fieldName);
                     currentValue.getSyncDataHolder().writeToNetworkBuffer(buf);
-                } ;
+                };
             } else {
                 if (field.transformer == null) throw new IllegalStateException(
                         "Missing value transformer for field %s".formatted(field.fieldName));
@@ -62,6 +65,7 @@ public class SyncDataHolder {
         dirtySyncFields.clear();
     }
 
+    @SneakyThrows
     @SuppressWarnings("unchecked")
     public void readFromNetworkBuffer(FriendlyByteBuf buf) {
         while (buf.isReadable()) {
@@ -69,6 +73,9 @@ public class SyncDataHolder {
             var field = syncData.clientSyncFields.get(updatedField);
             if (field == null) throw new IllegalStateException("Recieved update info for unknown field: " + updatedField);
 
+            if (field.isCustomData) {
+                field.bufReadModifier[0].invoke(holder, buf);
+            }
             if (field.isComplex) {
                 ISyncManaged currentValue = (ISyncManaged) field.handle.get(holder);
                 currentValue.getSyncDataHolder().readFromNetworkBuffer(buf);
@@ -145,7 +152,9 @@ public class SyncDataHolder {
 
             if (field.isComplex && savedValue instanceof CompoundTag compound) {
                 ISyncManaged currentVal = (ISyncManaged) field.handle.get(holder);
-                if (currentVal == null) throw new IllegalArgumentException("Field %s is null and cannot be instantiated".formatted(field.fieldName));
+                if (currentVal == null) {
+                    throw new IllegalArgumentException("Field %s is null and cannot be instantiated".formatted(field.fieldName));
+                }
                 currentVal.getSyncDataHolder().deserializeNBT(compound, readingClientFields);
             } else {
                 if (field.transformer == null) {

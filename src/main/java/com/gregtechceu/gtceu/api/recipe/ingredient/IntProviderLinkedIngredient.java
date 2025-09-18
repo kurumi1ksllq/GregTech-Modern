@@ -21,6 +21,7 @@ public class IntProviderLinkedIngredient implements IRangedIngredient {
     private List<IRangedIngredient> links;
 
     public enum LinkMode implements StringRepresentable {
+
         LINK_DIRECT("direct"),
         LINK_INVERSE("inverse"),
         LINK_XOR("xor"),
@@ -29,11 +30,11 @@ public class IntProviderLinkedIngredient implements IRangedIngredient {
         @Getter
         private final String serializedName;
 
-        LinkMode(String name){
+        LinkMode(String name) {
             this.serializedName = name;
         }
 
-        public static LinkMode getModeFromName(String name){
+        public static LinkMode getModeFromName(String name) {
             return switch (name.strip().toLowerCase()) {
                 case "direct" -> LINK_DIRECT;
                 case "inverse" -> LINK_INVERSE;
@@ -82,7 +83,7 @@ public class IntProviderLinkedIngredient implements IRangedIngredient {
                 case LINK_DIRECT:
                     inner.setSampledCount(getLinkedCount(rollValue / links.size()));
                 case LINK_INVERSE:
-                    inner.setSampledCount(getLinkedCount((1.0 - rollValue) / links.size()));
+                    inner.setSampledCount(getLinkedCount(1.0 - (rollValue / links.size())));
                 case LINK_XOR:
                     inner.setSampledCount(getLinkedCount(rollValue));
             }

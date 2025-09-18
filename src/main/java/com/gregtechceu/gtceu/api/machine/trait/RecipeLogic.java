@@ -584,7 +584,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
     }
 
     @FieldDataModifier(fieldName = "chanceCaches", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
-    private Tag saveChanceCacheData(Tag tag) {
+    private Tag saveChanceCacheData(Tag tag, boolean saveClientFields) {
         CompoundTag chanceCache = new CompoundTag();
         this.chanceCaches.forEach((cap, cache) -> {
             ListTag cacheTag = new ListTag();
@@ -601,7 +601,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
     }
 
     @FieldDataModifier(fieldName = "chanceCaches", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
-    private void loadChanceCacheData(Tag tag) {
+    private void loadChanceCacheData(Tag tag, boolean loadClientFields) {
         if (tag instanceof CompoundTag chanceCache) {
             for (String key : chanceCache.getAllKeys()) {
                 RecipeCapability<?> cap = GTRegistries.RECIPE_CAPABILITIES.get(key);

@@ -179,7 +179,7 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     }
 
     @FieldDataModifier(fieldName = "inventory", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
-    private void checkInventoryNBTCompat(Tag tag) {
+    private void checkInventoryNBTCompat(Tag tag, boolean loadClientFields) {
         if (tag instanceof CompoundTag compound) {
             // todo: delete for 1.8
             // fix to preserve distinctness from pre 1.7 versions

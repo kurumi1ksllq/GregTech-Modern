@@ -102,8 +102,7 @@ public class SyncDataHolder {
         for (var fieldEntry : fieldsToSerialize.entrySet()) {
             var field = fieldEntry.getValue();
             if (field.isCustomData) {
-                if (writeClientFields) throw new IllegalStateException("Cannot send custom data fields across network");
-                var result = field.nbtSaveModifiers[0].invoke(holder, new CompoundTag());
+                var result = field.nbtSaveModifiers[0].invoke(holder, new CompoundTag(), writeClientFields);
                 tag.put(field.nbtSaveKey, (Tag) result);
                 continue;
             }
@@ -141,9 +140,7 @@ public class SyncDataHolder {
         for (var fieldEntry : fieldsToCheck.entrySet()) {
             var field = fieldEntry.getValue();
             if (field.isCustomData) {
-                if (readingClientFields)
-                    throw new IllegalStateException("Cannot send custom data fields across network");
-                field.nbtLoadModifiers[0].invoke(holder, tag);
+                field.nbtLoadModifiers[0].invoke(holder, tag, readingClientFields);
                 continue;
             }
 

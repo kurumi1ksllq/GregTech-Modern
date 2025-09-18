@@ -80,7 +80,7 @@ public class HullMachine extends TieredPartMachine implements IMonitorComponent 
     }
 
     @FieldDataModifier(fieldName = "gridNodeHost", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
-    private Tag saveGridNodeHost(Tag saved) {
+    private Tag saveGridNodeHost(Tag saved, boolean saveClientFields) {
         if (GTCEu.Mods.isAE2Loaded() && gridNodeHost instanceof IGridConnectedBlockEntity connectedBlockEntity) {
             var compound = new CompoundTag();
             connectedBlockEntity.getMainNode().saveToNBT(compound);
@@ -90,7 +90,7 @@ public class HullMachine extends TieredPartMachine implements IMonitorComponent 
     }
 
     @FieldDataModifier(fieldName = "gridNodeHost", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
-    private void loadGridNodeHost(Tag saved) {
+    private void loadGridNodeHost(Tag saved, boolean readClientFields) {
         if (GTCEu.Mods.isAE2Loaded() && gridNodeHost instanceof IGridConnectedBlockEntity connectedBlockEntity &&
                 saved instanceof CompoundTag tag) {
             connectedBlockEntity.getMainNode().loadFromNBT(tag);

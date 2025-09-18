@@ -12,14 +12,13 @@ import com.gregtechceu.gtceu.common.blockentity.ItemPipeBlockEntity;
 import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
-import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
-import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
+import com.gregtechceu.gtceu.syncdata.annotations.*;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -30,6 +29,8 @@ import net.minecraftforge.items.wrapper.EmptyHandler;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class PipeCoverContainer implements ICoverable, ISyncManaged {
 
     @Getter
@@ -39,6 +40,7 @@ public class PipeCoverContainer implements ICoverable, ISyncManaged {
 
     @SyncToClient
     @SaveField
+    @CustomDataField
     @RerenderOnChanged
     private CoverBehavior up, down, north, south, west, east;
 
@@ -181,23 +183,174 @@ public class PipeCoverContainer implements ICoverable, ISyncManaged {
         }
     }
 
-    @SuppressWarnings("unused")
-    private CompoundTag serializeCoverUid(CoverBehavior coverBehavior) {
-        var uid = new CompoundTag();
-        uid.putString("id", GTRegistries.COVERS.getKey(coverBehavior.coverDefinition).toString());
-        uid.putInt("side", coverBehavior.attachedSide.ordinal());
-        return uid;
+    // Because cover behaviors have to be instantiated based on synced data, they need custom logic
+
+    private CompoundTag serialiseCoverNBT(Direction side, CompoundTag tag, boolean saveClientData) {
+        var compound = new CompoundTag();
+        var cover = getCoverAtSide(side);
+        if (cover == null) return compound;
+
+        compound.putString("coverType", cover.coverDefinition.getId().toString());
+        CompoundTag serialisedCover = cover.getSyncDataHolder().serializeNBT(saveClientData);
+        compound.merge(serialisedCover);
+
+        return compound;
     }
 
-    @SuppressWarnings("unused")
-    private CoverBehavior deserializeCoverUid(CompoundTag uid) {
-        var definitionId = new ResourceLocation(uid.getString("id"));
-        var side = GTUtil.DIRECTIONS[uid.getInt("side")];
-        var definition = GTRegistries.COVERS.get(definitionId);
-        if (definition != null) {
-            return definition.createCoverBehavior(this, side);
+    private void serialiseCoverBuf(Direction side, FriendlyByteBuf buf) {
+        var cover = getCoverAtSide(side);
+        buf.writeBoolean(cover == null);
+        if (cover == null) return;
+        buf.writeResourceLocation(cover.coverDefinition.getId());
+        cover.getSyncDataHolder().writeToNetworkBuffer(buf);
+    }
+
+    private void deserialiseCoverNBT(Direction side, CompoundTag tag, boolean readClientData) {
+        var cover = getCoverAtSide(side);
+        if (tag.isEmpty()) {
+            setCoverAtSide(null, side);
+            return;
         }
-        GTCEu.LOGGER.error("couldn't find cover definition {}", definitionId);
-        throw new RuntimeException();
+        ResourceLocation coverType = ResourceLocation.tryParse(tag.getString("coverType"));
+        if (cover == null || cover.coverDefinition.getId() != coverType) {
+            setCoverAtSide(Objects.requireNonNull(GTRegistries.COVERS.get(coverType)).createCoverBehavior(this, side), side);
+        }
+
+        Objects.requireNonNull(getCoverAtSide(side)).getSyncDataHolder().deserializeNBT(tag, readClientData);
+
+    }
+
+    private void deserialiseCoverBuf(Direction side, FriendlyByteBuf buf) {
+        var cover = getCoverAtSide(side);
+        if (buf.readBoolean()) {
+            setCoverAtSide(null, side);
+            return;
+        }
+        ResourceLocation coverType = buf.readResourceLocation();
+        if (cover == null || cover.coverDefinition.getId() != coverType) {
+            setCoverAtSide(Objects.requireNonNull(GTRegistries.COVERS.get(coverType)).createCoverBehavior(this, side), side);
+        }
+
+        Objects.requireNonNull(getCoverAtSide(side)).getSyncDataHolder().readFromNetworkBuffer(buf);
+    }
+
+    @FieldDataModifier(fieldName = "up", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
+    private CompoundTag serialiseUpCoverNBT(CompoundTag tag, boolean saveClientData) {
+        return serialiseCoverNBT(Direction.UP, tag, saveClientData);
+    }
+
+    @FieldDataModifier(fieldName = "up", target = FieldDataModifier.ModifyTarget.WRITE_BUF)
+    private void serialiseUpCoverBuf(FriendlyByteBuf buf) {
+        serialiseCoverBuf(Direction.UP, buf);
+    }
+
+    @FieldDataModifier(fieldName = "up", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
+    private void deserialiseUpCoverNBT(CompoundTag tag, boolean readClientData) {
+        deserialiseCoverNBT(Direction.UP, tag, readClientData);
+    }
+
+    @FieldDataModifier(fieldName = "up", target = FieldDataModifier.ModifyTarget.READ_BUF)
+    private void deserialiseUpCoverBuf(FriendlyByteBuf buf) {
+        deserialiseCoverBuf(Direction.UP, buf);
+    }
+
+    @FieldDataModifier(fieldName = "down", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
+    private CompoundTag serialiseDownCoverNBT(CompoundTag tag, boolean saveClientData) {
+        return serialiseCoverNBT(Direction.DOWN, tag, saveClientData);
+    }
+
+    @FieldDataModifier(fieldName = "down", target = FieldDataModifier.ModifyTarget.WRITE_BUF)
+    private void serialiseDownCoverBuf(FriendlyByteBuf buf) {
+        serialiseCoverBuf(Direction.DOWN, buf);
+    }
+
+    @FieldDataModifier(fieldName = "down", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
+    private void deserialiseDownCoverNBT(CompoundTag tag, boolean readClientData) {
+        deserialiseCoverNBT(Direction.DOWN, tag, readClientData);
+    }
+
+    @FieldDataModifier(fieldName = "down", target = FieldDataModifier.ModifyTarget.READ_BUF)
+    private void deserialiseDownCoverBuf(FriendlyByteBuf buf) {
+        deserialiseCoverBuf(Direction.DOWN, buf);
+    }
+
+    @FieldDataModifier(fieldName = "north", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
+    private CompoundTag serialiseNorthCoverNBT(CompoundTag tag, boolean saveClientData) {
+        return serialiseCoverNBT(Direction.NORTH, tag, saveClientData);
+    }
+
+    @FieldDataModifier(fieldName = "north", target = FieldDataModifier.ModifyTarget.WRITE_BUF)
+    private void serialiseNorthCoverBuf(FriendlyByteBuf buf) {
+        serialiseCoverBuf(Direction.NORTH, buf);
+    }
+
+    @FieldDataModifier(fieldName = "north", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
+    private void deserialiseNorthCoverNBT(CompoundTag tag, boolean readClientData) {
+        deserialiseCoverNBT(Direction.NORTH, tag, readClientData);
+    }
+
+    @FieldDataModifier(fieldName = "north", target = FieldDataModifier.ModifyTarget.READ_BUF)
+    private void deserialiseNorthCoverBuf(FriendlyByteBuf buf) {
+        deserialiseCoverBuf(Direction.NORTH, buf);
+    }
+
+    @FieldDataModifier(fieldName = "south", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
+    private CompoundTag serialiseSouthCoverNBT(CompoundTag tag, boolean saveClientData) {
+        return serialiseCoverNBT(Direction.SOUTH, tag, saveClientData);
+    }
+
+    @FieldDataModifier(fieldName = "south", target = FieldDataModifier.ModifyTarget.WRITE_BUF)
+    private void serialiseSouthCoverBuf(FriendlyByteBuf buf) {
+        serialiseCoverBuf(Direction.SOUTH, buf);
+    }
+
+    @FieldDataModifier(fieldName = "south", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
+    private void deserialiseSouthCoverNBT(CompoundTag tag, boolean readClientData) {
+        deserialiseCoverNBT(Direction.SOUTH, tag, readClientData);
+    }
+
+    @FieldDataModifier(fieldName = "south", target = FieldDataModifier.ModifyTarget.READ_BUF)
+    private void deserialiseSouthCoverBuf(FriendlyByteBuf buf) {
+        deserialiseCoverBuf(Direction.SOUTH, buf);
+    }
+
+    @FieldDataModifier(fieldName = "east", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
+    private CompoundTag serialiseEastCoverNBT(CompoundTag tag, boolean saveClientData) {
+        return serialiseCoverNBT(Direction.EAST, tag, saveClientData);
+    }
+
+    @FieldDataModifier(fieldName = "east", target = FieldDataModifier.ModifyTarget.WRITE_BUF)
+    private void serialiseEastCoverBuf(FriendlyByteBuf buf) {
+        serialiseCoverBuf(Direction.EAST, buf);
+    }
+
+    @FieldDataModifier(fieldName = "east", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
+    private void deserialiseEastCoverNBT(CompoundTag tag, boolean readClientData) {
+        deserialiseCoverNBT(Direction.EAST, tag, readClientData);
+    }
+
+    @FieldDataModifier(fieldName = "east", target = FieldDataModifier.ModifyTarget.READ_BUF)
+    private void deserialiseEastCoverBuf(FriendlyByteBuf buf) {
+        deserialiseCoverBuf(Direction.EAST, buf);
+    }
+
+    @FieldDataModifier(fieldName = "west", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
+    private CompoundTag serialiseWestCoverNBT(CompoundTag tag, boolean saveClientData) {
+        return serialiseCoverNBT(Direction.WEST, tag, saveClientData);
+    }
+
+    @FieldDataModifier(fieldName = "west", target = FieldDataModifier.ModifyTarget.WRITE_BUF)
+    private void serialiseWestCoverBuf(FriendlyByteBuf buf) {
+        serialiseCoverBuf(Direction.WEST, buf);
+    }
+
+    @FieldDataModifier(fieldName = "west", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
+    private void deserialiseWestCoverNBT(CompoundTag tag, boolean readClientData) {
+        deserialiseCoverNBT(Direction.WEST, tag, readClientData);
+    }
+
+    @FieldDataModifier(fieldName = "west", target = FieldDataModifier.ModifyTarget.READ_BUF)
+    private void deserialiseWestCoverBuf(FriendlyByteBuf buf) {
+        deserialiseCoverBuf(Direction.WEST, buf);
     }
 }

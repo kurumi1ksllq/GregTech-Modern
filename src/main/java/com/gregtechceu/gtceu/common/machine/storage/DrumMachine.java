@@ -15,6 +15,7 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
+import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
@@ -29,6 +30,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -53,6 +55,8 @@ public class DrumMachine extends MetaMachine implements IAutoOutputFluid, IDropS
     @SyncToClient
     @RerenderOnChanged
     protected boolean autoOutputFluids;
+    @SaveField
+    protected boolean allowInputFromOutputSideFluids;
     @Getter
     private final int maxStoredFluids;
     @SaveField
@@ -146,14 +150,20 @@ public class DrumMachine extends MetaMachine implements IAutoOutputFluid, IDropS
         updateAutoOutputSubscription();
     }
 
-    @Override
-    public boolean isAllowInputFromOutputSideFluids() {
-        return false;
+    private static boolean canInputFluidsFromOutputSide() {
+        return ConfigHolder.INSTANCE.machines.allowDrumsInputFluidsFromOutputSide;
     }
 
-    // always is facing down, and can never accept fluids from output side
     @Override
-    public void setAllowInputFromOutputSideFluids(boolean allow) {}
+    public boolean isAllowInputFromOutputSideFluids() {
+        return canInputFluidsFromOutputSide() && this.allowInputFromOutputSideFluids;
+    }
+
+    // always is facing down, and can never accept fluids from output side by default
+    @Override
+    public void setAllowInputFromOutputSideFluids(boolean allow) {
+        this.allowInputFromOutputSideFluids = allow;
+    }
 
     @Override
     public void setOutputFacingFluids(@Nullable Direction outputFacing) {
@@ -211,27 +221,60 @@ public class DrumMachine extends MetaMachine implements IAutoOutputFluid, IDropS
     protected InteractionResult onScrewdriverClick(Player playerIn, InteractionHand hand, Direction gridSide,
                                                    BlockHitResult hitResult) {
         if (!isRemote()) {
+            if (canInputFluidsFromOutputSide()) {
+                setAllowInputFromOutputSideFluids(!isAllowInputFromOutputSideFluids());
+                playerIn.sendSystemMessage(
+                        Component
+                                .translatable("gtceu.machine.basic.input_from_output_side." +
+                                        (isAllowInputFromOutputSideFluids() ? "allow" : "disallow"))
+                                .append(Component.translatable("gtceu.creative.tank.fluid")));
+            }
+            return InteractionResult.SUCCESS;
+        }
+        return super.onScrewdriverClick(playerIn, hand, gridSide, hitResult);
+    }
+
+    @Override
+    protected InteractionResult onSoftMalletClick(Player playerIn, InteractionHand hand, Direction gridSide,
+                                                  BlockHitResult hitResult) {
+        if (!isRemote()) {
             if (!playerIn.isShiftKeyDown()) {
                 setAutoOutputFluids(!isAutoOutputFluids());
-                playerIn.sendSystemMessage(Component
-                        .translatable("gtceu.machine.drum." + (autoOutputFluids ? "enable" : "disable") + "_output"));
+                playerIn.sendSystemMessage(
+                        Component.translatable(
+                                "gtceu.machine.drum." + (autoOutputFluids ? "enable" : "disable") + "_output"));
                 return InteractionResult.SUCCESS;
             }
         }
-        return super.onScrewdriverClick(playerIn, hand, gridSide, hitResult);
+        return super.onSoftMalletClick(playerIn, hand, gridSide, hitResult);
     }
 
     //////////////////////////////////////
     // ******* Rendering ********//
     //////////////////////////////////////
+
+    @Override
+    public boolean shouldRenderGrid(Player player, BlockPos pos, BlockState state, ItemStack held,
+                                    Set<GTToolType> toolTypes) {
+        return super.shouldRenderGrid(player, pos, state, held, toolTypes) ||
+                toolTypes.contains(GTToolType.SOFT_MALLET) ||
+                (canInputFluidsFromOutputSide() && toolTypes.contains(GTToolType.SCREWDRIVER));
+    }
+
     @Override
     public @Nullable ResourceTexture sideTips(Player player, BlockPos pos, BlockState state, Set<GTToolType> toolTypes,
                                               Direction side) {
-        if (toolTypes.contains(GTToolType.SCREWDRIVER)) {
+        if (toolTypes.contains(GTToolType.SOFT_MALLET)) {
             if (side == getOutputFacingFluids()) {
                 return isAutoOutputFluids() ? GuiTextures.TOOL_DISABLE_AUTO_OUTPUT : GuiTextures.TOOL_AUTO_OUTPUT;
             }
         }
+        if (canInputFluidsFromOutputSide() && toolTypes.contains(GTToolType.SCREWDRIVER)) {
+            if (side == getOutputFacingFluids()) {
+                return GuiTextures.TOOL_ALLOW_INPUT;
+            }
+        }
+
         return super.sideTips(player, pos, state, toolTypes, side);
     }
 }

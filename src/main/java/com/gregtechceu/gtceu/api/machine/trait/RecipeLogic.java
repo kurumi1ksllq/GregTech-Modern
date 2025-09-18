@@ -102,8 +102,10 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
     @SaveField
     @Getter
     @Setter
+    @DescSynced
     protected int progress;
     @Getter
+    @SyncToClient
     @SaveField
     protected int duration;
     @Getter(onMethod_ = @VisibleForTesting)

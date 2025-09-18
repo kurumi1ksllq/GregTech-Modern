@@ -27,7 +27,8 @@ import org.jetbrains.annotations.NotNull;
  * and either an {@link IntProvider} or {@code int, int} range bounds (inclusive).
  * Functions similarly to {@link IntProviderIngredient}.
  */
-public class IntProviderFluidIngredient extends FluidIngredient {
+public class IntProviderFluidIngredient extends FluidIngredient
+                                        implements IRangedIngredient {
 
     public static final Codec<IntProviderFluidIngredient> CODEC = ExtraCodecs.JSON
             .xmap(IntProviderFluidIngredient::fromJson, IntProviderFluidIngredient::toJson);
@@ -139,10 +140,10 @@ public class IntProviderFluidIngredient extends FluidIngredient {
     }
 
     /**
-     * @return the average roll of this ranged amount
+     * Whether this ingredient has had its count rolled
      */
-    public double getMidRoll() {
-        return ((countProvider.getMaxValue() + countProvider.getMinValue()) / 2.0);
+    public boolean isRolled() {
+        return this.sampledCount != -1;
     }
 
     @Override

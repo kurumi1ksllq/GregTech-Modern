@@ -33,7 +33,7 @@ import java.util.stream.Stream;
  * and an {@link IntProvider}.
  * Functions similarly to {@link IntProviderFluidIngredient}.
  */
-public class IntProviderIngredient extends Ingredient {
+public class IntProviderIngredient extends Ingredient implements IRangedIngredient {
 
     public static final ResourceLocation TYPE = GTCEu.id("int_provider");
     public static final ItemStack[] EMPTY_STACK_ARRAY = new ItemStack[0];
@@ -92,7 +92,7 @@ public class IntProviderIngredient extends Ingredient {
     @Override
     public ItemStack @NotNull [] getItems() {
         if (itemStacks == null) {
-            int cachedCount = getSampledCount(GTValues.RNG);
+            int cachedCount = getSampledCount();
             if (cachedCount == 0) {
                 return EMPTY_STACK_ARRAY;
             }
@@ -118,6 +118,19 @@ public class IntProviderIngredient extends Ingredient {
     }
 
     /**
+     * If this ingredient has not yet had its {@link IntProviderIngredient#sampledCount} rolled, rolls it and
+     * returns the roll.
+     * If it has, returns the existing roll.
+     * Passthrough method, invokes {@link IntProviderIngredient#getSampledCount(RandomSource)} using the threadsafe
+     * {@link GTValues#RNG}.
+     *
+     * @return the count rolled
+     */
+    public int getSampledCount() {
+        return getSampledCount(GTValues.RNG);
+    }
+
+    /**
      * If this ingredient has not yet had its {@link IntProviderIngredient#sampledCount} rolled, rolls it and returns
      * the roll.
      * If it has, returns the existing roll.
@@ -133,10 +146,10 @@ public class IntProviderIngredient extends Ingredient {
     }
 
     /**
-     * @return the average roll of this ranged amount
+     * Whether this ingredient has had its count rolled
      */
-    public double getMidRoll() {
-        return ((countProvider.getMaxValue() + countProvider.getMinValue()) / 2.0);
+    public boolean isRolled() {
+        return this.sampledCount != -1;
     }
 
     @Override

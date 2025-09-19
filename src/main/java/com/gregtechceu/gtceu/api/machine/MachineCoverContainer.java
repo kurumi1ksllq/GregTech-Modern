@@ -199,7 +199,12 @@ public class MachineCoverContainer implements ICoverable, ISyncManaged {
         }
         ResourceLocation coverType = ResourceLocation.tryParse(tag.getString("coverType"));
         if (cover == null || cover.coverDefinition.getId() != coverType) {
-            setCoverAtSide(Objects.requireNonNull(GTRegistries.COVERS.get(coverType)).createCoverBehavior(this, side), side);
+            var coverReg = GTRegistries.COVERS.get(coverType);
+            if (coverReg == null) {
+                GTCEu.LOGGER.error("Error during NBT load: unknown cover type {}", coverType);
+                return;
+            }
+            setCoverAtSide(coverReg.createCoverBehavior(this, side), side);
         }
 
         Objects.requireNonNull(getCoverAtSide(side)).getSyncDataHolder().deserializeNBT(tag, readClientData);
@@ -214,7 +219,12 @@ public class MachineCoverContainer implements ICoverable, ISyncManaged {
         }
         ResourceLocation coverType = buf.readResourceLocation();
         if (cover == null || cover.coverDefinition.getId() != coverType) {
-            setCoverAtSide(Objects.requireNonNull(GTRegistries.COVERS.get(coverType)).createCoverBehavior(this, side), side);
+            var coverReg = GTRegistries.COVERS.get(coverType);
+            if (coverReg == null) {
+                GTCEu.LOGGER.error("Error during network buffer read: unknown cover type {}", coverType);
+                return;
+            }
+            setCoverAtSide(coverReg.createCoverBehavior(this, side), side);
         }
 
         Objects.requireNonNull(getCoverAtSide(side)).getSyncDataHolder().readFromNetworkBuffer(buf);

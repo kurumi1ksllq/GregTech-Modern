@@ -1,12 +1,10 @@
 package com.gregtechceu.gtceu.syncdata;
 
 import com.gregtechceu.gtceu.GTCEu;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 
-import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
@@ -38,34 +36,41 @@ public class SyncDataHolder {
     }
 
     @SuppressWarnings("unchecked")
-    @SneakyThrows
     public void writeToNetworkBuffer(FriendlyByteBuf buf) {
-        for (String fieldName : dirtySyncFields) {
-            var field = syncData.clientSyncFields.get(fieldName);
-            if (field == null) continue;
+        for (var fieldEntry : syncData.clientSyncFields.entrySet()) {
+            if (!(dirtySyncFields.contains(fieldEntry.getKey()) || fieldEntry.getValue().isComplex)) continue;
+            var field = fieldEntry.getValue();
             if (field.isCustomData) {
-                field.bufWriteModifier[0].invoke(holder, buf);
+
+                try {
+                    field.bufWriteModifier[0].invoke(holder, buf);
+                } catch (Throwable e) {
+                    GTCEu.LOGGER.error("Error while serialising field {}", field.fieldName);
+                    GTCEu.LOGGER.error(e.getMessage());
+                    return;
+                }
             }
 
             if (field.isComplex) {
                 ISyncManaged currentValue = (ISyncManaged) field.handle.get(holder);
                 if (currentValue != null) {
-                    buf.writeUtf(fieldName);
+                    buf.writeUtf(fieldEntry.getKey());
                     currentValue.getSyncDataHolder().writeToNetworkBuffer(buf);
-                };
+                }
             } else {
-                if (field.transformer == null) throw new IllegalStateException(
-                        "Missing value transformer for field %s".formatted(field.fieldName));
+                if (field.transformer == null) {
+                    GTCEu.LOGGER.error("no value transformer registered for field: {}", field.fieldName);
+                    return;
+                }
                 IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
                 Object result = field.handle.get(holder);
-                buf.writeUtf(fieldName);
+                buf.writeUtf(fieldEntry.getKey());
                 transformer.writeToBuffer(result, buf);
             }
         }
         dirtySyncFields.clear();
     }
 
-    @SneakyThrows
     @SuppressWarnings("unchecked")
     public void readFromNetworkBuffer(FriendlyByteBuf buf) {
         while (buf.isReadable()) {
@@ -74,13 +79,22 @@ public class SyncDataHolder {
             if (field == null) throw new IllegalStateException("Recieved update info for unknown field: " + updatedField);
 
             if (field.isCustomData) {
-                field.bufReadModifier[0].invoke(holder, buf);
+                try {
+                    field.bufReadModifier[0].invoke(holder, buf);
+                } catch (Throwable e) {
+                    GTCEu.LOGGER.error("Error while reading field {}", field.fieldName);
+                    GTCEu.LOGGER.error(e.getMessage());
+                    return;
+                }
             }
             if (field.isComplex) {
                 ISyncManaged currentValue = (ISyncManaged) field.handle.get(holder);
                 currentValue.getSyncDataHolder().readFromNetworkBuffer(buf);
             } else {
-                if (field.transformer == null) throw new IllegalStateException("Missing value transformer for field %s".formatted(field.fieldName));
+                if (field.transformer == null) {
+                    GTCEu.LOGGER.error("no value transformer registered for field: {}", field.fieldName);
+                    return;
+                }
                 IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
                 if (transformer.mustProvideObject()) {
                     transformer.readFromBuffer(buf, field.handle.get(holder));
@@ -91,7 +105,6 @@ public class SyncDataHolder {
         }
     }
 
-    @SneakyThrows
     @SuppressWarnings("unchecked")
     public CompoundTag serializeNBT(boolean writeClientFields) {
         CompoundTag tag = new CompoundTag();
@@ -102,8 +115,14 @@ public class SyncDataHolder {
         for (var fieldEntry : fieldsToSerialize.entrySet()) {
             var field = fieldEntry.getValue();
             if (field.isCustomData) {
-                var result = field.nbtSaveModifiers[0].invoke(holder, new CompoundTag(), writeClientFields);
-                tag.put(field.nbtSaveKey, (Tag) result);
+                try {
+                    Object result = field.nbtSaveModifiers[0].invoke(holder, new CompoundTag(), writeClientFields);
+                    tag.put(field.nbtSaveKey, (Tag) result);
+                } catch (Throwable e) {
+                    GTCEu.LOGGER.error("Error while reading field {}", field.fieldName);
+                    GTCEu.LOGGER.error(e.getMessage());
+                    return new CompoundTag();
+                }
                 continue;
             }
 
@@ -114,7 +133,8 @@ public class SyncDataHolder {
                 else nbtValue = new CompoundTag();
             } else {
                 if (field.transformer == null) {
-                    throw new IllegalStateException("no value transformer for field: " + field.fieldName);
+                    GTCEu.LOGGER.error("no value transformer for field: {}", field.fieldName);
+                    return new CompoundTag();
                 }
                 IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
                 Object result = field.handle.get(holder);
@@ -124,7 +144,13 @@ public class SyncDataHolder {
 
             if (!writeClientFields) {
                 for (MethodHandle modifier : field.nbtSaveModifiers) {
-                    nbtValue = (Tag) modifier.invoke(holder, nbtValue);
+                    try {
+                        nbtValue = (Tag) modifier.invoke(holder, nbtValue);
+                    } catch (Throwable e) {
+                        GTCEu.LOGGER.error("Error while reading field {}", field.fieldName);
+                        GTCEu.LOGGER.error(e.getMessage());
+                        return new CompoundTag();
+                    }
                 }
             }
             tag.put(field.nbtSaveKey, nbtValue);
@@ -132,7 +158,6 @@ public class SyncDataHolder {
         return tag;
     }
 
-    @SneakyThrows
     @SuppressWarnings("unchecked")
     public void deserializeNBT(CompoundTag tag, boolean readingClientFields) {
         Map<String, ClassSyncData.FieldSyncData> fieldsToCheck = readingClientFields ? syncData.clientSyncFields :
@@ -140,7 +165,13 @@ public class SyncDataHolder {
         for (var fieldEntry : fieldsToCheck.entrySet()) {
             var field = fieldEntry.getValue();
             if (field.isCustomData) {
-                field.nbtLoadModifiers[0].invoke(holder, tag, readingClientFields);
+                try {
+                    field.nbtLoadModifiers[0].invoke(holder, tag, readingClientFields);
+                } catch (Throwable e) {
+                    GTCEu.LOGGER.error("Error while reading field {}", field.fieldName);
+                    GTCEu.LOGGER.error(e.getMessage());
+                    return;
+                }
                 continue;
             }
 
@@ -155,7 +186,8 @@ public class SyncDataHolder {
                 currentVal.getSyncDataHolder().deserializeNBT(compound, readingClientFields);
             } else {
                 if (field.transformer == null) {
-                    throw new IllegalStateException("no value transformer for field: " + field.fieldName);
+                    GTCEu.LOGGER.error("missing value transformer for field: {}", field.fieldName);
+                    return;
                 }
                 IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
 
@@ -167,7 +199,13 @@ public class SyncDataHolder {
             }
             if (!readingClientFields) {
                 for (MethodHandle modifier : field.nbtLoadModifiers) {
-                    modifier.invoke(holder, savedValue);
+                    try {
+                        modifier.invoke(holder, savedValue);
+                    } catch (Throwable e) {
+                        GTCEu.LOGGER.error("Error while reading field {}", field.fieldName);
+                        GTCEu.LOGGER.error(e.getMessage());
+                        return;
+                    }
                 }
             }
         }

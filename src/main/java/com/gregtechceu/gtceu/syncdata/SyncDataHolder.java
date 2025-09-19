@@ -212,7 +212,7 @@ public class SyncDataHolder {
             if (!readingClientFields) {
                 for (MethodHandle modifier : field.nbtLoadModifiers) {
                     try {
-                        modifier.invoke(holder, savedValue);
+                        modifier.invoke(holder, savedValue, readingClientFields);
                     } catch (Throwable e) {
                         GTCEu.LOGGER.error("Error while reading field {}", field.fieldName);
                         GTCEu.LOGGER.error(e.getMessage());

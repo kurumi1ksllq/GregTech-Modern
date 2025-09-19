@@ -192,7 +192,7 @@ public class MachineCoverContainer implements ICoverable, ISyncManaged {
 
     private void deserialiseCoverNBT(Direction side, CompoundTag tag, boolean readClientData) {
         var cover = getCoverAtSide(side);
-        if (tag.isEmpty()) {
+        if (tag.isEmpty() || tag.getString("coverType").isEmpty()) {
             setCoverAtSide(null, side);
             return;
         }

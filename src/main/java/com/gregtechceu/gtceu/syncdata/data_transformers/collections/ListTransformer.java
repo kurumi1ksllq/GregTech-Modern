@@ -19,6 +19,7 @@ public class ListTransformer<T> implements IValueTransformer<List<T>> {
 
     @Override
     public void writeToBuffer(List<T> value, FriendlyByteBuf buf) {
+        if (elementTransformer == null) return;
         buf.writeInt(value.size());
         for (var obj : value) {
             elementTransformer.writeToBuffer(obj, buf);
@@ -27,6 +28,7 @@ public class ListTransformer<T> implements IValueTransformer<List<T>> {
 
     @Override
     public List<T> readFromBuffer(FriendlyByteBuf buf, List<T> currentValue) {
+        if (elementTransformer == null) return currentValue;
         var size = buf.readInt();
         List<T> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
@@ -39,6 +41,7 @@ public class ListTransformer<T> implements IValueTransformer<List<T>> {
     @Override
     public Tag serializeNBT(List<T> value) {
         ListTag list = new ListTag();
+        if (elementTransformer == null) return list;
         for (var obj : value) {
             list.add(elementTransformer.serializeNBT(obj));
         }
@@ -47,7 +50,7 @@ public class ListTransformer<T> implements IValueTransformer<List<T>> {
 
     @Override
     public List<T> deserializeNBT(Tag tag, List<T> current) {
-        if (!(tag instanceof ListTag listTag)) return List.of();
+        if (!(tag instanceof ListTag listTag) || elementTransformer == null) return List.of();
         return listTag.stream().map((t) -> elementTransformer.deserializeNBT(t, null)).toList();
     }
 }

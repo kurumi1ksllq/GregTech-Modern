@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 import com.gregtechceu.gtceu.syncdata.annotations.*;
-import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -201,7 +200,7 @@ public class MachineCoverContainer implements ICoverable, ISyncManaged {
         if (cover == null || cover.coverDefinition.getId() != coverType) {
             var coverReg = GTRegistries.COVERS.get(coverType);
             if (coverReg == null) {
-                GTCEu.LOGGER.error("Error during NBT load: unknown cover type {}", coverType);
+                GTCEu.LOGGER.error("Error during NBT load: unknown cover type {} ({})", coverType, tag.getString("coverType"));
                 return;
             }
             setCoverAtSide(coverReg.createCoverBehavior(this, side), side);

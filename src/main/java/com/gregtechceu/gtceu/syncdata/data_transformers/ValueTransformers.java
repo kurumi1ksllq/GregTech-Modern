@@ -72,7 +72,8 @@ public final class ValueTransformers {
                 if (ifaceEntry.getKey().isAssignableFrom(type)) return ifaceEntry.getValue();
             }
 
-            throw new IllegalStateException("No transformer registered for type: " + type);
+
+            return null;
         }
     };
 

@@ -76,7 +76,10 @@ public class SyncDataHolder {
         while (buf.isReadable()) {
             var updatedField = buf.readUtf();
             var field = syncData.clientSyncFields.get(updatedField);
-            if (field == null) throw new IllegalStateException("Recieved update info for unknown field: " + updatedField);
+            if (field == null) {
+                GTCEu.LOGGER.error("Recieved update info for unknown field: {}", updatedField);
+                return;
+            };
 
             if (field.isCustomData) {
                 try {
@@ -99,7 +102,11 @@ public class SyncDataHolder {
                 if (transformer.mustProvideObject()) {
                     transformer.readFromBuffer(buf, field.handle.get(holder));
                 } else {
-                    field.handle.set(transformer.readFromBuffer(buf, null));
+                    try {
+                        field.handle.set(transformer.readFromBuffer(buf, null));
+                    } catch (UnsupportedOperationException e) {
+                        GTCEu.LOGGER.error("Sync error: failed to perform VarHandle set: unsupported op {} {}", field.fieldName, field.handle.toString());
+                    }
                 }
             }
         }
@@ -181,7 +188,8 @@ public class SyncDataHolder {
             if (field.isComplex && savedValue instanceof CompoundTag compound) {
                 ISyncManaged currentVal = (ISyncManaged) field.handle.get(holder);
                 if (currentVal == null) {
-                    throw new IllegalArgumentException("Field %s is null and cannot be instantiated".formatted(field.fieldName));
+                    GTCEu.LOGGER.error("Sync error: ISyncManaged field was null, cannot instantiate {}", field.fieldName);
+                    return;
                 }
                 currentVal.getSyncDataHolder().deserializeNBT(compound, readingClientFields);
             } else {
@@ -194,7 +202,11 @@ public class SyncDataHolder {
                 if (transformer.mustProvideObject()) {
                     transformer.deserializeNBT(savedValue, field.handle.get(holder));
                 } else {
-                    field.handle.set(holder, transformer.deserializeNBT(savedValue, null));
+                    try {
+                        field.handle.set(holder, transformer.deserializeNBT(savedValue, null));
+                    } catch (UnsupportedOperationException e) {
+                        GTCEu.LOGGER.error("Sync error: failed to perform VarHandle set: unsupported op {} {}", field.fieldName, field.handle.toString());
+                    }
                 }
             }
             if (!readingClientFields) {

@@ -5,6 +5,8 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.capability.IMonitorComponent;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
+import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
 import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
 import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
 
@@ -27,7 +29,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.UnaryOperator;
 
-public class MonitorGroup {
+public class MonitorGroup implements ISyncManaged {
+    @Getter
+    protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
 
     @SyncToClient
     @SaveField
@@ -156,5 +160,15 @@ public class MonitorGroup {
                     .getLevel(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dim"))));
         }
         return level;
+    }
+
+    @Override
+    public void scheduleRenderUpdate() {
+
+    }
+
+    @Override
+    public void markAsChanged() {
+
     }
 }

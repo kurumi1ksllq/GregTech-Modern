@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
+import com.gregtechceu.gtceu.api.recipe.ingredient.SpatialIngredient;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 
 import net.minecraft.world.item.crafting.Ingredient;
@@ -19,6 +20,7 @@ public class GTRecipeCapabilities {
     public final static RecipeCapability<BlockState> BLOCK_STATE = BlockStateRecipeCapability.CAP;
     public final static RecipeCapability<EnergyStack> EU = EURecipeCapability.CAP;
     public final static RecipeCapability<Integer> CWU = CWURecipeCapability.CAP;
+    public final static RecipeCapability<SpatialIngredient> SPATIAL = SpatialRecipeCapability.CAP;
 
     public static void init() {
         GTRegistries.RECIPE_CAPABILITIES.unfreeze();
@@ -28,6 +30,7 @@ public class GTRecipeCapabilities {
         GTRegistries.RECIPE_CAPABILITIES.register(BLOCK_STATE.name, BLOCK_STATE);
         GTRegistries.RECIPE_CAPABILITIES.register(EU.name, EU);
         GTRegistries.RECIPE_CAPABILITIES.register(CWU.name, CWU);
+        GTRegistries.RECIPE_CAPABILITIES.register(SPATIAL.name, SPATIAL);
 
         AddonFinder.getAddons().forEach(IGTAddon::registerRecipeCapabilities);
         ModLoader.get().postEvent(new GTCEuAPI.RegisterEvent<>(GTRegistries.RECIPE_CAPABILITIES,

@@ -606,7 +606,7 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                 }
             }
             if (changed) onContentsChanged();
-            return left.isEmpty() ? null : left;
+            return left;
         }
 
         public @Nullable List<FluidIngredient> handleFluidInternal(List<FluidIngredient> left, boolean simulate) {
@@ -655,7 +655,7 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
             }
 
             if (changed) onContentsChanged();
-            return left.isEmpty() ? null : left;
+            return left;
         }
 
         @Override

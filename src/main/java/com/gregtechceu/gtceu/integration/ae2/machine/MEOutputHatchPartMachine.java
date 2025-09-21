@@ -188,7 +188,7 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine implements IMac
                 ingredient.shrink(storage.fill(output, action));
                 if (ingredient.getAmount() <= 0) it.remove();
             }
-            return left.isEmpty() ? null : left;
+            return left;
         }
     }
 

@@ -206,7 +206,7 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
         storage.setOnContentsChanged(listener);
         if (changed && !simulate) listener.run();
 
-        return left.isEmpty() ? null : left;
+        return left;
     }
 
     private static @Nullable ItemStack getActioned(CustomItemStackHandler storage, int index, List<?> actions) {

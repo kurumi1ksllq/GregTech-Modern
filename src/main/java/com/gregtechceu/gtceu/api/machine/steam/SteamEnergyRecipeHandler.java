@@ -53,7 +53,7 @@ public class SteamEnergyRecipeHandler implements IRecipeHandler<EnergyStack> {
                 }
             }
         }
-        return left.isEmpty() ? null : left;
+        return left;
     }
 
     @Override

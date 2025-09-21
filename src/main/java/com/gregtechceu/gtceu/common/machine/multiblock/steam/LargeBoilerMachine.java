@@ -152,7 +152,7 @@ public class LargeBoilerMachine extends WorkableMultiblockMachine implements IEx
                     outputTanks.addAll(getCapabilitiesFlat(IO.BOTH, FluidRecipeCapability.CAP));
                     for (IRecipeHandler<?> tank : outputTanks) {
                         fillSteam = (List<FluidIngredient>) tank.handleRecipe(IO.OUT, null, fillSteam, false);
-                        if (fillSteam == null) break;
+                        if (fillSteam == null || fillSteam.isEmpty()) break;
                     }
                 }
 

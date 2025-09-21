@@ -330,7 +330,7 @@ public class NotifiableEnergyContainer extends NotifiableRecipeHandlerTrait<Ener
 
         }
 
-        return left.isEmpty() ? null : left;
+        return left;
     }
 
     @Override

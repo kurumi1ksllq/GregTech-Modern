@@ -219,7 +219,7 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
             if (changed && action.execute()) listeners[i].run();
         }
 
-        return left.isEmpty() ? null : left;
+        return left;
     }
 
     @Override

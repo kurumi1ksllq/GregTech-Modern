@@ -163,7 +163,7 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
             for (var handler : handlers) {
                 // noinspection unchecked
                 copied = (List<FluidIngredient>) handler.handleRecipe(IO.OUT, recipe, copied, true);
-                if (copied == null) break;
+                if (copied == null || copied.isEmpty()) break;
             }
             int[] bin = ParallelLogic.adjustMultiplier(copied == null, minMultiplier, multiplier, maxMultiplier);
             minMultiplier = bin[0];

@@ -181,6 +181,7 @@ public class PipeCoverContainer implements ICoverable, ISyncManaged {
         } else if (previousCover != null && previousCover.canPipePassThrough()) {
             pipeTile.setConnection(side, false, false);
         }
+        getSyncDataHolder().resyncAllFields();
     }
 
     // Because cover behaviors have to be instantiated based on synced data, they need custom logic

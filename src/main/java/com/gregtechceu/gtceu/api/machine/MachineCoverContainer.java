@@ -148,6 +148,7 @@ public class MachineCoverContainer implements ICoverable, ISyncManaged {
             case EAST -> east = coverBehavior;
             case NORTH -> north = coverBehavior;
         }
+        getSyncDataHolder().resyncAllFields();
     }
 
     @Override

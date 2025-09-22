@@ -23,7 +23,6 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -41,13 +40,6 @@ public class MachineCoverContainer implements ICoverable, ISyncManaged {
 
     public MachineCoverContainer(MetaMachine machine) {
         this.machine = machine;
-    }
-
-    @SuppressWarnings("unused")
-    private void onCoverSet(CoverBehavior newValue, CoverBehavior oldValue) {
-        if (newValue != oldValue && (newValue == null || oldValue == null)) {
-            scheduleRenderUpdate();
-        }
     }
 
     @Override

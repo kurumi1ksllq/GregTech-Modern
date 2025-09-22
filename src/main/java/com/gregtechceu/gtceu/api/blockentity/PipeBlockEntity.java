@@ -66,12 +66,10 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     protected final PipeCoverContainer coverContainer;
 
     @Getter
-    @Setter
     @SyncToClient
     @SaveField
     @RerenderOnChanged
     protected int connections = Node.ALL_CLOSED;
-    @Setter
     @SyncToClient
     @SaveField
     @RerenderOnChanged
@@ -82,13 +80,11 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     @SyncToClient
     @RerenderOnChanged
     @Getter
-    @Setter
     private int paintingColor = -1;
 
     @RerenderOnChanged
     @SyncToClient
     @SaveField
-    @Setter
     @NotNull
     private Material frameMaterial = GTMaterials.NULL;
     private final List<TickableSubscription> serverTicks;
@@ -123,6 +119,26 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     public void clearRemoved() {
         super.clearRemoved();
         coverContainer.onLoad();
+    }
+
+    public void setConnections(int connections) {
+        this.connections = connections;
+        getSyncDataHolder().markClientSyncFieldDirty("connections");
+    }
+
+    public void setBlockedConnections(int blocked) {
+        this.blockedConnections = blocked;
+        getSyncDataHolder().markClientSyncFieldDirty("blockedConnections");
+    }
+
+    public void setPaintingColor(int col) {
+        paintingColor = col;
+        getSyncDataHolder().markClientSyncFieldDirty("paintingColor");
+    }
+
+    public void setFrameMaterial(Material mat) {
+        frameMaterial = mat;
+        getSyncDataHolder().markClientSyncFieldDirty("frameMaterial");
     }
 
     @Override

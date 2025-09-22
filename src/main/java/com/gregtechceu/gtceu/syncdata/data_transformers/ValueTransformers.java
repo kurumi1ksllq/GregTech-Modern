@@ -1,9 +1,11 @@
 package com.gregtechceu.gtceu.syncdata.data_transformers;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 import com.gregtechceu.gtceu.syncdata.data_transformers.collections.*;
 
@@ -86,14 +88,18 @@ public final class ValueTransformers {
             Type valueType = actualTypes.length > 1 ? actualTypes[1] : null;
             if (List.class.isAssignableFrom(collectionType)) {
                 if (keyType instanceof Class<?> keyClass) {
+                    if (ISyncManaged.class.isAssignableFrom(keyClass)) throw new IllegalArgumentException("Cannot sync collection of ISyncManaged objects");
                     return new ListTransformer<>(ValueTransformers.get(keyClass));
                 }
             } else if (Set.class.isAssignableFrom(collectionType)) {
                 if (keyType instanceof Class<?> keyClass) {
+                    if (ISyncManaged.class.isAssignableFrom(keyClass)) throw new IllegalArgumentException("Cannot sync collection of ISyncManaged objects");
                     return new SetTransformer<>(ValueTransformers.get(keyClass));
                 }
             } else if (Map.class.isAssignableFrom(collectionType)) {
                 if (keyType instanceof Class<?> keyClass && valueType instanceof Class<?> valueClass) {
+                    if (ISyncManaged.class.isAssignableFrom(keyClass) || ISyncManaged.class.isAssignableFrom(valueClass)) throw new IllegalArgumentException("Cannot sync collection of ISyncManaged objects");
+
                     return new MapTransformer<>(ValueTransformers.get(keyClass), ValueTransformers.get(valueClass));
                 }
             }

@@ -72,6 +72,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
 
     @SaveField
     @SyncToClient
+    @RerenderOnChanged
     protected boolean isActive;
 
     @Nullable
@@ -101,7 +102,6 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
     protected GTRecipe lastOriginRecipe;
     @SaveField
     @Getter
-    @Setter
     @SyncToClient
     protected int progress;
     @Getter
@@ -138,12 +138,6 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
         updateSound();
     }
 
-    @SuppressWarnings("unused")
-    @ClientFieldChangeListener(fieldName = "isActive")
-    protected void onActiveSynced() {
-        scheduleRenderUpdate();
-    }
-
     /**
      * Call it to abort current recipe and reset the first state.
      */
@@ -160,6 +154,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
             setStatus(Status.IDLE);
         }
         updateTickSubscription();
+        getSyncDataHolder().resyncAllFields();
     }
 
     @Override
@@ -177,6 +172,11 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
         } else {
             subscription = getMachine().subscribeServerTick(subscription, this::serverTick);
         }
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
+        getSyncDataHolder().markClientSyncFieldDirty("progress");
     }
 
     public double getProgressPercent() {

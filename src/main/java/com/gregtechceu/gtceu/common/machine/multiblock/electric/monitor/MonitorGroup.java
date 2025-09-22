@@ -48,16 +48,13 @@ public class MonitorGroup implements ISyncManaged {
     @SyncToClient
     @SaveField
     private final CustomItemStackHandler placeholderSlotsHandler;
-    @Setter
     @SaveField
     @SyncToClient
     private @Nullable BlockPos target;
-    @Setter
     @Getter
     @SyncToClient
     @SaveField
     private @Nullable Direction targetCoverSide;
-    @Setter
     @Getter
     @SyncToClient
     @SaveField
@@ -116,6 +113,21 @@ public class MonitorGroup implements ISyncManaged {
             if (coverable != null) return coverable.getCoverAtSide(targetCoverSide);
         }
         return null;
+    }
+
+    public void setTarget(BlockPos pos) {
+        this.target = pos;
+        getSyncDataHolder().markClientSyncFieldDirty("target");
+    }
+
+    public void setTargetCoverSide(Direction side) {
+        this.targetCoverSide = side;
+        getSyncDataHolder().markClientSyncFieldDirty("targetCoverSide");
+    }
+
+    public void setDataSlot(int slot) {
+        this.dataSlot = slot;
+        getSyncDataHolder().markClientSyncFieldDirty("dataSlot");
     }
 
     public @Nullable BlockPos getTargetRaw() {

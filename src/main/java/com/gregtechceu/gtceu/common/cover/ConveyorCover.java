@@ -74,7 +74,6 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
     @Getter
     @RerenderOnChanged
     protected IO io;
-    @Setter
     @SaveField
     @SyncToClient
     @Getter
@@ -128,6 +127,11 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
     protected @Nullable IItemHandler getAdjacentItemHandler() {
         return GTTransferUtils.getAdjacentItemHandler(coverHolder.getLevel(), coverHolder.getPos(), attachedSide)
                 .resolve().orElse(null);
+    }
+
+    public void setDistributionMode(DistributionMode mode) {
+        distributionMode = mode;
+        getSyncDataHolder().markClientSyncFieldDirty("distributionMode");
     }
 
     //////////////////////////////////////

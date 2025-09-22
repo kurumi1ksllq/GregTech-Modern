@@ -67,7 +67,6 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
     @SaveField
     @SyncToClient
     @Getter
-    @Setter
     protected boolean isMuffled;
     protected boolean previouslyMuffled = true;
 
@@ -177,6 +176,11 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
     public void onMachineRemoved() {
         clearInventory(importItems.storage);
         clearInventory(exportItems.storage);
+    }
+
+    public void setMuffled(boolean muffled) {
+        isMuffled = muffled;
+        getSyncDataHolder().markClientSyncFieldDirty("isMuffled");
     }
 
     //////////////////////////////////////

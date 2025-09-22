@@ -19,6 +19,7 @@ public class SyncDataHolder {
     private final ISyncManaged holder;
 
     private final Set<String> dirtySyncFields = new HashSet<>();
+    private boolean resyncAll = false;
 
     public SyncDataHolder(@NotNull ISyncManaged o) {
         holder = o;
@@ -35,10 +36,15 @@ public class SyncDataHolder {
         holder.markAsChanged();
     }
 
+    public void resyncAllFields() {
+        resyncAll = true;
+        holder.markAsChanged();
+    }
+
     @SuppressWarnings("unchecked")
     public void writeToNetworkBuffer(FriendlyByteBuf buf) {
         for (var fieldEntry : syncData.clientSyncFields.entrySet()) {
-            if (!(dirtySyncFields.contains(fieldEntry.getKey()) || fieldEntry.getValue().isComplex)) continue;
+            if (!resyncAll && !(dirtySyncFields.contains(fieldEntry.getKey()) || fieldEntry.getValue().isComplex)) continue;
             var field = fieldEntry.getValue();
             if (field.isCustomData) {
 
@@ -68,6 +74,7 @@ public class SyncDataHolder {
                 transformer.writeToBuffer(result, buf);
             }
         }
+        resyncAll = false;
         dirtySyncFields.clear();
     }
 

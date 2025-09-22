@@ -104,6 +104,11 @@ public class AdvancedItemDetectorCover extends ItemDetectorCover implements IUIC
         this.maxValue = Math.max(maxValue, 0);
     }
 
+    public void setLatched(boolean latched) {
+        isLatched = latched;
+        getSyncDataHolder().markClientSyncFieldDirty("isLatched");
+    }
+
     //////////////////////////////////////
     // *********** GUI ***********//
     //////////////////////////////////////

@@ -55,7 +55,6 @@ public class RotorHolderPartMachine extends TieredPartMachine
     @SaveField
     @SyncToClient
     public int rotorSpeed;
-    @Setter
     @SaveField
     @SyncToClient
     @NotNull
@@ -124,6 +123,11 @@ public class RotorHolderPartMachine extends TieredPartMachine
             return GTMaterials.NULL;
         }
         return rotorMaterial;
+    }
+
+    public void setRotorMaterial(Material mat) {
+        this.rotorMaterial = mat;
+        getSyncDataHolder().markClientSyncFieldDirty("rotorMaterial");
     }
 
     private void onRotorInventoryChanged() {

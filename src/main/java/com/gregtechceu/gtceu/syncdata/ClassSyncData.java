@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.syncdata;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.syncdata.annotations.*;
 import com.gregtechceu.gtceu.syncdata.data_transformers.ValueTransformers;
 
@@ -34,7 +35,9 @@ public final class ClassSyncData {
         MethodHandles.Lookup privateLookup;
         try {
             privateLookup = MethodHandles.privateLookupIn(clazz, LOOKUP);
-        } catch (IllegalAccessException ignored) {
+        } catch (IllegalAccessException e) {
+            GTCEu.LOGGER.error("Sync: Failed to create method handle lookup for class {}", clazz);
+            GTCEu.LOGGER.error(e.getMessage());
             return;
         }
 
@@ -55,8 +58,8 @@ public final class ClassSyncData {
             try {
                 handle = privateLookup.unreflect(method);
             } catch (IllegalAccessException e) {
-                // noinspection CallToPrintStackTrace
-                e.printStackTrace();
+                GTCEu.LOGGER.error("Sync: Failed to acquire method handle for method {} {}", method.getName(), clazz.getCanonicalName());
+                GTCEu.LOGGER.error(e.getMessage());
                 continue;
             }
 
@@ -86,8 +89,8 @@ public final class ClassSyncData {
             try {
                 handle = privateLookup.unreflectVarHandle(field);
             } catch (IllegalAccessException e) {
-                // noinspection CallToPrintStackTrace
-                e.printStackTrace();
+                GTCEu.LOGGER.error("Sync: Failed to acquire variable handle for field {} {}", field.getName(), clazz.getCanonicalName());
+                GTCEu.LOGGER.error(e.getMessage());
                 continue;
             }
 

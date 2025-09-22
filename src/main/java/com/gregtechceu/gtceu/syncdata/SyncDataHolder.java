@@ -1,6 +1,8 @@
 package com.gregtechceu.gtceu.syncdata;
 
 import com.gregtechceu.gtceu.GTCEu;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -18,7 +20,7 @@ public class SyncDataHolder {
     private final ClassSyncData syncData;
     private final ISyncManaged holder;
 
-    private final Set<String> dirtySyncFields = new HashSet<>();
+    private final ObjectSet<String> dirtySyncFields = new ObjectOpenHashSet<>();
     private boolean resyncAll = false;
 
     public SyncDataHolder(@NotNull ISyncManaged o) {

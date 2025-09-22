@@ -4,6 +4,8 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.syncdata.annotations.*;
 import com.gregtechceu.gtceu.syncdata.data_transformers.ValueTransformers;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
@@ -28,8 +30,9 @@ public final class ClassSyncData {
         }
     };
 
-    public final Map<String, FieldSyncData> clientSyncFields = new HashMap<>();
-    public final Map<String, FieldSyncData> serverSaveFields = new HashMap<>();
+
+    public final Object2ObjectMap<String, FieldSyncData> clientSyncFields = new Object2ObjectOpenHashMap<>();
+    public final Object2ObjectMap<String, FieldSyncData> serverSaveFields = new Object2ObjectOpenHashMap<>();
 
     private ClassSyncData(@NotNull Class<?> clazz) {
         MethodHandles.Lookup privateLookup;

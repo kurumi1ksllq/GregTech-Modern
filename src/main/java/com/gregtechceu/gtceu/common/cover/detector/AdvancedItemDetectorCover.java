@@ -45,7 +45,6 @@ public class AdvancedItemDetectorCover extends ItemDetectorCover implements IUIC
     @SaveField
     @SyncToClient
     @Getter
-    @Setter
     private boolean isLatched;
     @SaveField
     @SyncToClient

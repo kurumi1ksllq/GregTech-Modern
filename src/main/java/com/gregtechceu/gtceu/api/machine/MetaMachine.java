@@ -170,8 +170,7 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
         Level level = getLevel();
         BlockPos pos = getPos();
 
-        if (level == null || pos == null)
-            return;
+        if (level == null) return;
 
         level.getBlockState(pos).updateNeighbourShapes(level, pos, Block.UPDATE_ALL);
     }

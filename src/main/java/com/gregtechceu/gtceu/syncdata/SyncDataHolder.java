@@ -73,6 +73,8 @@ public class SyncDataHolder {
                 IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
                 Object result = field.handle.get(holder);
                 buf.writeUtf(fieldEntry.getKey());
+                buf.writeBoolean(result == null);
+                if (result == null) continue;
                 transformer.writeToBuffer(result, buf);
             }
         }
@@ -84,6 +86,7 @@ public class SyncDataHolder {
     public void readFromNetworkBuffer(FriendlyByteBuf buf) {
         while (buf.isReadable()) {
             var updatedField = buf.readUtf();
+            boolean fieldNull = buf.readBoolean();
             var field = syncData.clientSyncFields.get(updatedField);
             if (field == null) {
                 GTCEu.LOGGER.error("Recieved update info for unknown field: {}", updatedField);
@@ -103,6 +106,10 @@ public class SyncDataHolder {
                 ISyncManaged currentValue = (ISyncManaged) field.handle.get(holder);
                 currentValue.getSyncDataHolder().readFromNetworkBuffer(buf);
             } else {
+                if (fieldNull) {
+                    field.handle.set(holder, null);
+                    continue;
+                }
                 if (field.transformer == null) {
                     GTCEu.LOGGER.error("no value transformer registered for field: {}", field.fieldName);
                     return;
@@ -112,7 +119,7 @@ public class SyncDataHolder {
                     transformer.readFromBuffer(buf, field.handle.get(holder));
                 } else {
                     try {
-                        field.handle.set(transformer.readFromBuffer(buf, null));
+                        field.handle.set(holder, transformer.readFromBuffer(buf, null));
                     } catch (UnsupportedOperationException e) {
                         GTCEu.LOGGER.error("Sync error: failed to perform VarHandle set: unsupported op {} {}", field.fieldName, field.handle.toString());
                     }

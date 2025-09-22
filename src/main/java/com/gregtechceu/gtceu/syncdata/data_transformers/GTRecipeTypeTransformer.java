@@ -15,11 +15,14 @@ public class GTRecipeTypeTransformer implements IValueTransformer<GTRecipeType> 
 
     @Override
     public void writeToBuffer(GTRecipeType value, FriendlyByteBuf buf) {
+        buf.writeBoolean(value == null);
+        if (value == null) return;
         buf.writeResourceLocation(value.registryName);
     }
 
     @Override
     public GTRecipeType readFromBuffer(FriendlyByteBuf buf, GTRecipeType currentValue) {
+        if (buf.readBoolean()) return null;
         var id = buf.readResourceLocation();
         return GTRegistries.RECIPE_TYPES.getOrDefault(id, null);
     }
@@ -27,6 +30,7 @@ public class GTRecipeTypeTransformer implements IValueTransformer<GTRecipeType> 
     @Override
     public Tag serializeNBT(GTRecipeType value) {
         var tag = new CompoundTag();
+        if (value == null) return tag;
         tag.putString("namespace", value.registryName.getNamespace());
         tag.putString("path", value.registryName.getPath());
         return tag;
@@ -34,7 +38,7 @@ public class GTRecipeTypeTransformer implements IValueTransformer<GTRecipeType> 
 
     @Override
     public GTRecipeType deserializeNBT(Tag tag, @Nullable GTRecipeType currentVal) {
-        if (!(tag instanceof CompoundTag compound)) return null;
+        if (!(tag instanceof CompoundTag compound) || compound.isEmpty()) return null;
         String namespace = compound.getString("namespace");
         String path = compound.getString("path");
         return GTRegistries.RECIPE_TYPES.get(new ResourceLocation(namespace, path));

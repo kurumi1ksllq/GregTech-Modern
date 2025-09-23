@@ -183,15 +183,6 @@ public class SyncDataHolder {
     public void deserializeNBT(CompoundTag tag, boolean readingClientFields) {
         Map<String, ClassSyncData.FieldSyncData> fieldsToCheck = readingClientFields ? syncData.clientSyncFields :
                 syncData.serverSaveFields;
-        if (tag.getAllKeys().size() != fieldsToCheck.size()) {
-            GTCEu.LOGGER.warn("Sync: Mismatch between field count: expected {}, got {} - {}", fieldsToCheck.size(), tag.getAllKeys().size(), holder);
-            var actualFields = tag.getAllKeys();
-            for (var fieldEntry : fieldsToCheck.entrySet()) {
-                actualFields.remove(fieldEntry.getValue().nbtSaveKey);
-                if (!(tag.contains(fieldEntry.getValue().nbtSaveKey))) GTCEu.LOGGER.warn("No value for field: {}", fieldEntry.getValue().fieldName);
-            }
-            actualFields.forEach((v) -> GTCEu.LOGGER.warn("Unknown NBT value was defined: {}", v));
-        }
         for (var fieldEntry : fieldsToCheck.entrySet()) {
             var field = fieldEntry.getValue();
             if (field.isCustomData) {

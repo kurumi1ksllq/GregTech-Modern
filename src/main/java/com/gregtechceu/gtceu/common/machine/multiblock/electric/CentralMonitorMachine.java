@@ -73,7 +73,7 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
     @SyncToClient
     @Getter
     @RerenderOnChanged
-    private final List<MonitorGroup> monitorGroups = new ArrayList<>();
+    private List<MonitorGroup> monitorGroups = new ArrayList<>();
     private final Set<IMonitorComponent> selectedComponents = new HashSet<>();
     private final List<IMonitorComponent> selectedTargets = new ArrayList<>();
 

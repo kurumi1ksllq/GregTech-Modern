@@ -29,35 +29,22 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.UnaryOperator;
 
-public class MonitorGroup implements ISyncManaged {
-    @Getter
-    protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
+public class MonitorGroup {
 
-    @SyncToClient
-    @SaveField
     private final Set<BlockPos> monitorPositions = new HashSet<>();
     @Getter
-    @SyncToClient
-    @SaveField
     private final String name;
     @Getter
-    @SyncToClient
-    @SaveField
     private final CustomItemStackHandler itemStackHandler;
     @Getter
-    @SyncToClient
-    @SaveField
     private final CustomItemStackHandler placeholderSlotsHandler;
-    @SaveField
-    @SyncToClient
+    @Setter
     private @Nullable BlockPos target;
+    @Setter
     @Getter
-    @SyncToClient
-    @SaveField
     private @Nullable Direction targetCoverSide;
+    @Setter
     @Getter
-    @SyncToClient
-    @SaveField
     private int dataSlot = 0;
 
     public MonitorGroup(String name) {
@@ -115,21 +102,6 @@ public class MonitorGroup implements ISyncManaged {
         return null;
     }
 
-    public void setTarget(BlockPos pos) {
-        this.target = pos;
-        getSyncDataHolder().markClientSyncFieldDirty("target");
-    }
-
-    public void setTargetCoverSide(Direction side) {
-        this.targetCoverSide = side;
-        getSyncDataHolder().markClientSyncFieldDirty("targetCoverSide");
-    }
-
-    public void setDataSlot(int slot) {
-        this.dataSlot = slot;
-        getSyncDataHolder().markClientSyncFieldDirty("dataSlot");
-    }
-
     public @Nullable BlockPos getTargetRaw() {
         return target;
     }
@@ -174,13 +146,4 @@ public class MonitorGroup implements ISyncManaged {
         return level;
     }
 
-    @Override
-    public void scheduleRenderUpdate() {
-
-    }
-
-    @Override
-    public void markAsChanged() {
-
-    }
 }

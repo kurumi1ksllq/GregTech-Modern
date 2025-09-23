@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
+import com.gregtechceu.gtceu.common.machine.multiblock.electric.monitor.MonitorGroup;
 import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 import com.gregtechceu.gtceu.syncdata.data_transformers.collections.*;
@@ -149,6 +150,8 @@ public final class ValueTransformers {
         registerClassTransformer(GTRecipeType.class, new GTRecipeTypeTransformer());
         registerClassTransformer(MachineRenderState.class, new MachineRenderStateTransformer());
         registerClassTransformer(Material.class, new MaterialTransformer());
+        registerClassTransformer(MonitorGroup.class, new MonitorGroupTransformer());
+
 
         // Interfaces
 

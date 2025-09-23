@@ -58,6 +58,8 @@ public class MetaMachineBlockEntity extends ManagedSyncBlockEntity implements IM
     protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
 
     @Getter
+    @SaveField(nbtKey = "machine")
+    @SyncToClient
     public final MetaMachine metaMachine;
     @Getter
     @SaveField
@@ -70,11 +72,6 @@ public class MetaMachineBlockEntity extends ManagedSyncBlockEntity implements IM
         super(type, pos, blockState);
         this.renderState = getDefinition().defaultRenderState();
         this.metaMachine = getDefinition().createMetaMachine(this);
-    }
-
-    @Override
-    protected ISyncManaged @NotNull [] getSyncObjects() {
-        return new ISyncManaged[] { this, metaMachine };
     }
 
     @Override
@@ -307,6 +304,10 @@ public class MetaMachineBlockEntity extends ManagedSyncBlockEntity implements IM
     @Override
     public void load(@NotNull CompoundTag tag) {
         TagFixer.fixFluidTags(tag);
+        if (!tag.contains("machine")) {
+            var compound = tag.copy();
+            tag.put("machine", compound);
+        }
         super.load(tag);
     }
 

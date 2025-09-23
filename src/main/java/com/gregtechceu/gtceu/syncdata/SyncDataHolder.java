@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
@@ -91,7 +92,7 @@ public class SyncDataHolder {
             if (field == null) {
                 GTCEu.LOGGER.error("Recieved update info for unknown field: {}", updatedField);
                 return;
-            };
+            }
 
             if (field.isCustomData) {
                 try {

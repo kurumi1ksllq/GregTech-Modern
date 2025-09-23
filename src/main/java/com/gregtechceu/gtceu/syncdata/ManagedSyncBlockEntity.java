@@ -36,26 +36,18 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
         super(type, pos, blockState);
     }
 
-    protected ISyncManaged @NotNull [] getSyncObjects() {
-        return new ISyncManaged[] { this };
-    }
-
     // Called when this BlockEntity is saved or loaded
 
     @Override
     protected final void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        for (ISyncManaged obj : getSyncObjects()) {
-            tag.merge(obj.getSyncDataHolder().serializeNBT(false));
-        }
+        tag.merge(getSyncDataHolder().serializeNBT(false));
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        for (ISyncManaged obj : getSyncObjects()) {
-            obj.getSyncDataHolder().deserializeNBT(tag, false);
-        }
+        getSyncDataHolder().deserializeNBT(tag, false);
     }
 
     // Called when a client loads this BlockEntity
@@ -63,17 +55,13 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
     @Override
     public CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
-        for (ISyncManaged obj : getSyncObjects()) {
-            tag.merge(obj.getSyncDataHolder().serializeNBT(true));
-        }
+        tag.merge(getSyncDataHolder().serializeNBT(true));
         return tag;
     }
 
     @Override
     public void handleUpdateTag(CompoundTag tag) {
-        for (ISyncManaged obj : getSyncObjects()) {
-            obj.getSyncDataHolder().deserializeNBT(tag, true);
-        }
+        getSyncDataHolder().deserializeNBT(tag, true);
     }
 
     @Override
@@ -93,8 +81,6 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
     }
 
     public final void writeToDataBuffer(FriendlyByteBuf buf) {
-        for (ISyncManaged syncObj : getSyncObjects()) {
-            syncObj.getSyncDataHolder().writeToNetworkBuffer(buf);
-        }
+        getSyncDataHolder().writeToNetworkBuffer(buf);
     }
 }

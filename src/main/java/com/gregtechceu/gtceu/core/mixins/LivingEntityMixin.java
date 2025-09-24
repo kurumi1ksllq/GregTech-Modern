@@ -32,7 +32,7 @@ public abstract class LivingEntityMixin {
         for (ItemStack itemStack : this.getArmorSlots()) {
             if (itemStack.getItem() instanceof ArmorComponentItem armorItem) {
                 EquipmentSlot slot = EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, i);
-                armorItem.damageArmor((LivingEntity) (Object) this, itemStack, damageSource, (int) armorDamage, slot);
+                armorItem.damageItem(itemStack, (int) armorDamage, (LivingEntity) (Object) this, entity -> {});
                 if (itemStack.getCount() == 0) {
                     this.setItemSlot(slot, ItemStack.EMPTY);
                 }

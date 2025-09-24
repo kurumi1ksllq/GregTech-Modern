@@ -36,10 +36,12 @@ public class GTArmorModifiers {
             new AttributeModifier(ADD_ARMOR_UUID, "Armor Modifier", 2.0D, AttributeModifier.Operation.ADDITION),
             null)
             .energyUsageOnHit(2048);
-    public static final ArmorModifier ARMOR_PLATE_TUNGSTENSTEEL = ArmorModifier.createItemAttribute(GTCEu.id("add_armor_5"),
-            Attributes.ARMOR,
-            new AttributeModifier(ADD_ARMOR_UUID, "Armor Modifier", 10.0D, AttributeModifier.Operation.ADDITION),
-            null)
+    public static final ArmorModifier ARMOR_PLATE_TUNGSTENSTEEL = ArmorModifier
+            .createItemAttribute(GTCEu.id("add_armor_5"),
+                    Attributes.ARMOR,
+                    new AttributeModifier(ADD_ARMOR_UUID, "Armor Modifier", 10.0D,
+                            AttributeModifier.Operation.ADDITION),
+                    null)
             .energyUsageOnHit(5120);
     public static final ArmorModifier SPEED = ArmorModifier.createEntityTick(GTCEu.id("speed"),
             (entity, stack) -> {

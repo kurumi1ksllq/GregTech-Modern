@@ -33,7 +33,7 @@ public enum GTArmorMaterials implements ArmorMaterial, StringRepresentable {
     NANO_MUSCLE("gtceu:nano_muscle_suite", 0, Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
         map.put(ArmorItem.Type.BOOTS, 3);
         map.put(ArmorItem.Type.LEGGINGS, 4);
-        map.put(ArmorItem.Type.CHESTPLATE,4);
+        map.put(ArmorItem.Type.CHESTPLATE, 4);
         map.put(ArmorItem.Type.HELMET, 2);
     }), 50, SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 0.0F, () -> Ingredient.EMPTY),
     ADVANCED_NANO_MUSCLE("gtceu:advanced_nano_muscle_suite", 0, Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {

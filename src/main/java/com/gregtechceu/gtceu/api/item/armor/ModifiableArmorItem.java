@@ -279,7 +279,7 @@ public class ModifiableArmorItem extends ArmorItem implements IComponentItem {
         return super.hasCraftingRemainingItem(stack);
     }
 
-    @Override
+    // TODO: this was an @Override before, figure out what it did
     public <T> LazyOptional<T> getCapability(@NotNull final ItemStack itemStack, @NotNull final Capability<T> cap) {
         for (IItemComponent component : components) {
             if (component instanceof IComponentCapability componentCapability) {

@@ -52,8 +52,6 @@
         "PotionBrewingAccessor",
         "PrimedTntAccessor",
         "RangedAttributeAccessor",
-        "RecipeManagerAccessor",
-        "RecipeManagerInvoker",
         "RecipeManagerMixin",
         "RepairItemRecipeMixin",
         "ServerChunkProviderMixin",

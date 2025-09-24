@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.data.recipe.builder;
 
 import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
-import com.gregtechceu.gtceu.api.recipe.ingredient.NBTIngredient;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
@@ -13,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
+import net.minecraftforge.common.crafting.StrictNBTIngredient;
 
 import com.google.gson.JsonObject;
 import lombok.Setter;
@@ -46,7 +46,7 @@ public class EquipmentFoundryRecipeBuilder {
     @Tolerate
     public EquipmentFoundryRecipeBuilder ingredient(ItemStack itemStack) {
         if (itemStack.hasTag()) {
-            ingredient = NBTIngredient.createNBTIngredient(itemStack);
+            ingredient = StrictNBTIngredient.of(itemStack);
         } else {
             ingredient = Ingredient.of(itemStack);
         }

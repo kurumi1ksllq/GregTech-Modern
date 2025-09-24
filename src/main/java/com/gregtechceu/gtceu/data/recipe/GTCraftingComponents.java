@@ -6,7 +6,7 @@ import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.data.recipe.event.CraftingComponentModificationEvent;
-import com.gregtechceu.gtceu.integration.kjs.GTCEuServerEvents;
+import com.gregtechceu.gtceu.integration.kjs.GTCEuStartupEvents;
 import com.gregtechceu.gtceu.integration.kjs.events.CraftingComponentsEventJS;
 
 import net.minecraftforge.common.MinecraftForge;
@@ -46,6 +46,7 @@ public class GTCraftingComponents {
     public static CraftingComponent MOTOR;
     public static CraftingComponent ROTOR;
     public static CraftingComponent SENSOR;
+    public static CraftingComponent SENSOR_EMITTER_GEM;
     public static CraftingComponent GRINDER;
     public static CraftingComponent SAWBLADE;
     public static CraftingComponent PISTON;
@@ -512,6 +513,16 @@ public class GTCraftingComponents {
                     .add(OpV, GTItems.SENSOR_OpV.asStack());
         }
 
+        SENSOR_EMITTER_GEM = CraftingComponent.of("sensor_emitter_gem", gem, Quartzite)
+                .add(LV, gem, Quartzite)
+                .add(MV, gemFlawless, Emerald)
+                .add(HV, gem, EnderEye)
+                .add(EV, GTItems.QUANTUM_EYE.asStack())
+                .add(IV, GTItems.QUANTUM_STAR.asStack())
+                .add(LuV, GTItems.QUANTUM_STAR.asStack())
+                .add(ZPM, GTItems.QUANTUM_STAR.asStack())
+                .add(UV, GTItems.GRAVI_STAR.asStack());
+
         CONVEYOR = CraftingComponent.of("conveyor", GTItems.CONVEYOR_MODULE_LV.asStack())
                 .add(LV, GTItems.CONVEYOR_MODULE_LV.asStack())
                 .add(MV, GTItems.CONVEYOR_MODULE_MV.asStack())
@@ -757,7 +768,7 @@ public class GTCraftingComponents {
     private static final class KJSCallWrapper {
 
         private static void craftingComponentModification() {
-            GTCEuServerEvents.CRAFTING_COMPONENTS.post(new CraftingComponentsEventJS());
+            GTCEuStartupEvents.CRAFTING_COMPONENTS.post(new CraftingComponentsEventJS());
         }
     }
 }

@@ -2,7 +2,9 @@ package com.gregtechceu.gtceu.data.recipe;
 
 import com.gregtechceu.gtceu.api.data.tag.TagUtil;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
@@ -17,7 +19,29 @@ public class CustomTags {
     public static final TagKey<Item> PISTONS = TagUtil.createItemTag("pistons");
     public static final TagKey<Item> CONCRETE_ITEM = TagUtil.createItemTag("concretes");
     public static final TagKey<Item> CONCRETE_POWDER_ITEM = TagUtil.createItemTag("concrete_powders");
+    // common/mod compat tags
     public static final TagKey<Item> DOUGHS = TagUtil.createItemTag("dough");
+    public static final TagKey<Item> WHEAT_DOUGHS = TagUtil.createItemTag("dough/wheat");
+    public static final TagKey<Item> GRAINS = TagUtil.createItemTag("grain");
+    public static final TagKey<Item> WHEAT_GRAINS = TagUtil.createItemTag("grain/wheat");
+
+    // Why did I put them all here? Why not? Science isn't about why, it's about why NOT!
+    // Why is so much of our science dangerous? Why don't you marry safe science if you love it so much!?
+    // IN FACT, WHY NOT INVENT A SAFETY DOOR THAT WON'T HIT YOU ON THE BUTT ON THE WAY OUT BECAUSE YOU'RE FIRED!!!
+    // Not you test subject, you're doing fine.
+    // YES, YOU. BOX. YOUR STUFF. OUT THE FRONT DOOR. PARKING LOT. CAR. GOODBYE!
+    public static final TagKey<Item> ALIVE_CORAL_BLOCK_ITEMS = TagUtil.createItemTag("coral_blocks/alive");
+    public static final TagKey<Item> DEAD_CORAL_BLOCK_ITEMS = TagUtil.createItemTag("coral_blocks/dead");
+    public static final TagKey<Item> CORAL_BLOCK_ITEMS = TagUtil.createItemTag("coral_blocks");
+    public static final TagKey<Item> ALIVE_CORAL_PLANT_ITEMS = TagUtil.createItemTag("coral_plants/alive");
+    public static final TagKey<Item> DEAD_CORAL_PLANT_ITEMS = TagUtil.createItemTag("coral_plants/dead");
+    public static final TagKey<Item> CORAL_PLANT_ITEMS = TagUtil.createItemTag("coral_plants");
+    public static final TagKey<Item> ALIVE_CORAL_FAN_ITEMS = TagUtil.createItemTag("coral_fans/alive");
+    public static final TagKey<Item> DEAD_CORAL_FAN_ITEMS = TagUtil.createItemTag("coral_fans/dead");
+    public static final TagKey<Item> CORAL_FAN_ITEMS = TagUtil.createItemTag("coral_fans");
+    public static final TagKey<Item> ALIVE_CORAL_ITEMS = TagUtil.createItemTag("corals/alive");
+    public static final TagKey<Item> DEAD_CORAL_ITEMS = TagUtil.createItemTag("corals/dead");
+    public static final TagKey<Item> CORAL_ITEMS = TagUtil.createItemTag("corals");
 
     // Added Gregtech tags
     public static final TagKey<Item> TRANSISTORS = TagUtil.createModItemTag("transistors");
@@ -103,6 +127,10 @@ public class CustomTags {
     public static final TagKey<Item> MODIFIABLE_EQUIPMENT = TagUtil.createModItemTag("modifiable_equipment");
     public static final TagKey<Item> RUBBER_LOGS = TagUtil.createModItemTag("rubber_logs");
 
+    public static final TagKey<Block> CLEANROOM_DOORS = TagUtil.createModBlockTag("cleanroom_doors");
+
+    public static final TagKey<Item> CHEM_BATH_WASHABLE = TagUtil.createModItemTag("chemical_bath_washable");
+
     // Mineability tags
     public static final TagKey<Block> MINEABLE_WITH_WRENCH = TagUtil.createBlockTag("mineable/wrench");
     public static final TagKey<Block> MINEABLE_WITH_WIRE_CUTTER = TagUtil.createBlockTag("mineable/wire_cutter");
@@ -123,6 +151,8 @@ public class CustomTags {
     public static final TagKey<Block> NEEDS_NEUTRONIUM_TOOL = TagUtil.createBlockTag("needs_neutronium_tool");
 
     // Tool tags
+    public static final TagKey<Item> TOOLS_IGNITER = TagUtil.createItemTag("tools/igniter");
+
     public static final TagKey<Item> BUTCHERY_KNIVES = TagUtil.createItemTag("tools/butchery_knives");
     public static final TagKey<Item> BUZZSAWS = TagUtil.createItemTag("tools/buzzsaws");
     public static final TagKey<Item> CHAINSAWS = TagUtil.createItemTag("tools/chainsaws");
@@ -171,6 +201,12 @@ public class CustomTags {
     public static final TagKey<Block> CONCRETE_BLOCK = TagUtil.createBlockTag("concretes");
     public static final TagKey<Block> CONCRETE_POWDER_BLOCK = TagUtil.createBlockTag("concrete_powders");
     public static final TagKey<Block> CLEANROOM_FLOORS = TagUtil.createModBlockTag("cleanroom_floors");
+    public static final TagKey<Block> CHARCOAL_PILE_IGNITER_WALLS = TagUtil.createModBlockTag(
+            "charcoal_pile_igniter_walls");
+    public static final TagKey<Block> CREATE_WRENCH_PICKUP = TagUtil.optionalTag(BuiltInRegistries.BLOCK,
+            new ResourceLocation("create", "wrench_pickup"));
+
+    public static final TagKey<Block> TALL_PLANTS = TagUtil.createModBlockTag("tall_plants");
 
     public static final TagKey<Biome> IS_SWAMP = TagUtil.createTag(Registries.BIOME, "is_swamp", false);
     public static final TagKey<Biome> IS_SANDY = TagUtil.createModTag(Registries.BIOME, "is_sandy");
@@ -180,9 +216,12 @@ public class CustomTags {
     public static final TagKey<EntityType<?>> CHEMICAL_IMMUNE = TagUtil.createModTag(Registries.ENTITY_TYPE,
             "chemical_immune");
 
-    public static final TagKey<Fluid> LIGHTER_FLUIDS = TagUtil.createFluidTag("lighter_fluid");
-    public static final TagKey<Fluid> MOLTEN_FLUIDS = TagUtil.createFluidTag("molten");
+    public static final TagKey<Fluid> LIGHTER_FLUIDS = TagUtil.createModFluidTag("lighter_fluids");
     public static final TagKey<Fluid> POTION_FLUIDS = TagUtil.createFluidTag("potion");
+
+    public static final TagKey<Fluid> MOLTEN_FLUIDS = TagUtil.createFluidTag("molten");
     public static final TagKey<Fluid> LIQUID_FLUIDS = TagUtil.createFluidTag("liquid");
     public static final TagKey<Fluid> PLASMA_FLUIDS = TagUtil.createFluidTag("plasmatic");
+
+    public static final TagKey<Fluid> HPCA_COOLANTS = TagUtil.createModFluidTag("hpca_coolants");
 }

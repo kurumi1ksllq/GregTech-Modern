@@ -134,6 +134,7 @@ public class SecondDegreeMaterials {
                 .buildAndRegister();
 
         TungstenSteel = new Material.Builder(GTCEu.id("tungsten_steel"))
+                .langValue("Tungstensteel")
                 .ingot(4).fluid()
                 .color(0x687ece).secondaryColor(0x03192f).iconSet(METALLIC)
                 .appendFlags(EXT2_METAL, GENERATE_ROTOR, GENERATE_SMALL_GEAR, GENERATE_DENSE, GENERATE_FRAME,
@@ -232,6 +233,7 @@ public class SecondDegreeMaterials {
                 .buildAndRegister();
 
         FullersEarth = new Material.Builder(GTCEu.id("fullers_earth"))
+                .langValue("Fuller's Earth")
                 .dust().ore(2, 1)
                 .color(0xf3efbb).secondaryColor(0xb8d066).iconSet(FINE)
                 .components(Magnesium, 1, Silicon, 4, Hydrogen, 1, Water, 4, Oxygen, 11)
@@ -394,11 +396,11 @@ public class SecondDegreeMaterials {
                 .color(0xc7c7c7).secondaryColor(0x212121).iconSet(FLINT)
                 .flags(NO_SMASHING, MORTAR_GRINDABLE, DECOMPOSITION_BY_CENTRIFUGING)
                 .components(SiliconDioxide, 1)
-                .toolStats(ToolProperty.Builder.of(1.5F, 1.0F, 64, 2)
+                .toolStats(ToolProperty.Builder.of(0.0F, 1.0F, 64, 1)
                         .types(GTToolType.MORTAR, GTToolType.KNIFE, GTToolType.AXE, GTToolType.PICKAXE, GTToolType.HOE,
                                 GTToolType.SWORD, GTToolType.SHOVEL)
                         .enchantability(5).ignoreCraftingTools()
-                        .enchantment(Enchantments.FIRE_ASPECT, 2).build())
+                        .enchantment(Enchantments.FIRE_ASPECT, 1).build())
                 .buildAndRegister();
 
         Air = new Material.Builder(GTCEu.id("air"))

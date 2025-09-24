@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.data.recipe.builder;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.recipe.ingredient.NBTIngredient;
 
 import com.lowdragmc.lowdraglib.utils.NBTToJsonConverter;
 
@@ -23,11 +22,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-/**
- * @author KilaBash
- * @date 2023/2/21
- * @implNote SmeltingRecipeBuilder
- */
 @Accessors(chain = true, fluent = true)
 public class BlastingRecipeBuilder {
 
@@ -52,11 +46,7 @@ public class BlastingRecipeBuilder {
     }
 
     public BlastingRecipeBuilder input(ItemStack itemStack) {
-        if (itemStack.hasTag()) {
-            input = NBTIngredient.createNBTIngredient(itemStack);
-        } else {
-            input = Ingredient.of(itemStack);
-        }
+        input = itemStack.hasTag() ? StrictNBTIngredient.of(itemStack) : Ingredient.of(itemStack);
         return this;
     }
 

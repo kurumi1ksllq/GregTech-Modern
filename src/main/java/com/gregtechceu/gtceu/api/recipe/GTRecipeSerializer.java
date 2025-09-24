@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.common.recipe.condition.ResearchCondition;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Tuple;
@@ -18,10 +19,8 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
@@ -29,11 +28,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-/**
- * @author KilaBash
- * @date 2023/2/20
- * @implNote GTRecipeSerializer
- */
 public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
 
     public static final Codec<GTRecipe> CODEC = makeCodec(GTCEu.Mods.isKubeJSLoaded());
@@ -67,7 +61,8 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
 
     @Override
     public @NotNull GTRecipe fromJson(@NotNull ResourceLocation id, @NotNull JsonObject json) {
-        GTRecipe recipe = CODEC.parse(JsonOps.INSTANCE, json).getOrThrow(false, GTCEu.LOGGER::error);
+        var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
+        GTRecipe recipe = CODEC.parse(ops, json).getOrThrow(false, GTCEu.LOGGER::error);
         recipe.setId(id);
         return recipe;
     }
@@ -86,8 +81,9 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
     }
 
     public static RecipeCondition conditionReader(FriendlyByteBuf buf) {
-        RecipeCondition condition = GTRegistries.RECIPE_CONDITIONS.get(buf.readUtf()).factory.createDefault();
-        return condition.fromNetwork(buf);
+        // Consume the condition key that's set in conditionWriter
+        buf.readUtf();
+        return RecipeCondition.fromNetwork(buf);
     }
 
     public static void conditionWriter(FriendlyByteBuf buf, RecipeCondition condition) {
@@ -193,7 +189,7 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
     }
 
     private static Codec<GTRecipe> makeCodec(boolean isKubeLoaded) {
-        // @formatter:off
+        // spotless:off
         if (!isKubeLoaded) {
             return RecordCodecBuilder.create(instance -> instance.group(
                             GTRegistries.RECIPE_TYPES.codec().fieldOf("type").forGetter(val -> val.recipeType),
@@ -242,17 +238,20 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
                             GTRegistries.RECIPE_CATEGORIES.codec().optionalFieldOf("category", GTRecipeCategory.DEFAULT).forGetter(val -> val.recipeCategory))
                     .apply(instance, GTRecipe::new));
         }
-        // @formatter:on
+        // spotless:on
     }
 
     public static class KJSCallWrapper {
 
-        public static final Codec<List<IngredientAction>> INGREDIENT_ACTION_CODEC = Codec.PASSTHROUGH.xmap(
-                dynamic -> {
-                    JsonElement json = dynamic.convert(JsonOps.INSTANCE).getValue();
-                    return IngredientAction.parseList(json);
-                },
-                list -> new Dynamic<>(JsonOps.INSTANCE, JsonNull.INSTANCE));
+        public static final Codec<List<IngredientAction>> INGREDIENT_ACTION_CODEC = ExtraCodecs.JSON.xmap(
+                IngredientAction::parseList,
+                list -> {
+                    JsonArray value = new JsonArray();
+                    for (IngredientAction action : list) {
+                        value.add(action.toJson());
+                    }
+                    return value;
+                });
 
         public static List<?> getIngredientActions(JsonObject json) {
             return IngredientAction.parseList(json.get("kubejs:actions"));

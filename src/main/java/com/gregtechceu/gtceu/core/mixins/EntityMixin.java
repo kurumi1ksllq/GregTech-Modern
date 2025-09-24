@@ -30,7 +30,7 @@ public abstract class EntityMixin implements IFireImmuneEntity {
 
     @ModifyReturnValue(method = "fireImmune", at = @At("RETURN"))
     private boolean gtceu$changeFireImmune(boolean original) {
-        return gtceu$fireImmune || original;
+        return original || gtceu$fireImmune;
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
@@ -42,16 +42,10 @@ public abstract class EntityMixin implements IFireImmuneEntity {
         this.gtceu$fireImmune = isImmune;
     }
 
-    @SuppressWarnings("UnreachableCode") // it doesn't like the cast because mixin.
     @ModifyReturnValue(method = "getMaxAirSupply", at = @At("RETURN"))
     private int gtceu$hazardModifyMaxAir(int original) {
-        if (!gtceu$isEntityInit) {
-            return original;
-        }
-
-        if (!ConfigHolder.INSTANCE.gameplay.hazardsEnabled) {
-            return original;
-        }
+        if (!gtceu$isEntityInit) return original;
+        if (!ConfigHolder.INSTANCE.gameplay.hazardsEnabled) return original;
 
         IMedicalConditionTracker tracker = GTCapabilityHelper.getMedicalConditionTracker((Entity) (Object) this);
         if (tracker != null && tracker.getMaxAirSupply() != -1) {

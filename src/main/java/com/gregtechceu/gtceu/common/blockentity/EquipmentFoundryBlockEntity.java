@@ -77,19 +77,8 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
                 return false;
             }
             NonNullList<ItemStack> stacks = NonNullList.create();
-            int firstEmptyIndex = -1;
-
             stacks.add(this.equipmentSlot.getStackInSlot(0));
-            for (int i = 0; i < modifierSlots.getSlots(); i++) {
-                ItemStack stack1 = modifierSlots.getStackInSlot(i);
-                stacks.add(stack1);
-                if (stack1.isEmpty() && firstEmptyIndex == -1) {
-                    firstEmptyIndex = i + 1;
-                }
-            }
-            if (firstEmptyIndex >= 0) {
-                stacks.set(firstEmptyIndex, stack);
-            }
+            stacks.add(stack);
             RecipeWrapper newWrapper = new RecipeWrapper(new CustomItemStackHandler(stacks));
 
             return getLevel().getRecipeManager()

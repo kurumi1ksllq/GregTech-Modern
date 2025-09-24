@@ -46,8 +46,10 @@ public class SyncDataHolder {
 
     @SuppressWarnings("unchecked")
     public void writeToNetworkBuffer(FriendlyByteBuf buf) {
-        for (var fieldEntry : syncData.clientSyncFields.entrySet()) {
-            if (!resyncAll && !(dirtySyncFields.contains(fieldEntry.getKey()) || fieldEntry.getValue().isComplex)) continue;
+        var fieldsToSync = syncData.clientSyncFields.entrySet().stream().filter(v -> !resyncAll && !(dirtySyncFields.contains(v.getKey()) || v.getValue().isComplex)).toList();
+        buf.writeInt(fieldsToSync.size());
+
+        for (var fieldEntry : fieldsToSync) {
             var field = fieldEntry.getValue();
             if (field.isCustomData) {
 
@@ -85,7 +87,8 @@ public class SyncDataHolder {
 
     @SuppressWarnings("unchecked")
     public void readFromNetworkBuffer(FriendlyByteBuf buf) {
-        while (buf.isReadable()) {
+        var fields = buf.readInt();
+        for (int i=0; i < fields; i++){
             var updatedField = buf.readUtf();
             boolean fieldNull = buf.readBoolean();
             var field = syncData.clientSyncFields.get(updatedField);

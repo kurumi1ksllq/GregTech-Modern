@@ -39,6 +39,8 @@ import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 import lombok.Getter;
 
+import java.util.List;
+
 public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAutoSyncBlockEntity, IRPCBlockEntity,
                                          IAutoPersistBlockEntity, IManaged, IManagedBlockEntity, IUIHolder {
 
@@ -155,6 +157,11 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
                 if (!player.getInventory().add(out)) {
                     player.drop(out, true);
                 }
+            }
+        } else {
+            List<ItemStack> modifiers = ArmorUtils.getModifierItems(stack);
+            for (int i = 0; i < modifiers.size() && i < modifierSlots.getSlots(); i++) {
+                if (modifiers.get(i) != null) modifierSlots.insertItem(i, modifiers.get(i), false);
             }
         }
     }

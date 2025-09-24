@@ -54,7 +54,7 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
 
     public ItemStack assemble(RecipeWrapper container, RegistryAccess registryAccess) {
         ItemStack result = ItemStack.EMPTY;
-        boolean foundIngredient = false;
+        ItemStack foundIngredient = null;
 
         for (int i = 0; i < container.getContainerSize(); ++i) {
             ItemStack stack = container.getItem(i);
@@ -65,16 +65,16 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
 
                 result = stack.copy();
             } else if (ingredient.test(stack)) {
-                foundIngredient = true;
+                foundIngredient = stack;
                 break;
             }
         }
 
-        if (!foundIngredient || result.isEmpty()) {
+        if (foundIngredient == null || result.isEmpty()) {
             return ItemStack.EMPTY;
         }
 
-        ArmorUtils.addModifier(result, modifier);
+        ArmorUtils.addModifier(result, modifier, foundIngredient);
         return result;
     }
 

@@ -43,6 +43,8 @@ public class ArmorModifier {
     private Modifier onTick;
     @Getter
     private Modifier onUnequip;
+    @Getter
+    private boolean canRemove;
 
     @Getter
     @Setter

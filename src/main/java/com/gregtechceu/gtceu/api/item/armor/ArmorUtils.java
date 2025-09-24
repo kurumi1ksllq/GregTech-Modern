@@ -16,7 +16,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -111,12 +110,14 @@ public class ArmorUtils {
      * @param stack    the stack to add the modifier to, if both are valid
      * @param modifier the modifier to add to the stack
      */
-    public static void addModifier(ItemStack stack, ArmorModifier modifier) {
+    public static void addModifier(ItemStack stack, ArmorModifier modifier, @Nullable ItemStack modifierItem) {
         CompoundTag tag = getArmorTag(stack);
-        ListTag modifierList = tag.getList(MODIFIERS_KEY, Tag.TAG_STRING);
+        ListTag modifierList = tag.getList(MODIFIERS_KEY, Tag.TAG_COMPOUND);
         if (modifierList.size() >= getMaxModifiers(stack)) return;
-
-        modifierList.add(StringTag.valueOf(modifier.id().toString()));
+        CompoundTag modifierTag = new CompoundTag();
+        modifierTag.putString("id", modifier.id().toString());
+        if (modifierItem != null) modifierTag.put("item", modifierItem.serializeNBT());
+        modifierList.add(modifierTag);
         modifier.onAddToItem().apply(stack);
         tag.put(MODIFIERS_KEY, modifierList);
     }
@@ -131,17 +132,40 @@ public class ArmorUtils {
     public static @NotNull List<ArmorModifier> getModifiers(ItemStack stack) {
         if (!hasArmorTag(stack)) return Collections.emptyList();
         CompoundTag tag = getArmorTag(stack);
-        ListTag modifierList = tag.getList(MODIFIERS_KEY, Tag.TAG_STRING);
+        ListTag modifierList = tag.getList(MODIFIERS_KEY, Tag.TAG_COMPOUND);
 
         List<ArmorModifier> modifiers = new ArrayList<>();
         for (int i = 0; i < modifierList.size(); i++) {
-            String idString = modifierList.getString(i);
+            CompoundTag modifierTag = modifierList.getCompound(i);
+            String idString = modifierTag.getString("id");
             ResourceLocation id = ResourceLocation.tryParse(idString);
-            if (id == null) {
+            if (id == null || ArmorModifier.MODIFIERS.get(id) == null) {
                 GTCEu.LOGGER.error("invalid armor modifier with id {}", idString);
                 continue;
             }
             modifiers.add(ArmorModifier.MODIFIERS.get(id));
+        }
+        return modifiers;
+    }
+
+    /**
+     * An unmodifiable list of all modifier items on the given stack.
+     * A {@code null} modifier item represents a modifier that wasn't added via an item.
+     *
+     * @param stack the stack to get the modifiers from
+     * @return the modifiers on the stack, some of which may be {@code null}
+     */
+    @Unmodifiable
+    public static @NotNull List<ItemStack> getModifierItems(ItemStack stack) {
+        if (!hasArmorTag(stack)) return Collections.emptyList();
+        CompoundTag tag = getArmorTag(stack);
+        ListTag modifierList = tag.getList(MODIFIERS_KEY, Tag.TAG_COMPOUND);
+
+        List<ItemStack> modifiers = new ArrayList<>();
+        for (int i = 0; i < modifierList.size(); i++) {
+            CompoundTag modifierTag = modifierList.getCompound(i);
+            if (!modifierTag.contains("item")) modifiers.add(null);
+            else modifiers.add(ItemStack.of(modifierTag.getCompound("item")));
         }
         return modifiers;
     }

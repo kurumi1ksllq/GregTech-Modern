@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.gui.UITemplate;
 import com.gregtechceu.gtceu.api.gui.widget.BlockableSlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
+import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.recipe.type.EquipmentFoundryRecipe;
@@ -130,6 +131,8 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
 
     public boolean isModifierSlotBlocked(int slot) {
         ItemStack equipment = equipmentSlot.getStackInSlot(0);
+        List<ArmorModifier> modifiers = ArmorUtils.getModifiers(equipment);
+        if (modifiers.size() > slot) return modifiers.get(slot).canRemove();
         return ArmorUtils.getMaxModifiers(equipment) <= slot;
     }
 
@@ -156,7 +159,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
     }
 
     public void onModifierSlotChanged() {
-        if (level.isClientSide) {
+        if (getLevel() == null || getLevel().isClientSide) {
             return;
         }
 
@@ -180,7 +183,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
                     .getRecipeFor(GTRecipeTypes.EQUIPMENT_FOUNDRY_RECIPES.get(), recipeWrapper, this.getLevel());
             if (maybeRecipe.isPresent()) {
                 EquipmentFoundryRecipe recipe = maybeRecipe.get();
-                ItemStack newStack = recipe.assemble(recipeWrapper, level.registryAccess());
+                ItemStack newStack = recipe.assemble(recipeWrapper, getLevel().registryAccess());
                 if (newStack.isEmpty()) {
                     continue;
                 }
@@ -196,7 +199,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
 
     @Override
     public boolean isRemote() {
-        return getLevel().isClientSide;
+        return getLevel() != null && getLevel().isClientSide;
     }
 
     @Override

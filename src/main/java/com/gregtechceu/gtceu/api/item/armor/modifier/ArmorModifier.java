@@ -54,12 +54,13 @@ public class ArmorModifier {
     private BiConsumer<ItemStack, List<Component>> tooltips = (stack, tooltips) -> {};
 
     protected ArmorModifier(ResourceLocation id, ItemModifier onAddToItem,
-                            Modifier onEquip, Modifier onTick, Modifier onUnequip) {
+                            Modifier onEquip, Modifier onTick, Modifier onUnequip, boolean canRemove) {
         this.id = id;
         this.onAddToItem = onAddToItem;
         this.onEquip = onEquip;
         this.onTick = onTick;
         this.onUnequip = onUnequip;
+        this.canRemove = canRemove;
         MODIFIERS.put(id, this);
     }
 
@@ -99,7 +100,7 @@ public class ArmorModifier {
     }
 
     public static ArmorModifier createItem(ResourceLocation id, ItemModifier modifier) {
-        return new ArmorModifier(id, modifier, Modifier.NONE, Modifier.NONE, Modifier.NONE);
+        return new ArmorModifier(id, modifier, Modifier.NONE, Modifier.NONE, Modifier.NONE, true);
     }
 
     public static ArmorModifier createItemAttribute(ResourceLocation id,
@@ -113,11 +114,11 @@ public class ArmorModifier {
 
     public static ArmorModifier createEntity(ResourceLocation id,
                                              Modifier onEquip, Modifier onTick, Modifier onUnequip) {
-        return new ArmorModifier(id, ItemModifier.NONE, onEquip, onTick, onUnequip);
+        return new ArmorModifier(id, ItemModifier.NONE, onEquip, onTick, onUnequip, true);
     }
 
     public static ArmorModifier createEntityTick(ResourceLocation id, Modifier onTick) {
-        return new ArmorModifier(id, ItemModifier.NONE, Modifier.NONE, onTick, Modifier.NONE);
+        return new ArmorModifier(id, ItemModifier.NONE, Modifier.NONE, onTick, Modifier.NONE, true);
     }
 
     public static ArmorModifier createEntityAttribute(ResourceLocation id,
@@ -134,12 +135,12 @@ public class ArmorModifier {
     }
 
     public static ArmorModifier createAll(ResourceLocation id, ItemModifier onAddToItem,
-                                          Modifier onEquip, Modifier onTick, Modifier onUnequip) {
-        return new ArmorModifier(id, onAddToItem, onEquip, onTick, onUnequip);
+                                          Modifier onEquip, Modifier onTick, Modifier onUnequip, boolean canRemove) {
+        return new ArmorModifier(id, onAddToItem, onEquip, onTick, onUnequip, canRemove);
     }
 
     public static ArmorModifier createSpecial(ResourceLocation id) {
-        return new ArmorModifier(id, ItemModifier.NONE, Modifier.NONE, Modifier.NONE, Modifier.NONE);
+        return new ArmorModifier(id, ItemModifier.NONE, Modifier.NONE, Modifier.NONE, Modifier.NONE, true);
     }
 
     @FunctionalInterface

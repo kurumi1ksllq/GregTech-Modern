@@ -24,6 +24,12 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(Tags.Items.ARMORS_LEGGINGS)),
                 CustomTags.ELECTRIC_MOTORS, GTArmorModifiers.SPEED);
 
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "energy_shield",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+                CustomTags.FIELD_GENERATORS, GTArmorModifiers.DAMAGE_BLOCK);
+
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "defense_5",
                 IntersectionIngredient.of(
                         Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),

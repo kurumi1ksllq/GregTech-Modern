@@ -47,7 +47,7 @@ public class GTArmorModifiers {
     public static final ArmorModifier SPEED = ArmorModifier.createEntityTick(GTCEu.id("speed"),
             (entity, stack, modifier) -> {
                 if (entity instanceof Player player) {
-                    float mul = (GTUtil.getMotorTier(modifier.getModifierItem().getItem()) - 1) / 4f + 1;
+                    float mul = (GTUtil.getTier(modifier.getModifierItem().getItem()) - 1) / 4f + 1;
                     boolean sprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
                     boolean jumping = SyncedKeyMappings.VANILLA_JUMP.isKeyDown(player);
                     boolean sneaking = SyncedKeyMappings.VANILLA_SNEAK.isKeyDown(player);
@@ -96,6 +96,9 @@ public class GTArmorModifiers {
             });
     public static final ArmorModifier DAMAGE_BLOCK = ArmorModifier.createSpecial(GTCEu.id("damage_block"))
             .onDamage((entity, stack, source, amount, modifier) -> {
+                float div = (GTUtil.getTier(modifier.getModifierItem().getItem()) - 1) / 4f + 1;
+                long energyPerHP = (long) (8192 / div);
+                double percentage = 25;
                 if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) || source.is(DamageTypeTags.IS_FALL) ||
                         source.is(DamageTypeTags.IS_DROWNING) || source.is(DamageTypes.STARVE)) {
                     return new ArmorModifier.DamageModifier.Result(amount);
@@ -106,10 +109,14 @@ public class GTArmorModifiers {
                 if (electricItem == null) {
                     return new ArmorModifier.DamageModifier.Result(amount);
                 }
-                damageReduction = (int) Math.min(damageReduction, 25.0D * electricItem.getCharge() / (8192 * 100.0D));
+                damageReduction = (int) Math.min(damageReduction,
+                        percentage * electricItem.getCharge() / (energyPerHP * 100.0D));
+                damageReduction = Math.toIntExact(electricItem.discharge(
+                        damageReduction * energyPerHP,
+                        electricItem.getTier(),
+                        true, false, false) / energyPerHP);
                 return new ArmorModifier.DamageModifier.Result(Math.max(amount - damageReduction, 0));
-            })
-            .energyUsageOnHit(8192);
+            });
 
     public static void init() {}
 }

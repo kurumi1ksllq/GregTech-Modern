@@ -18,7 +18,7 @@ import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
-import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
+import com.gregtechceu.gtceu.api.item.armor.modifier.AppliedArmorModifier;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
@@ -381,10 +381,10 @@ public class ForgeCommonEventListener {
         LivingEntity entity = event.getEntity();
 
         for (ItemStack stack : entity.getArmorSlots()) {
-            List<ArmorModifier> modifiers = ArmorUtils.getModifiers(stack);
+            List<AppliedArmorModifier> modifiers = ArmorUtils.getModifiers(stack);
             if (modifiers.isEmpty()) continue;
-            for (ArmorModifier modifier : modifiers) {
-                modifier.onTick().apply(entity, stack);
+            for (AppliedArmorModifier modifier : modifiers) {
+                modifier.getModifier().onTick().apply(entity, stack, modifier);
             }
         }
 
@@ -426,8 +426,8 @@ public class ForgeCommonEventListener {
             if (!ArmorUtils.isModifiable(stack)) continue;
 
             float amount = event.getAmount();
-            for (ArmorModifier modifier : ArmorUtils.getModifiers(stack)) {
-                amount = modifier.onDamage().apply(entity, stack, source, amount).newAmount();
+            for (AppliedArmorModifier modifier : ArmorUtils.getModifiers(stack)) {
+                amount = modifier.getModifier().onDamage().apply(entity, stack, source, amount, modifier).newAmount();
             }
             event.setAmount(amount);
         }

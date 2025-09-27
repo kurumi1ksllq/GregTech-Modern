@@ -704,22 +704,27 @@ public class GTItems {
             .register();
     public static ItemEntry<Item> ELECTRIC_MOTOR_UHV = GTCEuAPI.isHighTier() ?
             REGISTRATE.item("uhv_electric_motor", Item::new).lang("UHV Electric Motor")
+                    .tag(CustomTags.ELECTRIC_MOTORS)
                     .register() :
             null;
     public static ItemEntry<Item> ELECTRIC_MOTOR_UEV = GTCEuAPI.isHighTier() ?
             REGISTRATE.item("uev_electric_motor", Item::new).lang("UEV Electric Motor")
+                    .tag(CustomTags.ELECTRIC_MOTORS)
                     .register() :
             null;
     public static ItemEntry<Item> ELECTRIC_MOTOR_UIV = GTCEuAPI.isHighTier() ?
             REGISTRATE.item("uiv_electric_motor", Item::new).lang("UIV Electric Motor")
+                    .tag(CustomTags.ELECTRIC_MOTORS)
                     .register() :
             null;
     public static ItemEntry<Item> ELECTRIC_MOTOR_UXV = GTCEuAPI.isHighTier() ?
             REGISTRATE.item("uxv_electric_motor", Item::new).lang("UXV Electric Motor")
+                    .tag(CustomTags.ELECTRIC_MOTORS)
                     .register() :
             null;
     public static ItemEntry<Item> ELECTRIC_MOTOR_OpV = GTCEuAPI.isHighTier() ?
             REGISTRATE.item("opv_electric_motor", Item::new).lang("OpV Electric Motor")
+                    .tag(CustomTags.ELECTRIC_MOTORS)
                     .register() :
             null;
 
@@ -817,6 +822,7 @@ public class GTItems {
                         lines.add(Component.translatable("gtceu.universal.tooltip.fluid_transfer_rate",
                                 1280 * 64 * 64 * 4 / 20));
                     })))
+                    .tag(CustomTags.ELECTRIC_PUMPS)
                     .register() :
             null;
 
@@ -829,6 +835,7 @@ public class GTItems {
                         lines.add(Component.translatable("gtceu.universal.tooltip.fluid_transfer_rate",
                                 1280 * 64 * 64 * 4 / 20));
                     })))
+                    .tag(CustomTags.ELECTRIC_PUMPS)
                     .register() :
             null;
 
@@ -841,6 +848,7 @@ public class GTItems {
                         lines.add(Component.translatable("gtceu.universal.tooltip.fluid_transfer_rate",
                                 1280 * 64 * 64 * 4 / 20));
                     })))
+                    .tag(CustomTags.ELECTRIC_PUMPS)
                     .register() :
             null;
 
@@ -853,6 +861,7 @@ public class GTItems {
                         lines.add(Component.translatable("gtceu.universal.tooltip.fluid_transfer_rate",
                                 1280 * 64 * 64 * 4 / 20));
                     })))
+                    .tag(CustomTags.ELECTRIC_PUMPS)
                     .register() :
             null;
 
@@ -865,6 +874,7 @@ public class GTItems {
                         lines.add(Component.translatable("gtceu.universal.tooltip.fluid_transfer_rate",
                                 1280 * 64 * 64 * 4 / 20));
                     })))
+                    .tag(CustomTags.ELECTRIC_PUMPS)
                     .register() :
             null;
 

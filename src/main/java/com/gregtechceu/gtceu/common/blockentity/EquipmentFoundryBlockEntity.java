@@ -5,7 +5,7 @@ import com.gregtechceu.gtceu.api.gui.UITemplate;
 import com.gregtechceu.gtceu.api.gui.widget.BlockableSlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
-import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
+import com.gregtechceu.gtceu.api.item.armor.modifier.AppliedArmorModifier;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.recipe.type.EquipmentFoundryRecipe;
@@ -131,8 +131,8 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
 
     public boolean isModifierSlotBlocked(int slot) {
         ItemStack equipment = equipmentSlot.getStackInSlot(0);
-        List<ArmorModifier> modifiers = ArmorUtils.getModifiers(equipment);
-        if (modifiers.size() > slot) return modifiers.get(slot).canRemove();
+        List<AppliedArmorModifier> modifiers = ArmorUtils.getModifiers(equipment);
+        if (modifiers.size() > slot) return modifiers.get(slot).getModifier().canRemove();
         return ArmorUtils.getMaxModifiers(equipment) <= slot;
     }
 
@@ -151,9 +151,9 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
                 }
             }
         } else {
-            List<ItemStack> modifiers = ArmorUtils.getModifierItems(stack);
+            List<AppliedArmorModifier> modifiers = ArmorUtils.getModifiers(stack);
             for (int i = 0; i < modifiers.size() && i < modifierSlots.getSlots(); i++) {
-                if (modifiers.get(i) != null) modifierSlots.insertItem(i, modifiers.get(i), false);
+                if (modifiers.get(i) != null) modifierSlots.insertItem(i, modifiers.get(i).getModifierItem(), false);
             }
         }
     }

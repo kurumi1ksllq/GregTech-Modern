@@ -69,7 +69,7 @@ public class ArmorModifier {
     }
 
     public ArmorModifier energyUsagePerTick(long energyUsage, BiPredicate<LivingEntity, ItemStack> doDrain) {
-        this.onTick = this.onTick.compose((entity, stack) -> {
+        this.onTick = this.onTick.compose((entity, stack, appliedModifier) -> {
             if (!doDrain.test(entity, stack)) {
                 return true;
             }
@@ -86,7 +86,7 @@ public class ArmorModifier {
     }
 
     public ArmorModifier energyUsageOnHit(long energyUsage) {
-        this.onDamage = this.onDamage.compose((entity, stack, source, amount) -> {
+        this.onDamage = this.onDamage.compose((entity, stack, source, amount, modifier) -> {
             IElectricItem electricItem = GTCapabilityHelper.getElectricItem(stack);
             if (electricItem != null) {
                 if (!electricItem.canUse(energyUsage)) {
@@ -123,11 +123,11 @@ public class ArmorModifier {
 
     public static ArmorModifier createEntityAttribute(ResourceLocation id,
                                                       Attribute attribute, AttributeModifier modifier) {
-        return createEntity(id, (entity, stack) -> {
+        return createEntity(id, (entity, stack, appliedModifier) -> {
             if (entity.getAttribute(attribute) == null) return true;
             entity.getAttribute(attribute).addPermanentModifier(modifier);
             return true;
-        }, Modifier.NONE, (entity, stack) -> {
+        }, Modifier.NONE, (entity, stack, appliedModifier) -> {
             if (entity.getAttribute(attribute) == null) return true;
             entity.getAttribute(attribute).removeModifier(modifier);
             return true;
@@ -146,23 +146,23 @@ public class ArmorModifier {
     @FunctionalInterface
     public interface Modifier {
 
-        Modifier NONE = (entity, stack) -> true;
+        Modifier NONE = (entity, stack, modifier) -> true;
 
-        boolean apply(@NotNull LivingEntity entity, @NotNull ItemStack stack);
+        boolean apply(@NotNull LivingEntity entity, @NotNull ItemStack stack, AppliedArmorModifier modifier);
 
         default Modifier andThen(Modifier after) {
-            return (entity, stack) -> {
-                if (this.apply(entity, stack)) {
-                    return after.apply(entity, stack);
+            return (entity, stack, modifier) -> {
+                if (this.apply(entity, stack, modifier)) {
+                    return after.apply(entity, stack, modifier);
                 }
                 return false;
             };
         }
 
         default Modifier compose(Modifier before) {
-            return (entity, stack) -> {
-                if (before.apply(entity, stack)) {
-                    return this.apply(entity, stack);
+            return (entity, stack, modifier) -> {
+                if (before.apply(entity, stack, modifier)) {
+                    return this.apply(entity, stack, modifier);
                 }
                 return false;
             };
@@ -187,28 +187,28 @@ public class ArmorModifier {
     @FunctionalInterface
     public interface DamageModifier {
 
-        DamageModifier NONE = (entity, stack, source, amount) -> new Result(amount);
+        DamageModifier NONE = (entity, stack, source, amount, modifier) -> new Result(amount);
 
         Result apply(@NotNull LivingEntity entity, @NotNull ItemStack stack,
-                     @NotNull DamageSource source, float amount);
+                     @NotNull DamageSource source, float amount, AppliedArmorModifier modifier);
 
         default DamageModifier compose(DamageModifier before) {
-            return (entity, stack, source, amount) -> {
-                var result = before.apply(entity, stack, source, amount);
+            return (entity, stack, source, amount, modifier) -> {
+                var result = before.apply(entity, stack, source, amount, modifier);
                 if (!result.doApplyNext) {
                     return result;
                 }
-                return this.apply(entity, stack, source, result.newAmount);
+                return this.apply(entity, stack, source, result.newAmount, modifier);
             };
         }
 
         default DamageModifier andThen(DamageModifier after) {
-            return (entity, stack, source, amount) -> {
-                var result = this.apply(entity, stack, source, amount);
+            return (entity, stack, source, amount, modifier) -> {
+                var result = this.apply(entity, stack, source, amount, modifier);
                 if (!result.doApplyNext) {
                     return result;
                 }
-                return after.apply(entity, stack, source, result.newAmount);
+                return after.apply(entity, stack, source, result.newAmount, modifier);
             };
         }
 

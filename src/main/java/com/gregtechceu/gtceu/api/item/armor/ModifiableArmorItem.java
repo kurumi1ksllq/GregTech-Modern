@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.item.armor;
 
 import com.gregtechceu.gtceu.api.item.IComponentItem;
-import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
+import com.gregtechceu.gtceu.api.item.armor.modifier.AppliedArmorModifier;
 import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
 
@@ -126,8 +126,8 @@ public class ModifiableArmorItem extends ArmorItem implements IComponentItem {
                 addInformation.appendHoverText(stack, level, tooltips, isAdvanced);
             }
         }
-        for (ArmorModifier modifier : ArmorUtils.getModifiers(stack)) {
-            modifier.tooltips().accept(stack, tooltips);
+        for (AppliedArmorModifier modifier : ArmorUtils.getModifiers(stack)) {
+            modifier.getModifier().tooltips().accept(stack, tooltips);
         }
     }
 

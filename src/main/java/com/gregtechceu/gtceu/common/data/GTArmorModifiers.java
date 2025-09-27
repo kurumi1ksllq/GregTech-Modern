@@ -5,7 +5,8 @@ import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
 import com.gregtechceu.gtceu.core.IFireImmuneEntity;
-import com.gregtechceu.gtceu.utils.input.KeyBind;
+import com.gregtechceu.gtceu.utils.GTUtil;
+import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.DamageTypeTags;
@@ -44,16 +45,17 @@ public class GTArmorModifiers {
                     null)
             .energyUsageOnHit(5120);
     public static final ArmorModifier SPEED = ArmorModifier.createEntityTick(GTCEu.id("speed"),
-            (entity, stack) -> {
+            (entity, stack, modifier) -> {
                 if (entity instanceof Player player) {
-                    boolean sprinting = KeyBind.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
-                    boolean jumping = KeyBind.VANILLA_JUMP.isKeyDown(player);
-                    boolean sneaking = KeyBind.VANILLA_SNEAK.isKeyDown(player);
+                    float mul = (GTUtil.getMotorTier(modifier.getModifierItem().getItem()) - 1) / 4f + 1;
+                    boolean sprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
+                    boolean jumping = SyncedKeyMappings.VANILLA_JUMP.isKeyDown(player);
+                    boolean sneaking = SyncedKeyMappings.VANILLA_SNEAK.isKeyDown(player);
 
                     if ((player.onGround() || player.isInWater()) && sprinting) {
-                        float speed = 0.25F;
+                        float speed = 0.25F * mul;
                         if (player.isInWater()) {
-                            speed = 0.1F;
+                            speed = 0.1F * mul;
                             if (jumping) {
                                 player.push(0.0, 0.1, 0.0);
                             }
@@ -61,16 +63,16 @@ public class GTArmorModifiers {
                         player.moveRelative(speed, new Vec3(0, 0, 1));
                     } else if (player.isInWater() && (sneaking || jumping)) {
                         if (sneaking)
-                            player.push(0.0, -SPEED_ACCEL, 0.0);
+                            player.push(0.0, -SPEED_ACCEL * mul, 0.0);
                         if (jumping)
-                            player.push(0.0, SPEED_ACCEL, 0.0);
+                            player.push(0.0, SPEED_ACCEL * mul, 0.0);
                     }
                 }
                 return true;
             })
             .energyUsagePerTick(819, (entity, itemStack) -> {
                 if (entity instanceof Player player) {
-                    return KeyBind.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
+                    return SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
                 }
                 return false;
             })
@@ -78,7 +80,7 @@ public class GTArmorModifiers {
                 tooltips.add(Component.translatable("metaarmor.tooltip.speed"));
             });
     public static final ArmorModifier FIRE_PROTECTION = ArmorModifier.createEntity(GTCEu.id("fire_protection"),
-            (entity, stack) -> {
+            (entity, stack, modifier) -> {
                 if (!entity.level().isClientSide && !entity.fireImmune()) {
                     ((IFireImmuneEntity) entity).gtceu$setFireImmune(true);
                     if (entity.isOnFire()) entity.extinguishFire();
@@ -86,26 +88,26 @@ public class GTArmorModifiers {
                 return true;
             },
             ArmorModifier.Modifier.NONE,
-            (entity, stack) -> {
+            (entity, stack, modifier) -> {
                 if (!entity.level().isClientSide) {
                     ((IFireImmuneEntity) entity).gtceu$setFireImmune(false);
                 }
                 return true;
             });
     public static final ArmorModifier DAMAGE_BLOCK = ArmorModifier.createSpecial(GTCEu.id("damage_block"))
-            .onDamage((entity, stack, source, amount) -> {
+            .onDamage((entity, stack, source, amount, modifier) -> {
                 if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) || source.is(DamageTypeTags.IS_FALL) ||
                         source.is(DamageTypeTags.IS_DROWNING) || source.is(DamageTypes.STARVE)) {
                     return new ArmorModifier.DamageModifier.Result(amount);
                 }
 
-                int damageLimit = Integer.MAX_VALUE;
+                int damageReduction = Integer.MAX_VALUE;
                 IElectricItem electricItem = GTCapabilityHelper.getElectricItem(stack);
                 if (electricItem == null) {
                     return new ArmorModifier.DamageModifier.Result(amount);
                 }
-                damageLimit = (int) Math.min(damageLimit, 25.0D * electricItem.getCharge() / (8192 * 100.0D));
-                return new ArmorModifier.DamageModifier.Result(Math.min(amount, damageLimit));
+                damageReduction = (int) Math.min(damageReduction, 25.0D * electricItem.getCharge() / (8192 * 100.0D));
+                return new ArmorModifier.DamageModifier.Result(Math.max(amount - damageReduction, 0));
             })
             .energyUsageOnHit(8192);
 

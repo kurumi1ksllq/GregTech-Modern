@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
+import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
@@ -34,6 +35,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -611,5 +613,41 @@ public class GTUtil {
 
     public static <T> ArrayList<T> list(T obj) {
         return new ArrayList<>(List.of(obj));
+    }
+
+    public static int getMotorTier(ItemLike itemLike) {
+        Item item = itemLike.asItem();
+        if (item == GTItems.ELECTRIC_MOTOR_LV.get()) return GTValues.LV;
+        if (item == GTItems.ELECTRIC_MOTOR_MV.get()) return GTValues.MV;
+        if (item == GTItems.ELECTRIC_MOTOR_HV.get()) return GTValues.HV;
+        if (item == GTItems.ELECTRIC_MOTOR_EV.get()) return GTValues.EV;
+        if (item == GTItems.ELECTRIC_MOTOR_IV.get()) return GTValues.IV;
+        if (item == GTItems.ELECTRIC_MOTOR_LuV.get()) return GTValues.LuV;
+        if (item == GTItems.ELECTRIC_MOTOR_ZPM.get()) return GTValues.ZPM;
+        if (item == GTItems.ELECTRIC_MOTOR_UV.get()) return GTValues.UV;
+        if (item == GTItems.ELECTRIC_MOTOR_UHV.get()) return GTValues.UHV;
+        if (item == GTItems.ELECTRIC_MOTOR_UEV.get()) return GTValues.UEV;
+        if (item == GTItems.ELECTRIC_MOTOR_UIV.get()) return GTValues.UIV;
+        if (item == GTItems.ELECTRIC_MOTOR_UXV.get()) return GTValues.UXV;
+        if (item == GTItems.ELECTRIC_MOTOR_OpV.get()) return GTValues.OpV;
+        return -1;
+    }
+
+    public static int getPumpTier(ItemLike itemLike) {
+        Item item = itemLike.asItem();
+        if (item == GTItems.ELECTRIC_PUMP_LV.get()) return GTValues.LV;
+        if (item == GTItems.ELECTRIC_PUMP_MV.get()) return GTValues.MV;
+        if (item == GTItems.ELECTRIC_PUMP_HV.get()) return GTValues.HV;
+        if (item == GTItems.ELECTRIC_PUMP_EV.get()) return GTValues.EV;
+        if (item == GTItems.ELECTRIC_PUMP_IV.get()) return GTValues.IV;
+        if (item == GTItems.ELECTRIC_PUMP_LuV.get()) return GTValues.LuV;
+        if (item == GTItems.ELECTRIC_PUMP_ZPM.get()) return GTValues.ZPM;
+        if (item == GTItems.ELECTRIC_PUMP_UV.get()) return GTValues.UV;
+        if (item == GTItems.ELECTRIC_PUMP_UHV.get()) return GTValues.UHV;
+        if (item == GTItems.ELECTRIC_PUMP_UEV.get()) return GTValues.UEV;
+        if (item == GTItems.ELECTRIC_PUMP_UIV.get()) return GTValues.UIV;
+        if (item == GTItems.ELECTRIC_PUMP_UXV.get()) return GTValues.UXV;
+        if (item == GTItems.ELECTRIC_PUMP_OpV.get()) return GTValues.OpV;
+        return -1;
     }
 }

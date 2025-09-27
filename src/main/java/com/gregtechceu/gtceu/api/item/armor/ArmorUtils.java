@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.item.armor;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
+import com.gregtechceu.gtceu.api.item.armor.modifier.AppliedArmorModifier;
 import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
 import com.gregtechceu.gtceu.common.data.GTSoundEntries;
 import com.gregtechceu.gtceu.config.ConfigHolder;
@@ -129,12 +130,12 @@ public class ArmorUtils {
      * @return the modifiers on the stack
      */
     @Unmodifiable
-    public static @NotNull List<ArmorModifier> getModifiers(ItemStack stack) {
+    public static @NotNull List<AppliedArmorModifier> getModifiers(ItemStack stack) {
         if (!hasArmorTag(stack)) return Collections.emptyList();
         CompoundTag tag = getArmorTag(stack);
         ListTag modifierList = tag.getList(MODIFIERS_KEY, Tag.TAG_COMPOUND);
 
-        List<ArmorModifier> modifiers = new ArrayList<>();
+        List<AppliedArmorModifier> modifiers = new ArrayList<>();
         for (int i = 0; i < modifierList.size(); i++) {
             CompoundTag modifierTag = modifierList.getCompound(i);
             String idString = modifierTag.getString("id");
@@ -143,29 +144,13 @@ public class ArmorUtils {
                 GTCEu.LOGGER.error("invalid armor modifier with id {}", idString);
                 continue;
             }
-            modifiers.add(ArmorModifier.MODIFIERS.get(id));
-        }
-        return modifiers;
-    }
-
-    /**
-     * An unmodifiable list of all modifier items on the given stack.
-     * A {@code null} modifier item represents a modifier that wasn't added via an item.
-     *
-     * @param stack the stack to get the modifiers from
-     * @return the modifiers on the stack, some of which may be {@code null}
-     */
-    @Unmodifiable
-    public static @NotNull List<ItemStack> getModifierItems(ItemStack stack) {
-        if (!hasArmorTag(stack)) return Collections.emptyList();
-        CompoundTag tag = getArmorTag(stack);
-        ListTag modifierList = tag.getList(MODIFIERS_KEY, Tag.TAG_COMPOUND);
-
-        List<ItemStack> modifiers = new ArrayList<>();
-        for (int i = 0; i < modifierList.size(); i++) {
-            CompoundTag modifierTag = modifierList.getCompound(i);
-            if (!modifierTag.contains("item")) modifiers.add(null);
-            else modifiers.add(ItemStack.of(modifierTag.getCompound("item")));
+            if (!modifierTag.contains("tag")) modifierTag.put("tag", new CompoundTag());
+            modifiers.add(new AppliedArmorModifier(
+                    ArmorModifier.MODIFIERS.get(id),
+                    stack2 -> modifierTag.put("item", stack2.serializeNBT()),
+                    tag2 -> modifierTag.put("tag", tag2),
+                    () -> ItemStack.of(modifierTag.getCompound("item")),
+                    () -> modifierTag.getCompound("tag")));
         }
         return modifiers;
     }

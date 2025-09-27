@@ -122,7 +122,15 @@ public class GTArmorModifiers {
             GTCEu.id("attack_speed"),
             Attributes.ATTACK_SPEED,
             (entity, stack, modifier) -> {
-                double mul = GTUtil.getTier(modifier.getModifierItem().getItem()) / 8d;
+                double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 8d;
+                return new AttributeModifier("gt_chestplate_motor", mul, AttributeModifier.Operation.MULTIPLY_TOTAL);
+            });
+
+    public static final ArmorModifier ATTACK_DAMAGE = ArmorModifier.createEntityAttribute(
+            GTCEu.id("attack_damage"),
+            Attributes.ATTACK_DAMAGE,
+            (entity, stack, modifier) -> {
+                double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 4d;
                 return new AttributeModifier("gt_chestplate_motor", mul, AttributeModifier.Operation.MULTIPLY_TOTAL);
             });
 

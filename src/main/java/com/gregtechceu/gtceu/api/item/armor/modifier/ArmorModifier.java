@@ -19,9 +19,7 @@ import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
@@ -122,14 +120,19 @@ public class ArmorModifier {
     }
 
     public static ArmorModifier createEntityAttribute(ResourceLocation id,
-                                                      Attribute attribute, AttributeModifier modifier) {
+                                                      Attribute attribute,
+                                                      ModifierInformedSupplier<AttributeModifier> modifierSupplier) {
+        List<UUID> uuidList = new ArrayList<>();
         return createEntity(id, (entity, stack, appliedModifier) -> {
             if (entity.getAttribute(attribute) == null) return true;
+            AttributeModifier modifier = modifierSupplier.apply(entity, stack, appliedModifier);
+            uuidList.add(modifier.getId());
             entity.getAttribute(attribute).addPermanentModifier(modifier);
             return true;
         }, Modifier.NONE, (entity, stack, appliedModifier) -> {
             if (entity.getAttribute(attribute) == null) return true;
-            entity.getAttribute(attribute).removeModifier(modifier);
+            uuidList.forEach(uuid -> entity.getAttribute(attribute).removePermanentModifier(uuid));
+            uuidList.clear();
             return true;
         });
     }
@@ -144,11 +147,17 @@ public class ArmorModifier {
     }
 
     @FunctionalInterface
-    public interface Modifier {
+    public interface ModifierInformedSupplier<T> {
+
+        T apply(@NotNull LivingEntity entity, @NotNull ItemStack stack, AppliedArmorModifier modifier);
+    }
+
+    @FunctionalInterface
+    public interface Modifier extends ModifierInformedSupplier<Boolean> {
 
         Modifier NONE = (entity, stack, modifier) -> true;
 
-        boolean apply(@NotNull LivingEntity entity, @NotNull ItemStack stack, AppliedArmorModifier modifier);
+        Boolean apply(@NotNull LivingEntity entity, @NotNull ItemStack stack, AppliedArmorModifier modifier);
 
         default Modifier andThen(Modifier after) {
             return (entity, stack, modifier) -> {

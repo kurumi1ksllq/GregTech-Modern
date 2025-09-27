@@ -30,6 +30,12 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
                 CustomTags.FIELD_GENERATORS, GTArmorModifiers.DAMAGE_BLOCK);
 
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "attack_speed",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+                CustomTags.ELECTRIC_MOTORS, GTArmorModifiers.ATTACK_SPEED);
+
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "defense_5",
                 IntersectionIngredient.of(
                         Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),

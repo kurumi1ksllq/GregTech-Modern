@@ -118,5 +118,13 @@ public class GTArmorModifiers {
                 return new ArmorModifier.DamageModifier.Result(Math.max(amount - damageReduction, 0));
             });
 
+    public static final ArmorModifier ATTACK_SPEED = ArmorModifier.createEntityAttribute(
+            GTCEu.id("attack_speed"),
+            Attributes.ATTACK_SPEED,
+            (entity, stack, modifier) -> {
+                double mul = GTUtil.getTier(modifier.getModifierItem().getItem()) / 8d;
+                return new AttributeModifier("gt_chestplate_motor", mul, AttributeModifier.Operation.MULTIPLY_TOTAL);
+            });
+
     public static void init() {}
 }

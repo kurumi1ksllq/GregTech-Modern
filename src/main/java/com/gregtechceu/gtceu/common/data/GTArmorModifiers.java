@@ -134,5 +134,20 @@ public class GTArmorModifiers {
                 return new AttributeModifier("gt_chestplate_motor", mul, AttributeModifier.Operation.MULTIPLY_TOTAL);
             });
 
+    public static final ArmorModifier BATTERY = ArmorModifier.createEntityTick(GTCEu.id("battery"),
+            ((entity, stack, modifier) -> {
+                IElectricItem electricItem = GTCapabilityHelper.getElectricItem(stack);
+                IElectricItem battery = GTCapabilityHelper.getElectricItem(modifier.getModifierItem());
+                if (electricItem == null || !electricItem.chargeable() || battery == null ||
+                        !battery.canProvideChargeExternally())
+                    return true;
+                long energy = electricItem.getMaxCharge() - electricItem.getCharge();
+                long simulated = battery.discharge(energy, battery.getTier(), true, false, true);
+                long actualEnergy = electricItem.charge(simulated, electricItem.getTier(), true, true);
+                long discharged = battery.discharge(actualEnergy, battery.getTier(), true, false, false);
+                electricItem.charge(discharged, electricItem.getTier(), true, false);
+                return true;
+            }));
+
     public static void init() {}
 }

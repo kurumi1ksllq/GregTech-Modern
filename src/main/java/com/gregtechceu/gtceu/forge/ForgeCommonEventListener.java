@@ -409,11 +409,13 @@ public class ForgeCommonEventListener {
         }
 
         if (!old.isEmpty() && ArmorUtils.hasArmorTag(old)) {
-            ArmorUtils.getModifiers(old).forEach(modifier -> modifier.onUnequip().apply(entity, old));
+            ArmorUtils.getModifiers(old)
+                    .forEach(modifier -> modifier.getModifier().onUnequip().apply(entity, old, modifier));
         }
 
         if (!current.isEmpty() && ArmorUtils.hasArmorTag(current)) {
-            ArmorUtils.getModifiers(current).forEach(modifier -> modifier.onEquip().apply(entity, current));
+            ArmorUtils.getModifiers(current)
+                    .forEach(modifier -> modifier.getModifier().onEquip().apply(entity, current, modifier));
         }
     }
 

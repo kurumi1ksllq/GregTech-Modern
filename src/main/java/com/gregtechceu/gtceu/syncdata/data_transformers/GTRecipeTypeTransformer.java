@@ -6,26 +6,11 @@ import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.Nullable;
 
 public class GTRecipeTypeTransformer implements IValueTransformer<GTRecipeType> {
-
-    @Override
-    public void writeToBuffer(GTRecipeType value, FriendlyByteBuf buf) {
-        buf.writeBoolean(value == null);
-        if (value == null) return;
-        buf.writeResourceLocation(value.registryName);
-    }
-
-    @Override
-    public GTRecipeType readFromBuffer(FriendlyByteBuf buf, GTRecipeType currentValue) {
-        if (buf.readBoolean()) return null;
-        var id = buf.readResourceLocation();
-        return GTRegistries.RECIPE_TYPES.getOrDefault(id, null);
-    }
 
     @Override
     public Tag serializeNBT(GTRecipeType value) {

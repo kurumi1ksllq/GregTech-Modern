@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
@@ -16,14 +17,14 @@ import net.minecraftforge.network.NetworkEvent;
 public class SPacketUpdateBESyncValue implements GTNetwork.INetPacket {
 
     private ManagedSyncBlockEntity blockEntity = null;
+    private CompoundTag data = null;
     private final BlockPos entityPos;
     private ResourceKey<Level> dimension = null;
-    private FriendlyByteBuf dataBuf;
 
     public SPacketUpdateBESyncValue(FriendlyByteBuf buf) {
-        dataBuf = new FriendlyByteBuf(buf.copy());
-        dimension = dataBuf.readResourceKey(Registries.DIMENSION);
-        entityPos = dataBuf.readBlockPos();
+        dimension = buf.readResourceKey(Registries.DIMENSION);
+        entityPos = buf.readBlockPos();
+        data = buf.readNbt();
     }
 
     public SPacketUpdateBESyncValue(ManagedSyncBlockEntity entity) {
@@ -40,7 +41,7 @@ public class SPacketUpdateBESyncValue implements GTNetwork.INetPacket {
         if (entityLvl == null) return;
         buffer.writeResourceKey(entityLvl.dimension());
         buffer.writeBlockPos(entityPos);
-        blockEntity.writeToDataBuffer(buffer);
+        buffer.writeNbt(blockEntity.getSyncDataHolder().serializeNBT(true));
     }
 
     @Override
@@ -52,7 +53,7 @@ public class SPacketUpdateBESyncValue implements GTNetwork.INetPacket {
             if (!cLvl.isLoaded(entityPos)) return;
             var entity = cLvl.getExistingBlockEntity(entityPos);
             if (entity instanceof ManagedSyncBlockEntity syncBlockEntity) {
-                syncBlockEntity.getSyncDataHolder().readFromNetworkBuffer(dataBuf);
+                syncBlockEntity.getSyncDataHolder().deserializeNBT(data, true);
             }
         }
     }

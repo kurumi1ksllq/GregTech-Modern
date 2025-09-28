@@ -6,14 +6,12 @@ import com.gregtechceu.gtceu.syncdata.network.SPacketUpdateBESyncValue;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -78,9 +76,5 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
                     new SPacketUpdateBESyncValue(this));
             isDirty = false;
         }
-    }
-
-    public final void writeToDataBuffer(FriendlyByteBuf buf) {
-        getSyncDataHolder().writeToNetworkBuffer(buf);
     }
 }

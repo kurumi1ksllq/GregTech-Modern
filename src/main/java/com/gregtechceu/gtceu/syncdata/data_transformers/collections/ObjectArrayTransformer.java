@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 
 public class ObjectArrayTransformer<T> implements IValueTransformer<T[]> {
 
@@ -17,25 +16,6 @@ public class ObjectArrayTransformer<T> implements IValueTransformer<T[]> {
 
     public ObjectArrayTransformer(IValueTransformer<T> elementTransformer) {
         this.elementTransformer = elementTransformer;
-    }
-
-    @Override
-    public void writeToBuffer(T[] value, FriendlyByteBuf buf) {
-        buf.writeInt(value.length);
-        for (T t : value) {
-            elementTransformer.writeToBuffer(t, buf);
-        }
-    }
-
-    @Override
-    public T[] readFromBuffer(FriendlyByteBuf buf, T[] currentValue) {
-        var length = buf.readInt();
-        if (currentValue.length != length)
-            throw new IllegalStateException("Attempting to read server sync array: Mismatch in array lengths.");
-        for (int i = 0; i < length; i++) {
-            currentValue[i] = elementTransformer.readFromBuffer(buf, null);
-        }
-        return currentValue;
     }
 
     @Override

@@ -1,13 +1,12 @@
 package com.gregtechceu.gtceu.syncdata;
 
 import com.gregtechceu.gtceu.GTCEu;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 
-import net.minecraft.world.level.block.entity.BlockEntity;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
@@ -42,94 +41,6 @@ public class SyncDataHolder {
     public void resyncAllFields() {
         resyncAll = true;
         holder.markAsChanged();
-    }
-
-    @SuppressWarnings("unchecked")
-    public void writeToNetworkBuffer(FriendlyByteBuf buf) {
-        var fieldsToSync = syncData.clientSyncFields.entrySet().stream().filter(v -> !resyncAll && !(dirtySyncFields.contains(v.getKey()) || v.getValue().isComplex)).toList();
-        buf.writeInt(fieldsToSync.size());
-
-        for (var fieldEntry : fieldsToSync) {
-            var field = fieldEntry.getValue();
-            if (field.isCustomData) {
-
-                try {
-                    field.bufWriteModifier[0].invoke(holder, buf);
-                } catch (Throwable e) {
-                    GTCEu.LOGGER.error("Error while invoking bufWriteModifier for field {}", field.fieldName);
-                    GTCEu.LOGGER.error(e.getMessage());
-                    return;
-                }
-            }
-
-            if (field.isComplex) {
-                ISyncManaged currentValue = (ISyncManaged) field.handle.get(holder);
-                if (currentValue != null) {
-                    buf.writeUtf(fieldEntry.getKey());
-                    currentValue.getSyncDataHolder().writeToNetworkBuffer(buf);
-                }
-            } else {
-                if (field.transformer == null) {
-                    GTCEu.LOGGER.error("no value transformer registered for field: {}", field.fieldName);
-                    return;
-                }
-                IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
-                Object result = field.handle.get(holder);
-                buf.writeUtf(fieldEntry.getKey());
-                buf.writeBoolean(result == null);
-                if (result == null) continue;
-                transformer.writeToBuffer(result, buf);
-            }
-        }
-        resyncAll = false;
-        dirtySyncFields.clear();
-    }
-
-    @SuppressWarnings("unchecked")
-    public void readFromNetworkBuffer(FriendlyByteBuf buf) {
-        var fields = buf.readInt();
-        for (int i=0; i < fields; i++){
-            var updatedField = buf.readUtf();
-            boolean fieldNull = buf.readBoolean();
-            var field = syncData.clientSyncFields.get(updatedField);
-            if (field == null) {
-                GTCEu.LOGGER.error("Recieved update info for unknown field: {}", updatedField);
-                return;
-            }
-
-            if (field.isCustomData) {
-                try {
-                    field.bufReadModifier[0].invoke(holder, buf);
-                } catch (Throwable e) {
-                    GTCEu.LOGGER.error("Error while invoking bufReadModifier for field {}", field.fieldName);
-                    GTCEu.LOGGER.error(e.getMessage());
-                    return;
-                }
-            }
-            if (field.isComplex) {
-                ISyncManaged currentValue = (ISyncManaged) field.handle.get(holder);
-                currentValue.getSyncDataHolder().readFromNetworkBuffer(buf);
-            } else {
-                if (fieldNull) {
-                    field.handle.set(holder, null);
-                    continue;
-                }
-                if (field.transformer == null) {
-                    GTCEu.LOGGER.error("no value transformer registered for field: {}", field.fieldName);
-                    return;
-                }
-                IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
-                if (transformer.mustProvideObject()) {
-                    transformer.readFromBuffer(buf, field.handle.get(holder));
-                } else {
-                    try {
-                        field.handle.set(holder, transformer.readFromBuffer(buf, null));
-                    } catch (UnsupportedOperationException e) {
-                        GTCEu.LOGGER.error("Sync error: failed to perform VarHandle set: unsupported op {} {}", field.fieldName, field.handle.toString());
-                    }
-                }
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -206,7 +117,8 @@ public class SyncDataHolder {
             if (field.isComplex && savedValue instanceof CompoundTag compound) {
                 ISyncManaged currentVal = (ISyncManaged) field.handle.get(holder);
                 if (currentVal == null) {
-                    GTCEu.LOGGER.error("Sync error: ISyncManaged field was null, cannot instantiate {}", field.fieldName);
+                    GTCEu.LOGGER.error("Sync error: ISyncManaged field was null, cannot instantiate {}",
+                            field.fieldName);
                     return;
                 }
                 currentVal.getSyncDataHolder().deserializeNBT(compound, readingClientFields);
@@ -223,7 +135,8 @@ public class SyncDataHolder {
                     try {
                         field.handle.set(holder, transformer.deserializeNBT(savedValue, null));
                     } catch (UnsupportedOperationException e) {
-                        GTCEu.LOGGER.error("Sync error: failed to perform VarHandle set: unsupported op {} {}", field.fieldName, field.handle.toString());
+                        GTCEu.LOGGER.error("Sync error: failed to perform VarHandle set: unsupported op {} {}",
+                                field.fieldName, field.handle.toString());
                     }
                 }
             }
@@ -235,6 +148,9 @@ public class SyncDataHolder {
                     GTCEu.LOGGER.error(e.getMessage());
                     return;
                 }
+            }
+            if (readingClientFields && field.triggerClientRerender) {
+                holder.scheduleRenderUpdate();
             }
         }
         holder.onSaveDataLoaded();

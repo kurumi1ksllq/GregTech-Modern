@@ -32,35 +32,6 @@ public class GTRecipeTransformer implements IValueTransformer<GTRecipe> {
     }
 
     @Override
-    public void writeToBuffer(GTRecipe value, FriendlyByteBuf buf) {
-        buf.writeBoolean(value == null);
-        if (value == null) return;
-        buf.writeResourceLocation(value.id);
-        GTRecipeSerializer.SERIALIZER.toNetwork(buf, value);
-        buf.writeInt(value.parallels);
-        buf.writeInt(value.ocLevel);
-    }
-
-    @Override
-    public GTRecipe readFromBuffer(FriendlyByteBuf buf, GTRecipe currentValue) {
-        if (buf.readBoolean()) return null;
-        GTRecipe recipe;
-        var id = buf.readResourceLocation();
-        if (buf.isReadable()) {
-            recipe = GTRecipeSerializer.SERIALIZER.fromNetwork(id, buf);
-            if (buf.isReadable()) {
-                recipe.parallels = buf.readInt();
-                recipe.ocLevel = buf.readInt();
-            }
-        } else { // Backwards Compatibility
-            RecipeManager recipeManager = getRecipeManager();
-            recipe = (GTRecipe) recipeManager.byKey(id).orElse(null);
-        }
-
-        return recipe;
-    }
-
-    @Override
     public Tag serializeNBT(GTRecipe value) {
         CompoundTag tag = new CompoundTag();
         if (value == null) return tag;

@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,24 +15,6 @@ public class SetTransformer<T> implements IValueTransformer<Set<T>> {
     @Override
     public boolean mustProvideObject() {
         return true;
-    }
-
-    @Override
-    public void writeToBuffer(Set<T> value, FriendlyByteBuf buf) {
-        buf.writeInt(value.size());
-        for (T elem : value) {
-            elementTransformer.writeToBuffer(elem, buf);
-        }
-    }
-
-    @Override
-    public Set<T> readFromBuffer(FriendlyByteBuf buf, Set<T> currentValue) {
-        Set<T> set = new HashSet<>();
-        var size = buf.readInt();
-        for (int i = 0; i < size; i++) {
-            set.add(elementTransformer.readFromBuffer(buf, null));
-        }
-        return set;
     }
 
     public SetTransformer(IValueTransformer<T> elementTransformer) {

@@ -4,9 +4,7 @@ import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ListTransformer<T> implements IValueTransformer<List<T>> {
@@ -15,27 +13,6 @@ public class ListTransformer<T> implements IValueTransformer<List<T>> {
 
     public ListTransformer(IValueTransformer<T> elementTransformer) {
         this.elementTransformer = elementTransformer;
-    }
-
-    @Override
-    public void writeToBuffer(List<T> value, FriendlyByteBuf buf) {
-        if (elementTransformer == null) return;
-        buf.writeInt(value.size());
-        for (var obj : value) {
-            elementTransformer.writeToBuffer(obj, buf);
-        }
-    }
-
-    @Override
-    public List<T> readFromBuffer(FriendlyByteBuf buf, List<T> currentValue) {
-        if (elementTransformer == null) return currentValue;
-        var size = buf.readInt();
-        List<T> list = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            var newVal = elementTransformer.readFromBuffer(buf, null);
-            list.add(newVal);
-        }
-        return list;
     }
 
     @Override

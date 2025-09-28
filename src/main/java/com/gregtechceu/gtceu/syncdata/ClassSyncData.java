@@ -30,7 +30,6 @@ public final class ClassSyncData {
         }
     };
 
-
     public final Object2ObjectMap<String, FieldSyncData> clientSyncFields = new Object2ObjectOpenHashMap<>();
     public final Object2ObjectMap<String, FieldSyncData> serverSaveFields = new Object2ObjectOpenHashMap<>();
 
@@ -61,23 +60,20 @@ public final class ClassSyncData {
             try {
                 handle = privateLookup.unreflect(method);
             } catch (IllegalAccessException e) {
-                GTCEu.LOGGER.error("Sync: Failed to acquire method handle for method {} {}", method.getName(), clazz.getCanonicalName());
+                GTCEu.LOGGER.error("Sync: Failed to acquire method handle for method {} {}", method.getName(),
+                        clazz.getCanonicalName());
                 GTCEu.LOGGER.error(e.getMessage());
                 continue;
             }
 
             String fieldName = listener != null ? listener.fieldName() : modifier.fieldName();
             annotatedMethods.putIfAbsent(fieldName,
-                    new MethodInfo(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
+                    new MethodInfo(new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
             if (listener != null) annotatedMethods.get(fieldName).listeners.add(handle);
             else if (modifier.target() == FieldDataModifier.ModifyTarget.LOAD_NBT)
                 annotatedMethods.get(fieldName).nbtLoaders.add(handle);
             else if (modifier.target() == FieldDataModifier.ModifyTarget.SAVE_NBT)
                 annotatedMethods.get(fieldName).nbtSavers.add(handle);
-            else if (modifier.target() == FieldDataModifier.ModifyTarget.WRITE_BUF)
-                annotatedMethods.get(fieldName).bufWriters.add(handle);
-            else if (modifier.target() == FieldDataModifier.ModifyTarget.READ_BUF)
-                annotatedMethods.get(fieldName).bufReaders.add(handle);
         }
 
         for (Field field : clazz.getDeclaredFields()) {
@@ -92,7 +88,8 @@ public final class ClassSyncData {
             try {
                 handle = privateLookup.unreflectVarHandle(field);
             } catch (IllegalAccessException e) {
-                GTCEu.LOGGER.error("Sync: Failed to acquire variable handle for field {} {}", field.getName(), clazz.getCanonicalName());
+                GTCEu.LOGGER.error("Sync: Failed to acquire variable handle for field {} {}", field.getName(),
+                        clazz.getCanonicalName());
                 GTCEu.LOGGER.error(e.getMessage());
                 continue;
             }
@@ -116,7 +113,7 @@ public final class ClassSyncData {
         public final VarHandle handle;
         public final boolean triggerClientRerender, isCustomData, isComplex;
         public final IValueTransformer<?> transformer;
-        public final MethodHandle[] changeListenerHandles, nbtSaveModifiers, nbtLoadModifiers, bufWriteModifier, bufReadModifier;
+        public final MethodHandle[] changeListenerHandles, nbtSaveModifiers, nbtLoadModifiers;
 
         public FieldSyncData(@NotNull Field field, @NotNull VarHandle handle, MethodInfo appliedMethods) {
             this.fieldName = field.getName();
@@ -145,18 +142,14 @@ public final class ClassSyncData {
                 changeListenerHandles = appliedMethods.listeners.toArray(MethodHandle[]::new);
                 nbtSaveModifiers = appliedMethods.nbtSavers.toArray(MethodHandle[]::new);
                 nbtLoadModifiers = appliedMethods.nbtLoaders.toArray(MethodHandle[]::new);
-                bufReadModifier = appliedMethods.bufReaders.toArray(MethodHandle[]::new);
-                bufWriteModifier = appliedMethods.bufWriters.toArray(MethodHandle[]::new);
             } else {
                 changeListenerHandles = new MethodHandle[0];
                 nbtSaveModifiers = new MethodHandle[0];
                 nbtLoadModifiers = new MethodHandle[0];
-                bufWriteModifier = new MethodHandle[0];
-                bufReadModifier = new MethodHandle[0];
             }
         }
     }
 
     public record MethodInfo(List<MethodHandle> listeners, List<MethodHandle> nbtLoaders,
-                             List<MethodHandle> nbtSavers, List<MethodHandle> bufWriters, List<MethodHandle> bufReaders) {}
+                             List<MethodHandle> nbtSavers) {}
 }

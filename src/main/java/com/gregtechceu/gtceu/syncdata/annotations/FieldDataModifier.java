@@ -15,8 +15,6 @@ public @interface FieldDataModifier {
     enum ModifyTarget {
         SAVE_NBT,
         LOAD_NBT,
-        WRITE_BUF,
-        READ_BUF
     }
 
     /**

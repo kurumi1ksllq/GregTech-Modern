@@ -26,7 +26,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 

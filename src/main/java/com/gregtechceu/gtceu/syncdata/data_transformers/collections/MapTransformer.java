@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.Map;
 
@@ -22,28 +21,6 @@ public class MapTransformer<K, V> implements IValueTransformer<Map<K, V>> {
     @Override
     public boolean mustProvideObject() {
         return true;
-    }
-
-    @Override
-    public void writeToBuffer(Map<K, V> value, FriendlyByteBuf buf) {
-        buf.writeInt(value.size());
-        for (var entry : value.entrySet()) {
-            keyTransformer.writeToBuffer(entry.getKey(), buf);
-            valueTransformer.writeToBuffer(entry.getValue(), buf);
-        }
-    }
-
-    @Override
-    public Map<K, V> readFromBuffer(FriendlyByteBuf buf, Map<K, V> currentValue) {
-        if (currentValue == null) return null;
-        currentValue.clear();
-        var size = buf.readInt();
-        for (int i = 0; i < size; i++) {
-            var key = keyTransformer.readFromBuffer(buf, null);
-            var value = valueTransformer.readFromBuffer(buf, null);
-            currentValue.put(key, value);
-        }
-        return currentValue;
     }
 
     @Override

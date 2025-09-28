@@ -3,21 +3,10 @@ package com.gregtechceu.gtceu.syncdata.data_transformers.collections;
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.*;
-import net.minecraft.network.FriendlyByteBuf;
 
 public class PrimitiveArrayTransformers {
 
     public static class IntArrayTransformer implements IValueTransformer<int[]> {
-
-        @Override
-        public void writeToBuffer(int[] value, FriendlyByteBuf buf) {
-            buf.writeVarIntArray(value);
-        }
-
-        @Override
-        public int[] readFromBuffer(FriendlyByteBuf buf, int[] currentValue) {
-            return buf.readVarIntArray();
-        }
 
         @Override
         public Tag serializeNBT(int[] value) {
@@ -34,16 +23,6 @@ public class PrimitiveArrayTransformers {
     public static class LongArrayTransformer implements IValueTransformer<long[]> {
 
         @Override
-        public void writeToBuffer(long[] value, FriendlyByteBuf buf) {
-            buf.writeLongArray(value);
-        }
-
-        @Override
-        public long[] readFromBuffer(FriendlyByteBuf buf, long[] currentValue) {
-            return buf.readLongArray();
-        }
-
-        @Override
         public Tag serializeNBT(long[] value) {
             return new LongArrayTag(value);
         }
@@ -56,16 +35,6 @@ public class PrimitiveArrayTransformers {
     }
 
     public static class ByteArrayTransformer implements IValueTransformer<byte[]> {
-
-        @Override
-        public void writeToBuffer(byte[] value, FriendlyByteBuf buf) {
-            buf.writeByteArray(value);
-        }
-
-        @Override
-        public byte[] readFromBuffer(FriendlyByteBuf buf, byte[] currentValue) {
-            return buf.readByteArray();
-        }
 
         @Override
         public Tag serializeNBT(byte[] value) {

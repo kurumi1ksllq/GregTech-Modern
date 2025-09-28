@@ -3,25 +3,16 @@ package com.gregtechceu.gtceu.syncdata.data_transformers;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.monitor.MonitorGroup;
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
+
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+
 import org.jetbrains.annotations.Nullable;
 
 public class MonitorGroupTransformer implements IValueTransformer<MonitorGroup> {
-
-    @Override
-    public void writeToBuffer(MonitorGroup value, FriendlyByteBuf buf) {
-        buf.writeNbt(serializeNBT(value));
-    }
-
-    @Override
-    public MonitorGroup readFromBuffer(FriendlyByteBuf buf, MonitorGroup currentValue) {
-        return deserializeNBT(buf.readNbt(), null);
-    }
 
     @Override
     public CompoundTag serializeNBT(MonitorGroup value) {
@@ -42,7 +33,6 @@ public class MonitorGroupTransformer implements IValueTransformer<MonitorGroup> 
         tag.put("items", value.getItemStackHandler().serializeNBT());
         tag.put("placeholderSlots", value.getPlaceholderSlotsHandler().serializeNBT());
         return tag;
-
     }
 
     @Override

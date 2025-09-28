@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.syncdata;
 
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -14,10 +13,6 @@ public interface IValueTransformer<T> {
     default boolean mustProvideObject() {
         return false;
     }
-
-    void writeToBuffer(T value, FriendlyByteBuf buf);
-
-    T readFromBuffer(FriendlyByteBuf buf, T currentValue);
 
     Tag serializeNBT(T value);
 

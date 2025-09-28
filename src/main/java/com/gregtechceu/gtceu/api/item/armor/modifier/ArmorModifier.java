@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Supplier;
 
 @SuppressWarnings("FieldMayBeFinal")
 @Accessors(chain = true, fluent = true)
@@ -110,14 +111,14 @@ public class ArmorModifier {
     }
 
     public static ArmorModifier createItemAttribute(ResourceLocation id,
-                                                    Attribute attribute,
+                                                    Supplier<Attribute> attribute,
                                                     BiFunction<ItemStack, AppliedArmorModifier, AttributeModifier> modifier,
                                                     @Nullable EquipmentSlot slot) {
         return createItem(id, (stack, appliedArmorModifier) -> {
             if (appliedArmorModifier.getTag().contains("modifierIndex")) return;
             EquipmentSlot slot1 = slot != null ? slot : LivingEntity.getEquipmentSlotForItem(stack);
             AttributeModifier attributeModifier = modifier.apply(stack, appliedArmorModifier);
-            stack.addAttributeModifier(attribute, attributeModifier, slot1);
+            stack.addAttributeModifier(attribute.get(), attributeModifier, slot1);
             appliedArmorModifier.getTag().putUUID("modifierUUID", attributeModifier.getId());
         }, (stack, appliedArmorModifier) -> {
             UUID uuid = appliedArmorModifier.getTag().getUUID("modifierUUID");
@@ -131,6 +132,12 @@ public class ArmorModifier {
                 }
             }
         });
+    }
+
+    public static ArmorModifier createItemAttribute(ResourceLocation id, Attribute attribute,
+                                                    BiFunction<ItemStack, AppliedArmorModifier, AttributeModifier> modifier,
+                                                    @Nullable EquipmentSlot slot) {
+        return createItemAttribute(id, () -> attribute, modifier, slot);
     }
 
     public static ArmorModifier createItemAttribute(ResourceLocation id, Attribute attribute,

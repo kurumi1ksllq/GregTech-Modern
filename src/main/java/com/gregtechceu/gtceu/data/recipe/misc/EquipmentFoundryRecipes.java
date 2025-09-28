@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.data.recipe.misc;
 
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
+import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
@@ -47,6 +48,16 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
                         Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
                 CustomTags.ROBOT_ARMS, GTArmorModifiers.BLOCK_REACH);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "attack_damage",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+                Ingredient.of(
+                        GTItems.ELECTRIC_JETPACK,
+                        GTItems.ELECTRIC_JETPACK_ADVANCED,
+                        GTItems.LIQUID_FUEL_JETPACK),
+                GTArmorModifiers.JETPACK);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "battery_modifier",
                 Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),

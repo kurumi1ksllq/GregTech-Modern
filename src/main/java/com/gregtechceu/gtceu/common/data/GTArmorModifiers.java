@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
+import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
 import com.gregtechceu.gtceu.core.IFireImmuneEntity;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -15,6 +16,7 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 
@@ -152,7 +154,7 @@ public class GTArmorModifiers {
 
     public static final ArmorModifier BLOCK_REACH = ArmorModifier.createItemAttribute(
             GTCEu.id("attack_damage"),
-            ForgeMod.BLOCK_REACH.get(),
+            ForgeMod.BLOCK_REACH,
             (stack, modifier) -> {
                 double add = GTUtil.getTier(modifier.getModifierItem().getItem()) / 2d;
                 return new AttributeModifier("Block Reach Modifier", add, AttributeModifier.Operation.ADDITION);
@@ -177,6 +179,19 @@ public class GTArmorModifiers {
             }).tooltips((stack, tooltips) -> {
                 tooltips.add(Component.translatable("metaarmor.tooltip.modifier.battery",
                         stack.getModifierItem().getDisplayName()));
+            });
+
+    public static final ArmorModifier JETPACK = ArmorModifier.createEntityTick(GTCEu.id("jetpack"),
+            (entity, stack, modifier) -> {
+                if (modifier.getModifierItem().getItem() instanceof ArmorComponentItem armorComponentItem) {
+                    armorComponentItem.onArmorTick(stack, entity.level(), (Player) entity);
+                }
+                return true;
+            }).tooltips((modifier, tooltip) -> {
+                tooltip.add(Component.translatable("metaarmor.tooltip.modifier.jetpack",
+                        modifier.getModifierItem().getDisplayName()));
+                modifier.getModifierItem().getItem().appendHoverText(modifier.getModifierItem(), null, tooltip,
+                        TooltipFlag.NORMAL);
             });
 
     public static void init() {}

@@ -126,19 +126,6 @@ public class IntProviderFluidIngredient extends FluidIngredient
      * If this ingredient has not yet had its {@link IntProviderFluidIngredient#sampledCount} rolled, rolls it and
      * returns the roll.
      * If it has, returns the existing roll.
-     * Passthrough method, invokes {@link IntProviderFluidIngredient#getSampledCount(RandomSource)} using the threadsafe
-     * {@link GTValues#RNG}.
-     *
-     * @return the amount rolled
-     */
-    public int getSampledCount() {
-        return getSampledCount(GTValues.RNG);
-    }
-
-    /**
-     * If this ingredient has not yet had its {@link IntProviderFluidIngredient#sampledCount} rolled, rolls it and
-     * returns the roll.
-     * If it has, returns the existing roll.
      *
      * @param random {@link RandomSource}, must be threadsafe, usually called using {@link GTValues#RNG}.
      * @return the amount rolled

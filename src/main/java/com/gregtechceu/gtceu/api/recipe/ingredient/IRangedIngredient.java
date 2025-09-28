@@ -1,15 +1,30 @@
 package com.gregtechceu.gtceu.api.recipe.ingredient;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
+import com.gregtechceu.gtceu.api.machine.trait.NotifiableRecipeHandlerTrait;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * An Ingredient, Fluid Ingredient, or something that can be passed into a crafting recipe, with a count or amount which
+ * is randomly rolled upon consumption or production.
+ * Due to type requirements in {@link NotifiableRecipeHandlerTrait}, all IRangedIngredients must extend a basic
+ * ingredient type, and contain an instance of that ingredient ({@code inner}).
+ */
 public interface IRangedIngredient {
 
     IntProvider getCountProvider();
 
-    int getSampledCount();
+    /**
+     * If this ingredient has not yet had its count rolled, rolls it and returns the roll.
+     * If it has, returns the existing roll.
+     * Passthrough method, invokes {@code getSampledCount()} using the threadsafe {@link GTValues#RNG}.
+     *
+     * @return the amount rolled
+     */
+    default int getSampledCount(){return getSampledCount(GTValues.RNG);}
 
     int getSampledCount(@NotNull RandomSource random);
 
@@ -23,18 +38,14 @@ public interface IRangedIngredient {
     }
 
     /**
-     * @return a decimal from 0 to 1.0 of how high this ingredient rolled out of its maximum range. If this ingredient
-     *         has not been rolled, returns 0.
+     * @return a decimal from 0 to 1.0 of how high this ingredient rolled out of its maximum range.
      */
     default double getSampledCountRatio() {
-        if (!isRolled()) return 0;
-        else {
-            int min = getCountProvider().getMinValue();
-            int max = getCountProvider().getMaxValue();
-            int count = getSampledCount();
+        int min = getCountProvider().getMinValue();
+        int max = getCountProvider().getMaxValue();
+        int count = getSampledCount();
 
-            return (1.0 - ((double) (max - count) / (max - min)));
-        }
+        return (1.0 - ((double) (max - count) / (max - min)));
     }
 
     boolean isRolled();

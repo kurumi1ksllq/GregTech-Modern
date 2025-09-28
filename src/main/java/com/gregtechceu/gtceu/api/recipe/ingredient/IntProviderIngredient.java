@@ -126,19 +126,6 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
     }
 
     /**
-     * If this ingredient has not yet had its {@link IntProviderIngredient#sampledCount} rolled, rolls it and
-     * returns the roll.
-     * If it has, returns the existing roll.
-     * Passthrough method, invokes {@link IntProviderIngredient#getSampledCount(RandomSource)} using the threadsafe
-     * {@link GTValues#RNG}.
-     *
-     * @return the count rolled
-     */
-    public int getSampledCount() {
-        return getSampledCount(GTValues.RNG);
-    }
-
-    /**
      * If this ingredient has not yet had its {@link IntProviderIngredient#sampledCount} rolled, rolls it and returns
      * the roll.
      * If it has, returns the existing roll.

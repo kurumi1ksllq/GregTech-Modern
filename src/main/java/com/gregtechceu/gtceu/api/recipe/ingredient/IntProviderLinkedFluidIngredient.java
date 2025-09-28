@@ -24,14 +24,17 @@ public class IntProviderLinkedFluidIngredient extends IntProviderFluidIngredient
         this.mode = mode;
     }
 
-    public IntProviderLinkedFluidIngredient of(IntProviderFluidIngredient inner, String mode, IRangedIngredient... links) {
+    public static IntProviderLinkedFluidIngredient of(IntProviderFluidIngredient inner, String mode, IRangedIngredient... links) {
         return new IntProviderLinkedFluidIngredient(inner, LinkedIngredientLinkMode.getModeFromName(mode), Arrays.stream(links).toList());
     }
 
-    public IntProviderLinkedFluidIngredient of(IntProviderFluidIngredient inner, LinkedIngredientLinkMode mode, IRangedIngredient... links) {
+    public static IntProviderLinkedFluidIngredient of(IntProviderFluidIngredient inner, LinkedIngredientLinkMode mode, IRangedIngredient... links) {
         return new IntProviderLinkedFluidIngredient(inner, mode, Arrays.stream(links).toList());
     }
 
+    public static IntProviderLinkedFluidIngredient of(IntProviderFluidIngredient inner, LinkedIngredientLinkMode mode, List<IRangedIngredient> links) {
+        return new IntProviderLinkedFluidIngredient(inner, mode, links);
+    }
 
     @Override
     public int getSampledCount() {

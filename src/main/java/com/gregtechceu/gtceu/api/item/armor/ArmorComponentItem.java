@@ -175,7 +175,7 @@ public class ArmorComponentItem extends ArmorItem implements IComponentItem {
             }
         }
         for (AppliedArmorModifier modifier : ArmorUtils.getModifiers(stack)) {
-            modifier.getModifier().tooltips().accept(stack, tooltips);
+            modifier.getModifier().tooltips().accept(modifier, tooltips);
         }
     }
 

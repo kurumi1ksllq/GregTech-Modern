@@ -102,7 +102,9 @@ public class ArmorUtils {
     public static void clearModifiers(ItemStack stack) {
         if (!hasArmorTag(stack)) return;
         CompoundTag tag = getArmorTag(stack);
-        tag.remove(MODIFIERS_KEY);
+        getModifiers(stack).forEach(modifier -> modifier.getModifier().onRemove().apply(stack, modifier));
+        if (tag != null)
+            tag.remove(MODIFIERS_KEY);
     }
 
     /**
@@ -117,9 +119,15 @@ public class ArmorUtils {
         if (modifierList.size() >= getMaxModifiers(stack)) return;
         CompoundTag modifierTag = new CompoundTag();
         modifierTag.putString("id", modifier.id().toString());
+        modifierTag.put("tag", new CompoundTag());
         if (modifierItem != null) modifierTag.put("item", modifierItem.serializeNBT());
         modifierList.add(modifierTag);
-        modifier.onAddToItem().apply(stack);
+        modifier.onAddToItem().apply(stack, new AppliedArmorModifier(
+                modifier,
+                itemStack -> modifierTag.put("item", itemStack.serializeNBT()),
+                tag2 -> modifierTag.put("tag", tag2),
+                () -> ItemStack.of(modifierTag.getCompound("item")),
+                () -> modifierTag.getCompound("tag")));
         tag.put(MODIFIERS_KEY, modifierList);
     }
 

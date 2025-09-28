@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.common.data;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
@@ -27,16 +28,20 @@ public class GTArmorModifiers {
 
     private static final UUID ADD_ARMOR_UUID = UUID.fromString("95bd81ea-b3af-4cca-8866-f3e62f5f68f1");
 
-    public static final ArmorModifier ADD_ARMOR_1 = ArmorModifier.createItemAttribute(GTCEu.id("add_armor_1"),
-            Attributes.ARMOR,
-            new AttributeModifier(ADD_ARMOR_UUID, "Armor Modifier", 1.0D, AttributeModifier.Operation.ADDITION),
-            null)
+    public static final ArmorModifier ADD_ARMOR_1 = ArmorModifier
+            .createItemAttribute(GTCEu.id("add_armor_1"),
+                    Attributes.ARMOR,
+                    new AttributeModifier(ADD_ARMOR_UUID, "Armor Modifier", 1.0D, AttributeModifier.Operation.ADDITION),
+                    null)
             .energyUsageOnHit(1024);
-    public static final ArmorModifier ADD_ARMOR_2 = ArmorModifier.createItemAttribute(GTCEu.id("add_armor_2"),
-            Attributes.ARMOR,
-            new AttributeModifier(ADD_ARMOR_UUID, "Armor Modifier", 2.0D, AttributeModifier.Operation.ADDITION),
-            null)
+
+    public static final ArmorModifier ADD_ARMOR_2 = ArmorModifier
+            .createItemAttribute(GTCEu.id("add_armor_2"),
+                    Attributes.ARMOR,
+                    new AttributeModifier(ADD_ARMOR_UUID, "Armor Modifier", 2.0D, AttributeModifier.Operation.ADDITION),
+                    null)
             .energyUsageOnHit(2048);
+
     public static final ArmorModifier ARMOR_PLATE_TUNGSTENSTEEL = ArmorModifier
             .createItemAttribute(GTCEu.id("add_armor_5"),
                     Attributes.ARMOR,
@@ -77,7 +82,8 @@ public class GTArmorModifiers {
                 return false;
             })
             .tooltips((stack, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.speed"));
+                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.speed",
+                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
             });
     public static final ArmorModifier FIRE_PROTECTION = ArmorModifier.createEntity(GTCEu.id("fire_protection"),
             (entity, stack, modifier) -> {
@@ -116,26 +122,35 @@ public class GTArmorModifiers {
                         electricItem.getTier(),
                         true, false, false) / energyPerHP);
                 return new ArmorModifier.DamageModifier.Result(Math.max(amount - damageReduction, 0));
-            });
+            }).tooltips((stack, tooltips) -> {
+                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.damage_block",
+                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
+            });;
 
-    public static final ArmorModifier ATTACK_SPEED = ArmorModifier.createEntityAttribute(
+    public static final ArmorModifier ATTACK_SPEED = ArmorModifier.createItemAttribute(
             GTCEu.id("attack_speed"),
             Attributes.ATTACK_SPEED,
-            (entity, stack, modifier) -> {
-                double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 8d;
-                return new AttributeModifier("gt_chestplate_motor", mul, AttributeModifier.Operation.MULTIPLY_TOTAL);
+            (stack, modifier) -> {
+                double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 16d;
+                return new AttributeModifier("Attack Speed Modifier", mul, AttributeModifier.Operation.MULTIPLY_TOTAL);
+            }, null).tooltips((stack, tooltips) -> {
+                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.attack_speed",
+                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
             });
 
-    public static final ArmorModifier ATTACK_DAMAGE = ArmorModifier.createEntityAttribute(
+    public static final ArmorModifier ATTACK_DAMAGE = ArmorModifier.createItemAttribute(
             GTCEu.id("attack_damage"),
             Attributes.ATTACK_DAMAGE,
-            (entity, stack, modifier) -> {
-                double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 4d;
-                return new AttributeModifier("gt_chestplate_motor", mul, AttributeModifier.Operation.MULTIPLY_TOTAL);
+            (stack, modifier) -> {
+                double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 16d;
+                return new AttributeModifier("Attack Damage Modifier", mul, AttributeModifier.Operation.MULTIPLY_TOTAL);
+            }, null).tooltips((stack, tooltips) -> {
+                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.attack_damage",
+                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
             });
 
     public static final ArmorModifier BATTERY = ArmorModifier.createEntityTick(GTCEu.id("battery"),
-            ((entity, stack, modifier) -> {
+            (entity, stack, modifier) -> {
                 IElectricItem electricItem = GTCapabilityHelper.getElectricItem(stack);
                 IElectricItem battery = GTCapabilityHelper.getElectricItem(modifier.getModifierItem());
                 if (electricItem == null || !electricItem.chargeable() || battery == null ||
@@ -147,7 +162,10 @@ public class GTArmorModifiers {
                 long discharged = battery.discharge(actualEnergy, battery.getTier(), true, false, false);
                 electricItem.charge(discharged, electricItem.getTier(), true, false);
                 return true;
-            }));
+            }).tooltips((stack, tooltips) -> {
+                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.battery",
+                        stack.getModifierItem().getDisplayName()));
+            });
 
     public static void init() {}
 }

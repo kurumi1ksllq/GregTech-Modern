@@ -132,7 +132,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
     public boolean isModifierSlotBlocked(int slot) {
         ItemStack equipment = equipmentSlot.getStackInSlot(0);
         List<AppliedArmorModifier> modifiers = ArmorUtils.getModifiers(equipment);
-        if (modifiers.size() > slot) return modifiers.get(slot).getModifier().canRemove();
+        if (modifiers.size() > slot) return !modifiers.get(slot).getModifier().canRemove();
         return ArmorUtils.getMaxModifiers(equipment) <= slot;
     }
 

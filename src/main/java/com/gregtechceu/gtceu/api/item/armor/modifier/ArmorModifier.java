@@ -3,12 +3,16 @@ package com.gregtechceu.gtceu.api.item.armor.modifier;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 
@@ -21,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
 @SuppressWarnings("FieldMayBeFinal")
@@ -36,6 +41,8 @@ public class ArmorModifier {
     @Getter
     private ItemModifier onAddToItem;
     @Getter
+    private ItemModifier onRemove;
+    @Getter
     private Modifier onEquip;
     @Getter
     private Modifier onTick;
@@ -49,12 +56,13 @@ public class ArmorModifier {
     private DamageModifier onDamage = DamageModifier.NONE;
     @Getter
     @Setter
-    private BiConsumer<ItemStack, List<Component>> tooltips = (stack, tooltips) -> {};
+    private BiConsumer<AppliedArmorModifier, List<Component>> tooltips = (modifier, tooltips) -> {};
 
-    protected ArmorModifier(ResourceLocation id, ItemModifier onAddToItem,
+    protected ArmorModifier(ResourceLocation id, ItemModifier onAddToItem, ItemModifier onRemove,
                             Modifier onEquip, Modifier onTick, Modifier onUnequip, boolean canRemove) {
         this.id = id;
         this.onAddToItem = onAddToItem;
+        this.onRemove = onRemove;
         this.onEquip = onEquip;
         this.onTick = onTick;
         this.onUnequip = onUnequip;
@@ -97,53 +105,74 @@ public class ArmorModifier {
         return this;
     }
 
-    public static ArmorModifier createItem(ResourceLocation id, ItemModifier modifier) {
-        return new ArmorModifier(id, modifier, Modifier.NONE, Modifier.NONE, Modifier.NONE, true);
+    public static ArmorModifier createItem(ResourceLocation id, ItemModifier onAdd, ItemModifier onRemove) {
+        return new ArmorModifier(id, onAdd, onRemove, Modifier.NONE, Modifier.NONE, Modifier.NONE, true);
     }
 
     public static ArmorModifier createItemAttribute(ResourceLocation id,
-                                                    Attribute attribute, AttributeModifier modifier,
+                                                    Attribute attribute,
+                                                    BiFunction<ItemStack, AppliedArmorModifier, AttributeModifier> modifier,
                                                     @Nullable EquipmentSlot slot) {
-        return createItem(id, (stack) -> {
+        return createItem(id, (stack, appliedArmorModifier) -> {
+            if (appliedArmorModifier.getTag().contains("modifierIndex")) return;
             EquipmentSlot slot1 = slot != null ? slot : LivingEntity.getEquipmentSlotForItem(stack);
-            stack.addAttributeModifier(attribute, modifier, slot1);
+            AttributeModifier attributeModifier = modifier.apply(stack, appliedArmorModifier);
+            stack.addAttributeModifier(attribute, attributeModifier, slot1);
+            appliedArmorModifier.getTag().putUUID("modifierUUID", attributeModifier.getId());
+        }, (stack, appliedArmorModifier) -> {
+            UUID uuid = appliedArmorModifier.getTag().getUUID("modifierUUID");
+            ListTag listTag = stack.getOrCreateTag().getList("AttributeModifiers", Tag.TAG_COMPOUND);
+            Iterator<Tag> it = listTag.iterator();
+            while (it.hasNext()) {
+                Tag tag = it.next();
+                if (tag instanceof CompoundTag compoundTag) {
+                    AttributeModifier attributeModifier = AttributeModifier.load(compoundTag);
+                    if (attributeModifier != null && attributeModifier.getId().equals(uuid)) it.remove();
+                }
+            }
         });
+    }
+
+    public static ArmorModifier createItemAttribute(ResourceLocation id, Attribute attribute,
+                                                    AttributeModifier modifier, @Nullable EquipmentSlot slot) {
+        return createItemAttribute(id, attribute, (stack, appliedArmorModifier) -> modifier, slot);
     }
 
     public static ArmorModifier createEntity(ResourceLocation id,
                                              Modifier onEquip, Modifier onTick, Modifier onUnequip) {
-        return new ArmorModifier(id, ItemModifier.NONE, onEquip, onTick, onUnequip, true);
+        return new ArmorModifier(id, ItemModifier.NONE, ItemModifier.NONE, onEquip, onTick, onUnequip, true);
     }
 
     public static ArmorModifier createEntityTick(ResourceLocation id, Modifier onTick) {
-        return new ArmorModifier(id, ItemModifier.NONE, Modifier.NONE, onTick, Modifier.NONE, true);
+        return new ArmorModifier(id, ItemModifier.NONE, ItemModifier.NONE, Modifier.NONE, onTick, Modifier.NONE, true);
     }
 
     public static ArmorModifier createEntityAttribute(ResourceLocation id,
                                                       Attribute attribute,
                                                       ModifierInformedSupplier<AttributeModifier> modifierSupplier) {
-        List<UUID> uuidList = new ArrayList<>();
         return createEntity(id, (entity, stack, appliedModifier) -> {
-            if (entity.getAttribute(attribute) == null) return true;
+            AttributeInstance attributeInstance = entity.getAttribute(attribute);
+            if (attributeInstance == null) return true;
             AttributeModifier modifier = modifierSupplier.apply(entity, stack, appliedModifier);
-            uuidList.add(modifier.getId());
-            entity.getAttribute(attribute).addPermanentModifier(modifier);
+            appliedModifier.getTag().putUUID("attributeModifierId", modifier.getId());
+            attributeInstance.addPermanentModifier(modifier);
             return true;
         }, Modifier.NONE, (entity, stack, appliedModifier) -> {
-            if (entity.getAttribute(attribute) == null) return true;
-            uuidList.forEach(uuid -> entity.getAttribute(attribute).removePermanentModifier(uuid));
-            uuidList.clear();
+            AttributeInstance attributeInstance = entity.getAttribute(attribute);
+            if (attributeInstance == null) return true;
+            attributeInstance.removePermanentModifier(appliedModifier.getTag().getUUID("attributeModifierId"));
             return true;
         });
     }
 
-    public static ArmorModifier createAll(ResourceLocation id, ItemModifier onAddToItem,
+    public static ArmorModifier createAll(ResourceLocation id, ItemModifier onAddToItem, ItemModifier onRemove,
                                           Modifier onEquip, Modifier onTick, Modifier onUnequip, boolean canRemove) {
-        return new ArmorModifier(id, onAddToItem, onEquip, onTick, onUnequip, canRemove);
+        return new ArmorModifier(id, onAddToItem, onRemove, onEquip, onTick, onUnequip, canRemove);
     }
 
     public static ArmorModifier createSpecial(ResourceLocation id) {
-        return new ArmorModifier(id, ItemModifier.NONE, Modifier.NONE, Modifier.NONE, Modifier.NONE, true);
+        return new ArmorModifier(id, ItemModifier.NONE, ItemModifier.NONE, Modifier.NONE, Modifier.NONE, Modifier.NONE,
+                true);
     }
 
     @FunctionalInterface
@@ -181,14 +210,14 @@ public class ArmorModifier {
     @FunctionalInterface
     public interface ItemModifier {
 
-        ItemModifier NONE = (stack) -> {};
+        ItemModifier NONE = (stack, modifier) -> {};
 
-        void apply(ItemStack stack);
+        void apply(ItemStack stack, AppliedArmorModifier modifier);
 
         default ItemModifier andThen(ItemModifier after) {
-            return (stack) -> {
-                this.apply(stack);
-                after.apply(stack);
+            return (stack, modifier) -> {
+                this.apply(stack, modifier);
+                after.apply(stack, modifier);
             };
         }
     }

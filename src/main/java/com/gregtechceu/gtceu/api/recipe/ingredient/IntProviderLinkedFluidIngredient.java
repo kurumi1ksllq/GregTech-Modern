@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.List;
 
-public class IntProviderLinkedIngredient extends IntProviderIngredient implements IRangedIngredient {
+public class IntProviderLinkedFluidIngredient extends IntProviderFluidIngredient implements IRangedIngredient {
 
     @Getter
     private List<IRangedIngredient> links;
@@ -18,18 +18,18 @@ public class IntProviderLinkedIngredient extends IntProviderIngredient implement
     @Getter
     private LinkedIngredientLinkMode mode;
 
-    private IntProviderLinkedIngredient(IntProviderIngredient inner, LinkedIngredientLinkMode mode, List<IRangedIngredient> links) {
+    private IntProviderLinkedFluidIngredient(IntProviderFluidIngredient inner, LinkedIngredientLinkMode mode, List<IRangedIngredient> links) {
         super(inner);
         this.links = links;
         this.mode = mode;
     }
 
-    public IntProviderLinkedIngredient of(IntProviderIngredient inner, String mode, IRangedIngredient... links) {
-        return new IntProviderLinkedIngredient(inner, LinkedIngredientLinkMode.getModeFromName(mode), Arrays.stream(links).toList());
+    public IntProviderLinkedFluidIngredient of(IntProviderFluidIngredient inner, String mode, IRangedIngredient... links) {
+        return new IntProviderLinkedFluidIngredient(inner, LinkedIngredientLinkMode.getModeFromName(mode), Arrays.stream(links).toList());
     }
 
-    public IntProviderLinkedIngredient of(IntProviderIngredient inner, LinkedIngredientLinkMode mode, IRangedIngredient... links) {
-        return new IntProviderLinkedIngredient(inner, mode, Arrays.stream(links).toList());
+    public IntProviderLinkedFluidIngredient of(IntProviderFluidIngredient inner, LinkedIngredientLinkMode mode, IRangedIngredient... links) {
+        return new IntProviderLinkedFluidIngredient(inner, mode, Arrays.stream(links).toList());
     }
 
 

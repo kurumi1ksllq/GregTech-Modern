@@ -21,6 +21,8 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.stream.Stream;
+
 /**
  * Allows a {@link FluidIngredient} to be created with a ranged {@code amount}, which will be randomly rolled upon
  * recipe start (input) / completion (output).
@@ -53,6 +55,14 @@ public class IntProviderFluidIngredient extends FluidIngredient
         super(inner.values, provider.getMaxValue(), null);
         this.inner = inner;
         this.countProvider = provider;
+    }
+
+    protected IntProviderFluidIngredient(IntProviderFluidIngredient clone){
+        super(clone.inner.values, clone.countProvider.getMaxValue(), clone.nbt);
+        this.inner = clone.inner;
+        this.countProvider = clone.countProvider;
+        this.sampledCount = clone.sampledCount;
+        this.fluidStacks = clone.fluidStacks;
     }
 
     @Override

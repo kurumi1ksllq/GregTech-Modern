@@ -59,6 +59,14 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
         this.countProvider = countProvider;
     }
 
+    protected IntProviderIngredient(IntProviderIngredient clone){
+        super(Stream.empty());
+        this.inner = clone.inner;
+        this.countProvider = clone.countProvider;
+        this.sampledCount = clone.sampledCount;
+        this.itemStacks = clone.itemStacks;
+    }
+
     /**
      * @param inner         {@link Ingredient}
      * @param countProvider usually as {@link net.minecraft.util.valueproviders.UniformInt#of(int, int)}

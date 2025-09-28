@@ -194,6 +194,11 @@ public class LangHandler {
         provider.add("item.gtceu.tool.behavior.block_rotation", "§2Mechanic: §fRotates Blocks");
         provider.add("item.gtceu.tool.behavior.dowse_campfire", "§Firefighter: §fDowses Campfires");
         provider.add("item.gtceu.tool.behavior.damage_boost", "§4Damage Boost: §fExtra damage against %s");
+        provider.add("item.gtceu.tool.behavior.prospecting.ore", "Found ore: %s");
+        provider.add("item.gtceu.tool.behavior.prospecting.air", "Found an air pocket");
+        provider.add("item.gtceu.tool.behavior.prospecting.water", "Found water");
+        provider.add("item.gtceu.tool.behavior.prospecting.lava", "Found lava");
+        provider.add("item.gtceu.tool.behavior.prospecting.changing", "Detected material change");
         replace(provider, "item.gtceu.tool.sword", "%s Sword");
         replace(provider, "item.gtceu.tool.pickaxe", "%s Pickaxe");
         replace(provider, "item.gtceu.tool.shovel", "%s Shovel");
@@ -534,6 +539,8 @@ public class LangHandler {
         replace(provider, "block.gtceu.oil_heavy", "Heavy Oil");
         replace(provider, "block.gtceu.oil_light", "Light Oil");
         replace(provider, "block.gtceu.oil_medium", "Raw Oil");
+        replace(provider, "block.gtceu.oil", "Oil");
+        replace(provider, "block.gtceu.creosote", "Creosote");
 
         replace(provider, GTBlocks.BATTERY_EMPTY_TIER_I.get().getDescriptionId(), "Empty Tier I Capacitor");
         replace(provider, GTBlocks.BATTERY_LAPOTRONIC_EV.get().getDescriptionId(), "EV Lapotronic Capacitor");
@@ -1211,6 +1218,7 @@ public class LangHandler {
         provider.add("config.jade.plugin_gtceu.multiblock_structure", "[GTCEu] MultiBlock Structure");
         provider.add("config.jade.plugin_gtceu.parallel_info", "[GTCEu] Parallel Info");
         provider.add("config.jade.plugin_gtceu.primitive_pump", "[GTCEu] Primitive Pump Info");
+        provider.add("config.jade.plugin_gtceu.data_bank", "[GTCEu] Data Bank Info");
         provider.add("config.jade.plugin_gtceu.transformer", "[GTCEu] Transformer Info");
         provider.add("config.jade.plugin_gtceu.stained_color", "[GTCEu] Stained Block Info");
         provider.add("config.jade.plugin_gtceu.me_pattern_buffer", "[GTCEu] Pattern Buffer Info");

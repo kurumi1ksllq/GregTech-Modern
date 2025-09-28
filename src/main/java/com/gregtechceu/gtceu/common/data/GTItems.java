@@ -28,6 +28,7 @@ import com.gregtechceu.gtceu.common.item.*;
 import com.gregtechceu.gtceu.common.item.armor.*;
 import com.gregtechceu.gtceu.common.item.modules.ImageModuleBehaviour;
 import com.gregtechceu.gtceu.common.item.modules.TextModuleBehaviour;
+import com.gregtechceu.gtceu.common.item.tool.behavior.FoamSprayBehavior;
 import com.gregtechceu.gtceu.common.item.tool.behavior.LighterBehavior;
 import com.gregtechceu.gtceu.common.item.tool.behavior.MetaMachineConfigCopyBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
@@ -2037,8 +2038,11 @@ public class GTItems {
             .onRegister(attach(new IntCircuitBehaviour()))
             .register();
 
-    // public static ItemEntry<ComponentItem> FOAM_SPRAYER = REGISTRATE.item("foam_sprayer",
-    // ComponentItem::create).onRegister(attach(new FoamSprayerBehavior()).setMaxStackSize(1);
+    public static ItemEntry<ComponentItem> FOAM_SPRAYER = REGISTRATE.item("foam_sprayer", ComponentItem::create)
+            .setData(ProviderType.ITEM_MODEL, NonNullBiConsumer.noop())
+            .onRegister(attach(new FoamSprayBehavior()))
+            .properties(p -> p.stacksTo(1))
+            .register();
     public static ItemEntry<Item> GELLED_TOLUENE = REGISTRATE.item("gelled_toluene", Item::new)
             .register();
 

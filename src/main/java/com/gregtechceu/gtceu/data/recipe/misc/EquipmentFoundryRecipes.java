@@ -42,6 +42,12 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
                 CustomTags.ELECTRIC_PISTONS, GTArmorModifiers.ATTACK_DAMAGE);
 
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "attack_damage",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+                CustomTags.ROBOT_ARMS, GTArmorModifiers.BLOCK_REACH);
+
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "battery_modifier",
                 Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
                 CustomTags.ELECTRIC_MOTORS, GTArmorModifiers.BATTERY);

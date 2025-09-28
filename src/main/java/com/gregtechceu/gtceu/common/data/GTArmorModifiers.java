@@ -16,6 +16,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.ForgeMod;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -144,6 +145,17 @@ public class GTArmorModifiers {
             (stack, modifier) -> {
                 double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 16d;
                 return new AttributeModifier("Attack Damage Modifier", mul, AttributeModifier.Operation.MULTIPLY_TOTAL);
+            }, null).tooltips((stack, tooltips) -> {
+                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.attack_damage",
+                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
+            });
+
+    public static final ArmorModifier BLOCK_REACH = ArmorModifier.createItemAttribute(
+            GTCEu.id("attack_damage"),
+            ForgeMod.BLOCK_REACH.get(),
+            (stack, modifier) -> {
+                double add = GTUtil.getTier(modifier.getModifierItem().getItem()) / 2d;
+                return new AttributeModifier("Block Reach Modifier", add, AttributeModifier.Operation.ADDITION);
             }, null).tooltips((stack, tooltips) -> {
                 tooltips.add(Component.translatable("metaarmor.tooltip.modifier.attack_damage",
                         GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));

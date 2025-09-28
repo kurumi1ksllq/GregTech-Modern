@@ -340,6 +340,7 @@ public class LangHandler {
         provider.add("metaarmor.tooltip.modifier.attack_speed", "Increases Attack Speed (%s)");
         provider.add("metaarmor.tooltip.modifier.attack_damage", "Increases Attack Damage (%s)");
         provider.add("metaarmor.tooltip.modifier.battery", "Increased Energy Capacity (%s)");
+        provider.add("metaarmor.tooltip.modifier.block_reach", "Increased Block Reach (%s)");
         provider.add("metaarmor.hud.status.enabled", "§aON");
         provider.add("metaarmor.hud.status.disabled", "§cOFF");
         provider.add("metaarmor.hud.energy_lvl", "Energy Level: %s");

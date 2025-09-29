@@ -35,6 +35,8 @@ public class GTArmorModifiers {
     private static final UUID MUL_ATTACK_SPEED_UUID = UUID.fromString("b5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
     private static final UUID ADD_BLOCK_REACH_UUID = UUID.fromString("c5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
     private static final UUID MUL_MOVEMENT_SPEED_UUID = UUID.fromString("d5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
+    private static final UUID MUL_SWIM_SPEED_UUID = UUID.fromString("e5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
+    private static final UUID ADD_STEP_HEIGHT_UUID = UUID.fromString("f5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
 
     public static final ArmorModifier ADD_ARMOR_1 = ArmorModifier
             .createItemAttribute(GTCEu.id("add_armor_1"),
@@ -263,6 +265,30 @@ public class GTArmorModifiers {
                 return true;
             }).tooltips((appliedArmorModifier, tooltips) -> {
                 tooltips.add(Component.translatable("metaarmor.tooltip.breath"));
+            });
+
+    public static final ArmorModifier SWIM_SPEED = ArmorModifier.createItemAttribute(
+            GTCEu.id("swim_speed"),
+            ForgeMod.SWIM_SPEED,
+            (stack, modifier) -> {
+                double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 8d;
+                return new AttributeModifier(MUL_SWIM_SPEED_UUID, "Swim Speed Modifier", mul,
+                        AttributeModifier.Operation.MULTIPLY_TOTAL);
+            }, null).tooltips((stack, tooltips) -> {
+                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.swim_speed",
+                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
+            });
+
+    public static final ArmorModifier STEP_HEIGHT = ArmorModifier.createItemAttribute(
+            GTCEu.id("step_height"),
+            ForgeMod.STEP_HEIGHT_ADDITION,
+            (stack, modifier) -> {
+                double add = GTUtil.getTier(modifier.getModifierItem().getItem()) / 8d;
+                return new AttributeModifier(ADD_STEP_HEIGHT_UUID, "Step Height Modifier", add,
+                        AttributeModifier.Operation.ADDITION);
+            }, null).tooltips((stack, tooltips) -> {
+                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.step_height",
+                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
             });
 
     public static void init() {}

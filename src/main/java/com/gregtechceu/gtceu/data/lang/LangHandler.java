@@ -344,6 +344,8 @@ public class LangHandler {
         provider.add("metaarmor.tooltip.modifier.jetpack", "Inserted Jetpack (%s)");
         provider.add("metaarmor.tooltip.modifier.movement_speed", "Increases Movement Speed (%s)");
         provider.add("metaarmor.tooltip.modifier.sneak_speed", "Increases Sneaking Speed (%s)");
+        provider.add("metaarmor.tooltip.modifier.step_height", "Increases Step Height (%s)");
+        provider.add("metaarmor.tooltip.modifier.swim_speed", "Increases Swim Speed (%s)");
         provider.add("metaarmor.hud.status.enabled", "§aON");
         provider.add("metaarmor.hud.status.disabled", "§cOFF");
         provider.add("metaarmor.hud.energy_lvl", "Energy Level: %s");

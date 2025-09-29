@@ -73,6 +73,18 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(Tags.Items.ARMORS_HELMETS)),
                 CustomTags.ROBOT_ARMS, GTArmorModifiers.AUTO_EAT);
 
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "swim_speed",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_BOOTS)),
+                CustomTags.ELECTRIC_PUMPS, GTArmorModifiers.SWIM_SPEED);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "step_height",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_BOOTS)),
+                CustomTags.ELECTRIC_PISTONS, GTArmorModifiers.STEP_HEIGHT);
+
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "jetpack",
                 IntersectionIngredient.of(
                         Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),

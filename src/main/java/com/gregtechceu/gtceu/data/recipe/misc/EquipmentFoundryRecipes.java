@@ -43,13 +43,13 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
                 CustomTags.ELECTRIC_PISTONS, GTArmorModifiers.ATTACK_DAMAGE);
 
-        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "attack_damage",
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "block_reach",
                 IntersectionIngredient.of(
                         Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
                         Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
                 CustomTags.ROBOT_ARMS, GTArmorModifiers.BLOCK_REACH);
 
-        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "attack_damage",
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "jetpack",
                 IntersectionIngredient.of(
                         Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
                         Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),

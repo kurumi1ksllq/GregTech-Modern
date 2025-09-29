@@ -30,6 +30,9 @@ public class GTArmorModifiers {
     private static final double SPEED_ACCEL = 0.085D;
 
     private static final UUID ADD_ARMOR_UUID = UUID.fromString("95bd81ea-b3af-4cca-8866-f3e62f5f68f1");
+    private static final UUID MUL_DAMAGE_UUID = UUID.fromString("a5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
+    private static final UUID MUL_ATTACK_SPEED_UUID = UUID.fromString("b5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
+    private static final UUID ADD_BLOCK_REACH_UUID = UUID.fromString("c5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
 
     public static final ArmorModifier ADD_ARMOR_1 = ArmorModifier
             .createItemAttribute(GTCEu.id("add_armor_1"),
@@ -135,7 +138,8 @@ public class GTArmorModifiers {
             Attributes.ATTACK_SPEED,
             (stack, modifier) -> {
                 double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 16d;
-                return new AttributeModifier("Attack Speed Modifier", mul, AttributeModifier.Operation.MULTIPLY_TOTAL);
+                return new AttributeModifier(MUL_ATTACK_SPEED_UUID, "Attack Speed Modifier", mul,
+                        AttributeModifier.Operation.MULTIPLY_TOTAL);
             }, null).tooltips((stack, tooltips) -> {
                 tooltips.add(Component.translatable("metaarmor.tooltip.modifier.attack_speed",
                         GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
@@ -146,20 +150,22 @@ public class GTArmorModifiers {
             Attributes.ATTACK_DAMAGE,
             (stack, modifier) -> {
                 double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 16d;
-                return new AttributeModifier("Attack Damage Modifier", mul, AttributeModifier.Operation.MULTIPLY_TOTAL);
+                return new AttributeModifier(MUL_DAMAGE_UUID, "Attack Damage Modifier", mul,
+                        AttributeModifier.Operation.MULTIPLY_TOTAL);
             }, null).tooltips((stack, tooltips) -> {
                 tooltips.add(Component.translatable("metaarmor.tooltip.modifier.attack_damage",
                         GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
             });
 
     public static final ArmorModifier BLOCK_REACH = ArmorModifier.createItemAttribute(
-            GTCEu.id("attack_damage"),
+            GTCEu.id("block_reach"),
             ForgeMod.BLOCK_REACH,
             (stack, modifier) -> {
                 double add = GTUtil.getTier(modifier.getModifierItem().getItem()) / 2d;
-                return new AttributeModifier("Block Reach Modifier", add, AttributeModifier.Operation.ADDITION);
+                return new AttributeModifier(ADD_BLOCK_REACH_UUID, "Block Reach Modifier", add,
+                        AttributeModifier.Operation.ADDITION);
             }, null).tooltips((stack, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.attack_damage",
+                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.block_reach",
                         GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
             });
 

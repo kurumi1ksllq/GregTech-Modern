@@ -1,0 +1,6 @@
+{
+  "parent": "gtceu:block/foam_reinforced",
+  "textures": {
+    "all": "gtceu:block/foam/purple_reinforced"
+  }
+}

@@ -70,10 +70,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.PotionItem;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -468,6 +465,18 @@ public class ForgeCommonEventListener {
             if (mapping.getKey().equals(GTCEu.id("steam_miner"))) {
                 mapping.remap(GTMachines.STEAM_MINER.first().getBlock());
             }
+            if (mapping.getKey().equals(GTCEu.id("foam"))) {
+                mapping.remap(GTBlocks.FOAMS.get(DyeColor.WHITE).get());
+            }
+            if (mapping.getKey().equals(GTCEu.id("reinforced_foam"))) {
+                mapping.remap(GTBlocks.REINFORCED_FOAMS.get(DyeColor.WHITE).get());
+            }
+            if (mapping.getKey().equals(GTCEu.id("petrified_foam"))) {
+                mapping.remap(GTBlocks.PETRIFIED_FOAMS.get(DyeColor.WHITE).get());
+            }
+            if (mapping.getKey().equals(GTCEu.id("reinforced_stone"))) {
+                mapping.remap(GTBlocks.REINFORCED_STONES.get(DyeColor.WHITE).get());
+            }
         });
         event.getMappings(Registries.ITEM, GTCEu.MOD_ID).forEach(mapping -> {
             if (mapping.getKey().equals(GTCEu.id("tungstensteel_coil_block"))) {
@@ -475,6 +484,18 @@ public class ForgeCommonEventListener {
             }
             if (mapping.getKey().equals(GTCEu.id("steam_miner"))) {
                 mapping.remap(GTMachines.STEAM_MINER.first().getItem());
+            }
+            if (mapping.getKey().equals(GTCEu.id("foam"))) {
+                mapping.remap(GTBlocks.FOAMS.get(DyeColor.WHITE).get().asItem());
+            }
+            if (mapping.getKey().equals(GTCEu.id("reinforced_foam"))) {
+                mapping.remap(GTBlocks.REINFORCED_FOAMS.get(DyeColor.WHITE).get().asItem());
+            }
+            if (mapping.getKey().equals(GTCEu.id("petrified_foam"))) {
+                mapping.remap(GTBlocks.PETRIFIED_FOAMS.get(DyeColor.WHITE).get().asItem());
+            }
+            if (mapping.getKey().equals(GTCEu.id("reinforced_stone"))) {
+                mapping.remap(GTBlocks.REINFORCED_STONES.get(DyeColor.WHITE).get().asItem());
             }
             if (mapping.getKey().equals(GTCEu.id("tungstensteel_fluid_cell"))) {
                 mapping.remap(GTItems.FLUID_CELL_LARGE_TUNGSTEN_STEEL.get().asItem());

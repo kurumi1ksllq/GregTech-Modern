@@ -1,5 +1,9 @@
 package com.gregtechceu.gtceu.data.tags;
 
+import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.data.chemical.material.Material;
+import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
+import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
@@ -11,6 +15,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 
 import com.tterrag.registrate.providers.RegistrateTagsProvider;
+
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 public class BlockTagLoader {
 
@@ -27,6 +35,21 @@ public class BlockTagLoader {
                         Blocks.CYAN_CONCRETE_POWDER, Blocks.PURPLE_CONCRETE_POWDER, Blocks.BLUE_CONCRETE_POWDER,
                         Blocks.BROWN_CONCRETE_POWDER, Blocks.GREEN_CONCRETE_POWDER, Blocks.RED_CONCRETE_POWDER,
                         Blocks.BLACK_CONCRETE_POWDER);
+
+        var reinforcedFrames = provider.addTag(CustomTags.REINFORCED_FRAMES);
+        Set<Material> defaultMats = new HashSet<>();
+
+        defaultMats.add(GTMaterials.Steel);
+        defaultMats.add(GTMaterials.BlackSteel);
+        defaultMats.add(GTMaterials.TungstenSteel);
+        defaultMats.add(GTMaterials.RedSteel);
+        defaultMats.add(GTMaterials.BlueSteel);
+
+        for (var mat : defaultMats) {
+            if (mat.hasFlag(MaterialFlags.GENERATE_FRAME)) {
+                reinforcedFrames.add(Objects.requireNonNull(ChemicalHelper.getBlock(TagPrefix.frameGt, mat)));
+            }
+        }
 
         provider.addTag(CustomTags.ENDSTONE_ORE_REPLACEABLES).add(Blocks.END_STONE);
 

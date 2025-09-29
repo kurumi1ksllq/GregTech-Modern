@@ -12,6 +12,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -25,9 +26,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class FoamBlock extends Block {
 
     private final boolean isReinforced;
+    private final DyeColor color;
 
-    public FoamBlock(Properties properties, boolean isReinforced) {
+    public FoamBlock(Properties properties, DyeColor color, boolean isReinforced) {
         super(properties);
+        this.color = color;
         this.isReinforced = isReinforced;
     }
 
@@ -57,7 +60,7 @@ public class FoamBlock extends Block {
     }
 
     private BlockState getPetrifiedBlock(BlockState state) {
-        var block = isReinforced ? GTBlocks.REINFORCED_STONE : GTBlocks.PETRIFIED_FOAM;
+        var block = isReinforced ? GTBlocks.REINFORCED_STONES.get(color) : GTBlocks.PETRIFIED_FOAMS.get(color);
         return block.getDefaultState();
     }
 }

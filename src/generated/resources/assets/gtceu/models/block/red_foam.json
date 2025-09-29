@@ -1,0 +1,6 @@
+{
+  "parent": "gtceu:block/foam",
+  "textures": {
+    "all": "gtceu:block/foam/red"
+  }
+}

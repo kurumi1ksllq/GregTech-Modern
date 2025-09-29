@@ -196,6 +196,8 @@ public class CustomTags {
             NEEDS_NEUTRONIUM_TOOL,
     };
 
+    public static final TagKey<Block> REINFORCED_FRAMES = TagUtil.createBlockTag("reinforced_frames");
+
     public static final TagKey<Block> ENDSTONE_ORE_REPLACEABLES = TagUtil.createBlockTag("end_stone_ore_replaceables");
     public static final TagKey<Block> CONCRETE_BLOCK = TagUtil.createBlockTag("concretes");
     public static final TagKey<Block> CONCRETE_POWDER_BLOCK = TagUtil.createBlockTag("concrete_powders");

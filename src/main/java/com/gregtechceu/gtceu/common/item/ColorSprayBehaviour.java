@@ -44,6 +44,7 @@ import appeng.api.util.AEColor;
 import appeng.blockentity.networking.CableBusBlockEntity;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -104,6 +105,7 @@ public class ColorSprayBehaviour implements IDurabilityBar, IInteractionItem, IA
     }
 
     private final Supplier<ItemStack> empty;
+    @Getter
     private final DyeColor color;
     public final int totalUses;
     private final IntIntPair durabilityBarColors;

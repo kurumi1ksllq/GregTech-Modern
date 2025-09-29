@@ -1,0 +1,6 @@
+{
+  "parent": "gtceu:block/foam_petrified",
+  "textures": {
+    "all": "gtceu:block/foam/black_petrified"
+  }
+}

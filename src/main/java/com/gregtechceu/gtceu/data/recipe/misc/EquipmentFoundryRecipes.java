@@ -49,6 +49,30 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
                 CustomTags.ROBOT_ARMS, GTArmorModifiers.BLOCK_REACH);
 
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "sneak_speed",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_LEGGINGS)),
+                CustomTags.CONVEYOR_MODULES, GTArmorModifiers.SNEAK_SPEED);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "speed_attribute",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_BOOTS)),
+                CustomTags.ELECTRIC_MOTORS, GTArmorModifiers.MOVEMENT_SPEED_ATTR);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "respiration",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_HELMETS)),
+                CustomTags.ELECTRIC_PUMPS, GTArmorModifiers.AIR_SUPPLIER);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "autoeat",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_HELMETS)),
+                CustomTags.ROBOT_ARMS, GTArmorModifiers.AUTO_EAT);
+
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "jetpack",
                 IntersectionIngredient.of(
                         Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),

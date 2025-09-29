@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
+import com.gregtechceu.gtceu.common.item.armor.AdvancedQuarkTechSuite;
 import com.gregtechceu.gtceu.core.IFireImmuneEntity;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
@@ -33,6 +34,7 @@ public class GTArmorModifiers {
     private static final UUID MUL_DAMAGE_UUID = UUID.fromString("a5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
     private static final UUID MUL_ATTACK_SPEED_UUID = UUID.fromString("b5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
     private static final UUID ADD_BLOCK_REACH_UUID = UUID.fromString("c5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
+    private static final UUID MUL_MOVEMENT_SPEED_UUID = UUID.fromString("d5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
 
     public static final ArmorModifier ADD_ARMOR_1 = ArmorModifier
             .createItemAttribute(GTCEu.id("add_armor_1"),
@@ -198,6 +200,69 @@ public class GTArmorModifiers {
                         modifier.getModifierItem().getDisplayName()));
                 modifier.getModifierItem().getItem().appendHoverText(modifier.getModifierItem(), null, tooltip,
                         TooltipFlag.NORMAL);
+            });
+
+    public static final ArmorModifier MOVEMENT_SPEED_ATTR = ArmorModifier.createItemAttribute(
+            GTCEu.id("movement_speed_attribute"),
+            Attributes.MOVEMENT_SPEED,
+            (stack, modifier) -> {
+                double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 8d;
+                return new AttributeModifier(MUL_MOVEMENT_SPEED_UUID, "Movement Speed Modifier", mul,
+                        AttributeModifier.Operation.MULTIPLY_TOTAL);
+            }, null).tooltips((stack, tooltips) -> {
+                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.movement_speed",
+                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
+            });
+
+    public static final ArmorModifier SNEAK_SPEED = ArmorModifier.createEntityTick(GTCEu.id("sneak_speed"),
+            (entity, stack, modifier) -> {
+                if (entity instanceof Player player) {
+                    float mul = (GTUtil.getTier(modifier.getModifierItem().getItem()) - 1) / 8f + 1;
+                    boolean jumping = SyncedKeyMappings.VANILLA_JUMP.isKeyDown(player);
+                    boolean sneaking = SyncedKeyMappings.VANILLA_SNEAK.isKeyDown(player);
+
+                    if (player.onGround() && sneaking) {
+                        float speed = 0.25F * mul;
+                        if (player.isInWater()) {
+                            speed = 0.1F * mul;
+                            if (jumping) {
+                                player.push(0.0, 0.1, 0.0);
+                            }
+                        }
+                        player.moveRelative(speed, new Vec3(0, 0, 1));
+                    }
+                }
+                return true;
+            })
+            .energyUsagePerTick(819, (entity, itemStack) -> {
+                if (entity instanceof Player player) {
+                    return SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isShiftKeyDown();
+                }
+                return false;
+            })
+            .tooltips((stack, tooltips) -> {
+                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.sneak_speed",
+                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
+            });
+
+    public static final ArmorModifier AUTO_EAT = ArmorModifier.createEntityTick(GTCEu.id("auto_eat"),
+            (entity, stack, modifier) -> {
+                IElectricItem electricItem = GTCapabilityHelper.getElectricItem(stack);
+                if (electricItem == null) return true;
+                AdvancedQuarkTechSuite.supplyFood(electricItem, (Player) entity, 512);
+                return true;
+            }).tooltips((appliedArmorModifier, tooltips) -> {
+                tooltips.add(Component.translatable("metaarmor.tooltip.autoeat"));
+            });
+
+    public static final ArmorModifier AIR_SUPPLIER = ArmorModifier.createEntityTick(GTCEu.id("respiration"),
+            (entity, stack, modifier) -> {
+                IElectricItem electricItem = GTCapabilityHelper.getElectricItem(stack);
+                if (electricItem == null) return true;
+                AdvancedQuarkTechSuite.supplyAir(electricItem, (Player) entity, 128);
+                return true;
+            }).tooltips((appliedArmorModifier, tooltips) -> {
+                tooltips.add(Component.translatable("metaarmor.tooltip.breath"));
             });
 
     public static void init() {}

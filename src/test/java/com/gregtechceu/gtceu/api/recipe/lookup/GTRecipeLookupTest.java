@@ -73,7 +73,7 @@ public class GTRecipeLookupTest {
     @GameTest(template = "empty", batch = "GTRecipeLookup")
     public static void recipeLookupSimpleSuccessTest(GameTestHelper helper) {
         var ingredients = createIngredients(new ItemStack(Items.COBBLESTONE, 1));
-        GTRecipe resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(ingredients, LOOKUP.getLookup(), ALWAYS_TRUE);
+        GTRecipe resultRecipe = LOOKUP.find(ingredients, LOOKUP.getLookup(), ALWAYS_TRUE);
         helper.assertTrue(SMELT_STONE.equals(resultRecipe),
                 "GT Recipe should be smelt_stone, instead was " + resultRecipe);
         helper.succeed();
@@ -84,7 +84,7 @@ public class GTRecipeLookupTest {
     @GameTest(template = "empty", batch = "GTRecipeLookup")
     public static void recipeLookupSimpleFailureTest(GameTestHelper helper) {
         var ingredients = createIngredients(new ItemStack(Items.REDSTONE_TORCH, 1));
-        GTRecipe resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(ingredients, LOOKUP.getLookup(), ALWAYS_TRUE);
+        GTRecipe resultRecipe = LOOKUP.find(ingredients, LOOKUP.getLookup(), ALWAYS_TRUE);
         helper.assertTrue(resultRecipe == null, "GT Recipe should be empty (null), instead was " + resultRecipe);
         helper.succeed();
     }
@@ -94,7 +94,7 @@ public class GTRecipeLookupTest {
     @GameTest(template = "empty", batch = "GTRecipeLookup")
     public static void recipeLookupFalsePredicateFailureTest(GameTestHelper helper) {
         var ingredients = createIngredients(new ItemStack(Items.COBBLESTONE, 1));
-        GTRecipe resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(ingredients, LOOKUP.getLookup(), ALWAYS_FALSE);
+        GTRecipe resultRecipe = LOOKUP.find(ingredients, LOOKUP.getLookup(), ALWAYS_FALSE);
         helper.assertTrue(resultRecipe == null, "GT Recipe should be empty (null), instead was " + resultRecipe);
         helper.succeed();
     }
@@ -104,7 +104,7 @@ public class GTRecipeLookupTest {
     public static void recipeLookupMultipleIngredientsSuccessTest(GameTestHelper helper) {
         var ingredients = createIngredients(new ItemStack(Items.COBBLESTONE, 1),
                 new ItemStack(Items.REDSTONE_TORCH, 1));
-        GTRecipe resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(ingredients, LOOKUP.getLookup(), ALWAYS_TRUE);
+        GTRecipe resultRecipe = LOOKUP.find(ingredients, LOOKUP.getLookup(), ALWAYS_TRUE);
         helper.assertTrue(SMELT_STONE.equals(resultRecipe),
                 "GT Recipe should be smelt_stone, instead was " + resultRecipe);
         helper.succeed();
@@ -116,13 +116,13 @@ public class GTRecipeLookupTest {
     public static void recipeLookupIngredientCountSucceedTest(GameTestHelper helper) {
         // NOTE: RecipeLookup only checks item type, not item count, so this will still work
         var notEnoughIngredients = createIngredients(new ItemStack(Items.CHERRY_WOOD, 8));
-        GTRecipe resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(notEnoughIngredients, LOOKUP.getLookup(),
+        GTRecipe resultRecipe = LOOKUP.find(notEnoughIngredients, LOOKUP.getLookup(),
                 ALWAYS_TRUE);
         helper.assertTrue(SMELT_CHERRY_WOOD.equals(resultRecipe),
                 "GT Recipe should be smelt_cherry_wood, instead was " + resultRecipe);
 
         var enoughIngredients = createIngredients(new ItemStack(Items.CHERRY_WOOD, 16));
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(enoughIngredients, LOOKUP.getLookup(), ALWAYS_TRUE);
+        resultRecipe = LOOKUP.find(enoughIngredients, LOOKUP.getLookup(), ALWAYS_TRUE);
         helper.assertTrue(SMELT_CHERRY_WOOD.equals(resultRecipe),
                 "GT Recipe should be smelt_cherry_wood, instead was " + resultRecipe);
         helper.succeed();
@@ -134,7 +134,7 @@ public class GTRecipeLookupTest {
         var ingredients = createIngredients(new ItemStack(Items.CHERRY_WOOD, 16));
         // Do a recipe check with a condition that requires at least 4 ingredients in the inputs
         // The recipe has 8, so this should succeed
-        GTRecipe resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(ingredients, LOOKUP.getLookup(),
+        GTRecipe resultRecipe = LOOKUP.find(ingredients, LOOKUP.getLookup(),
                 recipe -> recipe.inputs
                         .getOrDefault(ItemRecipeCapability.CAP, List.of())
                         .stream()
@@ -144,7 +144,7 @@ public class GTRecipeLookupTest {
 
         // Do a recipe check with a condition that requires at least 32 ingredients in the inputs
         // The recipe has 8, so this should fail
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(ingredients, LOOKUP.getLookup(), recipe -> recipe.inputs
+        resultRecipe = LOOKUP.find(ingredients, LOOKUP.getLookup(), recipe -> recipe.inputs
                 .getOrDefault(ItemRecipeCapability.CAP, List.of())
                 .stream()
                 .allMatch(content -> ((SizedIngredient) content.getContent()).getAmount() > 32));

@@ -91,8 +91,7 @@ public class SmartItemFilter implements ItemFilter {
     private int lookup(ItemStack itemStack) {
         ItemStack copy = itemStack.copyWithCount(Integer.MAX_VALUE);
         var ingredients = MapIngredientTypeManager.getFrom(copy, ItemRecipeCapability.CAP);
-        var recipe = filterMode.lookup.recurseIngredientTreeFindRecipe(List.of(ingredients),
-                filterMode.lookup.getLookup(), r -> true);
+        var recipe = filterMode.lookup.find(List.of(ingredients), filterMode.lookup.getLookup(), r -> true);
         if (recipe == null) return 0;
         for (Content content : recipe.getInputContents(ItemRecipeCapability.CAP)) {
             var stacks = ItemRecipeCapability.CAP.of(content.getContent()).getItems();

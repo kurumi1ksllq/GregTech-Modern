@@ -103,7 +103,7 @@ public class NBTItemStackMapIngredientLookupTest {
     @GameTest(template = "empty", batch = "NBTItemStackMapIngredientLookup")
     public static void NBTItemStackMapIngredientMatchingPartialTag1Test(GameTestHelper helper) {
         // Partial tag 1 fits in Partial tag 1
-        GTRecipe resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        GTRecipe resultRecipe = LOOKUP.find(
                 List.of(
                         PartialNBTItemStackMapIngredient.from(PartialNBTIngredient.of(Items.RED_BED, tag1))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
@@ -111,7 +111,7 @@ public class NBTItemStackMapIngredientLookupTest {
                 "GT Recipe should be PARTIAL_TAG_1, instead was " + resultRecipe);
 
         // Partial tag 2 fits in Partial tag 1
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        resultRecipe = LOOKUP.find(
                 List.of(
                         PartialNBTItemStackMapIngredient.from(PartialNBTIngredient.of(Items.RED_BED, tag2))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
@@ -119,13 +119,13 @@ public class NBTItemStackMapIngredientLookupTest {
                 "GT Recipe should be PARTIAL_TAG_1, instead was " + resultRecipe);
 
         // Strict tag 1 and 2 should never fit in partial tag 1
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        resultRecipe = LOOKUP.find(
                 List.of(
                         StrictNBTItemStackMapIngredient.from(createStrictTaggedIngredient(Items.RED_BED, tag1))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
         helper.assertTrue(resultRecipe == null, "GT Recipe should be null, instead was " + resultRecipe);
 
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        resultRecipe = LOOKUP.find(
                 List.of(
                         StrictNBTItemStackMapIngredient.from(createStrictTaggedIngredient(Items.RED_BED, tag2))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
@@ -136,14 +136,14 @@ public class NBTItemStackMapIngredientLookupTest {
     @GameTest(template = "empty", batch = "NBTItemStackMapIngredientLookup")
     public static void NBTItemStackMapIngredientMatchingPartialTag2Test(GameTestHelper helper) {
         // Partial tag 1 should not fit in partial tag 2
-        GTRecipe resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        GTRecipe resultRecipe = LOOKUP.find(
                 List.of(
                         PartialNBTItemStackMapIngredient.from(PartialNBTIngredient.of(Items.BROWN_BED, tag1))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
         helper.assertTrue(resultRecipe == null, "GT Recipe should be null, instead was " + resultRecipe);
 
         // Partial tag 2 fits in Partial tag 2
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        resultRecipe = LOOKUP.find(
                 List.of(
                         PartialNBTItemStackMapIngredient.from(PartialNBTIngredient.of(Items.BROWN_BED, tag2))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
@@ -151,13 +151,13 @@ public class NBTItemStackMapIngredientLookupTest {
                 "GT Recipe should be PARTIAL_TAG_2, instead was " + resultRecipe);
 
         // Strict tag 1 and 2 should never fit in partial tag 2
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        resultRecipe = LOOKUP.find(
                 List.of(
                         StrictNBTItemStackMapIngredient.from(createStrictTaggedIngredient(Items.BROWN_BED, tag1))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
         helper.assertTrue(resultRecipe == null, "GT Recipe should be null, instead was " + resultRecipe);
 
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        resultRecipe = LOOKUP.find(
                 List.of(
                         StrictNBTItemStackMapIngredient.from(createStrictTaggedIngredient(Items.BROWN_BED, tag2))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
@@ -168,20 +168,20 @@ public class NBTItemStackMapIngredientLookupTest {
     @GameTest(template = "empty", batch = "NBTItemStackMapIngredientLookup")
     public static void NBTItemStackMapIngredientMatchingStrictTag1Test(GameTestHelper helper) {
         // Partial tag 1 and 2 should not fit in strict tag 1
-        GTRecipe resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        GTRecipe resultRecipe = LOOKUP.find(
                 List.of(
                         PartialNBTItemStackMapIngredient.from(PartialNBTIngredient.of(Items.GREEN_BED, tag1))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
         helper.assertTrue(resultRecipe == null, "GT Recipe should be null, instead was " + resultRecipe);
 
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        resultRecipe = LOOKUP.find(
                 List.of(
                         PartialNBTItemStackMapIngredient.from(PartialNBTIngredient.of(Items.GREEN_BED, tag2))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
         helper.assertTrue(resultRecipe == null, "GT Recipe should be null, instead was " + resultRecipe);
 
         // Strict tag 1 should fit in strict tag 1
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        resultRecipe = LOOKUP.find(
                 List.of(
                         StrictNBTItemStackMapIngredient.from(createStrictTaggedIngredient(Items.GREEN_BED, tag1))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
@@ -189,7 +189,7 @@ public class NBTItemStackMapIngredientLookupTest {
                 "GT Recipe should be STRICT_TAG_1, instead was " + resultRecipe);
 
         // Strict tag 2 should not fit in strict tag 1
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        resultRecipe = LOOKUP.find(
                 List.of(
                         StrictNBTItemStackMapIngredient.from(createStrictTaggedIngredient(Items.GREEN_BED, tag2))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
@@ -200,27 +200,27 @@ public class NBTItemStackMapIngredientLookupTest {
     @GameTest(template = "empty", batch = "NBTItemStackMapIngredientLookup")
     public static void NBTItemStackMapIngredientMatchingStrictTag2Test(GameTestHelper helper) {
         // Partial tag 1 and 2 should not fit in strict tag 2
-        GTRecipe resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        GTRecipe resultRecipe = LOOKUP.find(
                 List.of(
                         PartialNBTItemStackMapIngredient.from(PartialNBTIngredient.of(Items.BLUE_BED, tag1))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
         helper.assertTrue(resultRecipe == null, "GT Recipe should be null, instead was " + resultRecipe);
 
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        resultRecipe = LOOKUP.find(
                 List.of(
                         PartialNBTItemStackMapIngredient.from(PartialNBTIngredient.of(Items.BLUE_BED, tag2))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
         helper.assertTrue(resultRecipe == null, "GT Recipe should be null, instead was " + resultRecipe);
 
         // Strict tag 1 should not fit in strict tag 2
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        resultRecipe = LOOKUP.find(
                 List.of(
                         StrictNBTItemStackMapIngredient.from(createStrictTaggedIngredient(Items.BLUE_BED, tag1))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);
         helper.assertTrue(resultRecipe == null, "GT Recipe should be null, instead was " + resultRecipe);
 
         // Strict tag 2 should fit in strict tag 2
-        resultRecipe = LOOKUP.recurseIngredientTreeFindRecipe(
+        resultRecipe = LOOKUP.find(
                 List.of(
                         StrictNBTItemStackMapIngredient.from(createStrictTaggedIngredient(Items.BLUE_BED, tag2))),
                 LOOKUP.getLookup(), ALWAYS_TRUE);

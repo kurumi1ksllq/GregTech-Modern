@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
-import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.AbstractMapIngredient;
@@ -48,7 +47,7 @@ public class GTRecipeLookup {
      */
     @Nullable
     public GTRecipe findRecipe(final IRecipeCapabilityHolder holder) {
-        return find(holder, recipe -> RecipeHelper.matchRecipe(holder, recipe).isSuccess());
+        return find(holder, (ignored) -> true);
     }
 
     /**
@@ -57,7 +56,6 @@ public class GTRecipeLookup {
      * @param holder the recipe holder (usually machine) to prepare
      * @return a List of Lists of AbstractMapIngredients used for finding recipes
      */
-    @Nullable
     protected List<List<AbstractMapIngredient>> prepareRecipeFind(@NotNull IRecipeCapabilityHolder holder) {
         // First, check if items and fluids are valid.
         int totalSize = 0;
@@ -82,7 +80,7 @@ public class GTRecipeLookup {
         }
 
         if (totalSize == 0) {
-            return null;
+            return Collections.emptyList();
         }
 
         // Build input.
@@ -90,7 +88,6 @@ public class GTRecipeLookup {
         list.addAll(fromHolder(holder));
 
         // nothing was added, so return nothing
-        if (list.isEmpty()) return null;
         return list;
     }
 
@@ -106,7 +103,34 @@ public class GTRecipeLookup {
         List<List<AbstractMapIngredient>> list = prepareRecipeFind(holder);
         // couldn't build any inputs to use for search, so no recipe could be found
         if (list == null) return null;
-        return recurseIngredientTreeFindRecipe(list, lookup, canHandle);
+        return find(list, canHandle);
+    }
+
+    /**
+     * Finds a recipe using Items and Fluids.
+     *
+     * @param ingredients the ingredients to search for.
+     * @param canHandle   a predicate for determining if a recipe is valid
+     * @return the recipe found
+     */
+    @Nullable
+    public GTRecipe find(List<List<AbstractMapIngredient>> ingredients, @NotNull Predicate<GTRecipe> canHandle) {
+        return find(ingredients, lookup, canHandle);
+    }
+
+    /**
+     * Finds a recipe using Items and Fluids.
+     *
+     * @param lookup      the lookup to search
+     * @param ingredients the ingredients to search for.
+     * @param canHandle   a predicate for determining if a recipe is valid
+     * @return the recipe found
+     */
+    @Nullable
+    public GTRecipe find(List<List<AbstractMapIngredient>> ingredients, Branch lookup,
+                         @NotNull Predicate<GTRecipe> canHandle) {
+        if (ingredients == null) return null;
+        return (new RecipeIterator(lookup, ingredients, canHandle)).next();
     }
 
     /**
@@ -158,108 +182,6 @@ public class GTRecipeLookup {
         ItemStack[] retUniqueItems = new ItemStack[index];
         System.arraycopy(uniqueItems, 0, retUniqueItems, 0, index);
         return retUniqueItems;
-    }
-
-    /**
-     * Recursively finds a recipe, top level.
-     *
-     * @param ingredients the ingredients part
-     * @param branchRoot  the root branch to search from.
-     * @param canHandle   if the found recipe is valid
-     * @return a recipe
-     */
-    @Nullable
-    public GTRecipe recurseIngredientTreeFindRecipe(@NotNull List<List<AbstractMapIngredient>> ingredients,
-                                                    @NotNull Branch branchRoot,
-                                                    @NotNull Predicate<GTRecipe> canHandle) {
-        // Try each ingredient as a starting point, adding it to the skip-list.
-        // The skip-list is a packed long, where each 1 bit represents an index to skip
-        for (int i = 0; i < ingredients.size(); i++) {
-            BitSet skipSet = new BitSet();
-            skipSet.set(i);
-            GTRecipe r = recurseIngredientTreeFindRecipe(ingredients, branchRoot, canHandle, i, 0, skipSet);
-            if (r != null) {
-                return r;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Recursively finds a recipe
-     *
-     * @param ingredients the ingredients part
-     * @param branchMap   the current branch of the tree
-     * @param canHandle   predicate to test found recipe.
-     * @param index       the index of the wrapper to get
-     * @param count       how deep we are in recursion, < ingredients.length
-     * @param skip        bitmap of ingredients to skip, i.e. which ingredients are already used in the recursion.
-     * @return a recipe
-     */
-    @Nullable
-    public GTRecipe recurseIngredientTreeFindRecipe(@NotNull List<List<AbstractMapIngredient>> ingredients,
-                                                    @NotNull Branch branchMap, @NotNull Predicate<GTRecipe> canHandle,
-                                                    int index, int count, BitSet skip) {
-        // exhausted all the ingredients, and didn't find anything
-        if (count == ingredients.size()) return null;
-
-        // Iterate over current level of nodes.
-        for (AbstractMapIngredient obj : ingredients.get(index)) {
-            // determine the root nodes
-            Map<AbstractMapIngredient, Either<GTRecipe, Branch>> targetMap = determineRootNodes(obj, branchMap);
-
-            Either<GTRecipe, Branch> result = targetMap.get(obj);
-            if (result != null) {
-                // if there is a recipe (left mapping), return it immediately as found, if it can be handled
-                // Otherwise, recurse and go to the next branch.
-                GTRecipe r = result.map(potentialRecipe -> canHandle.test(potentialRecipe) ? potentialRecipe : null,
-                        potentialBranch -> diveIngredientTreeFindRecipe(ingredients, potentialBranch, canHandle, index,
-                                count, skip));
-                if (r != null) {
-                    return r;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Recursively finds a recipe
-     *
-     * @param ingredients  the ingredients part
-     * @param map          the current branch of the tree
-     * @param canHandle    predicate to test found recipe.
-     * @param currentIndex the index of the wrapper to get
-     * @param count        how deep we are in recursion, < ingredients.length
-     * @param skip         bitmap of ingredients to skip, i.e. which ingredients are already used in the recursion.
-     * @return a recipe
-     */
-    @Nullable
-    private GTRecipe diveIngredientTreeFindRecipe(@NotNull List<List<AbstractMapIngredient>> ingredients,
-                                                  @NotNull Branch map,
-                                                  @NotNull Predicate<GTRecipe> canHandle, int currentIndex, int count,
-                                                  BitSet skip) {
-        // We loop around ingredients.size() if we reach the end.
-        // only end when all ingredients are exhausted, or a recipe is found
-        int i = (currentIndex + 1) % ingredients.size();
-        while (i != currentIndex) {
-            // Have we already used this ingredient? If so, skip this one.
-            if (!(skip.get(i))) {
-                // Recursive call
-                // Increase the count, so the recursion can terminate if needed (ingredients is exhausted)
-                // Append the current index to the skip list
-                BitSet copy = (BitSet) skip.clone();
-                copy.set(i);
-                GTRecipe found = recurseIngredientTreeFindRecipe(ingredients, map, canHandle, i, count + 1,
-                        copy);
-                if (found != null) {
-                    return found;
-                }
-            }
-            // increment the index if the current index is skipped, or the recipe is not found
-            i = (i + 1) % ingredients.size();
-        }
-        return null;
     }
 
     /**

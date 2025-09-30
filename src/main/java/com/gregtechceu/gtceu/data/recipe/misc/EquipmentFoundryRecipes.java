@@ -85,14 +85,25 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(Tags.Items.ARMORS_BOOTS)),
                 CustomTags.ELECTRIC_PISTONS, GTArmorModifiers.STEP_HEIGHT);
 
-        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "jetpack",
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "electric_jetpack",
                 IntersectionIngredient.of(
                         Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
                         Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+                GTItems.ELECTRIC_JETPACK,
+                GTArmorModifiers.JETPACK);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "advanced_electric_jetpack",
                 IntersectionIngredient.of(
-                        Ingredient.of(GTItems.ELECTRIC_JETPACK),
-                        Ingredient.of(GTItems.ELECTRIC_JETPACK_ADVANCED),
-                        Ingredient.of(GTItems.LIQUID_FUEL_JETPACK)),
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+                GTItems.ELECTRIC_JETPACK_ADVANCED,
+                GTArmorModifiers.JETPACK);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "liquid_fuel_jetpack",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+                GTItems.LIQUID_FUEL_JETPACK,
                 GTArmorModifiers.JETPACK);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "battery_modifier",

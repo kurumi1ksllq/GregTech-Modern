@@ -78,6 +78,7 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
 
     public FluidPipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
+        createTanksList();
     }
 
     public static void onBlockEntityRegister(BlockEntityType<FluidPipeBlockEntity> fluidPipeBlockEntityBlockEntityType) {}
@@ -92,7 +93,6 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
         if (updateSubs == null) {
             updateSubs = this.subscribeServerTick(this::update);
         }
-        createTanksList();
     }
 
     @Override

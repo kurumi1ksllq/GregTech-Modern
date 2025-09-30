@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.syncdata.data_transformers.collections;
 
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.ListTag;
@@ -22,20 +23,20 @@ public class SetTransformer<T> implements IValueTransformer<Set<T>> {
     }
 
     @Override
-    public Tag serializeNBT(Set<T> value) {
+    public Tag serializeNBT(Set<T> value, ISyncManaged holder) {
         ListTag tag = new ListTag();
         for (T element : value) {
-            tag.add(elementTransformer.serializeNBT(element));
+            tag.add(elementTransformer.serializeNBT(element, null));
         }
         return tag;
     }
 
     @Override
-    public Set<T> deserializeNBT(Tag tag, Set<T> currentVal) {
+    public Set<T> deserializeNBT(Tag tag, ISyncManaged holder, Set<T> currentVal) {
         if (!(tag instanceof ListTag listTag)) return Set.of();
         Set<T> set = new HashSet<>();
         for (Tag elementTag : listTag) {
-            set.add(elementTransformer.deserializeNBT(elementTag, null));
+            set.add(elementTransformer.deserializeNBT(elementTag, null,null));
         }
         return set;
     }

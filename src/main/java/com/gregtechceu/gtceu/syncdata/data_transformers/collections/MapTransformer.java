@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.syncdata.data_transformers.collections;
 
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.CompoundTag;
@@ -24,25 +25,25 @@ public class MapTransformer<K, V> implements IValueTransformer<Map<K, V>> {
     }
 
     @Override
-    public Tag serializeNBT(Map<K, V> value) {
+    public Tag serializeNBT(Map<K, V> value, ISyncManaged holder) {
         ListTag entries = new ListTag();
         for (var entry : value.entrySet()) {
             CompoundTag compound = new CompoundTag();
-            compound.put("k", keyTransformer.serializeNBT(entry.getKey()));
-            compound.put("v", valueTransformer.serializeNBT(entry.getValue()));
+            compound.put("k", keyTransformer.serializeNBT(entry.getKey(), null));
+            compound.put("v", valueTransformer.serializeNBT(entry.getValue(), null));
             entries.add(compound);
         }
         return entries;
     }
 
     @Override
-    public Map<K, V> deserializeNBT(Tag tag, Map<K, V> current) {
+    public Map<K, V> deserializeNBT(Tag tag, ISyncManaged holder, Map<K, V> current) {
         if (!(tag instanceof ListTag listTag)) return current;
         current.clear();
         for (Tag entryTag : listTag) {
             CompoundTag compound = (CompoundTag) entryTag;
-            K key = keyTransformer.deserializeNBT(compound.get("k"), null);
-            V value = valueTransformer.deserializeNBT(compound.get("v"), null);
+            K key = keyTransformer.deserializeNBT(compound.get("k"), null, null);
+            V value = valueTransformer.deserializeNBT(compound.get("v"), null, null);
             current.put(key, value);
         }
         return current;

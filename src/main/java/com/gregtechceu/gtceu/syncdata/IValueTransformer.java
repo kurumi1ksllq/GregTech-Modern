@@ -14,7 +14,15 @@ public interface IValueTransformer<T> {
         return false;
     }
 
-    Tag serializeNBT(T value);
+    default Tag serializeClientSyncNBT(T value, ISyncManaged holder) {
+        return serializeNBT(value, holder);
+    }
 
-    T deserializeNBT(Tag tag, @Nullable T currentVal);
+    default T deserializeClientNBT(Tag tag, ISyncManaged holder, @Nullable T currentVal) {
+        return deserializeNBT(tag, holder, currentVal);
+    }
+
+    Tag serializeNBT(T value, ISyncManaged holder);
+
+    T deserializeNBT(Tag tag, ISyncManaged holder, @Nullable T currentVal);
 }

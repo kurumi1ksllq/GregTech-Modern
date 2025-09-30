@@ -214,6 +214,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     public void setBlocked(Direction side, boolean isBlocked) {
         if (level instanceof ServerLevel serverLevel && canHaveBlockedFaces()) {
             blockedConnections = withSideConnection(blockedConnections, side, isBlocked);
+            getSyncDataHolder().markClientSyncFieldDirty("blockedConnections");
             setChanged();
             LevelPipeNet<?, ?> worldPipeNet = getPipeBlock().getWorldPipeNet(serverLevel);
             PipeNet<?> net = worldPipeNet.getNetFromPos(getBlockPos());
@@ -257,7 +258,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
             }
 
             connections = withSideConnection(connections, side, connected);
-
+            getSyncDataHolder().markClientSyncFieldDirty("connections");
             updateNetworkConnection(side, connected);
             // notify neighbor of change so Auto Output updates its ticking status
             getLevel().neighborChanged(getBlockPos().relative(side), getPipeBlock(), getBlockPos());

@@ -33,6 +33,7 @@ public class SPacketUpdateBESyncValue implements GTNetwork.INetPacket {
         Level entityLvl = entity.getLevel();
         if (entityLvl == null) return;
         dimension = entityLvl.dimension();
+        data = blockEntity.getSyncDataHolder().serializeNBT(true);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class SPacketUpdateBESyncValue implements GTNetwork.INetPacket {
         if (entityLvl == null) return;
         buffer.writeResourceKey(entityLvl.dimension());
         buffer.writeBlockPos(entityPos);
-        buffer.writeNbt(blockEntity.getSyncDataHolder().serializeNBT(true));
+        buffer.writeNbt(data);
     }
 
     @Override

@@ -43,14 +43,27 @@ public class SyncDataHolder {
         holder.markAsChanged();
     }
 
-    @SuppressWarnings("unchecked")
     public CompoundTag serializeNBT(boolean writeClientFields) {
+        CompoundTag tag = serializeNBT(writeClientFields, resyncAll);
+        resyncAll = false;
+        dirtySyncFields.clear();
+        return tag;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public CompoundTag serializeNBT(boolean writeClientFields, boolean fullSync) {
+        Map<String, ClassSyncData.FieldSyncData> fieldsToSerialize;
+        if (!writeClientFields) {
+            fieldsToSerialize = syncData.serverSaveFields;
+        } else {
+            fieldsToSerialize = syncData.clientSyncFields;
+        }
+
         CompoundTag tag = new CompoundTag();
-
-        Map<String, ClassSyncData.FieldSyncData> fieldsToSerialize = (writeClientFields ? syncData.clientSyncFields :
-                syncData.serverSaveFields);
-
         for (var fieldEntry : fieldsToSerialize.entrySet()) {
+
+            if (!fullSync && !dirtySyncFields.contains(fieldEntry.getKey()) && !fieldEntry.getValue().isComplex) continue;
             var field = fieldEntry.getValue();
             if (field.isCustomData) {
                 try {
@@ -65,19 +78,22 @@ public class SyncDataHolder {
             }
 
             Tag nbtValue;
-            if (field.isComplex) {
-                ISyncManaged currentValue = (ISyncManaged) field.handle.get(holder);
-                if (currentValue != null) nbtValue = currentValue.getSyncDataHolder().serializeNBT(writeClientFields);
-                else nbtValue = new CompoundTag();
+            Object currentValue = field.handle.get(holder);
+
+            if (!field.isComplex && currentValue == null && writeClientFields) {
+                var nullCompound = new CompoundTag();
+                nullCompound.putBoolean("null", true);
+                tag.put(field.nbtSaveKey, nullCompound);
+                continue;
+            }
+
+            if (field.transformer != null) {
+                if (writeClientFields) nbtValue = ((IValueTransformer<Object>) field.transformer).serializeClientSyncNBT(currentValue, holder);
+                else nbtValue = ((IValueTransformer<Object>) field.transformer).serializeNBT(currentValue, holder);
+            } else if (field.isComplex && currentValue instanceof ISyncManaged syncObj) {
+                nbtValue = syncObj.getSyncDataHolder().serializeNBT(writeClientFields);
             } else {
-                if (field.transformer == null) {
-                    GTCEu.LOGGER.error("no value transformer for field: {}", field.fieldName);
-                    return new CompoundTag();
-                }
-                IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
-                Object result = field.handle.get(holder);
-                if (result == null) continue;
-                nbtValue = transformer.serializeNBT(result);
+                nbtValue = new CompoundTag();
             }
 
             for (MethodHandle modifier : field.nbtSaveModifiers) {
@@ -89,6 +105,7 @@ public class SyncDataHolder {
                     return new CompoundTag();
                 }
             }
+
             tag.put(field.nbtSaveKey, nbtValue);
         }
         return tag;
@@ -98,8 +115,10 @@ public class SyncDataHolder {
     public void deserializeNBT(CompoundTag tag, boolean readingClientFields) {
         Map<String, ClassSyncData.FieldSyncData> fieldsToCheck = readingClientFields ? syncData.clientSyncFields :
                 syncData.serverSaveFields;
+
         for (var fieldEntry : fieldsToCheck.entrySet()) {
             var field = fieldEntry.getValue();
+
             if (field.isCustomData) {
                 try {
                     field.nbtLoadModifiers[0].invoke(holder, tag, readingClientFields);
@@ -112,34 +131,38 @@ public class SyncDataHolder {
             }
 
             Tag savedValue = tag.get(field.nbtSaveKey);
+            Object currentVal = field.handle.get(holder);
+
             if (savedValue == null || savedValue instanceof CompoundTag compound && compound.isEmpty()) continue;
 
-            if (field.isComplex && savedValue instanceof CompoundTag compound) {
-                ISyncManaged currentVal = (ISyncManaged) field.handle.get(holder);
-                if (currentVal == null) {
-                    GTCEu.LOGGER.error("Sync error: ISyncManaged field was null, cannot instantiate {}",
-                            field.fieldName);
-                    return;
-                }
-                currentVal.getSyncDataHolder().deserializeNBT(compound, readingClientFields);
-            } else {
-                if (field.transformer == null) {
-                    GTCEu.LOGGER.error("missing value transformer for field: {}", field.fieldName);
-                    return;
-                }
-                IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
+            if (savedValue instanceof CompoundTag compound && compound.getBoolean("null")) {
+                field.handle.set(holder, null);
+            }
 
+            if (field.transformer != null) {
+                IValueTransformer<Object> transformer = (IValueTransformer<Object>) field.transformer;
                 if (transformer.mustProvideObject()) {
-                    transformer.deserializeNBT(savedValue, field.handle.get(holder));
+                    if (readingClientFields) transformer.deserializeClientNBT(savedValue, holder, field.handle.get(holder));
+                        else transformer.deserializeNBT(savedValue, holder, field.handle.get(holder));
                 } else {
                     try {
-                        field.handle.set(holder, transformer.deserializeNBT(savedValue, null));
+                        if (readingClientFields) field.handle.set(holder, transformer.deserializeClientNBT(savedValue, holder, null));
+                            else field.handle.set(holder, transformer.deserializeNBT(savedValue, holder, null));
                     } catch (UnsupportedOperationException e) {
                         GTCEu.LOGGER.error("Sync error: failed to perform VarHandle set: unsupported op {} {}",
                                 field.fieldName, field.handle.toString());
                     }
                 }
+            } else if (field.isComplex && savedValue instanceof CompoundTag compound) {
+                if (currentVal == null) {
+                    GTCEu.LOGGER.error("Sync error: ISyncManaged field was null, cannot instantiate {}",
+                            field.fieldName);
+                    return;
+                }
+                if (currentVal instanceof ISyncManaged syncObj)
+                    syncObj.getSyncDataHolder().deserializeNBT(compound, readingClientFields);
             }
+
             for (MethodHandle modifier : field.nbtLoadModifiers) {
                 try {
                     modifier.invoke(holder, savedValue, readingClientFields);
@@ -149,6 +172,7 @@ public class SyncDataHolder {
                     return;
                 }
             }
+
             if (readingClientFields && field.triggerClientRerender) {
                 holder.scheduleRenderUpdate();
             }

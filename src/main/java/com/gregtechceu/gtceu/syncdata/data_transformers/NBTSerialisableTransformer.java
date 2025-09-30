@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.syncdata.data_transformers;
 
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.Tag;
@@ -13,12 +14,12 @@ public class NBTSerialisableTransformer implements IValueTransformer<INBTSeriali
     }
 
     @Override
-    public Tag serializeNBT(INBTSerializable<Tag> value) {
+    public Tag serializeNBT(INBTSerializable<Tag> value, ISyncManaged holder) {
         return value.serializeNBT();
     }
 
     @Override
-    public INBTSerializable<Tag> deserializeNBT(Tag tag, INBTSerializable<Tag> currentVal) {
+    public INBTSerializable<Tag> deserializeNBT(Tag tag, ISyncManaged holder, INBTSerializable<Tag> currentVal) {
         if (currentVal == null) return null;
         currentVal.deserializeNBT(tag);
         return currentVal;

@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.syncdata.data_transformers;
 
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.StringTag;
@@ -17,12 +18,12 @@ public class EnumTransformer<E extends Enum<E>> implements IValueTransformer<E> 
     }
 
     @Override
-    public Tag serializeNBT(E value) {
+    public Tag serializeNBT(E value, ISyncManaged holder) {
         return StringTag.valueOf(value.name());
     }
 
     @Override
-    public E deserializeNBT(Tag tag, @Nullable E currentVal) {
+    public E deserializeNBT(Tag tag, ISyncManaged holder, @Nullable E currentVal) {
         E value = null;
         try {
             value = Enum.valueOf(enumClass, tag.getAsString());

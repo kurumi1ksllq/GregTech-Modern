@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.syncdata.data_transformers;
 
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.nbt.CompoundTag;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 public class GTRecipeTypeTransformer implements IValueTransformer<GTRecipeType> {
 
     @Override
-    public Tag serializeNBT(GTRecipeType value) {
+    public Tag serializeNBT(GTRecipeType value, ISyncManaged holder) {
         var tag = new CompoundTag();
         if (value == null) return tag;
         tag.putString("namespace", value.registryName.getNamespace());
@@ -22,7 +23,7 @@ public class GTRecipeTypeTransformer implements IValueTransformer<GTRecipeType> 
     }
 
     @Override
-    public GTRecipeType deserializeNBT(Tag tag, @Nullable GTRecipeType currentVal) {
+    public GTRecipeType deserializeNBT(Tag tag, ISyncManaged holder, @Nullable GTRecipeType currentVal) {
         if (!(tag instanceof CompoundTag compound) || compound.isEmpty()) return null;
         String namespace = compound.getString("namespace");
         String path = compound.getString("path");

@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.syncdata.data_transformers;
 
+import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
@@ -77,7 +78,9 @@ public final class ValueTransformers {
                 if (ifaceEntry.getKey().isAssignableFrom(type)) return ifaceEntry.getValue();
             }
 
-            return null;
+            if (!ISyncManaged.class.isAssignableFrom(type)) throw new IllegalStateException(
+                    "No value transformer for sync object type: %s".formatted(type.getCanonicalName()));
+            else return null;
         }
     };
 
@@ -128,13 +131,14 @@ public final class ValueTransformers {
 
     public static <T> IValueTransformer<T> simpleNBT(Function<T, Tag> write, Function<Tag, T> read) {
         return new IValueTransformer<>() {
+
             @Override
-            public Tag serializeNBT(T value) {
+            public Tag serializeNBT(T value, ISyncManaged holder) {
                 return write.apply(value);
             }
 
             @Override
-            public T deserializeNBT(Tag tag, @Nullable T currentVal) {
+            public T deserializeNBT(Tag tag, ISyncManaged holder, @Nullable T currentVal) {
                 return read.apply(tag);
             }
         };
@@ -142,14 +146,22 @@ public final class ValueTransformers {
 
     static {
 
-        registerClassTransformer(Integer.class, simpleNBT(IntTag::valueOf, t -> (t instanceof IntTag intTag) ? intTag.getAsInt() : 0));
-        registerClassTransformer(Long.class, simpleNBT(LongTag::valueOf, t -> (t instanceof LongTag longTag) ? longTag.getAsLong() : 0L));
-        registerClassTransformer(Float.class, simpleNBT(FloatTag::valueOf, t -> (t instanceof FloatTag floatTag) ? floatTag.getAsFloat() : 0f));
-        registerClassTransformer(Double.class, simpleNBT(DoubleTag::valueOf, t -> (t instanceof DoubleTag doubleTag) ? doubleTag.getAsDouble() : 0.0));
-        registerClassTransformer(Short.class, simpleNBT(ShortTag::valueOf, t -> (t instanceof ShortTag shortTag) ? shortTag.getAsShort() : (short)0));
-        registerClassTransformer(Byte.class, simpleNBT(ByteTag::valueOf, t -> (t instanceof ByteTag byteTag) ? byteTag.getAsByte() : (byte)0));
-        registerClassTransformer(Character.class, simpleNBT((v) -> IntTag.valueOf((int)v), t -> (t instanceof IntTag intTag) ? intTag.getAsByte() : 0x0));
-        registerClassTransformer(Boolean.class, simpleNBT(ByteTag::valueOf, (t) -> t instanceof ByteTag byteTag && byteTag.getAsByte() != 0));
+        registerClassTransformer(Integer.class,
+                simpleNBT(IntTag::valueOf, t -> (t instanceof IntTag intTag) ? intTag.getAsInt() : 0));
+        registerClassTransformer(Long.class,
+                simpleNBT(LongTag::valueOf, t -> (t instanceof LongTag longTag) ? longTag.getAsLong() : 0L));
+        registerClassTransformer(Float.class,
+                simpleNBT(FloatTag::valueOf, t -> (t instanceof FloatTag floatTag) ? floatTag.getAsFloat() : 0f));
+        registerClassTransformer(Double.class,
+                simpleNBT(DoubleTag::valueOf, t -> (t instanceof DoubleTag doubleTag) ? doubleTag.getAsDouble() : 0.0));
+        registerClassTransformer(Short.class, simpleNBT(ShortTag::valueOf,
+                t -> (t instanceof ShortTag shortTag) ? shortTag.getAsShort() : (short) 0));
+        registerClassTransformer(Byte.class,
+                simpleNBT(ByteTag::valueOf, t -> (t instanceof ByteTag byteTag) ? byteTag.getAsByte() : (byte) 0));
+        registerClassTransformer(Character.class, simpleNBT((v) -> IntTag.valueOf((int) v),
+                t -> (t instanceof IntTag intTag) ? intTag.getAsByte() : 0x0));
+        registerClassTransformer(Boolean.class,
+                simpleNBT(ByteTag::valueOf, (t) -> t instanceof ByteTag byteTag && byteTag.getAsByte() != 0));
 
         // Primtive arrays
         registerClassTransformer(int[].class, new PrimitiveArrayTransformers.IntArrayTransformer());
@@ -158,14 +170,18 @@ public final class ValueTransformers {
 
         // Classes
 
-        registerClassTransformer(String.class, simpleNBT(StringTag::valueOf, (t) -> (t instanceof StringTag stringTag) ? stringTag.getAsString() : ""));
-        registerClassTransformer(ItemStack.class, simpleNBT(IForgeItemStack::serializeNBT, (t) -> (t instanceof CompoundTag compoundTag) ? ItemStack.of(compoundTag) : ItemStack.EMPTY));
+        registerClassTransformer(String.class, simpleNBT(StringTag::valueOf,
+                (t) -> (t instanceof StringTag stringTag) ? stringTag.getAsString() : ""));
+        registerClassTransformer(ItemStack.class, simpleNBT(IForgeItemStack::serializeNBT,
+                (t) -> (t instanceof CompoundTag compoundTag) ? ItemStack.of(compoundTag) : ItemStack.EMPTY));
         registerClassTransformer(FluidStack.class, simpleNBT((FluidStack v) -> v.writeToNBT(new CompoundTag()),
-                (t) -> (t instanceof CompoundTag compoundTag) ? FluidStack.loadFluidStackFromNBT(compoundTag) : FluidStack.EMPTY));
+                (t) -> (t instanceof CompoundTag compoundTag) ? FluidStack.loadFluidStackFromNBT(compoundTag) :
+                        FluidStack.EMPTY));
         registerClassTransformer(UUID.class, simpleNBT(NbtUtils::createUUID, NbtUtils::loadUUID));
         registerClassTransformer(BlockPos.class, simpleNBT(NbtUtils::writeBlockPos,
                 (t) -> (t instanceof CompoundTag compoundTag) ? NbtUtils.readBlockPos(compoundTag) : BlockPos.ZERO));
-        registerClassTransformer(CompoundTag.class, simpleNBT((CompoundTag v) -> v, (t) -> (t instanceof CompoundTag compoundTag) ? compoundTag : new CompoundTag()));
+        registerClassTransformer(CompoundTag.class, simpleNBT((CompoundTag v) -> v,
+                (t) -> (t instanceof CompoundTag compoundTag) ? compoundTag : new CompoundTag()));
 
         registerClassTransformer(GTRecipe.class, new GTRecipeTransformer());
         registerClassTransformer(GTRecipeType.class, new GTRecipeTypeTransformer());
@@ -173,11 +189,15 @@ public final class ValueTransformers {
         registerClassTransformer(Material.class, new MaterialTransformer());
         registerClassTransformer(MonitorGroup.class, new MonitorGroupTransformer());
 
-        // Interfaces
+        // Interfaces & abstract classes
 
         registerInterfaceTransformer(INBTSerializable.class, new NBTSerialisableTransformer());
-        registerInterfaceTransformer(Component.class, simpleNBT((Component c) -> StringTag.valueOf(Component.Serializer.toJson(c)), t ->
-                (t instanceof StringTag stringTag) ? Component.Serializer.fromJson(stringTag.getAsString()) : Component.empty()));
+        registerInterfaceTransformer(Component.class,
+                simpleNBT((Component c) -> StringTag.valueOf(Component.Serializer.toJson(c)),
+                        t -> (t instanceof StringTag stringTag) ?
+                                Component.Serializer.fromJson(stringTag.getAsString()) : Component.empty()));
+        registerInterfaceTransformer(CoverBehavior.class, new CoverBehaviorTransformer());
+
 
     }
 }

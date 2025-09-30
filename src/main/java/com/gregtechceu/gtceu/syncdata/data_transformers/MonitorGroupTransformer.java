@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.syncdata.data_transformers;
 
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.monitor.MonitorGroup;
+import com.gregtechceu.gtceu.syncdata.ISyncManaged;
 import com.gregtechceu.gtceu.syncdata.IValueTransformer;
 
 import net.minecraft.core.Direction;
@@ -15,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 public class MonitorGroupTransformer implements IValueTransformer<MonitorGroup> {
 
     @Override
-    public CompoundTag serializeNBT(MonitorGroup value) {
+    public CompoundTag serializeNBT(MonitorGroup value, ISyncManaged holder) {
         CompoundTag tag = new CompoundTag();
         tag.putString("name", value.getName());
         ListTag list = new ListTag();
@@ -36,7 +37,7 @@ public class MonitorGroupTransformer implements IValueTransformer<MonitorGroup> 
     }
 
     @Override
-    public MonitorGroup deserializeNBT(Tag tag, @Nullable MonitorGroup currentVal) {
+    public MonitorGroup deserializeNBT(Tag tag, ISyncManaged holder, @Nullable MonitorGroup currentVal) {
         if (tag instanceof CompoundTag compoundTag) {
             CustomItemStackHandler handler = new CustomItemStackHandler(),
                     placeholderSlotsHandler = new CustomItemStackHandler();

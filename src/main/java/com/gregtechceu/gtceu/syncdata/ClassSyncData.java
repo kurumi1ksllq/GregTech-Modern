@@ -129,7 +129,7 @@ public final class ClassSyncData {
                         "Fields marked with @CustomDataField must have exactly one SAVE_NBT FieldDataModifier and one LOAD_NBT FieldDataModifier: %s.%s"
                                 .formatted(field.getClass().getCanonicalName(), fieldName));
 
-            if (!isCustomData && !isComplex) {
+            if (!isCustomData) {
                 IValueTransformer<?> collectionTransformer = ValueTransformers.getCollectionTransformer(field);
                 if (collectionTransformer == null) {
                     transformer = ValueTransformers.get(field.getType());

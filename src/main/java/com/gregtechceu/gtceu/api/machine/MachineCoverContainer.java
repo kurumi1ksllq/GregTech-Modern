@@ -34,7 +34,6 @@ public class MachineCoverContainer implements ICoverable, ISyncManaged {
     @SyncToClient
     @SaveField
     @RerenderOnChanged
-    @CustomDataField
     private CoverBehavior up, down, north, south, west, east;
 
     public MachineCoverContainer(MetaMachine machine) {
@@ -158,99 +157,5 @@ public class MachineCoverContainer implements ICoverable, ISyncManaged {
     @Override
     public IFluidHandlerModifiable getFluidHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
         return machine.getFluidHandlerCap(side, useCoverCapability);
-    }
-
-    // Because cover behaviors have to be instantiated based on synced data, they need custom logic
-
-    private CompoundTag serialiseCoverNBT(Direction side, CompoundTag tag, boolean saveClientData) {
-        var compound = new CompoundTag();
-        var cover = getCoverAtSide(side);
-        if (cover == null) return compound;
-
-        compound.putString("coverType", cover.coverDefinition.getId().toString());
-        CompoundTag serialisedCover = cover.getSyncDataHolder().serializeNBT(saveClientData);
-        compound.merge(serialisedCover);
-
-        return compound;
-    }
-
-    private void deserialiseCoverNBT(Direction side, CompoundTag tag, boolean readClientData) {
-        var cover = getCoverAtSide(side);
-        if (tag.isEmpty() || tag.getString("coverType").isEmpty()) {
-            setCoverAtSide(null, side);
-            return;
-        }
-        ResourceLocation coverType = ResourceLocation.tryParse(tag.getString("coverType"));
-        if (cover == null || cover.coverDefinition.getId() != coverType) {
-            var coverReg = GTRegistries.COVERS.get(coverType);
-            if (coverReg == null) {
-                GTCEu.LOGGER.error("Error during NBT load: unknown cover type {} ({})", coverType,
-                        tag.getString("coverType"));
-                return;
-            }
-            setCoverAtSide(coverReg.createCoverBehavior(this, side), side);
-        }
-
-        Objects.requireNonNull(getCoverAtSide(side)).getSyncDataHolder().deserializeNBT(tag, readClientData);
-    }
-
-    @FieldDataModifier(fieldName = "up", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
-    private CompoundTag serialiseUpCoverNBT(CompoundTag tag, boolean saveClientData) {
-        return serialiseCoverNBT(Direction.UP, tag, saveClientData);
-    }
-
-    @FieldDataModifier(fieldName = "up", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
-    private void deserialiseUpCoverNBT(CompoundTag tag, boolean readClientData) {
-        deserialiseCoverNBT(Direction.UP, tag, readClientData);
-    }
-
-    @FieldDataModifier(fieldName = "down", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
-    private CompoundTag serialiseDownCoverNBT(CompoundTag tag, boolean saveClientData) {
-        return serialiseCoverNBT(Direction.DOWN, tag, saveClientData);
-    }
-
-    @FieldDataModifier(fieldName = "down", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
-    private void deserialiseDownCoverNBT(CompoundTag tag, boolean readClientData) {
-        deserialiseCoverNBT(Direction.DOWN, tag, readClientData);
-    }
-
-    @FieldDataModifier(fieldName = "north", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
-    private CompoundTag serialiseNorthCoverNBT(CompoundTag tag, boolean saveClientData) {
-        return serialiseCoverNBT(Direction.NORTH, tag, saveClientData);
-    }
-
-    @FieldDataModifier(fieldName = "north", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
-    private void deserialiseNorthCoverNBT(CompoundTag tag, boolean readClientData) {
-        deserialiseCoverNBT(Direction.NORTH, tag, readClientData);
-    }
-
-    @FieldDataModifier(fieldName = "south", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
-    private CompoundTag serialiseSouthCoverNBT(CompoundTag tag, boolean saveClientData) {
-        return serialiseCoverNBT(Direction.SOUTH, tag, saveClientData);
-    }
-
-    @FieldDataModifier(fieldName = "south", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
-    private void deserialiseSouthCoverNBT(CompoundTag tag, boolean readClientData) {
-        deserialiseCoverNBT(Direction.SOUTH, tag, readClientData);
-    }
-
-    @FieldDataModifier(fieldName = "east", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
-    private CompoundTag serialiseEastCoverNBT(CompoundTag tag, boolean saveClientData) {
-        return serialiseCoverNBT(Direction.EAST, tag, saveClientData);
-    }
-
-    @FieldDataModifier(fieldName = "east", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
-    private void deserialiseEastCoverNBT(CompoundTag tag, boolean readClientData) {
-        deserialiseCoverNBT(Direction.EAST, tag, readClientData);
-    }
-
-    @FieldDataModifier(fieldName = "west", target = FieldDataModifier.ModifyTarget.SAVE_NBT)
-    private CompoundTag serialiseWestCoverNBT(CompoundTag tag, boolean saveClientData) {
-        return serialiseCoverNBT(Direction.WEST, tag, saveClientData);
-    }
-
-    @FieldDataModifier(fieldName = "west", target = FieldDataModifier.ModifyTarget.LOAD_NBT)
-    private void deserialiseWestCoverNBT(CompoundTag tag, boolean readClientData) {
-        deserialiseCoverNBT(Direction.WEST, tag, readClientData);
     }
 }

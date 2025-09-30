@@ -53,7 +53,8 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
     @Override
     public CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
-        tag.merge(getSyncDataHolder().serializeNBT(true));
+        getSyncDataHolder().resyncAllFields();
+        tag.merge(getSyncDataHolder().serializeNBT(true, true));
         return tag;
     }
 

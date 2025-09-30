@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.item.armor;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.armor.modifier.AppliedArmorModifier;
 import com.gregtechceu.gtceu.api.item.component.*;
@@ -44,6 +45,9 @@ public class ModifiableArmorItem extends ArmorItem implements IComponentItem {
     @Getter
     @Setter
     private int defaultMaxModifiers;
+    @Getter
+    @Setter
+    private int defaultMaxModuleTier = GTValues.MAX;
     @Getter
     protected List<IItemComponent> components = new ArrayList<>();
 

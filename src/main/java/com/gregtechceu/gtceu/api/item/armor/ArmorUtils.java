@@ -59,6 +59,7 @@ public class ArmorUtils {
     public static final String ARMOR_KEY = "GT.Armor";
     public static final String MODIFIERS_KEY = "Modifiers";
     public static final String MAX_MODIFIERS_KEY = "MaxModifiers";
+    public static final String MAX_MODULE_TIER_KEY = "MaxModuleTier";
 
     public static boolean isModifiable(ItemStack stack) {
         return stack.is(CustomTags.MODIFIABLE_EQUIPMENT);
@@ -92,6 +93,22 @@ public class ArmorUtils {
     public static void setMaxModifiers(ItemStack stack, int maxModifiers) {
         if (!isModifiable(stack)) return;
         getArmorTag(stack).putInt(MAX_MODIFIERS_KEY, maxModifiers);
+    }
+
+    public static int getMaxModuleTier(ItemStack stack) {
+        if (!(hasArmorTag(stack) && getArmorTag(stack).contains(MAX_MODULE_TIER_KEY, Tag.TAG_INT)) &&
+                stack.getItem() instanceof ModifiableArmorItem armorComponentItem) {
+            setMaxModifiers(stack, armorComponentItem.getDefaultMaxModuleTier());
+            return armorComponentItem.getDefaultMaxModuleTier();
+        } else if (!hasArmorTag(stack)) {
+            return 0;
+        }
+        return getArmorTag(stack).getInt(MAX_MODULE_TIER_KEY);
+    }
+
+    public static void setMaxModuleTier(ItemStack stack, int maxModuleTier) {
+        if (!isModifiable(stack)) return;
+        getArmorTag(stack).putInt(MAX_MODULE_TIER_KEY, maxModuleTier);
     }
 
     /**

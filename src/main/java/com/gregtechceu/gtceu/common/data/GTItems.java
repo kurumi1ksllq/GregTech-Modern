@@ -2404,7 +2404,8 @@ public class GTItems {
     public static ItemEntry<ModifiableArmorItem> NANO_CHESTPLATE = REGISTRATE
             .item("nanomuscle_chestplate",
                     (p) -> new ModifiableArmorItem(GTArmorMaterials.NANO_MUSCLE, ArmorItem.Type.CHESTPLATE, p)
-                            .setDefaultMaxModifiers(6))
+                            .setDefaultMaxModifiers(6)
+                            .setDefaultMaxModuleTier(GTValues.EV))
             .lang("NanoMuscle™ Suite Chestplate")
             .properties(p -> p.rarity(Rarity.UNCOMMON))
             .tag(Tags.Items.ARMORS_CHESTPLATES, CustomTags.MODIFIABLE_EQUIPMENT)
@@ -2412,7 +2413,8 @@ public class GTItems {
     public static ItemEntry<ModifiableArmorItem> NANO_LEGGINGS = REGISTRATE
             .item("nanomuscle_leggings",
                     (p) -> new ModifiableArmorItem(GTArmorMaterials.NANO_MUSCLE, ArmorItem.Type.LEGGINGS, p)
-                            .setDefaultMaxModifiers(6))
+                            .setDefaultMaxModifiers(6)
+                            .setDefaultMaxModuleTier(GTValues.EV))
             .lang("NanoMuscle™ Suite Leggings")
             .properties(p -> p.rarity(Rarity.UNCOMMON))
             .tag(Tags.Items.ARMORS_LEGGINGS, CustomTags.MODIFIABLE_EQUIPMENT)
@@ -2420,7 +2422,8 @@ public class GTItems {
     public static ItemEntry<ModifiableArmorItem> NANO_BOOTS = REGISTRATE
             .item("nanomuscle_boots",
                     (p) -> new ModifiableArmorItem(GTArmorMaterials.NANO_MUSCLE, ArmorItem.Type.BOOTS, p)
-                            .setDefaultMaxModifiers(6))
+                            .setDefaultMaxModifiers(6)
+                            .setDefaultMaxModuleTier(GTValues.EV))
             .lang("NanoMuscle™ Suite Boots")
             .properties(p -> p.rarity(Rarity.UNCOMMON))
             .tag(Tags.Items.ARMORS_BOOTS, CustomTags.STEP_BOOTS, CustomTags.MODIFIABLE_EQUIPMENT)
@@ -2428,7 +2431,8 @@ public class GTItems {
     public static ItemEntry<ModifiableArmorItem> NANO_HELMET = REGISTRATE
             .item("nanomuscle_helmet",
                     (p) -> new ModifiableArmorItem(GTArmorMaterials.NANO_MUSCLE, ArmorItem.Type.HELMET, p)
-                            .setDefaultMaxModifiers(6))
+                            .setDefaultMaxModifiers(6)
+                            .setDefaultMaxModuleTier(GTValues.EV))
             .lang("NanoMuscle™ Suite Helmet")
             .tag(Tags.Items.ARMORS_HELMETS, CustomTags.MODIFIABLE_EQUIPMENT)
             .properties(p -> p.rarity(Rarity.UNCOMMON))
@@ -2493,7 +2497,8 @@ public class GTItems {
     public static ItemEntry<ModifiableArmorItem> QUANTUM_CHESTPLATE = REGISTRATE
             .item("quarktech_chestplate",
                     (p) -> new ModifiableArmorItem(GTArmorMaterials.QUARK_TECH, ArmorItem.Type.CHESTPLATE, p)
-                            .setDefaultMaxModifiers(8))
+                            .setDefaultMaxModifiers(8)
+                            .setDefaultMaxModuleTier(GTValues.MAX))
             .lang("QuarkTech™ Suite Chestplate")
             .properties(p -> p.rarity(Rarity.RARE))
             .tag(Tags.Items.ARMORS_CHESTPLATES, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT,
@@ -2503,7 +2508,8 @@ public class GTItems {
     public static ItemEntry<ModifiableArmorItem> QUANTUM_LEGGINGS = REGISTRATE
             .item("quarktech_leggings",
                     (p) -> new ModifiableArmorItem(GTArmorMaterials.QUARK_TECH, ArmorItem.Type.LEGGINGS, p)
-                            .setDefaultMaxModifiers(8))
+                            .setDefaultMaxModifiers(8)
+                            .setDefaultMaxModuleTier(GTValues.MAX))
             .lang("QuarkTech™ Suite Leggings")
             .properties(p -> p.rarity(Rarity.RARE))
             .tag(Tags.Items.ARMORS_LEGGINGS, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT)
@@ -2511,7 +2517,8 @@ public class GTItems {
     public static ItemEntry<ModifiableArmorItem> QUANTUM_BOOTS = REGISTRATE
             .item("quarktech_boots",
                     (p) -> new ModifiableArmorItem(GTArmorMaterials.QUARK_TECH, ArmorItem.Type.BOOTS, p)
-                            .setDefaultMaxModifiers(8))
+                            .setDefaultMaxModifiers(8)
+                            .setDefaultMaxModuleTier(GTValues.MAX))
             .lang("QuarkTech™ Suite Boots")
             .properties(p -> p.rarity(Rarity.RARE))
             .tag(Tags.Items.ARMORS_BOOTS, CustomTags.PPE_ARMOR, CustomTags.STEP_BOOTS, CustomTags.MODIFIABLE_EQUIPMENT)
@@ -2519,7 +2526,8 @@ public class GTItems {
     public static ItemEntry<ModifiableArmorItem> QUANTUM_HELMET = REGISTRATE
             .item("quarktech_helmet",
                     (p) -> new ModifiableArmorItem(GTArmorMaterials.QUARK_TECH, ArmorItem.Type.HELMET, p)
-                            .setDefaultMaxModifiers(8))
+                            .setDefaultMaxModifiers(8)
+                            .setDefaultMaxModuleTier(GTValues.MAX))
             .lang("QuarkTech™ Suite Helmet")
             .properties(p -> p.rarity(Rarity.RARE))
             .tag(Tags.Items.ARMORS_HELMETS, CustomTags.PPE_ARMOR, CustomTags.MODIFIABLE_EQUIPMENT)

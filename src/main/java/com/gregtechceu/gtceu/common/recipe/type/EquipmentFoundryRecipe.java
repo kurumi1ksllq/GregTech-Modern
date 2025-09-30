@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.RegistryAccess;
@@ -48,6 +49,9 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
                 }
             }
         }
+        if (foundIngredient != null && foundItem != null && GTUtil.getTier(foundIngredient.getItem()) != -1) {
+            if (GTUtil.getTier(foundIngredient.getItem()) > ArmorUtils.getMaxModuleTier(foundItem)) return false;
+        }
 
         return foundItem != null && foundIngredient != null && ArmorUtils.getModifier(foundItem, modifier) == null;
     }
@@ -74,6 +78,9 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
             return ItemStack.EMPTY;
         }
         if (ArmorUtils.getModifier(result, modifier) != null) return ItemStack.EMPTY;
+        if (GTUtil.getTier(foundIngredient.getItem()) != -1) {
+            if (GTUtil.getTier(foundIngredient.getItem()) > ArmorUtils.getMaxModuleTier(result)) return ItemStack.EMPTY;
+        }
         ArmorUtils.addModifier(result, modifier, foundIngredient);
         return result;
     }

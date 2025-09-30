@@ -163,6 +163,14 @@ public class ArmorUtils {
         return modifiers;
     }
 
+    public static @Nullable AppliedArmorModifier getModifier(ItemStack stack, ArmorModifier modifier) {
+        List<AppliedArmorModifier> modifiers = getModifiers(stack);
+        for (AppliedArmorModifier appliedModifier : modifiers) {
+            if (appliedModifier.getModifier() == modifier) return appliedModifier;
+        }
+        return null;
+    }
+
     /**
      * Check is possible to charge item
      */

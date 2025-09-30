@@ -33,23 +33,23 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
     private final ArmorModifier modifier;
 
     public boolean matches(RecipeWrapper container, Level level) {
-        boolean foundItem = false, foundIngredient = false;
+        ItemStack foundItem = null, foundIngredient = null;
 
         for (int i = 0; i < container.getContainerSize(); ++i) {
             ItemStack stack = container.getItem(i);
             if (!stack.isEmpty()) {
                 if (equipment.test(stack)) {
-                    if (foundItem) {
+                    if (foundItem != null) {
                         return false;
                     }
-                    foundItem = true;
+                    foundItem = stack;
                 } else if (ingredient.test(stack)) {
-                    foundIngredient = true;
+                    foundIngredient = stack;
                 }
             }
         }
 
-        return foundItem && foundIngredient;
+        return foundItem != null && foundIngredient != null && ArmorUtils.getModifier(foundItem, modifier) == null;
     }
 
     public ItemStack assemble(RecipeWrapper container, RegistryAccess registryAccess) {
@@ -73,7 +73,7 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
         if (foundIngredient == null || result.isEmpty()) {
             return ItemStack.EMPTY;
         }
-
+        if (ArmorUtils.getModifier(result, modifier) != null) return ItemStack.EMPTY;
         ArmorUtils.addModifier(result, modifier, foundIngredient);
         return result;
     }

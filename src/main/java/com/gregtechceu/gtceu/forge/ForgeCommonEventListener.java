@@ -19,6 +19,7 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.api.item.armor.modifier.AppliedArmorModifier;
+import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
@@ -386,6 +387,8 @@ public class ForgeCommonEventListener {
             for (AppliedArmorModifier modifier : modifiers) {
                 modifier.getModifier().onTick().apply(entity, stack, modifier);
             }
+            AppliedItemModule.getAppliedModules(stack)
+                    .forEach(appliedItemModule -> appliedItemModule.armorTick(entity));
         }
 
         float MAGIC_STEP_HEIGHT = 1.0023f;
@@ -409,13 +412,11 @@ public class ForgeCommonEventListener {
         }
 
         if (!old.isEmpty() && ArmorUtils.hasArmorTag(old)) {
-            ArmorUtils.getModifiers(old)
-                    .forEach(modifier -> modifier.getModifier().onUnequip().apply(entity, old, modifier));
+            AppliedItemModule.getAppliedModules(old).forEach(appliedItemModule -> appliedItemModule.unequip(entity));
         }
 
         if (!current.isEmpty() && ArmorUtils.hasArmorTag(current)) {
-            ArmorUtils.getModifiers(current)
-                    .forEach(modifier -> modifier.getModifier().onEquip().apply(entity, current, modifier));
+            AppliedItemModule.getAppliedModules(current).forEach(appliedItemModule -> appliedItemModule.equip(entity));
         }
     }
 
@@ -428,8 +429,8 @@ public class ForgeCommonEventListener {
             if (!ArmorUtils.isModifiable(stack)) continue;
 
             float amount = event.getAmount();
-            for (AppliedArmorModifier modifier : ArmorUtils.getModifiers(stack)) {
-                amount = modifier.getModifier().onDamage().apply(entity, stack, source, amount, modifier).newAmount();
+            for (AppliedItemModule appliedItemModule : AppliedItemModule.getAppliedModules(stack)) {
+                amount = appliedItemModule.changeDamage(entity, amount, source);
             }
             event.setAmount(amount);
         }

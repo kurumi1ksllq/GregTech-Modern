@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.item.module;
 import com.gregtechceu.gtceu.GTCEu;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -86,6 +87,10 @@ public class AppliedItemModule {
 
     public void unequip(@NotNull LivingEntity entity) {
         this.module.onUnequip(entity, this);
+    }
+
+    public float changeDamage(LivingEntity entity, float damage, DamageSource source) {
+        return this.module.changeDamage(entity, this, damage, source);
     }
 
     public static AppliedItemModule attach(ItemStack stack, ItemModule module, int slot) {

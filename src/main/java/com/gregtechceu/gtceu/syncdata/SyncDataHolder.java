@@ -80,7 +80,7 @@ public class SyncDataHolder {
             Tag nbtValue;
             Object currentValue = field.handle.get(holder);
 
-            if (!field.isComplex && currentValue == null && writeClientFields) {
+            if (!field.isComplex && currentValue == null) {
                 var nullCompound = new CompoundTag();
                 nullCompound.putBoolean("null", true);
                 tag.put(field.nbtSaveKey, nullCompound);

@@ -4,6 +4,7 @@ import com.cleanroommc.modularui.screen.viewport.TransformationMatrix;
 import com.cleanroommc.modularui.widget.sizer.Area;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -12,6 +13,7 @@ import org.joml.Vector3f;
  * This handles all viewports in a GUI. Also keeps track of a matrix stack used for rendering and
  * user interaction.
  */
+@ApiStatus.NonExtendable
 public interface IViewportStack {
 
     /**

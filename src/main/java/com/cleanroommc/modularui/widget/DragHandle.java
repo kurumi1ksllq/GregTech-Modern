@@ -1,5 +1,6 @@
 package com.cleanroommc.modularui.widget;
 
+import com.cleanroommc.modularui.base.layout.IViewport;
 import com.cleanroommc.modularui.base.layout.IViewportStack;
 import com.cleanroommc.modularui.base.widget.IDraggable;
 import com.cleanroommc.modularui.base.widget.IWidget;
@@ -13,7 +14,7 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import org.jetbrains.annotations.Nullable;
 
-public class DragHandle extends Widget<DragHandle> implements IDraggable {
+public class DragHandle extends Widget<DragHandle> implements IDraggable, IViewport {
 
     private IDraggable parentDraggable;
 
@@ -88,22 +89,26 @@ public class DragHandle extends Widget<DragHandle> implements IDraggable {
 
     @Override
     public void transformChildren(IViewportStack stack) {
-        if (this.parentDraggable != null) {
-            this.parentDraggable.transformChildren(stack);
+        if (this.parentDraggable instanceof IViewport viewport) {
+            viewport.transformChildren(stack);
         }
     }
 
     @Override
     public void getWidgetsAt(IViewportStack stack, HoveredWidgetList widgets, int x, int y) {
-        if (this.parentDraggable != null) {
-            this.parentDraggable.getWidgetsAt(stack, widgets, x, y);
+        if (this.parentDraggable instanceof IViewport viewport) {
+            viewport.getWidgetsAt(stack, widgets, x, y);
+        } else {
+            IViewport.super.getWidgetsAt(stack, widgets, x, y);
         }
     }
 
     @Override
     public void getSelfAt(IViewportStack stack, HoveredWidgetList widgets, int x, int y) {
-        if (this.parentDraggable != null) {
-            this.parentDraggable.getSelfAt(stack, widgets, x, y);
+        if (this.parentDraggable instanceof IViewport viewport) {
+            viewport.getSelfAt(stack, widgets, x, y);
+        } else {
+            IViewport.super.getSelfAt(stack, widgets, x, y);
         }
     }
 }

@@ -3,7 +3,6 @@ package com.cleanroommc.modularui.base.widget;
 import com.cleanroommc.modularui.base.layout.IViewport;
 import com.cleanroommc.modularui.base.layout.IViewportStack;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
-import com.cleanroommc.modularui.utils.HoveredWidgetList;
 import com.cleanroommc.modularui.widget.DraggableWidget;
 import com.cleanroommc.modularui.widget.WidgetTree;
 import com.cleanroommc.modularui.widget.sizer.Area;
@@ -18,12 +17,12 @@ import org.jetbrains.annotations.Nullable;
  *
  * @see DraggableWidget
  */
-public interface IDraggable extends IViewport {
+public interface IDraggable {
 
     /**
      * Gets called every frame after everything else is rendered.
      * Is only called when {@link #isMoving()} is true.
-     * Translate to the mouse pos and draw with {@link WidgetTree#drawTree(IWidget, ModularGuiContext)}.
+     * Translate to the mouse pos and draw with {@link WidgetTree#drawTree(IWidget, ModularGuiContext, boolean, boolean)}.
      *
      * @param graphics
      * @param partialTicks difference from last from
@@ -66,7 +65,4 @@ public interface IDraggable extends IViewport {
     void setMoving(boolean moving);
 
     void transform(IViewportStack viewportStack);
-
-    @Override
-    default void getWidgetsAt(IViewportStack stack, HoveredWidgetList widgets, int x, int y) {}
 }

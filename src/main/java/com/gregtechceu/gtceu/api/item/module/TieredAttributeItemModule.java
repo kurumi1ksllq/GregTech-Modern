@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.api.item.module;
 
+import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -8,6 +10,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Iterator;
 import java.util.UUID;
@@ -16,6 +19,11 @@ public abstract class TieredAttributeItemModule extends TieredItemModule {
 
     public TieredAttributeItemModule(ResourceLocation id, int tier) {
         super(id, tier);
+    }
+
+    @Override
+    public boolean canApplyTo(ItemStack stack) {
+        return super.canApplyTo(stack) && ArmorUtils.getMaxModuleTier(stack) >= getTier();
     }
 
     @Override

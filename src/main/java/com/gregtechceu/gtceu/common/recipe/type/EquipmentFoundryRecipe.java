@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.recipe.type;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.ItemModule;
@@ -38,7 +39,7 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
 
     private ItemModule getModule(ItemStack ingredient) {
         int tier = GTUtil.getTier(ingredient.getItem());
-        return modifier[Mth.clamp(tier, 0, modifier.length)];
+        return modifier[Mth.clamp(tier - GTValues.LV, 0, modifier.length)];
     }
 
     public boolean matches(RecipeWrapper container, Level level) {

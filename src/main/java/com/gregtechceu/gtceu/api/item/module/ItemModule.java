@@ -1,17 +1,23 @@
 package com.gregtechceu.gtceu.api.item.module;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.capability.IElectricItem;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class ItemModule {
@@ -48,11 +54,34 @@ public abstract class ItemModule {
 
     public void onEquip(LivingEntity entity, AppliedItemModule modifier) {}
 
-    public void onArmorTick(LivingEntity entity, AppliedItemModule modifier) {}
+    public void onArmorTick(LivingEntity entity, AppliedItemModule module) {
+        IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getModuleItem());
+        long energy = energyUsagePerTick(entity, module);
+        if (electricItem != null) {
+            electricItem.discharge(energy, electricItem.getTier(), true, false, false);
+        }
+    }
 
     public void onUnequip(LivingEntity entity, AppliedItemModule modifier) {}
 
-    public void onInventoryTick(Player player, AppliedItemModule modifier) {}
+    public void onInventoryTick(Player player, AppliedItemModule module) {
+        IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getModuleItem());
+        long energy = energyUsagePerTick(player, module);
+        if (electricItem != null && useEnergyInInventory(player, module)) {
+            electricItem.discharge(energy, electricItem.getTier(), true, false, false);
+        }
+    }
+
+    public void appendHoverText(Level level, TooltipFlag isAdvanced, List<Component> tooltips,
+                                AppliedItemModule module) {}
+
+    public boolean useEnergyInInventory(LivingEntity entity, AppliedItemModule module) {
+        return true;
+    }
+
+    public long energyUsagePerTick(LivingEntity entity, AppliedItemModule module) {
+        return 0;
+    }
 
     public float changeDamage(LivingEntity entity, AppliedItemModule modifier, float damage, DamageSource source) {
         return damage;

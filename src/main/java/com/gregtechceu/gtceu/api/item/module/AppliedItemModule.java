@@ -3,10 +3,13 @@ package com.gregtechceu.gtceu.api.item.module;
 import com.gregtechceu.gtceu.GTCEu;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +31,9 @@ public class AppliedItemModule {
 
     @Getter
     private CompoundTag tag;
+
+    @Getter
+    private ItemStack moduleItem;
 
     /**
      * The stack that this module is applied to.
@@ -54,11 +60,19 @@ public class AppliedItemModule {
         if (!this.moduleTag.contains("tag")) this.moduleTag.put("tag", new CompoundTag());
         this.tag = this.moduleTag.getCompound("tag");
         this.slot = slot;
+        if (this.moduleTag.contains("item")) {
+            this.moduleItem = ItemStack.of(this.moduleTag.getCompound("item"));
+        }
     }
 
     public void setModule(ItemModule module) {
         this.moduleTag.put("module", module.serializeNBT());
         this.module = module;
+    }
+
+    public void setModuleItem(ItemStack stack) {
+        this.moduleItem = stack;
+        this.moduleTag.put("item", stack.serializeNBT());
     }
 
     public void setTag(CompoundTag tag) {
@@ -91,6 +105,10 @@ public class AppliedItemModule {
 
     public float changeDamage(LivingEntity entity, float damage, DamageSource source) {
         return this.module.changeDamage(entity, this, damage, source);
+    }
+
+    public void appendHoverText(Level level, TooltipFlag isAdvanced, List<Component> tooltips) {
+        this.module.appendHoverText(level, isAdvanced, tooltips, this);
     }
 
     public static AppliedItemModule attach(ItemStack stack, ItemModule module, int slot) {

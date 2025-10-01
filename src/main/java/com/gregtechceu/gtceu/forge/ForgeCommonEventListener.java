@@ -391,6 +391,13 @@ public class ForgeCommonEventListener {
                     .forEach(appliedItemModule -> appliedItemModule.armorTick(entity));
         }
 
+        if (entity instanceof Player player) {
+            for (ItemStack stack : entity.getAllSlots()) {
+                AppliedItemModule.getAppliedModules(stack)
+                        .forEach(appliedItemModule -> appliedItemModule.inventoryTick(player));
+            }
+        }
+
         float MAGIC_STEP_HEIGHT = 1.0023f;
         if (!entity.isCrouching() && entity.getItemBySlot(EquipmentSlot.FEET).is(CustomTags.STEP_BOOTS)) {
             if (entity.getStepHeight() < MAGIC_STEP_HEIGHT) {

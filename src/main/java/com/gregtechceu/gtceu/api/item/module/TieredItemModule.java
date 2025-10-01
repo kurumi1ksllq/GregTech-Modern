@@ -4,7 +4,9 @@ import net.minecraft.resources.ResourceLocation;
 
 import lombok.Getter;
 
-public class TieredItemModule extends ItemModule {
+import java.util.function.BiFunction;
+
+public abstract class TieredItemModule extends ItemModule {
 
     @Getter
     private final int tier;
@@ -14,10 +16,13 @@ public class TieredItemModule extends ItemModule {
         this.tier = tier;
     }
 
-    public static TieredItemModule[] createForTiersBetween(ResourceLocation id, int minTier, int maxTier) {
+    public static TieredItemModule[] createForTiersBetween(ResourceLocation id, int minTier, int maxTier,
+                                                           BiFunction<ResourceLocation, Integer, TieredItemModule> constructor) {
         TieredItemModule[] result = new TieredItemModule[maxTier - minTier + 1];
-        for (int i = 0; i <= maxTier - minTier; i++)
-            result[i] = new TieredItemModule(id.withSuffix("_" + (i + minTier)), i + minTier);
+        for (int i = 0; i <= maxTier - minTier; i++) {
+            ResourceLocation resourceLocation = id.withSuffix("_" + (i + minTier));
+            result[i] = constructor.apply(resourceLocation, i + minTier);
+        }
         return result;
     }
 }

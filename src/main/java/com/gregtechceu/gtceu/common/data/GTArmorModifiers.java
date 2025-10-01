@@ -38,20 +38,6 @@ public class GTArmorModifiers {
     private static final UUID MUL_SWIM_SPEED_UUID = UUID.fromString("e5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
     private static final UUID ADD_STEP_HEIGHT_UUID = UUID.fromString("f5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
 
-    public static final ArmorModifier ADD_ARMOR_1 = ArmorModifier
-            .createItemAttribute(GTCEu.id("add_armor_1"),
-                    Attributes.ARMOR,
-                    new AttributeModifier(ADD_ARMOR_UUID, "Armor Modifier", 1.0D, AttributeModifier.Operation.ADDITION),
-                    null)
-            .energyUsageOnHit(1024);
-
-    public static final ArmorModifier ADD_ARMOR_2 = ArmorModifier
-            .createItemAttribute(GTCEu.id("add_armor_2"),
-                    Attributes.ARMOR,
-                    new AttributeModifier(ADD_ARMOR_UUID, "Armor Modifier", 2.0D, AttributeModifier.Operation.ADDITION),
-                    null)
-            .energyUsageOnHit(2048);
-
     public static final ArmorModifier ARMOR_PLATE_TUNGSTENSTEEL = ArmorModifier
             .createItemAttribute(GTCEu.id("add_armor_5"),
                     Attributes.ARMOR,

@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.data.recipe.builder;
 
-import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
+import com.gregtechceu.gtceu.api.item.module.ItemModule;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
@@ -14,10 +14,12 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.crafting.StrictNBTIngredient;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -32,7 +34,7 @@ public class EquipmentFoundryRecipeBuilder {
     @Setter
     private Ingredient ingredient;
     @Setter
-    private ArmorModifier modifier;
+    private ItemModule[] modifier;
 
     public EquipmentFoundryRecipeBuilder(@Nullable ResourceLocation id) {
         this.id = id;
@@ -59,32 +61,34 @@ public class EquipmentFoundryRecipeBuilder {
     }
 
     protected ResourceLocation defaultId() {
-        return modifier.id();
+        return modifier[0].getId();
     }
 
     public void toJson(JsonObject json) {
         json.add("equipment", equipment.toJson());
         json.add("ingredient", ingredient.toJson());
 
-        json.addProperty("modifier", modifier.id().toString());
+        JsonArray arr = new JsonArray();
+        for (ItemModule module : modifier) arr.add(module.getId().toString());
+        json.add("modifier", arr);
     }
 
     public void save(Consumer<FinishedRecipe> consumer) {
         consumer.accept(new FinishedRecipe() {
 
             @Override
-            public void serializeRecipeData(JsonObject pJson) {
+            public void serializeRecipeData(@NotNull JsonObject pJson) {
                 toJson(pJson);
             }
 
             @Override
-            public ResourceLocation getId() {
+            public @NotNull ResourceLocation getId() {
                 var _id = id == null ? defaultId() : id;
                 return _id.withPrefix("equipment_foundry/");
             }
 
             @Override
-            public RecipeSerializer<?> getType() {
+            public @NotNull RecipeSerializer<?> getType() {
                 return GTRecipeTypes.EQUIPMENT_FOUNDRY_SERIALIZER.get();
             }
 

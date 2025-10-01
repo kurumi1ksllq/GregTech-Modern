@@ -1,8 +1,6 @@
 package com.gregtechceu.gtceu.data.recipe.misc;
 
-import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
-import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
@@ -12,9 +10,6 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.IntersectionIngredient;
 
 import java.util.function.Consumer;
-
-import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.plateDense;
-import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 
 public class EquipmentFoundryRecipes {
 
@@ -85,35 +80,32 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(Tags.Items.ARMORS_BOOTS)),
                 CustomTags.ELECTRIC_PISTONS, GTArmorModifiers.STEP_HEIGHT);
 
-        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "electric_jetpack",
-                IntersectionIngredient.of(
-                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
-                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
-                GTItems.ELECTRIC_JETPACK,
-                GTArmorModifiers.JETPACK);
-
-        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "advanced_electric_jetpack",
-                IntersectionIngredient.of(
-                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
-                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
-                GTItems.ELECTRIC_JETPACK_ADVANCED,
-                GTArmorModifiers.JETPACK);
-
-        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "liquid_fuel_jetpack",
-                IntersectionIngredient.of(
-                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
-                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
-                GTItems.LIQUID_FUEL_JETPACK,
-                GTArmorModifiers.JETPACK);
-
-        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "battery_modifier",
-                Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
-                CustomTags.ELECTRIC_MOTORS, GTArmorModifiers.BATTERY);
-
-        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "defense_5",
-                IntersectionIngredient.of(
-                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
-                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
-                ChemicalHelper.get(plateDense, TungstenSteel), GTArmorModifiers.ARMOR_PLATE_TUNGSTENSTEEL);
+        /*
+         * FIXME
+         * VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "electric_jetpack",
+         * IntersectionIngredient.of(
+         * Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+         * Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+         * GTItems.ELECTRIC_JETPACK,
+         * GTArmorModifiers.JETPACK);
+         * 
+         * VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "advanced_electric_jetpack",
+         * IntersectionIngredient.of(
+         * Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+         * Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+         * GTItems.ELECTRIC_JETPACK_ADVANCED,
+         * GTArmorModifiers.JETPACK);
+         * 
+         * VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "liquid_fuel_jetpack",
+         * IntersectionIngredient.of(
+         * Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+         * Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+         * GTItems.LIQUID_FUEL_JETPACK,
+         * GTArmorModifiers.JETPACK);
+         * 
+         * VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "battery_modifier",
+         * Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+         * CustomTags.ELECTRIC_MOTORS, GTArmorModifiers.BATTERY);
+         */
     }
 }

@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.item.module;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -121,6 +122,17 @@ public class AppliedItemModule {
         return appliedModule;
     }
 
+    public static @Nullable AppliedItemModule attach(ItemStack stack, ItemModule module) {
+        for (int i = 0; i < ArmorUtils.getMaxModifiers(stack); i++) {
+            if (getModuleInSlot(stack, i) == null) return attach(stack, module, i);
+        }
+        return null;
+    }
+
+    public static void clearModules(ItemStack stack) {
+        stack.removeTagKey(MODULES_TAG);
+    }
+
     public static @Nullable AppliedItemModule getModuleInSlot(ItemStack stack, int slot) {
         CompoundTag modulesTag = stack.getOrCreateTagElement(MODULES_TAG);
         if (!modulesTag.contains(String.valueOf(slot))) return null;
@@ -134,5 +146,10 @@ public class AppliedItemModule {
             modules.add(new AppliedItemModule(modulesTag.getCompound(key), Integer.parseInt(key)));
         }
         return modules;
+    }
+
+    public static @Nullable AppliedItemModule getModule(ItemStack stack, ItemModule module) {
+        return getAppliedModules(stack).stream().filter(appliedModule -> appliedModule.getModule() == module).findAny()
+                .orElse(null);
     }
 }

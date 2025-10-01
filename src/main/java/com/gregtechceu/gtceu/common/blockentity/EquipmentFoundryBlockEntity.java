@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.gui.widget.BlockableSlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.api.item.armor.modifier.AppliedArmorModifier;
+import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.recipe.type.EquipmentFoundryRecipe;
@@ -168,7 +169,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
             return;
         }
 
-        ArmorUtils.clearModifiers(stack);
+        AppliedItemModule.clearModules(stack);
         for (int i = 0; i < modifierSlots.getSlots(); i++) {
             ItemStack modifier = modifierSlots.getStackInSlot(i);
             if (modifier.isEmpty()) {

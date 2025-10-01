@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.armor.modifier.AppliedArmorModifier;
 import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
+import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.model.HumanoidModel;
@@ -132,6 +133,9 @@ public class ModifiableArmorItem extends ArmorItem implements IComponentItem {
         }
         for (AppliedArmorModifier modifier : ArmorUtils.getModifiers(stack)) {
             modifier.getModifier().tooltips().accept(modifier, tooltips);
+        }
+        for (AppliedItemModule module : AppliedItemModule.getAppliedModules(stack)) {
+            module.appendHoverText(level, isAdvanced, tooltips);
         }
     }
 

@@ -1,281 +1,35 @@
 package com.gregtechceu.gtceu.common.data;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.capability.IElectricItem;
-import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
-import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
-import com.gregtechceu.gtceu.common.item.armor.AdvancedQuarkTechSuite;
-import com.gregtechceu.gtceu.core.IFireImmuneEntity;
-import com.gregtechceu.gtceu.utils.GTUtil;
-import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
-
-import net.minecraft.network.chat.Component;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
+import com.gregtechceu.gtceu.api.item.module.ItemModule;
+import com.gregtechceu.gtceu.api.item.module.TieredItemModule;
+import com.gregtechceu.gtceu.common.module.*;
 
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.UUID;
 
 @Slf4j
 public class GTArmorModifiers {
 
-    private static final double SPEED_ACCEL = 0.085D;
+    // TODO add battery and jetpack modules
 
-    private static final UUID ADD_ARMOR_UUID = UUID.fromString("95bd81ea-b3af-4cca-8866-f3e62f5f68f1");
-    private static final UUID MUL_DAMAGE_UUID = UUID.fromString("a5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
-    private static final UUID MUL_ATTACK_SPEED_UUID = UUID.fromString("b5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
-    private static final UUID ADD_BLOCK_REACH_UUID = UUID.fromString("c5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
-    private static final UUID MUL_MOVEMENT_SPEED_UUID = UUID.fromString("d5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
-    private static final UUID MUL_SWIM_SPEED_UUID = UUID.fromString("e5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
-    private static final UUID ADD_STEP_HEIGHT_UUID = UUID.fromString("f5bd81ea-b3af-4cca-8866-f3e62f5f68f1");
-
-    public static final ArmorModifier ARMOR_PLATE_TUNGSTENSTEEL = ArmorModifier
-            .createItemAttribute(GTCEu.id("add_armor_5"),
-                    Attributes.ARMOR,
-                    new AttributeModifier(ADD_ARMOR_UUID, "Armor Modifier", 10.0D,
-                            AttributeModifier.Operation.ADDITION),
-                    null)
-            .energyUsageOnHit(5120);
-    public static final ArmorModifier SPEED = ArmorModifier.createEntityTick(GTCEu.id("speed"),
-            (entity, stack, modifier) -> {
-                if (entity instanceof Player player) {
-                    float mul = (GTUtil.getTier(modifier.getModifierItem().getItem()) - 1) / 4f + 1;
-                    boolean sprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
-                    boolean jumping = SyncedKeyMappings.VANILLA_JUMP.isKeyDown(player);
-                    boolean sneaking = SyncedKeyMappings.VANILLA_SNEAK.isKeyDown(player);
-
-                    if ((player.onGround() || player.isInWater()) && sprinting) {
-                        float speed = 0.25F * mul;
-                        if (player.isInWater()) {
-                            speed = 0.1F * mul;
-                            if (jumping) {
-                                player.push(0.0, 0.1, 0.0);
-                            }
-                        }
-                        player.moveRelative(speed, new Vec3(0, 0, 1));
-                    } else if (player.isInWater() && (sneaking || jumping)) {
-                        if (sneaking)
-                            player.push(0.0, -SPEED_ACCEL * mul, 0.0);
-                        if (jumping)
-                            player.push(0.0, SPEED_ACCEL * mul, 0.0);
-                    }
-                }
-                return true;
-            })
-            .energyUsagePerTick(819, (entity, itemStack) -> {
-                if (entity instanceof Player player) {
-                    return SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
-                }
-                return false;
-            })
-            .tooltips((stack, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.speed",
-                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
-            });
-    public static final ArmorModifier FIRE_PROTECTION = ArmorModifier.createEntity(GTCEu.id("fire_protection"),
-            (entity, stack, modifier) -> {
-                if (!entity.level().isClientSide && !entity.fireImmune()) {
-                    ((IFireImmuneEntity) entity).gtceu$setFireImmune(true);
-                    if (entity.isOnFire()) entity.extinguishFire();
-                }
-                return true;
-            },
-            ArmorModifier.Modifier.NONE,
-            (entity, stack, modifier) -> {
-                if (!entity.level().isClientSide) {
-                    ((IFireImmuneEntity) entity).gtceu$setFireImmune(false);
-                }
-                return true;
-            });
-    public static final ArmorModifier DAMAGE_BLOCK = ArmorModifier.createSpecial(GTCEu.id("damage_block"))
-            .onDamage((entity, stack, source, amount, modifier) -> {
-                float div = (GTUtil.getTier(modifier.getModifierItem().getItem()) - 1) / 4f + 1;
-                long energyPerHP = (long) (8192 / div);
-                double percentage = 25;
-                if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) || source.is(DamageTypeTags.IS_FALL) ||
-                        source.is(DamageTypeTags.IS_DROWNING) || source.is(DamageTypes.STARVE)) {
-                    return new ArmorModifier.DamageModifier.Result(amount);
-                }
-
-                int damageReduction = Integer.MAX_VALUE;
-                IElectricItem electricItem = GTCapabilityHelper.getElectricItem(stack);
-                if (electricItem == null) {
-                    return new ArmorModifier.DamageModifier.Result(amount);
-                }
-                damageReduction = (int) Math.min(damageReduction,
-                        percentage * electricItem.getCharge() / (energyPerHP * 100.0D));
-                damageReduction = Math.toIntExact(electricItem.discharge(
-                        damageReduction * energyPerHP,
-                        electricItem.getTier(),
-                        true, false, false) / energyPerHP);
-                return new ArmorModifier.DamageModifier.Result(Math.max(amount - damageReduction, 0));
-            }).tooltips((stack, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.damage_block",
-                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
-            });;
-
-    public static final ArmorModifier ATTACK_SPEED = ArmorModifier.createItemAttribute(
-            GTCEu.id("attack_speed"),
-            Attributes.ATTACK_SPEED,
-            (stack, modifier) -> {
-                double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 16d;
-                return new AttributeModifier(MUL_ATTACK_SPEED_UUID, "Attack Speed Modifier", mul,
-                        AttributeModifier.Operation.MULTIPLY_TOTAL);
-            }, null).tooltips((stack, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.attack_speed",
-                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
-            });
-
-    public static final ArmorModifier ATTACK_DAMAGE = ArmorModifier.createItemAttribute(
-            GTCEu.id("attack_damage"),
-            Attributes.ATTACK_DAMAGE,
-            (stack, modifier) -> {
-                double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 16d;
-                return new AttributeModifier(MUL_DAMAGE_UUID, "Attack Damage Modifier", mul,
-                        AttributeModifier.Operation.MULTIPLY_TOTAL);
-            }, null).tooltips((stack, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.attack_damage",
-                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
-            });
-
-    public static final ArmorModifier BLOCK_REACH = ArmorModifier.createItemAttribute(
-            GTCEu.id("block_reach"),
-            ForgeMod.BLOCK_REACH,
-            (stack, modifier) -> {
-                double add = GTUtil.getTier(modifier.getModifierItem().getItem()) / 2d;
-                return new AttributeModifier(ADD_BLOCK_REACH_UUID, "Block Reach Modifier", add,
-                        AttributeModifier.Operation.ADDITION);
-            }, null).tooltips((stack, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.block_reach",
-                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
-            });
-
-    public static final ArmorModifier BATTERY = ArmorModifier.createEntityTick(GTCEu.id("battery"),
-            (entity, stack, modifier) -> {
-                IElectricItem electricItem = GTCapabilityHelper.getElectricItem(stack);
-                IElectricItem battery = GTCapabilityHelper.getElectricItem(modifier.getModifierItem());
-                if (electricItem == null || !electricItem.chargeable() || battery == null ||
-                        !battery.canProvideChargeExternally())
-                    return true;
-                long energy = electricItem.getMaxCharge() - electricItem.getCharge();
-                long simulated = battery.discharge(energy, battery.getTier(), true, false, true);
-                long actualEnergy = electricItem.charge(simulated, electricItem.getTier(), true, true);
-                long discharged = battery.discharge(actualEnergy, battery.getTier(), true, false, false);
-                electricItem.charge(discharged, electricItem.getTier(), true, false);
-                return true;
-            }).tooltips((stack, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.battery",
-                        stack.getModifierItem().getDisplayName()));
-            });
-
-    public static final ArmorModifier JETPACK = ArmorModifier.createEntityTick(GTCEu.id("jetpack"),
-            (entity, stack, modifier) -> {
-                if (modifier.getModifierItem().getItem() instanceof ArmorComponentItem armorComponentItem) {
-                    armorComponentItem.onArmorTick(stack, entity.level(), (Player) entity);
-                }
-                return true;
-            }).tooltips((modifier, tooltip) -> {
-                tooltip.add(Component.translatable("metaarmor.tooltip.modifier.jetpack",
-                        modifier.getModifierItem().getDisplayName()));
-                modifier.getModifierItem().getItem().appendHoverText(modifier.getModifierItem(), null, tooltip,
-                        TooltipFlag.NORMAL);
-            });
-
-    public static final ArmorModifier MOVEMENT_SPEED_ATTR = ArmorModifier.createItemAttribute(
-            GTCEu.id("movement_speed_attribute"),
-            Attributes.MOVEMENT_SPEED,
-            (stack, modifier) -> {
-                double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 8d;
-                return new AttributeModifier(MUL_MOVEMENT_SPEED_UUID, "Movement Speed Modifier", mul,
-                        AttributeModifier.Operation.MULTIPLY_TOTAL);
-            }, null).tooltips((stack, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.movement_speed",
-                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
-            });
-
-    public static final ArmorModifier SNEAK_SPEED = ArmorModifier.createEntityTick(GTCEu.id("sneak_speed"),
-            (entity, stack, modifier) -> {
-                if (entity instanceof Player player) {
-                    float mul = (GTUtil.getTier(modifier.getModifierItem().getItem()) - 1) / 8f + 1;
-                    boolean jumping = SyncedKeyMappings.VANILLA_JUMP.isKeyDown(player);
-                    boolean sneaking = SyncedKeyMappings.VANILLA_SNEAK.isKeyDown(player);
-
-                    if (player.onGround() && sneaking) {
-                        float speed = 0.25F * mul;
-                        if (player.isInWater()) {
-                            speed = 0.1F * mul;
-                            if (jumping) {
-                                player.push(0.0, 0.1, 0.0);
-                            }
-                        }
-                        player.moveRelative(speed, new Vec3(0, 0, 1));
-                    }
-                }
-                return true;
-            })
-            .energyUsagePerTick(819, (entity, itemStack) -> {
-                if (entity instanceof Player player) {
-                    return SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isShiftKeyDown();
-                }
-                return false;
-            })
-            .tooltips((stack, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.sneak_speed",
-                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
-            });
-
-    public static final ArmorModifier AUTO_EAT = ArmorModifier.createEntityTick(GTCEu.id("auto_eat"),
-            (entity, stack, modifier) -> {
-                IElectricItem electricItem = GTCapabilityHelper.getElectricItem(stack);
-                if (electricItem == null) return true;
-                AdvancedQuarkTechSuite.supplyFood(electricItem, (Player) entity, 512);
-                return true;
-            }).tooltips((appliedArmorModifier, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.autoeat"));
-            });
-
-    public static final ArmorModifier AIR_SUPPLIER = ArmorModifier.createEntityTick(GTCEu.id("respiration"),
-            (entity, stack, modifier) -> {
-                IElectricItem electricItem = GTCapabilityHelper.getElectricItem(stack);
-                if (electricItem == null) return true;
-                AdvancedQuarkTechSuite.supplyAir(electricItem, (Player) entity, 128);
-                return true;
-            }).tooltips((appliedArmorModifier, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.breath"));
-            });
-
-    public static final ArmorModifier SWIM_SPEED = ArmorModifier.createItemAttribute(
-            GTCEu.id("swim_speed"),
-            ForgeMod.SWIM_SPEED,
-            (stack, modifier) -> {
-                double mul = 1 + GTUtil.getTier(modifier.getModifierItem().getItem()) / 8d;
-                return new AttributeModifier(MUL_SWIM_SPEED_UUID, "Swim Speed Modifier", mul,
-                        AttributeModifier.Operation.MULTIPLY_TOTAL);
-            }, null).tooltips((stack, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.swim_speed",
-                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
-            });
-
-    public static final ArmorModifier STEP_HEIGHT = ArmorModifier.createItemAttribute(
-            GTCEu.id("step_height"),
-            ForgeMod.STEP_HEIGHT_ADDITION,
-            (stack, modifier) -> {
-                double add = GTUtil.getTier(modifier.getModifierItem().getItem()) / 8d;
-                return new AttributeModifier(ADD_STEP_HEIGHT_UUID, "Step Height Modifier", add,
-                        AttributeModifier.Operation.ADDITION);
-            }, null).tooltips((stack, tooltips) -> {
-                tooltips.add(Component.translatable("metaarmor.tooltip.modifier.step_height",
-                        GTValues.VN[GTUtil.getTier(stack.getModifierItem().getItem())]));
-            });
+    public static final ItemModule[] SPEED = TieredItemModule.create(GTCEu.id("speed"), SpeedItemModule::new);
+    public static final ItemModule[] DAMAGE_BLOCK = TieredItemModule.create(GTCEu.id("damage_block"),
+            EnergyShieldItemModule::new);
+    public static final ItemModule[] ATTACK_SPEED = TieredItemModule.create(GTCEu.id("attack_speed"),
+            AttackSpeedItemModule::new);
+    public static final ItemModule[] ATTACK_DAMAGE = TieredItemModule.create(GTCEu.id("attack_damage"),
+            AttackDamageItemModule::new);
+    public static final ItemModule[] BLOCK_REACH = TieredItemModule.create(GTCEu.id("block_reach"),
+            BlockReachItemModule::new);
+    public static final ItemModule[] MOVEMENT_SPEED_ATTR = TieredItemModule.create(GTCEu.id("movement_speed"),
+            MovementSpeedItemModule::new);
+    public static final ItemModule[] SNEAK_SPEED = TieredItemModule.create(GTCEu.id("sneak_speed"),
+            SneakSpeedItemModule::new);
+    public static final ItemModule[] SWIM_SPEED = TieredItemModule.create(GTCEu.id("swim_speed"), SwimSpeedModule::new);
+    public static final ItemModule[] STEP_HEIGHT = TieredItemModule.create(GTCEu.id("step_height"),
+            StepHeightModule::new);
+    public static final ItemModule AUTO_EAT = new AutoEatModule(GTCEu.id("auto_eat"));
+    public static final ItemModule AIR_SUPPLIER = new AirSupplierModule(GTCEu.id("air_supplier"));
 
     public static void init() {}
 }

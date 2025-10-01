@@ -19,9 +19,10 @@ public abstract class TieredAttributeItemModule extends TieredItemModule {
     }
 
     @Override
-    public void onEquip(LivingEntity entity, AppliedItemModule appliedItemModule) {
-        super.onEquip(entity, appliedItemModule);
+    public void onAttach(AppliedItemModule appliedItemModule) {
+        super.onAttach(appliedItemModule);
         if (appliedItemModule.getTag().contains("modifierUUID")) return;
+        if (appliedItemModule.getAppliedTo() == null) return;
         EquipmentSlot slot = LivingEntity.getEquipmentSlotForItem(appliedItemModule.getAppliedTo());
         AttributeModifier attributeModifier = getAttributeModifier(appliedItemModule);
         appliedItemModule.getAppliedTo().addAttributeModifier(getAttribute(appliedItemModule), attributeModifier, slot);

@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
@@ -65,6 +66,7 @@ public abstract class ItemModule {
     public void onUnequip(LivingEntity entity, AppliedItemModule modifier) {}
 
     public void onInventoryTick(Player player, AppliedItemModule module) {
+        if (module.getModuleItem() == null) return;
         IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getModuleItem());
         long energy = energyUsagePerTick(player, module);
         if (electricItem != null && useEnergyInInventory(player, module)) {
@@ -88,6 +90,10 @@ public abstract class ItemModule {
     }
 
     public boolean canRemove(AppliedItemModule modifier) {
+        return true;
+    }
+
+    public boolean canApplyTo(ItemStack stack) {
         return true;
     }
 }

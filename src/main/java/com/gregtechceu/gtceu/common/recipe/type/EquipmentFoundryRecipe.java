@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.ItemModule;
+import com.gregtechceu.gtceu.api.item.module.TieredItemModule;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -39,7 +40,8 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
 
     private ItemModule getModule(ItemStack ingredient) {
         int tier = GTUtil.getTier(ingredient.getItem());
-        return modifier[Mth.clamp(tier - GTValues.LV, 0, modifier.length)];
+        int lowestTier = (modifier[0] instanceof TieredItemModule tieredModule) ? tieredModule.getTier() : GTValues.ULV;
+        return modifier[Mth.clamp(tier - lowestTier, 0, modifier.length)];
     }
 
     public boolean matches(RecipeWrapper container, Level level) {

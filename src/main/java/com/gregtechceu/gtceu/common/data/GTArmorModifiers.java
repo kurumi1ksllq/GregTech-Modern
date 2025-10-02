@@ -5,12 +5,7 @@ import com.gregtechceu.gtceu.api.item.module.ItemModule;
 import com.gregtechceu.gtceu.api.item.module.TieredItemModule;
 import com.gregtechceu.gtceu.common.module.*;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class GTArmorModifiers {
-
-    // TODO add battery and jetpack modules
 
     public static final ItemModule[] SPEED = TieredItemModule.create(GTCEu.id("speed"), SpeedItemModule::new);
     public static final ItemModule[] DAMAGE_BLOCK = TieredItemModule.create(GTCEu.id("damage_block"),
@@ -31,6 +26,7 @@ public class GTArmorModifiers {
     public static final ItemModule AUTO_EAT = new AutoEatModule(GTCEu.id("auto_eat"));
     public static final ItemModule AIR_SUPPLIER = new AirSupplierModule(GTCEu.id("air_supplier"));
     public static final ItemModule BATTERY = new BatteryItemModule(GTCEu.id("battery"));
+    public static final ItemModule NIGHT_VISION = new NightVisionModule(GTCEu.id("night_vision"));
 
     public static void init() {}
 }

@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.data.recipe.misc;
 
 import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
+import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
@@ -108,5 +109,11 @@ public class EquipmentFoundryRecipes {
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "battery_modifier",
                 Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
                 CustomTags.BATTERIES, GTArmorModifiers.BATTERY);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "night_vision",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_HELMETS)),
+                GTItems.NIGHTVISION_GOGGLES, GTArmorModifiers.NIGHT_VISION);
     }
 }

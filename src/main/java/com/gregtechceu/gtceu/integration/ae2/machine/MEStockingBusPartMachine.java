@@ -33,6 +33,9 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import appeng.api.config.Actionable;
 import appeng.api.networking.IGrid;
+import appeng.api.networking.IGridNodeListener;
+import appeng.api.networking.IStackWatcher;
+import appeng.api.networking.storage.IStorageWatcherNode;
 import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.GenericStack;
@@ -50,7 +53,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class MEStockingBusPartMachine extends MEInputBusPartMachine implements IMEStockingPart {
+public class MEStockingBusPartMachine extends MEInputBusPartMachine implements IMEStockingPart, IStorageWatcherNode {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             MEStockingBusPartMachine.class, MEInputBusPartMachine.MANAGED_FIELD_HOLDER);
@@ -74,9 +77,15 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     @Setter
     private Predicate<GenericStack> autoPullTest;
 
+    private IStackWatcher watcher;
+
+    private PriorityQueue<ItemHolder> topItems = new PriorityQueue<>(
+            Comparator.comparingLong(ItemHolder::getAmount));
+
     public MEStockingBusPartMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
         this.autoPullTest = $ -> false;
+        this.nodeHolder.getMainNode().addService(IStorageWatcherNode.class, this);
     }
 
     /////////////////////////////////
@@ -93,6 +102,12 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     public void removedFromController(IMultiController controller) {
         IMEStockingPart.super.removedFromController(controller);
         super.removedFromController(controller);
+    }
+
+    @Override
+    public void onMainNodeStateChanged(IGridNodeListener.State reason) {
+        super.onMainNodeStateChanged(reason);
+        refreshList();
     }
 
     @Override
@@ -116,31 +131,112 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
         if (ticksPerCycle == 0) ticksPerCycle = ConfigHolder.INSTANCE.compat.ae2.updateIntervals; // Emergency Check to
                                                                                                   // Avoid Crash loops.
         if (getOffsetTimer() % ticksPerCycle == 0) {
-            if (autoPull) {
-                refreshList();
-            }
             syncME();
         }
     }
 
     @Override
     protected void syncME() {
-        // Update the visual display for the fake items. This also is important for the item handler's
-        // getStackInSlot() method, as it uses the cached items set here.
-        MEStorage networkInv = this.getMainNode().getGrid().getStorageService().getInventory();
-        for (ExportOnlyAEItemSlot slot : this.aeItemHandler.getInventory()) {
-            var config = slot.getConfig();
-            if (config != null) {
-                // Try to fill the slot
-                var key = config.what();
-                long extracted = networkInv.extract(key, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
-                if (extracted >= minStackSize) {
-                    slot.setStock(new GenericStack(key, extracted));
-                    continue;
+        // Refreshes what things are being watched
+        // TODO: Be smart about this.
+        // We only need to update what we listen to when said list changes, so in
+        // refreshList() or when it's changed in the UI
+        // For now, periodically testing is fine since this is cheap afs
+        if (watcher == null) return;
+        watcher.reset();
+        if (autoPull) {
+            watcher.setWatchAll(true);
+        } else {
+            watcher.setWatchAll(false);
+            for (ExportOnlyAEItemSlot slot : this.aeItemHandler.getInventory()) {
+                if (slot.getConfig() == null) continue;
+                watcher.add(slot.getConfig().what());
+            }
+        }
+    }
+
+    @Override
+    public void updateWatcher(IStackWatcher newWatcher) {
+        watcher = newWatcher;
+        this.syncME();
+    }
+
+    @Override
+    public void onStackChange(AEKey what, long amount) {
+        if (autoPull) {
+            if (!(what instanceof AEItemKey itemKey)) return;
+
+            // TODO: this is expensive? maybe move this somewhere else?
+            if (autoPullTest != null && !autoPullTest.test(new GenericStack(itemKey, amount))) {
+                // If this gets reached, we should delete the entry. This is the same as updating the entry to amount 0
+                amount = 0;
+            }
+
+            var changed = false;
+            for (var entry : new PriorityQueue<>(topItems)) {
+                if (entry.item.equals(what)) {
+                    if (amount <= 0) {
+                        // An item is being deleted, force recalculate the entire list
+                        refreshList();
+                        return;
+                    } else {
+                        entry.setAmount(amount);
+                        changed = true;
+                    }
                 }
             }
-            slot.setStock(null);
+            if (!changed) {
+                // If we get here, it's a new item
+                changed = addKeyToPQ(what, amount);
+            }
+            if (!changed) return;
+            // TODO: only do this once all the stacks have changed? Is there any way to know?
+            syncListToHandler();
+        } else {
+            for (ExportOnlyAEItemSlot slot : this.aeItemHandler.getInventory()) {
+                if (slot.getConfig() == null) continue;
+                AEKey key = slot.getConfig().what();
+                if (key.equals(what)) {
+                    if (amount > 0) {
+                        slot.setStock(new GenericStack(key, amount));
+                    } else {
+                        slot.setStock(null);
+                    }
+                }
+            }
         }
+    }
+
+    private boolean addKeyToPQ(AEKey what, long amount) {
+        if (amount <= 0) return false;
+        if (!(what instanceof AEItemKey itemKey)) return false;
+        if (autoPullTest != null && !autoPullTest.test(new GenericStack(itemKey, amount))) return false;
+
+        if (amount >= minStackSize) {
+            if (topItems.size() < CONFIG_SIZE) {
+                topItems.offer(new ItemHolder(itemKey, amount));
+                return true;
+            } else if (amount > topItems.peek().getAmount()) {
+                topItems.poll();
+                topItems.offer(new ItemHolder(itemKey, amount));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void syncListToHandler() {
+        int index = 0;
+        int itemAmount = topItems.size();
+        var clone = new PriorityQueue<>(topItems);
+        while (!clone.isEmpty()) {
+            var entry = clone.poll();
+            var slot = this.aeItemHandler.getInventory()[itemAmount - index - 1];
+            slot.setConfig(new GenericStack(entry.getItem(), 1));
+            slot.setStock(new GenericStack(entry.getItem(), entry.getAmount()));
+            index++;
+        }
+        aeItemHandler.clearInventory(index);
     }
 
     @Override
@@ -217,51 +313,17 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
         MEStorage networkStorage = grid.getStorageService().getInventory();
         var counter = networkStorage.getAvailableStacks();
 
-        // Use a PriorityQueue to sort the stacks on size, take the first CONFIG_SIZE
-        // biggest stacks.
-        PriorityQueue<Object2LongMap.Entry<AEKey>> topItems = new PriorityQueue<>(
-                Comparator.comparingLong(Object2LongMap.Entry<AEKey>::getLongValue));
+        topItems.clear();
 
         for (Object2LongMap.Entry<AEKey> entry : counter) {
             long amount = entry.getLongValue();
             AEKey what = entry.getKey();
 
-            if (amount <= 0) continue;
-            if (!(what instanceof AEItemKey itemKey)) continue;
-
-            // Ensure that it is valid to configure with this stack
-            if (autoPullTest != null && !autoPullTest.test(new GenericStack(itemKey, amount))) continue;
-            if (amount >= minStackSize) {
-                if (topItems.size() < CONFIG_SIZE) {
-                    topItems.offer(entry);
-                } else if (amount > topItems.peek().getLongValue()) {
-                    topItems.poll();
-                    topItems.offer(entry);
-                }
-            }
+            addKeyToPQ(what, amount);
         }
 
         // Now, topItems is a PQ with CONFIG_SIZE highest amount items in the system.
-        int index;
-        int itemAmount = topItems.size();
-        for (index = 0; index < CONFIG_SIZE; index++) {
-            if (topItems.isEmpty()) break;
-            Object2LongMap.Entry<AEKey> entry = topItems.poll();
-
-            AEKey what = entry.getKey();
-            long amount = entry.getLongValue();
-
-            // If we get here, the item has already been checked by the PQ.
-            long request = networkStorage.extract(what, amount, Actionable.SIMULATE, actionSource);
-
-            // Since we want our items to be displayed from highest to lowest, but poll() returns
-            // the lowest first, we fill in the slots starting at itemAmount-1
-            var slot = this.aeItemHandler.getInventory()[itemAmount - index - 1];
-            slot.setConfig(new GenericStack(what, 1));
-            slot.setStock(new GenericStack(what, request));
-        }
-
-        aeItemHandler.clearInventory(index);
+        syncListToHandler();
     }
 
     ///////////////////////////////
@@ -398,6 +460,21 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
             return new ExportOnlyAEStockingItemSlot(
                     this.config == null ? null : copy(this.config),
                     this.stock == null ? null : copy(this.stock));
+        }
+    }
+
+    private static class ItemHolder {
+
+        @Getter
+        @Setter
+        public AEKey item;
+        @Getter
+        @Setter
+        public long amount;
+
+        public ItemHolder(AEKey item, long amount) {
+            this.item = item;
+            this.amount = amount;
         }
     }
 }

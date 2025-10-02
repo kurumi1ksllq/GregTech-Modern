@@ -81,6 +81,12 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(Tags.Items.ARMORS_BOOTS)),
                 CustomTags.ELECTRIC_PISTONS, GTArmorModifiers.STEP_HEIGHT);
 
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "jump_boost",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_LEGGINGS)),
+                CustomTags.ELECTRIC_PISTONS, GTArmorModifiers.JUMP_BOOST);
+
         /*
          * FIXME
          * VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "electric_jetpack",

@@ -1,14 +1,18 @@
 package com.gregtechceu.gtceu.core.mixins;
 
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
+import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
+import com.gregtechceu.gtceu.api.item.module.IJumpBoostItemModule;
 
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -39,5 +43,25 @@ public abstract class LivingEntityMixin {
             }
             ++i;
         }
+    }
+
+    @Unique
+    private LivingEntity gtceu$self() {
+        return (LivingEntity) (Object) this;
+    }
+
+    @Inject(method = "getJumpBoostPower", at = @At("HEAD"), cancellable = true)
+    private void gtceu$adjustJumpBoost(CallbackInfoReturnable<Float> cir) {
+        float add = 0;
+        for (ItemStack stack : this.getArmorSlots()) {
+            for (AppliedItemModule module : AppliedItemModule.getAppliedModules(stack)) {
+                if (module.getModule() instanceof IJumpBoostItemModule jumpBoostModule) {
+                    add += jumpBoostModule.getJumpBoost(module);
+                }
+            }
+        }
+        cir.setReturnValue(add + (gtceu$self().hasEffect(MobEffects.JUMP) ?
+                0.1F * ((float) gtceu$self().getEffect(MobEffects.JUMP).getAmplifier() + 1.0F) : 0.0F));
+        cir.cancel();
     }
 }

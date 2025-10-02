@@ -213,9 +213,6 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine implemen
             if (amount <= 0) continue;
             if (!(what instanceof AEFluidKey fluidKey)) continue;
 
-            long request = networkStorage.extract(what, amount, Actionable.SIMULATE, actionSource);
-            if (request == 0) continue;
-
             // Ensure that it is valid to configure with this stack
             if (autoPullTest != null && !autoPullTest.test(new GenericStack(fluidKey, amount))) continue;
             if (amount >= minStackSize) {

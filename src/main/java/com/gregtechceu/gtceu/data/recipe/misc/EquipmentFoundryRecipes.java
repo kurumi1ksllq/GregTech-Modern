@@ -103,9 +103,10 @@ public class EquipmentFoundryRecipes {
          * GTItems.LIQUID_FUEL_JETPACK,
          * GTArmorModifiers.JETPACK);
          * 
-         * VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "battery_modifier",
-         * Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
-         * CustomTags.ELECTRIC_MOTORS, GTArmorModifiers.BATTERY);
+         *
          */
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "battery_modifier",
+                Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                CustomTags.BATTERIES, GTArmorModifiers.BATTERY);
     }
 }

@@ -30,6 +30,7 @@ public class GTArmorModifiers {
             StepHeightModule::new);
     public static final ItemModule AUTO_EAT = new AutoEatModule(GTCEu.id("auto_eat"));
     public static final ItemModule AIR_SUPPLIER = new AirSupplierModule(GTCEu.id("air_supplier"));
+    public static final ItemModule BATTERY = new BatteryItemModule(GTCEu.id("battery"));
 
     public static void init() {}
 }

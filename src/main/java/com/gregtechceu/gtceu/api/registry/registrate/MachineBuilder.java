@@ -28,6 +28,7 @@ import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.data.models.GTMachineModels;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.model.builder.MachineModelBuilder;
+import com.gregtechceu.gtceu.forge.ForgeCommonEventListener;
 import com.gregtechceu.gtceu.integration.kjs.GTCEuStartupEvents;
 import com.gregtechceu.gtceu.integration.kjs.events.RegisterGTMachineEventJS;
 
@@ -49,7 +50,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
-import net.minecraftforge.fml.ModLoader;
+import net.minecraftforge.common.MinecraftForge;
 
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.builders.BlockBuilder;
@@ -541,7 +542,8 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
     @HideFromJS
     public DEFINITION register() {
         RegisterGTMachineEvent event = new RegisterGTMachineEvent(this);
-        ModLoader.get().postEvent(event);
+        ForgeCommonEventListener.addSpoilTransferModifier(event); // ok im putting this back lol FIXME
+        MinecraftForge.EVENT_BUS.post(event);
         if (GTCEu.Mods.isKubeJSLoaded()) {
             KJSCallWrapper.fireKJSEvent(event);
         }

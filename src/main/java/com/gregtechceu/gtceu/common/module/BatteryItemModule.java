@@ -5,8 +5,13 @@ import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.ItemModule;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+
+import java.util.List;
 
 public class BatteryItemModule extends ItemModule {
 
@@ -30,5 +35,12 @@ public class BatteryItemModule extends ItemModule {
             long amount = (long) (item.getMaxCharge() * PERCENTAGE / 100 - item.getCharge());
             battery.charge(item.discharge(amount, item.getTier(), true, false, false), battery.getTier(), true, false);
         }
+    }
+
+    @Override
+    public void appendHoverText(Level level, TooltipFlag isAdvanced, List<Component> tooltips,
+                                AppliedItemModule module) {
+        super.appendHoverText(level, isAdvanced, tooltips, module);
+        tooltips.add(Component.translatable("metaarmor.tooltip.modifier.battery", module.getModuleItem()));
     }
 }

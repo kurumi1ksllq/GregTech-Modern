@@ -41,6 +41,7 @@ public class BatteryItemModule extends ItemModule {
     public void appendHoverText(Level level, TooltipFlag isAdvanced, List<Component> tooltips,
                                 AppliedItemModule module) {
         super.appendHoverText(level, isAdvanced, tooltips, module);
-        tooltips.add(Component.translatable("metaarmor.tooltip.modifier.battery", module.getModuleItem()));
+        tooltips.add(
+                Component.translatable("metaarmor.tooltip.modifier.battery", module.getModuleItem().getDisplayName()));
     }
 }

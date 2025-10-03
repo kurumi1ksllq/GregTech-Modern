@@ -46,9 +46,7 @@ public final class OreRecipeHandler {
         }
 
         for (TagPrefix ore : ORES.keySet()) {
-            if (ConfigHolder.INSTANCE.worldgen.allUniqueStoneTypes || ORES.get(ore).shouldDropAsItem()) {
-                processOre(provider, ore, property, material);
-            }
+            processOre(provider, ore, property, material);
         }
 
         processRawOre(provider, property, material);

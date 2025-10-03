@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.api.item.armor;
 
 import com.gregtechceu.gtceu.api.item.IComponentItem;
-import com.gregtechceu.gtceu.api.item.armor.modifier.AppliedArmorModifier;
 import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.common.data.GTItems;
@@ -177,9 +176,6 @@ public class ArmorComponentItem extends ArmorItem implements IComponentItem {
         }
         for (AppliedItemModule module : AppliedItemModule.getAppliedModules(stack)) {
             module.appendHoverText(level, isAdvanced, tooltips);
-        }
-        for (AppliedArmorModifier modifier : ArmorUtils.getModifiers(stack)) {
-            modifier.getModifier().tooltips().accept(modifier, tooltips);
         }
     }
 

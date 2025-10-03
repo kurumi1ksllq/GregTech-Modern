@@ -102,6 +102,7 @@ public interface ModifierFunction {
     final class FunctionBuilder {
 
         private int parallels = 1;
+        private int subtickParallels = 1;
         private int batchParallels = 1;
         private int addOCs = 0;
         private ContentModifier eutModifier = ContentModifier.IDENTITY;
@@ -169,6 +170,7 @@ public interface ModifierFunction {
                         newConditions, new ArrayList<>(recipe.ingredientActions),
                         recipe.data, recipe.duration, recipe.recipeCategory, recipe.transferSpoilingProgress);
                 copied.parallels = recipe.parallels * parallels;
+                copied.subtickParallels = recipe.subtickParallels * subtickParallels;
                 copied.ocLevel = recipe.ocLevel + addOCs;
                 copied.batchParallels = recipe.batchParallels * batchParallels;
                 if (recipe.data.getBoolean("duration_is_total_cwu")) {

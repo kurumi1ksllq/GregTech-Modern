@@ -27,6 +27,7 @@ import com.lowdragmc.lowdraglib.utils.Position;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraftforge.energy.IEnergyStorage;
 
@@ -35,7 +36,9 @@ import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -73,6 +76,9 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
     @Getter
     @Persisted
     protected final CustomItemStackHandler chargerInventory;
+    @Getter
+    @Persisted
+    protected final Set<ItemStack> linkedItems = new HashSet<>();
 
     @Getter
     @DescSynced
@@ -189,6 +195,7 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
                 }
             }
         }
+        electricItems.addAll(this.linkedItems);
         return electricItems;
     }
 
@@ -268,6 +275,7 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
                 setEnergyStored(getInternalStorage() - internalAmps * voltage + energy);
                 return usedAmps;
             }
+            linkedItems.clear();
             return 0;
         }
 

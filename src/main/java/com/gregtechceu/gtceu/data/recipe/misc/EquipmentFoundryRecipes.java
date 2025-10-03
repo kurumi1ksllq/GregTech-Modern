@@ -159,5 +159,11 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
                         Ingredient.of(Tags.Items.ARMORS_HELMETS)),
                 CustomTags.SENSORS, GTArmorModifiers.SENSOR);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "wireless_charger",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+                CustomTags.SENSORS, GTArmorModifiers.WIRELESS_CHARGER);
     }
 }

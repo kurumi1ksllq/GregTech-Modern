@@ -1,0 +1,84 @@
+package com.gregtechceu.gtceu.common.module;
+
+import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.capability.IElectricItem;
+import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
+import com.gregtechceu.gtceu.api.item.module.ItemModule;
+import com.gregtechceu.gtceu.api.item.module.TieredItemModule;
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
+import com.gregtechceu.gtceu.common.machine.electric.ChargerMachine;
+import com.gregtechceu.gtceu.common.machine.multiblock.electric.PowerSubstationMachine;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+
+import java.util.List;
+
+public class AutoChargeItemModule extends TieredItemModule {
+
+    public AutoChargeItemModule(ResourceLocation id, int tier) {
+        super(id, tier);
+    }
+
+    @Override
+    public void onInventoryTick(Player player, AppliedItemModule module) {
+        super.onInventoryTick(player, module);
+        IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getAppliedTo());
+        if (electricItem == null) return;
+        long energy = Math.min(electricItem.getMaxCharge() - electricItem.getCharge(), electricItem.getTransferLimit());
+        if (energy <= 0) return;
+        MetaMachine machine = getLinkedMachine(player.getServer(), module);
+        if (machine == null) return;
+        boolean interdimensional = false;
+        for (ItemModule shieldModule : GTArmorModifiers.DAMAGE_BLOCK) {
+            if (shieldModule instanceof EnergyShieldItemModule shieldItemModule &&
+                    shieldItemModule.getTier() >= GTValues.IV) {
+                if (AppliedItemModule.getModule(module.getAppliedTo(), shieldItemModule) != null)
+                    interdimensional = true;
+            }
+            if (interdimensional) break;
+        }
+        interdimensional = interdimensional && getTier() >= GTValues.IV;
+        if (machine.getLevel() != player.level() && !interdimensional) return;
+        if (!interdimensional && machine.getPos().distSqr(player.blockPosition()) < getRange()) return;
+        if (machine instanceof PowerSubstationMachine substation) {
+            electricItem.charge(substation.getEnergyBank().drain(energy), electricItem.getTier(), false, false);
+        } else if (machine instanceof ChargerMachine charger) {
+            charger.getLinkedItems().add(module.getAppliedTo());
+        }
+    }
+
+    private MetaMachine getLinkedMachine(MinecraftServer server, AppliedItemModule module) {
+        if (!module.getModuleItem().getOrCreateTag().contains("LinkedCharger")) return null;
+        CompoundTag tag = module.getModuleItem().getOrCreateTagElement("LinkedCharger");
+        int x = tag.getInt("x");
+        int y = tag.getInt("y");
+        int z = tag.getInt("z");
+        if (server == null) return null;
+        Level level = server
+                .getLevel(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dim"))));
+        if (level == null) return null;
+        return MetaMachine.getMachine(level, new BlockPos(x, y, z));
+    }
+
+    private double getRange() {
+        return (8 << getTier());
+    }
+
+    @Override
+    public void appendHoverText(Level level, TooltipFlag isAdvanced, List<Component> tooltips,
+                                AppliedItemModule module) {
+        super.appendHoverText(level, isAdvanced, tooltips, module);
+        tooltips.add(Component.translatable("metaarmor.tooltip.modifier.wireless_charging", GTValues.VNF[getTier()]));
+    }
+}

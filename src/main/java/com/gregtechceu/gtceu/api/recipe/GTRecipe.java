@@ -54,6 +54,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
     public CompoundTag data;
     public int duration;
     public int parallels = 1;
+    public int subtickParallels = 1;
     public int batchParallels = 1;
     public int ocLevel = 0;
     /**
@@ -152,6 +153,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
         copied.ocLevel = ocLevel;
         copied.parallels = parallels;
         copied.batchParallels = batchParallels;
+        copied.subtickParallels = subtickParallels;
         return copied;
     }
 
@@ -240,6 +242,10 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
             a += stack.amperage();
         }
         return new EnergyStack(v, a);
+    }
+
+    public int getTotalRuns() {
+        return parallels * subtickParallels * batchParallels;
     }
 
     // Just check id as there *should* only ever be 1 instance of a recipe with this id.

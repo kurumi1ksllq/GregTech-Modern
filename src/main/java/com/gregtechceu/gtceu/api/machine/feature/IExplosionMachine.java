@@ -68,7 +68,7 @@ public interface IExplosionMachine extends IMachineFeature {
                 for (ItemStack stack : player.getArmorSlots()) {
                     if (stack.isEmpty()) continue;
                     for (AppliedItemModule module : AppliedItemModule.getAppliedModules(stack)) {
-                        if (module.getModule() instanceof SensorItemModule && module.getModule().isEnabled(module)) {
+                        if (module.getModule() instanceof SensorItemModule && module.isEnabled()) {
                             player.sendSystemMessage(Component.translatable(
                                     "gtceu.machine.exploded",
                                     machine.getDefinition().asStack().getDisplayName(),

@@ -54,7 +54,7 @@ public interface IArmorLogic {
 
     default boolean isPPE(ItemStack stack) {
         for (AppliedItemModule module : AppliedItemModule.getAppliedModules(stack)) {
-            if (module.getModule().isPPE(module)) return true;
+            if (module.isPPE()) return true;
         }
         return false;
     }

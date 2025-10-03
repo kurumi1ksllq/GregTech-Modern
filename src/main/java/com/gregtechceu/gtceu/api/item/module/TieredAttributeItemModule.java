@@ -26,9 +26,7 @@ public abstract class TieredAttributeItemModule extends TieredItemModule {
         return super.canApplyTo(stack) && ArmorUtils.getMaxModuleTier(stack) >= getTier();
     }
 
-    @Override
-    public void onAttach(AppliedItemModule appliedItemModule) {
-        super.onAttach(appliedItemModule);
+    private void attachAttribute(AppliedItemModule appliedItemModule) {
         if (appliedItemModule.getTag().contains("modifierUUID")) return;
         if (appliedItemModule.getAppliedTo() == null) return;
         EquipmentSlot slot = LivingEntity.getEquipmentSlotForItem(appliedItemModule.getAppliedTo());
@@ -37,11 +35,10 @@ public abstract class TieredAttributeItemModule extends TieredItemModule {
         appliedItemModule.getTag().putUUID("modifierUUID", attributeModifier.getId());
     }
 
-    @Override
-    public void onRemove(AppliedItemModule modifier) {
-        super.onRemove(modifier);
-        UUID uuid = modifier.getTag().getUUID("modifierUUID");
-        ListTag listTag = modifier.getAppliedTo().getOrCreateTag().getList("AttributeModifiers", Tag.TAG_COMPOUND);
+    private void detachAttribute(AppliedItemModule appliedItemModule) {
+        UUID uuid = appliedItemModule.getTag().getUUID("modifierUUID");
+        ListTag listTag = appliedItemModule.getAppliedTo().getOrCreateTag().getList("AttributeModifiers",
+                Tag.TAG_COMPOUND);
         Iterator<Tag> it = listTag.iterator();
         while (it.hasNext()) {
             Tag tag = it.next();
@@ -50,6 +47,26 @@ public abstract class TieredAttributeItemModule extends TieredItemModule {
                 if (attributeModifier != null && attributeModifier.getId().equals(uuid)) it.remove();
             }
         }
+    }
+
+    @Override
+    public void onAttach(AppliedItemModule appliedItemModule) {
+        super.onAttach(appliedItemModule);
+        attachAttribute(appliedItemModule);
+    }
+
+    @Override
+    public void onRemove(AppliedItemModule appliedItemModule) {
+        super.onRemove(appliedItemModule);
+        detachAttribute(appliedItemModule);
+    }
+
+    @Override
+    public void setEnabled(AppliedItemModule module, boolean enabled) {
+        super.setEnabled(module, enabled);
+        if (this.isEnabled(module)) {
+            this.attachAttribute(module);
+        } else this.detachAttribute(module);
     }
 
     public abstract Attribute getAttribute(AppliedItemModule module);

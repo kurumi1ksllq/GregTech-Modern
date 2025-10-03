@@ -4,10 +4,12 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -15,6 +17,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -65,6 +68,9 @@ public abstract class ItemModule {
 
     public void onUnequip(LivingEntity entity, AppliedItemModule modifier) {}
 
+    /**
+     * Called each tick this item is in a player's inventory or equipment slots
+     */
     public void onInventoryTick(Player player, AppliedItemModule module) {
         if (module.getModuleItem() == null) return;
         IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getModuleItem());
@@ -102,6 +108,23 @@ public abstract class ItemModule {
     }
 
     public boolean isEnabled(AppliedItemModule module) {
-        return true;
+        if (!module.getTag().contains("enabled")) {
+            setEnabled(module, true);
+        }
+        return module.getTag().getBoolean("enabled");
     }
+
+    public void setEnabled(AppliedItemModule module, boolean enabled) {
+        module.getTag().putBoolean("enabled", enabled);
+    }
+
+    /**
+     * Called when the item this module is attached to is ticked,
+     * ignores {@link #isEnabled(AppliedItemModule)}.
+     *
+     * @param entity the entity in which the item is, {@code null} if the item is not in one
+     * @param pos    the position of the block in which the item is, {@code null} if the item is not in one
+     */
+    public void onTickRaw(AppliedItemModule module, @Nullable Entity entity, @NotNull Level level,
+                          @Nullable BlockPos pos) {}
 }

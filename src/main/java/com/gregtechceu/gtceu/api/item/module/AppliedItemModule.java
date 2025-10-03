@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.item.module;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
@@ -89,11 +90,16 @@ public class AppliedItemModule {
     }
 
     public void inventoryTick(Player player) {
-        this.module.onInventoryTick(player, this);
+        if (this.isEnabled()) this.module.onInventoryTick(player, this);
+        this.module.onTickRaw(this, player, player.level(), null);
     }
 
     public void armorTick(@NotNull LivingEntity entity) {
-        this.module.onArmorTick(entity, this);
+        if (this.isEnabled()) this.module.onArmorTick(entity, this);
+    }
+
+    public void tick(@NotNull Level level, @Nullable BlockPos pos) {
+        this.module.onTickRaw(this, null, level, pos);
     }
 
     public void equip(@NotNull LivingEntity entity) {
@@ -105,11 +111,19 @@ public class AppliedItemModule {
     }
 
     public float changeDamage(LivingEntity entity, float damage, DamageSource source) {
-        return this.module.changeDamage(entity, this, damage, source);
+        return this.isEnabled() ? this.module.changeDamage(entity, this, damage, source) : damage;
     }
 
     public void appendHoverText(Level level, TooltipFlag isAdvanced, List<Component> tooltips) {
         this.module.appendHoverText(level, isAdvanced, tooltips, this);
+    }
+
+    public boolean isEnabled() {
+        return this.module.isEnabled(this);
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.module.setEnabled(this, enabled);
     }
 
     public static AppliedItemModule attach(ItemStack stack, ItemModule module, int slot) {
@@ -151,5 +165,9 @@ public class AppliedItemModule {
     public static @Nullable AppliedItemModule getModule(ItemStack stack, ItemModule module) {
         return getAppliedModules(stack).stream().filter(appliedModule -> appliedModule.getModule() == module).findAny()
                 .orElse(null);
+    }
+
+    public boolean isPPE() {
+        return this.module.isPPE(this) && this.isEnabled();
     }
 }

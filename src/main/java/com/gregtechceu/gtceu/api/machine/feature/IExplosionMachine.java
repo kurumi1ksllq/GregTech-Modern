@@ -1,11 +1,18 @@
 package com.gregtechceu.gtceu.api.machine.feature;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.common.machine.owner.PlayerOwner;
+import com.gregtechceu.gtceu.common.module.SensorItemModule;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
@@ -51,8 +58,26 @@ public interface IExplosionMachine extends IMachineFeature {
     }
 
     default void doExplosion(BlockPos pos, float explosionPower) {
-        var machine = self();
-        var level = machine.getLevel();
+        MetaMachine machine = self();
+        Level level = machine.getLevel();
+        PlayerOwner owner = machine.getPlayerOwner();
+        if (level == null) return;
+        if (owner != null && !level.isClientSide() && level.getServer() != null) {
+            ServerPlayer player = level.getServer().getPlayerList().getPlayer(owner.getPlayerUUID());
+            if (player != null) {
+                for (ItemStack stack : player.getArmorSlots()) {
+                    if (stack.isEmpty()) continue;
+                    for (AppliedItemModule module : AppliedItemModule.getAppliedModules(stack)) {
+                        if (module.getModule() instanceof SensorItemModule && module.getModule().isEnabled(module)) {
+                            player.sendSystemMessage(Component.translatable(
+                                    "gtceu.machine.exploded",
+                                    machine.getDefinition().asStack().getDisplayName(),
+                                    pos.getX(), pos.getY(), pos.getZ()));
+                        }
+                    }
+                }
+            }
+        }
         level.removeBlock(pos, false);
         level.explode(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                 explosionPower, ConfigHolder.INSTANCE.machines.doesExplosionDamagesTerrain ?

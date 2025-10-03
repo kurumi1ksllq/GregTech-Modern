@@ -100,4 +100,8 @@ public abstract class ItemModule {
     public boolean canApplyTo(ItemStack stack) {
         return true;
     }
+
+    public boolean isEnabled(AppliedItemModule module) {
+        return true;
+    }
 }

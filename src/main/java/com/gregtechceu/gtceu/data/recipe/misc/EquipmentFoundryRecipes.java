@@ -153,5 +153,11 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(Tags.Items.ARMORS_BOOTS)),
                 ChemicalHelper.get(plate, PolyvinylChloride),
                 GTArmorModifiers.PPE);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "sensor",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_HELMETS)),
+                CustomTags.SENSORS, GTArmorModifiers.SENSOR);
     }
 }

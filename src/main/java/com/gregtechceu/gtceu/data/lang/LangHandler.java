@@ -346,6 +346,8 @@ public class LangHandler {
         provider.add("metaarmor.tooltip.modifier.sneak_speed", "Increases Sneaking Speed (%s)");
         provider.add("metaarmor.tooltip.modifier.step_height", "Increases Step Height (%s)");
         provider.add("metaarmor.tooltip.modifier.swim_speed", "Increases Swim Speed (%s)");
+        provider.add("metaarmor.tooltip.modifier.sensor", "Machine Breaking Reporting (%s)");
+        provider.add("gtceu.machine.exploded", "%s exploded at (%d, %d, %d)");
         provider.add("metaarmor.hud.status.enabled", "§aON");
         provider.add("metaarmor.hud.status.disabled", "§cOFF");
         provider.add("metaarmor.hud.energy_lvl", "Energy Level: %s");

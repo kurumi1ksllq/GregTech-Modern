@@ -94,7 +94,8 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
         ItemModule module = getModule(foundIngredient);
         if (AppliedItemModule.getModule(result, module) != null) return ItemStack.EMPTY;
         if (!module.canApplyTo(result)) return ItemStack.EMPTY;
-        AppliedItemModule.attach(result, module);
+        AppliedItemModule attachedModule = AppliedItemModule.attach(result, module);
+        if (attachedModule != null) attachedModule.setModuleItem(foundIngredient);
         return result;
     }
 

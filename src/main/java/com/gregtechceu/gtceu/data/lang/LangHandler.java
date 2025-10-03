@@ -705,6 +705,7 @@ public class LangHandler {
         provider.add("item.gtceu.small_iridium_metal_residue_dust", "Small Pile of Iridium Metal Residue");
         provider.add("item.gtceu.iridium_metal_residue_dust", "Iridium Metal Residue");
 
+        provider.add("behaviour.charger_linked", "Linked charger");
         provider.add("behaviour.hoe", "Can till dirt");
         provider.add("behaviour.soft_hammer", "Activates and Deactivates Machines");
         provider.add("behaviour.soft_hammer.enabled", "Working Enabled");

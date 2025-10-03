@@ -1515,42 +1515,42 @@ public class GTItems {
 
     public static ItemEntry<ComponentItem> SENSOR_LV = REGISTRATE.item("lv_sensor", ComponentItem::create)
             .lang("LV Sensor")
-            .onRegister(attach(new TieredBehaviour(GTValues.LV)))
+            .onRegister(attach(new TieredBehaviour(GTValues.LV), new ChargingLinkingBehaviour()))
             .tag(CustomTags.SENSORS)
             .register();
     public static ItemEntry<ComponentItem> SENSOR_MV = REGISTRATE.item("mv_sensor", ComponentItem::create)
             .lang("MV Sensor")
-            .onRegister(attach(new TieredBehaviour(GTValues.MV)))
+            .onRegister(attach(new TieredBehaviour(GTValues.MV), new ChargingLinkingBehaviour()))
             .tag(CustomTags.SENSORS)
             .register();
     public static ItemEntry<ComponentItem> SENSOR_HV = REGISTRATE.item("hv_sensor", ComponentItem::create)
             .lang("HV Sensor")
-            .onRegister(attach(new TieredBehaviour(GTValues.HV)))
+            .onRegister(attach(new TieredBehaviour(GTValues.HV), new ChargingLinkingBehaviour()))
             .tag(CustomTags.SENSORS)
             .register();
     public static ItemEntry<ComponentItem> SENSOR_EV = REGISTRATE.item("ev_sensor", ComponentItem::create)
             .lang("EV Sensor")
-            .onRegister(attach(new TieredBehaviour(GTValues.EV)))
+            .onRegister(attach(new TieredBehaviour(GTValues.EV), new ChargingLinkingBehaviour()))
             .tag(CustomTags.SENSORS)
             .register();
     public static ItemEntry<ComponentItem> SENSOR_IV = REGISTRATE.item("iv_sensor", ComponentItem::create)
             .lang("IV Sensor")
-            .onRegister(attach(new TieredBehaviour(GTValues.IV)))
+            .onRegister(attach(new TieredBehaviour(GTValues.IV), new ChargingLinkingBehaviour()))
             .tag(CustomTags.SENSORS)
             .register();
     public static ItemEntry<ComponentItem> SENSOR_LuV = REGISTRATE.item("luv_sensor", ComponentItem::create)
             .lang("LuV Sensor")
-            .onRegister(attach(new TieredBehaviour(GTValues.LuV)))
+            .onRegister(attach(new TieredBehaviour(GTValues.LuV), new ChargingLinkingBehaviour()))
             .tag(CustomTags.SENSORS)
             .register();
     public static ItemEntry<ComponentItem> SENSOR_ZPM = REGISTRATE.item("zpm_sensor", ComponentItem::create)
             .lang("ZPM Sensor")
-            .onRegister(attach(new TieredBehaviour(GTValues.ZPM)))
+            .onRegister(attach(new TieredBehaviour(GTValues.ZPM), new ChargingLinkingBehaviour()))
             .tag(CustomTags.SENSORS)
             .register();
     public static ItemEntry<ComponentItem> SENSOR_UV = REGISTRATE.item("uv_sensor", ComponentItem::create)
             .lang("UV Sensor")
-            .onRegister(attach(new TieredBehaviour(GTValues.UV)))
+            .onRegister(attach(new TieredBehaviour(GTValues.UV), new ChargingLinkingBehaviour()))
             .tag(CustomTags.SENSORS)
             .register();
     public static ItemEntry<Item> SENSOR_UHV = GTCEuAPI.isHighTier() ? REGISTRATE.item("uhv_sensor", Item::new)

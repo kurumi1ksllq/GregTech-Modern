@@ -1,10 +1,7 @@
 package com.gregtechceu.gtceu.api.item.armor;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
-import com.gregtechceu.gtceu.api.item.armor.modifier.AppliedArmorModifier;
-import com.gregtechceu.gtceu.api.item.armor.modifier.ArmorModifier;
 import com.gregtechceu.gtceu.common.data.GTSoundEntries;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.ServerGamePacketListenerImplAccessor;
@@ -16,10 +13,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResultHolder;
@@ -38,12 +33,9 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -109,83 +101,6 @@ public class ArmorUtils {
     public static void setMaxModuleTier(ItemStack stack, int maxModuleTier) {
         if (!isModifiable(stack)) return;
         getArmorTag(stack).putInt(MAX_MODULE_TIER_KEY, maxModuleTier);
-    }
-
-    /**
-     * Clear all modifiers from the given piece of armor
-     * 
-     * @param stack the armor to remove all modifiers from
-     */
-    public static void clearModifiers(ItemStack stack) {
-        if (!hasArmorTag(stack)) return;
-        CompoundTag tag = getArmorTag(stack);
-        getModifiers(stack).forEach(modifier -> modifier.getModifier().onRemove().apply(stack, modifier));
-        if (tag != null)
-            tag.remove(MODIFIERS_KEY);
-    }
-
-    /**
-     * Add an armor modifier to the given stack
-     * 
-     * @param stack    the stack to add the modifier to, if both are valid
-     * @param modifier the modifier to add to the stack
-     */
-    public static void addModifier(ItemStack stack, ArmorModifier modifier, @Nullable ItemStack modifierItem) {
-        CompoundTag tag = getArmorTag(stack);
-        ListTag modifierList = tag.getList(MODIFIERS_KEY, Tag.TAG_COMPOUND);
-        if (modifierList.size() >= getMaxModifiers(stack)) return;
-        CompoundTag modifierTag = new CompoundTag();
-        modifierTag.putString("id", modifier.id().toString());
-        modifierTag.put("tag", new CompoundTag());
-        if (modifierItem != null) modifierTag.put("item", modifierItem.serializeNBT());
-        modifierList.add(modifierTag);
-        modifier.onAddToItem().apply(stack, new AppliedArmorModifier(
-                modifier,
-                itemStack -> modifierTag.put("item", itemStack.serializeNBT()),
-                tag2 -> modifierTag.put("tag", tag2),
-                () -> ItemStack.of(modifierTag.getCompound("item")),
-                () -> modifierTag.getCompound("tag")));
-        tag.put(MODIFIERS_KEY, modifierList);
-    }
-
-    /**
-     * An unmodifiable list of all modifiers on the given stack
-     * 
-     * @param stack the stack to get the modifiers from
-     * @return the modifiers on the stack
-     */
-    @Unmodifiable
-    public static @NotNull List<AppliedArmorModifier> getModifiers(ItemStack stack) {
-        if (!hasArmorTag(stack)) return Collections.emptyList();
-        CompoundTag tag = getArmorTag(stack);
-        ListTag modifierList = tag.getList(MODIFIERS_KEY, Tag.TAG_COMPOUND);
-
-        List<AppliedArmorModifier> modifiers = new ArrayList<>();
-        for (int i = 0; i < modifierList.size(); i++) {
-            CompoundTag modifierTag = modifierList.getCompound(i);
-            String idString = modifierTag.getString("id");
-            ResourceLocation id = ResourceLocation.tryParse(idString);
-            if (id == null || ArmorModifier.MODIFIERS.get(id) == null) {
-                GTCEu.LOGGER.error("invalid armor modifier with id {}", idString);
-                continue;
-            }
-            if (!modifierTag.contains("tag")) modifierTag.put("tag", new CompoundTag());
-            modifiers.add(new AppliedArmorModifier(
-                    ArmorModifier.MODIFIERS.get(id),
-                    stack2 -> modifierTag.put("item", stack2.serializeNBT()),
-                    tag2 -> modifierTag.put("tag", tag2),
-                    () -> ItemStack.of(modifierTag.getCompound("item")),
-                    () -> modifierTag.getCompound("tag")));
-        }
-        return modifiers;
-    }
-
-    public static @Nullable AppliedArmorModifier getModifier(ItemStack stack, ArmorModifier modifier) {
-        List<AppliedArmorModifier> modifiers = getModifiers(stack);
-        for (AppliedArmorModifier appliedModifier : modifiers) {
-            if (appliedModifier.getModifier() == modifier) return appliedModifier;
-        }
-        return null;
     }
 
     /**

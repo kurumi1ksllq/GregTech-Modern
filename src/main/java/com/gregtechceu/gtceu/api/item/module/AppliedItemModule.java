@@ -170,4 +170,8 @@ public class AppliedItemModule {
     public boolean isPPE() {
         return this.module.isPPE(this) && this.isEnabled();
     }
+
+    public boolean canRemove() {
+        return this.module.canRemove(this);
+    }
 }

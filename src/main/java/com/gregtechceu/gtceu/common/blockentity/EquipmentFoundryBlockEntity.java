@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.gui.UITemplate;
 import com.gregtechceu.gtceu.api.gui.widget.BlockableSlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
-import com.gregtechceu.gtceu.api.item.armor.modifier.AppliedArmorModifier;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
@@ -41,7 +40,7 @@ import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 import lombok.Getter;
 
-import java.util.List;
+import java.util.Optional;
 
 public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAutoSyncBlockEntity, IRPCBlockEntity,
                                          IAutoPersistBlockEntity, IManaged, IManagedBlockEntity, IUIHolder {
@@ -58,15 +57,14 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
     private final CustomItemStackHandler equipmentSlot;
     @Persisted
     @DescSynced
-    private final CustomItemStackHandler modifierSlots;
+    private final CustomItemStackHandler moduleSlots;
 
     public EquipmentFoundryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
         this.equipmentSlot = new CustomItemStackHandler(1);
-        // TODO remove instanceof once datagen can run
         this.equipmentSlot.setFilter(stack -> stack.is(CustomTags.MODIFIABLE_EQUIPMENT));
 
-        this.modifierSlots = new CustomItemStackHandler(MAX_MODIFIER_SLOTS) {
+        this.moduleSlots = new CustomItemStackHandler(MAX_MODIFIER_SLOTS) {
 
             @Override
             public int getSlotLimit(int slot) {
@@ -74,7 +72,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
             }
         };
 
-        this.modifierSlots.setFilter(stack -> {
+        this.moduleSlots.setFilter(stack -> {
             if (this.getLevel() == null) {
                 return false;
             }
@@ -116,9 +114,9 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         int y = 13;
         for (int i = 0; i < MAX_MODIFIER_SLOTS; i++) {
             final int finalI = i;
-            modularUI.widget(new BlockableSlotWidget(modifierSlots, i, x, y)
+            modularUI.widget(new BlockableSlotWidget(moduleSlots, i, x, y)
                     .setIsBlocked(() -> isModifierSlotBlocked(finalI))
-                    .setChangeListener(this::onModifierSlotChanged)
+                    .setChangeListener(() -> this.onModifierSlotChanged(finalI))
                     .setBackgroundTexture(null));
             x += 26;
             if (i == 4) {
@@ -132,34 +130,34 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
 
     public boolean isModifierSlotBlocked(int slot) {
         ItemStack equipment = equipmentSlot.getStackInSlot(0);
-        List<AppliedArmorModifier> modifiers = ArmorUtils.getModifiers(equipment);
-        if (modifiers.size() > slot) return !modifiers.get(slot).getModifier().canRemove();
+        AppliedItemModule module = AppliedItemModule.getModuleInSlot(equipment, slot);
+        if (module != null) return !(module.canRemove() && module.getModuleItem() != null);
         return ArmorUtils.getMaxModifiers(equipment) <= slot;
     }
 
     public void onEquipmentSlotChanged(Player player) {
         ItemStack stack = equipmentSlot.getStackInSlot(0);
         if (stack.isEmpty()) {
-            for (int i = 0; i < modifierSlots.getSlots(); i++) {
-                ItemStack out = modifierSlots.extractItem(i, Integer.MAX_VALUE, true);
+            for (int i = 0; i < moduleSlots.getSlots(); i++) {
+                ItemStack out = moduleSlots.extractItem(i, Integer.MAX_VALUE, true);
                 if (out.isEmpty()) {
                     continue;
                 }
-                out = modifierSlots.extractItem(i, Integer.MAX_VALUE, false);
+                out = moduleSlots.extractItem(i, Integer.MAX_VALUE, false);
                 out.shrink(1);
                 if (!player.getInventory().add(out)) {
                     player.drop(out, true);
                 }
             }
         } else {
-            List<AppliedArmorModifier> modifiers = ArmorUtils.getModifiers(stack);
-            for (int i = 0; i < modifiers.size() && i < modifierSlots.getSlots(); i++) {
-                if (modifiers.get(i) != null) modifierSlots.insertItem(i, modifiers.get(i).getModifierItem(), false);
+            for (AppliedItemModule module : AppliedItemModule.getAppliedModules(stack)) {
+                if (module.getSlot() < 8 && module.getModuleItem() != null)
+                    moduleSlots.insertItem(module.getSlot(), module.getModuleItem(), false);
             }
         }
     }
 
-    public void onModifierSlotChanged() {
+    public void onModifierSlotChanged(int slot) {
         if (getLevel() == null || getLevel().isClientSide) {
             return;
         }
@@ -169,27 +167,20 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
             return;
         }
 
-        AppliedItemModule.clearModules(stack);
-        for (int i = 0; i < modifierSlots.getSlots(); i++) {
-            ItemStack modifier = modifierSlots.getStackInSlot(i);
-            if (modifier.isEmpty()) {
-                continue;
-            }
-
-            CustomItemStackHandler handler = new CustomItemStackHandler(modifier);
-            RecipeWrapper recipeWrapper = new RecipeWrapper(
-                    new CombinedInvWrapper(this.equipmentSlot, handler));
-
-            var maybeRecipe = getLevel().getRecipeManager()
-                    .getRecipeFor(GTRecipeTypes.EQUIPMENT_FOUNDRY_RECIPES.get(), recipeWrapper, this.getLevel());
-            if (maybeRecipe.isPresent()) {
-                EquipmentFoundryRecipe recipe = maybeRecipe.get();
-                ItemStack newStack = recipe.assemble(recipeWrapper, getLevel().registryAccess());
-                if (newStack.isEmpty()) {
-                    continue;
-                }
-                equipmentSlot.setStackInSlot(0, newStack);
-            }
+        AppliedItemModule prevModule = AppliedItemModule.getModuleInSlot(stack, slot);
+        if (prevModule != null) prevModule.detach();
+        ItemStack newModule = moduleSlots.getStackInSlot(slot);
+        RecipeWrapper recipeWrapper = new RecipeWrapper(new CombinedInvWrapper(
+                this.equipmentSlot,
+                new CustomItemStackHandler(newModule)));
+        Optional<EquipmentFoundryRecipe> recipe = getLevel().getRecipeManager().getRecipeFor(
+                GTRecipeTypes.EQUIPMENT_FOUNDRY_RECIPES.get(),
+                recipeWrapper,
+                this.getLevel());
+        if (recipe.isPresent()) {
+            ItemStack newStack = recipe.get().assemble(recipeWrapper, getLevel().registryAccess());
+            if (newStack.isEmpty()) return;
+            equipmentSlot.setStackInSlot(0, newStack);
         }
     }
 

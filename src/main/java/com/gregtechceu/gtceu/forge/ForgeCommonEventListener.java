@@ -18,7 +18,6 @@ import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
-import com.gregtechceu.gtceu.api.item.armor.modifier.AppliedArmorModifier;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -109,7 +108,6 @@ import com.tterrag.registrate.util.entry.ItemEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -382,11 +380,6 @@ public class ForgeCommonEventListener {
         LivingEntity entity = event.getEntity();
 
         for (ItemStack stack : entity.getArmorSlots()) {
-            List<AppliedArmorModifier> modifiers = ArmorUtils.getModifiers(stack);
-            if (modifiers.isEmpty()) continue;
-            for (AppliedArmorModifier modifier : modifiers) {
-                modifier.getModifier().onTick().apply(entity, stack, modifier);
-            }
             AppliedItemModule.getAppliedModules(stack)
                     .forEach(appliedItemModule -> appliedItemModule.armorTick(entity));
         }

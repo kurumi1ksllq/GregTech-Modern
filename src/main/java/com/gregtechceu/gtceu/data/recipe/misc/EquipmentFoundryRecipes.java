@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.data.recipe.misc;
 
+import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
@@ -11,6 +12,9 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.IntersectionIngredient;
 
 import java.util.function.Consumer;
+
+import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
+import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 
 public class EquipmentFoundryRecipes {
 
@@ -121,5 +125,33 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
                         Ingredient.of(Tags.Items.ARMORS_HELMETS)),
                 GTItems.NIGHTVISION_GOGGLES, GTArmorModifiers.NIGHT_VISION);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "ppe_helmet",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_HELMETS)),
+                GTItems.MASK_FILTER,
+                GTArmorModifiers.PPE);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "ppe_chestplate",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+                ChemicalHelper.get(plate, PolyvinylChloride),
+                GTArmorModifiers.PPE);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "ppe_leggings",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_LEGGINGS)),
+                ChemicalHelper.get(plate, PolyvinylChloride),
+                GTArmorModifiers.PPE);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "ppe_boots",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_BOOTS)),
+                ChemicalHelper.get(plate, PolyvinylChloride),
+                GTArmorModifiers.PPE);
     }
 }

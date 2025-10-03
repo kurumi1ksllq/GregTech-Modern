@@ -110,7 +110,7 @@ public class HazardProperty implements IMaterialProperty {
             for (ArmorItem.Type equipmentType : equipmentTypes) {
                 ItemStack armor = livingEntity.getItemBySlot(equipmentType.getSlot());
                 if (!armor.isEmpty() && ((armor.getItem() instanceof ArmorComponentItem armorItem &&
-                        armorItem.getArmorLogic().isPPE()) ||
+                        armorItem.getArmorLogic().isPPE(armor)) ||
                         armor.getTags().anyMatch(tag -> tag.equals(CustomTags.PPE_ARMOR)))) {
                     correctArmorItems.add(equipmentType);
                 }
@@ -129,7 +129,7 @@ public class HazardProperty implements IMaterialProperty {
             for (SlotResult result : results) {
                 ItemStack armor = result.stack();
                 if (!armor.isEmpty() && ((armor.getItem() instanceof ArmorComponentItem armorItem &&
-                        armorItem.getArmorLogic().isPPE()) ||
+                        armorItem.getArmorLogic().isPPE(armor)) ||
                         armor.getTags().anyMatch(tag -> tag.equals(CustomTags.PPE_ARMOR)))) {
                     correctCurios.add(result.slotContext().identifier());
                 }
@@ -143,7 +143,7 @@ public class HazardProperty implements IMaterialProperty {
                 for (ArmorItem.Type type : this.getEquipmentTypes()) {
                     ItemStack armor = player.getItemBySlot(type.getSlot());
                     if (!armor.isEmpty() && ((armor.getItem() instanceof ArmorComponentItem armorItem &&
-                            armorItem.getArmorLogic().isPPE()) ||
+                            armorItem.getArmorLogic().isPPE(armor)) ||
                             armor.getTags().anyMatch(tag -> tag.equals(CustomTags.PPE_ARMOR)))) {
                         armor.hurtAndBreak(amount, player, p -> p.broadcastBreakEvent(type.getSlot()));
                     }
@@ -159,7 +159,7 @@ public class HazardProperty implements IMaterialProperty {
                                 for (int i = 0; i < handler.getSlots(); ++i) {
                                     ItemStack armor = stackHandler.getStackInSlot(i);
                                     if (!armor.isEmpty() && ((armor.getItem() instanceof ArmorComponentItem armorItem &&
-                                            armorItem.getArmorLogic().isPPE()) ||
+                                            armorItem.getArmorLogic().isPPE(armor)) ||
                                             armor.getTags().anyMatch(tag -> tag.equals(CustomTags.PPE_ARMOR)))) {
                                         armor.hurtAndBreak(amount, player, p -> {});
                                     }

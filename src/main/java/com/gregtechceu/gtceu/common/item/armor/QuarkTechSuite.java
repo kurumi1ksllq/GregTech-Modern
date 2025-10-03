@@ -363,7 +363,7 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
     }
 
     @Override
-    public boolean isPPE() {
+    public boolean isPPE(ItemStack stack) {
         return true;
     }
 }

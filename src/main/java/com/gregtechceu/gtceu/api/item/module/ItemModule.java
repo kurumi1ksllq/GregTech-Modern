@@ -89,8 +89,12 @@ public abstract class ItemModule {
         return damage;
     }
 
-    public boolean canRemove(AppliedItemModule modifier) {
+    public boolean canRemove(AppliedItemModule module) {
         return true;
+    }
+
+    public boolean isPPE(AppliedItemModule module) {
+        return false;
     }
 
     public boolean canApplyTo(ItemStack stack) {

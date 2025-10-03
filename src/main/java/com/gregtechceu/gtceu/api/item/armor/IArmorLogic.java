@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.api.item.armor;
 
+import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
+
 import net.minecraft.Util;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.resources.ResourceLocation;
@@ -50,7 +52,10 @@ public interface IArmorLogic {
         return false;
     }
 
-    default boolean isPPE() {
+    default boolean isPPE(ItemStack stack) {
+        for (AppliedItemModule module : AppliedItemModule.getAppliedModules(stack)) {
+            if (module.getModule().isPPE(module)) return true;
+        }
         return false;
     }
 

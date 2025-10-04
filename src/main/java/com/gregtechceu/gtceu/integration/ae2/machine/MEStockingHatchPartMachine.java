@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.machine.fancyconfigurator.AutoStockingFancyConf
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
+import com.gregtechceu.gtceu.api.misc.StockingHatchList;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.ae2.machine.feature.multiblock.IMEStockingPart;
@@ -34,6 +35,8 @@ import net.minecraftforge.fluids.FluidStack;
 
 import appeng.api.config.Actionable;
 import appeng.api.networking.IGrid;
+import appeng.api.networking.IStackWatcher;
+import appeng.api.networking.storage.IStorageWatcherNode;
 import appeng.api.stacks.AEFluidKey;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.GenericStack;
@@ -43,15 +46,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
-import java.util.PriorityQueue;
 import java.util.function.Predicate;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class MEStockingHatchPartMachine extends MEInputHatchPartMachine implements IMEStockingPart {
+public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
+                                        implements IMEStockingPart, IStorageWatcherNode {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             MEStockingHatchPartMachine.class, MEInputHatchPartMachine.MANAGED_FIELD_HOLDER);
@@ -77,6 +79,10 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine implemen
 
     @Setter
     private Predicate<GenericStack> autoPullTest;
+
+    private IStackWatcher watcher;
+
+    private StockingHatchList topItems = new StockingHatchList(CONFIG_SIZE);
 
     public MEStockingHatchPartMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
@@ -118,31 +124,79 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine implemen
     public void autoIO() {
         super.autoIO();
         if (ticksPerCycle == 0) ticksPerCycle = ConfigHolder.INSTANCE.compat.ae2.updateIntervals; // Emergency Check to
-                                                                                                  // Avoid Crash loops.
+        // Avoid Crash loops.
         if (getOffsetTimer() % ticksPerCycle == 0) {
-            if (autoPull) {
-                refreshList();
-            }
             syncME();
         }
     }
 
     @Override
     protected void syncME() {
-        MEStorage networkInv = this.getMainNode().getGrid().getStorageService().getInventory();
-        for (ExportOnlyAEFluidSlot slot : aeFluidHandler.getInventory()) {
-            var config = slot.getConfig();
-            if (config != null) {
-                // Try to fill the slot
-                var key = config.what();
-                long extracted = networkInv.extract(key, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
-                if (extracted >= minStackSize) {
-                    slot.setStock(new GenericStack(key, extracted));
-                    continue;
+        // Refreshes what things are being watched
+        // TODO: Be smart about this.
+        // We only need to update what we listen to when said list changes, so in
+        // refreshList() or when it's changed in the UI
+        // For now, periodically testing is fine since this is cheap afs
+        if (watcher == null) return;
+        watcher.reset();
+        if (autoPull) {
+            watcher.setWatchAll(true);
+        } else {
+            watcher.setWatchAll(false);
+            for (ExportOnlyAEFluidSlot slot : this.aeFluidHandler.getInventory()) {
+                if (slot.getConfig() == null) continue;
+                watcher.add(slot.getConfig().what());
+            }
+        }
+    }
+
+    @Override
+    public void updateWatcher(IStackWatcher newWatcher) {
+        watcher = newWatcher;
+        this.syncME();
+    }
+
+    @Override
+    public void onStackChange(AEKey what, long amount) {
+        if (autoPull) {
+            if (!(what instanceof AEFluidKey itemKey)) return;
+
+            // TODO: this is expensive? maybe move this somewhere else?
+            boolean changed;
+            if (autoPullTest != null && !autoPullTest.test(new GenericStack(itemKey, amount))) {
+                topItems.remove(what);
+                changed = true;
+            } else {
+                changed = topItems.insert(what, amount);
+            }
+
+            if (!changed) return;
+            // TODO: only do this once all the stacks have changed? Is there any way to know?
+            syncListToHandler();
+        } else {
+            for (ExportOnlyAEFluidSlot slot : this.aeFluidHandler.getInventory()) {
+                if (slot.getConfig() == null) continue;
+                AEKey key = slot.getConfig().what();
+                if (key.equals(what)) {
+                    if (amount > 0) {
+                        slot.setStock(new GenericStack(key, amount));
+                    } else {
+                        slot.setStock(null);
+                    }
                 }
             }
-            slot.setStock(null);
         }
+    }
+
+    private void syncListToHandler() {
+        int index = 0;
+        for (var entry : topItems) {
+            var slot = this.aeFluidHandler.getInventory()[index];
+            slot.setConfig(new GenericStack(entry.getKey(), 1));
+            slot.setStock(new GenericStack(entry.getKey(), entry.getAmount()));
+            index++;
+        }
+        aeFluidHandler.clearInventory(index);
     }
 
     @Override
@@ -201,50 +255,20 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine implemen
         MEStorage networkStorage = grid.getStorageService().getInventory();
         var counter = networkStorage.getAvailableStacks();
 
-        // Use a PriorityQueue to sort the stacks on size, take the first CONFIG_SIZE
-        // biggest stacks.
-        PriorityQueue<Object2LongMap.Entry<AEKey>> topFluids = new PriorityQueue<>(
-                Comparator.comparingLong(Object2LongMap.Entry<AEKey>::getLongValue));
+        topItems.clear();
 
         for (Object2LongMap.Entry<AEKey> entry : counter) {
-            long amount = entry.getLongValue();
             AEKey what = entry.getKey();
-
-            if (amount <= 0) continue;
             if (!(what instanceof AEFluidKey fluidKey)) continue;
-
-            // Ensure that it is valid to configure with this stack
-            if (autoPullTest != null && !autoPullTest.test(new GenericStack(fluidKey, amount))) continue;
-            if (amount >= minStackSize) {
-                if (topFluids.size() < CONFIG_SIZE) {
-                    topFluids.offer(entry);
-                } else if (amount > topFluids.peek().getLongValue()) {
-                    topFluids.poll();
-                    topFluids.offer(entry);
-                }
-            }
-        }
-
-        // Now, topFluids is a PQ with CONFIG_SIZE highest amount fluids in the system.
-        int index;
-        int fluidAmount = topFluids.size();
-        for (index = 0; index < CONFIG_SIZE; index++) {
-            if (topFluids.isEmpty()) break;
-            Object2LongMap.Entry<AEKey> entry = topFluids.poll();
-            AEKey what = entry.getKey();
             long amount = entry.getLongValue();
 
-            // If we get here, the fluid has already been checked by the PQ.
-            long request = networkStorage.extract(what, amount, Actionable.SIMULATE, actionSource);
+            if (autoPullTest != null && !autoPullTest.test(new GenericStack(what, amount))) continue;
 
-            // Since we want our fluids to be displayed from highest to lowest, but poll() returns
-            // the lowest first, we fill in the slots starting at fluidAmount-1
-            var slot = this.aeFluidHandler.getInventory()[fluidAmount - index - 1];
-            slot.setConfig(new GenericStack(what, 1));
-            slot.setStock(new GenericStack(what, request));
+            topItems.insert(what, amount);
         }
 
-        aeFluidHandler.clearInventory(index);
+        // Now, topItems is a PQ with CONFIG_SIZE highest amount items in the system.
+        syncListToHandler();
     }
 
     ///////////////////////////////

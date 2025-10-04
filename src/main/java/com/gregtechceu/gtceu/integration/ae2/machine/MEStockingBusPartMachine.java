@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.machine.fancyconfigurator.AutoStockingFancyConf
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
+import com.gregtechceu.gtceu.api.misc.StockingHatchList;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.ae2.machine.feature.multiblock.IMEStockingPart;
@@ -45,8 +46,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
-import java.util.PriorityQueue;
 import java.util.function.Predicate;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -79,8 +78,7 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
 
     private IStackWatcher watcher;
 
-    private PriorityQueue<ItemHolder> topItems = new PriorityQueue<>(
-            Comparator.comparingLong(ItemHolder::getAmount));
+    private StockingHatchList topItems = new StockingHatchList(CONFIG_SIZE);
 
     public MEStockingBusPartMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
@@ -167,28 +165,14 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
             if (!(what instanceof AEItemKey itemKey)) return;
 
             // TODO: this is expensive? maybe move this somewhere else?
+            boolean changed;
             if (autoPullTest != null && !autoPullTest.test(new GenericStack(itemKey, amount))) {
-                // If this gets reached, we should delete the entry. This is the same as updating the entry to amount 0
-                amount = 0;
+                topItems.remove(what);
+                changed = true;
+            } else {
+                changed = topItems.insert(what, amount);
             }
 
-            var changed = false;
-            for (var entry : new PriorityQueue<>(topItems)) {
-                if (entry.item.equals(what)) {
-                    if (amount <= 0) {
-                        // An item is being deleted, force recalculate the entire list
-                        refreshList();
-                        return;
-                    } else {
-                        entry.setAmount(amount);
-                        changed = true;
-                    }
-                }
-            }
-            if (!changed) {
-                // If we get here, it's a new item
-                changed = addKeyToPQ(what, amount);
-            }
             if (!changed) return;
             // TODO: only do this once all the stacks have changed? Is there any way to know?
             syncListToHandler();
@@ -207,33 +191,12 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
         }
     }
 
-    private boolean addKeyToPQ(AEKey what, long amount) {
-        if (amount <= 0) return false;
-        if (!(what instanceof AEItemKey itemKey)) return false;
-        if (autoPullTest != null && !autoPullTest.test(new GenericStack(itemKey, amount))) return false;
-
-        if (amount >= minStackSize) {
-            if (topItems.size() < CONFIG_SIZE) {
-                topItems.offer(new ItemHolder(itemKey, amount));
-                return true;
-            } else if (amount > topItems.peek().getAmount()) {
-                topItems.poll();
-                topItems.offer(new ItemHolder(itemKey, amount));
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void syncListToHandler() {
         int index = 0;
-        int itemAmount = topItems.size();
-        var clone = new PriorityQueue<>(topItems);
-        while (!clone.isEmpty()) {
-            var entry = clone.poll();
-            var slot = this.aeItemHandler.getInventory()[itemAmount - index - 1];
-            slot.setConfig(new GenericStack(entry.getItem(), 1));
-            slot.setStock(new GenericStack(entry.getItem(), entry.getAmount()));
+        for (var entry : topItems) {
+            var slot = this.aeItemHandler.getInventory()[index];
+            slot.setConfig(new GenericStack(entry.getKey(), 1));
+            slot.setStock(new GenericStack(entry.getKey(), entry.getAmount()));
             index++;
         }
         aeItemHandler.clearInventory(index);
@@ -316,10 +279,13 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
         topItems.clear();
 
         for (Object2LongMap.Entry<AEKey> entry : counter) {
-            long amount = entry.getLongValue();
             AEKey what = entry.getKey();
+            if (!(what instanceof AEItemKey itemKey)) continue;
+            long amount = entry.getLongValue();
 
-            addKeyToPQ(what, amount);
+            if (autoPullTest != null && !autoPullTest.test(new GenericStack(what, amount))) continue;
+
+            topItems.insert(what, amount);
         }
 
         // Now, topItems is a PQ with CONFIG_SIZE highest amount items in the system.
@@ -460,21 +426,6 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
             return new ExportOnlyAEStockingItemSlot(
                     this.config == null ? null : copy(this.config),
                     this.stock == null ? null : copy(this.stock));
-        }
-    }
-
-    private static class ItemHolder {
-
-        @Getter
-        @Setter
-        public AEKey item;
-        @Getter
-        @Setter
-        public long amount;
-
-        public ItemHolder(AEKey item, long amount) {
-            this.item = item;
-            this.amount = amount;
         }
     }
 }

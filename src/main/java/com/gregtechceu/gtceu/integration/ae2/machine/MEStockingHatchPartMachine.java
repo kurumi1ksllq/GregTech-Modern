@@ -82,7 +82,7 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
 
     private IStackWatcher watcher;
 
-    private StockingHatchList topItems = new StockingHatchList(CONFIG_SIZE);
+    private StockingHatchList topFluids = new StockingHatchList(CONFIG_SIZE);
 
     public MEStockingHatchPartMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
@@ -123,8 +123,10 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
     @Override
     public void autoIO() {
         super.autoIO();
-        if (ticksPerCycle == 0) ticksPerCycle = ConfigHolder.INSTANCE.compat.ae2.updateIntervals; // Emergency Check to
-        // Avoid Crash loops.
+        if (ticksPerCycle == 0) {
+            // Emergency Check to avoid Crash loops.
+            ticksPerCycle = ConfigHolder.INSTANCE.compat.ae2.updateIntervals;
+        }
         if (getOffsetTimer() % ticksPerCycle == 0) {
             syncME();
         }
@@ -136,7 +138,7 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
         // TODO: Be smart about this.
         // We only need to update what we listen to when said list changes, so in
         // refreshList() or when it's changed in the UI
-        // For now, periodically testing is fine since this is cheap afs
+        // For now, periodically testing is fine since this is cheap
         if (watcher == null) return;
         watcher.reset();
         if (autoPull) {
@@ -151,23 +153,22 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
     }
 
     @Override
-    public void updateWatcher(IStackWatcher newWatcher) {
-        watcher = newWatcher;
+    public void updateWatcher(IStackWatcher watcher) {
+        this.watcher = watcher;
         this.syncME();
     }
 
     @Override
     public void onStackChange(AEKey what, long amount) {
+        if (!(what instanceof AEFluidKey itemKey)) return;
         if (autoPull) {
-            if (!(what instanceof AEFluidKey itemKey)) return;
-
             // TODO: this is expensive? maybe move this somewhere else?
             boolean changed;
             if (autoPullTest != null && !autoPullTest.test(new GenericStack(itemKey, amount))) {
-                topItems.remove(what);
+                topFluids.remove(what);
                 changed = true;
             } else {
-                changed = topItems.insert(what, amount);
+                changed = topFluids.insert(what, amount);
             }
 
             if (!changed) return;
@@ -189,8 +190,9 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
     }
 
     private void syncListToHandler() {
-        int index = 0;
-        for (var entry : topItems) {
+        int index;
+        for (index = 0; index < topFluids.size(); index++) {
+            var entry = topFluids.get(index);
             var slot = this.aeFluidHandler.getInventory()[index];
             slot.setConfig(new GenericStack(entry.getKey(), 1));
             slot.setStock(new GenericStack(entry.getKey(), entry.getAmount()));
@@ -255,7 +257,7 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
         MEStorage networkStorage = grid.getStorageService().getInventory();
         var counter = networkStorage.getAvailableStacks();
 
-        topItems.clear();
+        topFluids.clear();
 
         for (Object2LongMap.Entry<AEKey> entry : counter) {
             AEKey what = entry.getKey();
@@ -264,10 +266,9 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
 
             if (autoPullTest != null && !autoPullTest.test(new GenericStack(what, amount))) continue;
 
-            topItems.insert(what, amount);
+            topFluids.insert(what, amount);
         }
 
-        // Now, topItems is a PQ with CONFIG_SIZE highest amount items in the system.
         syncListToHandler();
     }
 

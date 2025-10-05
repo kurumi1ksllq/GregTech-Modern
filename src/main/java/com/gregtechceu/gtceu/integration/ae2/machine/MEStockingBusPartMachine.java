@@ -126,8 +126,10 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     @Override
     public void autoIO() {
         super.autoIO();
-        if (ticksPerCycle == 0) ticksPerCycle = ConfigHolder.INSTANCE.compat.ae2.updateIntervals; // Emergency Check to
-                                                                                                  // Avoid Crash loops.
+        if (ticksPerCycle == 0) {
+            // Emergency Check to avoid Crash loops.
+            ticksPerCycle = ConfigHolder.INSTANCE.compat.ae2.updateIntervals;
+        }
         if (getOffsetTimer() % ticksPerCycle == 0) {
             syncME();
         }
@@ -139,7 +141,7 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
         // TODO: Be smart about this.
         // We only need to update what we listen to when said list changes, so in
         // refreshList() or when it's changed in the UI
-        // For now, periodically testing is fine since this is cheap afs
+        // For now, periodically testing is fine since this is cheap
         if (watcher == null) return;
         watcher.reset();
         if (autoPull) {
@@ -154,15 +156,15 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     }
 
     @Override
-    public void updateWatcher(IStackWatcher newWatcher) {
-        watcher = newWatcher;
+    public void updateWatcher(IStackWatcher watcher) {
+        this.watcher = watcher;
         this.syncME();
     }
 
     @Override
     public void onStackChange(AEKey what, long amount) {
+        if (!(what instanceof AEItemKey itemKey)) return;
         if (autoPull) {
-            if (!(what instanceof AEItemKey itemKey)) return;
 
             // TODO: this is expensive? maybe move this somewhere else?
             boolean changed;
@@ -192,8 +194,9 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     }
 
     private void syncListToHandler() {
-        int index = 0;
-        for (var entry : topItems) {
+        int index;
+        for (index = 0; index < topItems.size(); index++) {
+            var entry = topItems.get(index);
             var slot = this.aeItemHandler.getInventory()[index];
             slot.setConfig(new GenericStack(entry.getKey(), 1));
             slot.setStock(new GenericStack(entry.getKey(), entry.getAmount()));
@@ -288,7 +291,6 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
             topItems.insert(what, amount);
         }
 
-        // Now, topItems is a PQ with CONFIG_SIZE highest amount items in the system.
         syncListToHandler();
     }
 

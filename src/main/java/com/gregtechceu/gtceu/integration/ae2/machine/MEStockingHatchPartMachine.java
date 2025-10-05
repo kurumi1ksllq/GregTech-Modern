@@ -35,6 +35,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import appeng.api.config.Actionable;
 import appeng.api.networking.IGrid;
+import appeng.api.networking.IGridNodeListener;
 import appeng.api.networking.IStackWatcher;
 import appeng.api.networking.storage.IStorageWatcherNode;
 import appeng.api.stacks.AEFluidKey;
@@ -106,6 +107,14 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
     }
 
     @Override
+    public void onMainNodeStateChanged(IGridNodeListener.State reason) {
+        super.onMainNodeStateChanged(reason);
+        if (autoPull) {
+            refreshList();
+        }
+    }
+
+    @Override
     protected NotifiableFluidTank createTank(int initialCapacity, int slots, Object... args) {
         this.aeFluidHandler = new ExportOnlyAEStockingFluidList(this, CONFIG_SIZE);
         return this.aeFluidHandler;
@@ -128,12 +137,11 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
             ticksPerCycle = ConfigHolder.INSTANCE.compat.ae2.updateIntervals;
         }
         if (getOffsetTimer() % ticksPerCycle == 0) {
-            syncME();
+            syncWatchedStacks();
         }
     }
 
-    @Override
-    protected void syncME() {
+    private void syncWatchedStacks() {
         // Refreshes what things are being watched
         // TODO: Be smart about this.
         // We only need to update what we listen to when said list changes, so in
@@ -176,7 +184,10 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
             syncListToHandler();
         } else {
             for (ExportOnlyAEFluidSlot slot : this.aeFluidHandler.getInventory()) {
-                if (slot.getConfig() == null) continue;
+                if (slot.getConfig() == null) {
+                    slot.setStock(null);
+                    continue;
+                }
                 AEKey key = slot.getConfig().what();
                 if (key.equals(what)) {
                     if (amount > 0) {
@@ -196,7 +207,6 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
             var slot = this.aeFluidHandler.getInventory()[index];
             slot.setConfig(new GenericStack(entry.getKey(), 1));
             slot.setStock(new GenericStack(entry.getKey(), entry.getAmount()));
-            index++;
         }
         aeFluidHandler.clearInventory(index);
     }
@@ -270,6 +280,13 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
         }
 
         syncListToHandler();
+    }
+
+    // Expensive, use sparingly.
+    private long getAmountInNetwork(AEKey key) {
+        MEStorage networkInv = this.getMainNode().getGrid().getStorageService().getInventory();
+        long extracted = networkInv.extract(key, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
+        return extracted;
     }
 
     ///////////////////////////////
@@ -370,6 +387,21 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
 
         public ExportOnlyAEStockingFluidSlot(@Nullable GenericStack config, @Nullable GenericStack stock) {
             super(config, stock);
+        }
+
+        @Override
+        public void setConfig(@Nullable GenericStack config) {
+            var oldConfig = this.config;
+            this.config = config;
+            if (config == null) {
+                this.setStock(null);
+            } else {
+                if (!config.equals(oldConfig)) {
+                    // Refresh to get stack amount from AE2
+                    this.setStock(new GenericStack(config.what(), getAmountInNetwork(config.what())));
+                    syncWatchedStacks();
+                }
+            }
         }
 
         @Override

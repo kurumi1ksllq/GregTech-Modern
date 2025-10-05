@@ -105,7 +105,9 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     @Override
     public void onMainNodeStateChanged(IGridNodeListener.State reason) {
         super.onMainNodeStateChanged(reason);
-        refreshList();
+        if (autoPull) {
+            refreshList();
+        }
     }
 
     @Override
@@ -131,12 +133,11 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
             ticksPerCycle = ConfigHolder.INSTANCE.compat.ae2.updateIntervals;
         }
         if (getOffsetTimer() % ticksPerCycle == 0) {
-            syncME();
+            syncWatchedStacks();
         }
     }
 
-    @Override
-    protected void syncME() {
+    private void syncWatchedStacks() {
         // Refreshes what things are being watched
         // TODO: Be smart about this.
         // We only need to update what we listen to when said list changes, so in
@@ -158,7 +159,7 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     @Override
     public void updateWatcher(IStackWatcher watcher) {
         this.watcher = watcher;
-        this.syncME();
+        this.syncWatchedStacks();
     }
 
     @Override
@@ -180,7 +181,10 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
             syncListToHandler();
         } else {
             for (ExportOnlyAEItemSlot slot : this.aeItemHandler.getInventory()) {
-                if (slot.getConfig() == null) continue;
+                if (slot.getConfig() == null) {
+                    slot.setStock(null);
+                    continue;
+                }
                 AEKey key = slot.getConfig().what();
                 if (key.equals(what)) {
                     if (amount > 0) {
@@ -200,7 +204,6 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
             var slot = this.aeItemHandler.getInventory()[index];
             slot.setConfig(new GenericStack(entry.getKey(), 1));
             slot.setStock(new GenericStack(entry.getKey(), entry.getAmount()));
-            index++;
         }
         aeItemHandler.clearInventory(index);
     }
@@ -292,6 +295,13 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
         }
 
         syncListToHandler();
+    }
+
+    // Expensive, use sparingly.
+    private long getAmountInNetwork(AEKey key) {
+        MEStorage networkInv = this.getMainNode().getGrid().getStorageService().getInventory();
+        long extracted = networkInv.extract(key, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
+        return extracted;
     }
 
     ///////////////////////////////
@@ -388,6 +398,21 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
 
         public ExportOnlyAEStockingItemSlot(@Nullable GenericStack config, @Nullable GenericStack stock) {
             super(config, stock);
+        }
+
+        @Override
+        public void setConfig(@Nullable GenericStack config) {
+            var oldConfig = this.config;
+            this.config = config;
+            if (config == null) {
+                this.setStock(null);
+            } else {
+                if (!config.equals(oldConfig)) {
+                    // Refresh to get stack amount from AE2
+                    this.setStock(new GenericStack(config.what(), getAmountInNetwork(config.what())));
+                    syncWatchedStacks();
+                }
+            }
         }
 
         @Override

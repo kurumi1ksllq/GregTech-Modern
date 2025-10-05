@@ -24,6 +24,8 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -172,6 +174,14 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
     public void reroll() {
         sampledCount = -1;
         itemStacks = null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(inner.getItems());
+        result = 31 * result + Integer.hashCode(countProvider.getMinValue());
+        result = 31 * result + Integer.hashCode(countProvider.getMaxValue());
+        return result;
     }
 
     @Override

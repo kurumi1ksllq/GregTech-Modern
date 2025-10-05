@@ -56,4 +56,6 @@ public interface IRangedIngredient {
     void reroll();
 
     boolean isEmpty();
+
+    int hashCode();
 }

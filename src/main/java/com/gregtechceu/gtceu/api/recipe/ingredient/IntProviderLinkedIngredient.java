@@ -11,7 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * An {@link IntProviderIngredient whose rolled value is calculated based on the rolls of one or more other {@link IRangedIngredient}s.}
+ * An {@link IntProviderIngredient whose rolled value is calculated based on the rolls of one or more other
+ * {@link IRangedIngredient}s.}
  */
 public class IntProviderLinkedIngredient extends IntProviderIngredient implements IRangedIngredient {
 
@@ -21,24 +22,27 @@ public class IntProviderLinkedIngredient extends IntProviderIngredient implement
     @Getter
     private LinkedIngredientLinkMode mode;
 
-    private IntProviderLinkedIngredient(IntProviderIngredient inner, LinkedIngredientLinkMode mode, List<IRangedIngredient> links) {
-        super(inner);
+    private IntProviderLinkedIngredient(IntProviderIngredient inner, LinkedIngredientLinkMode mode,
+                                        List<IRangedIngredient> links) {
+        super(inner.inner, inner.countProvider);
         this.links = links;
         this.mode = mode;
     }
 
     public static IntProviderLinkedIngredient of(IntProviderIngredient inner, String mode, IRangedIngredient... links) {
-        return new IntProviderLinkedIngredient(inner, LinkedIngredientLinkMode.getModeFromName(mode), Arrays.stream(links).toList());
+        return new IntProviderLinkedIngredient(inner, LinkedIngredientLinkMode.getModeFromName(mode),
+                Arrays.stream(links).toList());
     }
 
-    public static IntProviderLinkedIngredient of(IntProviderIngredient inner, LinkedIngredientLinkMode mode, IRangedIngredient... links) {
+    public static IntProviderLinkedIngredient of(IntProviderIngredient inner, LinkedIngredientLinkMode mode,
+                                                 IRangedIngredient... links) {
         return new IntProviderLinkedIngredient(inner, mode, Arrays.stream(links).toList());
     }
 
-    public static IntProviderLinkedIngredient of(IntProviderIngredient inner, LinkedIngredientLinkMode mode, List<IRangedIngredient> links) {
+    public static IntProviderLinkedIngredient of(IntProviderIngredient inner, LinkedIngredientLinkMode mode,
+                                                 List<IRangedIngredient> links) {
         return new IntProviderLinkedIngredient(inner, mode, links);
     }
-
 
     @Override
     public int getSampledCount() {
@@ -75,5 +79,4 @@ public class IntProviderLinkedIngredient extends IntProviderIngredient implement
 
         return (int) Math.round((max - min) * roll) + min;
     }
-
 }

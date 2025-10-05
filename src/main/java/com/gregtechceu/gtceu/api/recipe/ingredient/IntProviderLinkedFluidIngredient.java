@@ -18,21 +18,26 @@ public class IntProviderLinkedFluidIngredient extends IntProviderFluidIngredient
     @Getter
     private LinkedIngredientLinkMode mode;
 
-    private IntProviderLinkedFluidIngredient(IntProviderFluidIngredient inner, LinkedIngredientLinkMode mode, List<IRangedIngredient> links) {
-        super(inner);
+    private IntProviderLinkedFluidIngredient(IntProviderFluidIngredient inner, LinkedIngredientLinkMode mode,
+                                             List<IRangedIngredient> links) {
+        super(inner.getInner(), inner.getCountProvider());
         this.links = links;
         this.mode = mode;
     }
 
-    public static IntProviderLinkedFluidIngredient of(IntProviderFluidIngredient inner, String mode, IRangedIngredient... links) {
-        return new IntProviderLinkedFluidIngredient(inner, LinkedIngredientLinkMode.getModeFromName(mode), Arrays.stream(links).toList());
+    public static IntProviderLinkedFluidIngredient of(IntProviderFluidIngredient inner, String mode,
+                                                      IRangedIngredient... links) {
+        return new IntProviderLinkedFluidIngredient(inner, LinkedIngredientLinkMode.getModeFromName(mode),
+                Arrays.stream(links).toList());
     }
 
-    public static IntProviderLinkedFluidIngredient of(IntProviderFluidIngredient inner, LinkedIngredientLinkMode mode, IRangedIngredient... links) {
+    public static IntProviderLinkedFluidIngredient of(IntProviderFluidIngredient inner, LinkedIngredientLinkMode mode,
+                                                      IRangedIngredient... links) {
         return new IntProviderLinkedFluidIngredient(inner, mode, Arrays.stream(links).toList());
     }
 
-    public static IntProviderLinkedFluidIngredient of(IntProviderFluidIngredient inner, LinkedIngredientLinkMode mode, List<IRangedIngredient> links) {
+    public static IntProviderLinkedFluidIngredient of(IntProviderFluidIngredient inner, LinkedIngredientLinkMode mode,
+                                                      List<IRangedIngredient> links) {
         return new IntProviderLinkedFluidIngredient(inner, mode, links);
     }
 
@@ -71,5 +76,4 @@ public class IntProviderLinkedFluidIngredient extends IntProviderFluidIngredient
 
         return (int) Math.round((max - min) * roll) + min;
     }
-
 }

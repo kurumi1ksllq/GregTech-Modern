@@ -59,12 +59,11 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
         this.countProvider = countProvider;
     }
 
-    protected IntProviderIngredient(IntProviderIngredient clone){
+    protected IntProviderIngredient(Ingredient inner, IntProvider countProvider, int sampledCount) {
         super(Stream.empty());
-        this.inner = clone.inner;
-        this.countProvider = clone.countProvider;
-        this.sampledCount = clone.sampledCount;
-        this.itemStacks = clone.itemStacks;
+        this.inner = inner;
+        this.countProvider = countProvider;
+        this.sampledCount = sampledCount;
     }
 
     /**
@@ -100,7 +99,7 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
     @Override
     public ItemStack @NotNull [] getItems() {
         if (itemStacks == null) {
-            int cachedCount = getSampledCount();
+            int cachedCount = getSampledCount(GTValues.RNG);
             if (cachedCount == 0) {
                 return EMPTY_STACK_ARRAY;
             }
@@ -126,6 +125,19 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
     }
 
     /**
+     * If this ingredient has not yet had its {@link IntProviderIngredient#sampledCount} rolled, rolls it and
+     * returns the roll.
+     * If it has, returns the existing roll.
+     * Passthrough method, invokes {@link IntProviderIngredient#getSampledCount(RandomSource)} using the threadsafe
+     * {@link GTValues#RNG}.
+     *
+     * @return the amount rolled
+     */
+    public int getSampledCount() {
+        return getSampledCount(GTValues.RNG);
+    }
+
+    /**
      * If this ingredient has not yet had its {@link IntProviderIngredient#sampledCount} rolled, rolls it and returns
      * the roll.
      * If it has, returns the existing roll.
@@ -141,10 +153,25 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
     }
 
     /**
+     * @return the average roll of this ranged amount
+     */
+    public double getMidRoll() {
+        return ((countProvider.getMaxValue() + countProvider.getMinValue()) / 2.0);
+    }
+
+    /**
      * Whether this ingredient has had its count rolled
      */
     public boolean isRolled() {
         return this.sampledCount != -1;
+    }
+
+    /**
+     * Resets the random roll on this ingredient
+     */
+    public void reroll() {
+        sampledCount = -1;
+        itemStacks = null;
     }
 
     @Override
@@ -190,6 +217,7 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
         json.add("count_provider", IntProvider.CODEC.encodeStart(JsonOps.INSTANCE, countProvider)
                 .getOrThrow(false, GTCEu.LOGGER::error));
         json.add("ingredient", inner.toJson());
+        json.addProperty("sampledCount", sampledCount);
         return json;
     }
 
@@ -197,17 +225,20 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
 
         @Override
         public @NotNull IntProviderIngredient parse(FriendlyByteBuf buffer) {
-            IntProvider amount = IntProvider.CODEC.parse(NbtOps.INSTANCE, buffer.readNbt().get("provider"))
+            var nbt = buffer.readNbt();
+            IntProvider provider = IntProvider.CODEC.parse(NbtOps.INSTANCE, nbt.get("provider"))
                     .getOrThrow(false, GTCEu.LOGGER::error);
-            return new IntProviderIngredient(Ingredient.fromNetwork(buffer), amount);
+            int sampledCount = nbt.getInt("sampledCount");
+            return new IntProviderIngredient(Ingredient.fromNetwork(buffer), provider, sampledCount);
         }
 
         @Override
         public @NotNull IntProviderIngredient parse(JsonObject json) {
-            IntProvider amount = IntProvider.CODEC.parse(JsonOps.INSTANCE, json.get("count_provider"))
+            IntProvider provider = IntProvider.CODEC.parse(JsonOps.INSTANCE, json.get("count_provider"))
                     .getOrThrow(false, GTCEu.LOGGER::error);
             Ingredient inner = Ingredient.fromJson(json.get("ingredient"));
-            return new IntProviderIngredient(inner, amount);
+            int sampledCount = json.getAsJsonPrimitive("sampledCount").getAsInt();
+            return new IntProviderIngredient(inner, provider, sampledCount);
         }
 
         @Override
@@ -215,6 +246,7 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
             CompoundTag wrapper = new CompoundTag();
             wrapper.put("provider", IntProvider.CODEC.encodeStart(NbtOps.INSTANCE, ingredient.countProvider)
                     .getOrThrow(false, GTCEu.LOGGER::error));
+            wrapper.putInt("sampledCount", ingredient.sampledCount);
             buffer.writeNbt(wrapper);
             ingredient.inner.toNetwork(buffer);
         }

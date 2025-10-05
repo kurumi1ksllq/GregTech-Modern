@@ -1,8 +1,10 @@
 package com.gregtechceu.gtceu.api.recipe.ingredient;
 
-import lombok.Getter;
-import net.minecraft.util.StringRepresentable;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
+
+import net.minecraft.util.StringRepresentable;
+
+import lombok.Getter;
 
 public enum LinkedIngredientLinkMode implements StringRepresentable {
 
@@ -20,7 +22,8 @@ public enum LinkedIngredientLinkMode implements StringRepresentable {
      */
     LINK_XOR("xor"),
     /**
-     * The ingredient's roll is calculated as the inverse of one of the linked ingredient's rolls. Only use if the linked
+     * The ingredient's roll is calculated as the inverse of one of the linked ingredient's rolls. Only use if the
+     * linked
      * ingredients use {@link ChanceLogic#XOR}.
      */
     LINK_XOR_INVERSE("xor-inverse"),

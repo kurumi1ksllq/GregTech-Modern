@@ -21,8 +21,6 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.Stream;
-
 /**
  * Allows a {@link FluidIngredient} to be created with a ranged {@code amount}, which will be randomly rolled upon
  * recipe start (input) / completion (output).
@@ -57,18 +55,17 @@ public class IntProviderFluidIngredient extends FluidIngredient
         this.countProvider = provider;
     }
 
-    protected IntProviderFluidIngredient(IntProviderFluidIngredient clone){
-        super(clone.inner.values, clone.countProvider.getMaxValue(), clone.nbt);
-        this.inner = clone.inner;
-        this.countProvider = clone.countProvider;
-        this.sampledCount = clone.sampledCount;
-        this.fluidStacks = clone.fluidStacks;
+    protected IntProviderFluidIngredient(FluidIngredient inner, IntProvider provider, int sampledCount) {
+        super(inner.values, provider.getMaxValue(), null);
+        this.inner = inner;
+        this.countProvider = provider;
+        this.sampledCount = sampledCount;
     }
 
     @Override
     public IntProviderFluidIngredient copy() {
-        IntProviderFluidIngredient ipfi = new IntProviderFluidIngredient(this.inner, this.countProvider);
-        ipfi.setSampledCount(this.sampledCount);
+        IntProviderFluidIngredient ipfi = new IntProviderFluidIngredient(this.inner, this.countProvider,
+                this.sampledCount);
         return ipfi;
     }
 
@@ -138,6 +135,13 @@ public class IntProviderFluidIngredient extends FluidIngredient
     }
 
     /**
+     * @return the average roll of this ranged amount
+     */
+    public double getMidRoll() {
+        return ((countProvider.getMaxValue() + countProvider.getMinValue()) / 2.0);
+    }
+
+    /**
      * Whether this ingredient has had its count rolled
      */
     public boolean isRolled() {
@@ -147,6 +151,14 @@ public class IntProviderFluidIngredient extends FluidIngredient
     @Override
     public boolean isEmpty() {
         return inner.isEmpty();
+    }
+
+    /**
+     * Resets the random roll on this ingredient
+     */
+    public void reroll() {
+        sampledCount = -1;
+        fluidStacks = null;
     }
 
     /**
@@ -179,6 +191,7 @@ public class IntProviderFluidIngredient extends FluidIngredient
         json.add("count_provider", IntProvider.CODEC.encodeStart(JsonOps.INSTANCE, countProvider)
                 .getOrThrow(false, GTCEu.LOGGER::error));
         json.add("inner", inner.toJson());
+        json.addProperty("sampledCount", sampledCount);
         return json;
     }
 
@@ -196,8 +209,9 @@ public class IntProviderFluidIngredient extends FluidIngredient
         JsonObject jsonObject = GsonHelper.convertToJsonObject(json, "ingredient");
         IntProvider amount = IntProvider.CODEC.parse(JsonOps.INSTANCE, jsonObject.get("count_provider"))
                 .getOrThrow(false, GTCEu.LOGGER::error);
+        int sampledCount = jsonObject.getAsJsonPrimitive("sampledCount").getAsInt();
         FluidIngredient inner = FluidIngredient.fromJson(jsonObject.get("inner"));
-        return new IntProviderFluidIngredient(inner, amount);
+        return new IntProviderFluidIngredient(inner, amount, sampledCount);
     }
 
     public CompoundTag toNBT() {

@@ -1,9 +1,10 @@
 package com.gregtechceu.gtceu.api.recipe.ingredient;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.machine.trait.NotifiableRecipeHandlerTrait;
+
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableRecipeHandlerTrait;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +25,9 @@ public interface IRangedIngredient {
      *
      * @return the amount rolled
      */
-    default int getSampledCount(){return getSampledCount(GTValues.RNG);}
+    default int getSampledCount() {
+        return getSampledCount(GTValues.RNG);
+    }
 
     int getSampledCount(@NotNull RandomSource random);
 
@@ -49,6 +52,8 @@ public interface IRangedIngredient {
     }
 
     boolean isRolled();
+
+    void reroll();
 
     boolean isEmpty();
 }

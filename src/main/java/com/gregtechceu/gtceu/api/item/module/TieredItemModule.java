@@ -8,7 +8,7 @@ import lombok.Getter;
 
 import java.util.function.BiFunction;
 
-public abstract class TieredItemModule extends ItemModule {
+public abstract class TieredItemModule extends ItemModule implements ITieredItemModule {
 
     @Getter
     private final int tier;

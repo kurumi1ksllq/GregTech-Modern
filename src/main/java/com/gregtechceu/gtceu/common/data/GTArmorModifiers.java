@@ -33,6 +33,9 @@ public class GTArmorModifiers {
     public static final ItemModule BATTERY = new BatteryItemModule(GTCEu.id("battery"));
     public static final ItemModule NIGHT_VISION = new NightVisionModule(GTCEu.id("night_vision"));
     public static final ItemModule PPE = new PPEModule(GTCEu.id("ppe"));
+    public static final ItemModule LIQUID_FUEL_JETPACK = new LiquidFuelJetpackModule(GTCEu.id("liquid_fuel_jetpack"));
+    public static final ItemModule JETPACK = new JetpackModule(GTCEu.id("jetpack"));
+    public static final ItemModule ADVANCED_JETPACK = new AdvancedJetpackModule(GTCEu.id("advanced_jetpack"));
 
     public static void init() {}
 }

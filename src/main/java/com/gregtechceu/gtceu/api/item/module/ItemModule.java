@@ -52,11 +52,11 @@ public abstract class ItemModule {
         return getModuleById(ResourceLocation.tryParse(tag.getString("id")));
     }
 
-    public void onAttach(AppliedItemModule modifier) {}
+    public void onAttach(AppliedItemModule module) {}
 
-    public void onRemove(AppliedItemModule modifier) {}
+    public void onRemove(AppliedItemModule module) {}
 
-    public void onEquip(LivingEntity entity, AppliedItemModule modifier) {}
+    public void onEquip(LivingEntity entity, AppliedItemModule module) {}
 
     public void onArmorTick(LivingEntity entity, AppliedItemModule module) {
         IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getModuleItem());
@@ -66,7 +66,7 @@ public abstract class ItemModule {
         }
     }
 
-    public void onUnequip(LivingEntity entity, AppliedItemModule modifier) {}
+    public void onUnequip(LivingEntity entity, AppliedItemModule module) {}
 
     /**
      * Called each tick this item is in a player's inventory or equipment slots

@@ -165,5 +165,23 @@ public class EquipmentFoundryRecipes {
                         Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
                         Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
                 CustomTags.SENSORS, GTArmorModifiers.WIRELESS_CHARGER);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "jetpack",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+                GTItems.ELECTRIC_JETPACK, GTArmorModifiers.JETPACK);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "advanced_jetpack",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+                GTItems.ELECTRIC_JETPACK_ADVANCED, GTArmorModifiers.ADVANCED_JETPACK);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "liquid_fuel_jetpack",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+                CustomTags.SENSORS, GTArmorModifiers.LIQUID_FUEL_JETPACK);
     }
 }

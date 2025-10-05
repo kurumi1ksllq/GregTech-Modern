@@ -918,9 +918,9 @@ public class ConfigHolder {
         public boolean doSuperflatOres = false;
         @Configurable
         @Configurable.Comment({ "Dump all registered GT recipes?", "Default: false" })
-        public boolean dumpRecipes = false;
+        public boolean dumpRecipes = true;
         @Configurable
         @Configurable.Comment({ "Dump all registered GT models/blockstates/etc?", "Default: false" })
-        public boolean dumpAssets = false;
+        public boolean dumpAssets = true;
     }
 }

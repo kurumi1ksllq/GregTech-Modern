@@ -43,6 +43,7 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
     private static final String TEXTURES_PREFIX = "textures/";
     private static final String PNG_SUFFIX = ".png";
 
+    @Getter
     public final ResourceLocation location;
     public final float u0, v0, u1, v1;
     @Getter
@@ -117,10 +118,6 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
      */
     public UITexture getSubArea(float uStart, float vStart, float uEnd, float vEnd) {
         return new UITexture(this.location, lerpU(uStart), lerpV(vStart), lerpU(uEnd), lerpV(vEnd), this.canApplyTheme);
-    }
-
-    public ResourceLocation getLocation() {
-        return this.location;
     }
 
     protected final float lerpU(float u) {

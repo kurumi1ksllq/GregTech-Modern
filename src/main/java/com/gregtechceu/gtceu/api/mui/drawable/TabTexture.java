@@ -12,20 +12,34 @@ public class TabTexture {
                                 int textureInset) {
         Objects.requireNonNull(texture);
         UITexture sa, ma, ea, si, mi, ei;
-        if (axis.isVertical()) {
+        if (axis.isVertical() && !positive) {
             si = texture.getSubArea(0, 0, 1 / 3f, 0.5f);
             mi = texture.getSubArea(1 / 3f, 0, 2 / 3f, 0.5f);
             ei = texture.getSubArea(2 / 3f, 0, 1f, 0.5f);
             sa = texture.getSubArea(0, 0.5f, 1 / 3f, 1);
             ma = texture.getSubArea(1 / 3f, 0.5f, 2 / 3f, 1);
             ea = texture.getSubArea(2 / 3f, 0.5f, 1f, 1);
-        } else if (axis.isHorizontal()) {
+        } else if (axis.isVertical()) {
+            sa = texture.getSubArea(0, 0, 1 / 3f, 0.5f);
+            ma = texture.getSubArea(1 / 3f, 0, 2 / 3f, 0.5f);
+            ea = texture.getSubArea(2 / 3f, 0, 1f, 0.5f);
+            si = texture.getSubArea(0, 0.5f, 1 / 3f, 1);
+            mi = texture.getSubArea(1 / 3f, 0.5f, 2 / 3f, 1);
+            ei = texture.getSubArea(2 / 3f, 0.5f, 1f, 1);
+        } else if (axis.isHorizontal() && !positive) {
             si = texture.getSubArea(0, 0, 0.5f, 1 / 3f);
             mi = texture.getSubArea(0, 1 / 3f, 0.5f, 2 / 3f);
             ei = texture.getSubArea(0, 2 / 3f, 0.5f, 1f);
             sa = texture.getSubArea(0.5f, 0, 1, 1 / 3f);
             ma = texture.getSubArea(0.5f, 1 / 3f, 1, 2 / 3f);
             ea = texture.getSubArea(0.5f, 2 / 3f, 1, 1f);
+        } else if (axis.isHorizontal()) {
+            sa = texture.getSubArea(0, 0, 0.5f, 1 / 3f);
+            ma = texture.getSubArea(0, 1 / 3f, 0.5f, 2 / 3f);
+            ea = texture.getSubArea(0, 2 / 3f, 0.5f, 1f);
+            si = texture.getSubArea(0.5f, 0, 1, 1 / 3f);
+            mi = texture.getSubArea(0.5f, 1 / 3f, 1, 2 / 3f);
+            ei = texture.getSubArea(0.5f, 2 / 3f, 1, 1f);
         } else {
             throw new IllegalArgumentException();
         }

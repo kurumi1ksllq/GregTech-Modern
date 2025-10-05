@@ -97,8 +97,6 @@ public class CrateMachine extends MetaMachine implements IMuiMachine, IMachineLi
     public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
         syncManager.registerSlotGroup("item_inv", inventorySize);
 
-        syncManager.registerSlotGroup("item_inv", inventorySize);
-
         int rows = inventorySize / rowLength;
         ParentWidget<?> slots = new ParentWidget<>();
         for (int i = 0; i < rows; i++) {

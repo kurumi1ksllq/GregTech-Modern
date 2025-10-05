@@ -164,7 +164,7 @@ public class SteamParallelMultiblockMachine extends WorkableMultiblockMachine im
         return GuiTextures.DISPLAY_STEAM.get(ConfigHolder.INSTANCE.machines.steelSteamMultiblocks);
     }
 
-    @Override
+    /*@Override
     public ModularUI createUI(Player entityPlayer) {
         var screen = new DraggableScrollableWidgetGroup(7, 4, 162, 121).setBackground(getScreenTexture());
         screen.addWidget(new LabelWidget(4, 5, self().getBlockState().getBlock().getDescriptionId()));
@@ -177,5 +177,5 @@ public class SteamParallelMultiblockMachine extends WorkableMultiblockMachine im
                 .widget(UITemplate.bindPlayerInventory(entityPlayer.getInventory(),
                         GuiTextures.SLOT_STEAM.get(ConfigHolder.INSTANCE.machines.steelSteamMultiblocks), 7, 134,
                         true));
-    }
+    }*/
 }

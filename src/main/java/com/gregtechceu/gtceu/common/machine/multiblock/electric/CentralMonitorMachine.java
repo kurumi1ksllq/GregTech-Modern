@@ -317,7 +317,7 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
         getDefinition().getAdditionalDisplay().accept(this, textList);
     }
 
-    @Override
+    /*@Override
     public Widget createUIWidget() {
         updateStructureDimensions();
         selectedComponents.clear();
@@ -643,7 +643,7 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
         }
         builder.addWidget(main);
         return builder;
-    }
+    }*/
 
     @Override
     public IGuiTexture getComponentIcon() {

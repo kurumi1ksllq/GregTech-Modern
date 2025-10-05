@@ -37,7 +37,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class DataBankMachine extends WorkableElectricMultiblockMachine
-                             implements IFancyUIMachine, IDisplayUIMachine, IControllable {
+                             implements IDisplayUIMachine, IControllable {
 
     public static final int EUT_PER_HATCH = GTValues.VA[GTValues.EV];
     public static final int EUT_PER_HATCH_CHAINED = GTValues.VA[GTValues.LuV];

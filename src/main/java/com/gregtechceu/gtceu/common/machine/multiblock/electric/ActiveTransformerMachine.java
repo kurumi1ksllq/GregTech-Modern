@@ -39,7 +39,7 @@ import java.util.List;
 import static com.gregtechceu.gtceu.api.pattern.Predicates.abilities;
 
 public class ActiveTransformerMachine extends WorkableElectricMultiblockMachine
-                                      implements IControllable, IExplosionMachine, IFancyUIMachine, IDisplayUIMachine {
+                                      implements IControllable, IExplosionMachine, IDisplayUIMachine {
 
     private IEnergyContainer powerOutput;
     private IEnergyContainer powerInput;
@@ -197,7 +197,7 @@ public class ActiveTransformerMachine extends WorkableElectricMultiblockMachine
         }
     }
 
-    @Override
+    /*@Override
     public @NotNull Widget createUIWidget() {
         var group = new WidgetGroup(0, 0, 182 + 8, 117 + 8);
         group.addWidget(new DraggableScrollableWidgetGroup(4, 4, 182, 117).setBackground(getScreenTexture())
@@ -212,5 +212,5 @@ public class ActiveTransformerMachine extends WorkableElectricMultiblockMachine
     @Override
     public @NotNull ModularUI createUI(@NotNull Player entityPlayer) {
         return new ModularUI(198, 208, this, entityPlayer).widget(new FancyMachineUIWidget(this, 198, 208));
-    }
+    }*/
 }

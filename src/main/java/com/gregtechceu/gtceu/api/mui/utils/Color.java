@@ -19,8 +19,6 @@ import java.util.function.ToIntFunction;
  * <b>All methods assume the color int to be AARRGGBB if not stated otherwise!</b>
  * Most of the conversion methods are written by me with the help of <a
  * href=https://www.rapidtables.com/convert/color/>this website</a>.
- *
- * @author brachy
  */
 public class Color {
 

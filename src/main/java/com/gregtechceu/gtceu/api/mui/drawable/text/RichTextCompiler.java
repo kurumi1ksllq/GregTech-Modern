@@ -151,8 +151,8 @@ public class RichTextCompiler {
                 // was split at line feed -> new line
                 newLine();
             }
-        } while ((l = text.indexOf('\n', k)) >= 0 || k < text.length()); // if no line feed found, check if we are at
-                                                                         // the end of the text
+        } while ((l = text.indexOf('\n', k)) >= 0 || k < text.length());
+        // if no line feed found, check if we are at the end of the text
     }
 
     private void newLine() {

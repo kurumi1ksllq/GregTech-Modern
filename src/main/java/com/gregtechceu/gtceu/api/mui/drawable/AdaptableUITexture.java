@@ -136,24 +136,20 @@ public class AdaptableUITexture extends UITexture {
                     0);
             // right border
             GuiDraw.drawTiledTexture(pose, x1 - this.br, y, this.br, height, uInnerEnd, this.v0, this.u1, this.v1,
-                    this.br,
-                    th, 0);
+                    this.br, th, 0);
             // center
             GuiDraw.drawTiledTexture(pose, x + this.bl, y, width - this.bl - this.br, height, uInnerStart, this.v0,
-                    uInnerEnd,
-                    this.v1, tw - this.bl - this.br, th, 0);
+                    uInnerEnd, this.v1, tw - this.bl - this.br, th, 0);
         } else if (this.bl <= 0 && this.br <= 0) {
             // top border
             GuiDraw.drawTiledTexture(pose, x, y, width, this.bt, this.u0, this.v0, this.u1, vInnerStart, tw, this.bt,
                     0);
             // bottom border
             GuiDraw.drawTiledTexture(pose, x, y1 - this.bb, width, this.bb, this.u0, vInnerEnd, this.u1, this.v1, tw,
-                    this.bb,
-                    0);
+                    this.bb, 0);
             // center
             GuiDraw.drawTiledTexture(pose, x, y + this.bt, width, height - this.bt - this.bb, this.u0, vInnerStart,
-                    this.u1,
-                    vInnerEnd, tw, th - this.bt - this.bb, 0);
+                    this.u1, vInnerEnd, tw, th - this.bt - this.bb, 0);
         } else {
             // top left corner
             GuiDraw.drawTiledTexture(pose, x, y, this.bl, this.bt, this.u0, this.v0, uInnerStart, vInnerStart, this.bl,
@@ -183,8 +179,8 @@ public class AdaptableUITexture extends UITexture {
 
             // center
             GuiDraw.drawTiledTexture(pose, x + this.bl, y + this.bt, width - this.bl - this.br,
-                    height - this.bt - this.bb,
-                    uInnerStart, vInnerStart, uInnerEnd, vInnerEnd, tw - this.bl - this.br, th - this.bt - this.bb, 0);
+                    height - this.bt - this.bb, uInnerStart, vInnerStart, uInnerEnd, vInnerEnd,
+                    tw - this.bl - this.br, th - this.bt - this.bb, 0);
         }
         RenderSystem.disableBlend();
     }

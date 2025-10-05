@@ -228,7 +228,7 @@ public class LargeCombustionEngineMachine extends WorkableElectricMultiblockMach
         return ChatFormatting.RED + FormattingUtil.formatNumbers(neededAmount) + "mB";
     }
 
-    @Override
+    /*@Override
     public void attachTooltips(TooltipsPanel tooltipsPanel) {
         super.attachTooltips(tooltipsPanel);
         tooltipsPanel.attachTooltips(new IFancyTooltip.Basic(
@@ -237,7 +237,7 @@ public class LargeCombustionEngineMachine extends WorkableElectricMultiblockMach
                         .setStyle(Style.EMPTY.withColor(ChatFormatting.RED))),
                 this::isIntakesObstructed,
                 () -> null));
-    }
+    }*/
 
     @Override
     public ManagedFieldHolder getFieldHolder() {

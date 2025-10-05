@@ -7,13 +7,28 @@ import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.ModularScreen;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 public abstract class AbstractUIFactory<T extends GuiData> implements UIFactory<T> {
+
+    protected static ServerPlayer verifyServerSide(Player player) {
+        if (player == null) throw new NullPointerException("Can't open UI for null player!");
+        if (player instanceof ServerPlayer serverPlayer) return serverPlayer;
+        throw new IllegalArgumentException("Expected server player to open UI on server!");
+    }
+
+    protected static LocalPlayer verifyClientSide(Player player) {
+        if (player == null) throw new NullPointerException("Can't open UI for null player!");
+        if (player instanceof LocalPlayer localPlayer) return localPlayer;
+        throw new IllegalArgumentException("Expected client player to open UI on client side!");
+    }
 
     private final ResourceLocation name;
 

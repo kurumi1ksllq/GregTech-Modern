@@ -34,7 +34,7 @@ public class CompoundKey extends BaseKey {
         MutableComponent builder = Component.empty();
         for (IKey key : this.keys) {
             if (formatted) {
-                // merge parent formatting and this formatting to no lose info
+                // merge parent formatting and this formatting to not lose info
                 builder.append(key.getFormatted(FormattingState.merge(parentFormatting, getFormatting())));
             } else {
                 builder.append(key.get());

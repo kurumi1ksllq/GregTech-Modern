@@ -239,7 +239,7 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
         }
     }
 
-    @Override
+    /*@Override
     public Widget createUIWidget() {
         WidgetGroup builder = (WidgetGroup) super.createUIWidget();
         // Create the hover grid
@@ -268,7 +268,7 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
             }
         }
         return builder;
-    }
+    }*/
 
     @Override
     public void addDisplayText(List<Component> textList) {

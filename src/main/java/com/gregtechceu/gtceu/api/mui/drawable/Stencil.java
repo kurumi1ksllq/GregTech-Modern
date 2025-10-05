@@ -62,8 +62,7 @@ public class Stencil {
      * Scissor a transformed part of the screen.
      * OpenGL's transformations do effect these values.
      * If the context is not null, it's viewport transformations are applied to the area that will be stored in the
-     * stack,
-     * but not to the actual stencil.
+     * stack, but not to the actual stencil.
      */
     public static void apply(int x, int y, int w, int h, @Nullable GuiContext context) {
         apply(() -> drawRectangleStencilShape(x, y, w, h), x, y, w, h, context);

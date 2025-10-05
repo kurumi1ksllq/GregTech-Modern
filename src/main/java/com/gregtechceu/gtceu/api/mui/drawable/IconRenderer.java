@@ -74,7 +74,6 @@ public class IconRenderer {
         TextRenderer.SHARED.setShadow(this.shadow);
         TextRenderer.SHARED.setScale(this.scale);
         TextRenderer.SHARED.setAlignment(this.alignment, this.maxWidth);
-        // Look at Screen#L239; height starts with 8, which is equal to `Font.lineHeight - 1`
         int totalHeight = -1, maxWidth = 0;
         if (this.useWholeWidth) {
             maxWidth = (int) this.maxWidth;

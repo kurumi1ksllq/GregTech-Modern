@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class GTGuis {
 
-    public static final int DEFAULT_WIDTH = 176, DEFAULT_HIEGHT = 166;
+    public static final int DEFAULT_WIDTH = 176, DEFAULT_HEIGHT = 166;
 
     public static ModularPanel createPanel(String name, int width, int height) {
         return ModularPanel.defaultPanel(name, width, height);
@@ -33,7 +33,7 @@ public class GTGuis {
     }
 
     public static ModularPanel createPanel(String name) {
-        return ModularPanel.defaultPanel(name, DEFAULT_WIDTH, DEFAULT_HIEGHT);
+        return ModularPanel.defaultPanel(name, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
     public static ModularPanel defaultPanel(MetaMachine machine) {
@@ -45,7 +45,7 @@ public class GTGuis {
     }
 
     public static ModularPanel defaultPanel(ItemStack stack) {
-        return createPanel(stack, DEFAULT_WIDTH, DEFAULT_HIEGHT);
+        return createPanel(stack, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
     public static ModularPanel defaultPanel(Item item) {
@@ -64,7 +64,7 @@ public class GTGuis {
 
     public static PopupPanel defaultPopupPanel(String name) {
         return new PopupPanel(name)
-                .size(DEFAULT_WIDTH, DEFAULT_HIEGHT);
+                .size(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
     public static PopupPanel defaultPopupPanel(String name, boolean disableBelow,

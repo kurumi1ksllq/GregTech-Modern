@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PowerSubstationMachine extends WorkableMultiblockMachine
-                                    implements IEnergyInfoProvider, IFancyUIMachine, IDisplayUIMachine {
+                                    implements IEnergyInfoProvider, IDisplayUIMachine {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             PowerSubstationMachine.class, WorkableMultiblockMachine.MANAGED_FIELD_HOLDER);
@@ -347,7 +347,7 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
         return MANAGED_FIELD_HOLDER;
     }
 
-    @Override
+    /*@Override
     public Widget createUIWidget() {
         var group = new WidgetGroup(0, 0, 182 + 8, 117 + 8);
         group.addWidget(new DraggableScrollableWidgetGroup(4, 4, 182, 117).setBackground(getScreenTexture())
@@ -375,7 +375,7 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
         for (IMultiPart part : getParts()) {
             part.attachFancyTooltipsToController(this, tooltipsPanel);
         }
-    }
+    }*/
 
     @Override
     public void saveCustomPersistedData(@NotNull CompoundTag tag, boolean forDrop) {

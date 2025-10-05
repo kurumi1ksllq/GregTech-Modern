@@ -67,6 +67,11 @@ public class CoverUIFactory extends AbstractUIFactory<SidedPosGuiData> {
     }
 
     @Override
+    public boolean canInteractWith(Player player, SidedPosGuiData guiData) {
+        return guiData.getSquaredDistance(player) <= 8 * 8;
+    }
+
+    @Override
     public void writeGuiData(SidedPosGuiData guiData, FriendlyByteBuf buffer) {
         buffer.writeBlockPos(guiData.getBlockPos());
         buffer.writeByte(guiData.getSide().get3DDataValue());

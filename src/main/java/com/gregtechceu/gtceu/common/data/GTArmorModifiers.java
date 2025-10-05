@@ -1,11 +1,14 @@
 package com.gregtechceu.gtceu.common.data;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.item.module.ItemModule;
-import com.gregtechceu.gtceu.api.item.module.TieredItemModule;
+import com.gregtechceu.gtceu.api.item.module.*;
 import com.gregtechceu.gtceu.common.module.*;
 
 public class GTArmorModifiers {
+
+    public static final ItemModuleSlot UNIVERSAL_SLOT = new UniversalItemModuleSlot(GTCEu.id("universal"));
+    public static final TieredItemModuleSlot[] TIERED_SLOTS = TieredItemModuleSlot.create(GTCEu.id("tiered"),
+            TieredItemModuleSlot::new);
 
     public static final ItemModule[] SPEED = TieredItemModule.create(GTCEu.id("speed"), SpeedItemModule::new);
     public static final ItemModule[] DAMAGE_BLOCK = TieredItemModule.create(GTCEu.id("damage_block"),

@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.common.recipe.type;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.ITieredItemModule;
 import com.gregtechceu.gtceu.api.item.module.ItemModule;
@@ -63,9 +62,6 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
         }
         if (foundIngredient == null || foundItem == null) return false;
 
-        if (GTUtil.getTier(foundIngredient.getItem()) != -1) {
-            if (GTUtil.getTier(foundIngredient.getItem()) > ArmorUtils.getMaxModuleTier(foundItem)) return false;
-        }
         ItemModule module = getModule(foundIngredient);
 
         return AppliedItemModule.getModule(foundItem, module) == null && module.canApplyTo(foundItem);
@@ -96,8 +92,11 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
         if (AppliedItemModule.getModule(result, module) != null) return ItemStack.EMPTY;
         if (!module.canApplyTo(result)) return ItemStack.EMPTY;
         AppliedItemModule attachedModule = AppliedItemModule.attach(result, module);
-        if (attachedModule != null) attachedModule.setModuleItem(foundIngredient);
-        return result;
+        if (attachedModule != null) {
+            attachedModule.setModuleItem(foundIngredient);
+            return result;
+        }
+        return ItemStack.EMPTY;
     }
 
     @Override

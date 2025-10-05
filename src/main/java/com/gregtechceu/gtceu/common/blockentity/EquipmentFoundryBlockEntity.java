@@ -132,7 +132,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         ItemStack equipment = equipmentSlot.getStackInSlot(0);
         AppliedItemModule module = AppliedItemModule.getModuleInSlot(equipment, slot);
         if (module != null) return !(module.canRemove() && module.getModuleItem() != null);
-        return ArmorUtils.getMaxModifiers(equipment) <= slot;
+        return ArmorUtils.getMaxModules(equipment) <= slot;
     }
 
     public void onEquipmentSlotChanged(Player player) {

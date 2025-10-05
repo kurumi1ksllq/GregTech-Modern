@@ -2637,6 +2637,10 @@ public class GTItems {
             .onRegister(attach(new ImageModuleBehaviour()))
             .register();
 
+    public static ItemEntry<Item> CREATIVE_FLIGHT_MODULE = REGISTRATE.item("creative_flight_module", Item::new)
+            .lang("Gravitation Module")
+            .register();
+
     public static void init() {
         GTMaterialItems.generateMaterialItems();
         GTMaterialItems.generateTools();

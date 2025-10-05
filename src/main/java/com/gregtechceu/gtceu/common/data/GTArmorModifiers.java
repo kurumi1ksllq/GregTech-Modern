@@ -36,6 +36,7 @@ public class GTArmorModifiers {
     public static final ItemModule LIQUID_FUEL_JETPACK = new LiquidFuelJetpackModule(GTCEu.id("liquid_fuel_jetpack"));
     public static final ItemModule JETPACK = new JetpackModule(GTCEu.id("jetpack"));
     public static final ItemModule ADVANCED_JETPACK = new AdvancedJetpackModule(GTCEu.id("advanced_jetpack"));
+    public static final ItemModule CREATIVE_FLIGHT = new CreativeFlightModule(GTCEu.id("creative_flight"));
 
     public static void init() {}
 }

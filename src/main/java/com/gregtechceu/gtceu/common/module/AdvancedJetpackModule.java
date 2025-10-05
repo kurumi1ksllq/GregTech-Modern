@@ -30,6 +30,6 @@ public class AdvancedJetpackModule extends ArmorLogicItemModule implements ITier
 
     @Override
     public int getTier() {
-        return GTValues.IV;
+        return GTValues.EV;
     }
 }

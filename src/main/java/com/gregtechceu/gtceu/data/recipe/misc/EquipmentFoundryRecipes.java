@@ -182,6 +182,12 @@ public class EquipmentFoundryRecipes {
                 IntersectionIngredient.of(
                         Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
                         Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
-                CustomTags.SENSORS, GTArmorModifiers.LIQUID_FUEL_JETPACK);
+                GTItems.LIQUID_FUEL_JETPACK, GTArmorModifiers.LIQUID_FUEL_JETPACK);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "creative_flight",
+                IntersectionIngredient.of(
+                        Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT),
+                        Ingredient.of(Tags.Items.ARMORS_CHESTPLATES)),
+                GTItems.CREATIVE_FLIGHT_MODULE, GTArmorModifiers.CREATIVE_FLIGHT);
     }
 }

@@ -55,6 +55,11 @@ public class IntProviderLinkedIngredient extends IntProviderIngredient implement
     }
 
     @Override
+    public IntProviderLinkedIngredient copy(){
+        return new IntProviderLinkedIngredient(IntProviderIngredient.of(inner, countProvider, mark), mode, symlinks);
+    }
+
+    @Override
     public int getSampledCount(@NotNull RandomSource random) {
         if (!isRolled() && !links.isEmpty()) {
             double rollValue = 0;
@@ -66,10 +71,13 @@ public class IntProviderLinkedIngredient extends IntProviderIngredient implement
                 setSampledCount(getLinkedCount(rollMultiplier));
             }
         }
-        return super.getSampledCount();
+        return super.getSampledCount(random);
     }
 
-
+    @Override
+    public ItemStack[] getItems(){
+        throw new IllegalCallerException("A linked ingredient cannot be rolled outside a recipe");
+    }
 
     // TODO:
     // mark linked ingredients

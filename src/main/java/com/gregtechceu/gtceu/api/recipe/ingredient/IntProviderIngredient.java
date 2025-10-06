@@ -118,6 +118,10 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
         return of(inner, countProvider, mark);
     }
 
+    public IntProviderIngredient copy(){
+        return new IntProviderIngredient(inner, countProvider, sampledCount, mark);
+    }
+
     @Override
     public boolean test(@Nullable ItemStack stack) {
         return inner.test(stack);

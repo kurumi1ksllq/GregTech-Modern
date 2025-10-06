@@ -126,7 +126,7 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
                 if (simulate) {
                     fluids = new FluidStack[] { provider.getMaxSizeStack() };
                 } else {
-                    if (provider instanceof IntProviderLinkedFluidIngredient linked) {
+                    if (ingredient instanceof IntProviderLinkedFluidIngredient linked) {
                         fluids = linked.getStacks(recipe, io);
                     } else {
                         fluids = provider.getStacks();

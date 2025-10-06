@@ -122,7 +122,7 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
                     output = provider.getMaxSizeStack();
                     items = new ItemStack[] { output };
                 } else {
-                    if (provider instanceof IntProviderLinkedIngredient linked) {
+                    if (ingredient instanceof IntProviderLinkedIngredient linked) {
                         items = linked.getItems(recipe, io);
                     } else {
                         items = provider.getItems();

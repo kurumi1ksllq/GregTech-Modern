@@ -58,29 +58,14 @@ public class IntProviderLinkedFluidIngredient extends IntProviderFluidIngredient
             for (IRangedIngredient link : links) {
                 rollValue += link.getSampledCountRatio();
             }
-
-            switch (mode) {
-                case LINK_DIRECT:
-                    setSampledCount(getLinkedCount(rollValue / links.size()));
-                case LINK_INVERSE:
-                    setSampledCount(getLinkedCount(1.0 - (rollValue / links.size())));
-                case LINK_XOR:
-                    setSampledCount(getLinkedCount(rollValue));
-                case LINK_XOR_INVERSE:
-                    setSampledCount(getLinkedCount(1.0 - rollValue));
-                default:
-                    // pass
+            double rollMultiplier = mode.getLinkMultiplier(rollValue, links.size());
+            if (rollMultiplier != -1) {
+                setSampledCount(getLinkedCount(rollMultiplier));
             }
         }
         return super.getSampledCount();
     }
 
-    private int getLinkedCount(double roll) {
-        int min = getCountProvider().getMinValue();
-        int max = getCountProvider().getMaxValue();
-
-        return (int) Math.round((max - min) * roll) + min;
-    }
 
     public FluidStack[] getStacks(GTRecipe recipe, IO io) {
         if (fluidStacks == null) {

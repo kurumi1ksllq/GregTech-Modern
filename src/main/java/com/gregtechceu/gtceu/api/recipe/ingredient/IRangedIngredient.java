@@ -60,6 +60,13 @@ public interface IRangedIngredient {
         return (1.0 - ((double) (max - count) / (max - min)));
     }
 
+    default int getLinkedCount(double roll) {
+        int min = getCountProvider().getMinValue();
+        int max = getCountProvider().getMaxValue();
+
+        return (int) Math.round((max - min) * roll) + min;
+    }
+
     boolean isRolled();
 
     void reroll();

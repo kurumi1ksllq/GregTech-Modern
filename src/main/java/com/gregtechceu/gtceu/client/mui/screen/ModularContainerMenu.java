@@ -157,7 +157,7 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     @ApiStatus.Internal
     public void registerSlot(String panelName, ModularSlot slot) {
         if (slot.isPhantom()) {
-            if(this.phantomSlots.contains(slot)) {
+            if (this.phantomSlots.contains(slot)) {
                 throw new IllegalArgumentException("Tried to register slot which already exists!");
             }
             this.phantomSlots.add(slot);
@@ -325,19 +325,19 @@ public class ModularContainerMenu extends AbstractContainerMenu {
                         }
                     } else if (heldStack.getMaxStackSize() > 1 &&
                             ItemStack.isSameItemSameTags(slotStack, heldStack) && !slotStack.isEmpty()) {
-                        int stackCount = slotStack.getCount();
+                                int stackCount = slotStack.getCount();
 
-                        if (stackCount + heldStack.getCount() <= heldStack.getMaxStackSize()) {
-                            heldStack.grow(stackCount);
-                            slotStack = clickedSlot.remove(stackCount);
+                                if (stackCount + heldStack.getCount() <= heldStack.getMaxStackSize()) {
+                                    heldStack.grow(stackCount);
+                                    slotStack = clickedSlot.remove(stackCount);
 
-                            if (slotStack.isEmpty()) {
-                                clickedSlot.setByPlayer(ItemStack.EMPTY);
+                                    if (slotStack.isEmpty()) {
+                                        clickedSlot.setByPlayer(ItemStack.EMPTY);
+                                    }
+
+                                    clickedSlot.onTake(player, this.getCarried());
+                                }
                             }
-
-                            clickedSlot.onTake(player, this.getCarried());
-                        }
-                    }
                 }
                 clickedSlot.setChanged();
             }

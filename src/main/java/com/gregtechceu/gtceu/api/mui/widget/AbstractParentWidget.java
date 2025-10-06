@@ -25,7 +25,8 @@ public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWid
 
     /**
      * A list of all children of this widget. The list is modifiable contrary to the annotation.
-     * This just means that you shouldn't carelessly modify the list. Adding to the list also requires initialising the new child.
+     * This just means that you shouldn't carelessly modify the list. Adding to the list also requires initialising the
+     * new child.
      * Removing requires disposing the old child.
      *
      * @return a view of all children.
@@ -39,8 +40,10 @@ public class AbstractParentWidget<I extends IWidget, W extends AbstractParentWid
     }
 
     /**
-     * A list of all children of this widget with the given children type {@link I}. The list is modifiable contrary to the annotation.
-     * This just means that you shouldn't carelessly modify the list. Adding to the list also requires initialising the new child.
+     * A list of all children of this widget with the given children type {@link I}. The list is modifiable contrary to
+     * the annotation.
+     * This just means that you shouldn't carelessly modify the list. Adding to the list also requires initialising the
+     * new child.
      * Removing requires disposing the old child.
      *
      * @return a view of all children.

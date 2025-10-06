@@ -16,7 +16,6 @@ import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
 import com.gregtechceu.gtceu.api.mui.widget.wrapper.WidgetWrapper;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -34,6 +33,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -84,8 +84,10 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
     @Getter
     private final String owner;
     /**
-     * The name of this screen, which is also the name of the panel. Every UI under one owner should have a different name.
-     * Unfortunately there is no good way to verify this, so it's the UI implementors responsibility to set a proper name for the main panel.
+     * The name of this screen, which is also the name of the panel. Every UI under one owner should have a different
+     * name.
+     * Unfortunately there is no good way to verify this, so it's the UI implementors responsibility to set a proper
+     * name for the main panel.
      * This is mainly used to find theme overrides.
      */
     @Getter
@@ -193,8 +195,10 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
     }
 
     /**
-     * Called everytime the Game window changes its size. Overriding for additional logic is allowed, but super must be called.
-     * This method resizes the entire widget tree of every panel currently open and then updates the size of the {@link IMuiScreen} wrapper.
+     * Called everytime the Game window changes its size. Overriding for additional logic is allowed, but super must be
+     * called.
+     * This method resizes the entire widget tree of every panel currently open and then updates the size of the
+     * {@link IMuiScreen} wrapper.
      * <p>
      * Do not call this method except in an override!
      *
@@ -360,9 +364,11 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called when a mouse button is pressed. Tries to invoke
-     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onMousePressed(double, double, int) Interactable#onMousePressed(double, double, int)} on every widget under
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onMousePressed(double, double, int)
+     * Interactable#onMousePressed(double, double, int)} on every widget under
      * the mouse after gui action listeners have been called. Will try to focus widgets that have been interacted with.
-     * Focused widgets will be interacted with first in other interaction methods (mouse scroll, release and drag, key press and release).
+     * Focused widgets will be interacted with first in other interaction methods (mouse scroll, release and drag, key
+     * press and release).
      *
      * @param mouseX mouse x-coordinate
      * @param mouseY mouse y-coordinate
@@ -389,7 +395,8 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called when a mouse button is released. Tries to invoke
-     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onMouseReleased(double, double, int) Interactable#onMouseRelease(int)} on every widget under
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onMouseReleased(double, double, int)
+     * Interactable#onMouseRelease(int)} on every widget under
      * the mouse after gui action listeners have been called.
      *
      * @param mouseX mouse x-coordinate
@@ -418,7 +425,8 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called when a keyboard key is pressed. Tries to invoke
-     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onKeyPressed(int, int, int) Interactable#onKeyPressed(int, int, int)} on every
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onKeyPressed(int, int, int)
+     * Interactable#onKeyPressed(int, int, int)} on every
      * widget under the mouse after gui action listeners have been called.
      *
      * @param keyCode   the key code of the pressed key (see constants at {@link InputConstants})
@@ -444,7 +452,8 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called when a keyboard key is released. Tries to invoke
-     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onKeyReleased(int, int, int) Interactable#onKeyRelease(int, int, int)} on every
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onKeyReleased(int, int, int)
+     * Interactable#onKeyRelease(int, int, int)} on every
      * widget under the mouse after gui action listeners have been called.
      *
      * @param keyCode   the key code of the pressed key (see constants at {@link InputConstants})
@@ -470,11 +479,12 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called when a keyboard key is released. Tries to invoke
-     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onCharTyped(char, int) Interactable#onCharTyped(char, int)} on every
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onCharTyped(char, int)
+     * Interactable#onCharTyped(char, int)} on every
      * widget under the mouse after gui action listeners have been called.
      *
-     * @param codePoint   the character of the pressed key
-     * @param modifiers     the key modifiers of the pressed key (see modifiers at {@link InputConstants})
+     * @param codePoint the character of the pressed key
+     * @param modifiers the key modifiers of the pressed key (see modifiers at {@link InputConstants})
      * @return true if the action was consumed and further processing should be canceled
      */
     @Override
@@ -495,12 +505,13 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called when a mouse button is released. Tries to invoke
-     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onMouseScrolled(double, double, double) Interactable#onMouseScrolled(double, double, double)} on every widget under
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onMouseScrolled(double, double, double)
+     * Interactable#onMouseScrolled(double, double, double)} on every widget under
      * the mouse after gui action listeners have been called.
      *
      * @param mouseX mouse x-coordinate
      * @param mouseY mouse y-coordinate
-     * @param delta the direction and speed of the scroll
+     * @param delta  the direction and speed of the scroll
      * @return true if the action was consumed and further processing should be canceled
      */
     @Override
@@ -521,14 +532,16 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
 
     /**
      * Called every time the mouse pos changes and a mouse button is held down. Invokes
-     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onMouseDrag(double, double, int, double, double) Interactable#onMouseDrag(double, double, int, double, double)} on every widget
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.Interactable#onMouseDrag(double, double, int, double, double)
+     * Interactable#onMouseDrag(double, double, int, double, double)} on every widget
      * under the mouse after gui action listeners have been called.
      *
-     * @param mouseX    starting mouse x-coordinate
-     * @param mouseY    starting mouse y-coordinate
-     * @param button    mouse button that is held down (0 = left button, 1 = right button, 2 = scroll button, 4 and 5 = side buttons)
-     * @param dragX     ending mouse y-coordinate
-     * @param dragY     ending mouse y-coordinate
+     * @param mouseX starting mouse x-coordinate
+     * @param mouseY starting mouse y-coordinate
+     * @param button mouse button that is held down (0 = left button, 1 = right button, 2 = scroll button, 4 and 5 =
+     *               side buttons)
+     * @param dragX  ending mouse y-coordinate
+     * @param dragY  ending mouse y-coordinate
      * @return true if the action was consumed and further processing should be canceled
      */
     @Override
@@ -548,8 +561,10 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
     }
 
     /**
-     * Called with {@code true} after a widget which implements {@link com.gregtechceu.gtceu.api.mui.base.widget.IFocusedWidget IFocusedWidget}
-     * has consumed a mouse press and called with {@code false} if a widget is currently focused and anything else has consumed a mouse
+     * Called with {@code true} after a widget which implements
+     * {@link com.gregtechceu.gtceu.api.mui.base.widget.IFocusedWidget IFocusedWidget}
+     * has consumed a mouse press and called with {@code false} if a widget is currently focused and anything else has
+     * consumed a mouse
      * press. This is required for other mods like JEI/EMI to not interfere with inputs.
      *
      * @param focus true if the gui screen will be focused
@@ -690,7 +705,8 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
     }
 
     /**
-     * Tries to use a specific theme for this screen. If the theme for this screen has been overriden via resource packs, this method does
+     * Tries to use a specific theme for this screen. If the theme for this screen has been overriden via resource
+     * packs, this method does
      * nothing.
      *
      * @param theme id of theme to use
@@ -702,7 +718,8 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
     }
 
     /**
-     * Sets if the gui should pause the game in the background. Pausing means every ticking will halt. If the client is connected to a
+     * Sets if the gui should pause the game in the background. Pausing means every ticking will halt. If the client is
+     * connected to a
      * dedicated server the UI will NEVER pause the game.
      *
      * @param pausesGame true if the ui should pause the game in the background.

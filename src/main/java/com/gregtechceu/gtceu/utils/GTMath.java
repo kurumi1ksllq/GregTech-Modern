@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.utils;
 
 import com.gregtechceu.gtceu.utils.math.ParseResult;
-import com.gregtechceu.gtceu.utils.math.ParseResult;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.util.Mth;
@@ -10,7 +9,6 @@ import net.minecraftforge.fluids.FluidStack;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.mariuszgromada.math.mxparser.Constant;
 import org.jetbrains.annotations.Nullable;
 import org.mariuszgromada.math.mxparser.Constant;
 import org.mariuszgromada.math.mxparser.Expression;

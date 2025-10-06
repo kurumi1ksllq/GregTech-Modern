@@ -6,47 +6,38 @@ import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeHandler;
-import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.*;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDisplayUIMachine;
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
-import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifierList;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
 import com.gregtechceu.gtceu.common.mui.GTGuis;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.*;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
 
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine implements IMuiMachine,
-        IDisplayUIMachine, ITieredMachine, IOverclockMachine {
+                                               IDisplayUIMachine, ITieredMachine, IOverclockMachine {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             WorkableElectricMultiblockMachine.class, WorkableMultiblockMachine.MANAGED_FIELD_HOLDER);
@@ -139,52 +130,54 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
         IDisplayUIMachine.super.addDisplayText(textList);
     }
 
-    /*@Override
-    public Widget createUIWidget() {
-        var group = new WidgetGroup(0, 0, 182 + 8, 117 + 8);
-        group.addWidget(new DraggableScrollableWidgetGroup(4, 4, 182, 117).setBackground(getScreenTexture())
-                .addWidget(new LabelWidget(4, 5, self().getBlockState().getBlock().getDescriptionId()))
-                .addWidget(new ComponentPanelWidget(4, 17, this::addDisplayText)
-                        .textSupplier(this.getLevel().isClientSide ? null : this::addDisplayText)
-                        .setMaxWidthLimit(200)
-                        .clickHandler(this::handleDisplayClick)));
-        group.setBackground(GuiTextures.BACKGROUND_INVERSE);
-        return group;
-    }
-
-    @Override
-    public ModularUI createUI(Player entityPlayer) {
-        return new ModularUI(198, 208, this, entityPlayer).widget(new FancyMachineUIWidget(this, 198, 208));
-    }
-
-    @Override
-    public List<IFancyUIProvider> getSubTabs() {
-        return getParts().stream().filter(Objects::nonNull).map(IFancyUIProvider.class::cast).toList();
-    }
-
-    @Override
-    public void attachConfigurators(ConfiguratorPanel configuratorPanel) {
-        if (getDefinition().getRecipeModifier() instanceof RecipeModifierList list && Arrays.stream(list.getModifiers())
-                .anyMatch(modifier -> modifier == GTRecipeModifiers.BATCH_MODE)) {
-            configuratorPanel.attachConfigurators(new IFancyConfiguratorButton.Toggle(
-                    GuiTextures.BUTTON_BATCH.getSubTexture(0, 0, 1, 0.5),
-                    GuiTextures.BUTTON_BATCH.getSubTexture(0, 0.5, 1, 0.5),
-                    this::isBatchEnabled,
-                    (cd, p) -> setBatchEnabled(p))
-                    .setTooltipsSupplier(
-                            p -> List.of(
-                                    Component.translatable("gtceu.machine.batch_" + (p ? "enabled" : "disabled")))));
-        }
-
-        IFancyUIMachine.super.attachConfigurators(configuratorPanel);
-    }
-
-    @Override
-    public void attachTooltips(TooltipsPanel tooltipsPanel) {
-        for (IMultiPart part : getParts()) {
-            part.attachFancyTooltipsToController(this, tooltipsPanel);
-        }
-    }*/
+    /*
+     * @Override
+     * public Widget createUIWidget() {
+     * var group = new WidgetGroup(0, 0, 182 + 8, 117 + 8);
+     * group.addWidget(new DraggableScrollableWidgetGroup(4, 4, 182, 117).setBackground(getScreenTexture())
+     * .addWidget(new LabelWidget(4, 5, self().getBlockState().getBlock().getDescriptionId()))
+     * .addWidget(new ComponentPanelWidget(4, 17, this::addDisplayText)
+     * .textSupplier(this.getLevel().isClientSide ? null : this::addDisplayText)
+     * .setMaxWidthLimit(200)
+     * .clickHandler(this::handleDisplayClick)));
+     * group.setBackground(GuiTextures.BACKGROUND_INVERSE);
+     * return group;
+     * }
+     * 
+     * @Override
+     * public ModularUI createUI(Player entityPlayer) {
+     * return new ModularUI(198, 208, this, entityPlayer).widget(new FancyMachineUIWidget(this, 198, 208));
+     * }
+     * 
+     * @Override
+     * public List<IFancyUIProvider> getSubTabs() {
+     * return getParts().stream().filter(Objects::nonNull).map(IFancyUIProvider.class::cast).toList();
+     * }
+     * 
+     * @Override
+     * public void attachConfigurators(ConfiguratorPanel configuratorPanel) {
+     * if (getDefinition().getRecipeModifier() instanceof RecipeModifierList list && Arrays.stream(list.getModifiers())
+     * .anyMatch(modifier -> modifier == GTRecipeModifiers.BATCH_MODE)) {
+     * configuratorPanel.attachConfigurators(new IFancyConfiguratorButton.Toggle(
+     * GuiTextures.BUTTON_BATCH.getSubTexture(0, 0, 1, 0.5),
+     * GuiTextures.BUTTON_BATCH.getSubTexture(0, 0.5, 1, 0.5),
+     * this::isBatchEnabled,
+     * (cd, p) -> setBatchEnabled(p))
+     * .setTooltipsSupplier(
+     * p -> List.of(
+     * Component.translatable("gtceu.machine.batch_" + (p ? "enabled" : "disabled")))));
+     * }
+     * 
+     * IFancyUIMachine.super.attachConfigurators(configuratorPanel);
+     * }
+     * 
+     * @Override
+     * public void attachTooltips(TooltipsPanel tooltipsPanel) {
+     * for (IMultiPart part : getParts()) {
+     * part.attachFancyTooltipsToController(this, tooltipsPanel);
+     * }
+     * }
+     */
 
     //////////////////////////////////////
     // ******** OVERCLOCK *********//

@@ -7,7 +7,6 @@ import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.util.TimedProgressSupplier;
-import com.gregtechceu.gtceu.api.gui.widget.ExtendedProgressWidget;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
@@ -24,12 +23,7 @@ import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.syncdata.IManaged;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
@@ -59,7 +53,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Supplier;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -250,36 +243,38 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
         }
     }
 
-    /*@Override
-    public Widget createUIWidget() {
-        WidgetGroup builder = (WidgetGroup) super.createUIWidget();
-        // Create the hover grid
-        builder.addWidget(new ExtendedProgressWidget(
-                () -> hpcaHandler.getAllocatedCWUt() > 0 ? progressSupplier.getAsDouble() : 0,
-                74, 57, 47, 47, GuiTextures.HPCA_COMPONENT_OUTLINE)
-                .setServerTooltipSupplier(hpcaHandler::addInfo)
-                .setFillDirection(ProgressTexture.FillDirection.LEFT_TO_RIGHT));
-        int startX = 76;
-        int startY = 59;
-
-        // we need to know what components we have on the client
-        if (getLevel().isClientSide) {
-            if (isFormed) {
-                hpcaHandler.tryGatherClientComponents(this.getLevel(), this.getPos(), this.getFrontFacing(),
-                        this.getUpwardsFacing(), this.isFlipped);
-            } else {
-                hpcaHandler.clearClientComponents();
-            }
-        }
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                final int index = i * 3 + j;
-                Supplier<IGuiTexture> textureSupplier = () -> hpcaHandler.getComponentTexture(index);
-                builder.addWidget(new ImageWidget(startX + (15 * j), startY + (15 * i), 13, 13, textureSupplier));
-            }
-        }
-        return builder;
-    }*/
+    /*
+     * @Override
+     * public Widget createUIWidget() {
+     * WidgetGroup builder = (WidgetGroup) super.createUIWidget();
+     * // Create the hover grid
+     * builder.addWidget(new ExtendedProgressWidget(
+     * () -> hpcaHandler.getAllocatedCWUt() > 0 ? progressSupplier.getAsDouble() : 0,
+     * 74, 57, 47, 47, GuiTextures.HPCA_COMPONENT_OUTLINE)
+     * .setServerTooltipSupplier(hpcaHandler::addInfo)
+     * .setFillDirection(ProgressTexture.FillDirection.LEFT_TO_RIGHT));
+     * int startX = 76;
+     * int startY = 59;
+     * 
+     * // we need to know what components we have on the client
+     * if (getLevel().isClientSide) {
+     * if (isFormed) {
+     * hpcaHandler.tryGatherClientComponents(this.getLevel(), this.getPos(), this.getFrontFacing(),
+     * this.getUpwardsFacing(), this.isFlipped);
+     * } else {
+     * hpcaHandler.clearClientComponents();
+     * }
+     * }
+     * for (int i = 0; i < 3; i++) {
+     * for (int j = 0; j < 3; j++) {
+     * final int index = i * 3 + j;
+     * Supplier<IGuiTexture> textureSupplier = () -> hpcaHandler.getComponentTexture(index);
+     * builder.addWidget(new ImageWidget(startX + (15 * j), startY + (15 * i), 13, 13, textureSupplier));
+     * }
+     * }
+     * return builder;
+     * }
+     */
 
     @Override
     public void addDisplayText(List<Component> textList) {

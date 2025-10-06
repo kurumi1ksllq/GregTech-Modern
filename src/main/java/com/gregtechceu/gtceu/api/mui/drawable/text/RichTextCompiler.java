@@ -72,7 +72,7 @@ public class RichTextCompiler {
                 }
                 text = key.getFormatted();
             } else if (!(o instanceof IDrawable)) {
-                text = Component.literal(String.valueOf(o));
+                text = Component.translatable(String.valueOf(o));
             }
             if (text != null) {
                 compileString(text.getString());

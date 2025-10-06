@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.UnaryOperator;
 
 /**
- * An interface for JEI to get the ingredient from a widget to show recipes for example.
+ * An interface for recipe viewers to get the ingredient from a widget to show recipes for example.
  * Implement this on {@link com.gregtechceu.gtceu.api.mui.base.widget.IWidget}.
  * No further registration needed.
  *

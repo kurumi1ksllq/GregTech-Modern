@@ -31,7 +31,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -77,19 +76,19 @@ public class ClientScreenHandler {
         Screen newGui = event.getNewScreen();
         defaultContext.reset();
 
-        if(lastMui != null && newGui == null) {
-            if(lastMui.getScreen().getPanelManager().isOpen()) {
+        if (lastMui != null && newGui == null) {
+            if (lastMui.getScreen().getPanelManager().isOpen()) {
                 lastMui.getScreen().getPanelManager().closeAll();
             }
             lastMui.getScreen().getPanelManager().dispose();
             lastMui = null;
-        } else if(newGui instanceof IMuiScreen screenWrapper) {
-            if(lastMui == null) {
+        } else if (newGui instanceof IMuiScreen screenWrapper) {
+            if (lastMui == null) {
                 lastMui = screenWrapper;
-            } else if(lastMui == newGui) {
+            } else if (lastMui == newGui) {
                 lastMui.getScreen().getPanelManager().reopen();
             } else {
-                if(lastMui.getScreen().getPanelManager().isOpen()) {
+                if (lastMui.getScreen().getPanelManager().isOpen()) {
                     lastMui.getScreen().getPanelManager().closeAll();
                 }
                 lastMui.getScreen().getPanelManager().dispose();

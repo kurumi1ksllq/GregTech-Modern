@@ -6,32 +6,24 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.IMuiCover;
-import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
-import com.gregtechceu.gtceu.api.gui.widget.PhantomSlotWidget;
-import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
+import com.gregtechceu.gtceu.api.machine.MachineCoverContainer;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.factory.SidedPosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
-import com.gregtechceu.gtceu.api.machine.MachineCoverContainer;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.cover.data.ControllerMode;
-
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTGuis;
+
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
@@ -40,8 +32,6 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -216,10 +206,8 @@ public class MachineControllerCover extends CoverBehavior implements IMuiCover {
     // *********** GUI ***********//
     //////////////////////////////////////
 
-
     @Override
     public ModularPanel buildUI(SidedPosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-
         return GTGuis.createPanel(this, 176, 164)
                 .bindPlayerInventory()
                 .child(createUIWidget())
@@ -233,48 +221,50 @@ public class MachineControllerCover extends CoverBehavior implements IMuiCover {
         return slots;
     }
 
-    /*@Override
-    public Widget createUIWidget() {
-        if (controllerMode != null && getControllable(controllerMode.side) == null) {
-            setControllerMode(null);
-        }
-        WidgetGroup group = new WidgetGroup(0, 0, 176, 95);
-
-        group.addWidget(new LabelWidget(10, 5, "cover.machine_controller.title"));
-        group.addWidget(new IntInputWidget(10, 20, 131, 20,
-                this::getMinRedstoneStrength, this::setMinRedstoneStrength).setMin(1).setMax(15));
-
-        modeButton = new ButtonWidget(10, 45, 131, 20,
-                new GuiTextureGroup(GuiTextures.VANILLA_BUTTON),
-                cd -> selectNextMode());
-        group.addWidget(modeButton);
-
-        // Inverted Mode Toggle:
-        group.addWidget(new ToggleButtonWidget(
-                146, 20, 20, 20,
-                GuiTextures.INVERT_REDSTONE_BUTTON, this::isInverted, this::setInverted)
-                .isMultiLang()
-                .setTooltipText("cover.machine_controller.invert"));
-
-        group.addWidget(new LabelWidget(10, 72, "cover.machine_controller.suspend_powerfail"));
-        group.addWidget(new ToggleButtonWidget(147, 68, 18, 18, GuiTextures.BUTTON_POWER,
-                this::preventPowerFail, (data) -> {
-                    preventPowerFail = data;
-                }));
-
-        sideCoverSlot = new CustomItemStackHandler(1);
-        group.addWidget(new PhantomSlotWidget(sideCoverSlot, 0, 147, 46) {
-
-            @Override
-            public ItemStack slotClickPhantom(Slot slot, int mouseButton, ClickType clickTypeIn, ItemStack stackHeld) {
-                return sideCoverSlot.getStackInSlot(0);
-            }
-        });
-
-        updateUI();
-
-        return group;
-    }*/
+    /*
+     * @Override
+     * public Widget createUIWidget() {
+     * if (controllerMode != null && getControllable(controllerMode.side) == null) {
+     * setControllerMode(null);
+     * }
+     * WidgetGroup group = new WidgetGroup(0, 0, 176, 95);
+     * 
+     * group.addWidget(new LabelWidget(10, 5, "cover.machine_controller.title"));
+     * group.addWidget(new IntInputWidget(10, 20, 131, 20,
+     * this::getMinRedstoneStrength, this::setMinRedstoneStrength).setMin(1).setMax(15));
+     * 
+     * modeButton = new ButtonWidget(10, 45, 131, 20,
+     * new GuiTextureGroup(GuiTextures.VANILLA_BUTTON),
+     * cd -> selectNextMode());
+     * group.addWidget(modeButton);
+     * 
+     * // Inverted Mode Toggle:
+     * group.addWidget(new ToggleButtonWidget(
+     * 146, 20, 20, 20,
+     * GuiTextures.INVERT_REDSTONE_BUTTON, this::isInverted, this::setInverted)
+     * .isMultiLang()
+     * .setTooltipText("cover.machine_controller.invert"));
+     * 
+     * group.addWidget(new LabelWidget(10, 72, "cover.machine_controller.suspend_powerfail"));
+     * group.addWidget(new ToggleButtonWidget(147, 68, 18, 18, GuiTextures.BUTTON_POWER,
+     * this::preventPowerFail, (data) -> {
+     * preventPowerFail = data;
+     * }));
+     * 
+     * sideCoverSlot = new CustomItemStackHandler(1);
+     * group.addWidget(new PhantomSlotWidget(sideCoverSlot, 0, 147, 46) {
+     * 
+     * @Override
+     * public ItemStack slotClickPhantom(Slot slot, int mouseButton, ClickType clickTypeIn, ItemStack stackHeld) {
+     * return sideCoverSlot.getStackInSlot(0);
+     * }
+     * });
+     * 
+     * updateUI();
+     * 
+     * return group;
+     * }
+     */
 
     private void selectNextMode() {
         var allowedModes = getAllowedModes();

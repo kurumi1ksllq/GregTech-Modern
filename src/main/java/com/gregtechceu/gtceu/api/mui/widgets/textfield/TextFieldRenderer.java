@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.utils.Point;
 import com.gregtechceu.gtceu.api.mui.utils.PointF;
 
-import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -19,6 +18,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import lombok.Setter;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -190,7 +190,8 @@ public class TextFieldRenderer extends TextRenderer {
         RenderSystem.enableBlend();
     }
 
-    private static void drawRect(float x0, float y0, float x1, float y1, float red, float green, float blue, float alpha) {
+    private static void drawRect(float x0, float y0, float x1, float y1, float red, float green, float blue,
+                                 float alpha) {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tesselator.getBuilder();
 

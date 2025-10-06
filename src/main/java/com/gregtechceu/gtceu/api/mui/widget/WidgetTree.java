@@ -235,7 +235,7 @@ public class WidgetTree {
     public static void resize(IWidget parent) {
         if (!GTCEu.isClientThread()) return;
 
-        while(!(parent instanceof ModularPanel) && (parent.getParent() instanceof ILayoutWidget ||
+        while (!(parent instanceof ModularPanel) && (parent.getParent() instanceof ILayoutWidget ||
                 parent.getParent().flex().dependsOnChildren())) {
             parent = parent.getParent();
         }

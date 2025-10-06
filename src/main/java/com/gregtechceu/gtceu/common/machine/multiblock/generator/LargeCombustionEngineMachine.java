@@ -3,9 +3,6 @@ package com.gregtechceu.gtceu.common.machine.multiblock.generator;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
-import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.gregtechceu.gtceu.api.gui.fancy.IFancyTooltip;
-import com.gregtechceu.gtceu.api.gui.fancy.TooltipsPanel;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
@@ -31,7 +28,6 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
@@ -228,16 +224,18 @@ public class LargeCombustionEngineMachine extends WorkableElectricMultiblockMach
         return ChatFormatting.RED + FormattingUtil.formatNumbers(neededAmount) + "mB";
     }
 
-    /*@Override
-    public void attachTooltips(TooltipsPanel tooltipsPanel) {
-        super.attachTooltips(tooltipsPanel);
-        tooltipsPanel.attachTooltips(new IFancyTooltip.Basic(
-                () -> GuiTextures.INDICATOR_NO_STEAM.get(false),
-                () -> List.of(Component.translatable("gtceu.multiblock.large_combustion_engine.obstructed")
-                        .setStyle(Style.EMPTY.withColor(ChatFormatting.RED))),
-                this::isIntakesObstructed,
-                () -> null));
-    }*/
+    /*
+     * @Override
+     * public void attachTooltips(TooltipsPanel tooltipsPanel) {
+     * super.attachTooltips(tooltipsPanel);
+     * tooltipsPanel.attachTooltips(new IFancyTooltip.Basic(
+     * () -> GuiTextures.INDICATOR_NO_STEAM.get(false),
+     * () -> List.of(Component.translatable("gtceu.multiblock.large_combustion_engine.obstructed")
+     * .setStyle(Style.EMPTY.withColor(ChatFormatting.RED))),
+     * this::isIntakesObstructed,
+     * () -> null));
+     * }
+     */
 
     @Override
     public ManagedFieldHolder getFieldHolder() {

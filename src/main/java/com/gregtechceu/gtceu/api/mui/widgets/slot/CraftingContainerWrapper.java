@@ -15,8 +15,10 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A crafting inventory which wraps a {@link IItemHandlerModifiable}. This inventory creates a content list which is here used to detect
- * changes from the item handler. This is required as interacting with a slot will update the content, but will not notify the container
+ * A crafting inventory which wraps a {@link IItemHandlerModifiable}. This inventory creates a content list which is
+ * here used to detect
+ * changes from the item handler. This is required as interacting with a slot will update the content, but will not
+ * notify the container
  * to check for new recipes.
  */
 public class CraftingContainerWrapper extends TransientCraftingContainer {
@@ -32,7 +34,8 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
         super(menu, width, height);
         this.size = width * height + 1;
         if (startIndex + this.size < delegate.getSlots()) {
-            throw new IllegalArgumentException("Inventory does not have enough slots for given size. Requires " + (startIndex + this.size) + " slots, but only has " + delegate.getSlots() + " slots!");
+            throw new IllegalArgumentException("Inventory does not have enough slots for given size. Requires " +
+                    (startIndex + this.size) + " slots, but only has " + delegate.getSlots() + " slots!");
         }
         this.delegate = delegate;
         this.startIndex = startIndex;
@@ -62,7 +65,7 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
         for (int slot = 0; slot < size - 1; slot++) {
             ItemStack stack = getBackingList().get(slot);
             ItemStack current = this.delegate.getStackInSlot(slot + this.startIndex);
-            if(current.isEmpty() && current != ItemStack.EMPTY) {
+            if (current.isEmpty() && current != ItemStack.EMPTY) {
                 current = ItemStack.EMPTY;
                 this.delegate.insertItem(slot + this.startIndex, ItemStack.EMPTY, true);
             }
@@ -79,7 +82,7 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
     @Override
     public boolean isEmpty() {
         for (int i = 0; i < this.size; i++) {
-            if(!getItem(i).isEmpty()) {
+            if (!getItem(i).isEmpty()) {
                 return false;
             }
         }
@@ -99,7 +102,7 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
 
     public void setSlot(int slot, @NotNull ItemStack stack, boolean notify) {
         this.delegate.insertItem(slot, stack, notify);
-        if(notify) notifyContainer();
+        if (notify) notifyContainer();
     }
 
     @Override
@@ -113,10 +116,10 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
         ItemStack stack = getItem(slot);
         if (stack.isEmpty()) return ItemStack.EMPTY;
         stack.split(amount);
-        if(stack.isEmpty()) {
+        if (stack.isEmpty()) {
             setSlot(slot, ItemStack.EMPTY, false);
         }
-        if(notify) notifyContainer();
+        if (notify) notifyContainer();
         return stack;
     }
 
@@ -130,20 +133,20 @@ public class CraftingContainerWrapper extends TransientCraftingContainer {
         if (slot >= 0 || slot < this.size) return ItemStack.EMPTY;
         ItemStack stack = getItem(slot);
         this.delegate.insertItem(slot, stack, notify);
-        if(notify) notifyContainer();
+        if (notify) notifyContainer();
         return stack;
     }
 
     @Override
     public void clearContent() {
-        for(int i = 0; i < this.size; i++) {
+        for (int i = 0; i < this.size; i++) {
             setSlot(i, ItemStack.EMPTY, false);
         }
     }
 
     @Override
     public void fillStackedContents(StackedContents contents) {
-        for(int i = 0; i < this.size; i++) {
+        for (int i = 0; i < this.size; i++) {
             contents.accountStack(getItem(i));
         }
     }

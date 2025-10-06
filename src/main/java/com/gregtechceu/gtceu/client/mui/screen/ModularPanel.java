@@ -22,13 +22,12 @@ import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiViewportStack;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.LocatedWidget;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
 
-import com.lowdragmc.lowdraglib.jei.ModularUIJeiHandler;
-import lombok.Setter;
 import net.minecraft.Util;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
@@ -634,8 +633,8 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
         while (i < this.hovering.size()) {
             LocatedWidget widget = this.hovering.get(i);
             if (!widget.getElement().isValid()) {
-               this.hovering.remove(i);
-               continue;
+                this.hovering.remove(i);
+                continue;
             }
             if (debug || widget.getElement().canHover()) {
                 return widget;

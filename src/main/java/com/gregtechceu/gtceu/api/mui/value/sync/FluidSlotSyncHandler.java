@@ -243,7 +243,8 @@ public class FluidSlotSyncHandler extends ValueSyncHandler<FluidStack> {
                 }
             }
         } else if (mouseData.mouseButton() == 2 && !currentFluid.isEmpty() && this.canDrainSlot) {
-            this.fluidTank.drain(mouseData.shift() ? Integer.MAX_VALUE : FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE);
+            this.fluidTank.drain(mouseData.shift() ? Integer.MAX_VALUE : FluidType.BUCKET_VOLUME,
+                    IFluidHandler.FluidAction.EXECUTE);
         }
     }
 

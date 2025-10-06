@@ -103,7 +103,7 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
      * @param inner         {@link Ingredient}
      * @param countProvider usually as {@link net.minecraft.util.valueproviders.UniformInt#of(int, int)}
      */
-    public static IntProviderIngredient of(Ingredient inner, IntProvider countProvider, String mark) {
+    public static IntProviderIngredient of(Ingredient inner, IntProvider countProvider, @NotNull String mark) {
         Preconditions.checkArgument(countProvider.getMinValue() >= 0,
                 "IntProviderIngredient must have a min value of at least 0.");
         return new IntProviderIngredient(inner, countProvider, mark);
@@ -113,7 +113,7 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
      * @param stack         {@link ItemStack}
      * @param countProvider usually as {@link net.minecraft.util.valueproviders.UniformInt#of(int, int)}
      */
-    public static IntProviderIngredient of(ItemStack stack, IntProvider countProvider, String mark) {
+    public static IntProviderIngredient of(ItemStack stack, IntProvider countProvider, @NotNull String mark) {
         Ingredient inner = stack.hasTag() ? StrictNBTIngredient.of(stack) : Ingredient.of(stack);
         return of(inner, countProvider, mark);
     }

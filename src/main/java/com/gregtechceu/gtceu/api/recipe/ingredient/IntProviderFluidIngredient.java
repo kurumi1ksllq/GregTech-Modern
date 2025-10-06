@@ -61,6 +61,13 @@ public class IntProviderFluidIngredient extends FluidIngredient
         this.countProvider = provider;
     }
 
+    protected IntProviderFluidIngredient(FluidIngredient inner, IntProvider provider, @NotNull String mark) {
+        super(inner.values, provider.getMaxValue(), inner.nbt);
+        this.inner = inner;
+        this.countProvider = provider;
+        this.mark=mark;
+    }
+
     protected IntProviderFluidIngredient(FluidIngredient inner, IntProvider provider, int sampledCount,
                                          @NotNull String mark) {
         super(inner.values, provider.getMaxValue(), inner.nbt);
@@ -188,6 +195,14 @@ public class IntProviderFluidIngredient extends FluidIngredient
 
     public static IntProviderFluidIngredient of(FluidStack inner, int min, int max) {
         return IntProviderFluidIngredient.of(FluidIngredient.of(inner), UniformInt.of(min, max));
+    }
+
+    public static IntProviderFluidIngredient of(FluidIngredient inner, IntProvider provider, @NotNull String mark) {
+        return new IntProviderFluidIngredient(inner, provider, mark);
+    }
+
+    public static IntProviderFluidIngredient of(FluidStack inner, int min, int max, @NotNull String mark) {
+        return IntProviderFluidIngredient.of(FluidIngredient.of(inner), UniformInt.of(min, max), mark);
     }
 
     @Override

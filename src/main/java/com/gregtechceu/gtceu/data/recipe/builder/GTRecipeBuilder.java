@@ -514,6 +514,27 @@ public class GTRecipeBuilder {
         return inputItems(input);
     }
 
+    public GTRecipeBuilder inputItemsRanged(ItemStack input, IntProvider intProvider, @NotNull String mark) {
+        return inputItems(IntProviderIngredient.of(input, intProvider, mark));
+    }
+
+    public GTRecipeBuilder inputItemsRanged(Item input, IntProvider intProvider, @NotNull String mark) {
+        return inputItemsRanged(new ItemStack(input), intProvider, mark);
+    }
+
+    public GTRecipeBuilder inputItemsRanged(Supplier<? extends ItemLike> input, IntProvider intProvider, @NotNull String mark) {
+        return inputItemsRanged(new ItemStack(input.get().asItem()), intProvider, mark);
+    }
+
+    public GTRecipeBuilder inputItemsRanged(TagPrefix orePrefix, Material material, IntProvider intProvider, @NotNull String mark) {
+        var item = ChemicalHelper.get(orePrefix, material, 1);
+        if (item.isEmpty()) {
+            GTCEu.LOGGER.error("Tried to set input ranged item stack that doesn't exist, TagPrefix: {}, Material: {}",
+                    orePrefix, material);
+        }
+        return inputItemsRanged(item, intProvider, mark);
+    }
+
     public GTRecipeBuilder outputItems(Object output) {
         if (output instanceof Item item) {
             return outputItems(item);
@@ -658,6 +679,27 @@ public class GTRecipeBuilder {
 
     public GTRecipeBuilder outputItemRanged(IntProviderIngredient output) {
         return inputItems(output);
+    }
+
+    public GTRecipeBuilder outputItemsRanged(ItemStack output, IntProvider intProvider, @NotNull String mark) {
+        return outputItems(IntProviderIngredient.of(output, intProvider, mark));
+    }
+
+    public GTRecipeBuilder outputItemsRanged(Item input, IntProvider intProvider, @NotNull String mark) {
+        return outputItemsRanged(new ItemStack(input), intProvider, mark);
+    }
+
+    public GTRecipeBuilder outputItemsRanged(Supplier<? extends ItemLike> output, IntProvider intProvider, @NotNull String mark) {
+        return outputItemsRanged(new ItemStack(output.get().asItem()), intProvider, mark);
+    }
+
+    public GTRecipeBuilder outputItemsRanged(TagPrefix orePrefix, Material material, IntProvider intProvider, @NotNull String mark) {
+        var item = ChemicalHelper.get(orePrefix, material, 1);
+        if (item.isEmpty()) {
+            GTCEu.LOGGER.error("Tried to set output ranged item stack that doesn't exist, TagPrefix: {}, Material: {}",
+                    orePrefix, material);
+        }
+        return outputItemsRanged(item, intProvider, mark);
     }
 
     public GTRecipeBuilder notConsumable(ItemStack itemStack) {
@@ -1003,6 +1045,14 @@ public class GTRecipeBuilder {
         return inputFluids(IntProviderFluidIngredient.of(input, intProvider));
     }
 
+    public GTRecipeBuilder inputFluidsRanged(FluidStack input, IntProvider intProvider, @NotNull String mark) {
+        return inputFluidsRanged(FluidIngredient.of(input), intProvider, mark);
+    }
+
+    protected GTRecipeBuilder inputFluidsRanged(FluidIngredient input, IntProvider intProvider, @NotNull String mark) {
+        return inputFluids(IntProviderFluidIngredient.of(input, intProvider, mark));
+    }
+
     public GTRecipeBuilder inputFluidRanged(IntProviderFluidIngredient input) {
         return inputFluids(input);
     }
@@ -1030,6 +1080,14 @@ public class GTRecipeBuilder {
 
     protected GTRecipeBuilder outputFluidsRanged(FluidIngredient output, IntProvider intProvider) {
         return outputFluids(IntProviderFluidIngredient.of(output, intProvider));
+    }
+
+    public GTRecipeBuilder outputFluidsRanged(FluidStack output, IntProvider intProvider, @NotNull String mark) {
+        return outputFluidsRanged(FluidIngredient.of(output), intProvider, mark);
+    }
+
+    protected GTRecipeBuilder outputFluidsRanged(FluidIngredient output, IntProvider intProvider, @NotNull String mark) {
+        return outputFluids(IntProviderFluidIngredient.of(output, intProvider, mark));
     }
 
     public GTRecipeBuilder outputFluidRanged(IntProviderFluidIngredient output) {

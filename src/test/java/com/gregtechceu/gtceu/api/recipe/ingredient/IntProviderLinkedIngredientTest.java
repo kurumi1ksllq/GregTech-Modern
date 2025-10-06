@@ -79,10 +79,10 @@ public class IntProviderLinkedIngredientTest {
 
     @BeforeBatch(batch = "LinkedIngredients")
     public static void prepare(ServerLevel level) {
-        CR_RECIPE_TYPE = TestUtils.createRecipeType("ranged_fluid_ingredient_cr_tests", GTRecipeTypes.CHEMICAL_RECIPES);
-        LCR_RECIPE_TYPE = TestUtils.createRecipeType("ranged_fluid_ingredient_lcr_tests",
+        CR_RECIPE_TYPE = TestUtils.createRecipeType("linked_ingredient_cr_tests", GTRecipeTypes.CHEMICAL_RECIPES);
+        LCR_RECIPE_TYPE = TestUtils.createRecipeType("linked_ingredient_lcr_tests",
                 GTRecipeTypes.LARGE_CHEMICAL_RECIPES);
-        CENTRIFUGE_RECIPE_TYPE = TestUtils.createRecipeType("ranged_fluid_ingredient_centrifuge_tests",
+        CENTRIFUGE_RECIPE_TYPE = TestUtils.createRecipeType("linked_ingredient_centrifuge_tests",
                 GTRecipeTypes.CENTRIFUGE_RECIPES);
 
         CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE

@@ -21,9 +21,6 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 /**
  * Allows a {@link FluidIngredient} to be created with a ranged {@code amount}, which will be randomly rolled upon
  * recipe start (input) / completion (output).
@@ -208,15 +205,6 @@ public class IntProviderFluidIngredient extends FluidIngredient
     @Override
     public boolean test(@Nullable FluidStack stack) {
         return inner.test(stack);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Arrays.hashCode(inner.values);
-        result = 31 * result + Objects.hashCode(inner.nbt);
-        result = 31 * result + Integer.hashCode(countProvider.getMinValue());
-        result = 31 * result + Integer.hashCode(countProvider.getMaxValue());
-        return result;
     }
 
     /**

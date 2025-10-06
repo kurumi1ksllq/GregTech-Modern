@@ -127,10 +127,8 @@ public class AppliedItemModule {
     }
 
     public static AppliedItemModule attach(ItemStack stack, ItemModule module, int slot) {
-        CompoundTag tag = ArmorUtils.getArmorTag(stack);
         CompoundTag modulesTag = stack.getOrCreateTagElement(MODULES_TAG);
-        CompoundTag slotsTag = tag == null ? new CompoundTag() : tag.getCompound(ArmorUtils.MODULE_SLOTS_KEY);
-        ItemModuleSlot moduleSlot = ItemModuleSlot.fromNBT(slotsTag.getCompound(String.valueOf(slot)));
+        ItemModuleSlot moduleSlot = ArmorUtils.getSlots(stack).get(slot);
         if (moduleSlot == null || !moduleSlot.acceptsModule(module)) return null;
         if (!modulesTag.contains(String.valueOf(slot))) modulesTag.put(String.valueOf(slot), new CompoundTag());
         AppliedItemModule appliedModule = new AppliedItemModule(modulesTag.getCompound(String.valueOf(slot)), module,

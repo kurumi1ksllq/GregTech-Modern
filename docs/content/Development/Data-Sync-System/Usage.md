@@ -10,7 +10,7 @@ At the core of the system is the interface `ISyncManaged`, which represents a cl
 All block entities which should be synchronised or saved must extend the abstract class `ManagedSyncBlockEntity`.
 
 !!! warning 
-  Block entities that inherit `ManagedSyncBlockEntity` must call `BlockEntity::setChanged`***every tick*** within their ticker, or they will not be saved.
+  Block entities that inherit `ManagedSyncBlockEntity` must call `ManagedSyncBlockEntity::updateTick`***every tick*** within their ticker, or they will not be saved.
 
 ```java
 class MySyncObject implements ISyncManaged {
@@ -70,16 +70,28 @@ public interface IValueTransformer<T> {
     default boolean mustProvideObject() {
         return false;
     }
+    
+    // A method for serialising a value into a tag
+    // Called when serialising a value to be sent to the client
+    default Tag serializeClientSyncNBT(@Nullable T value, ISyncManaged holder) {
+      return serializeNBT(value, holder);
+    }
 
-    // A method for serialising a value into a tag.
-    // isSync is true when the serialised NBT will be sent to the client rather than saved to server
-    // isFullSync is true when the serialised NBT will be sent to a client who is loading this entire BlockEntity for the first time
-    Tag serializeNBT(T value, boolean isSync, boolean isFullSync);
+    // A method for deserialising a value from a tag
+    // Called when deserialising a value on the client.
+    // If mustProvideObject == true, currentVal is the currently saved value.
+  default T deserializeClientNBT(Tag tag, ISyncManaged holder, @Nullable T currentVal) {
+      return deserializeNBT(tag, holder, currentVal);
+    }
 
-    // A method for deserialising a tag into a value.
-    // currentVal is null if mustProvideObject returns false
-    // isSync is true when deserialiseNBT is called client-side 
-    T deserializeNBT(Tag tag, @Nullable T currentVal, boolean isSync);
+
+  // A method for serialising a value into a tag.
+  // The holder param is the object this sync value is attached to
+  Tag serializeNBT(T value, ISyncManaged holder);
+    
+  // A method for deserialising a value from a tag
+  // If mustProvideObject == true, currentVal is the currently saved value.
+  T deserializeNBT(Tag tag, ISyncManaged holder, @Nullable T currentVal);
 }
 ```
 

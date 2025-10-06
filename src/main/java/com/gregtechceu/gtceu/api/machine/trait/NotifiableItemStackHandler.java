@@ -123,7 +123,7 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
                     items = new ItemStack[] { output };
                 } else {
                     if (provider instanceof IntProviderLinkedIngredient linked) {
-                        items = linked.getItems(recipe);
+                        items = linked.getItems(recipe, io);
                     } else {
                         items = provider.getItems();
                     }

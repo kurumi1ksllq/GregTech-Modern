@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.api.recipe.ingredient;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
+import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
@@ -87,12 +88,14 @@ public class IntProviderLinkedIngredient extends IntProviderIngredient implement
     // TODO:
     // mark linked ingredients
     // pull marked ingredients from recipe to get rolls
-    public ItemStack[] getItems(GTRecipe recipe) {
+    public ItemStack[] getItems(GTRecipe recipe, IO io) {
         if (itemStacks == null) {
             var fullcontents = recipe.getInputContents(ItemRecipeCapability.CAP);
             fullcontents.addAll(recipe.getInputContents(FluidRecipeCapability.CAP));
-            fullcontents.addAll(recipe.getOutputContents(ItemRecipeCapability.CAP));
-            fullcontents.addAll(recipe.getOutputContents(FluidRecipeCapability.CAP));
+            if (io == IO.OUT) {
+                fullcontents.addAll(recipe.getOutputContents(ItemRecipeCapability.CAP));
+                fullcontents.addAll(recipe.getOutputContents(FluidRecipeCapability.CAP));
+            }
 
             for (Content c : fullcontents) {
                 if (c.content instanceof IRangedIngredient ranged && ranged.hasMark() &&

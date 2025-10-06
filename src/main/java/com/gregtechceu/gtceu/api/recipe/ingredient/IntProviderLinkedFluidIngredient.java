@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.api.recipe.ingredient;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
+import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
@@ -81,12 +82,14 @@ public class IntProviderLinkedFluidIngredient extends IntProviderFluidIngredient
         return (int) Math.round((max - min) * roll) + min;
     }
 
-    public FluidStack[] getStacks(GTRecipe recipe) {
+    public FluidStack[] getStacks(GTRecipe recipe, IO io) {
         if (fluidStacks == null) {
             var fullcontents = recipe.getInputContents(ItemRecipeCapability.CAP);
             fullcontents.addAll(recipe.getInputContents(FluidRecipeCapability.CAP));
-            fullcontents.addAll(recipe.getOutputContents(ItemRecipeCapability.CAP));
-            fullcontents.addAll(recipe.getOutputContents(FluidRecipeCapability.CAP));
+            if (io == IO.OUT) {
+                fullcontents.addAll(recipe.getOutputContents(ItemRecipeCapability.CAP));
+                fullcontents.addAll(recipe.getOutputContents(FluidRecipeCapability.CAP));
+            }
 
             for (Content c : fullcontents) {
                 if (c.content instanceof IRangedIngredient ranged && ranged.hasMark() &&

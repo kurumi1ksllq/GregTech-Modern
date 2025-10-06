@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.recipe.DummyCraftingContainer;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderIngredient;
+import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderLinkedIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -114,15 +115,18 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
             ItemStack[] items;
             int amount;
             if (ingredient instanceof IntProviderIngredient provider) {
-                provider.setItemStacks(null);
-                provider.setSampledCount(-1);
+                provider.reroll();
 
                 ItemStack output;
                 if (simulate) {
                     output = provider.getMaxSizeStack();
                     items = new ItemStack[] { output };
                 } else {
-                    items = provider.getItems();
+                    if (provider instanceof IntProviderLinkedIngredient linked) {
+                        items = linked.getItems(recipe);
+                    } else {
+                        items = provider.getItems();
+                    }
                     if (items.length == 0 || items[0].isEmpty()) {
                         it.remove();
                         continue;

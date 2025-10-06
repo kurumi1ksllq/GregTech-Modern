@@ -16,6 +16,7 @@ import net.minecraftforge.common.crafting.StrictNBTIngredient;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -25,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -54,6 +54,9 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
     protected final Ingredient inner;
     @Setter
     protected ItemStack[] itemStacks = null;
+    @Getter
+    protected @NotNull String mark = "";
+    // wow I wish this could be null but it makes the serializer explode
 
     protected IntProviderIngredient(Ingredient inner, IntProvider countProvider) {
         super(Stream.empty());
@@ -61,11 +64,20 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
         this.countProvider = countProvider;
     }
 
-    protected IntProviderIngredient(Ingredient inner, IntProvider countProvider, int sampledCount) {
+    protected IntProviderIngredient(Ingredient inner, IntProvider countProvider, @NotNull String mark) {
+        super(Stream.empty());
+        this.inner = inner;
+        this.countProvider = countProvider;
+        this.mark = mark;
+    }
+
+    protected IntProviderIngredient(Ingredient inner, IntProvider countProvider, int sampledCount,
+                                    @NotNull String mark) {
         super(Stream.empty());
         this.inner = inner;
         this.countProvider = countProvider;
         this.sampledCount = sampledCount;
+        this.mark = mark;
     }
 
     /**
@@ -85,6 +97,25 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
     public static IntProviderIngredient of(ItemStack stack, IntProvider countProvider) {
         Ingredient inner = stack.hasTag() ? StrictNBTIngredient.of(stack) : Ingredient.of(stack);
         return of(inner, countProvider);
+    }
+
+    /**
+     * @param inner         {@link Ingredient}
+     * @param countProvider usually as {@link net.minecraft.util.valueproviders.UniformInt#of(int, int)}
+     */
+    public static IntProviderIngredient of(Ingredient inner, IntProvider countProvider, String mark) {
+        Preconditions.checkArgument(countProvider.getMinValue() >= 0,
+                "IntProviderIngredient must have a min value of at least 0.");
+        return new IntProviderIngredient(inner, countProvider, mark);
+    }
+
+    /**
+     * @param stack         {@link ItemStack}
+     * @param countProvider usually as {@link net.minecraft.util.valueproviders.UniformInt#of(int, int)}
+     */
+    public static IntProviderIngredient of(ItemStack stack, IntProvider countProvider, String mark) {
+        Ingredient inner = stack.hasTag() ? StrictNBTIngredient.of(stack) : Ingredient.of(stack);
+        return of(inner, countProvider, mark);
     }
 
     @Override
@@ -124,19 +155,6 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
     public @NotNull ItemStack getMaxSizeStack() {
         if (inner.getItems().length == 0) return ItemStack.EMPTY;
         else return inner.getItems()[0].copyWithCount(countProvider.getMaxValue());
-    }
-
-    /**
-     * If this ingredient has not yet had its {@link IntProviderIngredient#sampledCount} rolled, rolls it and
-     * returns the roll.
-     * If it has, returns the existing roll.
-     * Passthrough method, invokes {@link IntProviderIngredient#getSampledCount(RandomSource)} using the threadsafe
-     * {@link GTValues#RNG}.
-     *
-     * @return the amount rolled
-     */
-    public int getSampledCount() {
-        return getSampledCount(GTValues.RNG);
     }
 
     /**
@@ -228,6 +246,7 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
                 .getOrThrow(false, GTCEu.LOGGER::error));
         json.add("ingredient", inner.toJson());
         json.addProperty("sampledCount", sampledCount);
+        json.addProperty("mark", mark);
         return json;
     }
 
@@ -239,7 +258,8 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
             IntProvider provider = IntProvider.CODEC.parse(NbtOps.INSTANCE, nbt.get("provider"))
                     .getOrThrow(false, GTCEu.LOGGER::error);
             int sampledCount = nbt.getInt("sampledCount");
-            return new IntProviderIngredient(Ingredient.fromNetwork(buffer), provider, sampledCount);
+            String mark = nbt.getString("mark");
+            return new IntProviderIngredient(Ingredient.fromNetwork(buffer), provider, sampledCount, mark);
         }
 
         @Override
@@ -248,7 +268,9 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
                     .getOrThrow(false, GTCEu.LOGGER::error);
             Ingredient inner = Ingredient.fromJson(json.get("ingredient"));
             int sampledCount = json.getAsJsonPrimitive("sampledCount").getAsInt();
-            return new IntProviderIngredient(inner, provider, sampledCount);
+            JsonElement isMarked = json.get("mark");
+            String mark = (isMarked instanceof JsonNull ? "" : isMarked.getAsJsonPrimitive().getAsString());
+            return new IntProviderIngredient(inner, provider, sampledCount, mark);
         }
 
         @Override
@@ -257,6 +279,7 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
             wrapper.put("provider", IntProvider.CODEC.encodeStart(NbtOps.INSTANCE, ingredient.countProvider)
                     .getOrThrow(false, GTCEu.LOGGER::error));
             wrapper.putInt("sampledCount", ingredient.sampledCount);
+            wrapper.putString("mark", ingredient.mark == null ? "" : ingredient.mark);
             buffer.writeNbt(wrapper);
             ingredient.inner.toNetwork(buffer);
         }

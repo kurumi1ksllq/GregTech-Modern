@@ -1,12 +1,19 @@
 package com.gregtechceu.gtceu.api.recipe.ingredient;
 
-import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
+import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.api.recipe.content.Content;
 
+import com.gregtechceu.gtceu.config.ConfigHolder;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,36 +24,33 @@ import java.util.List;
 public class IntProviderLinkedIngredient extends IntProviderIngredient implements IRangedIngredient {
 
     @Getter
-    private List<IRangedIngredient> links;
+    private List<String> symlinks;
+
+    private List<IRangedIngredient> links = new ArrayList<>();
 
     @Getter
     private LinkedIngredientLinkMode mode;
 
     private IntProviderLinkedIngredient(IntProviderIngredient inner, LinkedIngredientLinkMode mode,
-                                        List<IRangedIngredient> links) {
+                                        List<String> symlinks) {
         super(inner.inner, inner.countProvider);
-        this.links = links;
+        this.symlinks = symlinks;
         this.mode = mode;
     }
 
-    public static IntProviderLinkedIngredient of(IntProviderIngredient inner, String mode, IRangedIngredient... links) {
+    public static IntProviderLinkedIngredient of(IntProviderIngredient inner, String mode, String... links) {
         return new IntProviderLinkedIngredient(inner, LinkedIngredientLinkMode.getModeFromName(mode),
                 Arrays.stream(links).toList());
     }
 
     public static IntProviderLinkedIngredient of(IntProviderIngredient inner, LinkedIngredientLinkMode mode,
-                                                 IRangedIngredient... links) {
+                                                 String... links) {
         return new IntProviderLinkedIngredient(inner, mode, Arrays.stream(links).toList());
     }
 
     public static IntProviderLinkedIngredient of(IntProviderIngredient inner, LinkedIngredientLinkMode mode,
-                                                 List<IRangedIngredient> links) {
+                                                 List<String> links) {
         return new IntProviderLinkedIngredient(inner, mode, links);
-    }
-
-    @Override
-    public int getSampledCount() {
-        return getSampledCount(GTValues.RNG);
     }
 
     @Override
@@ -78,5 +82,29 @@ public class IntProviderLinkedIngredient extends IntProviderIngredient implement
         int max = getCountProvider().getMaxValue();
 
         return (int) Math.round((max - min) * roll) + min;
+    }
+
+    // TODO:
+    // mark linked ingredients
+    // pull marked ingredients from recipe to get rolls
+    public ItemStack[] getItems(GTRecipe recipe) {
+        if (itemStacks == null) {
+            var fullcontents = recipe.getInputContents(ItemRecipeCapability.CAP);
+            fullcontents.addAll(recipe.getInputContents(FluidRecipeCapability.CAP));
+            fullcontents.addAll(recipe.getOutputContents(ItemRecipeCapability.CAP));
+            fullcontents.addAll(recipe.getOutputContents(FluidRecipeCapability.CAP));
+
+            for (Content c : fullcontents) {
+                if (c.content instanceof IRangedIngredient ranged && ranged.hasMark() &&
+                        symlinks.contains(ranged.getMark())) {
+                    links.add(ranged);
+                }
+            }
+            if (links.isEmpty() && ConfigHolder.INSTANCE.dev.debug) {
+                GTCEu.LOGGER.warn("Recipe with Linked Ingredients contained no valid links! Recipe:" + recipe.getId());
+            }
+            getSampledCount();
+        }
+        return super.getItems();
     }
 }

@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderFluidIngredient;
+import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderLinkedFluidIngredient;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -120,13 +121,16 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
             FluidStack[] fluids;
 
             if (ingredient instanceof IntProviderFluidIngredient provider) {
-                provider.setFluidStacks(null);
-                provider.setSampledCount(-1);
+                provider.reroll();
 
                 if (simulate) {
                     fluids = new FluidStack[] { provider.getMaxSizeStack() };
                 } else {
-                    fluids = provider.getStacks();
+                    if (provider instanceof IntProviderLinkedFluidIngredient linked) {
+                        fluids = linked.getStacks(recipe);
+                    } else {
+                        fluids = provider.getStacks();
+                    }
                 }
             } else {
                 fluids = ingredient.getStacks();

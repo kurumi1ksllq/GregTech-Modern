@@ -19,6 +19,15 @@ public interface IRangedIngredient {
     IntProvider getCountProvider();
 
     /**
+     * Used to establish Links in {@link IntProviderLinkedIngredient}s
+     */
+    String getMark();
+
+    default boolean hasMark() {
+        return getMark() != null || getMark().isEmpty();
+    }
+
+    /**
      * If this ingredient has not yet had its count rolled, rolls it and returns the roll.
      * If it has, returns the existing roll.
      * Passthrough method, invokes {@code getSampledCount()} using the threadsafe {@link GTValues#RNG}.

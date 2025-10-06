@@ -51,6 +51,9 @@ public class IntProviderFluidIngredient extends FluidIngredient
     private final FluidIngredient inner;
     @Setter
     protected FluidStack[] fluidStacks = null;
+    @Getter
+    protected @NotNull String mark = "";
+    // wow I wish this could be null but it makes the serializer explode
 
     protected IntProviderFluidIngredient(FluidIngredient inner, IntProvider provider) {
         super(inner.values, provider.getMaxValue(), inner.nbt);
@@ -58,30 +61,28 @@ public class IntProviderFluidIngredient extends FluidIngredient
         this.countProvider = provider;
     }
 
-    protected IntProviderFluidIngredient(FluidIngredient inner, IntProvider provider, int sampledCount) {
+    protected IntProviderFluidIngredient(FluidIngredient inner, IntProvider provider, int sampledCount,
+                                         @NotNull String mark) {
         super(inner.values, provider.getMaxValue(), inner.nbt);
         this.inner = inner;
         this.countProvider = provider;
         this.sampledCount = sampledCount;
+        this.mark = mark;
     }
 
-    protected IntProviderFluidIngredient(FluidIngredient inner, IntProvider provider, @Nullable CompoundTag nbt) {
+    protected IntProviderFluidIngredient(FluidIngredient inner, IntProvider provider, int sampledCount,
+                                         @NotNull String mark, @Nullable CompoundTag nbt) {
         super(inner.values, provider.getMaxValue(), nbt);
         this.inner = inner;
         this.countProvider = provider;
-    }
-
-    protected IntProviderFluidIngredient(FluidIngredient inner, IntProvider provider, int sampledCount, @Nullable CompoundTag nbt) {
-        super(inner.values, provider.getMaxValue(), nbt);
-        this.inner = inner;
-        this.countProvider = provider;
+        this.mark = mark;
         this.sampledCount = sampledCount;
     }
 
     @Override
     public IntProviderFluidIngredient copy() {
         IntProviderFluidIngredient ipfi = new IntProviderFluidIngredient(this.inner, this.countProvider,
-                this.sampledCount);
+                this.sampledCount, this.mark);
         return ipfi;
     }
 
@@ -217,6 +218,7 @@ public class IntProviderFluidIngredient extends FluidIngredient
                 .getOrThrow(false, GTCEu.LOGGER::error));
         json.add("inner", inner.toJson());
         json.addProperty("sampledCount", sampledCount);
+        json.addProperty("mark", mark);
         return json;
     }
 
@@ -236,7 +238,9 @@ public class IntProviderFluidIngredient extends FluidIngredient
                 .getOrThrow(false, GTCEu.LOGGER::error);
         int sampledCount = jsonObject.getAsJsonPrimitive("sampledCount").getAsInt();
         FluidIngredient inner = FluidIngredient.fromJson(jsonObject.get("inner"));
-        return new IntProviderFluidIngredient(inner, amount, sampledCount);
+        JsonElement isMarked = jsonObject.get("mark");
+        String mark = (isMarked instanceof JsonNull ? "" : isMarked.getAsJsonPrimitive().getAsString());
+        return new IntProviderFluidIngredient(inner, amount, sampledCount, mark);
     }
 
     public CompoundTag toNBT() {

@@ -1036,47 +1036,6 @@ public class GTRecipeBuilder {
         return outputFluids(output);
     }
 
-    public GTRecipeBuilder inputItemLinked(IntProviderIngredient input, LinkedIngredientLinkMode mode,
-                                           List<IRangedIngredient> links) {
-        return inputItems(IntProviderLinkedIngredient.of(input, mode, links));
-    }
-
-    public GTRecipeBuilder inputItemLinked(IntProviderIngredient input, String mode, IRangedIngredient... links) {
-        return inputItems(IntProviderLinkedIngredient.of(input, LinkedIngredientLinkMode.getModeFromName(mode),
-                Arrays.stream(links).toList()));
-    }
-
-    public GTRecipeBuilder inputFluidLinked(IntProviderFluidIngredient input, LinkedIngredientLinkMode mode,
-                                            List<IRangedIngredient> links) {
-        return inputItems(IntProviderLinkedFluidIngredient.of(input, mode, links));
-    }
-
-    public GTRecipeBuilder inputFluidLinked(IntProviderFluidIngredient input, String mode, IRangedIngredient... links) {
-        return inputItems(IntProviderLinkedFluidIngredient.of(input, LinkedIngredientLinkMode.getModeFromName(mode),
-                Arrays.stream(links).toList()));
-    }
-
-    public GTRecipeBuilder outputItemLinked(IntProviderIngredient output, LinkedIngredientLinkMode mode,
-                                            List<IRangedIngredient> links) {
-        return outputItems(IntProviderLinkedIngredient.of(output, mode, links));
-    }
-
-    public GTRecipeBuilder outputItemLinked(IntProviderIngredient output, String mode, IRangedIngredient... links) {
-        return outputItems(IntProviderLinkedIngredient.of(output, LinkedIngredientLinkMode.getModeFromName(mode),
-                Arrays.stream(links).toList()));
-    }
-
-    public GTRecipeBuilder outputFluidLinked(IntProviderFluidIngredient output, LinkedIngredientLinkMode mode,
-                                             List<IRangedIngredient> links) {
-        return outputItems(IntProviderLinkedFluidIngredient.of(output, mode, links));
-    }
-
-    public GTRecipeBuilder outputFluidLinked(IntProviderFluidIngredient output, String mode,
-                                             IRangedIngredient... links) {
-        return outputItems(IntProviderLinkedFluidIngredient.of(output, LinkedIngredientLinkMode.getModeFromName(mode),
-                Arrays.stream(links).toList()));
-    }
-
     //////////////////////////////////////
     // ********** DATA ***********//
     //////////////////////////////////////

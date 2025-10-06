@@ -6,8 +6,8 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
-
 import com.gregtechceu.gtceu.config.ConfigHolder;
+
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 

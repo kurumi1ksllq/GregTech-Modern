@@ -65,7 +65,7 @@ public class IntProviderFluidIngredient extends FluidIngredient
         super(inner.values, provider.getMaxValue(), inner.nbt);
         this.inner = inner;
         this.countProvider = provider;
-        this.mark=mark;
+        this.mark = mark;
     }
 
     protected IntProviderFluidIngredient(FluidIngredient inner, IntProvider provider, int sampledCount,

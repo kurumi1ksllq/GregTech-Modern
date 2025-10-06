@@ -12,11 +12,8 @@ import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.common.data.GTRecipeConditions;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.GsonHelper;
 
-import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.AllArgsConstructor;
@@ -50,7 +47,7 @@ public class CleanroomCondition extends RecipeCondition {
     @Override
     public Component getTooltips() {
         return cleanroom == null ? null :
-                Component.translatable("gtceu.recipe.cleanroom", Component.translatable(cleanroom.translationKey()));
+                Component.translatable("gtceu.recipe.cleanroom", Component.translatable(cleanroom.getTranslationKey()));
     }
 
     @Override
@@ -66,34 +63,6 @@ public class CleanroomCondition extends RecipeCondition {
             return provider.isClean() && provider.getTypes().contains(this.cleanroom);
         }
         return true;
-    }
-
-    @NotNull
-    @Override
-    public JsonObject serialize() {
-        JsonObject value = super.serialize();
-        value.addProperty("cleanroom", cleanroom.name());
-        return value;
-    }
-
-    @Override
-    public RecipeCondition deserialize(@NotNull JsonObject config) {
-        super.deserialize(config);
-        this.cleanroom = CleanroomType.getByNameOrDefault(GsonHelper.getAsString(config, "cleanroom", "cleanroom"));
-        return this;
-    }
-
-    @Override
-    public void toNetwork(FriendlyByteBuf buf) {
-        super.toNetwork(buf);
-        buf.writeUtf(this.cleanroom.name());
-    }
-
-    @Override
-    public RecipeCondition fromNetwork(FriendlyByteBuf buf) {
-        super.fromNetwork(buf);
-        this.cleanroom = CleanroomType.getByNameOrDefault(buf.readUtf());
-        return this;
     }
 
     @Override

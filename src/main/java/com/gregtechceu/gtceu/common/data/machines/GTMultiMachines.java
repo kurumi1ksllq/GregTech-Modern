@@ -577,7 +577,7 @@ public class GTMultiMachines {
                     .where('F', Predicates.frames(GTMaterials.TreatedWood))
                     .where('H',
                             Predicates.abilities(PartAbility.PUMP_FLUID_HATCH)
-                                    .or(blocks(FLUID_EXPORT_HATCH[LV].get(), FLUID_EXPORT_HATCH[MV].get())))
+                                    .or(blocks(FLUID_EXPORT_HATCH[ULV].get(), FLUID_EXPORT_HATCH[LV].get())))
                     .where('#', Predicates.any())
                     .build())
             .allowExtendedFacing(false)
@@ -1116,6 +1116,17 @@ public class GTMultiMachines {
             new PropertyFluidFilter(340, false, false, false, false),
             (builder, overlay) -> builder.sidedWorkableCasingModel(GTCEu.id("block/casings/wood_wall"), overlay));
 
+    public static final MachineDefinition BRONZE_TANK_VALVE = GTMachineUtils.registerTankValve(
+            "bronze_tank_valve", "Bronze Tank Valve", true,
+            (builder, overlay) -> builder
+                    .workableCasingModel(GTCEu.id("block/casings/solid/machine_casing_bronze_plated_bricks"), overlay));
+    public static final MultiblockMachineDefinition BRONZE_MULTIBLOCK_TANK = registerMultiblockTank(
+            "bronze_multiblock_tank", "Bronze Multiblock Tank", 500 * 1000,
+            CASING_BRONZE_BRICKS, BRONZE_TANK_VALVE::getBlock,
+            new PropertyFluidFilter(1696, true, false, false, false),
+            (builder, overlay) -> builder
+                    .workableCasingModel(GTCEu.id("block/casings/solid/machine_casing_bronze_plated_bricks"), overlay));
+
     public static final MachineDefinition STEEL_TANK_VALVE = GTMachineUtils.registerTankValve(
             "steel_tank_valve", "Steel Tank Valve", true,
             (builder, overlay) -> builder.workableCasingModel(
@@ -1135,7 +1146,7 @@ public class GTMultiMachines {
             .pattern((definition) -> FactoryBlockPattern.start()
                     .aisle("BCB", "BBB", "BBB", "BBB")
                     .where('C', Predicates.controller(Predicates.blocks(definition.get())))
-                    .where('B', CentralMonitorMachine.BLOCK_PREDICATE)
+                    .where('B', CentralMonitorMachine.getMultiPredicate())
                     .build())
             .modelProperty(RecipeLogic.STATUS_PROPERTY, RecipeLogic.Status.IDLE)
             .model(createWorkableCasingMachineModel(

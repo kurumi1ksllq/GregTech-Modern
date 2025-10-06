@@ -50,6 +50,7 @@ public class OpticalNetHandler implements IDataAccessHatch, IOpticalComputationP
 
     @Override
     public int requestCWUt(int cwut, boolean simulate, @NotNull Collection<IOpticalComputationProvider> seen) {
+        if (cwut == 0) return 0;
         int provided = traverseRequestCWUt(cwut, simulate, seen);
         if (provided > 0) setPipesActive();
         return provided;

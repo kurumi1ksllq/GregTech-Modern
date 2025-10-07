@@ -612,12 +612,6 @@ public class VanillaRecipeHelper {
     }
 
     public static void addEquipmentFoundryRecipe(Consumer<FinishedRecipe> provider, @NotNull String regName,
-                                                 @NotNull Object ingredient, @NotNull ItemModule modifier) {
-        addEquipmentFoundryRecipe(provider, GTCEu.id(regName),
-                Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT), ingredient, modifier);
-    }
-
-    public static void addEquipmentFoundryRecipe(Consumer<FinishedRecipe> provider, @NotNull String regName,
                                                  @NotNull Ingredient equipment,
                                                  @NotNull Object ingredient, @NotNull ItemModule modifier) {
         addEquipmentFoundryRecipe(provider, GTCEu.id(regName), equipment, ingredient, modifier);

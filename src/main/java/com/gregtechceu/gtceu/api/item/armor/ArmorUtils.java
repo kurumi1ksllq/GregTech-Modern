@@ -2,8 +2,6 @@ package com.gregtechceu.gtceu.api.item.armor;
 
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
-import com.gregtechceu.gtceu.api.item.module.IModularItem;
-import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
 import com.gregtechceu.gtceu.common.data.GTSoundEntries;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.ServerGamePacketListenerImplAccessor;
@@ -13,8 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -47,42 +43,6 @@ public class ArmorUtils {
     public static final int NIGHTVISION_DURATION = 20 * 20; // 20 seconds
     // Flashing starts at 10 seconds + two second buffer to prevent flicker
     public static final int NIGHT_VISION_RESET = 12 * 20;
-
-    public static final String MODULE_SLOTS_KEY = "ModuleSlots";
-
-    public static void setSlots(ItemStack stack, List<ItemModuleSlot> slots) {
-        CompoundTag tag = new CompoundTag();
-        for (int i = 0; i < slots.size(); i++) {
-            ItemModuleSlot slot = slots.get(i);
-            if (slot != null) tag.put(String.valueOf(i), slot.serializeNBT());
-        }
-        stack.getOrCreateTag().put(MODULE_SLOTS_KEY, tag);
-    }
-
-    public static List<ItemModuleSlot> getSlots(ItemStack stack) {
-        if (!stack.getOrCreateTag().contains(MODULE_SLOTS_KEY, Tag.TAG_COMPOUND)) {
-            if (stack.getItem() instanceof IModularItem modularItem) {
-                List<ItemModuleSlot> slots = modularItem.getDefaultSlots(stack);
-                setSlots(stack, slots);
-                return slots;
-            } else if (stack.getItem() instanceof ArmorComponentItem armorItem &&
-                    armorItem.getArmorLogic() instanceof IModularItem modularItem) {
-                        List<ItemModuleSlot> slots = modularItem.getDefaultSlots(stack);
-                        setSlots(stack, slots);
-                        return slots;
-                    }
-            return new ArrayList<>();
-        } else {
-            List<ItemModuleSlot> slots = new ArrayList<>();
-            CompoundTag tag = stack.getOrCreateTagElement(MODULE_SLOTS_KEY);
-            for (String key : tag.getAllKeys()) {
-                int i = Integer.parseInt(key);
-                while (slots.size() <= i) slots.add(null);
-                slots.set(i, ItemModuleSlot.fromNBT(tag.getCompound(key)));
-            }
-            return slots;
-        }
-    }
 
     /**
      * Check is possible to charge item

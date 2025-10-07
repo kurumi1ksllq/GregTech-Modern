@@ -4,14 +4,12 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.UITemplate;
 import com.gregtechceu.gtceu.api.gui.widget.BlockableSlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
-import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.recipe.type.EquipmentFoundryRecipe;
-import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
 import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
@@ -67,7 +65,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         super(type, pos, blockState);
         this.equipmentSlot = new CustomItemStackHandler(1);
         this.equipmentSlot.setFilter(
-                stack -> stack.is(CustomTags.MODIFIABLE_EQUIPMENT) || stack.getItem() instanceof IModularItem);
+                stack -> stack.getItem() instanceof IModularItem);
 
         this.moduleSlots = new CustomItemStackHandler(MAX_MODIFIER_SLOTS) {
 
@@ -139,7 +137,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         ItemStack equipment = equipmentSlot.getStackInSlot(0);
         AppliedItemModule module = AppliedItemModule.getModuleInSlot(equipment, slot);
         if (module != null) return !(module.canRemove() && module.getModuleItem() != null);
-        return ArmorUtils.getSlots(equipment).size() <= slot;
+        return ItemModuleSlot.getSlots(equipment).size() <= slot;
     }
 
     public void onEquipmentSlotChanged(Player player, List<SlotWidget> slotWidgets) {
@@ -163,7 +161,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
                     moduleSlots.setStackInSlot(module.getSlot(), module.getModuleItem());
                 }
             }
-            List<ItemModuleSlot> slots = ArmorUtils.getSlots(stack);
+            List<ItemModuleSlot> slots = ItemModuleSlot.getSlots(stack);
             for (int i = 0; i < slots.size() && i < slotWidgets.size(); i++) {
                 SlotWidget slotWidget = slotWidgets.get(i);
                 if (slots.get(i) != null && slotWidget != null) {

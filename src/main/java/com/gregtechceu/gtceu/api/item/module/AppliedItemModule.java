@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.api.item.module;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -135,7 +134,7 @@ public class AppliedItemModule {
 
     public static AppliedItemModule attach(ItemStack stack, ItemModule module, int slot, boolean simulate) {
         CompoundTag modulesTag = stack.getOrCreateTagElement(MODULES_TAG);
-        ItemModuleSlot moduleSlot = ArmorUtils.getSlots(stack).get(slot);
+        ItemModuleSlot moduleSlot = ItemModuleSlot.getSlots(stack).get(slot);
         if (moduleSlot == null || !moduleSlot.acceptsModule(module) || !module.canApplyTo(stack)) return null;
         if (!modulesTag.contains(String.valueOf(slot)) && !simulate)
             modulesTag.put(String.valueOf(slot), new CompoundTag());
@@ -151,7 +150,7 @@ public class AppliedItemModule {
     }
 
     public static @Nullable AppliedItemModule attach(ItemStack stack, ItemModule module, boolean simulate) {
-        for (int i = 0; i < ArmorUtils.getSlots(stack).size(); i++) {
+        for (int i = 0; i < ItemModuleSlot.getSlots(stack).size(); i++) {
             if (getModuleInSlot(stack, i) == null) return attach(stack, module, i, simulate);
         }
         return null;

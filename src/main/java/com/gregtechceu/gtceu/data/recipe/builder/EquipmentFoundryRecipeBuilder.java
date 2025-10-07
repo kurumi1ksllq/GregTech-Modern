@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.data.recipe.builder;
 
 import com.gregtechceu.gtceu.api.item.module.ItemModule;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
-import com.gregtechceu.gtceu.data.recipe.CustomTags;
 
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
@@ -30,7 +29,7 @@ public class EquipmentFoundryRecipeBuilder {
     @Setter
     private ResourceLocation id;
     @Setter
-    private Ingredient equipment = Ingredient.of(CustomTags.MODIFIABLE_EQUIPMENT);
+    private Ingredient equipment;
     @Setter
     private Ingredient ingredient;
     @Setter

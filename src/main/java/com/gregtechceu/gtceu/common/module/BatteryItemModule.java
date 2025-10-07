@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.item.module.ItemModule;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
@@ -43,5 +44,10 @@ public class BatteryItemModule extends ItemModule {
         super.appendHoverText(level, isAdvanced, tooltips, module);
         tooltips.add(
                 Component.translatable("metaarmor.tooltip.modifier.battery", module.getModuleItem().getDisplayName()));
+    }
+
+    @Override
+    public boolean canApplyTo(ItemStack stack) {
+        return super.canApplyTo(stack) && GTCapabilityHelper.getElectricItem(stack) != null;
     }
 }

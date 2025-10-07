@@ -112,22 +112,23 @@ public class ArmorUtils {
             ItemModuleSlot slot = slots.get(i);
             if (slot != null) tag.put(String.valueOf(i), slot.serializeNBT());
         }
+        stack.getOrCreateTag().put(MODULE_SLOTS_KEY, tag);
     }
 
     public static List<ItemModuleSlot> getSlots(ItemStack stack) {
-        if (!(hasArmorTag(stack) && getArmorTag(stack).contains(MODULE_SLOTS_KEY, Tag.TAG_COMPOUND))) {
+        if (!stack.getOrCreateTag().contains(MODULE_SLOTS_KEY, Tag.TAG_COMPOUND)) {
             List<ItemModuleSlot> slots = new ArrayList<>();
             int maxTier = getMaxModuleTier(stack);
             int maxModules = getMaxModules(stack);
             for (int i = 0; i < maxModules; i++) {
                 if (maxTier == -1) slots.add(GTArmorModifiers.UNIVERSAL_SLOT);
-                else slots.add(GTArmorModifiers.TIERED_SLOTS[maxTier]);
+                else slots.add(GTArmorModifiers.TIERED_SLOTS[maxTier - GTArmorModifiers.TIERED_SLOTS[0].getTier()]);
             }
             setSlots(stack, slots);
             return slots;
         } else {
             List<ItemModuleSlot> slots = new ArrayList<>();
-            CompoundTag tag = getArmorTag(stack).getCompound(MODULE_SLOTS_KEY);
+            CompoundTag tag = stack.getOrCreateTagElement(MODULE_SLOTS_KEY);
             for (String key : tag.getAllKeys()) {
                 int i = Integer.parseInt(key);
                 while (slots.size() <= i) slots.add(null);

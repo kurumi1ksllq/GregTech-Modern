@@ -2,6 +2,9 @@ package com.gregtechceu.gtceu.api.item.module;
 
 import com.gregtechceu.gtceu.api.GTValues;
 
+import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
 import net.minecraft.resources.ResourceLocation;
 
 import lombok.Getter;
@@ -20,7 +23,7 @@ public class TieredItemModuleSlot extends ItemModuleSlot {
 
     @Override
     public boolean acceptsModule(ItemModule module) {
-        return !(module instanceof ITieredItemModule tieredModule) || tieredModule.getTier() >= getTier();
+        return !(module instanceof ITieredItemModule tieredModule) || tieredModule.getTier() <= getTier();
     }
 
     public static TieredItemModuleSlot[] create(ResourceLocation id, int minTier, int maxTier,
@@ -36,5 +39,10 @@ public class TieredItemModuleSlot extends ItemModuleSlot {
     public static TieredItemModuleSlot[] create(ResourceLocation id,
                                                 BiFunction<ResourceLocation, Integer, TieredItemModuleSlot> constructor) {
         return create(id, GTValues.LV, GTValues.MAX, constructor);
+    }
+
+    @Override
+    public IGuiTexture getSlotTexture() {
+        return new ColorBorderTexture(1, 0xFF000000 | GTValues.VCM[getTier()]);
     }
 }

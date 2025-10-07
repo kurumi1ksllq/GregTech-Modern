@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.gui.widget.BlockableSlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
+import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.recipe.type.EquipmentFoundryRecipe;
@@ -40,6 +41,8 @@ import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAutoSyncBlockEntity, IRPCBlockEntity,
@@ -105,19 +108,21 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
                         16, 2, 105, 16, titleText))
                 .setBackground(GuiTextures.TITLE_BAR_BACKGROUND.copy().setColor(0xff69645f)));
         modularUI.widget(new ImageWidget(4, 4, 168, 75, GuiTextures.EQUIPMENT_FOUNDRY_BACKGROUND));
-
+        List<SlotWidget> slotWidgets = new ArrayList<>();
         modularUI.widget(new SlotWidget(equipmentSlot, 0, 14, 32)
-                .setChangeListener(() -> this.onEquipmentSlotChanged(entityPlayer))
+                .setChangeListener(() -> this.onEquipmentSlotChanged(entityPlayer, slotWidgets))
                 .setBackgroundTexture(null));
 
         int x = 42;
         int y = 13;
         for (int i = 0; i < MAX_MODIFIER_SLOTS; i++) {
             final int finalI = i;
-            modularUI.widget(new BlockableSlotWidget(moduleSlots, i, x, y)
+            SlotWidget slotWidget = new BlockableSlotWidget(moduleSlots, i, x, y)
                     .setIsBlocked(() -> isModifierSlotBlocked(finalI))
                     .setChangeListener(() -> this.onModifierSlotChanged(finalI))
-                    .setBackgroundTexture(null));
+                    .setBackgroundTexture(null);
+            modularUI.widget(slotWidget);
+            slotWidgets.add(slotWidget);
             x += 26;
             if (i == 4) {
                 x = 42;
@@ -132,10 +137,10 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         ItemStack equipment = equipmentSlot.getStackInSlot(0);
         AppliedItemModule module = AppliedItemModule.getModuleInSlot(equipment, slot);
         if (module != null) return !(module.canRemove() && module.getModuleItem() != null);
-        return ArmorUtils.getMaxModules(equipment) <= slot;
+        return ArmorUtils.getSlots(equipment).size() <= slot;
     }
 
-    public void onEquipmentSlotChanged(Player player) {
+    public void onEquipmentSlotChanged(Player player, List<SlotWidget> slotWidgets) {
         ItemStack stack = equipmentSlot.getStackInSlot(0);
         if (stack.isEmpty()) {
             for (int i = 0; i < moduleSlots.getSlots(); i++) {
@@ -149,10 +154,19 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
                     player.drop(out, true);
                 }
             }
+            slotWidgets.forEach(slotWidget -> slotWidget.setBackgroundTexture(null));
         } else {
             for (AppliedItemModule module : AppliedItemModule.getAppliedModules(stack)) {
-                if (module.getSlot() < 8 && module.getModuleItem() != null)
-                    moduleSlots.insertItem(module.getSlot(), module.getModuleItem(), false);
+                if (module.getSlot() < MAX_MODIFIER_SLOTS && module.getModuleItem() != null) {
+                    moduleSlots.setStackInSlot(module.getSlot(), module.getModuleItem());
+                }
+            }
+            List<ItemModuleSlot> slots = ArmorUtils.getSlots(stack);
+            for (int i = 0; i < slots.size() && i < slotWidgets.size(); i++) {
+                SlotWidget slotWidget = slotWidgets.get(i);
+                if (slots.get(i) != null && slotWidget != null) {
+                    slotWidget.setBackgroundTexture(slots.get(i).getSlotTexture());
+                }
             }
         }
     }
@@ -170,6 +184,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         AppliedItemModule prevModule = AppliedItemModule.getModuleInSlot(stack, slot);
         if (prevModule != null) prevModule.detach();
         ItemStack newModule = moduleSlots.getStackInSlot(slot);
+        if (newModule.isEmpty()) return;
         RecipeWrapper recipeWrapper = new RecipeWrapper(new CombinedInvWrapper(
                 this.equipmentSlot,
                 new CustomItemStackHandler(newModule)));

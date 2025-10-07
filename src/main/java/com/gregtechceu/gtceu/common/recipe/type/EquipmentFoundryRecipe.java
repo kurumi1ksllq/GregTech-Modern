@@ -64,7 +64,7 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
 
         ItemModule module = getModule(foundIngredient);
 
-        return AppliedItemModule.getModule(foundItem, module) == null && module.canApplyTo(foundItem);
+        return AppliedItemModule.attach(foundItem, module, true) != null;
     }
 
     public ItemStack assemble(RecipeWrapper container, RegistryAccess registryAccess) {
@@ -91,7 +91,7 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
         ItemModule module = getModule(foundIngredient);
         if (AppliedItemModule.getModule(result, module) != null) return ItemStack.EMPTY;
         if (!module.canApplyTo(result)) return ItemStack.EMPTY;
-        AppliedItemModule attachedModule = AppliedItemModule.attach(result, module);
+        AppliedItemModule attachedModule = AppliedItemModule.attach(result, module, false);
         if (attachedModule != null) {
             attachedModule.setModuleItem(foundIngredient);
             return result;

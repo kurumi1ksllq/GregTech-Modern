@@ -44,6 +44,9 @@ public class AppliedItemModule {
     @Getter
     private ItemStack appliedTo;
 
+    /**
+     * Create an applied module and fill the provided tag with module data
+     */
     private AppliedItemModule(CompoundTag moduleTag, ItemModule module, int slot) {
         this.moduleTag = moduleTag;
         this.moduleTag.put("module", module.serializeNBT());
@@ -53,7 +56,10 @@ public class AppliedItemModule {
         this.slot = slot;
     }
 
-    private AppliedItemModule(CompoundTag moduleTag, int slot) {
+    /**
+     * Load an applied module from an existing module tag
+     */
+    private AppliedItemModule(CompoundTag moduleTag, @Nullable ItemStack appliedTo, int slot) {
         this.moduleTag = moduleTag;
         if (!this.moduleTag.contains("module")) {
             GTCEu.LOGGER.warn("Created an AppliedItemModule from an invalid tag, module will be null!");
@@ -65,6 +71,7 @@ public class AppliedItemModule {
         if (this.moduleTag.contains("item")) {
             this.moduleItem = ItemStack.of(this.moduleTag.getCompound("item"));
         }
+        this.appliedTo = appliedTo;
     }
 
     public void setModule(ItemModule module) {
@@ -126,21 +133,26 @@ public class AppliedItemModule {
         this.module.setEnabled(this, enabled);
     }
 
-    public static AppliedItemModule attach(ItemStack stack, ItemModule module, int slot) {
+    public static AppliedItemModule attach(ItemStack stack, ItemModule module, int slot, boolean simulate) {
         CompoundTag modulesTag = stack.getOrCreateTagElement(MODULES_TAG);
         ItemModuleSlot moduleSlot = ArmorUtils.getSlots(stack).get(slot);
-        if (moduleSlot == null || !moduleSlot.acceptsModule(module)) return null;
-        if (!modulesTag.contains(String.valueOf(slot))) modulesTag.put(String.valueOf(slot), new CompoundTag());
-        AppliedItemModule appliedModule = new AppliedItemModule(modulesTag.getCompound(String.valueOf(slot)), module,
+        if (moduleSlot == null || !moduleSlot.acceptsModule(module) || !module.canApplyTo(stack)) return null;
+        if (!modulesTag.contains(String.valueOf(slot)) && !simulate)
+            modulesTag.put(String.valueOf(slot), new CompoundTag());
+        AppliedItemModule appliedModule = new AppliedItemModule(
+                simulate ? new CompoundTag() : modulesTag.getCompound(String.valueOf(slot)),
+                module,
                 slot);
         appliedModule.appliedTo = stack;
-        module.onAttach(appliedModule);
+        if (!simulate) {
+            module.onAttach(appliedModule);
+        }
         return appliedModule;
     }
 
-    public static @Nullable AppliedItemModule attach(ItemStack stack, ItemModule module) {
+    public static @Nullable AppliedItemModule attach(ItemStack stack, ItemModule module, boolean simulate) {
         for (int i = 0; i < ArmorUtils.getMaxModules(stack); i++) {
-            if (getModuleInSlot(stack, i) == null) return attach(stack, module, i);
+            if (getModuleInSlot(stack, i) == null) return attach(stack, module, i, simulate);
         }
         return null;
     }
@@ -152,14 +164,14 @@ public class AppliedItemModule {
     public static @Nullable AppliedItemModule getModuleInSlot(ItemStack stack, int slot) {
         CompoundTag modulesTag = stack.getOrCreateTagElement(MODULES_TAG);
         if (!modulesTag.contains(String.valueOf(slot))) return null;
-        return new AppliedItemModule(modulesTag.getCompound(String.valueOf(slot)), slot);
+        return new AppliedItemModule(modulesTag.getCompound(String.valueOf(slot)), stack, slot);
     }
 
     public static @NotNull List<AppliedItemModule> getAppliedModules(ItemStack stack) {
         CompoundTag modulesTag = stack.getOrCreateTagElement(MODULES_TAG);
         List<AppliedItemModule> modules = new ArrayList<>();
         for (String key : modulesTag.getAllKeys()) {
-            modules.add(new AppliedItemModule(modulesTag.getCompound(key), Integer.parseInt(key)));
+            modules.add(new AppliedItemModule(modulesTag.getCompound(key), stack, Integer.parseInt(key)));
         }
         return modules;
     }

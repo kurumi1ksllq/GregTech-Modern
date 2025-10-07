@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.api.item.module;
 
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 
@@ -36,4 +38,8 @@ public abstract class ItemModuleSlot {
     }
 
     public abstract boolean acceptsModule(ItemModule module);
+
+    public IGuiTexture getSlotTexture() {
+        return null;
+    }
 }

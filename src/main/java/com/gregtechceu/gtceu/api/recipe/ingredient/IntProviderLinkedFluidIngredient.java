@@ -69,7 +69,8 @@ public class IntProviderLinkedFluidIngredient extends IntProviderFluidIngredient
 
     public FluidStack[] getStacks(GTRecipe recipe, IO io) {
         if (fluidStacks == null) {
-            var fullcontents = recipe.getInputContents(ItemRecipeCapability.CAP);
+            var fullcontents = new ArrayList<Content>();
+            fullcontents.addAll(recipe.getInputContents(ItemRecipeCapability.CAP));
             fullcontents.addAll(recipe.getInputContents(FluidRecipeCapability.CAP));
             if (io == IO.OUT) {
                 fullcontents.addAll(recipe.getOutputContents(ItemRecipeCapability.CAP));

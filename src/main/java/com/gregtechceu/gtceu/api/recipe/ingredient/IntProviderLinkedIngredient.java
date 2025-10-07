@@ -84,7 +84,8 @@ public class IntProviderLinkedIngredient extends IntProviderIngredient implement
     // pull marked ingredients from recipe to get rolls
     public ItemStack[] getItems(GTRecipe recipe, IO io) {
         if (itemStacks == null) {
-            var fullcontents = recipe.getInputContents(ItemRecipeCapability.CAP);
+            var fullcontents = new ArrayList<Content>();
+            fullcontents.addAll(recipe.getInputContents(ItemRecipeCapability.CAP));
             fullcontents.addAll(recipe.getInputContents(FluidRecipeCapability.CAP));
             if (io == IO.OUT) {
                 fullcontents.addAll(recipe.getOutputContents(ItemRecipeCapability.CAP));

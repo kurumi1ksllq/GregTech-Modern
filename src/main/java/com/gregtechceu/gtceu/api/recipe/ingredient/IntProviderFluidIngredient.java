@@ -49,8 +49,8 @@ public class IntProviderFluidIngredient extends FluidIngredient
     @Setter
     protected FluidStack[] fluidStacks = null;
     @Getter
+    // I wish this could be null but it makes the serializer explode
     protected @NotNull String mark = "";
-    // wow I wish this could be null but it makes the serializer explode
 
     protected IntProviderFluidIngredient(FluidIngredient inner, IntProvider provider) {
         super(inner.values, provider.getMaxValue(), inner.nbt);

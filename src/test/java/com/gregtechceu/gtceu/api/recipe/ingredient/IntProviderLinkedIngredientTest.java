@@ -192,6 +192,7 @@ public class IntProviderLinkedIngredientTest {
         // check the results of all rolls together
         helper.runAfterDelay(runs * 2 + 1, () -> {
             ItemStack[] results = { itemIn.getStackInSlot(0), itemIn.getStackInSlot(1)};
+//            int check = matchedRolls[0];
 
             int upperLimit = 64 - (runs * 0);
             int lowerLimit = 64 - (runs * 9);

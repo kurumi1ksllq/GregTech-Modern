@@ -54,8 +54,8 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
     @Setter
     protected ItemStack[] itemStacks = null;
     @Getter
+    // I wish this could be null but it makes the serializer explode
     protected @NotNull String mark = "";
-    // wow I wish this could be null but it makes the serializer explode
 
     protected IntProviderIngredient(Ingredient inner, IntProvider countProvider) {
         super(Stream.empty());

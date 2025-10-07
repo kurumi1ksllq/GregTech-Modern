@@ -91,4 +91,11 @@ public class IntProviderLinkedFluidIngredient extends IntProviderFluidIngredient
         }
         return super.getStacks();
     }
+
+    @Override
+    public void reroll(){
+        sampledCount = -1;
+        fluidStacks = null;
+        links.clear();
+    }
 }

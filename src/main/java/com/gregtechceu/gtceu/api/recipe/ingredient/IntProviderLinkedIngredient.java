@@ -67,7 +67,7 @@ public class IntProviderLinkedIngredient extends IntProviderIngredient implement
                 rollValue += link.getSampledCountRatio();
             }
             double rollMultiplier = mode.getLinkMultiplier(rollValue, links.size());
-            if (rollMultiplier != -1) {
+            if (rollMultiplier > 0) {
                 setSampledCount(getLinkedCount(rollMultiplier));
             }
         }
@@ -104,5 +104,12 @@ public class IntProviderLinkedIngredient extends IntProviderIngredient implement
             getSampledCount();
         }
         return super.getItems();
+    }
+
+    @Override
+    public void reroll(){
+        sampledCount = -1;
+        itemStacks = null;
+        links.clear();
     }
 }

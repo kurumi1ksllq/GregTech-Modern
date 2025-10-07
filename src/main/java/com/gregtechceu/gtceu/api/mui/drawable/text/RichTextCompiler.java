@@ -13,6 +13,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ public class RichTextCompiler {
                 lines.add(line);
                 continue;
             }
-            Component text = null;
+            MutableComponent text = null;
             if (o instanceof IKey key) {
                 if (key == IKey.EMPTY) continue;
                 if (key == IKey.SPACE) {
@@ -72,10 +73,17 @@ public class RichTextCompiler {
                 }
                 text = key.getFormatted();
             } else if (!(o instanceof IDrawable)) {
-                text = Component.literal(String.valueOf(o));
+                if (o instanceof MutableComponent component) {
+                    text = component.copy();
+                }
+
             }
             if (text != null) {
-                compileString(text.getString());
+                if (text.getStyle() != Style.EMPTY) {
+                    addLineElement(text);
+                } else {
+                    compileString(text.getString());
+                }
                 continue;
             }
             if (!(o instanceof IIcon)) {
@@ -242,6 +250,11 @@ public class RichTextCompiler {
             o = styleBuilder.toString() + o;
             this.formatting.parseFrom(s2); // parse formatting from current string
         }
+        if (o instanceof Component c) {
+            x += fr.width(c.getString());
+            h = Math.max(h, fr.lineHeight);
+        }
+
         this.currentLine.add(o);
     }
 

@@ -151,7 +151,7 @@ public class AppliedItemModule {
     }
 
     public static @Nullable AppliedItemModule attach(ItemStack stack, ItemModule module, boolean simulate) {
-        for (int i = 0; i < ArmorUtils.getMaxModules(stack); i++) {
+        for (int i = 0; i < ArmorUtils.getSlots(stack).size(); i++) {
             if (getModuleInSlot(stack, i) == null) return attach(stack, module, i, simulate);
         }
         return null;

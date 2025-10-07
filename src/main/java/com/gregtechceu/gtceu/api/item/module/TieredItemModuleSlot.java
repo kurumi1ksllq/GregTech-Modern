@@ -38,7 +38,7 @@ public class TieredItemModuleSlot extends ItemModuleSlot {
 
     public static TieredItemModuleSlot[] create(ResourceLocation id,
                                                 BiFunction<ResourceLocation, Integer, TieredItemModuleSlot> constructor) {
-        return create(id, GTValues.LV, GTValues.MAX, constructor);
+        return create(id, GTValues.ULV, GTValues.MAX, constructor);
     }
 
     @Override

@@ -2,12 +2,11 @@ package com.gregtechceu.gtceu.api.item.armor;
 
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
+import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
-import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
 import com.gregtechceu.gtceu.common.data.GTSoundEntries;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.ServerGamePacketListenerImplAccessor;
-import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
 
 import net.minecraft.client.Minecraft;
@@ -41,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class ArmorUtils {
 
@@ -50,63 +48,9 @@ public class ArmorUtils {
     // Flashing starts at 10 seconds + two second buffer to prevent flicker
     public static final int NIGHT_VISION_RESET = 12 * 20;
 
-    public static final String ARMOR_KEY = "GT.Armor";
     public static final String MODULE_SLOTS_KEY = "ModuleSlots";
-    public static final String MAX_MODIFIERS_KEY = "MaxModifiers";
-    public static final String MAX_MODULE_TIER_KEY = "MaxModuleTier";
-
-    public static boolean isModifiable(ItemStack stack) {
-        return stack.is(CustomTags.MODIFIABLE_EQUIPMENT);
-    }
-
-    public static boolean hasArmorTag(ItemStack stack) {
-        return isModifiable(stack) && stack.getTagElement(ARMOR_KEY) != null;
-    }
-
-    @Nullable
-    public static CompoundTag getArmorTag(ItemStack stack) {
-        if (!isModifiable(stack)) return null;
-        return stack.getOrCreateTagElement(ARMOR_KEY);
-    }
-
-    /**
-     * @param stack the stack to get maximum modifier amount for
-     * @return the maximum amount of modifiers for the given stack
-     */
-    public static int getMaxModules(ItemStack stack) {
-        if (!(hasArmorTag(stack) && getArmorTag(stack).contains(MAX_MODIFIERS_KEY, Tag.TAG_INT)) &&
-                stack.getItem() instanceof ModifiableArmorItem armorComponentItem) {
-            setMaxModules(stack, armorComponentItem.getDefaultMaxModifiers());
-            return armorComponentItem.getDefaultMaxModifiers();
-        } else if (!hasArmorTag(stack)) {
-            return 0;
-        }
-        return getArmorTag(stack).getInt(MAX_MODIFIERS_KEY);
-    }
-
-    public static void setMaxModules(ItemStack stack, int maxModifiers) {
-        if (!isModifiable(stack)) return;
-        getArmorTag(stack).putInt(MAX_MODIFIERS_KEY, maxModifiers);
-    }
-
-    public static int getMaxModuleTier(ItemStack stack) {
-        if (!(hasArmorTag(stack) && getArmorTag(stack).contains(MAX_MODULE_TIER_KEY, Tag.TAG_INT)) &&
-                stack.getItem() instanceof ModifiableArmorItem armorComponentItem) {
-            setMaxModules(stack, armorComponentItem.getDefaultMaxModuleTier());
-            return armorComponentItem.getDefaultMaxModuleTier();
-        } else if (!hasArmorTag(stack)) {
-            return -1;
-        }
-        return getArmorTag(stack).getInt(MAX_MODULE_TIER_KEY);
-    }
-
-    public static void setMaxModuleTier(ItemStack stack, int maxModuleTier) {
-        if (!isModifiable(stack)) return;
-        getArmorTag(stack).putInt(MAX_MODULE_TIER_KEY, maxModuleTier);
-    }
 
     public static void setSlots(ItemStack stack, List<ItemModuleSlot> slots) {
-        if (!isModifiable(stack)) return;
         CompoundTag tag = new CompoundTag();
         for (int i = 0; i < slots.size(); i++) {
             ItemModuleSlot slot = slots.get(i);
@@ -117,15 +61,17 @@ public class ArmorUtils {
 
     public static List<ItemModuleSlot> getSlots(ItemStack stack) {
         if (!stack.getOrCreateTag().contains(MODULE_SLOTS_KEY, Tag.TAG_COMPOUND)) {
-            List<ItemModuleSlot> slots = new ArrayList<>();
-            int maxTier = getMaxModuleTier(stack);
-            int maxModules = getMaxModules(stack);
-            for (int i = 0; i < maxModules; i++) {
-                if (maxTier == -1) slots.add(GTArmorModifiers.UNIVERSAL_SLOT);
-                else slots.add(GTArmorModifiers.TIERED_SLOTS[maxTier - GTArmorModifiers.TIERED_SLOTS[0].getTier()]);
-            }
-            setSlots(stack, slots);
-            return slots;
+            if (stack.getItem() instanceof IModularItem modularItem) {
+                List<ItemModuleSlot> slots = modularItem.getDefaultSlots(stack);
+                setSlots(stack, slots);
+                return slots;
+            } else if (stack.getItem() instanceof ArmorComponentItem armorItem &&
+                    armorItem.getArmorLogic() instanceof IModularItem modularItem) {
+                        List<ItemModuleSlot> slots = modularItem.getDefaultSlots(stack);
+                        setSlots(stack, slots);
+                        return slots;
+                    }
+            return new ArrayList<>();
         } else {
             List<ItemModuleSlot> slots = new ArrayList<>();
             CompoundTag tag = stack.getOrCreateTagElement(MODULE_SLOTS_KEY);

@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.gui.widget.BlockableSlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
+import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
@@ -65,7 +66,8 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
     public EquipmentFoundryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
         this.equipmentSlot = new CustomItemStackHandler(1);
-        this.equipmentSlot.setFilter(stack -> stack.is(CustomTags.MODIFIABLE_EQUIPMENT));
+        this.equipmentSlot.setFilter(
+                stack -> stack.is(CustomTags.MODIFIABLE_EQUIPMENT) || stack.getItem() instanceof IModularItem);
 
         this.moduleSlots = new CustomItemStackHandler(MAX_MODIFIER_SLOTS) {
 

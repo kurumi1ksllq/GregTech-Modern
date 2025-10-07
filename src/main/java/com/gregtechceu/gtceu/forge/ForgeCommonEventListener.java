@@ -17,7 +17,6 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
-import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -411,11 +410,11 @@ public class ForgeCommonEventListener {
             return;
         }
 
-        if (!old.isEmpty() && ArmorUtils.hasArmorTag(old)) {
+        if (!old.isEmpty()) {
             AppliedItemModule.getAppliedModules(old).forEach(appliedItemModule -> appliedItemModule.unequip(entity));
         }
 
-        if (!current.isEmpty() && ArmorUtils.hasArmorTag(current)) {
+        if (!current.isEmpty()) {
             AppliedItemModule.getAppliedModules(current).forEach(appliedItemModule -> appliedItemModule.equip(entity));
         }
     }
@@ -426,8 +425,6 @@ public class ForgeCommonEventListener {
         final DamageSource source = event.getSource();
 
         for (final ItemStack stack : entity.getArmorSlots()) {
-            if (!ArmorUtils.isModifiable(stack)) continue;
-
             float amount = event.getAmount();
             for (AppliedItemModule appliedItemModule : AppliedItemModule.getAppliedModules(stack)) {
                 amount = appliedItemModule.changeDamage(entity, amount, source);

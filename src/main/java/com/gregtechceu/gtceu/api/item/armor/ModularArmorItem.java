@@ -5,6 +5,9 @@ import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
+import com.gregtechceu.gtceu.api.item.module.IModularItem;
+import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
+import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.model.HumanoidModel;
@@ -40,18 +43,18 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @Accessors(chain = true)
-public class ModifiableArmorItem extends ArmorItem implements IComponentItem {
+public class ModularArmorItem extends ArmorItem implements IComponentItem, IModularItem {
 
     @Getter
     @Setter
-    private int defaultMaxModifiers;
+    private int defaultMaxModules;
     @Getter
     @Setter
     private int defaultMaxModuleTier = GTValues.MAX;
     @Getter
     protected List<IItemComponent> components = new ArrayList<>();
 
-    public ModifiableArmorItem(ArmorMaterial material, Type type, Properties properties) {
+    public ModularArmorItem(ArmorMaterial material, Type type, Properties properties) {
         super(material, type, properties);
     }
 
@@ -294,5 +297,13 @@ public class ModifiableArmorItem extends ArmorItem implements IComponentItem {
             }
         }
         return LazyOptional.empty();
+    }
+
+    @Override
+    public List<ItemModuleSlot> getDefaultSlots(ItemStack stack) {
+        List<ItemModuleSlot> slots = new ArrayList<>();
+        for (int i = 0; i < getDefaultMaxModules(); i++)
+            slots.add(GTArmorModifiers.TIERED_SLOTS[getDefaultMaxModuleTier()]);
+        return slots;
     }
 }

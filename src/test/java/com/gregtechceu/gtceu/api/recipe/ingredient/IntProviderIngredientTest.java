@@ -67,10 +67,10 @@ public class IntProviderIngredientTest {
 
     @BeforeBatch(batch = "RangedIngredients")
     public static void prepare(ServerLevel level) {
-        CR_RECIPE_TYPE = TestUtils.createRecipeType("ranged_fluid_ingredient_cr_tests", GTRecipeTypes.CHEMICAL_RECIPES);
-        LCR_RECIPE_TYPE = TestUtils.createRecipeType("ranged_fluid_ingredient_lcr_tests",
+        CR_RECIPE_TYPE = TestUtils.createRecipeType("ranged_ingredient_cr_tests", GTRecipeTypes.CHEMICAL_RECIPES);
+        LCR_RECIPE_TYPE = TestUtils.createRecipeType("ranged_ingredient_lcr_tests",
                 GTRecipeTypes.LARGE_CHEMICAL_RECIPES);
-        CENTRIFUGE_RECIPE_TYPE = TestUtils.createRecipeType("ranged_fluid_ingredient_centrifuge_tests",
+        CENTRIFUGE_RECIPE_TYPE = TestUtils.createRecipeType("ranged_ingredient_centrifuge_tests",
                 GTRecipeTypes.CENTRIFUGE_RECIPES);
 
         CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
@@ -209,7 +209,7 @@ public class IntProviderIngredientTest {
                 "IntProviderIngredient should have item equal to what it was made with");
         helper.assertTrue(TestUtils.areItemStacksEqual(stacks, ingredient.getItems()),
                 "IntProviderIngredient.getItems shouldn't change between getStacks calls");
-        ingredient.reroll();
+        ingredient.reset();
         helper.assertFalse(TestUtils.areItemStacksEqual(stacks, ingredient.getItems()),
                 "IntProviderIngredient.getItems should have changed after rerolling");
         helper.succeed();

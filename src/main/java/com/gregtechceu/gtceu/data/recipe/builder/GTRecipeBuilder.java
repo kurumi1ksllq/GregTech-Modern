@@ -104,6 +104,8 @@ public class GTRecipeBuilder {
     private boolean itemMaterialInfo = false;
     private boolean fluidMaterialInfo = false;
     private boolean removePreviousMatInfo = false;
+    @Getter
+    private boolean linkedIngredients = false;
     public GTRecipeCategory recipeCategory;
     @Setter
     public @Nullable BiConsumer<GTRecipeBuilder, Consumer<FinishedRecipe>> onSave;
@@ -137,6 +139,7 @@ public class GTRecipeBuilder {
         this.data = toCopy.data.copy();
         this.duration = toCopy.duration;
         this.recipeCategory = toCopy.recipeCategory;
+        this.linkedIngredients = toCopy.linkedIngredients;
     }
 
     public static GTRecipeBuilder of(ResourceLocation id, GTRecipeType recipeType) {
@@ -168,6 +171,7 @@ public class GTRecipeBuilder {
         copy.perTick = this.perTick;
         copy.recipeCategory = this.recipeCategory;
         copy.onSave = this.onSave;
+        copy.linkedIngredients = this.linkedIngredients;
         return copy;
     }
 
@@ -184,6 +188,7 @@ public class GTRecipeBuilder {
         var t = (perTick ? tickInput : input);
         warnTooManyIngredients(capability, true, t, 1);
         t.computeIfAbsent(capability, c -> new ArrayList<>()).add(makeContent(capability.of(obj)));
+        if  (obj instanceof ILinkedIngredient) linkedIngredients = true;
         return this;
     }
 
@@ -199,6 +204,7 @@ public class GTRecipeBuilder {
         var t = (perTick ? tickOutput : output);
         warnTooManyIngredients(capability, false, t, 1);
         t.computeIfAbsent(capability, c -> new ArrayList<>()).add(makeContent(capability.of(obj)));
+        if  (obj instanceof ILinkedIngredient) linkedIngredients = true;
         return this;
     }
 
@@ -514,27 +520,27 @@ public class GTRecipeBuilder {
         return inputItems(input);
     }
 
-    public GTRecipeBuilder inputItemsRanged(ItemStack input, IntProvider intProvider, @NotNull String mark) {
+    public GTRecipeBuilder inputItemsRangedMarked(ItemStack input, IntProvider intProvider, @NotNull String mark) {
         return inputItems(IntProviderIngredient.of(input, intProvider, mark));
     }
 
-    public GTRecipeBuilder inputItemsRanged(Item input, IntProvider intProvider, @NotNull String mark) {
-        return inputItemsRanged(new ItemStack(input), intProvider, mark);
+    public GTRecipeBuilder inputItemsRangedMarked(Item input, IntProvider intProvider, @NotNull String mark) {
+        return inputItemsRangedMarked(new ItemStack(input), intProvider, mark);
     }
 
-    public GTRecipeBuilder inputItemsRanged(Supplier<? extends ItemLike> input, IntProvider intProvider,
+    public GTRecipeBuilder inputItemsRangedMarked(Supplier<? extends ItemLike> input, IntProvider intProvider,
                                             @NotNull String mark) {
-        return inputItemsRanged(new ItemStack(input.get().asItem()), intProvider, mark);
+        return inputItemsRangedMarked(new ItemStack(input.get().asItem()), intProvider, mark);
     }
 
-    public GTRecipeBuilder inputItemsRanged(TagPrefix orePrefix, Material material, IntProvider intProvider,
+    public GTRecipeBuilder inputItemsRangedMarked(TagPrefix orePrefix, Material material, IntProvider intProvider,
                                             @NotNull String mark) {
         var item = ChemicalHelper.get(orePrefix, material, 1);
         if (item.isEmpty()) {
             GTCEu.LOGGER.error("Tried to set input ranged item stack that doesn't exist, TagPrefix: {}, Material: {}",
                     orePrefix, material);
         }
-        return inputItemsRanged(item, intProvider, mark);
+        return inputItemsRangedMarked(item, intProvider, mark);
     }
 
     public GTRecipeBuilder inputItemsLinked(ItemStack input, IntProvider intProvider, String mode, String... marks) {
@@ -741,27 +747,27 @@ public class GTRecipeBuilder {
         return inputItems(output);
     }
 
-    public GTRecipeBuilder outputItemsRanged(ItemStack output, IntProvider intProvider, @NotNull String mark) {
+    public GTRecipeBuilder outputItemsRangedMarked(ItemStack output, IntProvider intProvider, @NotNull String mark) {
         return outputItems(IntProviderIngredient.of(output, intProvider, mark));
     }
 
-    public GTRecipeBuilder outputItemsRanged(Item input, IntProvider intProvider, @NotNull String mark) {
-        return outputItemsRanged(new ItemStack(input), intProvider, mark);
+    public GTRecipeBuilder outputItemsRangedMarked(Item input, IntProvider intProvider, @NotNull String mark) {
+        return outputItemsRangedMarked(new ItemStack(input), intProvider, mark);
     }
 
-    public GTRecipeBuilder outputItemsRanged(Supplier<? extends ItemLike> output, IntProvider intProvider,
+    public GTRecipeBuilder outputItemsRangedMarked(Supplier<? extends ItemLike> output, IntProvider intProvider,
                                              @NotNull String mark) {
-        return outputItemsRanged(new ItemStack(output.get().asItem()), intProvider, mark);
+        return outputItemsRangedMarked(new ItemStack(output.get().asItem()), intProvider, mark);
     }
 
-    public GTRecipeBuilder outputItemsRanged(TagPrefix orePrefix, Material material, IntProvider intProvider,
+    public GTRecipeBuilder outputItemsRangedMarked(TagPrefix orePrefix, Material material, IntProvider intProvider,
                                              @NotNull String mark) {
         var item = ChemicalHelper.get(orePrefix, material, 1);
         if (item.isEmpty()) {
             GTCEu.LOGGER.error("Tried to set output ranged item stack that doesn't exist, TagPrefix: {}, Material: {}",
                     orePrefix, material);
         }
-        return outputItemsRanged(item, intProvider, mark);
+        return outputItemsRangedMarked(item, intProvider, mark);
     }
 
     public GTRecipeBuilder outputItemsLinked(ItemStack output, IntProvider intProvider, String mode,
@@ -1167,11 +1173,11 @@ public class GTRecipeBuilder {
         return inputFluids(IntProviderFluidIngredient.of(input, intProvider));
     }
 
-    public GTRecipeBuilder inputFluidsRanged(FluidStack input, IntProvider intProvider, @NotNull String mark) {
-        return inputFluidsRanged(FluidIngredient.of(input), intProvider, mark);
+    public GTRecipeBuilder inputFluidsRangedMarked(FluidStack input, IntProvider intProvider, @NotNull String mark) {
+        return inputFluidsRangedMarked(FluidIngredient.of(input), intProvider, mark);
     }
 
-    protected GTRecipeBuilder inputFluidsRanged(FluidIngredient input, IntProvider intProvider, @NotNull String mark) {
+    protected GTRecipeBuilder inputFluidsRangedMarked(FluidIngredient input, IntProvider intProvider, @NotNull String mark) {
         return inputFluids(IntProviderFluidIngredient.of(input, intProvider, mark));
     }
 
@@ -1229,11 +1235,11 @@ public class GTRecipeBuilder {
         return outputFluids(IntProviderFluidIngredient.of(output, intProvider));
     }
 
-    public GTRecipeBuilder outputFluidsRanged(FluidStack output, IntProvider intProvider, @NotNull String mark) {
-        return outputFluidsRanged(FluidIngredient.of(output), intProvider, mark);
+    public GTRecipeBuilder outputFluidsRangedMarked(FluidStack output, IntProvider intProvider, @NotNull String mark) {
+        return outputFluidsRangedMarked(FluidIngredient.of(output), intProvider, mark);
     }
 
-    protected GTRecipeBuilder outputFluidsRanged(FluidIngredient output, IntProvider intProvider,
+    protected GTRecipeBuilder outputFluidsRangedMarked(FluidIngredient output, IntProvider intProvider,
                                                  @NotNull String mark) {
         return outputFluids(IntProviderFluidIngredient.of(output, intProvider, mark));
     }
@@ -1889,7 +1895,7 @@ public class GTRecipeBuilder {
         return new GTRecipe(recipeType, id.withPrefix(recipeType.registryName.getPath() + "/"),
                 input, output, tickInput, tickOutput,
                 inputChanceLogic, outputChanceLogic, tickInputChanceLogic, tickOutputChanceLogic,
-                conditions, List.of(), data, duration, recipeCategory);
+                conditions, List.of(), data, duration, recipeCategory, linkedIngredients);
     }
 
     protected void warnTooManyIngredients(RecipeCapability<?> capability,

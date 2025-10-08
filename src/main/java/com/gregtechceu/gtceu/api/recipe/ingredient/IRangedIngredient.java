@@ -69,7 +69,12 @@ public interface IRangedIngredient {
 
     boolean isRolled();
 
-    void reroll();
+    void reset();
 
     boolean isEmpty();
+
+    default void roll(){
+        reset();
+        getSampledCount();
+    }
 }

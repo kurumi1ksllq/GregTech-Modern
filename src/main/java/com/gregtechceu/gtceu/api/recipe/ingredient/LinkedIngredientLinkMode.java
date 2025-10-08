@@ -55,7 +55,7 @@ public enum LinkedIngredientLinkMode implements StringRepresentable {
             case LINK_INVERSE -> 1.0 - (rollValue / size);
             case LINK_XOR -> rollValue;
             case LINK_XOR_INVERSE -> 1.0 - rollValue;
-            default -> -1;
+            default -> 0;
         };
     }
 }

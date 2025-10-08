@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
+import lombok.Setter;
 import net.minecraft.util.RandomSource;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -18,11 +19,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class IntProviderLinkedFluidIngredient extends IntProviderFluidIngredient implements IRangedIngredient {
+public class IntProviderLinkedFluidIngredient extends IntProviderFluidIngredient implements ILinkedIngredient {
 
     @Getter
-    private List<String> symlinks;
+    private List<String> symLinks;
 
+    @Getter
     private List<IRangedIngredient> links = new ArrayList<>();
 
     @Getter
@@ -30,8 +32,8 @@ public class IntProviderLinkedFluidIngredient extends IntProviderFluidIngredient
 
     private IntProviderLinkedFluidIngredient(IntProviderFluidIngredient inner, LinkedIngredientLinkMode mode,
                                              List<String> links) {
-        super(inner.getInner(), inner.getCountProvider());
-        this.symlinks = links;
+        super(inner.inner, inner.countProvider, inner.sampledCount, inner.mark);
+        this.symLinks = links;
         this.mode = mode;
     }
 
@@ -52,48 +54,12 @@ public class IntProviderLinkedFluidIngredient extends IntProviderFluidIngredient
     }
 
     @Override
-    public int getSampledCount(@NotNull RandomSource random) {
-        if (!isRolled() && !links.isEmpty()) {
-            double rollValue = 0;
-            for (IRangedIngredient link : links) {
-                rollValue += link.getSampledCountRatio();
-            }
-            double rollMultiplier = mode.getLinkMultiplier(rollValue, links.size());
-            if (rollMultiplier != -1) {
-                setSampledCount(getLinkedCount(rollMultiplier));
-            }
-        }
-        return super.getSampledCount();
-    }
-
-
-    public FluidStack[] getStacks(GTRecipe recipe, IO io) {
-        if (fluidStacks == null) {
-            var fullcontents = new ArrayList<Content>();
-            fullcontents.addAll(recipe.getInputContents(ItemRecipeCapability.CAP));
-            fullcontents.addAll(recipe.getInputContents(FluidRecipeCapability.CAP));
-            if (io == IO.OUT) {
-                fullcontents.addAll(recipe.getOutputContents(ItemRecipeCapability.CAP));
-                fullcontents.addAll(recipe.getOutputContents(FluidRecipeCapability.CAP));
-            }
-
-            for (Content c : fullcontents) {
-                if (c.content instanceof IRangedIngredient ranged && ranged.hasMark() &&
-                        symlinks.contains(ranged.getMark())) {
-                    links.add(ranged);
-                }
-            }
-            if (links.isEmpty() && ConfigHolder.INSTANCE.dev.debug) {
-                GTCEu.LOGGER.warn("Recipe with Linked Ingredients contained no valid links! Recipe:" + recipe.getId());
-            }
-
-            getSampledCount();
-        }
-        return super.getStacks();
+    public IntProviderLinkedFluidIngredient copy(){
+        return new IntProviderLinkedFluidIngredient(super.copy(), mode, symLinks);
     }
 
     @Override
-    public void reroll(){
+    public void reset(){
         sampledCount = -1;
         fluidStacks = null;
         links.clear();

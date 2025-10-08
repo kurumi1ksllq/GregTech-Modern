@@ -192,7 +192,7 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
     /**
      * Resets the random roll on this ingredient
      */
-    public void reroll() {
+    public void reset() {
         sampledCount = -1;
         itemStacks = null;
     }

@@ -35,7 +35,7 @@ public class IntProviderFluidIngredient extends FluidIngredient
             .xmap(IntProviderFluidIngredient::fromJson, IntProviderFluidIngredient::toJson);
 
     @Getter
-    private final IntProvider countProvider;
+    protected final IntProvider countProvider;
     /**
      * The last result of {@link IntProviderFluidIngredient#getSampledCount()}. -1 if not rolled.
      */
@@ -45,7 +45,7 @@ public class IntProviderFluidIngredient extends FluidIngredient
      * The {@link FluidIngredient} to have a ranged amount.
      */
     @Getter
-    private final FluidIngredient inner;
+    protected final FluidIngredient inner;
     @Setter
     protected FluidStack[] fluidStacks = null;
     @Getter
@@ -177,7 +177,7 @@ public class IntProviderFluidIngredient extends FluidIngredient
     /**
      * Resets the random roll on this ingredient
      */
-    public void reroll() {
+    public void reset() {
         sampledCount = -1;
         fluidStacks = null;
     }

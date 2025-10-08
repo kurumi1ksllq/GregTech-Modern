@@ -4,7 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.item.module.*;
 import com.gregtechceu.gtceu.common.module.*;
 
-public class GTArmorModifiers {
+public class GTItemModules {
 
     public static final ItemModuleSlot UNIVERSAL_SLOT = new UniversalItemModuleSlot(GTCEu.id("universal"));
     public static final TieredItemModuleSlot[] TIERED_SLOTS = TieredItemModuleSlot.create(GTCEu.id("tiered"),

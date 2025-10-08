@@ -8,7 +8,7 @@ import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.module.ItemModule;
 import com.gregtechceu.gtceu.api.item.module.TieredItemModule;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
+import com.gregtechceu.gtceu.common.data.GTItemModules;
 import com.gregtechceu.gtceu.common.machine.electric.ChargerMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.PowerSubstationMachine;
 
@@ -55,7 +55,7 @@ public class AutoChargeItemModule extends TieredItemModule {
         MetaMachine machine = getLinkedMachine(player.getServer(), module);
         if (machine == null) return 0;
         boolean interdimensional = false;
-        for (ItemModule shieldModule : GTArmorModifiers.DAMAGE_BLOCK) {
+        for (ItemModule shieldModule : GTItemModules.DAMAGE_BLOCK) {
             if (shieldModule instanceof EnergyShieldItemModule shieldItemModule &&
                     shieldItemModule.getTier() >= GTValues.IV) {
                 IModularItem modularItem = GTCapabilityHelper.getModularItem(module.getAppliedTo());

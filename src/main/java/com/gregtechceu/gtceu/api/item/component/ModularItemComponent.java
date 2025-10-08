@@ -8,7 +8,7 @@ import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.ICapabilityModule;
 import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
-import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
+import com.gregtechceu.gtceu.common.data.GTItemModules;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
@@ -30,7 +30,7 @@ public class ModularItemComponent implements IItemComponent, IComponentCapabilit
 
     public ModularItemComponent(int slots, int maxTier) {
         List<ItemModuleSlot> defaultSlots = new ArrayList<>();
-        for (int i = 0; i < slots; i++) defaultSlots.add(GTArmorModifiers.TIERED_SLOTS[maxTier]);
+        for (int i = 0; i < slots; i++) defaultSlots.add(GTItemModules.TIERED_SLOTS[maxTier]);
         this.defaultSlotGetter = stack -> defaultSlots;
     }
 

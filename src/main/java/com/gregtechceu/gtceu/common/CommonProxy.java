@@ -158,7 +158,7 @@ public class CommonProxy {
         GTMachines.init();
 
         GTFoods.init();
-        GTArmorModifiers.init();
+        GTItemModules.init();
         GTItems.init();
         GTDimensionMarkers.init();
         ChanceLogic.init();

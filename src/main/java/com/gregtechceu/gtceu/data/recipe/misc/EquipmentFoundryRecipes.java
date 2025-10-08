@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.data.recipe.misc;
 
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
-import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
+import com.gregtechceu.gtceu.common.data.GTItemModules;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
@@ -20,102 +20,102 @@ public class EquipmentFoundryRecipes {
     public static void init(Consumer<FinishedRecipe> provider) {
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "speed",
                 Ingredient.of(Tags.Items.ARMORS_LEGGINGS),
-                CustomTags.ELECTRIC_MOTORS, GTArmorModifiers.SPEED);
+                CustomTags.ELECTRIC_MOTORS, GTItemModules.SPEED);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "energy_shield",
                 Ingredient.of(Tags.Items.ARMORS_CHESTPLATES),
-                CustomTags.FIELD_GENERATORS, GTArmorModifiers.DAMAGE_BLOCK);
+                CustomTags.FIELD_GENERATORS, GTItemModules.DAMAGE_BLOCK);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "attack_speed",
                 Ingredient.of(Tags.Items.ARMORS_CHESTPLATES),
-                CustomTags.ELECTRIC_MOTORS, GTArmorModifiers.ATTACK_SPEED);
+                CustomTags.ELECTRIC_MOTORS, GTItemModules.ATTACK_SPEED);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "attack_damage",
                 Ingredient.of(Tags.Items.ARMORS_CHESTPLATES),
-                CustomTags.ELECTRIC_PISTONS, GTArmorModifiers.ATTACK_DAMAGE);
+                CustomTags.ELECTRIC_PISTONS, GTItemModules.ATTACK_DAMAGE);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "block_reach",
                 Ingredient.of(Tags.Items.ARMORS_CHESTPLATES),
-                CustomTags.ROBOT_ARMS, GTArmorModifiers.BLOCK_REACH);
+                CustomTags.ROBOT_ARMS, GTItemModules.BLOCK_REACH);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "sneak_speed",
                 Ingredient.of(Tags.Items.ARMORS_LEGGINGS),
-                CustomTags.CONVEYOR_MODULES, GTArmorModifiers.SNEAK_SPEED);
+                CustomTags.CONVEYOR_MODULES, GTItemModules.SNEAK_SPEED);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "speed_attribute",
                 Ingredient.of(Tags.Items.ARMORS_BOOTS),
-                CustomTags.ELECTRIC_MOTORS, GTArmorModifiers.MOVEMENT_SPEED_ATTR);
+                CustomTags.ELECTRIC_MOTORS, GTItemModules.MOVEMENT_SPEED_ATTR);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "respiration",
                 Ingredient.of(Tags.Items.ARMORS_HELMETS),
-                CustomTags.ELECTRIC_PUMPS, GTArmorModifiers.AIR_SUPPLIER);
+                CustomTags.ELECTRIC_PUMPS, GTItemModules.AIR_SUPPLIER);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "autoeat",
                 Ingredient.of(Tags.Items.ARMORS_HELMETS),
-                CustomTags.ROBOT_ARMS, GTArmorModifiers.AUTO_EAT);
+                CustomTags.ROBOT_ARMS, GTItemModules.AUTO_EAT);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "swim_speed",
                 Ingredient.of(Tags.Items.ARMORS_BOOTS),
-                CustomTags.ELECTRIC_PUMPS, GTArmorModifiers.SWIM_SPEED);
+                CustomTags.ELECTRIC_PUMPS, GTItemModules.SWIM_SPEED);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "step_height",
                 Ingredient.of(Tags.Items.ARMORS_BOOTS),
-                CustomTags.ELECTRIC_PISTONS, GTArmorModifiers.STEP_HEIGHT);
+                CustomTags.ELECTRIC_PISTONS, GTItemModules.STEP_HEIGHT);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "jump_boost",
                 Ingredient.of(Tags.Items.ARMORS_LEGGINGS),
-                CustomTags.ELECTRIC_PISTONS, GTArmorModifiers.JUMP_BOOST);
+                CustomTags.ELECTRIC_PISTONS, GTItemModules.JUMP_BOOST);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "battery_modifier",
                 Ingredient.of(Tags.Items.ARMORS),
-                CustomTags.BATTERIES, GTArmorModifiers.BATTERY);
+                CustomTags.BATTERIES, GTItemModules.BATTERY);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "night_vision",
                 Ingredient.of(Tags.Items.ARMORS_HELMETS),
-                GTItems.NIGHTVISION_GOGGLES, GTArmorModifiers.NIGHT_VISION);
+                GTItems.NIGHTVISION_GOGGLES, GTItemModules.NIGHT_VISION);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "ppe_helmet",
                 Ingredient.of(Tags.Items.ARMORS_HELMETS),
                 GTItems.MASK_FILTER,
-                GTArmorModifiers.PPE);
+                GTItemModules.PPE);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "ppe_chestplate",
                 Ingredient.of(Tags.Items.ARMORS_CHESTPLATES),
                 ChemicalHelper.get(plate, PolyvinylChloride),
-                GTArmorModifiers.PPE);
+                GTItemModules.PPE);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "ppe_leggings",
                 Ingredient.of(Tags.Items.ARMORS_LEGGINGS),
                 ChemicalHelper.get(plate, PolyvinylChloride),
-                GTArmorModifiers.PPE);
+                GTItemModules.PPE);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "ppe_boots",
                 Ingredient.of(Tags.Items.ARMORS_BOOTS),
                 ChemicalHelper.get(plate, PolyvinylChloride),
-                GTArmorModifiers.PPE);
+                GTItemModules.PPE);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "sensor",
                 Ingredient.of(Tags.Items.ARMORS_HELMETS),
-                CustomTags.SENSORS, GTArmorModifiers.SENSOR);
+                CustomTags.SENSORS, GTItemModules.SENSOR);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "wireless_charger",
                 Ingredient.of(Tags.Items.ARMORS_CHESTPLATES),
-                CustomTags.SENSORS, GTArmorModifiers.WIRELESS_CHARGER);
+                CustomTags.SENSORS, GTItemModules.WIRELESS_CHARGER);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "jetpack",
                 Ingredient.of(Tags.Items.ARMORS_CHESTPLATES),
-                GTItems.ELECTRIC_JETPACK, GTArmorModifiers.JETPACK);
+                GTItems.ELECTRIC_JETPACK, GTItemModules.JETPACK);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "advanced_jetpack",
                 Ingredient.of(Tags.Items.ARMORS_CHESTPLATES),
-                GTItems.ELECTRIC_JETPACK_ADVANCED, GTArmorModifiers.ADVANCED_JETPACK);
+                GTItems.ELECTRIC_JETPACK_ADVANCED, GTItemModules.ADVANCED_JETPACK);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "liquid_fuel_jetpack",
                 Ingredient.of(Tags.Items.ARMORS_CHESTPLATES),
-                GTItems.LIQUID_FUEL_JETPACK, GTArmorModifiers.LIQUID_FUEL_JETPACK);
+                GTItems.LIQUID_FUEL_JETPACK, GTItemModules.LIQUID_FUEL_JETPACK);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "creative_flight",
                 Ingredient.of(Tags.Items.ARMORS_CHESTPLATES),
-                GTItems.CREATIVE_FLIGHT_MODULE, GTArmorModifiers.CREATIVE_FLIGHT);
+                GTItems.CREATIVE_FLIGHT_MODULE, GTItemModules.CREATIVE_FLIGHT);
     }
 }

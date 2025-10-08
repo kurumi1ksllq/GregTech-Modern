@@ -34,12 +34,26 @@ public class AutoChargeItemModule extends TieredItemModule {
     @Override
     public void onInventoryTick(Player player, AppliedItemModule module) {
         super.onInventoryTick(player, module);
+        long energy = getEnergyToTransfer(player, module);
+        MetaMachine machine = getLinkedMachine(player.getServer(), module);
         IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getAppliedTo());
         if (electricItem == null) return;
+        if (energy > 0) {
+            if (machine instanceof PowerSubstationMachine substation) {
+                electricItem.charge(substation.getEnergyBank().drain(energy), electricItem.getTier(), false, false);
+            } else if (machine instanceof ChargerMachine charger) {
+                charger.getLinkedItems().add(module.getAppliedTo());
+            }
+        }
+    }
+
+    private long getEnergyToTransfer(Player player, AppliedItemModule module) {
+        IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getAppliedTo());
+        if (electricItem == null) return 0;
         long energy = Math.min(electricItem.getMaxCharge() - electricItem.getCharge(), electricItem.getTransferLimit());
-        if (energy <= 0) return;
+        if (energy <= 0) return 0;
         MetaMachine machine = getLinkedMachine(player.getServer(), module);
-        if (machine == null) return;
+        if (machine == null) return 0;
         boolean interdimensional = false;
         for (ItemModule shieldModule : GTArmorModifiers.DAMAGE_BLOCK) {
             if (shieldModule instanceof EnergyShieldItemModule shieldItemModule &&
@@ -51,13 +65,9 @@ public class AutoChargeItemModule extends TieredItemModule {
             if (interdimensional) break;
         }
         interdimensional = interdimensional && getTier() >= GTValues.IV;
-        if (machine.getLevel() != player.level() && !interdimensional) return;
-        if (!interdimensional && machine.getPos().distSqr(player.blockPosition()) < getRange()) return;
-        if (machine instanceof PowerSubstationMachine substation) {
-            electricItem.charge(substation.getEnergyBank().drain(energy), electricItem.getTier(), false, false);
-        } else if (machine instanceof ChargerMachine charger) {
-            charger.getLinkedItems().add(module.getAppliedTo());
-        }
+        if (machine.getLevel() != player.level() && !interdimensional) return 0;
+        if (!interdimensional && machine.getPos().distSqr(player.blockPosition()) > getRange()) return 0;
+        return energy;
     }
 
     private MetaMachine getLinkedMachine(MinecraftServer server, AppliedItemModule module) {

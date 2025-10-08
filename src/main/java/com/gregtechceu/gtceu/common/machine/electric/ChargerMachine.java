@@ -77,7 +77,6 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
     @Persisted
     protected final CustomItemStackHandler chargerInventory;
     @Getter
-    @Persisted
     protected final Set<ItemStack> linkedItems = new HashSet<>();
 
     @Getter
@@ -195,7 +194,22 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
                 }
             }
         }
-        electricItems.addAll(this.linkedItems);
+        for (ItemStack electricItemStack : linkedItems) {
+            var electricItem = GTCapabilityHelper.getElectricItem(electricItemStack);
+            if (electricItem != null) {
+                if (electricItem.getCharge() < electricItem.getMaxCharge()) {
+                    electricItems.add(electricItem);
+                }
+            } else if (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE) {
+                var energyStorage = GTCapabilityHelper.getForgeEnergyItem(electricItemStack);
+                if (energyStorage != null) {
+                    if (energyStorage.getEnergyStored() < energyStorage.getMaxEnergyStored()) {
+                        electricItems.add(energyStorage);
+                    }
+                }
+            }
+        }
+        linkedItems.clear();
         return electricItems;
     }
 
@@ -275,7 +289,6 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
                 setEnergyStored(getInternalStorage() - internalAmps * voltage + energy);
                 return usedAmps;
             }
-            linkedItems.clear();
             return 0;
         }
 
@@ -284,6 +297,18 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
             long energyCapacity = 0L;
             for (int i = 0; i < chargerInventory.getSlots(); i++) {
                 var electricItemStack = chargerInventory.getStackInSlot(i);
+                var electricItem = GTCapabilityHelper.getElectricItem(electricItemStack);
+                if (electricItem != null) {
+                    energyCapacity += electricItem.getMaxCharge();
+                } else if (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE) {
+                    var energyStorage = GTCapabilityHelper.getForgeEnergyItem(electricItemStack);
+                    if (energyStorage != null) {
+                        energyCapacity += FeCompat.toEu(energyStorage.getMaxEnergyStored(),
+                                FeCompat.ratio(false));
+                    }
+                }
+            }
+            for (ItemStack electricItemStack : linkedItems) {
                 var electricItem = GTCapabilityHelper.getElectricItem(electricItemStack);
                 if (electricItem != null) {
                     energyCapacity += electricItem.getMaxCharge();
@@ -308,6 +333,18 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
             long energyStored = 0L;
             for (int i = 0; i < chargerInventory.getSlots(); i++) {
                 var electricItemStack = chargerInventory.getStackInSlot(i);
+                var electricItem = GTCapabilityHelper.getElectricItem(electricItemStack);
+                if (electricItem != null) {
+                    energyStored += electricItem.getCharge();
+                } else if (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE) {
+                    var energyStorage = GTCapabilityHelper.getForgeEnergyItem(electricItemStack);
+                    if (energyStorage != null) {
+                        energyStored += FeCompat.toEu(energyStorage.getEnergyStored(),
+                                FeCompat.ratio(false));
+                    }
+                }
+            }
+            for (ItemStack electricItemStack : linkedItems) {
                 var electricItem = GTCapabilityHelper.getElectricItem(electricItemStack);
                 if (electricItem != null) {
                     energyStored += electricItem.getCharge();

@@ -7,9 +7,15 @@ import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.ITieredItemModule;
 import com.gregtechceu.gtceu.api.item.module.ItemModule;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+
+import java.util.List;
 
 public class CreativeFlightModule extends ItemModule implements ITieredItemModule {
 
@@ -52,6 +58,14 @@ public class CreativeFlightModule extends ItemModule implements ITieredItemModul
             electricItem.discharge(2048, electricItem.getTier(), true, false, false);
             setMayFly(entity, true);
         }
+    }
+
+    @Override
+    public void appendHoverText(Level level, TooltipFlag isAdvanced, List<Component> tooltips,
+                                AppliedItemModule module) {
+        super.appendHoverText(level, isAdvanced, tooltips, module);
+        tooltips.add(Component.translatable("metaarmor.tooltip.modifier.creative_flight")
+                .withStyle(ChatFormatting.LIGHT_PURPLE));
     }
 
     @Override

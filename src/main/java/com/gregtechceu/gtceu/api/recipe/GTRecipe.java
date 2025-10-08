@@ -6,8 +6,8 @@ import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
-
 import com.gregtechceu.gtceu.api.recipe.ingredient.ILinkedIngredient;
+
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
@@ -273,7 +273,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
         return new EnergyStack(v, a);
     }
 
-    public void rollLinkedIngredients(){
+    public void rollLinkedIngredients() {
         inputs.values()
                 .stream()
                 .flatMap(List::stream)

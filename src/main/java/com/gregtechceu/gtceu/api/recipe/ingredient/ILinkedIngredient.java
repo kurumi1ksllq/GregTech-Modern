@@ -7,13 +7,15 @@ import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+
 import net.minecraft.util.RandomSource;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public interface ILinkedIngredient extends IRangedIngredient{
+public interface ILinkedIngredient extends IRangedIngredient {
 
     List<IRangedIngredient> getLinks();
 
@@ -21,10 +23,10 @@ public interface ILinkedIngredient extends IRangedIngredient{
 
     LinkedIngredientLinkMode getMode();
 
-    default int getSampledCount(GTRecipe recipe){
+    default int getSampledCount(GTRecipe recipe) {
         return getSampledCount(GTValues.RNG, recipe);
     }
-    
+
     default int getSampledCount(@NotNull RandomSource random, GTRecipe recipe) {
         if (getLinks().isEmpty()) addLinks(recipe);
         if (!isRolled()) {
@@ -38,7 +40,7 @@ public interface ILinkedIngredient extends IRangedIngredient{
         return getSampledCount(random);
     }
 
-    default void addLinks(GTRecipe recipe){
+    default void addLinks(GTRecipe recipe) {
         var fullcontents = new ArrayList<Content>();
         fullcontents.addAll(recipe.getInputContents(ItemRecipeCapability.CAP));
         fullcontents.addAll(recipe.getInputContents(FluidRecipeCapability.CAP));
@@ -55,7 +57,7 @@ public interface ILinkedIngredient extends IRangedIngredient{
         }
     }
 
-    default void roll(GTRecipe recipe){
+    default void roll(GTRecipe recipe) {
         reset();
         getSampledCount(recipe);
     }

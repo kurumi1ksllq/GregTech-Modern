@@ -19,7 +19,7 @@ import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachin
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ParallelHatchPartMachine;
 import com.gregtechceu.gtceu.gametest.util.TestUtils;
-import lombok.Getter;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.BeforeBatch;
 import net.minecraft.gametest.framework.GameTest;
@@ -32,6 +32,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
+
+import lombok.Getter;
 
 /**
  * Test cases:
@@ -94,8 +96,6 @@ public class IntProviderLinkedIngredientTest {
                 .EUt(GTValues.V[GTValues.HV])
                 .duration(2)
                 .buildRawRecipe());
-
-
     }
 
     private static MetaMachine getMetaMachine(BlockEntity entity) {
@@ -158,7 +158,6 @@ public class IntProviderLinkedIngredientTest {
         return new BusHolderBatchParallel(inputBus1, inputHatch1, outputBus1, outputHatch1, controller, parallelHatch);
     }
 
-
     // Test for singleblock machine with ranged item input
     @GameTest(template = "singleblock_charged_cr", batch = "LinkedIngredients")
     public static void singleblockLinkedItemItemInput(GameTestHelper helper) {
@@ -191,8 +190,8 @@ public class IntProviderLinkedIngredientTest {
         }
         // check the results of all rolls together
         helper.runAfterDelay(runs * 2 + 1, () -> {
-            ItemStack[] results = { itemIn.getStackInSlot(0), itemIn.getStackInSlot(1)};
-//            int check = matchedRolls[0];
+            ItemStack[] results = { itemIn.getStackInSlot(0), itemIn.getStackInSlot(1) };
+            // int check = matchedRolls[0];
 
             int upperLimit = 64 - (runs * 0);
             int lowerLimit = 64 - (runs * 9);

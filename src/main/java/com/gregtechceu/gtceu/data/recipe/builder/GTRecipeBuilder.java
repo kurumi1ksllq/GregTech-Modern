@@ -188,7 +188,7 @@ public class GTRecipeBuilder {
         var t = (perTick ? tickInput : input);
         warnTooManyIngredients(capability, true, t, 1);
         t.computeIfAbsent(capability, c -> new ArrayList<>()).add(makeContent(capability.of(obj)));
-        if  (obj instanceof ILinkedIngredient) linkedIngredients = true;
+        if (obj instanceof ILinkedIngredient) linkedIngredients = true;
         return this;
     }
 
@@ -204,7 +204,7 @@ public class GTRecipeBuilder {
         var t = (perTick ? tickOutput : output);
         warnTooManyIngredients(capability, false, t, 1);
         t.computeIfAbsent(capability, c -> new ArrayList<>()).add(makeContent(capability.of(obj)));
-        if  (obj instanceof ILinkedIngredient) linkedIngredients = true;
+        if (obj instanceof ILinkedIngredient) linkedIngredients = true;
         return this;
     }
 
@@ -529,12 +529,12 @@ public class GTRecipeBuilder {
     }
 
     public GTRecipeBuilder inputItemsRangedMarked(Supplier<? extends ItemLike> input, IntProvider intProvider,
-                                            @NotNull String mark) {
+                                                  @NotNull String mark) {
         return inputItemsRangedMarked(new ItemStack(input.get().asItem()), intProvider, mark);
     }
 
     public GTRecipeBuilder inputItemsRangedMarked(TagPrefix orePrefix, Material material, IntProvider intProvider,
-                                            @NotNull String mark) {
+                                                  @NotNull String mark) {
         var item = ChemicalHelper.get(orePrefix, material, 1);
         if (item.isEmpty()) {
             GTCEu.LOGGER.error("Tried to set input ranged item stack that doesn't exist, TagPrefix: {}, Material: {}",
@@ -575,24 +575,26 @@ public class GTRecipeBuilder {
         return inputItems(input);
     }
 
-    public GTRecipeBuilder inputItemsLinkedMarked(ItemStack input, IntProvider intProvider, @NotNull String mark, String mode,
-                                            String... marks) {
+    public GTRecipeBuilder inputItemsLinkedMarked(ItemStack input, IntProvider intProvider, @NotNull String mark,
+                                                  String mode,
+                                                  String... marks) {
         return inputItems(
                 IntProviderLinkedIngredient.of(IntProviderIngredient.of(input, intProvider, mark), mode, marks));
     }
 
-    public GTRecipeBuilder inputItemsLinkedMarked(Item input, IntProvider intProvider, @NotNull String mark, String mode,
-                                            String... marks) {
+    public GTRecipeBuilder inputItemsLinkedMarked(Item input, IntProvider intProvider, @NotNull String mark,
+                                                  String mode,
+                                                  String... marks) {
         return inputItemsLinkedMarked(new ItemStack(input), intProvider, mark, mode, marks);
     }
 
     public GTRecipeBuilder inputItemsLinkedMarked(Supplier<? extends ItemLike> input, IntProvider intProvider,
-                                            @NotNull String mark, String mode, String... marks) {
+                                                  @NotNull String mark, String mode, String... marks) {
         return inputItemsLinkedMarked(new ItemStack(input.get().asItem()), intProvider, mark, mode, marks);
     }
 
     public GTRecipeBuilder inputItemsLinkedMarked(TagPrefix orePrefix, Material material, IntProvider intProvider,
-                                            @NotNull String mark, String mode, String... marks) {
+                                                  @NotNull String mark, String mode, String... marks) {
         var item = ChemicalHelper.get(orePrefix, material, 1);
         if (item.isEmpty()) {
             GTCEu.LOGGER.error("Tried to set input ranged item stack that doesn't exist, TagPrefix: {}, Material: {}",
@@ -756,12 +758,12 @@ public class GTRecipeBuilder {
     }
 
     public GTRecipeBuilder outputItemsRangedMarked(Supplier<? extends ItemLike> output, IntProvider intProvider,
-                                             @NotNull String mark) {
+                                                   @NotNull String mark) {
         return outputItemsRangedMarked(new ItemStack(output.get().asItem()), intProvider, mark);
     }
 
     public GTRecipeBuilder outputItemsRangedMarked(TagPrefix orePrefix, Material material, IntProvider intProvider,
-                                             @NotNull String mark) {
+                                                   @NotNull String mark) {
         var item = ChemicalHelper.get(orePrefix, material, 1);
         if (item.isEmpty()) {
             GTCEu.LOGGER.error("Tried to set output ranged item stack that doesn't exist, TagPrefix: {}, Material: {}",
@@ -805,23 +807,25 @@ public class GTRecipeBuilder {
     }
 
     public GTRecipeBuilder outputItemsLinkedMarked(ItemStack output, IntProvider intProvider, String mark,
-                                             @NotNull String mode, @NotNull String... marks) {
+                                                   @NotNull String mode, @NotNull String... marks) {
         return outputItems(
                 IntProviderLinkedIngredient.of(IntProviderIngredient.of(output, intProvider, mark), mode, marks));
     }
 
-    public GTRecipeBuilder outputItemsLinkedMarked(Item input, IntProvider intProvider, String mark, @NotNull String mode,
-                                             @NotNull String... marks) {
+    public GTRecipeBuilder outputItemsLinkedMarked(Item input, IntProvider intProvider, String mark,
+                                                   @NotNull String mode,
+                                                   @NotNull String... marks) {
         return outputItemsLinkedMarked(new ItemStack(input), intProvider, mark, mode, marks);
     }
 
-    public GTRecipeBuilder outputItemsLinkedMarked(Supplier<? extends ItemLike> output, IntProvider intProvider, String mark,
-                                             @NotNull String mode, @NotNull String... marks) {
+    public GTRecipeBuilder outputItemsLinkedMarked(Supplier<? extends ItemLike> output, IntProvider intProvider,
+                                                   String mark,
+                                                   @NotNull String mode, @NotNull String... marks) {
         return outputItemsLinkedMarked(new ItemStack(output.get().asItem()), intProvider, mark, mode, marks);
     }
 
     public GTRecipeBuilder outputItemsLinkedMarked(TagPrefix orePrefix, Material material, IntProvider intProvider,
-                                             String mark, @NotNull String mode, @NotNull String... marks) {
+                                                   String mark, @NotNull String mode, @NotNull String... marks) {
         var item = ChemicalHelper.get(orePrefix, material, 1);
         if (item.isEmpty()) {
             GTCEu.LOGGER.error("Tried to set output ranged item stack that doesn't exist, TagPrefix: {}, Material: {}",
@@ -1177,7 +1181,8 @@ public class GTRecipeBuilder {
         return inputFluidsRangedMarked(FluidIngredient.of(input), intProvider, mark);
     }
 
-    protected GTRecipeBuilder inputFluidsRangedMarked(FluidIngredient input, IntProvider intProvider, @NotNull String mark) {
+    protected GTRecipeBuilder inputFluidsRangedMarked(FluidIngredient input, IntProvider intProvider,
+                                                      @NotNull String mark) {
         return inputFluids(IntProviderFluidIngredient.of(input, intProvider, mark));
     }
 
@@ -1196,12 +1201,13 @@ public class GTRecipeBuilder {
     }
 
     public GTRecipeBuilder inputFluidsLinkedMarked(FluidStack input, IntProvider intProvider, @NotNull String mark,
-                                             String mode, String... marks) {
+                                                   String mode, String... marks) {
         return inputFluidsLinkedMarked(FluidIngredient.of(input), intProvider, mark, mode, marks);
     }
 
-    protected GTRecipeBuilder inputFluidsLinkedMarked(FluidIngredient input, IntProvider intProvider, @NotNull String mark,
-                                                String mode, String... marks) {
+    protected GTRecipeBuilder inputFluidsLinkedMarked(FluidIngredient input, IntProvider intProvider,
+                                                      @NotNull String mark,
+                                                      String mode, String... marks) {
         return inputFluids(IntProviderLinkedFluidIngredient.of(IntProviderFluidIngredient.of(input, intProvider, mark),
                 mode, marks));
     }
@@ -1240,7 +1246,7 @@ public class GTRecipeBuilder {
     }
 
     protected GTRecipeBuilder outputFluidsRangedMarked(FluidIngredient output, IntProvider intProvider,
-                                                 @NotNull String mark) {
+                                                       @NotNull String mark) {
         return outputFluids(IntProviderFluidIngredient.of(output, intProvider, mark));
     }
 
@@ -1260,12 +1266,13 @@ public class GTRecipeBuilder {
     }
 
     public GTRecipeBuilder outputFluidsLinkedMarked(FluidStack output, IntProvider intProvider, @NotNull String mark,
-                                              String mode, String... marks) {
+                                                    String mode, String... marks) {
         return outputFluidsLinkedMarked(FluidIngredient.of(output), intProvider, mark, mode, marks);
     }
 
-    protected GTRecipeBuilder outputFluidsLinkedMarked(FluidIngredient output, IntProvider intProvider, @NotNull String mark,
-                                                 String mode, String... marks) {
+    protected GTRecipeBuilder outputFluidsLinkedMarked(FluidIngredient output, IntProvider intProvider,
+                                                       @NotNull String mark,
+                                                       String mode, String... marks) {
         return outputFluids(IntProviderLinkedFluidIngredient
                 .of(IntProviderFluidIngredient.of(output, intProvider, mark), mode, marks));
     }

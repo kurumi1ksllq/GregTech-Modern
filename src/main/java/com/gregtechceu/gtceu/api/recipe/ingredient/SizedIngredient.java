@@ -87,7 +87,7 @@ public class SizedIngredient extends Ingredient {
             return SizedIngredient.create(sizedIngredient.inner, sizedIngredient.amount);
         } else if (ingredient instanceof IntCircuitIngredient circuit) {
             return circuit;
-        } else if (ingredient instanceof  IntProviderLinkedIngredient linked){
+        } else if (ingredient instanceof IntProviderLinkedIngredient linked) {
             return linked.copy();
         } else if (ingredient instanceof IntProviderIngredient provider) {
             return provider.copy();

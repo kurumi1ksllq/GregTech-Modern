@@ -49,7 +49,7 @@ public enum LinkedIngredientLinkMode implements StringRepresentable {
         };
     }
 
-    public double getLinkMultiplier(double rollValue, int size){
+    public double getLinkMultiplier(double rollValue, int size) {
         return switch (this) {
             case LINK_DIRECT -> rollValue / size;
             case LINK_INVERSE -> 1.0 - (rollValue / size);

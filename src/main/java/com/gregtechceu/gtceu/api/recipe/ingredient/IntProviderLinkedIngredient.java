@@ -1,19 +1,6 @@
 package com.gregtechceu.gtceu.api.recipe.ingredient;
 
-import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
-import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
-import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.api.recipe.content.Content;
-import com.gregtechceu.gtceu.config.ConfigHolder;
-
-import lombok.Setter;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.ItemStack;
-
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,12 +44,12 @@ public class IntProviderLinkedIngredient extends IntProviderIngredient implement
     }
 
     @Override
-    public IntProviderLinkedIngredient copy(){
+    public IntProviderLinkedIngredient copy() {
         return new IntProviderLinkedIngredient(super.copy(), mode, symLinks);
     }
 
     @Override
-    public void reset(){
+    public void reset() {
         sampledCount = -1;
         itemStacks = null;
         links.clear();

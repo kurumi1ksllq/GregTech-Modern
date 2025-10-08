@@ -1,8 +1,10 @@
 package com.gregtechceu.gtceu.api.item.armor;
 
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
+import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.common.data.GTItems;
 
 import net.minecraft.client.model.HumanoidModel;
@@ -174,8 +176,11 @@ public class ArmorComponentItem extends ArmorItem implements IComponentItem {
                 addInformation.appendHoverText(stack, level, tooltips, isAdvanced);
             }
         }
-        for (AppliedItemModule module : AppliedItemModule.getAppliedModules(stack)) {
-            module.appendHoverText(level, isAdvanced, tooltips);
+        IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
+        if (modularItem != null) {
+            for (AppliedItemModule module : modularItem.getAppliedModules()) {
+                module.appendHoverText(level, isAdvanced, tooltips);
+            }
         }
     }
 

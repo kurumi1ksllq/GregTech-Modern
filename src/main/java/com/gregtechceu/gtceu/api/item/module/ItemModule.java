@@ -103,8 +103,10 @@ public abstract class ItemModule {
         return false;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean canApplyTo(ItemStack stack) {
-        return AppliedItemModule.getModule(stack, this) == null;
+        IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
+        return modularItem != null && modularItem.getModule(this) == null;
     }
 
     public boolean isEnabled(AppliedItemModule module) {

@@ -1,14 +1,10 @@
 package com.gregtechceu.gtceu.common.item.armor;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorLogicSuite;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
-import com.gregtechceu.gtceu.api.item.module.IModularItem;
-import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
-import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.core.IFireImmuneEntity;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
@@ -43,11 +39,10 @@ import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist, IModularItem {
+public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
 
     public static final Reference2IntMap<MobEffect> potionRemovalCost = new Reference2IntOpenHashMap<>();
     private float charge = 0.0F;
@@ -370,12 +365,5 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist, IMod
     @Override
     public boolean isPPE(ItemStack stack) {
         return true;
-    }
-
-    @Override
-    public List<ItemModuleSlot> getDefaultSlots(ItemStack stack) {
-        List<ItemModuleSlot> slots = new ArrayList<>();
-        for (int i = 0; i < 8; i++) slots.add(GTArmorModifiers.TIERED_SLOTS[GTValues.MAX]);
-        return slots;
     }
 }

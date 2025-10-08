@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.common.module;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.TieredItemModule;
@@ -24,7 +23,7 @@ public class EnergyShieldItemModule extends TieredItemModule {
     }
 
     @Override
-    public float changeDamage(LivingEntity entity, AppliedItemModule modifier, float amount, DamageSource source) {
+    public float changeDamage(LivingEntity entity, AppliedItemModule module, float amount, DamageSource source) {
         float div = (getTier() - 1) / 4f + 1;
         long energyPerHP = (long) (8192 / div);
         double percentage = 25;
@@ -34,7 +33,7 @@ public class EnergyShieldItemModule extends TieredItemModule {
         }
 
         int damageReduction = Integer.MAX_VALUE;
-        IElectricItem electricItem = GTCapabilityHelper.getElectricItem(modifier.getAppliedTo());
+        IElectricItem electricItem = module.getElectricItem();
         if (electricItem == null) {
             return amount;
         }

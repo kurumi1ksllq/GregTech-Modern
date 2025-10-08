@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
+import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.module.ItemModule;
 import com.gregtechceu.gtceu.api.item.module.TieredItemModule;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -43,7 +44,8 @@ public class AutoChargeItemModule extends TieredItemModule {
         for (ItemModule shieldModule : GTArmorModifiers.DAMAGE_BLOCK) {
             if (shieldModule instanceof EnergyShieldItemModule shieldItemModule &&
                     shieldItemModule.getTier() >= GTValues.IV) {
-                if (AppliedItemModule.getModule(module.getAppliedTo(), shieldItemModule) != null)
+                IModularItem modularItem = GTCapabilityHelper.getModularItem(module.getAppliedTo());
+                if (modularItem != null && modularItem.getModule(shieldItemModule) != null)
                     interdimensional = true;
             }
             if (interdimensional) break;

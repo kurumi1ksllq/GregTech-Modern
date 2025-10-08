@@ -1,7 +1,9 @@
 package com.gregtechceu.gtceu.common.recipe.type;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
+import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.module.ITieredItemModule;
 import com.gregtechceu.gtceu.api.item.module.ItemModule;
 import com.gregtechceu.gtceu.common.data.GTItems;
@@ -63,8 +65,8 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
         if (foundIngredient == null || foundItem == null) return false;
 
         ItemModule module = getModule(foundIngredient);
-
-        return AppliedItemModule.attach(foundItem, module, true) != null;
+        IModularItem modularItem = GTCapabilityHelper.getModularItem(foundItem);
+        return modularItem != null && modularItem.attach(module, true) != null;
     }
 
     public ItemStack assemble(RecipeWrapper container, RegistryAccess registryAccess) {
@@ -89,9 +91,10 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
             return ItemStack.EMPTY;
         }
         ItemModule module = getModule(foundIngredient);
-        if (AppliedItemModule.getModule(result, module) != null) return ItemStack.EMPTY;
+        IModularItem modularItem = GTCapabilityHelper.getModularItem(result);
+        if (modularItem == null) return ItemStack.EMPTY;
         if (!module.canApplyTo(result)) return ItemStack.EMPTY;
-        AppliedItemModule attachedModule = AppliedItemModule.attach(result, module, false);
+        AppliedItemModule attachedModule = modularItem.attach(module, false);
         if (attachedModule != null) {
             attachedModule.setModuleItem(foundIngredient);
             return result;

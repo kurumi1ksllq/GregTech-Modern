@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.blockentity;
 
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.UITemplate;
 import com.gregtechceu.gtceu.api.gui.widget.BlockableSlotWidget;
@@ -65,7 +66,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         super(type, pos, blockState);
         this.equipmentSlot = new CustomItemStackHandler(1);
         this.equipmentSlot.setFilter(
-                stack -> stack.getItem() instanceof IModularItem);
+                stack -> GTCapabilityHelper.getModularItem(stack) != null);
 
         this.moduleSlots = new CustomItemStackHandler(MAX_MODIFIER_SLOTS) {
 
@@ -135,9 +136,11 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
 
     public boolean isModifierSlotBlocked(int slot) {
         ItemStack equipment = equipmentSlot.getStackInSlot(0);
-        AppliedItemModule module = AppliedItemModule.getModuleInSlot(equipment, slot);
+        IModularItem modularItem = GTCapabilityHelper.getModularItem(equipment);
+        if (modularItem == null) return true;
+        AppliedItemModule module = modularItem.getModuleInSlot(slot);
         if (module != null) return !(module.canRemove() && module.getModuleItem() != null);
-        return ItemModuleSlot.getSlots(equipment).size() <= slot;
+        return modularItem.getSlots().size() <= slot;
     }
 
     public void onEquipmentSlotChanged(Player player, List<SlotWidget> slotWidgets) {
@@ -156,12 +159,14 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
             }
             slotWidgets.forEach(slotWidget -> slotWidget.setBackgroundTexture(null));
         } else {
-            for (AppliedItemModule module : AppliedItemModule.getAppliedModules(stack)) {
+            IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
+            if (modularItem == null) return;
+            for (AppliedItemModule module : modularItem.getAppliedModules()) {
                 if (module.getSlot() < MAX_MODIFIER_SLOTS && module.getModuleItem() != null) {
                     moduleSlots.setStackInSlot(module.getSlot(), module.getModuleItem());
                 }
             }
-            List<ItemModuleSlot> slots = ItemModuleSlot.getSlots(stack);
+            List<ItemModuleSlot> slots = modularItem.getSlots();
             for (int i = 0; i < slots.size() && i < slotWidgets.size(); i++) {
                 SlotWidget slotWidget = slotWidgets.get(i);
                 if (slots.get(i) != null && slotWidget != null) {
@@ -180,8 +185,8 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         if (stack.isEmpty()) {
             return;
         }
-
-        AppliedItemModule prevModule = AppliedItemModule.getModuleInSlot(stack, slot);
+        IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
+        AppliedItemModule prevModule = modularItem == null ? null : modularItem.getModuleInSlot(slot);
         if (prevModule != null) prevModule.detach();
         ItemStack newModule = moduleSlots.getStackInSlot(slot);
         if (newModule.isEmpty()) return;

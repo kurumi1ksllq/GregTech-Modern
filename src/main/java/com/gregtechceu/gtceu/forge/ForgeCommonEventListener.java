@@ -18,6 +18,7 @@ import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
+import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
@@ -379,14 +380,16 @@ public class ForgeCommonEventListener {
         LivingEntity entity = event.getEntity();
 
         for (ItemStack stack : entity.getArmorSlots()) {
-            AppliedItemModule.getAppliedModules(stack)
-                    .forEach(appliedItemModule -> appliedItemModule.armorTick(entity));
+            IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
+            if (modularItem == null) continue;
+            modularItem.getAppliedModules().forEach(appliedItemModule -> appliedItemModule.armorTick(entity));
         }
 
         if (entity instanceof Player player) {
             for (ItemStack stack : entity.getAllSlots()) {
-                AppliedItemModule.getAppliedModules(stack)
-                        .forEach(appliedItemModule -> appliedItemModule.inventoryTick(player));
+                IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
+                if (modularItem == null) continue;
+                modularItem.getAppliedModules().forEach(appliedItemModule -> appliedItemModule.inventoryTick(player));
             }
         }
 
@@ -411,11 +414,15 @@ public class ForgeCommonEventListener {
         }
 
         if (!old.isEmpty()) {
-            AppliedItemModule.getAppliedModules(old).forEach(appliedItemModule -> appliedItemModule.unequip(entity));
+            IModularItem modularItem = GTCapabilityHelper.getModularItem(old);
+            if (modularItem != null)
+                modularItem.getAppliedModules().forEach(appliedItemModule -> appliedItemModule.unequip(entity));
         }
 
         if (!current.isEmpty()) {
-            AppliedItemModule.getAppliedModules(current).forEach(appliedItemModule -> appliedItemModule.equip(entity));
+            IModularItem modularItem = GTCapabilityHelper.getModularItem(current);
+            if (modularItem != null)
+                modularItem.getAppliedModules().forEach(appliedItemModule -> appliedItemModule.equip(entity));
         }
     }
 
@@ -426,7 +433,9 @@ public class ForgeCommonEventListener {
 
         for (final ItemStack stack : entity.getArmorSlots()) {
             float amount = event.getAmount();
-            for (AppliedItemModule appliedItemModule : AppliedItemModule.getAppliedModules(stack)) {
+            IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
+            if (modularItem == null) continue;
+            for (AppliedItemModule appliedItemModule : modularItem.getAppliedModules()) {
                 amount = appliedItemModule.changeDamage(entity, amount, source);
             }
             event.setAmount(amount);

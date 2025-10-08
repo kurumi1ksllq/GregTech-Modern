@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.capability.forge;
 
 import com.gregtechceu.gtceu.api.capability.*;
+import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 
@@ -46,6 +47,9 @@ public class GTCapability {
     public static final Capability<IMedicalConditionTracker> CAPABILITY_MEDICAL_CONDITION_TRACKER = CapabilityManager
             .get(new CapabilityToken<>() {});
 
+    public static final Capability<IModularItem> CAPABILITY_MODULAR_ITEM = CapabilityManager
+            .get(new CapabilityToken<>() {});
+
     public static void register(RegisterCapabilitiesEvent event) {
         event.register(IEnergyContainer.class);
         event.register(IEnergyInfoProvider.class);
@@ -65,5 +69,6 @@ public class GTCapability {
         event.register(IHazardParticleContainer.class);
         event.register(IMonitorComponent.class);
         event.register(ICentralMonitor.class);
+        event.register(IModularItem.class);
     }
 }

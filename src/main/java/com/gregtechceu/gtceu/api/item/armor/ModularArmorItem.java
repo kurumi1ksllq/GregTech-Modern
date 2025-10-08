@@ -1,13 +1,11 @@
 package com.gregtechceu.gtceu.api.item.armor;
 
-import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.IModularItem;
-import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
-import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.model.HumanoidModel;
@@ -28,7 +26,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,14 +40,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @Accessors(chain = true)
-public class ModularArmorItem extends ArmorItem implements IComponentItem, IModularItem {
+public class ModularArmorItem extends ArmorItem implements IComponentItem {
 
-    @Getter
-    @Setter
-    private int defaultMaxModules;
-    @Getter
-    @Setter
-    private int defaultMaxModuleTier = GTValues.MAX;
     @Getter
     protected List<IItemComponent> components = new ArrayList<>();
 
@@ -133,8 +124,11 @@ public class ModularArmorItem extends ArmorItem implements IComponentItem, IModu
                 addInformation.appendHoverText(stack, level, tooltips, isAdvanced);
             }
         }
-        for (AppliedItemModule module : AppliedItemModule.getAppliedModules(stack)) {
-            module.appendHoverText(level, isAdvanced, tooltips);
+        IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
+        if (modularItem != null) {
+            for (AppliedItemModule module : modularItem.getAppliedModules()) {
+                module.appendHoverText(level, isAdvanced, tooltips);
+            }
         }
     }
 
@@ -297,13 +291,5 @@ public class ModularArmorItem extends ArmorItem implements IComponentItem, IModu
             }
         }
         return LazyOptional.empty();
-    }
-
-    @Override
-    public List<ItemModuleSlot> getDefaultSlots(ItemStack stack) {
-        List<ItemModuleSlot> slots = new ArrayList<>();
-        for (int i = 0; i < getDefaultMaxModules(); i++)
-            slots.add(GTArmorModifiers.TIERED_SLOTS[getDefaultMaxModuleTier()]);
-        return slots;
     }
 }

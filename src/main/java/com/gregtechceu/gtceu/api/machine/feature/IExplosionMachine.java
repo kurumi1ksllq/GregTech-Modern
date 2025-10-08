@@ -1,7 +1,9 @@
 package com.gregtechceu.gtceu.api.machine.feature;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
+import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.common.machine.owner.PlayerOwner;
 import com.gregtechceu.gtceu.common.module.SensorItemModule;
@@ -67,7 +69,9 @@ public interface IExplosionMachine extends IMachineFeature {
             if (player != null) {
                 for (ItemStack stack : player.getArmorSlots()) {
                     if (stack.isEmpty()) continue;
-                    for (AppliedItemModule module : AppliedItemModule.getAppliedModules(stack)) {
+                    IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
+                    if (modularItem == null) continue;
+                    for (AppliedItemModule module : modularItem.getAppliedModules()) {
                         if (module.getModule() instanceof SensorItemModule && module.isEnabled()) {
                             player.sendSystemMessage(Component.translatable(
                                     "gtceu.machine.exploded",

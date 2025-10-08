@@ -1,6 +1,10 @@
 package com.gregtechceu.gtceu.api.item.module;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.capability.IElectricItem;
+import com.gregtechceu.gtceu.api.item.capability.ModularItem;
+import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -13,15 +17,13 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AppliedItemModule {
-
-    private static final String MODULES_TAG = "Modules";
 
     private final CompoundTag moduleTag;
     @Getter
@@ -41,12 +43,13 @@ public class AppliedItemModule {
      * If this module is not applied to anything, this field is {@code null}.
      */
     @Getter
+    @Setter
     private ItemStack appliedTo;
 
     /**
      * Create an applied module and fill the provided tag with module data
      */
-    private AppliedItemModule(CompoundTag moduleTag, ItemModule module, int slot) {
+    public AppliedItemModule(CompoundTag moduleTag, ItemModule module, int slot) {
         this.moduleTag = moduleTag;
         this.moduleTag.put("module", module.serializeNBT());
         this.moduleTag.put("tag", new CompoundTag());
@@ -58,7 +61,7 @@ public class AppliedItemModule {
     /**
      * Load an applied module from an existing module tag
      */
-    private AppliedItemModule(CompoundTag moduleTag, @Nullable ItemStack appliedTo, int slot) {
+    public AppliedItemModule(CompoundTag moduleTag, @Nullable ItemStack appliedTo, int slot) {
         this.moduleTag = moduleTag;
         if (!this.moduleTag.contains("module")) {
             GTCEu.LOGGER.warn("Created an AppliedItemModule from an invalid tag, module will be null!");
@@ -91,7 +94,7 @@ public class AppliedItemModule {
     public void detach() {
         if (this.appliedTo == null || !this.module.canRemove(this)) return;
         this.module.onRemove(this);
-        this.appliedTo.getOrCreateTagElement(MODULES_TAG).remove(String.valueOf(slot));
+        this.appliedTo.getOrCreateTagElement(ModularItem.MODULES_TAG).remove(String.valueOf(slot));
         this.appliedTo = null;
     }
 
@@ -132,59 +135,22 @@ public class AppliedItemModule {
         this.module.setEnabled(this, enabled);
     }
 
-    public static AppliedItemModule attach(ItemStack stack, ItemModule module, int slot, boolean simulate) {
-        CompoundTag modulesTag = stack.getOrCreateTagElement(MODULES_TAG);
-        ItemModuleSlot moduleSlot = ItemModuleSlot.getSlots(stack).get(slot);
-        if (moduleSlot == null || !moduleSlot.acceptsModule(module) || !module.canApplyTo(stack)) return null;
-        if (!modulesTag.contains(String.valueOf(slot)) && !simulate)
-            modulesTag.put(String.valueOf(slot), new CompoundTag());
-        AppliedItemModule appliedModule = new AppliedItemModule(
-                simulate ? new CompoundTag() : modulesTag.getCompound(String.valueOf(slot)),
-                module,
-                slot);
-        appliedModule.appliedTo = stack;
-        if (!simulate) {
-            module.onAttach(appliedModule);
-        }
-        return appliedModule;
-    }
-
-    public static @Nullable AppliedItemModule attach(ItemStack stack, ItemModule module, boolean simulate) {
-        for (int i = 0; i < ItemModuleSlot.getSlots(stack).size(); i++) {
-            if (getModuleInSlot(stack, i) == null) return attach(stack, module, i, simulate);
-        }
-        return null;
-    }
-
-    public static void clearModules(ItemStack stack) {
-        stack.removeTagKey(MODULES_TAG);
-    }
-
-    public static @Nullable AppliedItemModule getModuleInSlot(ItemStack stack, int slot) {
-        CompoundTag modulesTag = stack.getOrCreateTagElement(MODULES_TAG);
-        if (!modulesTag.contains(String.valueOf(slot))) return null;
-        return new AppliedItemModule(modulesTag.getCompound(String.valueOf(slot)), stack, slot);
-    }
-
-    public static @NotNull List<AppliedItemModule> getAppliedModules(ItemStack stack) {
-        CompoundTag modulesTag = stack.getOrCreateTagElement(MODULES_TAG);
-        List<AppliedItemModule> modules = new ArrayList<>();
-        for (String key : modulesTag.getAllKeys()) {
-            modules.add(new AppliedItemModule(modulesTag.getCompound(key), stack, Integer.parseInt(key)));
-        }
-        return modules;
-    }
-
-    public static @Nullable AppliedItemModule getModule(ItemStack stack, ItemModule module) {
-        return getAppliedModules(stack).stream().filter(appliedModule -> appliedModule.getModule() == module).findAny()
-                .orElse(null);
-    }
-
     public boolean isPPE() {
         return this.module.isPPE(this) && this.isEnabled();
     }
 
     public boolean canRemove() {
         return this.module.canRemove(this);
+    }
+
+    public @Nullable IElectricItem getElectricItem() {
+        if (this.getAppliedTo() == null) return null;
+        IElectricItem electricItem = GTCapabilityHelper.getElectricItem(this.getAppliedTo());
+        IModularItem modularItem = GTCapabilityHelper.getModularItem(this.getAppliedTo());
+        if (electricItem != null || modularItem == null) return electricItem;
+        AppliedItemModule battery = modularItem.getModule(GTArmorModifiers.BATTERY);
+        if (battery != null && battery.getModuleItem() != null)
+            return GTCapabilityHelper.getElectricItem(battery.getModuleItem());
+        else return null;
     }
 }

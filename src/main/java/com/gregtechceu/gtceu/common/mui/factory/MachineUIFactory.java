@@ -48,7 +48,11 @@ public class MachineUIFactory extends AbstractUIFactory<PosGuiData> {
 
     @Override
     public @NotNull IUIHolder<PosGuiData> getGuiHolder(PosGuiData data) {
-        return Objects.requireNonNull(castUIHolder(getMachine(data)), "Found MetaMachine is not a gui holder!");
+        MetaMachine machine = getMachine(data);
+        if (machine.getDefinition().getUI() != null) {
+            return machine.getDefinition().getUI();
+        }
+        return Objects.requireNonNull(castUIHolder(machine), "Found MetaMachine is not a gui holder!");
     }
 
     @Override

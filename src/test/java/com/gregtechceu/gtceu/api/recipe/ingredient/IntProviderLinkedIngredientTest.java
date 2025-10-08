@@ -87,7 +87,7 @@ public class IntProviderLinkedIngredientTest {
 
         CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_linked_input-input_item_cr"))
-                .inputItemsRanged(CR_IN, UniformInt.of(0, 9), "orange")
+                .inputItemsRangedMarked(CR_IN, UniformInt.of(0, 9), "orange")
                 .inputItemsLinked(CR_OUT, UniformInt.of(0, 9), "direct", "orange")
                 .inputFluids(REDSTONE)
                 .outputItems(STONE)

@@ -67,7 +67,7 @@ public class EquipmentFoundryRecipes {
                 CustomTags.ELECTRIC_PISTONS, GTArmorModifiers.JUMP_BOOST);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "battery_modifier",
-                Ingredient.EMPTY,
+                Ingredient.of(Tags.Items.ARMORS),
                 CustomTags.BATTERIES, GTArmorModifiers.BATTERY);
 
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "night_vision",

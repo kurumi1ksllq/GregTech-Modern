@@ -1,10 +1,7 @@
 package com.gregtechceu.gtceu.api.item.module;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.capability.ModularItem;
-import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -141,16 +138,5 @@ public class AppliedItemModule {
 
     public boolean canRemove() {
         return this.module.canRemove(this);
-    }
-
-    public @Nullable IElectricItem getElectricItem() {
-        if (this.getAppliedTo() == null) return null;
-        IElectricItem electricItem = GTCapabilityHelper.getElectricItem(this.getAppliedTo());
-        IModularItem modularItem = GTCapabilityHelper.getModularItem(this.getAppliedTo());
-        if (electricItem != null || modularItem == null) return electricItem;
-        AppliedItemModule battery = modularItem.getModule(GTArmorModifiers.BATTERY);
-        if (battery != null && battery.getModuleItem() != null)
-            return GTCapabilityHelper.getElectricItem(battery.getModuleItem());
-        else return null;
     }
 }

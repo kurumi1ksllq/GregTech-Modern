@@ -1,8 +1,12 @@
 package com.gregtechceu.gtceu.api.item.component;
 
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.capability.ModularItem;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
+import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
+import com.gregtechceu.gtceu.api.item.module.ICapabilityModule;
+import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
 import com.gregtechceu.gtceu.common.data.GTArmorModifiers;
 
@@ -32,7 +36,20 @@ public class ModularItemComponent implements IItemComponent, IComponentCapabilit
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(ItemStack stack, @NotNull Capability<T> cap) {
-        return GTCapability.CAPABILITY_MODULAR_ITEM.orEmpty(cap,
-                LazyOptional.of(() -> new ModularItem(stack, defaultSlotGetter)));
+        if (cap == GTCapability.CAPABILITY_MODULAR_ITEM)
+            return GTCapability.CAPABILITY_MODULAR_ITEM.orEmpty(cap,
+                    LazyOptional.of(() -> new ModularItem(stack, defaultSlotGetter)));
+        else {
+            IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
+            if (modularItem != null) {
+                for (AppliedItemModule module : modularItem.getAppliedModules()) {
+                    if (module.getModule() instanceof ICapabilityModule capabilityModule) {
+                        LazyOptional<T> optional = capabilityModule.getCapability(module, cap);
+                        if (optional.isPresent()) return optional;
+                    }
+                }
+            }
+            return LazyOptional.empty();
+        }
     }
 }

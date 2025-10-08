@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.common.module;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.TieredItemModule;
@@ -33,7 +34,7 @@ public class EnergyShieldItemModule extends TieredItemModule {
         }
 
         int damageReduction = Integer.MAX_VALUE;
-        IElectricItem electricItem = module.getElectricItem();
+        IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getAppliedTo());
         if (electricItem == null) {
             return amount;
         }

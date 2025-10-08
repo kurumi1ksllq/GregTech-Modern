@@ -8,7 +8,6 @@ import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.pipenet.PipeNetworkType;
 import com.gregtechceu.gtceu.client.model.PipeModel;
 import com.gregtechceu.gtceu.client.renderer.block.PipeBlockRenderer;
-import com.gregtechceu.gtceu.common.blockentity.LaserPipeBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.laser.LaserPipeProperties;
@@ -19,7 +18,6 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -82,19 +80,7 @@ public class LaserPipeBlock extends PipeBlock<LaserPipeType, LaserPipeProperties
     }
 
     @Override
-    public LaserPipeProperties createRawData(BlockState pState, @Nullable ItemStack pStack) {
-        return LaserPipeProperties.INSTANCE;
-    }
-
-    @Override
-    public LaserPipeProperties createProperties(PipeBlockEntity<LaserPipeType, LaserPipeProperties> pipeTile) {
-        LaserPipeType pipeType = pipeTile.getPipeType();
-        if (pipeType == null) return getFallbackType();
-        return this.pipeType.modifyProperties(properties);
-    }
-
-    @Override
-    public LaserPipeProperties getFallbackType() {
+    public LaserPipeProperties createRawData() {
         return LaserPipeProperties.INSTANCE;
     }
 

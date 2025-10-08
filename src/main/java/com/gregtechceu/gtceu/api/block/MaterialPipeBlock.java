@@ -63,34 +63,9 @@ public abstract class MaterialPipeBlock<
     }
 
     @Override
-    public final NodeDataType createRawData(BlockState pState, @Nullable ItemStack pStack) {
-        return createMaterialData();
-    }
-
-    @Override
-    public NodeDataType createProperties(PipeBlockEntity<PipeType, NodeDataType> pipeTile) {
-        PipeType pipeType = pipeTile.getPipeType();
-        Material material = ((MaterialPipeBlock<PipeType, NodeDataType, WorldPipeNetType>) pipeTile
-                .getPipeBlock()).material;
-        if (pipeType == null || material.isNull()) {
-            return getFallbackType();
-        }
-        return createProperties(pipeType, material);
-    }
-
-    protected abstract NodeDataType createProperties(PipeType pipeType, Material material);
-
-    @Override
     public @Nullable PipeBlockRenderer getRenderer(BlockState state) {
         return renderer;
     }
-
-    @Override
-    public final NodeDataType getFallbackType() {
-        return createMaterialData();
-    }
-
-    protected abstract NodeDataType createMaterialData();
 
     protected abstract PipeModel createPipeModel();
 

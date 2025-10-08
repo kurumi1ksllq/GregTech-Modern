@@ -39,12 +39,7 @@ public class ItemPipeBlock extends MaterialPipeBlock<ItemPipeType, ItemPipePrope
     }
 
     @Override
-    protected ItemPipeProperties createProperties(ItemPipeType itemPipeType, Material material) {
-        return itemPipeType.modifyProperties(material.getProperty(PropertyKey.ITEM_PIPE));
-    }
-
-    @Override
-    protected ItemPipeProperties createMaterialData() {
+    public ItemPipeProperties createRawData() {
         return material.getProperty(PropertyKey.ITEM_PIPE);
     }
 
@@ -67,7 +62,7 @@ public class ItemPipeBlock extends MaterialPipeBlock<ItemPipeType, ItemPipePrope
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip,
                                 TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
-        ItemPipeProperties properties = createProperties(defaultBlockState(), stack);
+        ItemPipeProperties properties = createProperties();
 
         if (properties.getTransferRate() % 1 != 0) {
             tooltip.add(Component.translatable("gtceu.universal.tooltip.item_transfer_rate",

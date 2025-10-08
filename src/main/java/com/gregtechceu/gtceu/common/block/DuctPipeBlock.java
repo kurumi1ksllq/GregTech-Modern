@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardEmitter;
 import com.gregtechceu.gtceu.api.pipenet.PipeNetworkType;
 import com.gregtechceu.gtceu.client.model.PipeModel;
 import com.gregtechceu.gtceu.client.renderer.block.PipeBlockRenderer;
-import com.gregtechceu.gtceu.common.blockentity.DuctPipeBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.duct.DuctPipeProperties;
@@ -59,25 +58,13 @@ public class DuctPipeBlock extends PipeBlock<DuctPipeType, DuctPipeProperties, L
     }
 
     @Override
-    public DuctPipeProperties createRawData(BlockState pState, @Nullable ItemStack pStack) {
+    public DuctPipeProperties createRawData() {
         return properties;
-    }
-
-    @Override
-    public DuctPipeProperties createProperties(PipeBlockEntity<DuctPipeType, DuctPipeProperties> pipeTile) {
-        DuctPipeType pipeType = pipeTile.getPipeType();
-        if (pipeType == null) return getFallbackType();
-        return this.pipeType.modifyProperties(properties);
     }
 
     @Override
     public PipeNetworkType getPipeType() {
         return GTPipeNetworks.DUCT;
-    }
-
-    @Override
-    public DuctPipeProperties getFallbackType() {
-        return properties;
     }
 
     @Override

@@ -15,7 +15,6 @@ import com.gregtechceu.gtceu.client.renderer.block.PipeBlockRenderer;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.item.CoverPlaceBehavior;
-import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 import com.gregtechceu.gtceu.syncsystem.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -28,7 +27,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -58,7 +56,6 @@ import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -116,18 +113,11 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
     /**
      * Add data via placement.
      */
-    public abstract NodeDataType createRawData(BlockState pState, @Nullable ItemStack pStack);
+    public abstract NodeDataType createRawData();
 
-    public NodeDataType createProperties(BlockState state, @Nullable ItemStack stack) {
-        return pipeType.modifyProperties(createRawData(state, stack));
+    public NodeDataType createProperties() {
+        return pipeType.modifyProperties(createRawData());
     }
-
-    public abstract NodeDataType createProperties(PipeBlockEntity<PipeType, NodeDataType> pipeTile);
-
-    /**
-     * Sometimes some people
-     */
-    public abstract NodeDataType getFallbackType();
 
     @Nullable
     @Override

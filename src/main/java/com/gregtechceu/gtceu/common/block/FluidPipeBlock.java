@@ -51,12 +51,7 @@ public class FluidPipeBlock extends MaterialPipeBlock<FluidPipeType, FluidPipePr
     }
 
     @Override
-    protected FluidPipeProperties createProperties(FluidPipeType fluidPipeType, Material material) {
-        return fluidPipeType.modifyProperties(material.getProperty(PropertyKey.FLUID_PIPE));
-    }
-
-    @Override
-    protected FluidPipeProperties createMaterialData() {
+    public FluidPipeProperties createRawData() {
         return material.getProperty(PropertyKey.FLUID_PIPE);
     }
 
@@ -90,7 +85,7 @@ public class FluidPipeBlock extends MaterialPipeBlock<FluidPipeType, FluidPipePr
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip,
                                 TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
-        FluidPipeProperties properties = createProperties(defaultBlockState(), stack);
+        FluidPipeProperties properties = createProperties();
 
         tooltip.add(Component.translatable("gtceu.universal.tooltip.fluid_transfer_rate", properties.getThroughput()));
         tooltip.add(Component.translatable("gtceu.fluid_pipe.max_temperature",

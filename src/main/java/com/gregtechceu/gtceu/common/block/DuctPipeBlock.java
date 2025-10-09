@@ -13,12 +13,10 @@ import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.duct.DuctPipeProperties;
 import com.gregtechceu.gtceu.common.pipelike.duct.DuctPipeType;
-import com.gregtechceu.gtceu.common.pipelike.duct.LevelDuctPipeNet;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -34,32 +32,22 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class DuctPipeBlock extends PipeBlock<DuctPipeType, DuctPipeProperties, LevelDuctPipeNet> {
+public class DuctPipeBlock extends PipeBlock<DuctPipeType, DuctPipeProperties> {
 
     public final PipeBlockRenderer renderer;
     public final PipeModel model;
     private final DuctPipeProperties properties;
 
     public DuctPipeBlock(Properties properties, DuctPipeType type) {
-        super(properties, type);
+        super(properties, type, new DuctPipeProperties(type.getRateMultiplier()));
         this.properties = new DuctPipeProperties(type.getRateMultiplier());
         this.model = type.createPipeModel();
         this.renderer = new PipeBlockRenderer(this.model);
     }
 
     @Override
-    public LevelDuctPipeNet getWorldPipeNet(ServerLevel world) {
-        return LevelDuctPipeNet.getOrCreate(world);
-    }
-
-    @Override
     public BlockEntityType<? extends PipeBlockEntity<DuctPipeType, DuctPipeProperties>> getBlockEntityType() {
         return GTBlockEntities.DUCT_PIPE.get();
-    }
-
-    @Override
-    public DuctPipeProperties createRawData() {
-        return properties;
     }
 
     @Override

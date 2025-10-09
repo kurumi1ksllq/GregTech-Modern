@@ -10,7 +10,6 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
@@ -23,16 +22,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public abstract class MaterialPipeBlock<
-        PipeType extends Enum<PipeType> & IPipeType<NodeDataType> & IMaterialPipeType<NodeDataType>, NodeDataType,
-        WorldPipeNetType extends LevelPipeNet<NodeDataType, ? extends PipeNet<NodeDataType>>>
-                                       extends PipeBlock<PipeType, NodeDataType, WorldPipeNetType> {
+        PipeType extends Enum<PipeType> & IPipeType<NodeDataType> & IMaterialPipeType<NodeDataType>, NodeDataType>
+                                       extends PipeBlock<PipeType, NodeDataType> {
 
     public final Material material;
     public final PipeBlockRenderer renderer;
     public final PipeModel model;
 
-    public MaterialPipeBlock(Properties properties, PipeType pipeType, Material material) {
-        super(properties, pipeType);
+    public MaterialPipeBlock(Properties properties, PipeType pipeType, Material material, NodeDataType nodeProperties) {
+        super(properties, pipeType, nodeProperties);
         this.material = material;
         this.model = createPipeModel();
         this.renderer = new PipeBlockRenderer(this.model);
@@ -46,7 +44,7 @@ public abstract class MaterialPipeBlock<
                     return paintable.getPaintingColor();
                 }
             }
-            if (state.getBlock() instanceof MaterialPipeBlock<?, ?, ?> block) {
+            if (state.getBlock() instanceof MaterialPipeBlock<?, ?> block) {
                 return block.tinted(state, level, pos, index);
             }
             return -1;

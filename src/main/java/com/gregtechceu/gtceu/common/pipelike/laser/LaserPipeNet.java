@@ -1,21 +1,24 @@
 package com.gregtechceu.gtceu.common.pipelike.laser;
 
+import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 import com.gregtechceu.gtceu.api.pipenet.PipeNet;
 
+import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class LaserPipeNet extends PipeNet<LaserPipeProperties> {
+public class LaserPipeNet extends PipeNet {
 
     private final Map<BlockPos, LaserRoutePath> netData = new Object2ObjectOpenHashMap<>();
 
-    public LaserPipeNet(LevelLaserPipeNet world) {
-        super(world);
+    public LaserPipeNet(LevelPipeNet levelPipeNet) {
+        super(levelPipeNet, GTPipeNetworks.LASER);
     }
 
     @Nullable
@@ -31,15 +34,5 @@ public class LaserPipeNet extends PipeNet<LaserPipeProperties> {
             netData.put(pipePos, data);
         }
         return data;
-    }
-
-    @Override
-    public void onNeighbourUpdate(BlockPos fromPos) {
-        netData.clear();
-    }
-
-    @Override
-    public void onPipeConnectionsUpdate() {
-        netData.clear();
     }
 }

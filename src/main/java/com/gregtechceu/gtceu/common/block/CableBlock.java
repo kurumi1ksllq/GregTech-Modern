@@ -18,7 +18,6 @@ import com.gregtechceu.gtceu.common.data.GTDamageTypes;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.cable.Insulation;
-import com.gregtechceu.gtceu.common.pipelike.cable.LevelEnergyNet;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -26,7 +25,6 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -47,10 +45,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class CableBlock extends MaterialPipeBlock<Insulation, WireProperties, LevelEnergyNet> {
+public class CableBlock extends MaterialPipeBlock<Insulation, WireProperties> {
 
     public CableBlock(Properties properties, Insulation insulation, Material material) {
-        super(properties, insulation, material);
+        super(properties, insulation, material, material.getProperty(PropertyKey.WIRE));
     }
 
     @Override
@@ -59,16 +57,6 @@ public class CableBlock extends MaterialPipeBlock<Insulation, WireProperties, Le
             return 0x404040;
         }
         return super.tinted(state, level, pos, index);
-    }
-
-    @Override
-    public WireProperties createRawData() {
-        return material.getProperty(PropertyKey.WIRE);
-    }
-
-    @Override
-    public LevelEnergyNet getWorldPipeNet(ServerLevel level) {
-        return LevelEnergyNet.getOrCreate(level);
     }
 
     @Override
@@ -97,7 +85,7 @@ public class CableBlock extends MaterialPipeBlock<Insulation, WireProperties, Le
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip,
                                 TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
-        WireProperties wireProperties = createProperties();
+        WireProperties wireProperties = getBaseProperties();
         int tier = GTUtil.getTierByVoltage(wireProperties.getVoltage());
         if (wireProperties.isSuperconductor())
             tooltip.add(Component.translatable("gtceu.cable.superconductor", GTValues.VN[tier]));

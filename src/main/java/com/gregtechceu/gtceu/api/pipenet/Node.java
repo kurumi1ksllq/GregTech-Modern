@@ -6,17 +6,15 @@ import net.minecraft.core.Direction;
  * Represents a single node in network of pipes
  * It can have blocked connections and be active or not
  */
-public final class Node<NodeDataType> {
+public final class Node {
 
     public static final int ALL_OPENED = 0b111111;
     public static final int ALL_CLOSED = 0b000000;
 
-    public NodeDataType data;
     public int openConnections;
     public boolean isActive;
 
-    public Node(NodeDataType data, int openConnections, boolean isActive) {
-        this.data = data;
+    public Node(int openConnections, boolean isActive) {
         this.openConnections = openConnections;
         this.isActive = isActive;
     }

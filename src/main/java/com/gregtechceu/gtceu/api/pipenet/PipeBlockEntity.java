@@ -72,6 +72,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     protected final PipeCoverContainer coverContainer;
 
     @Getter
+    @Setter(onMethod_ = @ApiStatus.Internal)
     @SyncToClient
     @SaveField
     @RerenderOnChanged
@@ -98,10 +99,12 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
 
     private final List<TickableSubscription> serverTicks;
     private final List<TickableSubscription> waitingToAdd;
-
-    public PipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
+    @Getter
+    private final PipeNetworkType networkType;
+    public PipeBlockEntity(BlockEntityType<?> type, PipeNetworkType networkType, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
         this.coverContainer = new PipeCoverContainer(this);
+        this.networkType = networkType;
         this.serverTicks = new ArrayList<>();
         this.waitingToAdd = new ArrayList<>();
     }
@@ -114,7 +117,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
             var lvl = getLevel();
             attachedToNet = false;
             if (lvl instanceof ServerLevel serverLevel) {
-                getPipeBlock().getWorldPipeNet(serverLevel).removeNode(getBlockPos());
+                LevelPipeNet.getLevelPipeNet(serverLevel, networkType).removeNode(getBlockPos());
             }
         }
     }
@@ -197,8 +200,16 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     }
 
     @SuppressWarnings("unchecked")
-    public PipeBlock<PipeType, NodeDataType, ?> getPipeBlock() {
-        return (PipeBlock<PipeType, NodeDataType, ?>) getBlockState().getBlock();
+    public PipeBlock<PipeType, NodeDataType> getPipeBlock() {
+        return (PipeBlock<PipeType, NodeDataType>) getBlockState().getBlock();
+    }
+
+    @Nullable
+    public PipeNet getPipeNet() {
+        if (getLevel() instanceof ServerLevel serverLevel) {
+            return LevelPipeNet.getLevelPipeNet(serverLevel, networkType).getNetFromPos(getBlockPos());
+        }
+        return null;
     }
 
     public PipeType getPipeType() {
@@ -207,7 +218,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
 
     public NodeDataType getNodeData() {
         if (cachedNodeData == null) {
-            this.cachedNodeData = getPipeBlock().createProperties();
+            this.cachedNodeData = getPipeBlock().getBaseProperties();
         }
         return cachedNodeData;
     }
@@ -232,7 +243,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
         if (!attachedToNet) {
             int activeConnections = getConnections();
             boolean isActiveNode = activeConnections != 0;
-            getPipeBlock().getWorldPipeNet((ServerLevel)level).addNode(getBlockPos(), getPipeBlock().createRawData(), activeConnections, isActiveNode);
+            LevelPipeNet.getLevelPipeNet((ServerLevel)level, networkType).addNode(getBlockPos(), activeConnections, isActiveNode);
         }
 
         if (!waitingToAdd.isEmpty()) {
@@ -278,7 +289,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
             if (open && !canConnect)
                 setConnection(facing, false, false);
         }
-        PipeNet<NodeDataType> net = getPipeNet();
+        PipeNet net = getPipeNet();
         if (net != null) {
             getPipeNet().onNeighbourUpdate(neighbor);
         }
@@ -294,8 +305,8 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
             blockedConnections = withSideConnection(blockedConnections, side, isBlocked);
             syncDataHolder.markClientSyncFieldDirty("blockedConnections");
             setChanged();
-            LevelPipeNet<?, ?> worldPipeNet = getPipeBlock().getWorldPipeNet(serverLevel);
-            PipeNet<?> net = worldPipeNet.getNetFromPos(getBlockPos());
+            LevelPipeNet worldPipeNet = LevelPipeNet.getLevelPipeNet(serverLevel, networkType);
+            PipeNet net = worldPipeNet.getNetFromPos(getBlockPos());
             if (net != null) {
                 net.onPipeConnectionsUpdate();
             }
@@ -358,7 +369,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     }
 
     private void updateNetworkConnection(Direction side, boolean connected) {
-        LevelPipeNet<?, ?> worldPipeNet = getPipeBlock().getWorldPipeNet((ServerLevel) getLevel());
+        LevelPipeNet worldPipeNet = LevelPipeNet.getLevelPipeNet((ServerLevel) getLevel(), networkType);
         worldPipeNet.updateBlockedConnections(getBlockPos(), side, !connected);
     }
 
@@ -489,7 +500,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
 
     @Override
     public int getDefaultPaintingColor() {
-        return this.getPipeBlock() instanceof MaterialPipeBlock<?, ?, ?> materialPipeBlock ?
+        return this.getPipeBlock() instanceof MaterialPipeBlock<?, ?> materialPipeBlock ?
                 materialPipeBlock.material.getMaterialRGB() : 0xFFFFFF;
     }
 

@@ -12,12 +12,10 @@ import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.laser.LaserPipeProperties;
 import com.gregtechceu.gtceu.common.pipelike.laser.LaserPipeType;
-import com.gregtechceu.gtceu.common.pipelike.laser.LevelLaserPipeNet;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -30,15 +28,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class LaserPipeBlock extends PipeBlock<LaserPipeType, LaserPipeProperties, LevelLaserPipeNet> {
+public class LaserPipeBlock extends PipeBlock<LaserPipeType, LaserPipeProperties> {
 
     public final PipeBlockRenderer renderer;
     public final PipeModel model;
-    private final LaserPipeProperties properties;
 
     public LaserPipeBlock(Properties properties, LaserPipeType type) {
-        super(properties, type);
-        this.properties = LaserPipeProperties.INSTANCE;
+        super(properties, type, LaserPipeProperties.INSTANCE);
         this.model = new PipeModel(LaserPipeType.NORMAL.getThickness(), () -> GTCEu.id("block/pipe/pipe_laser_side"),
                 () -> GTCEu.id("block/pipe/pipe_laser_in"), null, null);
         this.renderer = new PipeBlockRenderer(this.model);
@@ -70,18 +66,8 @@ public class LaserPipeBlock extends PipeBlock<LaserPipeType, LaserPipeProperties
     }
 
     @Override
-    public LevelLaserPipeNet getWorldPipeNet(ServerLevel world) {
-        return LevelLaserPipeNet.getOrCreate(world);
-    }
-
-    @Override
     public BlockEntityType<? extends PipeBlockEntity<LaserPipeType, LaserPipeProperties>> getBlockEntityType() {
         return GTBlockEntities.LASER_PIPE.get();
-    }
-
-    @Override
-    public LaserPipeProperties createRawData() {
-        return LaserPipeProperties.INSTANCE;
     }
 
     @Override

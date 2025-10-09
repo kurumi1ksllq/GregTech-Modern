@@ -1,25 +1,20 @@
 package com.gregtechceu.gtceu.common.pipelike.cable;
 
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.WireProperties;
 import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 import com.gregtechceu.gtceu.api.pipenet.Node;
 import com.gregtechceu.gtceu.api.pipenet.PipeNet;
 
+import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 
 import java.util.*;
 
-public class EnergyNet extends PipeNet<WireProperties> {
+public class EnergyNet extends PipeNet {
 
     private final Map<BlockPos, List<EnergyRoutePath>> NET_DATA = new HashMap<>();
 
-    private long lastEnergyFluxPerSec;
-    private long energyFluxPerSec;
-    private long lastTime;
-
-    public EnergyNet(LevelPipeNet<WireProperties, ? extends EnergyNet> world) {
-        super(world);
+    public EnergyNet(LevelPipeNet world) {
+        super(world, GTPipeNetworks.ENERGY);
     }
 
     public List<EnergyRoutePath> getNetData(BlockPos pipePos) {
@@ -37,42 +32,11 @@ public class EnergyNet extends PipeNet<WireProperties> {
     }
 
     @Override
-    public void onNeighbourUpdate(BlockPos fromPos) {
-        NET_DATA.clear();
-    }
-
-    @Override
-    public void onPipeConnectionsUpdate() {
-        NET_DATA.clear();
-    }
-
-    @Override
-    protected void transferNodeData(Map<BlockPos, Node<WireProperties>> transferredNodes,
-                                    PipeNet<WireProperties> parentNet) {
+    protected void transferNodeData(Map<BlockPos, Node> transferredNodes,
+                                    PipeNet parentNet) {
         super.transferNodeData(transferredNodes, parentNet);
         NET_DATA.clear();
         ((EnergyNet) parentNet).NET_DATA.clear();
     }
 
-    //////////////////////////////////////
-    // ******* Pipe Status *******//
-    //////////////////////////////////////
-
-    public long getEnergyFluxPerSec() {
-        Level world = getLevel();
-        if (world != null && !world.isClientSide && (world.getGameTime() - lastTime) >= 20) {
-            lastTime = world.getGameTime();
-            clearCache();
-        }
-        return lastEnergyFluxPerSec;
-    }
-
-    public void addEnergyFluxPerSec(long energy) {
-        energyFluxPerSec += energy;
-    }
-
-    public void clearCache() {
-        lastEnergyFluxPerSec = energyFluxPerSec;
-        energyFluxPerSec = 0;
-    }
 }

@@ -14,6 +14,7 @@ import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.common.block.CableBlock;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
+import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.cable.*;
 import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
 import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
@@ -68,7 +69,7 @@ public class CableBlockEntity extends PipeBlockEntity<Insulation, WireProperties
     private TickableSubscription heatSubs;
 
     public CableBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
-        super(type, pos, blockState);
+        super(type, GTPipeNetworks.ENERGY, pos, blockState);
     }
 
     public static CableBlockEntity create(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
@@ -110,7 +111,7 @@ public class CableBlockEntity extends PipeBlockEntity<Insulation, WireProperties
                 currentEnergyNet.containsNode(getBlockPos()))
             return currentEnergyNet; // return current net if it is still valid
 
-        LevelPipeNet<WireProperties, EnergyNet> worldENet = getPipeBlock().getWorldPipeNet(serverLevel);
+        LevelPipeNet worldENet = LevelPipeNet.getLevelPipeNet(serverLevel, GTPipeNetworks.ENERGY);
         currentEnergyNet = worldENet.getNetFromPos(getBlockPos());
         if (currentEnergyNet != null) {
             this.currentEnergyNet = new WeakReference<>(currentEnergyNet);

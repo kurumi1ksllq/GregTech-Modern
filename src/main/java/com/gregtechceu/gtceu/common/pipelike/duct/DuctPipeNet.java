@@ -4,17 +4,19 @@ import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 import com.gregtechceu.gtceu.api.pipenet.Node;
 import com.gregtechceu.gtceu.api.pipenet.PipeNet;
 
+import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.*;
 
-public class DuctPipeNet extends PipeNet<DuctPipeProperties> {
+public class DuctPipeNet extends PipeNet {
 
     private final Map<BlockPos, List<DuctRoutePath>> NET_DATA = new HashMap<>();
 
-    public DuctPipeNet(LevelPipeNet<DuctPipeProperties, ? extends PipeNet<DuctPipeProperties>> world) {
-        super(world);
+    public DuctPipeNet(LevelPipeNet levelPipeNet) {
+        super(levelPipeNet, GTPipeNetworks.DUCT);
     }
 
     public List<DuctRoutePath> getNetData(BlockPos pipePos, Direction facing) {
@@ -30,21 +32,4 @@ public class DuctPipeNet extends PipeNet<DuctPipeProperties> {
         return data;
     }
 
-    @Override
-    public void onNeighbourUpdate(BlockPos fromPos) {
-        NET_DATA.clear();
-    }
-
-    @Override
-    public void onPipeConnectionsUpdate() {
-        NET_DATA.clear();
-    }
-
-    @Override
-    protected void transferNodeData(Map<BlockPos, Node<DuctPipeProperties>> transferredNodes,
-                                    PipeNet<DuctPipeProperties> parentNet) {
-        super.transferNodeData(transferredNodes, parentNet);
-        NET_DATA.clear();
-        ((DuctPipeNet) parentNet).NET_DATA.clear();
-    }
 }

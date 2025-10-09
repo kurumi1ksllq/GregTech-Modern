@@ -13,27 +13,34 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public abstract class LevelPipeNet<NodeDataType, T extends PipeNet<NodeDataType>> extends SavedData {
+public class LevelPipeNet extends SavedData {
+
+    public static LevelPipeNet getLevelPipeNet(ServerLevel sLvl, PipeNetworkType type) {
+            return sLvl.getDataStorage().computeIfAbsent(tag -> new LevelPipeNet(sLvl, type),
+                    () -> new LevelPipeNet(sLvl, type), "gt_pipenet_ " + type.networkID.getPath());
+    }
 
     private final ServerLevel serverLevel;
-    protected List<T> pipeNets = new ArrayList<>();
-    protected final Map<ChunkPos, List<T>> pipeNetsByChunk = new HashMap<>();
+    private final PipeNetworkType networkType;
+    protected List<PipeNet> pipeNets = new ArrayList<>();
+    protected final Map<ChunkPos, List<PipeNet>> pipeNetsByChunk = new HashMap<>();
 
-    public LevelPipeNet(ServerLevel serverLevel) {
+    public LevelPipeNet(ServerLevel serverLevel, PipeNetworkType networkType) {
         this.serverLevel = serverLevel;
+        this.networkType = networkType;
     }
 
     public ServerLevel getWorld() {
         return serverLevel;
     }
 
-    public void addNode(BlockPos nodePos, NodeDataType nodeData, int openConnections, boolean isActive) {
-        T myPipeNet = null;
-        Node<NodeDataType> node = new Node<>(nodeData, openConnections, isActive);
+    public void addNode(BlockPos nodePos, int openConnections, boolean isActive) {
+        PipeNet myPipeNet = null;
+        Node node = new Node(openConnections, isActive);
         for (Direction facing : GTUtil.DIRECTIONS) {
             BlockPos offsetPos = nodePos.relative(facing);
-            T pipeNet = getNetFromPos(offsetPos);
-            Node<NodeDataType> secondNode = pipeNet == null ? null : pipeNet.getAllNodes().get(offsetPos);
+            PipeNet pipeNet = getNetFromPos(offsetPos);
+            Node secondNode = pipeNet == null ? null : pipeNet.getAllNodes().get(offsetPos);
             if (pipeNet != null && pipeNet.canNodesConnect(secondNode, facing.getOpposite(), node, null)) {
                 if (myPipeNet == null) {
                     myPipeNet = pipeNet;
@@ -45,59 +52,58 @@ public abstract class LevelPipeNet<NodeDataType, T extends PipeNet<NodeDataType>
 
         }
         if (myPipeNet == null) {
-            myPipeNet = createNetInstance();
+            myPipeNet = networkType.netConstructor.apply(this);
             myPipeNet.addNode(nodePos, node);
             addPipeNet(myPipeNet);
         }
     }
 
-    protected void addPipeNetToChunk(ChunkPos chunkPos, T pipeNet) {
+    protected void addPipeNetToChunk(ChunkPos chunkPos, PipeNet pipeNet) {
         this.pipeNetsByChunk.computeIfAbsent(chunkPos, any -> new ArrayList<>()).add(pipeNet);
     }
 
-    protected void removePipeNetFromChunk(ChunkPos chunkPos, T pipeNet) {
-        List<T> list = this.pipeNetsByChunk.get(chunkPos);
+    protected void removePipeNetFromChunk(ChunkPos chunkPos, PipeNet pipeNet) {
+        List<PipeNet> list = this.pipeNetsByChunk.get(chunkPos);
         if (list != null) list.remove(pipeNet);
         if (list != null && list.isEmpty()) this.pipeNetsByChunk.remove(chunkPos);
     }
 
     public void removeNode(BlockPos nodePos) {
-        PipeNet<?> pipeNet = getNetFromPos(nodePos);
+        PipeNet pipeNet = getNetFromPos(nodePos);
         if (pipeNet != null) {
             pipeNet.removeNode(nodePos);
         }
     }
 
     public void updateBlockedConnections(BlockPos nodePos, Direction side, boolean isBlocked) {
-        PipeNet<?> pipeNet = getNetFromPos(nodePos);
+        PipeNet pipeNet = getNetFromPos(nodePos);
         if (pipeNet != null) {
             pipeNet.updateBlockedConnections(nodePos, side, isBlocked);
             pipeNet.onPipeConnectionsUpdate();
         }
     }
 
-    public T getNetFromPos(BlockPos blockPos) {
-        List<T> pipeNetsInChunk = pipeNetsByChunk.getOrDefault(new ChunkPos(blockPos), Collections.emptyList());
-        for (T pipeNet : pipeNetsInChunk) {
+    public <T extends PipeNet> T getNetFromPos(BlockPos blockPos) {
+        List<PipeNet> pipeNetsInChunk = pipeNetsByChunk.getOrDefault(new ChunkPos(blockPos), Collections.emptyList());
+        for (PipeNet pipeNet : pipeNetsInChunk) {
             if (pipeNet.containsNode(blockPos))
-                return pipeNet;
+                return (T) pipeNet;
         }
         return null;
     }
 
-    protected void addPipeNet(T pipeNet) {
+    protected void addPipeNet(PipeNet pipeNet) {
+        if (pipeNet.getNetworkType() != networkType) throw new IllegalArgumentException("Attempted to add pipenet of type %s to the level network for %s".formatted(pipeNet.getNetworkType(), networkType));
         this.pipeNets.add(pipeNet);
         pipeNet.getContainedChunks().forEach(chunkPos -> addPipeNetToChunk(chunkPos, pipeNet));
         pipeNet.isValid = true;
     }
 
-    protected void removePipeNet(T pipeNet) {
+    protected void removePipeNet(PipeNet pipeNet) {
         this.pipeNets.remove(pipeNet);
         pipeNet.getContainedChunks().forEach(chunkPos -> removePipeNetFromChunk(chunkPos, pipeNet));
         pipeNet.isValid = false;
     }
-
-    protected abstract T createNetInstance();
 
     @Override
     public @NotNull CompoundTag save(@NotNull CompoundTag compound) {

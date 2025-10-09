@@ -10,13 +10,11 @@ import com.gregtechceu.gtceu.client.model.PipeModel;
 import com.gregtechceu.gtceu.client.renderer.block.PipeBlockRenderer;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
-import com.gregtechceu.gtceu.common.pipelike.optical.LevelOpticalPipeNet;
 import com.gregtechceu.gtceu.common.pipelike.optical.OpticalPipeProperties;
 import com.gregtechceu.gtceu.common.pipelike.optical.OpticalPipeType;
 
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -31,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class OpticalPipeBlock extends PipeBlock<OpticalPipeType, OpticalPipeProperties, LevelOpticalPipeNet> {
+public class OpticalPipeBlock extends PipeBlock<OpticalPipeType, OpticalPipeProperties> {
 
     public final PipeBlockRenderer renderer;
     @Getter
@@ -41,7 +39,7 @@ public class OpticalPipeBlock extends PipeBlock<OpticalPipeType, OpticalPipeProp
     private final OpticalPipeProperties properties;
 
     public OpticalPipeBlock(BlockBehaviour.Properties properties, @NotNull OpticalPipeType pipeType) {
-        super(properties, pipeType);
+        super(properties, pipeType, OpticalPipeProperties.INSTANCE);
         this.pipeType = pipeType;
         this.properties = OpticalPipeProperties.INSTANCE;
         this.pipeModel = new PipeModel(pipeType.getThickness(), () -> GTCEu.id("block/pipe/pipe_optical_side"),
@@ -56,18 +54,8 @@ public class OpticalPipeBlock extends PipeBlock<OpticalPipeType, OpticalPipeProp
 
 
     @Override
-    public LevelOpticalPipeNet getWorldPipeNet(ServerLevel level) {
-        return LevelOpticalPipeNet.getOrCreate(level);
-    }
-
-    @Override
     public BlockEntityType<? extends PipeBlockEntity<OpticalPipeType, OpticalPipeProperties>> getBlockEntityType() {
         return GTBlockEntities.OPTICAL_PIPE.get();
-    }
-
-    @Override
-    public OpticalPipeProperties createRawData() {
-        return properties;
     }
 
     @Override

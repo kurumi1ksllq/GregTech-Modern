@@ -81,7 +81,7 @@ public class PipeBlockItem extends BlockItem {
                 BlockEntity te = selfTile.getNeighbor(facing);
                 if (te instanceof PipeBlockEntity otherPipe) {
                     if (otherPipe.isConnected(facing.getOpposite())) {
-                        if (otherPipe.getPipeBlock().canPipesConnect(otherPipe, facing.getOpposite(), selfTile)) {
+                        if (selfTile.getPipeBlock().getPipeType() == otherPipe.getPipeBlock().getPipeType()) {
                             selfTile.setConnection(facing, true, true);
                         } else {
                             otherPipe.setConnection(facing.getOpposite(), false, true);

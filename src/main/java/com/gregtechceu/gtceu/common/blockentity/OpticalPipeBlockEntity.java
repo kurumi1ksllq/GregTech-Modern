@@ -5,7 +5,10 @@ import com.gregtechceu.gtceu.api.capability.IDataAccessHatch;
 import com.gregtechceu.gtceu.api.capability.IOpticalComputationProvider;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
+import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
+import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.optical.*;
 import com.gregtechceu.gtceu.syncsystem.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
@@ -46,7 +49,7 @@ public class OpticalPipeBlockEntity extends PipeBlockEntity<OpticalPipeType, Opt
     private boolean isActive;
 
     public OpticalPipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
-        super(type, pos, blockState);
+        super(type, GTPipeNetworks.OPTICAL, pos, blockState);
     }
 
     @Override
@@ -116,9 +119,8 @@ public class OpticalPipeBlockEntity extends PipeBlockEntity<OpticalPipeType, Opt
         OpticalPipeNet currentPipeNet = this.currentPipeNet.get();
         if (currentPipeNet != null && currentPipeNet.isValid() && currentPipeNet.containsNode(this.getBlockPos()))
             return currentPipeNet; // if current net is valid and does contain position, return it
-        LevelOpticalPipeNet worldNet = (LevelOpticalPipeNet) getPipeBlock()
-                .getWorldPipeNet((ServerLevel) this.getLevel());
-        currentPipeNet = worldNet.getNetFromPos(this.getBlockPos());
+        LevelPipeNet worldNet = LevelPipeNet.getLevelPipeNet((ServerLevel) getLevel(), GTPipeNetworks.OPTICAL);
+        currentPipeNet = worldNet.getNetFromPos(getBlockPos());
         if (currentPipeNet != null) {
             this.currentPipeNet = new WeakReference<>(currentPipeNet);
         }

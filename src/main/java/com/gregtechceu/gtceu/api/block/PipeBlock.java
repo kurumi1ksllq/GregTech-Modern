@@ -21,10 +21,10 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.client.renderer.IBlockRendererProvider;
 
+import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -67,15 +67,16 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @SuppressWarnings("deprecation")
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<NodeDataType>, NodeDataType,
-        WorldPipeNetType extends LevelPipeNet<NodeDataType, ? extends PipeNet<NodeDataType>>> extends Block
+public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<NodeDataType>, NodeDataType> extends Block
                                implements EntityBlock, IBlockRendererProvider, SimpleWaterloggedBlock {
 
     public final PipeType pipeType;
-
-    public PipeBlock(Properties properties, PipeType pipeType) {
+    @Getter
+    protected final NodeDataType baseProperties;
+    public PipeBlock(Properties properties, PipeType pipeType, NodeDataType nodeProperties) {
         super(properties);
         this.pipeType = pipeType;
+        this.baseProperties = pipeType.modifyProperties(nodeProperties);
         registerDefaultState(defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, false));
     }
 
@@ -106,18 +107,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
 
     public abstract PipeNetworkType getPipeType();
 
-    public abstract WorldPipeNetType getWorldPipeNet(ServerLevel level);
-
     public abstract BlockEntityType<? extends PipeBlockEntity<PipeType, NodeDataType>> getBlockEntityType();
-
-    /**
-     * Add data via placement.
-     */
-    public abstract NodeDataType createRawData();
-
-    public NodeDataType createProperties() {
-        return pipeType.modifyProperties(createRawData());
-    }
 
     @Nullable
     @Override
@@ -169,13 +159,9 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
             cover = node.getCoverContainer().getCoverAtSide(facing.getOpposite());
             if (cover != null && !cover.canPipePassThrough())
                 return false;
-            return canPipesConnect(selfTile, facing, (PipeBlockEntity<PipeType, NodeDataType>) other);
+            return selfTile.getPipeBlock().getPipeType() == node.getPipeBlock().getPipeType();
         }
         return canPipeConnectToBlock(selfTile, facing, other);
-    }
-
-    public boolean canPipesConnect(PipeBlockEntity<PipeType, NodeDataType> selfTile, Direction side, PipeBlockEntity<PipeType, NodeDataType> sideTile) {
-        return selfTile.getPipeBlock().getPipeType() == sideTile.getPipeBlock().getPipeType();
     }
 
     public abstract boolean canPipeConnectToBlock(PipeBlockEntity<PipeType, NodeDataType> selfTile, Direction side, @Nullable BlockEntity tile);
@@ -325,7 +311,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
                         CoverPlaceBehavior.isCoverBehaviorItem(held, coverable::hasAnyCover,
                                 coverDef -> ICoverable.canPlaceCover(coverDef, coverable)) ||
                         (held.getItem() instanceof BlockItem blockItem &&
-                                blockItem.getBlock() instanceof PipeBlock<?, ?, ?> pipeBlock &&
+                                blockItem.getBlock() instanceof PipeBlock<?, ?> pipeBlock &&
                                 pipeBlock.pipeType.type().equals(pipeType.type()))) {
                     return Shapes.block();
                 }

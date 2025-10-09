@@ -3,8 +3,10 @@ package com.gregtechceu.gtceu.common.blockentity;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.ItemPipeProperties;
+import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.common.block.ItemPipeBlock;
+import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.item.ItemNetHandler;
 import com.gregtechceu.gtceu.common.pipelike.item.ItemPipeNet;
 import com.gregtechceu.gtceu.common.pipelike.item.ItemPipeType;
@@ -47,7 +49,7 @@ public class ItemPipeBlockEntity extends PipeBlockEntity<ItemPipeType, ItemPipeP
     private long timer = 0;
 
     public ItemPipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
-        super(type, pos, blockState);
+        super(type, GTPipeNetworks.ITEM, pos, blockState);
     }
 
     public static ItemPipeBlockEntity create(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
@@ -120,7 +122,7 @@ public class ItemPipeBlockEntity extends PipeBlockEntity<ItemPipeType, ItemPipeP
             if (currentItemPipeNet != null && currentItemPipeNet.isValid() &&
                     currentItemPipeNet.containsNode(getBlockPos()))
                 return currentItemPipeNet; // return current net if it is still valid
-            currentItemPipeNet = itemPipeBlock.getWorldPipeNet(serverLevel).getNetFromPos(getBlockPos());
+            currentItemPipeNet = LevelPipeNet.getLevelPipeNet(serverLevel, GTPipeNetworks.ITEM).getNetFromPos(getBlockPos());
             if (currentItemPipeNet != null) {
                 this.currentItemPipeNet = new WeakReference<>(currentItemPipeNet);
                 hasCurrentNetChanged = true;

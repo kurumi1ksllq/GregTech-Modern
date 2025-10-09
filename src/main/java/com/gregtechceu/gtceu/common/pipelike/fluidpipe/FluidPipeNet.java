@@ -1,13 +1,13 @@
 package com.gregtechceu.gtceu.common.pipelike.fluidpipe;
 
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.FluidPipeProperties;
 import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 import com.gregtechceu.gtceu.api.pipenet.PipeNet;
+import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 
-public class FluidPipeNet extends PipeNet<FluidPipeProperties> {
+public class FluidPipeNet extends PipeNet {
 
-    public FluidPipeNet(LevelPipeNet<FluidPipeProperties, FluidPipeNet> world) {
-        super(world);
+    public FluidPipeNet(LevelPipeNet world) {
+        super(world, GTPipeNetworks.FLUID);
     }
 
     /////////////////////////////////////

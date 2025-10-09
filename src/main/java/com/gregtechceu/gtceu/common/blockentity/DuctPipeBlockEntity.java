@@ -7,6 +7,9 @@ import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardCleaner;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardEmitter;
+import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
+import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
+import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.duct.*;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -36,7 +39,7 @@ public class DuctPipeBlockEntity extends PipeBlockEntity<DuctPipeType, DuctPipeP
     protected DuctNetHandler defaultHandler;
 
     protected DuctPipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
-        super(type, pos, blockState);
+        super(type, GTPipeNetworks.DUCT, pos, blockState);
     }
 
     public static DuctPipeBlockEntity create(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
@@ -99,7 +102,7 @@ public class DuctPipeBlockEntity extends PipeBlockEntity<DuctPipeType, DuctPipeP
         if (currentPipeNet != null && currentPipeNet.isValid() && currentPipeNet.containsNode(getBlockPos())) {
             return currentPipeNet;
         }
-        LevelDuctPipeNet worldNet = (LevelDuctPipeNet) getPipeBlock().getWorldPipeNet((ServerLevel) getLevel());
+        LevelPipeNet worldNet = LevelPipeNet.getLevelPipeNet((ServerLevel)getLevel(), GTPipeNetworks.DUCT);
         currentPipeNet = worldNet.getNetFromPos(getBlockPos());
         if (currentPipeNet != null) {
             this.currentPipeNet = new WeakReference<>(currentPipeNet);

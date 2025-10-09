@@ -7,16 +7,13 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.pipenet.PipeNetworkType;
 import com.gregtechceu.gtceu.client.model.PipeModel;
-import com.gregtechceu.gtceu.common.blockentity.ItemPipeBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.item.ItemPipeType;
-import com.gregtechceu.gtceu.common.pipelike.item.LevelItemPipeNet;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -32,25 +29,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class ItemPipeBlock extends MaterialPipeBlock<ItemPipeType, ItemPipeProperties, LevelItemPipeNet> {
+public class ItemPipeBlock extends MaterialPipeBlock<ItemPipeType, ItemPipeProperties> {
 
     public ItemPipeBlock(Properties properties, ItemPipeType itemPipeType, Material material) {
-        super(properties, itemPipeType, material);
-    }
-
-    @Override
-    public ItemPipeProperties createRawData() {
-        return material.getProperty(PropertyKey.ITEM_PIPE);
+        super(properties, itemPipeType, material, material.getProperty(PropertyKey.ITEM_PIPE));
     }
 
     @Override
     protected PipeModel createPipeModel() {
         return pipeType.createPipeModel(material);
-    }
-
-    @Override
-    public LevelItemPipeNet getWorldPipeNet(ServerLevel level) {
-        return LevelItemPipeNet.getOrCreate(level);
     }
 
     @Override
@@ -62,7 +49,7 @@ public class ItemPipeBlock extends MaterialPipeBlock<ItemPipeType, ItemPipePrope
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip,
                                 TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
-        ItemPipeProperties properties = createProperties();
+        ItemPipeProperties properties = getBaseProperties();
 
         if (properties.getTransferRate() % 1 != 0) {
             tooltip.add(Component.translatable("gtceu.universal.tooltip.item_transfer_rate",

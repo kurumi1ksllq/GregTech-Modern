@@ -27,7 +27,7 @@ import java.util.*;
  * <b>Do not walk a walker more than once</b>
  */
 @SuppressWarnings("unused")
-public abstract class PipeNetWalker<T extends PipeBlockEntity<?, ?>, NodeDataType, Net extends PipeNet<NodeDataType>> {
+public abstract class PipeNetWalker<T extends PipeBlockEntity<?, ?>, NodeDataType, Net extends PipeNet> {
 
     protected PipeNetWalker<T, NodeDataType, Net> root;
     protected final Net pipeNet;

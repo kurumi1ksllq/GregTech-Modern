@@ -14,7 +14,6 @@ import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.fluidpipe.FluidPipeType;
-import com.gregtechceu.gtceu.common.pipelike.fluidpipe.LevelFluidPipeNet;
 import com.gregtechceu.gtceu.utils.EntityDamageUtil;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -23,7 +22,6 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -44,20 +42,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class FluidPipeBlock extends MaterialPipeBlock<FluidPipeType, FluidPipeProperties, LevelFluidPipeNet> {
+public class FluidPipeBlock extends MaterialPipeBlock<FluidPipeType, FluidPipeProperties> {
 
     public FluidPipeBlock(Properties properties, FluidPipeType fluidPipeType, Material material) {
-        super(properties, fluidPipeType, material);
-    }
-
-    @Override
-    public FluidPipeProperties createRawData() {
-        return material.getProperty(PropertyKey.FLUID_PIPE);
-    }
-
-    @Override
-    public LevelFluidPipeNet getWorldPipeNet(ServerLevel level) {
-        return LevelFluidPipeNet.getOrCreate(level);
+        super(properties, fluidPipeType, material, material.getProperty(PropertyKey.FLUID_PIPE));
     }
 
     @Override
@@ -85,7 +73,7 @@ public class FluidPipeBlock extends MaterialPipeBlock<FluidPipeType, FluidPipePr
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip,
                                 TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
-        FluidPipeProperties properties = createProperties();
+        FluidPipeProperties properties = getBaseProperties();
 
         tooltip.add(Component.translatable("gtceu.universal.tooltip.fluid_transfer_rate", properties.getThroughput()));
         tooltip.add(Component.translatable("gtceu.fluid_pipe.max_temperature",

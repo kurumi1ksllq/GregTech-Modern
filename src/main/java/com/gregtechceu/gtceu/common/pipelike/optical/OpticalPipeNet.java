@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 import com.gregtechceu.gtceu.api.pipenet.Node;
 import com.gregtechceu.gtceu.api.pipenet.PipeNet;
 
+import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
@@ -12,12 +13,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class OpticalPipeNet extends PipeNet<OpticalPipeProperties> {
+public class OpticalPipeNet extends PipeNet {
 
     private final Map<BlockPos, OpticalRoutePath> NET_DATA = new Object2ObjectOpenHashMap<>();
 
-    public OpticalPipeNet(LevelPipeNet<OpticalPipeProperties, ? extends PipeNet<OpticalPipeProperties>> world) {
-        super(world);
+    public OpticalPipeNet(LevelPipeNet world) {
+        super(world, GTPipeNetworks.OPTICAL);
     }
 
     @Nullable
@@ -35,21 +36,4 @@ public class OpticalPipeNet extends PipeNet<OpticalPipeProperties> {
         return data;
     }
 
-    @Override
-    public void onNeighbourUpdate(BlockPos fromPos) {
-        NET_DATA.clear();
-    }
-
-    @Override
-    public void onPipeConnectionsUpdate() {
-        NET_DATA.clear();
-    }
-
-    @Override
-    protected void transferNodeData(Map<BlockPos, Node<OpticalPipeProperties>> transferredNodes,
-                                    PipeNet<OpticalPipeProperties> parentNet) {
-        super.transferNodeData(transferredNodes, parentNet);
-        NET_DATA.clear();
-        ((OpticalPipeNet) parentNet).NET_DATA.clear();
-    }
 }

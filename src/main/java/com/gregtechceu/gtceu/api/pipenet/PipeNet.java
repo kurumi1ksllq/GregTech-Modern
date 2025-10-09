@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.api.pipenet;
 
 import com.gregtechceu.gtceu.utils.GTUtil;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -20,22 +21,28 @@ import lombok.Getter;
 import java.util.*;
 import java.util.Map.Entry;
 
-public abstract class PipeNet<NodeDataType> {
+public abstract class PipeNet {
 
     @Getter
-    protected final LevelPipeNet<NodeDataType, PipeNet<NodeDataType>> worldData;
-    private final Map<BlockPos, Node<NodeDataType>> nodeByBlockPos = new HashMap<>();
-    private final Map<BlockPos, Node<NodeDataType>> unmodifiableNodeByBlockPos = Collections
+    protected final LevelPipeNet worldData;
+    private final Map<BlockPos, Node> nodeByBlockPos = new HashMap<>();
+    private final Map<BlockPos, Node> unmodifiableNodeByBlockPos = Collections
             .unmodifiableMap(nodeByBlockPos);
     private final Object2IntOpenHashMap<ChunkPos> ownedChunks = new Object2IntOpenHashMap<>();
+
+    private final Map<BlockPos, List<IRoutePath<?>>> routePaths = new Object2ObjectOpenHashMap<>();
+
+    @Getter
+    private final PipeNetworkType networkType;
+
     @Getter
     private long lastUpdate;
     @Getter
     boolean isValid = false;
 
-    public PipeNet(LevelPipeNet<NodeDataType, ? extends PipeNet<NodeDataType>> Level) {
-        // noinspection unchecked
-        this.worldData = (LevelPipeNet<NodeDataType, PipeNet<NodeDataType>>) Level;
+    public PipeNet(LevelPipeNet levelPipeNet, PipeNetworkType netType) {
+        this.worldData = levelPipeNet;
+        this.networkType = netType;
     }
 
     public Set<ChunkPos> getContainedChunks() {
@@ -56,15 +63,19 @@ public abstract class PipeNet<NodeDataType> {
     /**
      * Is called when any connection of any pipe in the net changes
      */
-    public void onPipeConnectionsUpdate() {}
+    public void onPipeConnectionsUpdate() {
+        routePaths.clear();
+    }
 
-    public void onNeighbourUpdate(BlockPos fromPos) {}
+    public void onNeighbourUpdate(BlockPos fromPos) {
+        routePaths.clear();
+    }
 
-    public Map<BlockPos, Node<NodeDataType>> getAllNodes() {
+    public Map<BlockPos, Node> getAllNodes() {
         return unmodifiableNodeByBlockPos;
     }
 
-    public Node<NodeDataType> getNodeAt(BlockPos blockPos) {
+    public Node getNodeAt(BlockPos blockPos) {
         return nodeByBlockPos.get(blockPos);
     }
 
@@ -72,20 +83,20 @@ public abstract class PipeNet<NodeDataType> {
         return nodeByBlockPos.containsKey(blockPos);
     }
 
-    protected void addNode(BlockPos nodePos, Node<NodeDataType> node) {
+    protected void addNode(BlockPos nodePos, Node node) {
         this.nodeByBlockPos.put(nodePos, node);
         checkAddedInChunk(nodePos);
     }
 
-    protected Node<NodeDataType> removeNodeWithoutRebuilding(BlockPos nodePos) {
-        Node<NodeDataType> removedNode = this.nodeByBlockPos.remove(nodePos);
+    protected Node removeNodeWithoutRebuilding(BlockPos nodePos) {
+        Node removedNode = this.nodeByBlockPos.remove(nodePos);
         ensureRemovedFromChunk(nodePos);
         return removedNode;
     }
 
     public void removeNode(BlockPos nodePos) {
         if (nodeByBlockPos.containsKey(nodePos)) {
-            Node<NodeDataType> selfNode = removeNodeWithoutRebuilding(nodePos);
+            Node selfNode = removeNodeWithoutRebuilding(nodePos);
             rebuildNetworkOnNodeRemoval(nodePos, selfNode);
         }
     }
@@ -113,14 +124,14 @@ public abstract class PipeNet<NodeDataType> {
         if (!containsNode(nodePos)) {
             return;
         }
-        Node<NodeDataType> selfNode = getNodeAt(nodePos);
+        Node selfNode = getNodeAt(nodePos);
         if (selfNode.isBlocked(facing) == isBlocked) {
             return;
         }
 
         setBlocked(selfNode, facing, isBlocked);
         BlockPos offsetPos = nodePos.relative(facing);
-        PipeNet<NodeDataType> pipeNetAtOffset = worldData.getNetFromPos(offsetPos);
+        PipeNet pipeNetAtOffset = worldData.getNetFromPos(offsetPos);
         if (pipeNetAtOffset == null) {
             return;
         }
@@ -135,12 +146,12 @@ public abstract class PipeNet<NodeDataType> {
                 if (canNodesConnect(selfNode, facing, getNodeAt(offsetPos), this)) {
                     // now block again to call findAllConnectedBlocks
                     setBlocked(selfNode, facing, true);
-                    HashMap<BlockPos, Node<NodeDataType>> thisENet = findAllConnectedBlocks(nodePos);
+                    HashMap<BlockPos, Node> thisENet = findAllConnectedBlocks(nodePos);
                     if (!getAllNodes().equals(thisENet)) {
                         // node visibility has changed, split network into 2
                         // node that code below is similar to removeNodeInternal, but only for 2 networks, and without
                         // node removal
-                        PipeNet<NodeDataType> newPipeNet = worldData.createNetInstance();
+                        PipeNet newPipeNet = networkType.netConstructor.apply(worldData);
                         thisENet.keySet().forEach(this::removeNodeWithoutRebuilding);
                         newPipeNet.transferNodeData(thisENet, this);
                         worldData.addPipeNet(newPipeNet);
@@ -151,7 +162,7 @@ public abstract class PipeNet<NodeDataType> {
             // if this is an unblock, and we can connect with their node, merge them
 
         } else if (!isBlocked) {
-            Node<NodeDataType> neighbourNode = pipeNetAtOffset.getNodeAt(offsetPos);
+            Node neighbourNode = pipeNetAtOffset.getNodeAt(offsetPos);
             // check connection availability from both networks
             if (canNodesConnect(selfNode, facing, neighbourNode, pipeNetAtOffset) &&
                     pipeNetAtOffset.canNodesConnect(neighbourNode, facing.getOpposite(), selfNode, this)) {
@@ -162,7 +173,7 @@ public abstract class PipeNet<NodeDataType> {
         }
     }
 
-    private void setBlocked(Node<NodeDataType> selfNode, Direction facing, boolean isBlocked) {
+    private void setBlocked(Node selfNode, Direction facing, boolean isBlocked) {
         if (!isBlocked) {
             selfNode.openConnections |= 1 << facing.ordinal();
         } else {
@@ -170,16 +181,8 @@ public abstract class PipeNet<NodeDataType> {
         }
     }
 
-    public boolean markNodeAsActive(BlockPos nodePos, boolean isActive) {
-        if (containsNode(nodePos) && getNodeAt(nodePos).isActive != isActive) {
-            getNodeAt(nodePos).isActive = isActive;
-            return true;
-        }
-        return false;
-    }
-
-    protected final void uniteNetworks(PipeNet<NodeDataType> unitedPipeNet) {
-        Map<BlockPos, Node<NodeDataType>> allNodes = new HashMap<>(unitedPipeNet.getAllNodes());
+    protected final void uniteNetworks(PipeNet unitedPipeNet) {
+        Map<BlockPos, Node> allNodes = new HashMap<>(unitedPipeNet.getAllNodes());
         worldData.removePipeNet(unitedPipeNet);
         allNodes.keySet().forEach(unitedPipeNet::removeNodeWithoutRebuilding);
         transferNodeData(allNodes, unitedPipeNet);
@@ -190,23 +193,23 @@ public abstract class PipeNet<NodeDataType> {
      * Note that this logic should equal with block connection logic
      * for proper work of network
      */
-    protected final boolean canNodesConnect(Node<NodeDataType> first, Direction firstFacing, Node<NodeDataType> second,
-                                            PipeNet<NodeDataType> secondPipeNet) {
+    protected final boolean canNodesConnect(Node first, Direction firstFacing, Node second,
+                                            PipeNet secondPipeNet) {
         return !first.isBlocked(firstFacing) && !second.isBlocked(firstFacing.getOpposite());
     }
 
     // we need to search only this network
-    protected HashMap<BlockPos, Node<NodeDataType>> findAllConnectedBlocks(BlockPos startPos) {
-        HashMap<BlockPos, Node<NodeDataType>> observedSet = new HashMap<>();
+    protected HashMap<BlockPos, Node> findAllConnectedBlocks(BlockPos startPos) {
+        HashMap<BlockPos, Node> observedSet = new HashMap<>();
         observedSet.put(startPos, getNodeAt(startPos));
-        Node<NodeDataType> firstNode = getNodeAt(startPos);
+        Node firstNode = getNodeAt(startPos);
         BlockPos.MutableBlockPos currentPos = startPos.mutable();
         Deque<Direction> moveStack = new ArrayDeque<>();
         main:
         while (true) {
             for (Direction facing : GTUtil.DIRECTIONS) {
                 currentPos.move(facing);
-                Node<NodeDataType> secondNode = getNodeAt(currentPos);
+                Node secondNode = getNodeAt(currentPos);
                 // if there is node, and it can connect with previous node, add it to list, and set previous node as
                 // current
                 if (secondNode != null && canNodesConnect(firstNode, facing, secondNode, this) &&
@@ -226,7 +229,7 @@ public abstract class PipeNet<NodeDataType> {
     }
 
     // called when node is removed to rebuild network
-    protected void rebuildNetworkOnNodeRemoval(BlockPos nodePos, Node<NodeDataType> selfNode) {
+    protected void rebuildNetworkOnNodeRemoval(BlockPos nodePos, Node selfNode) {
         int amountOfConnectedSides = 0;
         for (Direction facing : GTUtil.DIRECTIONS) {
             BlockPos offsetPos = nodePos.relative(facing);
@@ -239,19 +242,19 @@ public abstract class PipeNet<NodeDataType> {
         if (amountOfConnectedSides >= 2) {
             for (Direction facing : GTUtil.DIRECTIONS) {
                 BlockPos offsetPos = nodePos.relative(facing);
-                Node<NodeDataType> secondNode = getNodeAt(offsetPos);
+                Node secondNode = getNodeAt(offsetPos);
                 if (secondNode == null || !canNodesConnect(selfNode, facing, secondNode, this)) {
                     // if there isn't any neighbour node, or it wasn't connected with us, just skip it
                     continue;
                 }
-                HashMap<BlockPos, Node<NodeDataType>> thisENet = findAllConnectedBlocks(offsetPos);
+                HashMap<BlockPos, Node> thisENet = findAllConnectedBlocks(offsetPos);
                 if (getAllNodes().equals(thisENet)) {
                     // if cable on some direction contains all nodes of this network
                     // the network didn't change so keep it as is
                     break;
                 } else {
                     // and use them to create new network with caching active nodes set
-                    PipeNet<NodeDataType> energyNet = worldData.createNetInstance();
+                    PipeNet energyNet = networkType.netConstructor.apply(worldData);
                     // remove blocks that aren't connected with this network
                     thisENet.keySet().forEach(this::removeNodeWithoutRebuilding);
                     energyNet.transferNodeData(thisENet, this);
@@ -272,8 +275,10 @@ public abstract class PipeNet<NodeDataType> {
      * from parent network and add it to it's own tank, keeping network contents when old network is split
      * Note that it should be called when parent net doesn't have transferredNodes in allNodes already
      */
-    protected void transferNodeData(Map<BlockPos, Node<NodeDataType>> transferredNodes,
-                                    PipeNet<NodeDataType> parentNet) {
+    protected void transferNodeData(Map<BlockPos, Node> transferredNodes,
+                                    PipeNet parentNet) {
         transferredNodes.forEach(this::addNode);
+        routePaths.clear();
+        parentNet.routePaths.clear();
     }
 }

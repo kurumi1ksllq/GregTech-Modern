@@ -32,11 +32,4 @@ public class ItemPipeNet extends PipeNet {
         return data;
     }
 
-    @Override
-    protected void transferNodeData(Map<BlockPos, Node> transferredNodes,
-                                    PipeNet parentNet) {
-        super.transferNodeData(transferredNodes, parentNet);
-        NET_DATA.clear();
-        ((ItemPipeNet) parentNet).NET_DATA.clear();
-    }
 }

@@ -66,6 +66,9 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
 
     private final long offset = GTValues.RNG.nextInt(20);
 
+    public static final int ALL_OPENED = 0b111111;
+    public static final int ALL_CLOSED = 0b000000;
+
     @Getter
     @SyncToClient
     @SaveField(nbtKey = "cover")

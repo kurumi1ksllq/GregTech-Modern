@@ -21,7 +21,7 @@ import lombok.Getter;
 import java.util.*;
 import java.util.Map.Entry;
 
-public abstract class PipeNet {
+public class PipeNet {
 
     @Getter
     protected final LevelPipeNet worldData;

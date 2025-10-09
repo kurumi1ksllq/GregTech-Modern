@@ -36,11 +36,6 @@ public enum DuctPipeType implements IPipeType<DuctPipeProperties>, StringReprese
     }
 
     @Override
-    public DuctPipeProperties modifyProperties(DuctPipeProperties baseProperties) {
-        return baseProperties;
-    }
-
-    @Override
     public boolean isPaintable() {
         return true;
     }

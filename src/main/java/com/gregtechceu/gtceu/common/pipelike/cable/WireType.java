@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
 
-public enum Insulation implements IMaterialPipeType<WireProperties> {
+public enum WireType implements IMaterialPipeType<WireProperties> {
 
     WIRE_SINGLE("single_wire", 0.1875f, 1, 2, wireGtSingle, -1, false),
     WIRE_DOUBLE("double_wire", 0.3125f, 2, 2, wireGtDouble, -1, false),
@@ -40,10 +40,11 @@ public enum Insulation implements IMaterialPipeType<WireProperties> {
     @Getter
     public final TagPrefix tagPrefix;
     public final int insulationLevel;
+    @Getter
     public final boolean isCable;
 
-    Insulation(String name, float thickness, int amperage, int lossMultiplier, TagPrefix TagPrefix, int insulated,
-               boolean isCable) {
+    WireType(String name, float thickness, int amperage, int lossMultiplier, TagPrefix TagPrefix, int insulated,
+             boolean isCable) {
         this.name = name;
         this.thickness = thickness;
         this.amperage = amperage;
@@ -67,10 +68,6 @@ public enum Insulation implements IMaterialPipeType<WireProperties> {
 
         return new WireProperties(baseProperties.getVoltage(), baseProperties.getAmperage() * amperage, lossPerBlock,
                 baseProperties.isSuperconductor());
-    }
-
-    public boolean isCable() {
-        return ordinal() > 4;
     }
 
     @Override

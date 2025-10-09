@@ -31,12 +31,4 @@ public class EnergyNet extends PipeNet {
         return data;
     }
 
-    @Override
-    protected void transferNodeData(Map<BlockPos, Node> transferredNodes,
-                                    PipeNet parentNet) {
-        super.transferNodeData(transferredNodes, parentNet);
-        NET_DATA.clear();
-        ((EnergyNet) parentNet).NET_DATA.clear();
-    }
-
 }

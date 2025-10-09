@@ -17,7 +17,7 @@ import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.data.GTDamageTypes;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
-import com.gregtechceu.gtceu.common.pipelike.cable.Insulation;
+import com.gregtechceu.gtceu.common.pipelike.cable.WireType;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -45,10 +45,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class CableBlock extends MaterialPipeBlock<Insulation, WireProperties> {
+public class CableBlock extends MaterialPipeBlock<WireType, WireProperties> {
 
-    public CableBlock(Properties properties, Insulation insulation, Material material) {
-        super(properties, insulation, material, material.getProperty(PropertyKey.WIRE));
+    public CableBlock(Properties properties, WireType wireType, Material material) {
+        super(properties, wireType, material, material.getProperty(PropertyKey.WIRE));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class CableBlock extends MaterialPipeBlock<Insulation, WireProperties> {
     }
 
     @Override
-    public BlockEntityType<? extends PipeBlockEntity<Insulation, WireProperties>> getBlockEntityType() {
+    public BlockEntityType<? extends PipeBlockEntity<WireType, WireProperties>> getBlockEntityType() {
         return GTBlockEntities.CABLE.get();
     }
 
@@ -70,7 +70,7 @@ public class CableBlock extends MaterialPipeBlock<Insulation, WireProperties> {
     }
 
     @Override
-    public boolean canPipeConnectToBlock(PipeBlockEntity<Insulation, WireProperties> selfTile, Direction side,
+    public boolean canPipeConnectToBlock(PipeBlockEntity<WireType, WireProperties> selfTile, Direction side,
                                          @Nullable BlockEntity tile) {
         return tile != null &&
                 tile.getCapability(GTCapability.CAPABILITY_ENERGY_CONTAINER, side.getOpposite()).isPresent();
@@ -113,8 +113,8 @@ public class CableBlock extends MaterialPipeBlock<Insulation, WireProperties> {
         }
         if (level.isClientSide) return;
 
-        Insulation insulation = getPipeTile(level, pos).getPipeType();
-        if (insulation.insulationLevel == -1 && entity instanceof LivingEntity entityLiving) {
+        WireType wireType = getPipeTile(level, pos).getPipeType();
+        if (wireType.insulationLevel == -1 && entity instanceof LivingEntity entityLiving) {
             CableBlockEntity cable = (CableBlockEntity) getPipeTile(level, pos);
             if (cable != null && cable.getFrameMaterial().isNull() &&
                     cable.getNodeData().getLossPerBlock() > 0) {

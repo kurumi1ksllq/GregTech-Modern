@@ -47,19 +47,4 @@ public class LaserRoutePath implements IRoutePath<ILaserContainer> {
                 targetFacing.getOpposite());
     }
 
-    public boolean canAttachTo(Direction side) {
-        return (connections & (1 << side.ordinal())) != 0 && side.getAxis() == this.targetFacing.getAxis();
-    }
-
-    public boolean setAttached(Direction side, boolean attach) {
-        var result = canAttachTo(side);
-        if (result != attach) {
-            if (attach) {
-                connections |= (1 << side.ordinal());
-            } else {
-                connections &= ~(1 << side.ordinal());
-            }
-        }
-        return result != attach;
-    }
 }

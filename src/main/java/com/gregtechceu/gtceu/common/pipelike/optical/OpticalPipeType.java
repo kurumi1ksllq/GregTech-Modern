@@ -20,11 +20,6 @@ public enum OpticalPipeType implements IPipeType<OpticalPipeProperties>, StringR
     }
 
     @Override
-    public OpticalPipeProperties modifyProperties(OpticalPipeProperties baseProperties) {
-        return baseProperties;
-    }
-
-    @Override
     public boolean isPaintable() {
         return true;
     }

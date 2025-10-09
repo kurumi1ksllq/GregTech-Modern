@@ -12,7 +12,9 @@ public interface IPipeType<NodeDataType> {
     /**
      * modify the node data by the pipe type.
      */
-    NodeDataType modifyProperties(NodeDataType baseProperties);
+    default NodeDataType modifyProperties(NodeDataType baseProperties) {
+        return baseProperties;
+    }
 
     /**
      * can the pipe be painted as other color.

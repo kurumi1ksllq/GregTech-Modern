@@ -13,7 +13,7 @@ import com.gregtechceu.gtceu.api.item.MaterialPipeBlockItem;
 import com.gregtechceu.gtceu.api.item.SurfaceRockBlockItem;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.gregtechceu.gtceu.common.block.*;
-import com.gregtechceu.gtceu.common.pipelike.cable.Insulation;
+import com.gregtechceu.gtceu.common.pipelike.cable.WireType;
 import com.gregtechceu.gtceu.common.pipelike.fluidpipe.FluidPipeType;
 import com.gregtechceu.gtceu.common.pipelike.item.ItemPipeType;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
@@ -183,12 +183,12 @@ public class GTMaterialBlocks {
     // Material Cable & Wire Blocks
     public static void generateCableBlocks() {
         GTCEu.LOGGER.debug("Generating GTCEu Cable/Wire Blocks...");
-        for (Insulation insulation : Insulation.values()) {
+        for (WireType wireType : WireType.values()) {
             for (MaterialRegistry registry : GTCEuAPI.materialManager.getRegistries()) {
                 GTRegistrate registrate = registry.getRegistrate();
                 for (Material material : registry.getAllMaterials()) {
-                    if (allowCableBlock(material, insulation)) {
-                        registerCableBlock(material, insulation, registrate);
+                    if (allowCableBlock(material, wireType)) {
+                        registerCableBlock(material, wireType, registrate);
                     }
                 }
             }
@@ -197,18 +197,18 @@ public class GTMaterialBlocks {
         GTCEu.LOGGER.debug("Generating GTCEu Cable/Wire Blocks... Complete!");
     }
 
-    private static boolean allowCableBlock(Material material, Insulation insulation) {
-        return material.hasProperty(PropertyKey.WIRE) && !insulation.tagPrefix.isIgnored(material) &&
-                !(insulation.isCable && material.getProperty(PropertyKey.WIRE).isSuperconductor());
+    private static boolean allowCableBlock(Material material, WireType wireType) {
+        return material.hasProperty(PropertyKey.WIRE) && !wireType.tagPrefix.isIgnored(material) &&
+                !(wireType.isCable && material.getProperty(PropertyKey.WIRE).isSuperconductor());
     }
 
-    private static void registerCableBlock(Material material, Insulation insulation, GTRegistrate registrate) {
+    private static void registerCableBlock(Material material, WireType wireType, GTRegistrate registrate) {
         var entry = registrate
-                .block("%s_%s".formatted(material.getName(), insulation.name),
-                        p -> new CableBlock(p, insulation, material))
+                .block("%s_%s".formatted(material.getName(), wireType.name),
+                        p -> new CableBlock(p, wireType, material))
                 .initialProperties(() -> Blocks.IRON_BLOCK)
                 .properties(p -> p.dynamicShape().noOcclusion().noLootTable().forceSolidOn())
-                .transform(GTBlocks.unificationBlock(insulation.tagPrefix, material))
+                .transform(GTBlocks.unificationBlock(wireType.tagPrefix, material))
                 .blockstate(NonNullBiConsumer.noop())
                 .setData(ProviderType.LANG, NonNullBiConsumer.noop())
                 .setData(ProviderType.LOOT, NonNullBiConsumer.noop())
@@ -220,7 +220,7 @@ public class GTMaterialBlocks {
                 .color(() -> MaterialPipeBlockItem::tintColor)
                 .build()
                 .register();
-        CABLE_BLOCKS_BUILDER.put(insulation.tagPrefix, material, entry);
+        CABLE_BLOCKS_BUILDER.put(wireType.tagPrefix, material, entry);
     }
 
     // Material Fluid Pipe Blocks

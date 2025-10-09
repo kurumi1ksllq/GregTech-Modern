@@ -20,11 +20,6 @@ public enum LaserPipeType implements IPipeType<LaserPipeProperties>, StringRepre
     }
 
     @Override
-    public LaserPipeProperties modifyProperties(LaserPipeProperties baseProperties) {
-        return baseProperties;
-    }
-
-    @Override
     public boolean isPaintable() {
         return true;
     }

@@ -837,8 +837,11 @@ public class ConfigHolder {
         @Configurable.Range(min = 1)
         public int animationTime = 8;
         @Configurable
+        @Configurable.Comment({"If true, vanilla tooltips will be replaced with MUI's RichTooltips", "default: false"})
+        public boolean replaceVanillaTooltips = false;
+        @Configurable
         @Configurable.Comment("Default tooltip position around the widget or its panel.")
-        public RichTooltip.Pos tooltipPos = RichTooltip.Pos.VERTICAL;
+        public RichTooltip.Pos tooltipPos = RichTooltip.Pos.HORIZONTAL;
 
         @Configurable
         @Configurable.Comment({ "The default color to overlay onto Machine (and other) UIs.",

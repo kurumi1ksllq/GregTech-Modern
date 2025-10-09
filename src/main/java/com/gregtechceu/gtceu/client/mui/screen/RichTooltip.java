@@ -42,8 +42,8 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
     private static final Area HOLDER = new Area();
 
-    private final Consumer<Area> parent;
     private final RichText text = new RichText();
+    private Consumer<Area> parent;
     private Pos pos = null;
     private Consumer<RichTooltip> tooltipBuilder;
     @Getter
@@ -60,8 +60,25 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
 
     private boolean dirty;
 
-    public RichTooltip(IWidget parent) {
-        this(area -> {
+    public RichTooltip() {
+        parent(Area.ZERO);
+    }
+
+    public RichTooltip parent(Consumer<Area> parent) {
+        this.parent = parent;
+        return this;
+    }
+
+    public RichTooltip parent(Supplier<Area> parent) {
+        return parent(area -> area.set(parent.get()));
+    }
+
+    public RichTooltip parent(Area parent) {
+        return parent(area -> area.set(parent));
+    }
+
+    public RichTooltip parent(IWidget parent) {
+        return parent(area -> {
             area.setSize(parent.getArea());
             area.setPos(0, 0);
         });
@@ -111,9 +128,11 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         int mouseX = context.getAbsMouseX(), mouseY = context.getAbsMouseY();
         TextRenderer renderer = TextRenderer.SHARED;
         // this only turns the text and not any drawables into strings
-        List<Either<FormattedText, TooltipComponent>> textLines = this.text.getStringRepresentation().stream()
+        RichText copy = this.text.copy();
+
+        /*List<Either<FormattedText, TooltipComponent>> textLines = this.text.getStringRepresentation().stream()
                 .<Either<FormattedText, TooltipComponent>>map(Either::left)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
 
         var gatherEvent = new RenderTooltipEvent.GatherComponents(stack, screen.width, screen.height, textLines,
                 this.maxWidth);
@@ -158,8 +177,8 @@ public class RichTooltip implements IRichTextBuilder<RichTooltip> {
         context.getGraphics().pose().translate(0, 0, 400);
         this.text.compileAndDraw(renderer, context, false);
 
-        // MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostText(stack, textLines, area.x, area.y,
-        // TextRenderer.getFont(), area.width, area.height));
+        MinecraftForge.EVENT_BUS.post(new RichTooltipEvent.PostText(stack, textLines, area.x, area.y,
+            TextRenderer.getFont(), area.width, area.height));
     }
 
     public Rectangle determineTooltipArea(GuiContext context, TextRenderer renderer, int screenWidth, int screenHeight,

@@ -5,10 +5,15 @@ import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.ICapabilityModule;
+import com.gregtechceu.gtceu.api.item.module.IHUDProviderItemModule;
 import com.gregtechceu.gtceu.api.item.module.ItemModule;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -19,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class BatteryItemModule extends ItemModule implements ICapabilityModule {
+public class BatteryItemModule extends ItemModule implements ICapabilityModule, IHUDProviderItemModule {
 
     private static final double PERCENTAGE = 80.0d;
 
@@ -59,5 +64,50 @@ public class BatteryItemModule extends ItemModule implements ICapabilityModule {
         if (cap == GTCapability.CAPABILITY_ELECTRIC_ITEM && module.getModuleItem() != null) {
             return module.getModuleItem().getCapability(cap);
         } else return LazyOptional.empty();
+    }
+
+    @Override
+    public void drawHUD(AppliedItemModule module, GuiGraphics graphics) {
+        IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getModuleItem());
+        if (electricItem == null) return;
+        EquipmentSlot slot = LivingEntity.getEquipmentSlotForItem(module.getAppliedTo());
+        Component displayName = module.getModuleItem().getDisplayName();
+        int x = 10, y;
+        switch (slot) {
+            case HEAD -> {
+                y = 20;
+                graphics.drawString(
+                        Minecraft.getInstance().font,
+                        Component.translatable("metaarmor.tooltip.modifier.battery.hud.head", displayName),
+                        x, y, 0xFFFFFF);
+            }
+            case CHEST -> {
+                y = 40;
+                graphics.drawString(
+                        Minecraft.getInstance().font,
+                        Component.translatable("metaarmor.tooltip.modifier.battery.hud.chestplate", displayName),
+                        x, y, 0xFFFFFF);
+            }
+            case LEGS -> {
+                y = 60;
+                graphics.drawString(
+                        Minecraft.getInstance().font,
+                        Component.translatable("metaarmor.tooltip.modifier.battery.hud.leggings", displayName),
+                        x, y, 0xFFFFFF);
+            }
+            case FEET -> {
+                y = 80;
+                graphics.drawString(
+                        Minecraft.getInstance().font,
+                        Component.translatable("metaarmor.tooltip.modifier.battery.hud.boots", displayName),
+                        x, y, 0xFFFFFF);
+            }
+            default -> y = 100;
+        }
+        graphics.drawString(
+                Minecraft.getInstance().font,
+                Component.translatable("metaarmor.tooltip.modifier.battery.hud.info", electricItem.getCharge(),
+                        electricItem.getMaxCharge()),
+                x, y + 10, 0xFFFFFF);
     }
 }

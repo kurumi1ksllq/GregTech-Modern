@@ -23,7 +23,7 @@ public interface IHUDProviderItemModule {
         IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
         if (modularItem == null) return;
         for (AppliedItemModule module : modularItem.getAppliedModules()) {
-            if (module instanceof IHUDProviderItemModule hudProvider) {
+            if (module.getModule() instanceof IHUDProviderItemModule hudProvider) {
                 if (hudProvider.shouldDrawHUD(module)) hudProvider.drawHUD(module, graphics);
             }
         }

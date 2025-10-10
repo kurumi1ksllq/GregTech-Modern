@@ -349,6 +349,11 @@ public class LangHandler {
         provider.add("metaarmor.tooltip.modifier.sensor", "Machine Explosion Reporting (%s)");
         provider.add("metaarmor.tooltip.modifier.wireless_charging", "Wireless Charging (%s)");
         provider.add("metaarmor.tooltip.modifier.creative_flight", "Creative Flight");
+        provider.add("metaarmor.tooltip.modifier.battery.hud.info", "Storing %s/%s EU");
+        provider.add("metaarmor.tooltip.modifier.battery.hud.helmet", "Helmet battery: %s");
+        provider.add("metaarmor.tooltip.modifier.battery.hud.chestplate", "Chestplate battery: %s");
+        provider.add("metaarmor.tooltip.modifier.battery.hud.leggings", "Leggings battery: %s");
+        provider.add("metaarmor.tooltip.modifier.battery.hud.boots", "Boots battery: %s");
         provider.add("gtceu.machine.exploded", "%s exploded at (%d, %d, %d)");
         provider.add("metaarmor.hud.status.enabled", "§aON");
         provider.add("metaarmor.hud.status.disabled", "§cOFF");

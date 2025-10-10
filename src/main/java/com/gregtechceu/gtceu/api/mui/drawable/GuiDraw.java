@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.mui.drawable;
 import com.gregtechceu.gtceu.api.mui.drawable.text.TextRenderer;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.client.mui.screen.RichTooltip;
+import com.gregtechceu.gtceu.client.mui.screen.RichTooltipEvent;
 import com.gregtechceu.gtceu.client.renderer.GTRenderTypes;
 
 import net.minecraft.client.Minecraft;
@@ -621,7 +622,7 @@ public class GuiDraw {
         RenderTooltipEvent.Color colorEvent;
         if(tooltip != null) {
             colorEvent = new RichTooltipEvent.Color(stack, graphics, x, y,
-                    TextRenderer.getFont(), backgroundTop, borderColorStart, borderColorEnd, tooltip);
+                    TextRenderer.getFont(), backgroundTop, borderColorStart, borderColorEnd, lines, tooltip);
         }  else {
             colorEvent = new RenderTooltipEvent.Color(stack, graphics, x, y,
                     TextRenderer.getFont(), backgroundTop, borderColorStart, borderColorEnd, lines);

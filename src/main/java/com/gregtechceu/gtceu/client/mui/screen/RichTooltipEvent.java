@@ -19,25 +19,25 @@ public class RichTooltipEvent {
 
     private RichTooltipEvent() {}
 
+    // TODO: this can probably be removed?
     @Cancelable
     public static class Pre extends RenderTooltipEvent.Pre {
 
-        private final IRichTextBuilder<?> tooltip;
         public Pre(@NotNull ItemStack stack, GuiGraphics graphics, int x, int y, int screenWidth, int screenHeight, @NotNull Font font, @NotNull List<ClientTooltipComponent> components, @NotNull ClientTooltipPositioner positioner) {
             super(stack, graphics, x, y, screenWidth, screenHeight, font, components, positioner);
         }
+
     }
 
-    @Cancelable
-    public static class GatherComponents extends RenderTooltipEvent.Color {
+    public static class Color extends RenderTooltipEvent.Color {
 
         private final IRichTextBuilder<?> tooltip;
 
-        public GatherComponents(ItemStack itemStack, int screenWidth, int screenHeight, List<Either<FormattedText, TooltipComponent>> tooltipElements, int maxWidth, IRichTextBuilder<?> tooltip) {
-            super(itemStack, screenWidth, screenHeight, tooltipElements, maxWidth);
+        public Color(@NotNull ItemStack stack, GuiGraphics graphics, int x, int y, @NotNull Font fr, int background, int borderStart, int borderEnd, @NotNull List<ClientTooltipComponent> components, IRichTextBuilder<?> tooltip) {
+            super(stack, graphics, x, y, fr, background, borderStart, borderEnd, components);
             this.tooltip = tooltip;
-        }
 
+        }
         public IRichTextBuilder<?> getTooltip() {
             return tooltip;
         }

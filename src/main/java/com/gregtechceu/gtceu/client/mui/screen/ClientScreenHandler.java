@@ -7,8 +7,8 @@ import com.gregtechceu.gtceu.api.mui.base.widget.IGuiElement;
 import com.gregtechceu.gtceu.api.mui.base.widget.IVanillaSlot;
 import com.gregtechceu.gtceu.api.mui.drawable.GuiDraw;
 import com.gregtechceu.gtceu.api.mui.drawable.Stencil;
+import com.gregtechceu.gtceu.api.mui.overlay.OverlayManager;
 import com.gregtechceu.gtceu.api.mui.overlay.OverlayStack;
-import com.gregtechceu.gtceu.api.mui.utils.Animator;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.utils.FpsCounter;
 import com.gregtechceu.gtceu.api.mui.widget.sizer.Area;
@@ -71,18 +71,12 @@ public class ClientScreenHandler {
     private static long ticks = 0L;
     private static IMuiScreen lastMui;
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onOpenScreen(ScreenEvent.Opening event) {
         Screen newGui = event.getNewScreen();
         defaultContext.reset();
 
-        if (lastMui != null && newGui == null) {
-            if (lastMui.getScreen().getPanelManager().isOpen()) {
-                lastMui.getScreen().getPanelManager().closeAll();
-            }
-            lastMui.getScreen().getPanelManager().dispose();
-            lastMui = null;
-        } else if (newGui instanceof IMuiScreen screenWrapper) {
+        if (newGui instanceof IMuiScreen screenWrapper) {
             if (lastMui == null) {
                 lastMui = screenWrapper;
             } else if (lastMui == newGui) {
@@ -113,10 +107,18 @@ public class ClientScreenHandler {
             currentScreen.getPanelManager().dispose();
             currentScreen = null;
         }
+        OverlayManager.onOpenScreen(event);
     }
 
     @SubscribeEvent
     public static void onCloseScreen(ScreenEvent.Closing event) {
+        if (lastMui != null) {
+            if (lastMui.getScreen().getPanelManager().isOpen()) {
+                lastMui.getScreen().getPanelManager().closeAll();
+            }
+            lastMui.getScreen().getPanelManager().dispose();
+            lastMui = null;
+        }
         if (hasScreen() && !currentScreen.getPanelManager().isReopened()) {
             currentScreen.onCloseParent();
             currentScreen.getPanelManager().dispose();
@@ -284,7 +286,6 @@ public class ClientScreenHandler {
     public static void onFrameUpdate() {
         OverlayStack.foreach(ModularScreen::onFrameUpdate, true);
         if (currentScreen != null) currentScreen.onFrameUpdate();
-        Animator.advance();
     }
 
     private static boolean doAction(@Nullable ModularScreen muiScreen, Predicate<ModularScreen> action) {
@@ -323,17 +324,25 @@ public class ClientScreenHandler {
             ConfigHolder.INSTANCE.dev.debugUI = !ConfigHolder.INSTANCE.dev.debugUI;
             return true;
         }
+        if (keyCode == InputConstants.KEY_ESCAPE && screen.shouldCloseOnEsc()) {
+            onClose();
+            return true;
+        }
         boolean isInventoryKey = Minecraft.getInstance().options.keyInventory
                 .isActiveAndMatches(InputConstants.getKey(keyCode, scanCode));
         if (keyCode == 1 || isInventoryKey) {
-            if (currentScreen.getContext().hasDraggable()) {
-                currentScreen.getContext().dropDraggable();
-            } else {
-                currentScreen.getPanelManager().closeTopPanel(true);
-            }
+            onClose();
             return true;
         }
         return false;
+    }
+
+    private static void onClose() {
+        if (currentScreen.getContext().hasDraggable()) {
+            currentScreen.getContext().dropDraggable();
+        } else {
+            currentScreen.getPanelManager().closeTopPanel();
+        }
     }
 
     public static void dragSlot(double mouseX, double mouseY, int button, double dragX, double dragY) {

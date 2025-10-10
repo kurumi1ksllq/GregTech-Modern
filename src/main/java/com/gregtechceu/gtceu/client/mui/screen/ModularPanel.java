@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.client.mui.screen;
 
+import com.gregtechceu.gtceu.api.mui.animation.Animator;
 import com.gregtechceu.gtceu.api.mui.base.IPanelHandler;
 import com.gregtechceu.gtceu.api.mui.base.ITheme;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
@@ -9,9 +10,9 @@ import com.gregtechceu.gtceu.api.mui.base.widget.IFocusedWidget;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.base.widget.Interactable;
 import com.gregtechceu.gtceu.api.mui.theme.WidgetTheme;
-import com.gregtechceu.gtceu.api.mui.utils.Animator;
 import com.gregtechceu.gtceu.api.mui.utils.HoveredWidgetList;
 import com.gregtechceu.gtceu.api.mui.utils.Interpolation;
+import com.gregtechceu.gtceu.api.mui.utils.Interpolations;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandler;
@@ -21,6 +22,7 @@ import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.GuiViewportStack;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.LocatedWidget;
 import com.gregtechceu.gtceu.client.mui.screen.viewport.ModularGuiContext;
+import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.Util;
 
@@ -75,10 +77,6 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     private final List<IPanelHandler> clientSubPanels = new ArrayList<>();
     private boolean invisible = false;
     private Animator animator;
-    @Getter
-    private float scale = 1f;
-    @Getter
-    private float alpha = 1f;
 
     public ModularPanel(@NotNull String name) {
         this.name = Objects.requireNonNull(name, "A panels name must not be null and should be unique!");
@@ -115,13 +113,18 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     /**
      * If this panel is open it will be closed.
      * If animating is enabled and an animation is already playing this method will do nothing.
-     *
-     * @param animate true if the closing animation should play first.
      */
-    public void closeIfOpen(boolean animate) {
+    public void closeIfOpen() {
         if (!isOpen()) return;
         closeSubPanels();
-        if (!animate || !shouldAnimate()) {
+        /*
+         * if (isMainPanel()) {
+         * // close screen and let NEA animation // TODO: since nea is not yet ported, it will just close the screen
+         * Minecraft.getInstance().player.closeContainer();
+         * return;
+         * }
+         */
+        if (!shouldAnimate()) {
             this.screen.getPanelManager().closePanel(this);
             return;
         }
@@ -130,11 +133,13 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
                 // if this is the main panel, start closing animation for all panels
                 for (ModularPanel panel : getScreen().getPanelManager().getOpenPanels()) {
                     if (!panel.isMainPanel()) {
-                        panel.closeIfOpen(true);
+                        panel.closeIfOpen();
                     }
                 }
             }
-            getAnimator().setEndCallback(val -> this.screen.getPanelManager().closePanel(this)).backward();
+            getAnimator().onFinish(() -> this.screen.getPanelManager().closePanel(this));
+            getAnimator().reset(true);
+            getAnimator().animate(true);
         }
     }
 
@@ -145,7 +150,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     }
 
     public void animateClose() {
-        closeIfOpen(true);
+        closeIfOpen();
     }
 
     @Override
@@ -213,16 +218,12 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     public void onOpen(ModularScreen screen) {
         this.screen = screen;
         getArea().z(1);
-        this.scale = 1f;
-        this.alpha = 1f;
         initialise(this);
+        // TODO: NEA handles main panel
         if (shouldAnimate()) {
-            this.scale = 0.75f;
-            this.alpha = 0f;
-            getAnimator().setEndCallback(value -> {
-                this.scale = 1f;
-                this.alpha = 1f;
-            }).forward();
+            getAnimator().onFinish(() -> {});
+            getAnimator().reset();
+            getAnimator().animate();
         }
         this.state = State.OPEN;
     }
@@ -662,11 +663,27 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     }
 
     public boolean isOpening() {
-        return this.animator != null && this.animator.isRunningForwards();
+        return this.animator != null && this.animator.isAnimatingForward();
     }
 
     public boolean isClosing() {
-        return this.animator != null && this.animator.isRunningBackwards();
+        return this.animator != null && this.animator.isAnimatingReverse();
+    }
+
+    public float getScale() {
+        if (ConfigHolder.INSTANCE.client.ui.animationTime == 0) return 1f;
+        // 0.9 is default nea value
+        return Interpolations.lerp(0.9f, 1f, getAnimator().getValue());
+        // TODO NEA
+        // if (!ModularUI.Mods.NEA.isLoaded() || NEAConfig.openingAnimationTime == 0) return 1f;
+        // return Interpolations.lerp(NEAConfig.openingStartScale, 1f, getAnimator().getValue());
+    }
+
+    public float getAlpha() {
+        if (ConfigHolder.INSTANCE.client.ui.animationTime == 0) return 1f;
+        return getAnimator().getValue();
+        // if (!ModularUI.Mods.NEA.isLoaded() || NEAConfig.openingAnimationTime == 0) return 1f;
+        // return getAnimator().getValue();
     }
 
     public final boolean isMainPanel() {
@@ -686,13 +703,11 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     @NotNull
     protected Animator getAnimator() {
         if (this.animator == null) {
-            this.animator = new Animator(getScreen().getCurrentTheme().getOpenCloseAnimationOverride(),
-                    Interpolation.QUINT_OUT)
-                    .setValueBounds(0.0f, 1.0f)
-                    .setCallback(val -> {
-                        this.alpha = (float) val;
-                        this.scale = (float) val * 0.25f + 0.75f;
-                    });
+            this.animator = new Animator()
+                    .bounds(0f, 1f)
+                    .duration(ConfigHolder.INSTANCE.client.ui.animationTime)
+                    .curve(Interpolation.SINE_OUT); // TODO: NEA config values
+            this.animator.reset(true);
         }
         return this.animator;
     }

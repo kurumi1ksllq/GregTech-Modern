@@ -50,6 +50,15 @@ public class TextRenderer {
     protected float lastX = 0, lastY = 0;
     protected boolean scrollOnOverflow = false;
 
+    @Getter
+    protected float lastActualWidth = 0;
+    @Getter
+    protected float lastTrimmedWidth = 0;
+    @Getter
+    protected float lastActualHeight = 0;
+    @Getter
+    protected float lastTrimmedHeight = 0;
+
     public void setAlignment(Alignment alignment, float maxWidth) {
         setAlignment(alignment, maxWidth, -1);
     }
@@ -90,10 +99,10 @@ public class TextRenderer {
             draw(graphics, measuredLine.text, x0, y0);
             y0 += (int) getFontHeight();
         }
-        this.lastWidth = this.maxWidth > 0 ? Math.min(maxW, this.maxWidth) : maxW;
-        this.lastHeight = measuredLines.size() * getFontHeight();
-        this.lastWidth = Math.max(0, this.lastWidth - this.scale);
-        this.lastHeight = Math.max(0, this.lastHeight - this.scale);
+        this.lastActualWidth = this.maxWidth > 0 ? Math.min(maxW, this.maxWidth) : maxW;
+        this.lastActualHeight = measuredLines.size() * getFontHeight();
+        this.lastTrimmedWidth = Math.max(0, this.lastActualWidth - this.scale);
+        this.lastTrimmedHeight = Math.max(0, this.lastActualHeight - this.scale);
     }
 
     public void drawSimple(GuiGraphics graphics, Component text) {
@@ -104,10 +113,10 @@ public class TextRenderer {
         float w = getFont().width(text) * this.scale;
         int y = getStartYOfLines(1), x = getStartX(w);
         draw(graphics, text, x, y);
-        this.lastWidth = w;
-        this.lastHeight = getFontHeight();
-        this.lastWidth = Math.max(0, this.lastWidth - this.scale);
-        this.lastHeight = Math.max(0, this.lastHeight - this.scale);
+        this.lastActualWidth = w;
+        this.lastActualHeight = getFontHeight();
+        this.lastTrimmedWidth = Math.max(0, this.lastActualWidth - this.scale);
+        this.lastTrimmedHeight = Math.max(0, this.lastActualHeight - this.scale);
     }
 
     public List<Line> measureStringLines(List<String> lines) {
@@ -156,10 +165,10 @@ public class TextRenderer {
         if (!this.simulate) {
             context.getGraphics().pose().popPose();
         }
-        this.lastWidth = this.maxWidth > 0 ? Math.min(width * this.scale, this.maxWidth) : width * this.scale;
-        this.lastHeight = height * this.scale;
-        this.lastWidth = Math.max(0, this.lastWidth - this.scale);
-        this.lastHeight = Math.max(0, this.lastHeight - this.scale);
+        this.lastActualWidth = this.maxWidth > 0 ? Math.min(width * this.scale, this.maxWidth) : width * this.scale;
+        this.lastActualHeight = height * this.scale;
+        this.lastTrimmedWidth = Math.max(0, this.lastActualWidth - this.scale);
+        this.lastTrimmedHeight = Math.max(0, this.lastActualHeight - this.scale);
     }
 
     public void drawCut(GuiGraphics graphics, String text) {

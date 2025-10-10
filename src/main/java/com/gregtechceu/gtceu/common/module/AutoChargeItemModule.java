@@ -54,20 +54,19 @@ public class AutoChargeItemModule extends TieredItemModule {
         if (energy <= 0) return 0;
         MetaMachine machine = getLinkedMachine(player.getServer(), module);
         if (machine == null) return 0;
-        boolean interdimensional = false;
-        for (ItemModule shieldModule : GTItemModules.DAMAGE_BLOCK) {
-            if (shieldModule instanceof EnergyShieldItemModule shieldItemModule &&
-                    shieldItemModule.getTier() >= GTValues.IV) {
-                IModularItem modularItem = GTCapabilityHelper.getModularItem(module.getAppliedTo());
-                if (modularItem != null && modularItem.getModule(shieldItemModule) != null)
-                    interdimensional = true;
-            }
-            if (interdimensional) break;
+        int interdimensionalTier = -1;
+        ItemModule[] damageBlock = GTItemModules.DAMAGE_BLOCK;
+        for (int i = 0; i < damageBlock.length; i++) {
+            ItemModule shieldModule = damageBlock[i];
+            IModularItem modularItem = GTCapabilityHelper.getModularItem(module.getAppliedTo());
+            if (modularItem != null && modularItem.getModule(shieldModule) != null)
+                interdimensionalTier = i + 1;
         }
-        interdimensional = interdimensional && getTier() >= GTValues.IV;
-        if (machine.getLevel() != player.level() && !interdimensional) return 0;
-        if (!interdimensional && machine.getPos().distSqr(player.blockPosition()) > getRange()) return 0;
-        return energy;
+        interdimensionalTier = Math.min(interdimensionalTier, getTier());
+        if (machine.getLevel() != player.level() && interdimensionalTier < GTValues.IV) return 0;
+        if (interdimensionalTier < GTValues.IV && machine.getPos().distSqr(player.blockPosition()) > getRange())
+            return 0;
+        return Math.min(energy, GTValues.V[machine.getLevel() == player.level() ? getTier() : interdimensionalTier]);
     }
 
     private MetaMachine getLinkedMachine(MinecraftServer server, AppliedItemModule module) {

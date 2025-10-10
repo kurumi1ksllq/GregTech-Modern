@@ -183,6 +183,20 @@ public class ClientScreenHandler {
 
     // before JEI
     @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onScreenCharTyped(ScreenEvent.CharacterTyped.Pre event) {
+        int codePoint = event.getCodePoint();
+        int modifiers = event.getModifiers();
+        defaultContext.updateLatestTypedChar(codePoint, modifiers);
+        if (checkGui(event.getScreen())) currentScreen.getContext().updateLatestTypedChar(codePoint, modifiers);
+
+        // vanilla also casts to char here
+        if (doAction(currentScreen, ms -> ms.charTyped((char) codePoint, modifiers))) {
+            event.setCanceled(true);
+        }
+    }
+
+    // before JEI
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onScreenMousePressed(ScreenEvent.MouseButtonPressed.Pre event) {
         int button = event.getButton();
         double mouseX = event.getMouseX();
@@ -223,7 +237,7 @@ public class ClientScreenHandler {
         if (w == 0) return;
         defaultContext.updateMouseWheel(w);
         if (checkGui(event.getScreen())) currentScreen.getContext().updateMouseWheel(w);
-        checkGui(event.getScreen());
+
         if (doAction(currentScreen, ms -> ms.mouseScrolled(event.getMouseX(), event.getMouseY(), w))) {
             event.setCanceled(true);
         }
@@ -232,10 +246,6 @@ public class ClientScreenHandler {
     // before JEI
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onScreenMouseDragged(ScreenEvent.MouseDragged.Pre event) {
-        checkGui(event.getScreen());
-        if (event.getMouseButton() == -1) {
-            return;
-        }
         if (doAction(currentScreen, ms -> ms.mouseDragged(event.getMouseX(), event.getMouseY(),
                 event.getMouseButton(), event.getDragX(), event.getDragY()))) {
             event.setCanceled(true);

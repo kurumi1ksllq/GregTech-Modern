@@ -30,23 +30,32 @@ import com.lowdragmc.lowdraglib.syncdata.field.FieldManagedStorage;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAutoSyncBlockEntity, IRPCBlockEntity,
-                                         IAutoPersistBlockEntity, IManaged, IManagedBlockEntity, IUIHolder {
+                                         IAutoPersistBlockEntity, IManaged, IManagedBlockEntity, IUIHolder,
+                                         ICapabilityProvider {
 
     public static final int MAX_MODIFIER_SLOTS = 10;
 
@@ -64,7 +73,28 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
 
     public EquipmentFoundryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
-        this.equipmentSlot = new CustomItemStackHandler(1);
+        this.equipmentSlot = new CustomItemStackHandler(1) {
+
+            @Override
+            public int getSlotLimit(int slot) {
+                return 1;
+            }
+
+            @Override
+            public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+                ItemStack itemStack = super.insertItem(slot, stack, simulate);
+                if (!simulate) onEquipmentSlotChanged(null, List.of());
+                return itemStack;
+            }
+
+            @Override
+            public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+                ItemStack itemStack = super.extractItem(slot, amount, simulate);
+                if (!simulate) onEquipmentSlotChanged(null, List.of());
+                return itemStack;
+            }
+        };
+
         this.equipmentSlot.setFilter(
                 stack -> GTCapabilityHelper.getModularItem(stack) != null);
 
@@ -73,6 +103,17 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
             @Override
             public int getSlotLimit(int slot) {
                 return 1;
+            }
+
+            @Override
+            public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+                return super.isItemValid(slot, stack) && (!isModifierSlotBlocked(slot) || stack.isEmpty());
+            }
+
+            @Override
+            public void onContentsChanged(int slot) {
+                super.onContentsChanged(slot);
+                onModifierSlotChanged(slot);
             }
         };
 
@@ -120,7 +161,6 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
             final int finalI = i;
             SlotWidget slotWidget = new BlockableSlotWidget(moduleSlots, i, x, y)
                     .setIsBlocked(() -> isModifierSlotBlocked(finalI))
-                    .setChangeListener(() -> this.onModifierSlotChanged(finalI))
                     .setBackgroundTexture(null);
             modularUI.widget(slotWidget);
             slotWidgets.add(slotWidget);
@@ -143,7 +183,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         return modularItem.getSlots().size() <= slot;
     }
 
-    public void onEquipmentSlotChanged(Player player, List<SlotWidget> slotWidgets) {
+    public void onEquipmentSlotChanged(@Nullable Player player, List<SlotWidget> slotWidgets) {
         ItemStack stack = equipmentSlot.getStackInSlot(0);
         if (stack.isEmpty()) {
             for (int i = 0; i < moduleSlots.getSlots(); i++) {
@@ -153,8 +193,10 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
                 }
                 out = moduleSlots.extractItem(i, Integer.MAX_VALUE, false);
                 out.shrink(1);
-                if (!player.getInventory().add(out)) {
+                if (player != null && !player.getInventory().add(out)) {
                     player.drop(out, true);
+                } else if (!out.isEmpty() && getLevel() != null) {
+                    Block.popResource(getLevel(), getBlockPos(), out);
                 }
             }
             slotWidgets.forEach(slotWidget -> slotWidget.setBackgroundTexture(null));
@@ -232,5 +274,16 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
     @Override
     public void onChanged() {
         this.setChanged();
+    }
+
+    @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER && side != null) {
+            if (side.getAxis().isVertical())
+                return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, LazyOptional.of(() -> equipmentSlot));
+            if (side.getAxis().isHorizontal())
+                return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, LazyOptional.of(() -> moduleSlots));
+        }
+        return super.getCapability(cap, side);
     }
 }

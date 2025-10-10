@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class AppliedItemModule {
+public final class AppliedItemModule {
 
     private final CompoundTag moduleTag;
     @Getter

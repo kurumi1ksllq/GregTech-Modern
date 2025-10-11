@@ -107,7 +107,8 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
 
             @Override
             public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-                return super.isItemValid(slot, stack) && (!isModifierSlotBlocked(slot) || stack.isEmpty());
+                return super.isItemValid(slot, stack) && (!isModifierSlotBlocked(slot) || stack.isEmpty()) &&
+                        isModuleValid(slot, stack);
             }
 
             @Override
@@ -116,20 +117,20 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
                 onModifierSlotChanged(slot);
             }
         };
+    }
 
-        this.moduleSlots.setFilter(stack -> {
-            if (this.getLevel() == null) {
-                return false;
-            }
-            NonNullList<ItemStack> stacks = NonNullList.create();
-            stacks.add(this.equipmentSlot.getStackInSlot(0));
-            stacks.add(stack);
-            RecipeWrapper newWrapper = new RecipeWrapper(new CustomItemStackHandler(stacks));
+    public boolean isModuleValid(int slot, @NotNull ItemStack stack) {
+        if (this.getLevel() == null) {
+            return false;
+        }
+        NonNullList<ItemStack> stacks = NonNullList.create();
+        stacks.add(this.equipmentSlot.getStackInSlot(0));
+        stacks.add(stack);
+        RecipeWrapper newWrapper = new RecipeWrapper(new CustomItemStackHandler(stacks));
 
-            return getLevel().getRecipeManager()
-                    .getRecipeFor(GTRecipeTypes.EQUIPMENT_FOUNDRY_RECIPES.get(), newWrapper, this.getLevel())
-                    .isPresent();
-        });
+        return getLevel().getRecipeManager()
+                .getRecipeFor(GTRecipeTypes.EQUIPMENT_FOUNDRY_RECIPES.get(), newWrapper, this.getLevel())
+                .map(recipe -> recipe.matches(newWrapper, slot)).orElse(false);
     }
 
     @Override
@@ -240,7 +241,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
                 recipeWrapper,
                 this.getLevel());
         if (recipe.isPresent()) {
-            ItemStack newStack = recipe.get().assemble(recipeWrapper, getLevel().registryAccess());
+            ItemStack newStack = recipe.get().assemble(recipeWrapper, slot);
             if (newStack.isEmpty()) return;
             equipmentSlot.setStackInSlot(0, newStack);
         }

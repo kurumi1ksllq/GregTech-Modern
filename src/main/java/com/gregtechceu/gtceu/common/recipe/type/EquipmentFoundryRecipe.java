@@ -46,7 +46,12 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
         return modifier[Mth.clamp(tier - lowestTier, 0, modifier.length)];
     }
 
+    @Override
     public boolean matches(RecipeWrapper container, Level level) {
+        return matches(container, -1);
+    }
+
+    public boolean matches(RecipeWrapper container, int slot) {
         ItemStack foundItem = null, foundIngredient = null;
         for (int i = 0; i < container.getContainerSize(); ++i) {
             ItemStack stack = container.getItem(i);
@@ -61,10 +66,16 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
         if (foundIngredient == null || foundItem == null) return false;
         ItemModule module = getModule(foundIngredient);
         IModularItem modularItem = GTCapabilityHelper.getModularItem(foundItem);
-        return modularItem != null && modularItem.attach(module, true) != null;
+        return modularItem != null &&
+                (slot == -1 ? modularItem.attach(module, true) : modularItem.attach(module, slot, true)) != null;
     }
 
+    @Override
     public ItemStack assemble(RecipeWrapper container, RegistryAccess registryAccess) {
+        return assemble(container, -1);
+    }
+
+    public ItemStack assemble(RecipeWrapper container, int slot) {
         ItemStack result = ItemStack.EMPTY;
         ItemStack foundIngredient = null;
 
@@ -85,7 +96,8 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
         IModularItem modularItem = GTCapabilityHelper.getModularItem(result);
         if (modularItem == null) return ItemStack.EMPTY;
         if (!module.canApplyTo(result)) return ItemStack.EMPTY;
-        AppliedItemModule attachedModule = modularItem.attach(module, false);
+        AppliedItemModule attachedModule = slot == -1 ? modularItem.attach(module, false) :
+                modularItem.attach(module, slot, false);
         if (attachedModule != null) {
             attachedModule.setModuleItem(foundIngredient);
             return result;

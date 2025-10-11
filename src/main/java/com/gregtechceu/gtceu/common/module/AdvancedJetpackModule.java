@@ -8,9 +8,14 @@ import com.gregtechceu.gtceu.api.item.module.ITieredItemModule;
 import com.gregtechceu.gtceu.common.item.armor.AdvancedJetpack;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class AdvancedJetpackModule extends ArmorLogicItemModule implements ITieredItemModule {
 
@@ -31,5 +36,13 @@ public class AdvancedJetpackModule extends ArmorLogicItemModule implements ITier
     @Override
     public int getTier() {
         return GTValues.EV;
+    }
+
+    @Override
+    public void appendHoverText(Level level, TooltipFlag isAdvanced, List<Component> tooltips,
+                                AppliedItemModule module) {
+        super.appendHoverText(level, isAdvanced, tooltips, module);
+        tooltips.add(
+                Component.translatable("metaarmor.tooltip.modifier.jetpack", module.getModuleItem().getDisplayName()));
     }
 }

@@ -48,14 +48,10 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
 
     public boolean matches(RecipeWrapper container, Level level) {
         ItemStack foundItem = null, foundIngredient = null;
-
         for (int i = 0; i < container.getContainerSize(); ++i) {
             ItemStack stack = container.getItem(i);
             if (!stack.isEmpty()) {
-                if (equipment.test(stack)) {
-                    if (foundItem != null) {
-                        return false;
-                    }
+                if (equipment.test(stack) && foundItem == null) {
                     foundItem = stack;
                 } else if (ingredient.test(stack)) {
                     foundIngredient = stack;
@@ -63,7 +59,6 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
             }
         }
         if (foundIngredient == null || foundItem == null) return false;
-
         ItemModule module = getModule(foundIngredient);
         IModularItem modularItem = GTCapabilityHelper.getModularItem(foundItem);
         return modularItem != null && modularItem.attach(module, true) != null;
@@ -75,11 +70,7 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
 
         for (int i = 0; i < container.getContainerSize(); ++i) {
             ItemStack stack = container.getItem(i);
-            if (equipment.test(stack)) {
-                if (!result.isEmpty()) {
-                    return ItemStack.EMPTY;
-                }
-
+            if (equipment.test(stack) && result.isEmpty()) {
                 result = stack.copy();
             } else if (ingredient.test(stack)) {
                 foundIngredient = stack;

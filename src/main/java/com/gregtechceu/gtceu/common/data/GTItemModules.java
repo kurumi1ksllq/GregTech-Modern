@@ -40,6 +40,7 @@ public class GTItemModules {
     public static final ItemModule JETPACK = new JetpackModule(GTCEu.id("jetpack"));
     public static final ItemModule ADVANCED_JETPACK = new AdvancedJetpackModule(GTCEu.id("advanced_jetpack"));
     public static final ItemModule CREATIVE_FLIGHT = new CreativeFlightModule(GTCEu.id("creative_flight"));
+    public static final ItemModule FLUID_STORAGE = new FluidStorageModule(GTCEu.id("fluid_storage"));
 
     public static void init() {}
 }

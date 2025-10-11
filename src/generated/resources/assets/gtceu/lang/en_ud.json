@@ -5677,6 +5677,8 @@
   "metaarmor.tooltip.modifier.block_reach": ")%s( ɥɔɐǝᴚ ʞɔoןᗺ pǝsɐǝɹɔuI",
   "metaarmor.tooltip.modifier.creative_flight": "ʇɥbıןℲ ǝʌıʇɐǝɹƆ",
   "metaarmor.tooltip.modifier.damage_block": ")%s( ∩Ǝ buıs∩ ǝbɐɯɐᗡ sʞɔoןᗺ",
+  "metaarmor.tooltip.modifier.fluid_storage": ")%s( ǝbɐɹoʇs pınןɟ ןɐuoıʇıppⱯ",
+  "metaarmor.tooltip.modifier.fluid_storage.tooltip": "%s ɟo ᗺɯ %s/%s buıɹoʇS",
   "metaarmor.tooltip.modifier.jetpack": ")%s( ʞɔɐdʇǝſ pǝʇɹǝsuI",
   "metaarmor.tooltip.modifier.jump": ")%s( ǝɔuɐʇsıᗡ puɐ ʇɥbıǝH dɯnſ sǝsɐǝɹɔuI",
   "metaarmor.tooltip.modifier.movement_speed": ")%s( pǝǝdS ʇuǝɯǝʌoW sǝsɐǝɹɔuI",

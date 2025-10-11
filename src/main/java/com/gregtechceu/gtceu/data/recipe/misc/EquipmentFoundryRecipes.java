@@ -117,5 +117,9 @@ public class EquipmentFoundryRecipes {
         VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "creative_flight",
                 Ingredient.of(Tags.Items.ARMORS_CHESTPLATES),
                 GTItems.CREATIVE_FLIGHT_MODULE, GTItemModules.CREATIVE_FLIGHT);
+
+        VanillaRecipeHelper.addEquipmentFoundryRecipe(provider, "fluid_storage",
+                Ingredient.of(Tags.Items.ARMORS_CHESTPLATES),
+                Ingredient.of(CustomTags.FLUID_CONTAINERS), GTItemModules.FLUID_STORAGE);
     }
 }

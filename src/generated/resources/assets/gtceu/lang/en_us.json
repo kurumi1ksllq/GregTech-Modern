@@ -5677,6 +5677,8 @@
   "metaarmor.tooltip.modifier.block_reach": "Increased Block Reach (%s)",
   "metaarmor.tooltip.modifier.creative_flight": "Creative Flight",
   "metaarmor.tooltip.modifier.damage_block": "Blocks Damage Using EU (%s)",
+  "metaarmor.tooltip.modifier.fluid_storage": "Additional fluid storage (%s)",
+  "metaarmor.tooltip.modifier.fluid_storage.tooltip": "Storing %s/%s mB of %s",
   "metaarmor.tooltip.modifier.jetpack": "Inserted Jetpack (%s)",
   "metaarmor.tooltip.modifier.jump": "Increases Jump Height and Distance (%s)",
   "metaarmor.tooltip.modifier.movement_speed": "Increases Movement Speed (%s)",

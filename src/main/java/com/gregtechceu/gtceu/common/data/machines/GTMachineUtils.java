@@ -55,6 +55,7 @@ import com.gregtechceu.gtceu.common.machine.storage.DrumMachine;
 import com.gregtechceu.gtceu.common.machine.storage.QuantumChestMachine;
 import com.gregtechceu.gtceu.common.machine.storage.QuantumTankMachine;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
@@ -512,6 +513,7 @@ public class GTMachineUtils {
                         holder -> new DrumMachine(holder, material, capacity), MetaMachineBlock::new,
                         (holder, prop) -> DrumMachineItem.create(holder, prop, material),
                         MetaMachineBlockEntity::new)
+                .itemBuilder(builder -> builder.tag(CustomTags.FLUID_CONTAINERS))
                 .langValue(lang)
                 .rotationState(RotationState.NONE)
                 .simpleModel(GTCEu.id("block/machine/template/drum/" + (wooden ? "wooden" : "metal") + "_drum"))
@@ -545,6 +547,7 @@ public class GTMachineUtils {
                     MachineDefinition::new, (holder) -> new QuantumTankMachine(holder, tier, maxAmount),
                     MetaMachineBlock::new, QuantumTankMachineItem::new,
                     MetaMachineBlockEntity::new)
+                    .itemBuilder(builder -> builder.tag(CustomTags.FLUID_CONTAINERS))
                     .langValue(toEnglishName(name) + " " + LVT[tier])
                     .blockProp(BlockBehaviour.Properties::dynamicShape)
                     .rotationState(RotationState.ALL)

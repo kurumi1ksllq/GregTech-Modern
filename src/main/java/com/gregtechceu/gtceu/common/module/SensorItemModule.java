@@ -18,6 +18,11 @@ public class SensorItemModule extends TieredItemModule {
     }
 
     @Override
+    public Component getInfo() {
+        return getInfoTiered();
+    }
+
+    @Override
     public Component getInfoTiered() {
         return Component.translatable("gtceu.module.sensor");
     }

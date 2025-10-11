@@ -112,17 +112,17 @@ public class IntProviderLinkedIngredientTest {
                 .duration(2)
                 .buildRawRecipe());
 
-        // blue determines the amount of orange; orange determines the count of CR_OUT
-        // CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
-        // .recipeBuilder(GTCEu.id("test_chain_linked_item-fluid-item_input_cr"))
-        // .inputItemsRangedMarked(CR_OUT, UniformInt.of(0, 9), "blue")
-        // .inputFluidsLinkedMarked(LCENT_FOUT, UniformInt.of(0,9), "orange", "direct", "blue")
-        // .inputItemsLinked(CR_IN, UniformInt.of(0, 9), "direct", "orange")
-        // .inputFluids(REDSTONE)
-        // .outputItems(STONE)
-        // .EUt(GTValues.V[GTValues.HV])
-        // .duration(2)
-        // .buildRawRecipe());
+        // blue determines the amount of orange; orange determines the count of CR_IN
+        CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_chain_linked_item-fluid-item_input_cr"))
+                .inputItemsRangedMarked(LCENT_OUT, UniformInt.of(0, 9), "blue")
+                .inputFluidsLinkedMarked(RUBBER, UniformInt.of(0, 9), "orange", "direct", "blue")
+                .inputItemsLinked(CR_IN, UniformInt.of(0, 9), "direct", "orange")
+                .inputFluids(REDSTONE)
+                .outputItems(STONE)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(2)
+                .buildRawRecipe());
     }
 
     private static MetaMachine getMetaMachine(BlockEntity entity) {
@@ -200,6 +200,7 @@ public class IntProviderLinkedIngredientTest {
                 .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
 
         int runs = 7;
+        // CR_OUT determines CR_IN
         itemIn.setStackInSlot(0, CR_IN.copyWithCount(64));
         itemIn.setStackInSlot(1, CR_OUT.copyWithCount(64));
         fluidIn.setFluidInTank(0, new FluidStack(REDSTONE, runs));
@@ -222,18 +223,18 @@ public class IntProviderLinkedIngredientTest {
             int upperLimit = 64 - (runs * 0);
             int lowerLimit = 64 - (runs * 9);
             helper.assertTrue(TestUtils.isItemStackEqual(itemOut.getStackInSlot(0), STONE.copyWithCount(runs)),
-                    "Direct Linked Singleblock CR didn't complete correct number of recipes, completed [" +
+                    "I-I Direct Linked Singleblock CR didn't complete correct number of recipes, completed [" +
                             itemOut.getStackInSlot(0).getCount() + "] not [" + runs + "]");
             helper.assertTrue(TestUtils.isItemWithinRange(results[1], lowerLimit, upperLimit),
-                    "Direct Linked Singleblock CR didn't consume correct number of marked items, consumed [" +
+                    "I-I Direct Linked Singleblock CR didn't consume correct number of marked items, consumed [" +
                             (64 - results[1].getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
             helper.assertTrue(TestUtils.isItemWithinRange(results[1], lowerLimit, upperLimit),
-                    "Direct Linked Singleblock CR didn't consume correct number of linked items, consumed [" +
+                    "I-I Direct Linked Singleblock CR didn't consume correct number of linked items, consumed [" +
                             (64 - results[1].getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
             helper.assertFalse((results[1].getCount() == lowerLimit),
-                    "Direct Linked Singleblock CR rolled max value on every roll");
+                    "I-I Direct Linked Singleblock CR rolled max value on every roll");
             helper.assertFalse((results[1].getCount() == upperLimit),
-                    "Direct Linked Singleblock CR rolled min value on every roll");
+                    "I-I Direct Linked Singleblock CR rolled min value on every roll");
 
             // check if the consumed amounts matched
             for (int i = 0; i < addedRolls.length; i++) {
@@ -261,9 +262,9 @@ public class IntProviderLinkedIngredientTest {
         });
     }
 
-    // Test for singleblock machine with item-fluid-item direct linked input
+    // Test for singleblock machine with fluid-item-item direct linked input
     @GameTest(template = "singleblock_charged_cr", batch = "LinkedIngredients")
-    public static void singleblockDirectLinkedItemFluidItemInput(GameTestHelper helper) {
+    public static void singleblockDirectLinkedFluidItemItemInput(GameTestHelper helper) {
         SimpleTieredMachine machine = (SimpleTieredMachine) getMetaMachine(
                 helper.getBlockEntity(new BlockPos(0, 1, 0)));
 
@@ -276,6 +277,7 @@ public class IntProviderLinkedIngredientTest {
                 .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
 
         int runs = 7;
+        // RUBBER determines CR_IN, CR_IN determines LCENT_IN
         itemIn.setStackInSlot(0, CR_IN.copyWithCount(64));
         itemIn.setStackInSlot(1, LCENT_IN.copyWithCount(64));
         fluidIn.setFluidInTank(0, new FluidStack(REDSTONE, runs));
@@ -297,31 +299,30 @@ public class IntProviderLinkedIngredientTest {
         // check the results of all rolls together
         helper.runAfterDelay(runs * 2 + 1, () -> {
             ItemStack[] iresults = { itemIn.getStackInSlot(0), itemIn.getStackInSlot(1) };
-            FluidStack fresults = fluidIn.getFluidInTank(1);
 
             int upperLimit = 64 - (runs * 0);
             int lowerLimit = 64 - (runs * 9);
             helper.assertTrue(TestUtils.isItemStackEqual(itemOut.getStackInSlot(0), STONE.copyWithCount(runs)),
-                    "Chain Direct Linked Singleblock CR didn't complete correct number of recipes, completed [" +
+                    "F-I-I Chain Direct Linked Singleblock CR didn't complete correct number of recipes, completed [" +
                             itemOut.getStackInSlot(0).getCount() + "] not [" + runs + "]");
             helper.assertTrue(TestUtils.isItemWithinRange(iresults[1], lowerLimit, upperLimit),
-                    "Chain Direct Linked Singleblock CR didn't consume correct number of marked items, consumed [" +
+                    "F-I-I Chain Direct Linked Singleblock CR didn't consume correct number of marked items, consumed [" +
                             (64 - iresults[1].getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
             helper.assertTrue(TestUtils.isItemWithinRange(iresults[1], lowerLimit, upperLimit),
-                    "Chain Direct Linked Singleblock CR didn't consume correct number of linked items, consumed [" +
+                    "F-I-I Chain Direct Linked Singleblock CR didn't consume correct number of linked items, consumed [" +
                             (64 - iresults[1].getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
             helper.assertFalse((iresults[1].getCount() == lowerLimit),
-                    "Chain Direct Linked Singleblock CR rolled max value on every roll");
+                    "F-I-I Chain Direct Linked Singleblock CR rolled max value on every roll");
             helper.assertFalse((iresults[1].getCount() == upperLimit),
-                    "Chain Direct Linked Singleblock CR rolled min value on every roll");
+                    "F-I-I Chain Direct Linked Singleblock CR rolled min value on every roll");
 
             // check if the consumed amounts matched
             for (int i = 0; i < middleRolls.length; i++) {
                 helper.assertTrue(middleRolls[i] == matchedRolls[i] && matchedRolls[i] == fluidRolls[i],
-                        "Chain Direct Linked Singleblock CR " +
+                        "F-I-I Chain Direct Linked Singleblock CR " +
                                 "should have consumed equal ingredient counts! Consumed " +
-                                Arrays.toString(middleRolls) +
-                                " - vs - " + Arrays.toString(matchedRolls) + " - vs - " + Arrays.toString(fluidRolls));
+                                Arrays.toString(fluidRolls) +
+                                " - vs - " + Arrays.toString(middleRolls) + " - vs - " + Arrays.toString(matchedRolls));
             }
 
             // check if all the rolls were equal
@@ -338,7 +339,96 @@ public class IntProviderLinkedIngredientTest {
                 }
             }
             helper.assertFalse(allEqual,
-                    "Chain Direct Linked Singleblock CR rolled the same value on every input roll (rolled " + rolls[0] +
+                    "F-I-I Chain Direct Linked Singleblock CR rolled the same value on every input roll (rolled " +
+                            rolls[0] +
+                            ")");
+            helper.succeed();
+        });
+    }
+
+    // Test for singleblock machine with item-fluid-item direct linked input
+    @GameTest(template = "singleblock_charged_cr", batch = "LinkedIngredients")
+    public static void singleblockDirectLinkedItemFluidItemInput(GameTestHelper helper) {
+        SimpleTieredMachine machine = (SimpleTieredMachine) getMetaMachine(
+                helper.getBlockEntity(new BlockPos(0, 1, 0)));
+
+        machine.setRecipeType(CR_RECIPE_TYPE);
+        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
+        NotifiableFluidTank fluidIn = (NotifiableFluidTank) machine
+                .getCapabilitiesFlat(IO.IN, FluidRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+
+        int runs = 7;
+        // LCENT_OUT determines RUBBER, RUBBER determines CR_IN
+        itemIn.setStackInSlot(0, LCENT_OUT.copyWithCount(64));
+        itemIn.setStackInSlot(1, CR_IN.copyWithCount(64));
+        fluidIn.setFluidInTank(0, new FluidStack(REDSTONE, runs));
+        fluidIn.setFluidInTank(1, new FluidStack(RUBBER, 64));
+
+        // 1t to turn on, 2t per recipe run
+        // get the result of each roll independently
+        int[] baseRolls = new int[runs];
+        int[] matchedRolls = new int[runs];
+        int[] fluidRolls = new int[runs];
+        for (int i = 0; i < runs; i++) {
+            final int finalI = i; // lambda preserve you
+            helper.runAfterDelay(2 * i + 1, () -> {
+                baseRolls[finalI] = itemIn.getStackInSlot(0).getCount();
+                matchedRolls[finalI] = itemIn.getStackInSlot(1).getCount();
+                fluidRolls[finalI] = fluidIn.getFluidInTank(1).getAmount();
+            });
+        }
+        // check the results of all rolls together
+        helper.runAfterDelay(runs * 2 + 1, () -> {
+            ItemStack[] iresults = { itemIn.getStackInSlot(0), itemIn.getStackInSlot(1) };
+            FluidStack fresults = fluidIn.getFluidInTank(1);
+
+            int upperLimit = 64 - (runs * 0);
+            int lowerLimit = 64 - (runs * 9);
+            helper.assertTrue(TestUtils.isItemStackEqual(itemOut.getStackInSlot(0), STONE.copyWithCount(runs)),
+                    "I-F-I Chain Direct Linked Singleblock CR didn't complete correct number of recipes, completed [" +
+                            itemOut.getStackInSlot(0).getCount() + "] not [" + runs + "]");
+            helper.assertTrue(TestUtils.isItemWithinRange(iresults[1], lowerLimit, upperLimit),
+                    "I-F-I Chain Direct Linked Singleblock CR didn't consume correct number of marked items, consumed [" +
+                            (64 - iresults[1].getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertTrue(TestUtils.isItemWithinRange(iresults[1], lowerLimit, upperLimit),
+                    "I-F-I Chain Direct Linked Singleblock CR didn't consume correct number of linked items, consumed [" +
+                            (64 - iresults[1].getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertTrue(TestUtils.isFluidWithinRange(fresults, lowerLimit, upperLimit),
+                    "I-F-I Chain Direct Linked Singleblock CR didn't consume correct amount of linked fluid, consumed [" +
+                            (64 - fresults.getAmount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertFalse((iresults[1].getCount() == lowerLimit),
+                    "I-F-I Chain Direct Linked Singleblock CR rolled max value on every roll");
+            helper.assertFalse((iresults[1].getCount() == upperLimit),
+                    "I-F-I Chain Direct Linked Singleblock CR rolled min value on every roll");
+
+            // check if the consumed amounts matched
+            for (int i = 0; i < baseRolls.length; i++) {
+                helper.assertTrue(baseRolls[i] == matchedRolls[i] && matchedRolls[i] == fluidRolls[i],
+                        "I-F-I Chain Direct Linked Singleblock CR " +
+                                "should have consumed equal ingredient counts! Consumed " +
+                                Arrays.toString(baseRolls) +
+                                " - vs - " + Arrays.toString(fluidRolls) + " - vs - " + Arrays.toString(matchedRolls));
+            }
+
+            // check if all the rolls were equal
+            int[] rolls = new int[runs];
+            rolls[0] = 64 - matchedRolls[0];
+            boolean allEqual = false;
+            for (int i = 1; i < runs; i++) {
+                rolls[i] = matchedRolls[i - 1] - matchedRolls[i];
+                if (rolls[i] == rolls[i - 1]) {
+                    allEqual = true;
+                } else {
+                    allEqual = false;
+                    break;
+                }
+            }
+            helper.assertFalse(allEqual,
+                    "I-F-I Chain Direct Linked Singleblock CR rolled the same value on every input roll (rolled " +
+                            rolls[0] +
                             ")");
             helper.succeed();
         });

@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * An {@link IntProviderFluidIngredient whose rolled value is calculated based on the rolls of one or more other
+ * {@link IRangedIngredient}s.}
+ */
 public class IntProviderLinkedFluidIngredient extends IntProviderFluidIngredient implements ILinkedIngredient {
 
     @Getter

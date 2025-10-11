@@ -58,7 +58,6 @@ public interface ILinkedIngredient extends IRangedIngredient {
     }
 
     default void roll(GTRecipe recipe) {
-        reset();
         getSampledCount(recipe);
     }
 }

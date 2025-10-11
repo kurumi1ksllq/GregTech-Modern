@@ -61,14 +61,14 @@ public class GTModuleEMIRecipe implements EmiRecipe {
 
     @Override
     public int getDisplayWidth() {
-        return 160;
+        return 200;
     }
 
     @Override
     public int getDisplayHeight() {
         int height = 35;
         for (ItemModule module : recipe.getModules()) {
-            height += Minecraft.getInstance().font.wordWrapHeight(module.getInfo(), 152);
+            height += Minecraft.getInstance().font.wordWrapHeight(module.getInfo(), getDisplayWidth() - 8);
         }
         return height;
     }
@@ -80,8 +80,8 @@ public class GTModuleEMIRecipe implements EmiRecipe {
         int y = 30;
         for (ItemModule module : recipe.getModules()) {
             Component component = module.getInfo();
-            for (FormattedCharSequence line : Minecraft.getInstance().font.split(component, 152)) {
-                widgets.addText(line, 4, y, 0xFFFFFFFF, false);
+            for (FormattedCharSequence line : Minecraft.getInstance().font.split(component, getDisplayWidth() - 8)) {
+                widgets.addText(line, 4, y, 0xFFFFFFFF, true);
                 y += 9;
             }
         }

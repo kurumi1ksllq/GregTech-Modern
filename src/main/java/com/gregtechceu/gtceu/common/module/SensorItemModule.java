@@ -19,7 +19,8 @@ public class SensorItemModule extends TieredItemModule {
 
     @Override
     public Component getInfo() {
-        return getInfoTiered();
+        if (getTier() == GTValues.LV) return getInfoTiered();
+        else return Component.empty();
     }
 
     @Override

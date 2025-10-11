@@ -78,7 +78,7 @@ public class BatteryItemModule extends ItemModule implements ICapabilityModule, 
                 y = 20;
                 graphics.drawString(
                         Minecraft.getInstance().font,
-                        Component.translatable("metaarmor.tooltip.modifier.battery.hud.head", displayName),
+                        Component.translatable("metaarmor.tooltip.modifier.battery.hud.helmet", displayName),
                         x, y, 0xFFFFFF);
             }
             case CHEST -> {

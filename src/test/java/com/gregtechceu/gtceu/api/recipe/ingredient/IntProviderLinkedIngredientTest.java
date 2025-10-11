@@ -35,6 +35,8 @@ import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+
 /**
  * Test cases:
  * do many passes of most tests as a safeguard against bad rolls
@@ -160,7 +162,7 @@ public class IntProviderLinkedIngredientTest {
 
     // Test for singleblock machine with ranged item input
     @GameTest(template = "singleblock_charged_cr", batch = "LinkedIngredients")
-    public static void singleblockLinkedItemItemInput(GameTestHelper helper) {
+    public static void singleblockDirectLinkedItemItemInput(GameTestHelper helper) {
         SimpleTieredMachine machine = (SimpleTieredMachine) getMetaMachine(
                 helper.getBlockEntity(new BlockPos(0, 1, 0)));
 
@@ -191,27 +193,36 @@ public class IntProviderLinkedIngredientTest {
         // check the results of all rolls together
         helper.runAfterDelay(runs * 2 + 1, () -> {
             ItemStack[] results = { itemIn.getStackInSlot(0), itemIn.getStackInSlot(1) };
-            // int check = matchedRolls[0];
 
             int upperLimit = 64 - (runs * 0);
             int lowerLimit = 64 - (runs * 9);
             helper.assertTrue(TestUtils.isItemStackEqual(itemOut.getStackInSlot(0), STONE.copyWithCount(runs)),
-                    "Singleblock CR didn't complete correct number of recipes, completed [" +
+                    "Direct Linked Singleblock CR didn't complete correct number of recipes, completed [" +
                             itemOut.getStackInSlot(0).getCount() + "] not [" + runs + "]");
             helper.assertTrue(TestUtils.isItemWithinRange(results[0], lowerLimit, upperLimit),
-                    "Singleblock CR didn't consume correct number of items, consumed [" +
-                            (64 - results[0].getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
-            helper.assertFalse((results[0].getCount() == lowerLimit),
-                    "Singleblock CR rolled max value on every roll");
-            helper.assertFalse((results[0].getCount() == upperLimit),
-                    "Singleblock CR rolled min value on every roll");
+                    "Direct Linked Singleblock CR didn't consume correct number of marked items, consumed [" +
+                            (64 - results[1].getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertTrue(TestUtils.isItemWithinRange(results[1], lowerLimit, upperLimit),
+                    "Direct Linked Singleblock CR didn't consume correct number of linked items, consumed [" +
+                            (64 - results[1].getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertFalse((results[1].getCount() == lowerLimit),
+                    "Direct Linked Singleblock CR rolled max value on every roll");
+            helper.assertFalse((results[1].getCount() == upperLimit),
+                    "Direct Linked Singleblock CR rolled min value on every roll");
 
-            // check if all the rolls were equal, but not min/max
+            // check if the consumed amounts matched
+            for (int i = 0; i < addedRolls.length; i++) {
+                helper.assertTrue(addedRolls[i] == matchedRolls[i], "Linked Singleblock CR " +
+                        "should have consumed equal ingredient counts! Consumed " + Arrays.toString(addedRolls) +
+                        " - vs - " + Arrays.toString(matchedRolls));
+            }
+
+            // check if all the rolls were equal
             int[] rolls = new int[runs];
-            rolls[0] = 64 - addedRolls[0];
+            rolls[0] = 64 - matchedRolls[0];
             boolean allEqual = false;
             for (int i = 1; i < runs; i++) {
-                rolls[i] = addedRolls[i - 1] - addedRolls[i];
+                rolls[i] = matchedRolls[i - 1] - matchedRolls[i];
                 if (rolls[i] == rolls[i - 1]) {
                     allEqual = true;
                 } else {
@@ -220,7 +231,7 @@ public class IntProviderLinkedIngredientTest {
                 }
             }
             helper.assertFalse(allEqual,
-                    "Singleblock CR rolled the same value on every input roll (rolled " + rolls[0] + ")");
+                    "Direct Linked Singleblock CR rolled the same value on every input roll (rolled " + rolls[0] + ")");
             helper.succeed();
         });
     }

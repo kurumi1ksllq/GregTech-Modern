@@ -24,6 +24,11 @@ public class SpeedItemModule extends TieredItemModule {
     }
 
     @Override
+    public Component getInfoTiered() {
+        return Component.translatable("gtceu.module.speed", (getTier() - 1) * 25);
+    }
+
+    @Override
     public void onArmorTick(LivingEntity entity, AppliedItemModule modifier) {
         super.onArmorTick(entity, modifier);
         if (entity instanceof Player player) {

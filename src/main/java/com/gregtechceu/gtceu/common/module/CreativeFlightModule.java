@@ -23,6 +23,11 @@ public class CreativeFlightModule extends ItemModule implements ITieredItemModul
         super(id);
     }
 
+    @Override
+    public Component getInfo() {
+        return Component.translatable("gtceu.module.creative_flight", 2048);
+    }
+
     private void setMayFly(LivingEntity entity, boolean mayFly) {
         if (entity instanceof Player player) {
             player.getAbilities().mayfly = mayFly;

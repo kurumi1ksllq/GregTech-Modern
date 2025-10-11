@@ -25,6 +25,11 @@ public class FluidStorageModule extends ItemModule implements ICapabilityModule 
     }
 
     @Override
+    public Component getInfo() {
+        return Component.translatable("gtceu.module.fluid_storage");
+    }
+
+    @Override
     public @NotNull <T> LazyOptional<T> getCapability(AppliedItemModule module, @NotNull Capability<T> cap) {
         if (cap == ForgeCapabilities.FLUID_HANDLER_ITEM)
             return module.getModuleItem().getCapability(cap);

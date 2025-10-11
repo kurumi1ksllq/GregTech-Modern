@@ -18,6 +18,11 @@ public class PPEModule extends ItemModule {
     }
 
     @Override
+    public Component getInfo() {
+        return Component.translatable("gtceu.module.ppe");
+    }
+
+    @Override
     public boolean isPPE(AppliedItemModule module) {
         return true;
     }

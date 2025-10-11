@@ -36,6 +36,11 @@ public class BatteryItemModule extends ItemModule implements ICapabilityModule, 
     }
 
     @Override
+    public Component getInfo() {
+        return Component.translatable("gtceu.module.battery");
+    }
+
+    @Override
     public void onInventoryTick(Player player, AppliedItemModule module) {
         super.onInventoryTick(player, module);
         if (module.getAppliedTo() == null || module.getModuleItem() == null) return;

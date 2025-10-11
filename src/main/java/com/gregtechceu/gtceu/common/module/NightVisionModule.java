@@ -14,11 +14,27 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+
+import java.util.List;
 
 public class NightVisionModule extends ItemModule {
 
     public NightVisionModule(ResourceLocation id) {
         super(id);
+    }
+
+    @Override
+    public Component getInfo() {
+        return Component.translatable("gtceu.module.nightvision", 2);
+    }
+
+    @Override
+    public void appendHoverText(Level level, TooltipFlag isAdvanced, List<Component> tooltips,
+                                AppliedItemModule module) {
+        super.appendHoverText(level, isAdvanced, tooltips, module);
+        tooltips.add(Component.translatable("metaarmor.message.nightvision.enabled"));
     }
 
     @Override

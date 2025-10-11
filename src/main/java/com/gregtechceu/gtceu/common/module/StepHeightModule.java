@@ -24,6 +24,11 @@ public class StepHeightModule extends TieredAttributeItemModule {
     }
 
     @Override
+    public Component getInfoTiered() {
+        return Component.translatable("gtceu.module.step_height", getTier() / 8d);
+    }
+
+    @Override
     public Attribute getAttribute(AppliedItemModule module) {
         return ForgeMod.STEP_HEIGHT_ADDITION.get();
     }

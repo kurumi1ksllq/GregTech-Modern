@@ -32,6 +32,14 @@ public class AutoChargeItemModule extends TieredItemModule {
     }
 
     @Override
+    public Component getInfoTiered() {
+        if (getTier() < GTValues.IV)
+            return Component.translatable("gtceu.module.wireless_charging", getRange(), GTValues.V[getTier()]);
+        else return Component.translatable("gtceu.module.wireless_charging.interdimensional", getRange(),
+                GTValues.V[getTier()], GTValues.VNF[GTValues.IV]);
+    }
+
+    @Override
     public void onInventoryTick(Player player, AppliedItemModule module) {
         super.onInventoryTick(player, module);
         long energy = getEnergyToTransfer(player, module);

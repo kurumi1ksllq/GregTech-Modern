@@ -56,6 +56,8 @@ public abstract class ItemModule {
         return getModuleById(ResourceLocation.tryParse(tag.getString("id")));
     }
 
+    public abstract Component getInfo();
+
     public void onAttach(AppliedItemModule module) {}
 
     public void onRemove(AppliedItemModule module) {}

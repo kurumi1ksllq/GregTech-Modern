@@ -22,6 +22,11 @@ public class AutoEatModule extends ItemModule {
     }
 
     @Override
+    public Component getInfo() {
+        return Component.translatable("metaarmor.tooltip.autoeat");
+    }
+
+    @Override
     public void onArmorTick(LivingEntity entity, AppliedItemModule module) {
         super.onArmorTick(entity, module);
         IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getAppliedTo());

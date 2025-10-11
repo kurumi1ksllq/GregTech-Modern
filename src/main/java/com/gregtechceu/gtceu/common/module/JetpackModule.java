@@ -29,6 +29,11 @@ public class JetpackModule extends ArmorLogicItemModule implements ITieredItemMo
     }
 
     @Override
+    public Component getInfo() {
+        return Component.translatable("gtceu.module.jetpack");
+    }
+
+    @Override
     protected @Nullable IArmorLogic getArmorLogic(AppliedItemModule module) {
         return JETPACK;
     }

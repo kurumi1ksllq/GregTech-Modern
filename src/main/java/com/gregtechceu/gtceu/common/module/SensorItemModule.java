@@ -18,6 +18,11 @@ public class SensorItemModule extends TieredItemModule {
     }
 
     @Override
+    public Component getInfoTiered() {
+        return Component.translatable("gtceu.module.sensor");
+    }
+
+    @Override
     public void appendHoverText(Level level, TooltipFlag isAdvanced, List<Component> tooltips,
                                 AppliedItemModule module) {
         super.appendHoverText(level, isAdvanced, tooltips, module);

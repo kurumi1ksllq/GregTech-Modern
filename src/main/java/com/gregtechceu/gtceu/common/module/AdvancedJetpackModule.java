@@ -29,6 +29,11 @@ public class AdvancedJetpackModule extends ArmorLogicItemModule implements ITier
     }
 
     @Override
+    public Component getInfo() {
+        return Component.translatable("gtceu.module.advanced_jetpack");
+    }
+
+    @Override
     protected @Nullable IArmorLogic getArmorLogic(AppliedItemModule module) {
         return JETPACK;
     }

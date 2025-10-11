@@ -22,6 +22,11 @@ public class AirSupplierModule extends ItemModule {
     }
 
     @Override
+    public Component getInfo() {
+        return Component.translatable("metaarmor.tooltip.breath");
+    }
+
+    @Override
     public void onArmorTick(LivingEntity entity, AppliedItemModule module) {
         super.onArmorTick(entity, module);
         IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getAppliedTo());

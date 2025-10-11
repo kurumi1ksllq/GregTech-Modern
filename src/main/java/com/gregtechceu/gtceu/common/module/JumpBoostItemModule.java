@@ -19,6 +19,11 @@ public class JumpBoostItemModule extends TieredItemModule implements IJumpBoostI
     }
 
     @Override
+    public Component getInfoTiered() {
+        return Component.translatable("gtceu.module.jump", getTier() / 4f);
+    }
+
+    @Override
     public float getJumpBoost(AppliedItemModule module) {
         return getTier() / 4f;
     }

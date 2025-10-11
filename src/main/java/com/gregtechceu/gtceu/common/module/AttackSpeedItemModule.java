@@ -24,6 +24,11 @@ public class AttackSpeedItemModule extends TieredAttributeItemModule {
     }
 
     @Override
+    public Component getInfoTiered() {
+        return Component.translatable("gtceu.module.attack_speed", getTier() * 100 / 16d);
+    }
+
+    @Override
     public Attribute getAttribute(AppliedItemModule module) {
         return Attributes.ATTACK_SPEED;
     }

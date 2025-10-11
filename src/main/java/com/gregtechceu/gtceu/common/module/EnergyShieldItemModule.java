@@ -24,9 +24,18 @@ public class EnergyShieldItemModule extends TieredItemModule {
     }
 
     @Override
-    public float changeDamage(LivingEntity entity, AppliedItemModule module, float amount, DamageSource source) {
+    public Component getInfoTiered() {
+        return Component.translatable("gtceu.module.damage_block", getEnergyPerHP());
+    }
+
+    private long getEnergyPerHP() {
         float div = (getTier() - 1) / 4f + 1;
-        long energyPerHP = (long) (8192 / div);
+        return (long) (8192 / div);
+    }
+
+    @Override
+    public float changeDamage(LivingEntity entity, AppliedItemModule module, float amount, DamageSource source) {
+        long energyPerHP = getEnergyPerHP();
         double percentage = 25;
         if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) || source.is(DamageTypeTags.IS_FALL) ||
                 source.is(DamageTypeTags.IS_DROWNING) || source.is(DamageTypes.STARVE)) {

@@ -24,6 +24,11 @@ public class BlockReachItemModule extends TieredAttributeItemModule {
     }
 
     @Override
+    public Component getInfoTiered() {
+        return Component.translatable("gtceu.module.block_reach", getTier() / 2d);
+    }
+
+    @Override
     public Attribute getAttribute(AppliedItemModule module) {
         return ForgeMod.BLOCK_REACH.get();
     }

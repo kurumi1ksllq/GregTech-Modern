@@ -35,15 +35,18 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
 
     @Getter
     private final ResourceLocation id;
+    @Getter
     private final Ingredient equipment;
+    @Getter
     private final Ingredient ingredient;
-    private final ItemModule[] modifier;
+    @Getter
+    private final ItemModule[] modules;
 
     private ItemModule getModule(ItemStack ingredient) {
         int tier = GTUtil.getTier(ingredient.getItem());
-        int lowestTier = (modifier[0] instanceof ITieredItemModule tieredModule) ? tieredModule.getTier() :
+        int lowestTier = (modules[0] instanceof ITieredItemModule tieredModule) ? tieredModule.getTier() :
                 GTValues.ULV;
-        return modifier[Mth.clamp(tier - lowestTier, 0, modifier.length)];
+        return modules[Mth.clamp(tier - lowestTier, 0, modules.length)];
     }
 
     @Override
@@ -150,8 +153,8 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
         public void toNetwork(FriendlyByteBuf buffer, EquipmentFoundryRecipe recipe) {
             recipe.equipment.toNetwork(buffer);
             recipe.ingredient.toNetwork(buffer);
-            buffer.writeInt(recipe.modifier.length);
-            for (ItemModule module : recipe.modifier) buffer.writeResourceLocation(module.getId());
+            buffer.writeInt(recipe.modules.length);
+            for (ItemModule module : recipe.modules) buffer.writeResourceLocation(module.getId());
         }
     }
 }

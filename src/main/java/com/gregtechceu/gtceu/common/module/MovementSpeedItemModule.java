@@ -24,6 +24,11 @@ public class MovementSpeedItemModule extends TieredAttributeItemModule {
     }
 
     @Override
+    public Component getInfoTiered() {
+        return Component.translatable("gtceu.module.movement_speed", getTier() * 100 / 8d);
+    }
+
+    @Override
     public Attribute getAttribute(AppliedItemModule module) {
         return Attributes.MOVEMENT_SPEED;
     }

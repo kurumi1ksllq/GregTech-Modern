@@ -12,9 +12,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
@@ -46,6 +49,8 @@ public class BatteryItemModule extends ItemModule implements ICapabilityModule, 
             long amount = (long) (item.getMaxCharge() * PERCENTAGE / 100 - item.getCharge());
             battery.charge(item.discharge(amount, item.getTier(), true, false, false), battery.getTier(), true, false);
         }
+        // the battery's inventoryTick method does not use inventorySlot or isCurrentItem
+        module.getModuleItem().inventoryTick(player.level(), player, 0, false);
     }
 
     @Override
@@ -109,5 +114,11 @@ public class BatteryItemModule extends ItemModule implements ICapabilityModule, 
                 Component.translatable("metaarmor.tooltip.modifier.battery.hud.info", electricItem.getCharge(),
                         electricItem.getMaxCharge()),
                 x, y + 10, 0xFFFFFF);
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(AppliedItemModule module, Level level, Player player,
+                                                  InteractionHand hand) {
+        return module.getModuleItem().use(level, player, hand);
     }
 }

@@ -8,12 +8,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
 import lombok.Getter;
@@ -129,4 +133,22 @@ public abstract class ItemModule {
      */
     public void onTickRaw(AppliedItemModule module, @Nullable Entity entity, @NotNull Level level,
                           @Nullable BlockPos pos) {}
+
+    public InteractionResultHolder<ItemStack> use(AppliedItemModule module, Level level, Player player,
+                                                  InteractionHand hand) {
+        return InteractionResultHolder.pass(player.getItemInHand(hand));
+    }
+
+    public InteractionResult useOn(AppliedItemModule module, UseOnContext context) {
+        return InteractionResult.PASS;
+    }
+
+    public InteractionResult onItemUseFirst(AppliedItemModule module, UseOnContext context) {
+        return InteractionResult.PASS;
+    }
+
+    public InteractionResult interactLivingEntity(AppliedItemModule module, Player player,
+                                                  LivingEntity interactionTarget, InteractionHand usedHand) {
+        return InteractionResult.PASS;
+    }
 }

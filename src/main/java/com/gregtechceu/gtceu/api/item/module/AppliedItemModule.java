@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.item.module;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.item.capability.ModularItem;
+import com.gregtechceu.gtceu.api.item.capability.ModularItemStack;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -91,7 +91,7 @@ public final class AppliedItemModule {
     public void detach() {
         if (this.appliedTo == null || !this.module.canRemove(this)) return;
         this.module.onRemove(this);
-        this.appliedTo.getOrCreateTagElement(ModularItem.MODULES_TAG).remove(String.valueOf(slot));
+        this.appliedTo.getOrCreateTagElement(ModularItemStack.MODULES_TAG).remove(String.valueOf(slot));
         this.appliedTo = null;
     }
 

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class ModularItem implements IModularItem {
+public class ModularItemStack implements IModularItem {
 
     public static final String MODULE_SLOTS_KEY = "ModuleSlots";
     public static final String MODULES_TAG = "Modules";
@@ -25,7 +25,7 @@ public class ModularItem implements IModularItem {
     private final ItemStack stack;
     private final Function<ItemStack, List<ItemModuleSlot>> defaultSlotGetter;
 
-    public ModularItem(ItemStack stack, Function<ItemStack, List<ItemModuleSlot>> defaultSlotGetter) {
+    public ModularItemStack(ItemStack stack, Function<ItemStack, List<ItemModuleSlot>> defaultSlotGetter) {
         this.stack = stack;
         this.defaultSlotGetter = defaultSlotGetter;
     }

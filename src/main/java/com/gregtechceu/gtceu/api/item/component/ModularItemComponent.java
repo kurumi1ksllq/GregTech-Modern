@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.api.item.component;
 
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
-import com.gregtechceu.gtceu.api.item.capability.ModularItem;
+import com.gregtechceu.gtceu.api.item.capability.ModularItemStack;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.ICapabilityModule;
@@ -10,7 +10,15 @@ import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
 import com.gregtechceu.gtceu.common.data.GTItemModules;
 
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -20,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class ModularItemComponent implements IItemComponent, IComponentCapability {
+public class ModularItemComponent implements IItemComponent, IComponentCapability, IInteractionItem {
 
     private final Function<ItemStack, List<ItemModuleSlot>> defaultSlotGetter;
 
@@ -38,7 +46,7 @@ public class ModularItemComponent implements IItemComponent, IComponentCapabilit
     public @NotNull <T> LazyOptional<T> getCapability(ItemStack stack, @NotNull Capability<T> cap) {
         if (cap == GTCapability.CAPABILITY_MODULAR_ITEM)
             return GTCapability.CAPABILITY_MODULAR_ITEM.orEmpty(cap,
-                    LazyOptional.of(() -> new ModularItem(stack, defaultSlotGetter)));
+                    LazyOptional.of(() -> new ModularItemStack(stack, defaultSlotGetter)));
         else {
             IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
             if (modularItem != null) {
@@ -51,5 +59,55 @@ public class ModularItemComponent implements IItemComponent, IComponentCapabilit
             }
             return LazyOptional.empty();
         }
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Item item, Level level, Player player, InteractionHand usedHand) {
+        IModularItem modularItem = GTCapabilityHelper.getModularItem(player.getItemInHand(usedHand));
+        if (modularItem != null) {
+            for (AppliedItemModule module : modularItem.getAppliedModules()) {
+                InteractionResultHolder<ItemStack> result = module.getModule().use(module, level, player, usedHand);
+                if (result.getResult() != InteractionResult.PASS) return result;
+            }
+        }
+        return IInteractionItem.super.use(item, level, player, usedHand);
+    }
+
+    @Override
+    public InteractionResult useOn(UseOnContext context) {
+        IModularItem modularItem = GTCapabilityHelper.getModularItem(context.getItemInHand());
+        if (modularItem != null) {
+            for (AppliedItemModule module : modularItem.getAppliedModules()) {
+                InteractionResult result = module.getModule().useOn(module, context);
+                if (result != InteractionResult.PASS) return result;
+            }
+        }
+        return IInteractionItem.super.useOn(context);
+    }
+
+    @Override
+    public InteractionResult onItemUseFirst(ItemStack itemStack, UseOnContext context) {
+        IModularItem modularItem = GTCapabilityHelper.getModularItem(itemStack);
+        if (modularItem != null) {
+            for (AppliedItemModule module : modularItem.getAppliedModules()) {
+                InteractionResult result = module.getModule().onItemUseFirst(module, context);
+                if (result != InteractionResult.PASS) return result;
+            }
+        }
+        return IInteractionItem.super.onItemUseFirst(itemStack, context);
+    }
+
+    @Override
+    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity interactionTarget,
+                                                  InteractionHand usedHand) {
+        IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
+        if (modularItem != null) {
+            for (AppliedItemModule module : modularItem.getAppliedModules()) {
+                InteractionResult result = module.getModule().interactLivingEntity(module, player, interactionTarget,
+                        usedHand);
+                if (result != InteractionResult.PASS) return result;
+            }
+        }
+        return IInteractionItem.super.interactLivingEntity(stack, player, interactionTarget, usedHand);
     }
 }

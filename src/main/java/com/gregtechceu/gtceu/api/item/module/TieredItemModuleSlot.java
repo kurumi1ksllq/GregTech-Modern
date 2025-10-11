@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import lombok.Getter;
@@ -24,6 +25,11 @@ public class TieredItemModuleSlot extends ItemModuleSlot {
     @Override
     public boolean acceptsModule(ItemModule module) {
         return !(module instanceof ITieredItemModule tieredModule) || tieredModule.getTier() <= getTier();
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("metaarmor.tooltip.modifier_slot.tiered", GTValues.VNF[getTier()]);
     }
 
     public static TieredItemModuleSlot[] create(ResourceLocation id, int minTier, int maxTier,

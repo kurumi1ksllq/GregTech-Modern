@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.item.module;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import lombok.Getter;
@@ -38,6 +39,8 @@ public abstract class ItemModuleSlot {
     }
 
     public abstract boolean acceptsModule(ItemModule module);
+
+    public abstract Component getDisplayName();
 
     public IGuiTexture getSlotTexture() {
         return null;

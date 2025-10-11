@@ -356,6 +356,11 @@ public class LangHandler {
         provider.add("metaarmor.tooltip.modifier.battery.hud.boots", "Boots battery: %s");
         provider.add("metaarmor.tooltip.modifier.fluid_storage", "Additional fluid storage (%s)");
         provider.add("metaarmor.tooltip.modifier.fluid_storage.tooltip", "Storing %s/%s mB of %s");
+        provider.add("metaarmor.tooltip.modifier", " - %s: %s");
+        provider.add("metaarmor.tooltip.modifier.empty", "Empty");
+        provider.add("metaarmor.tooltip.modifier_slot.universal", "Universal");
+        provider.add("metaarmor.tooltip.modifier_slot.tiered", "Tiered (%s)");
+        provider.add("metaarmor.tooltip.modifiers", "Module slots:");
         provider.add("gtceu.machine.exploded", "%s exploded at (%d, %d, %d)");
         provider.add("metaarmor.hud.status.enabled", "§aON");
         provider.add("metaarmor.hud.status.disabled", "§cOFF");

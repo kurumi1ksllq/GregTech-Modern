@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.item.module;
 import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 public class UniversalItemModuleSlot extends ItemModuleSlot {
@@ -14,6 +15,11 @@ public class UniversalItemModuleSlot extends ItemModuleSlot {
     @Override
     public boolean acceptsModule(ItemModule module) {
         return true;
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("metaarmor.tooltip.modifier_slot.universal");
     }
 
     @Override

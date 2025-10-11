@@ -1,8 +1,10 @@
 package com.gregtechceu.gtceu.api.item.module;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import lombok.Getter;
 
@@ -12,10 +14,21 @@ public abstract class TieredItemModule extends ItemModule implements ITieredItem
 
     @Getter
     private final int tier;
+    @Getter
+    private TieredItemModule[] otherTierModules;
 
     public TieredItemModule(ResourceLocation id, int tier) {
         super(id);
         this.tier = tier;
+    }
+
+    @Override
+    public boolean canApplyTo(ItemStack stack) {
+        if (otherTierModules == null) return super.canApplyTo(stack);
+        IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
+        if (modularItem == null) return false;
+        for (TieredItemModule module : otherTierModules) if (modularItem.getModule(module) != null) return false;
+        return super.canApplyTo(stack);
     }
 
     public static TieredItemModule[] create(ResourceLocation id, int minTier, int maxTier,
@@ -24,6 +37,7 @@ public abstract class TieredItemModule extends ItemModule implements ITieredItem
         for (int i = 0; i <= maxTier - minTier; i++) {
             ResourceLocation resourceLocation = id.withSuffix("_" + (i + minTier));
             result[i] = constructor.apply(resourceLocation, i + minTier);
+            result[i].otherTierModules = result;
         }
         return result;
     }

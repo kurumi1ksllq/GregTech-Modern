@@ -34,7 +34,7 @@ public abstract class TieredItemModule extends ItemModule implements ITieredItem
 
     @Override
     public Component getInfo() {
-        return Component.literal(GTValues.VNF[getTier()]).append(": ");
+        return Component.literal(GTValues.VNF[getTier()]).append(": ").append(getInfoTiered());
     }
 
     public abstract Component getInfoTiered();

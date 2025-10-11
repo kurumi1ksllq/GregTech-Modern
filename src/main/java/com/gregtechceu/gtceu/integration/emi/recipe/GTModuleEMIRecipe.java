@@ -6,7 +6,10 @@ import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.recipe.type.EquipmentFoundryRecipe;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import dev.emi.emi.api.EmiRegistry;
@@ -58,22 +61,29 @@ public class GTModuleEMIRecipe implements EmiRecipe {
 
     @Override
     public int getDisplayWidth() {
-        return 134;
+        return 160;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 200;
+        int height = 35;
+        for (ItemModule module : recipe.getModules()) {
+            height += Minecraft.getInstance().font.wordWrapHeight(module.getInfo(), 152);
+        }
+        return height;
     }
 
     @Override
     public void addWidgets(WidgetHolder widgets) {
-        widgets.addSlot(EmiIngredient.of(recipe.getEquipment()), 32, 16);
-        widgets.addSlot(EmiIngredient.of(recipe.getIngredient()), 64, 16);
-        int y = 32;
+        widgets.addSlot(EmiIngredient.of(recipe.getEquipment()), 32, 4);
+        widgets.addSlot(EmiIngredient.of(recipe.getIngredient()), 64, 4);
+        int y = 30;
         for (ItemModule module : recipe.getModules()) {
-            widgets.addText(module.getInfo(), 16, y, 0xFFFFFFFF, true);
-            y += 9;
+            Component component = module.getInfo();
+            for (FormattedCharSequence line : Minecraft.getInstance().font.split(component, 152)) {
+                widgets.addText(line, 4, y, 0xFFFFFFFF, false);
+                y += 9;
+            }
         }
     }
 

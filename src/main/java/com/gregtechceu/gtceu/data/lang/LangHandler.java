@@ -376,12 +376,12 @@ public class LangHandler {
         provider.add("metaarmor.energy_share.tooltip", "Supply mode: %s");
         provider.add("metaarmor.energy_share.tooltip.guide",
                 "To change mode shift-right click when holding item");
-        provider.add("gtceu.module.speed", "Increases sprint speed by %s%");
+        provider.add("gtceu.module.speed", "Increases sprint speed by %s%%");
         provider.add("gtceu.module.jump", "Increases jump height by %s blocks");
         provider.add("gtceu.module.damage_block",
                 "Blocks any amount of damage with EU (%s EU per HP, requires any battery module)");
-        provider.add("gtceu.module.attack_speed", "Increases attack speed by %s%");
-        provider.add("gtceu.module.attack_damage", "Increases attack damage by %s%");
+        provider.add("gtceu.module.attack_speed", "Increases attack speed by %s%%");
+        provider.add("gtceu.module.attack_damage", "Increases attack damage by %s%%");
         provider.add("gtceu.module.battery",
                 "Allows the item to store energy or increases its capacity (capacity is equal to the battery's)");
         provider.add("gtceu.module.block_reach", "Increases block reach by %s blocks");
@@ -390,10 +390,10 @@ public class LangHandler {
         provider.add("gtceu.module.jetpack", "Makes the chestplate work like a jetpack (requires any battery module)");
         provider.add("gtceu.module.advanced_jetpack",
                 "Makes the chestplate work like an advanced jetpack (requires any battery module)");
-        provider.add("gtceu.module.movement_speed", "Increases all movement speed by %s%");
-        provider.add("gtceu.module.sneak_speed", "Increases sneaking speed by %s%");
+        provider.add("gtceu.module.movement_speed", "Increases all movement speed by %s%%");
+        provider.add("gtceu.module.sneak_speed", "Increases sneaking speed by %s%%");
         provider.add("gtceu.module.step_height", "Increases step height by %s blocks");
-        provider.add("gtceu.module.swim_speed", "Increases swim speed by %s%");
+        provider.add("gtceu.module.swim_speed", "Increases swim speed by %s%%");
         provider.add("gtceu.module.sensor", "Reports machine explosions (for machines placed by the player)");
         provider.add("gtceu.module.wireless_charging",
                 "Allows wireless charging in the range of %s blocks (%s EU/t max), bind to a charger by right-clicking on it");

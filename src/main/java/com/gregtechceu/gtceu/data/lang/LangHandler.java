@@ -396,9 +396,9 @@ public class LangHandler {
         provider.add("gtceu.module.swim_speed", "Increases swim speed by %s%%");
         provider.add("gtceu.module.sensor", "Reports machine explosions (for machines placed by the player)");
         provider.add("gtceu.module.wireless_charging",
-                "Allows wireless charging in the range of %s blocks (%s EU/t max), bind to a charger by right-clicking on it");
+                "Allows wireless charging in the range of %s blocks (1A %s max), bind to a charger by right-clicking on it");
         provider.add("gtceu.module.wireless_charging.interdimensional",
-                "Allows wireless charging in the range of %s blocks (%s EU/t max), interdimensional if a >=%s field generator is present");
+                "Allows wireless charging in the range of %s blocks (1A %s max), interdimensional if an at least %s field generator is present");
         provider.add("gtceu.module.creative_flight", "Allows creative flight (consumes %s EU/t while flying)");
         provider.add("gtceu.module.fluid_storage",
                 "Allows the item to store liquids or increases its capacity (capacity is equal to the tank's)");
@@ -407,7 +407,7 @@ public class LangHandler {
                 "Provides protection from environmental hazards if applied to all armor pieces");
         provider.add("gtceu.module.damage_block.short", "%s EU per HP");
         provider.add("gtceu.module.short_percentage", "... by %s%%");
-        provider.add("gtceu.module.wireless_charging.short", "%s blocks, %s EU/t max");
+        provider.add("gtceu.module.wireless_charging.short", "%s blocks, 1A %s max");
         provider.add("gtceu.module.block_reach.short", "... by %s blocks");
         provider.add("emi.category.gtceu.equipment_foundry", "Equipment Foundry");
         provider.add("gtceu.equipment_foundry.gui.applied_to", "Applied to:");

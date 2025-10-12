@@ -81,7 +81,7 @@ public class GTModuleEMIRecipe implements EmiRecipe {
         Component moduleItem = Component.translatable("gtceu.equipment_foundry.gui.module_item");
         widgets.addText(appliedTo, 4, 8, 0xFFFFFFFF, true);
         widgets.addText(moduleItem, font.width(appliedTo) + 36, 8, 0xFFFFFFFF, true);
-        widgets.addSlot(EmiIngredient.of(recipe.getEquipment()), 4 + font.width(appliedTo), 4);
+        widgets.addSlot(EmiIngredient.of(recipe.getEquipment()), 8 + font.width(appliedTo), 4);
         widgets.addSlot(EmiIngredient.of(recipe.getIngredient()), 40 + font.width(appliedTo) + font.width(moduleItem),
                 4);
         int y = 30;

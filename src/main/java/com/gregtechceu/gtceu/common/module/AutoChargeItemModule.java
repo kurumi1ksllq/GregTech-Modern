@@ -35,10 +35,11 @@ public class AutoChargeItemModule extends TieredItemModule {
     public Component getInfoTiered() {
         if (getTier() == GTValues.LV || getTier() == GTValues.IV) {
             if (getTier() < GTValues.IV)
-                return Component.translatable("gtceu.module.wireless_charging", getRange(), GTValues.V[getTier()]);
+                return Component.translatable("gtceu.module.wireless_charging", getRange(), GTValues.VNF[getTier()]);
             else return Component.translatable("gtceu.module.wireless_charging.interdimensional", getRange(),
-                    GTValues.V[getTier()], GTValues.VNF[GTValues.IV]);
-        } else return Component.translatable("gtceu.module.wireless_charging.short", getRange(), GTValues.V[getTier()]);
+                    GTValues.VNF[getTier()], GTValues.VNF[GTValues.IV]);
+        } else
+            return Component.translatable("gtceu.module.wireless_charging.short", getRange(), GTValues.VNF[getTier()]);
     }
 
     @Override

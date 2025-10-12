@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.recipe.type.EquipmentFoundryRecipe;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -75,12 +76,18 @@ public class GTModuleEMIRecipe implements EmiRecipe {
 
     @Override
     public void addWidgets(WidgetHolder widgets) {
-        widgets.addSlot(EmiIngredient.of(recipe.getEquipment()), 32, 4);
-        widgets.addSlot(EmiIngredient.of(recipe.getIngredient()), 64, 4);
+        Font font = Minecraft.getInstance().font;
+        Component appliedTo = Component.translatable("gtceu.equipment_foundry.gui.applied_to");
+        Component moduleItem = Component.translatable("gtceu.equipment_foundry.gui.module_item");
+        widgets.addText(appliedTo, 4, 8, 0xFFFFFFFF, true);
+        widgets.addText(moduleItem, font.width(appliedTo) + 36, 8, 0xFFFFFFFF, true);
+        widgets.addSlot(EmiIngredient.of(recipe.getEquipment()), 4 + font.width(appliedTo), 4);
+        widgets.addSlot(EmiIngredient.of(recipe.getIngredient()), 40 + font.width(appliedTo) + font.width(moduleItem),
+                4);
         int y = 30;
         for (ItemModule module : recipe.getModules()) {
             Component component = module.getInfo();
-            for (FormattedCharSequence line : Minecraft.getInstance().font.split(component, getDisplayWidth() - 8)) {
+            for (FormattedCharSequence line : font.split(component, getDisplayWidth() - 8)) {
                 widgets.addText(line, 4, y, 0xFFFFFFFF, true);
                 y += 9;
             }

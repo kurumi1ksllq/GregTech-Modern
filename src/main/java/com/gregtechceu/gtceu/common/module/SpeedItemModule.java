@@ -25,14 +25,16 @@ public class SpeedItemModule extends TieredItemModule {
 
     @Override
     public Component getInfoTiered() {
-        return Component.translatable("gtceu.module.speed", (getTier() - 1) * 25);
+        if (getTier() == GTValues.LV)
+            return Component.translatable("gtceu.module.speed", getTier() * 25);
+        else return Component.translatable("gtceu.module.short_percentage", getTier() * 25);
     }
 
     @Override
     public void onArmorTick(LivingEntity entity, AppliedItemModule modifier) {
         super.onArmorTick(entity, modifier);
         if (entity instanceof Player player) {
-            float mul = (getTier() - 1) / 4f + 1;
+            float mul = getTier() / 4f + 1;
             boolean sprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
             boolean jumping = SyncedKeyMappings.VANILLA_JUMP.isKeyDown(player);
             boolean sneaking = SyncedKeyMappings.VANILLA_SNEAK.isKeyDown(player);

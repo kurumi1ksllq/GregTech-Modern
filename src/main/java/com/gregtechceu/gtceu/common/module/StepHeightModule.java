@@ -25,7 +25,9 @@ public class StepHeightModule extends TieredAttributeItemModule {
 
     @Override
     public Component getInfoTiered() {
-        return Component.translatable("gtceu.module.step_height", getTier() / 8d);
+        if (getTier() == GTValues.LV)
+            return Component.translatable("gtceu.module.step_height", getTier() / 8d);
+        else return Component.translatable("gtceu.module.block_reach.short", getTier() / 8d);
     }
 
     @Override

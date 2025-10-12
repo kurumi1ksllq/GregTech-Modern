@@ -405,6 +405,10 @@ public class LangHandler {
         provider.add("gtceu.module.nightvision", "Provides night vision (consumes %s EU/t while active)");
         provider.add("gtceu.module.ppe",
                 "Provides protection from environmental hazards if applied to all armor pieces");
+        provider.add("gtceu.module.damage_block.short", "%s EU per HP");
+        provider.add("gtceu.module.short_percentage", "... by %s%%");
+        provider.add("gtceu.module.wireless_charging.short", "%s blocks, %s EU/t max");
+        provider.add("gtceu.module.block_reach.short", "... by %s blocks");
         provider.add("metaitem.record.sus.tooltip", "§7Leonz - Among Us Drip");
         provider.add("item.gtceu.nan_certificate.tooltip", "Challenge Accepted!");
         provider.add("item.gtceu.blacklight.tooltip", "Long-Wave §dUltraviolet§7 light source");

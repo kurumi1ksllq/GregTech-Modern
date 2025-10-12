@@ -20,7 +20,9 @@ public class JumpBoostItemModule extends TieredItemModule implements IJumpBoostI
 
     @Override
     public Component getInfoTiered() {
-        return Component.translatable("gtceu.module.jump", getTier() / 4f);
+        if (getTier() == GTValues.LV)
+            return Component.translatable("gtceu.module.jump", getTier() / 4f);
+        else return Component.translatable("gtceu.module.block_reach.short", getTier() / 4f);
     }
 
     @Override

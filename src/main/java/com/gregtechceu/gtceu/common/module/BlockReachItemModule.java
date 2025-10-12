@@ -25,7 +25,9 @@ public class BlockReachItemModule extends TieredAttributeItemModule {
 
     @Override
     public Component getInfoTiered() {
-        return Component.translatable("gtceu.module.block_reach", getTier() / 2d);
+        if (getTier() == GTValues.LV)
+            return Component.translatable("gtceu.module.block_reach", getTier() / 2d);
+        else return Component.translatable("gtceu.module.block_reach.short", getTier() / 2d);
     }
 
     @Override

@@ -409,6 +409,7 @@ public class LangHandler {
         provider.add("gtceu.module.short_percentage", "... by %s%%");
         provider.add("gtceu.module.wireless_charging.short", "%s blocks, %s EU/t max");
         provider.add("gtceu.module.block_reach.short", "... by %s blocks");
+        provider.add("emi.category.gtceu.equipment_foundry", "Equipment Foundry");
         provider.add("metaitem.record.sus.tooltip", "§7Leonz - Among Us Drip");
         provider.add("item.gtceu.nan_certificate.tooltip", "Challenge Accepted!");
         provider.add("item.gtceu.blacklight.tooltip", "Long-Wave §dUltraviolet§7 light source");

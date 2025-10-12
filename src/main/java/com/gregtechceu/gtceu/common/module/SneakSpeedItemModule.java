@@ -23,14 +23,14 @@ public class SneakSpeedItemModule extends TieredItemModule {
 
     @Override
     public Component getInfoTiered() {
-        return Component.translatable("gtceu.module.sneak_speed", (getTier() - 1) / 8f);
+        return Component.translatable("gtceu.module.sneak_speed", getTier() * 100 / 8f);
     }
 
     @Override
     public void onArmorTick(LivingEntity entity, AppliedItemModule module) {
         super.onArmorTick(entity, module);
         if (entity instanceof Player player) {
-            float mul = (getTier() - 1) / 8f + 1;
+            float mul = getTier() / 8f + 1;
             boolean jumping = SyncedKeyMappings.VANILLA_JUMP.isKeyDown(player);
             boolean sneaking = SyncedKeyMappings.VANILLA_SNEAK.isKeyDown(player);
 

@@ -85,11 +85,22 @@ public class GTModuleEMIRecipe implements EmiRecipe {
         widgets.addSlot(EmiIngredient.of(recipe.getIngredient()), 40 + font.width(appliedTo) + font.width(moduleItem),
                 4);
         int y = 30;
+        FormattedCharSequence prevLine = null;
         for (ItemModule module : recipe.getModules()) {
             Component component = module.getInfo();
+            boolean firstLine = true;
             for (FormattedCharSequence line : font.split(component, getDisplayWidth() - 8)) {
-                widgets.addText(line, 4, y, 0xFFFFFFFF, true);
-                y += 9;
+                if (prevLine != null && firstLine && font.width(prevLine) < getDisplayWidth() / 2 - 4 &&
+                        font.width(line) < getDisplayWidth() / 2 - 4) {
+                    widgets.addText(line, getDisplayWidth() / 2 + 4, y - 9, 0xFFFFFFFF, true);
+                    prevLine = null;
+                } else {
+                    widgets.addText(line, 4, y, 0xFFFFFFFF, true);
+                    y += 9;
+                    prevLine = line;
+                }
+                if (!firstLine) prevLine = null;
+                firstLine = false;
             }
         }
     }

@@ -374,7 +374,6 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
             isActive = false;
             return;
         }
-        if (recipe.linkedIngredients) recipe.rollLinkedIngredients();
         var handledIO = handleRecipeIO(recipe, IO.IN);
         if (handledIO.isSuccess()) {
             if (lastRecipe != null && !recipe.equals(lastRecipe)) {

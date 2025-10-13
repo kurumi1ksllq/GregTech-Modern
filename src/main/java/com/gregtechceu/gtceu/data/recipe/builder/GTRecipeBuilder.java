@@ -104,8 +104,6 @@ public class GTRecipeBuilder {
     private boolean itemMaterialInfo = false;
     private boolean fluidMaterialInfo = false;
     private boolean removePreviousMatInfo = false;
-    @Getter
-    private boolean linkedIngredients = false;
     public GTRecipeCategory recipeCategory;
     @Setter
     public @Nullable BiConsumer<GTRecipeBuilder, Consumer<FinishedRecipe>> onSave;
@@ -139,7 +137,6 @@ public class GTRecipeBuilder {
         this.data = toCopy.data.copy();
         this.duration = toCopy.duration;
         this.recipeCategory = toCopy.recipeCategory;
-        this.linkedIngredients = toCopy.linkedIngredients;
     }
 
     public static GTRecipeBuilder of(ResourceLocation id, GTRecipeType recipeType) {
@@ -171,7 +168,6 @@ public class GTRecipeBuilder {
         copy.perTick = this.perTick;
         copy.recipeCategory = this.recipeCategory;
         copy.onSave = this.onSave;
-        copy.linkedIngredients = this.linkedIngredients;
         return copy;
     }
 
@@ -188,7 +184,6 @@ public class GTRecipeBuilder {
         var t = (perTick ? tickInput : input);
         warnTooManyIngredients(capability, true, t, 1);
         t.computeIfAbsent(capability, c -> new ArrayList<>()).add(makeContent(capability.of(obj)));
-        if (obj instanceof ILinkedIngredient) linkedIngredients = true;
         return this;
     }
 
@@ -204,7 +199,6 @@ public class GTRecipeBuilder {
         var t = (perTick ? tickOutput : output);
         warnTooManyIngredients(capability, false, t, 1);
         t.computeIfAbsent(capability, c -> new ArrayList<>()).add(makeContent(capability.of(obj)));
-        if (obj instanceof ILinkedIngredient) linkedIngredients = true;
         return this;
     }
 
@@ -1902,7 +1896,7 @@ public class GTRecipeBuilder {
         return new GTRecipe(recipeType, id.withPrefix(recipeType.registryName.getPath() + "/"),
                 input, output, tickInput, tickOutput,
                 inputChanceLogic, outputChanceLogic, tickInputChanceLogic, tickOutputChanceLogic,
-                conditions, List.of(), data, duration, recipeCategory, linkedIngredients);
+                conditions, List.of(), data, duration, recipeCategory);
     }
 
     protected void warnTooManyIngredients(RecipeCapability<?> capability,

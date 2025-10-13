@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
-import com.gregtechceu.gtceu.api.recipe.ingredient.ILinkedIngredient;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.RegistryAccess;
@@ -55,7 +54,6 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
     public int subtickParallels = 1;
     public int batchParallels = 1;
     public int ocLevel = 0;
-    public boolean linkedIngredients = false;
     public final GTRecipeCategory recipeCategory;
     // Lazy fields, since we need the recipe EUt very often
     @Getter(lazy = true)
@@ -79,27 +77,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
                     @NotNull GTRecipeCategory recipeCategory) {
         this(recipeType, null, inputs, outputs, tickInputs, tickOutputs,
                 inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                conditions, ingredientActions, data, duration, recipeCategory, false);
-    }
-
-    public GTRecipe(GTRecipeType recipeType,
-                    Map<RecipeCapability<?>, List<Content>> inputs,
-                    Map<RecipeCapability<?>, List<Content>> outputs,
-                    Map<RecipeCapability<?>, List<Content>> tickInputs,
-                    Map<RecipeCapability<?>, List<Content>> tickOutputs,
-                    Map<RecipeCapability<?>, ChanceLogic> inputChanceLogics,
-                    Map<RecipeCapability<?>, ChanceLogic> outputChanceLogics,
-                    Map<RecipeCapability<?>, ChanceLogic> tickInputChanceLogics,
-                    Map<RecipeCapability<?>, ChanceLogic> tickOutputChanceLogics,
-                    List<RecipeCondition> conditions,
-                    List<?> ingredientActions,
-                    @NotNull CompoundTag data,
-                    int duration,
-                    @NotNull GTRecipeCategory recipeCategory,
-                    boolean linkedIngredients) {
-        this(recipeType, null, inputs, outputs, tickInputs, tickOutputs,
-                inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                conditions, ingredientActions, data, duration, recipeCategory, linkedIngredients);
+                conditions, ingredientActions, data, duration, recipeCategory);
     }
 
     public GTRecipe(GTRecipeType recipeType,
@@ -117,27 +95,6 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
                     @NotNull CompoundTag data,
                     int duration,
                     @NotNull GTRecipeCategory recipeCategory) {
-        this(recipeType, null, inputs, outputs, tickInputs, tickOutputs,
-                inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                conditions, ingredientActions, data, duration, recipeCategory, false);
-    }
-
-    public GTRecipe(GTRecipeType recipeType,
-                    @Nullable ResourceLocation id,
-                    Map<RecipeCapability<?>, List<Content>> inputs,
-                    Map<RecipeCapability<?>, List<Content>> outputs,
-                    Map<RecipeCapability<?>, List<Content>> tickInputs,
-                    Map<RecipeCapability<?>, List<Content>> tickOutputs,
-                    Map<RecipeCapability<?>, ChanceLogic> inputChanceLogics,
-                    Map<RecipeCapability<?>, ChanceLogic> outputChanceLogics,
-                    Map<RecipeCapability<?>, ChanceLogic> tickInputChanceLogics,
-                    Map<RecipeCapability<?>, ChanceLogic> tickOutputChanceLogics,
-                    List<RecipeCondition> conditions,
-                    List<?> ingredientActions,
-                    @NotNull CompoundTag data,
-                    int duration,
-                    @NotNull GTRecipeCategory recipeCategory,
-                    boolean linkedIngredients) {
         this.recipeType = recipeType;
         this.id = id;
 
@@ -156,7 +113,6 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
         this.data = data;
         this.duration = duration;
         this.recipeCategory = (recipeCategory != GTRecipeCategory.DEFAULT) ? recipeCategory : recipeType.getCategory();
-        this.linkedIngredients = linkedIngredients;
     }
 
     public GTRecipe copy() {
@@ -174,7 +130,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
                 new HashMap<>(inputChanceLogics), new HashMap<>(outputChanceLogics),
                 new HashMap<>(tickInputChanceLogics), new HashMap<>(tickOutputChanceLogics),
                 new ArrayList<>(conditions),
-                new ArrayList<>(ingredientActions), data, duration, recipeCategory, linkedIngredients);
+                new ArrayList<>(ingredientActions), data, duration, recipeCategory);
         if (modifyDuration) {
             copied.duration = modifier.apply(this.duration);
         }
@@ -182,7 +138,6 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
         copied.parallels = parallels;
         copied.batchParallels = batchParallels;
         copied.subtickParallels = subtickParallels;
-        copied.linkedIngredients = linkedIngredients;
         return copied;
     }
 
@@ -271,24 +226,6 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
             a += stack.amperage();
         }
         return new EnergyStack(v, a);
-    }
-
-    public void rollLinkedIngredients() {
-        inputs.values()
-                .stream()
-                .flatMap(List::stream)
-                .map(Content::getContent)
-                .filter(ILinkedIngredient.class::isInstance)
-                .map(ILinkedIngredient.class::cast)
-                .forEachOrdered(ingredient -> ingredient.roll(this));
-
-        outputs.values()
-                .stream()
-                .flatMap(List::stream)
-                .map(Content::getContent)
-                .filter(ILinkedIngredient.class::isInstance)
-                .map(ILinkedIngredient.class::cast)
-                .forEachOrdered(ingredient -> ingredient.roll(this));
     }
 
     public int getTotalRuns() {

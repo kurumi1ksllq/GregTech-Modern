@@ -1,16 +1,24 @@
 package com.gregtechceu.gtceu.integration.emi.recipe;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.item.module.ItemModule;
+import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.item.module.TieredItemModule;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.recipe.type.EquipmentFoundryRecipe;
+import com.gregtechceu.gtceu.utils.GTStringUtils;
+
+import com.lowdragmc.lowdraglib.emi.ModularEmiRecipe;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import dev.emi.emi.api.EmiRegistry;
@@ -20,10 +28,13 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class GTModuleEMIRecipe implements EmiRecipe {
+public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements EmiRecipe {
 
     public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(
             GTCEu.id("equipment_foundry"),
@@ -32,6 +43,7 @@ public class GTModuleEMIRecipe implements EmiRecipe {
     private final EquipmentFoundryRecipe recipe;
 
     public GTModuleEMIRecipe(EquipmentFoundryRecipe recipe) {
+        super(() -> createUIWidget(recipe));
         this.recipe = recipe;
     }
 
@@ -67,15 +79,14 @@ public class GTModuleEMIRecipe implements EmiRecipe {
 
     @Override
     public int getDisplayHeight() {
-        int height = 35;
-        for (ItemModule module : recipe.getModules()) {
-            height += Minecraft.getInstance().font.wordWrapHeight(module.getInfo(), getDisplayWidth() - 8);
-        }
+        int height = 57;
+        height += Minecraft.getInstance().font.wordWrapHeight(recipe.getModules()[0].getInfo(), getDisplayWidth() - 8);
         return height;
     }
 
     @Override
     public void addWidgets(WidgetHolder widgets) {
+        super.addWidgets(widgets);
         Font font = Minecraft.getInstance().font;
         Component appliedTo = Component.translatable("gtceu.equipment_foundry.gui.applied_to");
         Component moduleItem = Component.translatable("gtceu.equipment_foundry.gui.module_item");
@@ -84,25 +95,65 @@ public class GTModuleEMIRecipe implements EmiRecipe {
         widgets.addSlot(EmiIngredient.of(recipe.getEquipment()), 8 + font.width(appliedTo), 4);
         widgets.addSlot(EmiIngredient.of(recipe.getIngredient()), 40 + font.width(appliedTo) + font.width(moduleItem),
                 4);
+    }
+
+    public static WidgetGroup createUIWidget(EquipmentFoundryRecipe recipe) {
+        Font font = Minecraft.getInstance().font;
+        WidgetGroup widgets = new WidgetGroup();
         int y = 30;
-        FormattedCharSequence prevLine = null;
-        for (ItemModule module : recipe.getModules()) {
-            Component component = module.getInfo();
-            boolean firstLine = true;
-            for (FormattedCharSequence line : font.split(component, getDisplayWidth() - 4)) {
-                if (prevLine != null && firstLine && font.width(prevLine) < getDisplayWidth() / 2 - 4 &&
-                        font.width(line) < getDisplayWidth() / 2 - 2) {
-                    widgets.addText(line, getDisplayWidth() / 2 + 2, y - 9, 0xFFFFFFFF, true);
-                    prevLine = null;
-                } else {
-                    widgets.addText(line, 2, y, 0xFFFFFFFF, true);
-                    y += 9;
-                    prevLine = line;
-                }
-                if (!firstLine) prevLine = null;
-                firstLine = false;
+        List<LabelWidget> desc = new ArrayList<>();
+        if (recipe.getModules()[0] instanceof TieredItemModule) {
+            TieredItemModule[] tieredModules = Arrays.stream(recipe.getModules())
+                    .map(module -> (TieredItemModule) module).toArray(TieredItemModule[]::new);
+            int minTier = tieredModules[0].getTier();
+            int maxTier = tieredModules[tieredModules.length - 1].getTier();
+            if (minTier != maxTier) {
+                widgets.addWidget(new LabelWidget(2, y, Component.translatable(
+                        "gtceu.equipment_foundry.gui.supports_tiers",
+                        GTValues.VNF[minTier],
+                        GTValues.VNF[maxTier])));
+                y += font.lineHeight;
             }
+            int[] selectedTier = new int[] { tieredModules[0].getTier() };
+            LabelWidget tierLabel = new LabelWidget(2, y, Component.translatable(
+                    "gtceu.equipment_foundry.gui.tier",
+                    GTValues.VNF[selectedTier[0]]));
+            widgets.addWidget(tierLabel);
+            int finalY = y;
+            GTCEu.LOGGER.info(font.width(Component.translatable("gtceu.equipment_foundry.gui.tier", "")));
+            ButtonWidget button = new ButtonWidget(
+                    115, y,
+                    font.width(GTValues.VNF[selectedTier[0]]), tierLabel.getSizeHeight(), click -> {
+                        if (click.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) selectedTier[0]++;
+                        if (click.button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) selectedTier[0]--;
+                        selectedTier[0] = Mth.clamp(selectedTier[0], minTier, maxTier);
+                        tierLabel.setComponent(Component.translatable("gtceu.equipment_foundry.gui.tier",
+                                GTValues.VNF[selectedTier[0]]));
+                        if (!desc.isEmpty()) {
+                            desc.forEach(widget -> widget.setComponent(Component.literal("")));
+                            int i = 0;
+                            for (FormattedCharSequence line : font
+                                    .split(tieredModules[selectedTier[0] - minTier].getInfo(), 196)) {
+                                Component component = GTStringUtils.toComponent(line);
+                                if (desc.size() <= i) {
+                                    desc.add(new LabelWidget(2, finalY + (i + 2) * font.lineHeight, component));
+                                    widgets.addWidget(desc.get(i));
+                                }
+                                desc.get(i).setComponent(component);
+                                i++;
+                            }
+                        }
+                    });
+            button.setHoverTooltips(Component.translatable("gtceu.equipment_foundry.gui.tooltip.tier_switch"));
+            widgets.addWidget(button);
+            y += 2 * font.lineHeight;
         }
+        for (FormattedCharSequence line : font.split(recipe.getModules()[0].getInfo(), 196)) {
+            desc.add(new LabelWidget(2, y, GTStringUtils.toComponent(line)));
+            widgets.addWidget(desc.get(desc.size() - 1));
+            y += font.lineHeight;
+        }
+        return widgets;
     }
 
     public static void addRecipes(EmiRegistry registry) {

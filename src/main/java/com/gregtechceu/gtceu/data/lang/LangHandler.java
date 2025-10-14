@@ -398,7 +398,7 @@ public class LangHandler {
         provider.add("gtceu.module.wireless_charging",
                 "Allows wireless charging in the range of %s blocks (1A %s max), bind to a charger by right-clicking on it");
         provider.add("gtceu.module.wireless_charging.interdimensional",
-                "Allows wireless charging in the range of %s blocks (1A %s max), interdimensional if an at least %s field generator is present");
+                "%s blocks, 1A %s max, interdimensional if an at least %s field generator is present");
         provider.add("gtceu.module.creative_flight", "Allows creative flight (consumes %s EU/t while flying)");
         provider.add("gtceu.module.fluid_storage",
                 "Allows the item to store liquids or increases its capacity (capacity is equal to the tank's)");
@@ -412,6 +412,10 @@ public class LangHandler {
         provider.add("emi.category.gtceu.equipment_foundry", "Equipment Foundry");
         provider.add("gtceu.equipment_foundry.gui.applied_to", "Applied to:");
         provider.add("gtceu.equipment_foundry.gui.module_item", "Module item:");
+        provider.add("gtceu.equipment_foundry.gui.supports_tiers", "Module tiers: %s-%s");
+        provider.add("gtceu.equipment_foundry.gui.tier", "Viewing stats for tier: %s");
+        provider.add("gtceu.equipment_foundry.gui.tooltip.tier_switch",
+                "Left-click to increase tier by 1\nRight-click to decrease tier by 1");
         provider.add("metaitem.record.sus.tooltip", "§7Leonz - Among Us Drip");
         provider.add("item.gtceu.nan_certificate.tooltip", "Challenge Accepted!");
         provider.add("item.gtceu.blacklight.tooltip", "Long-Wave §dUltraviolet§7 light source");

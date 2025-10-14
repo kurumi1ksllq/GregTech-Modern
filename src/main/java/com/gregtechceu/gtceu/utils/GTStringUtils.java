@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -220,6 +221,15 @@ public class GTStringUtils {
             }
         }
         component.append("]");
+        return component;
+    }
+
+    public static MutableComponent toComponent(FormattedCharSequence charSequence) {
+        MutableComponent component = MutableComponent.create(ComponentContents.EMPTY);
+        charSequence.accept((pos, style, codePoint) -> {
+            component.append(Component.literal(Character.toString(codePoint)).withStyle(style));
+            return true;
+        });
         return component;
     }
 }

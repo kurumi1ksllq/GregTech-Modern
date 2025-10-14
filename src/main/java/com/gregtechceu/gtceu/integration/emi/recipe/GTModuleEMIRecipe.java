@@ -89,13 +89,13 @@ public class GTModuleEMIRecipe implements EmiRecipe {
         for (ItemModule module : recipe.getModules()) {
             Component component = module.getInfo();
             boolean firstLine = true;
-            for (FormattedCharSequence line : font.split(component, getDisplayWidth() - 8)) {
+            for (FormattedCharSequence line : font.split(component, getDisplayWidth() - 4)) {
                 if (prevLine != null && firstLine && font.width(prevLine) < getDisplayWidth() / 2 - 4 &&
-                        font.width(line) < getDisplayWidth() / 2 - 4) {
-                    widgets.addText(line, getDisplayWidth() / 2 + 4, y - 9, 0xFFFFFFFF, true);
+                        font.width(line) < getDisplayWidth() / 2 - 2) {
+                    widgets.addText(line, getDisplayWidth() / 2 + 2, y - 9, 0xFFFFFFFF, true);
                     prevLine = null;
                 } else {
-                    widgets.addText(line, 4, y, 0xFFFFFFFF, true);
+                    widgets.addText(line, 2, y, 0xFFFFFFFF, true);
                     y += 9;
                     prevLine = line;
                 }

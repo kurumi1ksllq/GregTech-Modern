@@ -268,6 +268,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
     }
 
     public void rollChancesAndEstablishLinks() {
+        // TODO: roll for chances, modify input/output maps
         var rangedContents = getFullContents()
                 .map(Content::getContent)
                 .filter(IRangedIngredient.class::isInstance)
@@ -277,6 +278,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
     }
 
     public void rollTickChancesAndTickLinks(){
+        // TODO: copy and roll tick chances, flatmap
         var rangedTickContents = getFullTickContents()
                 .map(Content::getContent)
                 .filter(IRangedIngredient.class::isInstance)

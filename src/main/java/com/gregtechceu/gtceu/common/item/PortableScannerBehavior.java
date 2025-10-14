@@ -323,7 +323,7 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
                         .resolve();
                 if (recipeLogicCap.isPresent()) {
                     RecipeLogic recipeLogic = recipeLogicCap.get();
-                    GTRecipe recipe = recipeLogic.getLastRecipe();
+                    GTRecipe recipe = recipeLogic.getLastDisplayedRecipe();
                     if (recipeLogic.getStatus().equals(RecipeLogic.Status.WAITING)) {
                         list.add(Component.translatable("behavior.portable_scanner.divider"));
                         list.add(Component.translatable("gtceu.multiblock.waiting"));

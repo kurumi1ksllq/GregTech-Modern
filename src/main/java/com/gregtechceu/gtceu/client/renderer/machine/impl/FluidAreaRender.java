@@ -82,7 +82,7 @@ public class FluidAreaRender extends DynamicRender<IFluidRenderMulti, FluidAreaR
             return;
         }
         if (!fixedFluid) {
-            var lastRecipe = machine.getRecipeLogic().getLastRecipe();
+            var lastRecipe = machine.getRecipeLogic().getLastDisplayedRecipe();
             if (lastRecipe == null) {
                 cachedRecipe = null;
                 cachedFluid = null;

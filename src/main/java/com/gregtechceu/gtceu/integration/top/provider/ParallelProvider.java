@@ -42,11 +42,11 @@ public class ParallelProvider implements IProbeInfoProvider {
             } else if (machineBlockEntity.getMetaMachine() instanceof IMultiController controller) {
                 if (controller instanceof IRecipeLogicMachine rlm &&
                         rlm.getRecipeLogic().isActive() &&
-                        rlm.getRecipeLogic().getLastRecipe() != null) {
-                    parallel = rlm.getRecipeLogic().getLastRecipe().parallels;
-                    batch = rlm.getRecipeLogic().getLastRecipe().batchParallels;
-                    subtickParallel = rlm.getRecipeLogic().getLastRecipe().subtickParallels;
-                    totalRuns = rlm.getRecipeLogic().getLastRecipe().getTotalRuns();
+                        rlm.getRecipeLogic().getLastDisplayedRecipe() != null) {
+                    parallel = rlm.getRecipeLogic().getLastDisplayedRecipe().parallels;
+                    batch = rlm.getRecipeLogic().getLastDisplayedRecipe().batchParallels;
+                    subtickParallel = rlm.getRecipeLogic().getLastDisplayedRecipe().subtickParallels;
+                    totalRuns = rlm.getRecipeLogic().getLastDisplayedRecipe().getTotalRuns();
                     exact = true;
                 } else {
                     parallel = controller.getParallelHatch()

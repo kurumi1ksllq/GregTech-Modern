@@ -101,11 +101,11 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
         int batchParallels;
         int totalRuns;
         boolean exact = false;
-        if (recipeLogic.isActive() && recipeLogic.getLastRecipe() != null) {
-            numParallels = recipeLogic.getLastRecipe().parallels;
-            subtickParallels = recipeLogic.getLastRecipe().subtickParallels;
-            batchParallels = recipeLogic.getLastRecipe().batchParallels;
-            totalRuns = recipeLogic.getLastRecipe().getTotalRuns();
+        if (recipeLogic.isActive() && recipeLogic.getLastDisplayedRecipe() != null) {
+            numParallels = recipeLogic.getLastDisplayedRecipe().parallels;
+            subtickParallels = recipeLogic.getLastDisplayedRecipe().subtickParallels;
+            batchParallels = recipeLogic.getLastDisplayedRecipe().batchParallels;
+            totalRuns = recipeLogic.getLastDisplayedRecipe().getTotalRuns();
             exact = true;
         } else {
             numParallels = getParallelHatch()
@@ -128,7 +128,7 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
                 .addWorkingStatusLine()
                 .addProgressLine(recipeLogic.getProgress(), recipeLogic.getMaxProgress(),
                         recipeLogic.getProgressPercent())
-                .addOutputLines(recipeLogic.getLastRecipe());
+                .addOutputLines(recipeLogic.getLastDisplayedRecipe());
         getDefinition().getAdditionalDisplay().accept(this, textList);
         IDisplayUIMachine.super.addDisplayText(textList);
     }

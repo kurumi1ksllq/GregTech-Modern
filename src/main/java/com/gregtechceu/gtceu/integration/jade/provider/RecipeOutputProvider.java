@@ -60,7 +60,7 @@ public class RecipeOutputProvider extends CapabilityBlockProvider<RecipeLogic> {
     protected void write(CompoundTag data, RecipeLogic recipeLogic) {
         if (recipeLogic.isWorking()) {
             data.putBoolean("Working", recipeLogic.isWorking());
-            var recipe = recipeLogic.getLastRecipe();
+            var recipe = recipeLogic.getLastDisplayedRecipe();
             if (recipe != null) {
                 int recipeTier = RecipeHelper.getPreOCRecipeEuTier(recipe);
                 int chanceTier = recipeTier + recipe.ocLevel;

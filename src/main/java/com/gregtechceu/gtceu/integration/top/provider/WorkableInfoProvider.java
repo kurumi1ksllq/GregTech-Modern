@@ -40,8 +40,8 @@ public class WorkableInfoProvider extends CapabilityInfoProvider<IWorkable> {
         Component text;
 
         if (capability instanceof RecipeLogic logic &&
-                logic.getLastRecipe() != null &&
-                logic.getLastRecipe().data.getBoolean("duration_is_total_cwu")) {
+                logic.getLastDisplayedRecipe() != null &&
+                logic.getLastDisplayedRecipe().data.getBoolean("duration_is_total_cwu")) {
             // show as total computation instead
             int color = capability.isWorkingEnabled() ? 0xFF00D4CE : 0xFFBB1C28;
             probeInfo.progress(currentProgress, maxProgress, probeInfo.defaultProgressStyle()

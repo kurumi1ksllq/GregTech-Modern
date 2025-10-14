@@ -50,7 +50,7 @@ public class RecipeOutputProvider extends CapabilityInfoProvider<RecipeLogic> {
     protected void addProbeInfo(RecipeLogic recipeLogic, IProbeInfo iProbeInfo, Player player, BlockEntity blockEntity,
                                 IProbeHitData iProbeHitData) {
         if (recipeLogic.isWorking()) {
-            var recipe = recipeLogic.getLastRecipe();
+            var recipe = recipeLogic.getLastDisplayedRecipe();
             if (recipe != null) {
                 int recipeTier = RecipeHelper.getPreOCRecipeEuTier(recipe);
                 int chanceTier = recipeTier + recipe.ocLevel;

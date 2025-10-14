@@ -47,7 +47,7 @@ public class RecipeLogicProvider extends CapabilityBlockProvider<RecipeLogic> {
     protected void write(CompoundTag data, RecipeLogic capability) {
         data.putBoolean("Working", capability.isWorking());
         var recipeInfo = new CompoundTag();
-        var recipe = capability.getLastRecipe();
+        var recipe = capability.getLastDisplayedRecipe();
         if (recipe != null) {
             var EUt = RecipeHelper.getRealEUtWithIO(recipe);
 

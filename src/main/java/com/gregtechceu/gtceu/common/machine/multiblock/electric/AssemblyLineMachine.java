@@ -203,6 +203,15 @@ public class AssemblyLineMachine extends WorkableElectricMultiblockMachine {
 
     private ActionResult consumeAll(@NotNull GTRecipe recipe, boolean isTick,
                                     Map<RecipeCapability<?>, Object2IntMap<?>> chanceCaches) {
+        if (!isTick) {
+            recipe.rollChancesAndEstablishLinks();
+        }
+        else{
+            recipe = recipe.copy();
+            recipe.rollTickChancesAndTickLinks();
+        }
+
+
         GTRecipe copyWithItems = recipe.copy();
         copyWithItems.inputs.clear();
         copyWithItems.tickInputs.clear();

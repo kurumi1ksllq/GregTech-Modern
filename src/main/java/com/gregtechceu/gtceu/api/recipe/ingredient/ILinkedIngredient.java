@@ -23,12 +23,12 @@ public interface ILinkedIngredient extends IRangedIngredient {
 
     LinkedIngredientLinkMode getMode();
 
-    default int getSampledCount(GTRecipe recipe) {
-        return getSampledCount(GTValues.RNG, recipe);
+    default int getSampledCount(List<IRangedIngredient> marks) {
+        return getSampledCount(GTValues.RNG, marks);
     }
 
-    default int getSampledCount(@NotNull RandomSource random, GTRecipe recipe) {
-        if (getLinks().isEmpty()) addLinks(recipe);
+    default int getSampledCount(@NotNull RandomSource random, List<IRangedIngredient> marks) {
+        if (getLinks().isEmpty()) addLinks(marks);
         if (!isRolled()) {
             double rollValue = 0;
             for (IRangedIngredient link : getLinks()) {
@@ -40,24 +40,15 @@ public interface ILinkedIngredient extends IRangedIngredient {
         return getSampledCount(random);
     }
 
-    default void addLinks(GTRecipe recipe) {
-        var fullcontents = new ArrayList<Content>();
-        fullcontents.addAll(recipe.getInputContents(ItemRecipeCapability.CAP));
-        fullcontents.addAll(recipe.getInputContents(FluidRecipeCapability.CAP));
-        fullcontents.addAll(recipe.getOutputContents(ItemRecipeCapability.CAP));
-        fullcontents.addAll(recipe.getOutputContents(FluidRecipeCapability.CAP));
-        for (Content c : fullcontents) {
-            if (c.content instanceof IRangedIngredient ranged && ranged.hasMark() &&
-                    getSymLinks().contains(ranged.getMark())) {
-                getLinks().add(ranged);
+    default void addLinks(List<IRangedIngredient> marks) {
+        for (IRangedIngredient mark : marks) {
+            if (getSymLinks().contains(mark.getMark())) {
+                getLinks().add(mark);
             }
-        }
-        if (getLinks().isEmpty() && ConfigHolder.INSTANCE.dev.debug) {
-            GTCEu.LOGGER.warn("Recipe with Linked Ingredients contained no valid links! Recipe:" + recipe.getId());
         }
     }
 
-    default void roll(GTRecipe recipe) {
-        getSampledCount(recipe);
+    default void roll(List<IRangedIngredient> marks) {
+        getSampledCount(marks);
     }
 }

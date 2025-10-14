@@ -7,6 +7,8 @@ import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
 
+import com.gregtechceu.gtceu.api.recipe.ingredient.ILinkedIngredient;
+import com.gregtechceu.gtceu.api.recipe.ingredient.IRangedIngredient;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -226,6 +229,74 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
             a += stack.amperage();
         }
         return new EnergyStack(v, a);
+    }
+
+    /*
+    public void rollLinkedIngredients() {
+        inputs.values()
+                .stream()
+                .flatMap(List::stream)
+                .map(Content::getContent)
+                .filter(ILinkedIngredient.class::isInstance)
+                .map(ILinkedIngredient.class::cast)
+                .forEachOrdered(ingredient -> ingredient.roll(this));
+
+        outputs.values()
+                .stream()
+                .flatMap(List::stream)
+                .map(Content::getContent)
+                .filter(ILinkedIngredient.class::isInstance)
+                .map(ILinkedIngredient.class::cast)
+                .forEachOrdered(ingredient -> ingredient.roll(this));
+    }
+     */
+
+    public void rollLinkedIngredients(Stream<IRangedIngredient> rangedIngredients, boolean isTick) {
+
+        var marks = new ArrayList<IRangedIngredient>();
+        var links = new ArrayList<ILinkedIngredient>();
+
+
+        rangedIngredients.forEachOrdered(ingredient -> {
+                    if (ingredient.hasMark()) marks.add(ingredient);
+                    if (ingredient instanceof ILinkedIngredient link) links.add(link);
+                });
+
+        for (var link : links){
+            link.roll(marks);
+        }
+    }
+
+    public void rollChancesAndEstablishLinks() {
+        var rangedContents = getFullContents()
+                .map(Content::getContent)
+                .filter(IRangedIngredient.class::isInstance)
+                .map(IRangedIngredient.class::cast);
+
+        rollLinkedIngredients(rangedContents, false);
+    }
+
+    public void rollTickChancesAndTickLinks(){
+        var rangedTickContents = getFullTickContents()
+                .map(Content::getContent)
+                .filter(IRangedIngredient.class::isInstance)
+                .map(IRangedIngredient.class::cast);
+
+        rollLinkedIngredients(rangedTickContents, true);
+    }
+
+    public Stream<Content> getFullContents(){
+        return Stream.concat(
+                        inputs.values().stream(),
+                        outputs.values().stream())
+                .flatMap(List::stream);
+    }
+
+    public Stream<Content> getFullTickContents(){
+        return Stream.concat(
+                        tickInputs.values().stream(),
+                        tickOutputs.values().stream())
+                .flatMap(List::stream);
     }
 
     public int getTotalRuns() {

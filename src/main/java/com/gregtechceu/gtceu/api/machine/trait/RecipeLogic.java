@@ -95,6 +95,10 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
     @Getter
     @Persisted
     @DescSynced
+    protected GTRecipe lastDisplayedRecipe = null;
+    @Getter
+    @Persisted
+    @DescSynced
     protected int consecutiveRecipes = 0; // Consecutive recipes that have been run
     /**
      * safe, it is the origin recipe before {@link IRecipeLogicMachine#fullModifyRecipe(GTRecipe)}'
@@ -152,6 +156,7 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
     public void resetRecipeLogic() {
         recipeDirty = false;
         lastRecipe = null;
+        lastDisplayedRecipe = null;
         lastOriginRecipe = null;
         consecutiveRecipes = 0;
         progress = 0;
@@ -325,10 +330,12 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
         if (!recipeDirty && lastRecipe != null && checkRecipe(lastRecipe).isSuccess()) {
             GTRecipe recipe = lastRecipe;
             lastRecipe = null;
+            lastDisplayedRecipe = null;
             lastOriginRecipe = null;
             setupRecipe(recipe);
         } else { // try to find and handle a new recipe
             lastRecipe = null;
+            lastDisplayedRecipe = null;
             lastOriginRecipe = null;
             handleSearchingRecipes(searchRecipe());
         }
@@ -358,6 +365,8 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
         var result = RecipeHelper.matchTickRecipe(machine, recipe);
         if (!result.isSuccess()) return result;
 
+        recipe.rollTickChancesAndTickLinks();
+
         result = handleTickRecipeIO(recipe, IO.IN);
         if (!result.isSuccess()) return result;
 
@@ -374,17 +383,22 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
             isActive = false;
             return;
         }
+        if (lastRecipe != null && !recipe.equals(lastRecipe)) {
+            chanceCaches.clear();
+        }
+        lastDisplayedRecipe = recipe.copy();
+        recipe.rollChancesAndEstablishLinks();
         var handledIO = handleRecipeIO(recipe, IO.IN);
         if (handledIO.isSuccess()) {
-            if (lastRecipe != null && !recipe.equals(lastRecipe)) {
-                chanceCaches.clear();
-            }
             recipeDirty = false;
             lastRecipe = recipe;
             setStatus(Status.WORKING);
             progress = 0;
             duration = recipe.duration;
             isActive = true;
+        }
+        else {
+            lastDisplayedRecipe = null;
         }
     }
 
@@ -482,6 +496,7 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
                 isActive = false;
                 // Force a recipe recheck.
                 lastRecipe = null;
+                lastDisplayedRecipe = null;
                 return;
             }
             if (machine.alwaysTryModifyRecipe()) {

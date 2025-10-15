@@ -99,7 +99,7 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
 
     public static WidgetGroup createUIWidget(EquipmentFoundryRecipe recipe) {
         Font font = Minecraft.getInstance().font;
-        WidgetGroup widgets = new WidgetGroup();
+        WidgetGroup widgets = new WidgetGroup(0, 0, 200, 200);
         int y = 30;
         List<LabelWidget> desc = new ArrayList<>();
         if (recipe.getModules()[0] instanceof TieredItemModule) {
@@ -121,8 +121,7 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
             widgets.addWidget(tierLabel);
             int finalY = y;
             ButtonWidget button = new ButtonWidget(
-                    font.width(Component.translatable("gtceu.equipment_foundry.gui.tier", "")) +
-                            tierLabel.getPositionX(),
+                    2 + font.width(Component.translatable("gtceu.equipment_foundry.gui.tier", "")),
                     tierLabel.getPositionY(),
                     font.width(GTValues.VNF[selectedTier[0]]), tierLabel.getSizeHeight(),
                     click -> {

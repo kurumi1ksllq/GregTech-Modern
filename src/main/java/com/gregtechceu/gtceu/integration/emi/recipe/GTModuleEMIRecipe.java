@@ -124,7 +124,8 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
                     font.width(Component.translatable("gtceu.equipment_foundry.gui.tier", "")) +
                             tierLabel.getPositionX(),
                     tierLabel.getPositionY(),
-                    font.width(GTValues.VNF[selectedTier[0]]), tierLabel.getSizeHeight(), click -> {
+                    font.width(GTValues.VNF[selectedTier[0]]), tierLabel.getSizeHeight(),
+                    click -> {
                         if (click.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) selectedTier[0]++;
                         if (click.button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) selectedTier[0]--;
                         selectedTier[0] = Mth.clamp(selectedTier[0], minTier, maxTier);

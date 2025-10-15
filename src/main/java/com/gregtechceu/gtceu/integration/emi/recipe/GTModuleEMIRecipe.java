@@ -43,6 +43,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements EmiRecipe {
 
@@ -75,10 +76,12 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
 
     @Override
     public List<EmiIngredient> getInputs() {
-        List<ItemStack> stacks = new ArrayList<>(
-                Arrays.stream(recipe.getEquipment().getItems()).filter(this::isModular).toList());
-        stacks.addAll(Arrays.stream(recipe.getEquipment().getItems()).filter(this::isModular).toList());
-        return stacks.stream().map(this::fromStack).toList();
+        return Stream
+                .concat(Arrays.stream(recipe.getEquipment().getItems()),
+                        Arrays.stream(recipe.getIngredient().getItems()))
+                .filter(this::isModular)
+                .map(this::fromStack)
+                .toList();
     }
 
     @Override

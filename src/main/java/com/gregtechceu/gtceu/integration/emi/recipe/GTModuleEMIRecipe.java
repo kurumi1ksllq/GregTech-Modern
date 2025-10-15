@@ -2,7 +2,9 @@ package com.gregtechceu.gtceu.integration.emi.recipe;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
+import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.module.TieredItemModule;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
@@ -44,16 +46,16 @@ import java.util.List;
 
 public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements EmiRecipe {
 
-    private final int unique = GTValues.RNG.nextInt();
+    private static final ItemStack NO_ITEM = Items.BARRIER.getDefaultInstance()
+            .setHoverName(Component.translatable("gtceu.equipment_foundry.gui.tier_too_high"));
 
     public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(
             GTCEu.id("equipment_foundry"),
             EmiIngredient.of(Ingredient.of(GTBlocks.EQUIPMENT_FOUNDRY)));
 
+    private final int unique = GTValues.RNG.nextInt();
     private final EquipmentFoundryRecipe recipe;
     private int selectedTier = -1;
-    private ItemStack[] stacks;
-    private int[] indexes;
 
     public GTModuleEMIRecipe(EquipmentFoundryRecipe recipe) {
         super(WidgetGroup::new);
@@ -103,9 +105,9 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
         super.addWidgets(widgets);
         widgets.addTexture(EmiTexture.PLUS, 35, 11);
         widgets.addTexture(EmiTexture.EMPTY_ARROW, 83, 9);
-        stacks = new ItemStack[] { ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY };
-        indexes = new int[] { 0, 0 };
-        widgets.addGeneratedSlot(random -> updateStacks(), unique, 8, 8);
+        ItemStack[] stacks = new ItemStack[] { ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY };
+        int[] indexes = new int[] { 0, 0 };
+        widgets.addGeneratedSlot(random -> updateStacks(stacks, indexes), unique, 8, 8);
         widgets.addGeneratedSlot(random -> fromStack(stacks[1]), unique, 56, 8);
         widgets.addGeneratedSlot(random -> fromStack(stacks[2]), unique, 115, 8);
     }
@@ -114,36 +116,29 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
         return EmiIngredient.of(Ingredient.of(stack));
     }
 
-    private EmiIngredient updateStacks() {
+    private EmiIngredient updateStacks(ItemStack[] stacks, int[] indexes) {
         if (stacks == null || indexes == null) return null;
-        stacks[1] = getModule(indexes);
+        stacks[1] = getModuleItem(indexes);
         stacks[0] = getEquipment(indexes, stacks[1]);
         stacks[2] = getResult(stacks[0], stacks[1]);
         return fromStack(stacks[0]);
     }
 
-    private ItemStack getModule(int[] indexes) {
+    private ItemStack getModuleItem(int[] indexes) {
         ItemStack[] stacks = recipe.getIngredient().getItems();
         if (selectedTier != -1) {
             stacks = Arrays.stream(stacks)
                     .filter(stack -> GTUtil.getTier(stack.getItem()) == selectedTier)
                     .toArray(ItemStack[]::new);
         }
-        return stacks.length == 0 ?
-                Items.BARRIER.getDefaultInstance()
-                        .setHoverName(Component.translatable("gtceu.equipment_foundry.gui.tier_too_high")) :
-                stacks[indexes[1]++ % stacks.length];
+        return stacks.length == 0 ? NO_ITEM : stacks[indexes[1]++ % stacks.length];
     }
 
     private ItemStack getEquipment(int[] indexes, ItemStack module) {
         ItemStack[] stacks;
-        if (module.getItem() == Items.BARRIER) stacks = Arrays.stream(recipe.getEquipment().getItems())
-                .filter(stack -> stack.getCapability(GTCapability.CAPABILITY_MODULAR_ITEM).map(modularItem -> {
-                    if (recipe.getModules()[0] instanceof TieredItemModule tieredModule) {
-                        return modularItem.attach(recipe.getModules()[selectedTier - tieredModule.getTier()], true) !=
-                                null;
-                    } else return modularItem.attach(recipe.getModules()[0], true) != null;
-                }).orElse(false))
+        if (module == NO_ITEM) stacks = Arrays.stream(recipe.getEquipment().getItems())
+                .filter(stack -> stack.getCapability(GTCapability.CAPABILITY_MODULAR_ITEM).map(
+                        modularItem -> modularItem.attach(recipe.getModule(selectedTier), true) != null).orElse(false))
                 .toArray(ItemStack[]::new);
         else stacks = Arrays.stream(recipe.getEquipment().getItems())
                 .filter(stack -> stack.getCapability(GTCapability.CAPABILITY_MODULAR_ITEM).isPresent())
@@ -155,8 +150,12 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
     }
 
     private ItemStack getResult(ItemStack equipment, ItemStack module) {
-        if (module.getItem() == Items.BARRIER) return module;
         ItemStack copy = equipment.copy();
+        if (module == NO_ITEM) {
+            IModularItem modularItem = GTCapabilityHelper.getModularItem(copy);
+            if (modularItem != null) modularItem.attach(recipe.getModule(selectedTier), false);
+            return copy;
+        }
         RecipeWrapper wrapper = new RecipeWrapper(new CombinedInvWrapper(
                 new CustomItemStackHandler(copy),
                 new CustomItemStackHandler(module)));
@@ -210,7 +209,6 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
                                 i++;
                             }
                         }
-                        updateStacks();
                     });
             button.setHoverTooltips(Component.translatable("gtceu.equipment_foundry.gui.tooltip.tier_switch"));
             widgets.addWidget(button);

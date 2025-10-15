@@ -42,11 +42,15 @@ public class EquipmentFoundryRecipe implements Recipe<RecipeWrapper> {
     @Getter
     private final ItemModule[] modules;
 
-    public ItemModule getModule(ItemStack ingredient) {
-        int tier = GTUtil.getTier(ingredient.getItem());
+    public ItemModule getModule(int tier) {
         int lowestTier = (modules[0] instanceof ITieredItemModule tieredModule) ? tieredModule.getTier() :
                 GTValues.ULV;
-        return modules[Mth.clamp(tier - lowestTier, 0, modules.length)];
+        return modules[Mth.clamp(tier - lowestTier, 0, modules.length - 1)];
+    }
+
+    public ItemModule getModule(ItemStack ingredient) {
+        int tier = GTUtil.getTier(ingredient.getItem());
+        return getModule(tier);
     }
 
     @Override

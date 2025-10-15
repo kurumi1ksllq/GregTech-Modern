@@ -2,11 +2,14 @@ package com.gregtechceu.gtceu.integration.emi.recipe;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.module.TieredItemModule;
+import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.recipe.type.EquipmentFoundryRecipe;
 import com.gregtechceu.gtceu.utils.GTStringUtils;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.emi.ModularEmiRecipe;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -19,11 +22,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
+import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
@@ -36,15 +44,21 @@ import java.util.List;
 
 public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements EmiRecipe {
 
+    private final int unique = GTValues.RNG.nextInt();
+
     public static final EmiRecipeCategory CATEGORY = new EmiRecipeCategory(
             GTCEu.id("equipment_foundry"),
             EmiIngredient.of(Ingredient.of(GTBlocks.EQUIPMENT_FOUNDRY)));
 
     private final EquipmentFoundryRecipe recipe;
+    private int selectedTier = -1;
+    private ItemStack[] stacks;
+    private int[] indexes;
 
     public GTModuleEMIRecipe(EquipmentFoundryRecipe recipe) {
-        super(() -> createUIWidget(recipe));
+        super(WidgetGroup::new);
         this.recipe = recipe;
+        this.widget = this::createUIWidget;
     }
 
     @Override
@@ -87,17 +101,69 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
     @Override
     public void addWidgets(WidgetHolder widgets) {
         super.addWidgets(widgets);
-        Font font = Minecraft.getInstance().font;
-        Component appliedTo = Component.translatable("gtceu.equipment_foundry.gui.applied_to");
-        Component moduleItem = Component.translatable("gtceu.equipment_foundry.gui.module_item");
-        widgets.addText(appliedTo, 4, 8, 0xFFFFFFFF, true);
-        widgets.addText(moduleItem, font.width(appliedTo) + 36, 8, 0xFFFFFFFF, true);
-        widgets.addSlot(EmiIngredient.of(recipe.getEquipment()), 8 + font.width(appliedTo), 4);
-        widgets.addSlot(EmiIngredient.of(recipe.getIngredient()), 40 + font.width(appliedTo) + font.width(moduleItem),
-                4);
+        widgets.addTexture(EmiTexture.PLUS, 35, 11);
+        widgets.addTexture(EmiTexture.EMPTY_ARROW, 83, 9);
+        stacks = new ItemStack[] { ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY };
+        indexes = new int[] { 0, 0 };
+        widgets.addGeneratedSlot(random -> updateStacks(), unique, 8, 8);
+        widgets.addGeneratedSlot(random -> fromStack(stacks[1]), unique, 56, 8);
+        widgets.addGeneratedSlot(random -> fromStack(stacks[2]), unique, 115, 8);
     }
 
-    public static WidgetGroup createUIWidget(EquipmentFoundryRecipe recipe) {
+    private EmiIngredient fromStack(ItemStack stack) {
+        return EmiIngredient.of(Ingredient.of(stack));
+    }
+
+    private EmiIngredient updateStacks() {
+        if (stacks == null || indexes == null) return null;
+        stacks[1] = getModule(indexes);
+        stacks[0] = getEquipment(indexes, stacks[1]);
+        stacks[2] = getResult(stacks[0], stacks[1]);
+        return fromStack(stacks[0]);
+    }
+
+    private ItemStack getModule(int[] indexes) {
+        ItemStack[] stacks = recipe.getIngredient().getItems();
+        if (selectedTier != -1) {
+            stacks = Arrays.stream(stacks)
+                    .filter(stack -> GTUtil.getTier(stack.getItem()) == selectedTier)
+                    .toArray(ItemStack[]::new);
+        }
+        return stacks.length == 0 ?
+                Items.BARRIER.getDefaultInstance()
+                        .setHoverName(Component.translatable("gtceu.equipment_foundry.gui.tier_too_high")) :
+                stacks[indexes[1]++ % stacks.length];
+    }
+
+    private ItemStack getEquipment(int[] indexes, ItemStack module) {
+        ItemStack[] stacks;
+        if (module.getItem() == Items.BARRIER) stacks = Arrays.stream(recipe.getEquipment().getItems())
+                .filter(stack -> stack.getCapability(GTCapability.CAPABILITY_MODULAR_ITEM).map(modularItem -> {
+                    if (recipe.getModules()[0] instanceof TieredItemModule tieredModule) {
+                        return modularItem.attach(recipe.getModules()[selectedTier - tieredModule.getTier()], true) !=
+                                null;
+                    } else return modularItem.attach(recipe.getModules()[0], true) != null;
+                }).orElse(false))
+                .toArray(ItemStack[]::new);
+        else stacks = Arrays.stream(recipe.getEquipment().getItems())
+                .filter(stack -> stack.getCapability(GTCapability.CAPABILITY_MODULAR_ITEM).isPresent())
+                .filter(stack -> recipe.matches(new RecipeWrapper(new CombinedInvWrapper(
+                        new CustomItemStackHandler(stack),
+                        new CustomItemStackHandler(module))), 0))
+                .toArray(ItemStack[]::new);
+        return stacks[indexes[0]++ % stacks.length];
+    }
+
+    private ItemStack getResult(ItemStack equipment, ItemStack module) {
+        if (module.getItem() == Items.BARRIER) return module;
+        ItemStack copy = equipment.copy();
+        RecipeWrapper wrapper = new RecipeWrapper(new CombinedInvWrapper(
+                new CustomItemStackHandler(copy),
+                new CustomItemStackHandler(module)));
+        return recipe.assemble(wrapper, 0);
+    }
+
+    public WidgetGroup createUIWidget() {
         Font font = Minecraft.getInstance().font;
         WidgetGroup widgets = new WidgetGroup(0, 0, 200, 200);
         int y = 30;
@@ -114,27 +180,27 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
                         GTValues.VNF[maxTier])));
                 y += font.lineHeight;
             }
-            int[] selectedTier = new int[] { tieredModules[0].getTier() };
+            selectedTier = tieredModules[0].getTier();
             LabelWidget tierLabel = new LabelWidget(2, y, Component.translatable(
                     "gtceu.equipment_foundry.gui.tier",
-                    GTValues.VNF[selectedTier[0]]));
+                    GTValues.VNF[selectedTier]));
             widgets.addWidget(tierLabel);
             int finalY = y;
             ButtonWidget button = new ButtonWidget(
                     2 + font.width(Component.translatable("gtceu.equipment_foundry.gui.tier", "")),
                     tierLabel.getPositionY(),
-                    font.width(GTValues.VNF[selectedTier[0]]), tierLabel.getSizeHeight(),
+                    font.width(GTValues.VNF[GTValues.MAX]), tierLabel.getSizeHeight(),
                     click -> {
-                        if (click.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) selectedTier[0]++;
-                        if (click.button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) selectedTier[0]--;
-                        selectedTier[0] = Mth.clamp(selectedTier[0], minTier, maxTier);
+                        if (click.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) selectedTier++;
+                        if (click.button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) selectedTier--;
+                        selectedTier = Mth.clamp(selectedTier, minTier, maxTier);
                         tierLabel.setComponent(Component.translatable("gtceu.equipment_foundry.gui.tier",
-                                GTValues.VNF[selectedTier[0]]));
+                                GTValues.VNF[selectedTier]));
                         if (!desc.isEmpty()) {
                             desc.forEach(widget -> widget.setComponent(Component.literal("")));
                             int i = 0;
                             for (FormattedCharSequence line : font
-                                    .split(tieredModules[selectedTier[0] - minTier].getInfo(), 196)) {
+                                    .split(tieredModules[selectedTier - minTier].getInfo(), 196)) {
                                 Component component = GTStringUtils.toComponent(line);
                                 if (desc.size() <= i) {
                                     desc.add(new LabelWidget(2, finalY + (i + 2) * font.lineHeight, component));
@@ -144,6 +210,7 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
                                 i++;
                             }
                         }
+                        updateStacks();
                     });
             button.setHoverTooltips(Component.translatable("gtceu.equipment_foundry.gui.tooltip.tier_switch"));
             widgets.addWidget(button);

@@ -414,6 +414,7 @@ public class LangHandler {
         provider.add("gtceu.equipment_foundry.gui.module_item", "Module item:");
         provider.add("gtceu.equipment_foundry.gui.supports_tiers", "Module tiers: %s-%s");
         provider.add("gtceu.equipment_foundry.gui.tier", "Viewing stats for tier: %s");
+        provider.add("gtceu.equipment_foundry.gui.tier_too_high", "No module item exists for this tier");
         provider.add("gtceu.equipment_foundry.gui.tooltip.tier_switch",
                 "Left-click to increase tier by 1\nRight-click to decrease tier by 1");
         provider.add("metaitem.record.sus.tooltip", "§7Leonz - Among Us Drip");

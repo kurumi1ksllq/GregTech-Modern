@@ -24,10 +24,8 @@ public class AttackDamageItemModule extends TieredAttributeItemModule {
     }
 
     @Override
-    public Component getInfoTiered() {
-        if (getTier() == GTValues.LV)
-            return Component.translatable("gtceu.module.attack_damage", getTier() * 100 / 16d);
-        else return Component.translatable("gtceu.module.short_percentage", getTier() * 100 / 16d);
+    public Component getInfo() {
+        return Component.translatable("gtceu.module.attack_damage", getTier() * 100 / 16d);
     }
 
     @Override

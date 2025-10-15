@@ -22,10 +22,8 @@ public class SneakSpeedItemModule extends TieredItemModule {
     }
 
     @Override
-    public Component getInfoTiered() {
-        if (getTier() == GTValues.LV)
-            return Component.translatable("gtceu.module.sneak_speed", getTier() * 100 / 8f);
-        else return Component.translatable("gtceu.module.short_percentage", getTier() * 100 / 8f);
+    public Component getInfo() {
+        return Component.translatable("gtceu.module.sneak_speed", getTier() * 100 / 8f);
     }
 
     @Override

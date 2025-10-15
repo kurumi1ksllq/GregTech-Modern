@@ -24,10 +24,8 @@ public class EnergyShieldItemModule extends TieredItemModule {
     }
 
     @Override
-    public Component getInfoTiered() {
-        if (getTier() == GTValues.LV)
-            return Component.translatable("gtceu.module.damage_block", getEnergyPerHP());
-        else return Component.translatable("gtceu.module.damage_block.short", getEnergyPerHP());
+    public Component getInfo() {
+        return Component.translatable("gtceu.module.damage_block", getEnergyPerHP());
     }
 
     private long getEnergyPerHP() {

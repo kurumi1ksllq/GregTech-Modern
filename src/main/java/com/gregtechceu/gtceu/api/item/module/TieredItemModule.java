@@ -3,7 +3,6 @@ package com.gregtechceu.gtceu.api.item.module;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -31,13 +30,6 @@ public abstract class TieredItemModule extends ItemModule implements ITieredItem
         for (TieredItemModule module : otherTierModules) if (modularItem.getModule(module) != null) return false;
         return super.canApplyTo(stack);
     }
-
-    @Override
-    public Component getInfo() {
-        return Component.literal(GTValues.VNF[getTier()]).append(": ").append(getInfoTiered());
-    }
-
-    public abstract Component getInfoTiered();
 
     public static TieredItemModule[] create(ResourceLocation id, int minTier, int maxTier,
                                             BiFunction<ResourceLocation, Integer, TieredItemModule> constructor) {

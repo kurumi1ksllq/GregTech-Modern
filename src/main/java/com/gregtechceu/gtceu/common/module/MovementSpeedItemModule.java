@@ -24,10 +24,8 @@ public class MovementSpeedItemModule extends TieredAttributeItemModule {
     }
 
     @Override
-    public Component getInfoTiered() {
-        if (getTier() == GTValues.LV)
-            return Component.translatable("gtceu.module.movement_speed", getTier() * 100 / 8d);
-        else return Component.translatable("gtceu.module.short_percentage", getTier() * 100 / 8d);
+    public Component getInfo() {
+        return Component.translatable("gtceu.module.movement_speed", getTier() * 100 / 8d);
     }
 
     @Override

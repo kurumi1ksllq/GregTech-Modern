@@ -75,7 +75,10 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
 
     @Override
     public List<EmiIngredient> getInputs() {
-        return List.of(EmiIngredient.of(recipe.getEquipment()), EmiIngredient.of(recipe.getIngredient()));
+        List<ItemStack> stacks = new ArrayList<>(
+                Arrays.stream(recipe.getEquipment().getItems()).filter(this::isModular).toList());
+        stacks.addAll(Arrays.stream(recipe.getEquipment().getItems()).filter(this::isModular).toList());
+        return stacks.stream().map(this::fromStack).toList();
     }
 
     @Override
@@ -112,6 +115,10 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
         widgets.addGeneratedSlot(random -> fromStack(stacks[2]), unique, 115, 8);
     }
 
+    private boolean isModular(ItemStack stack) {
+        return stack.getCapability(GTCapability.CAPABILITY_MODULAR_ITEM).isPresent();
+    }
+
     private EmiIngredient fromStack(ItemStack stack) {
         return EmiIngredient.of(Ingredient.of(stack));
     }
@@ -141,7 +148,7 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
                         modularItem -> modularItem.attach(recipe.getModule(selectedTier), true) != null).orElse(false))
                 .toArray(ItemStack[]::new);
         else stacks = Arrays.stream(recipe.getEquipment().getItems())
-                .filter(stack -> stack.getCapability(GTCapability.CAPABILITY_MODULAR_ITEM).isPresent())
+                .filter(this::isModular)
                 .filter(stack -> recipe.matches(new RecipeWrapper(new CombinedInvWrapper(
                         new CustomItemStackHandler(stack),
                         new CustomItemStackHandler(module))), 0))

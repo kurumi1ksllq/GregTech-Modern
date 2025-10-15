@@ -118,17 +118,17 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
 
     private EmiIngredient updateStacks(ItemStack[] stacks, int[] indexes) {
         if (stacks == null || indexes == null) return null;
-        stacks[1] = getModuleItem(indexes);
+        stacks[1] = getModuleItem(indexes, selectedTier);
         stacks[0] = getEquipment(indexes, stacks[1]);
         stacks[2] = getResult(stacks[0], stacks[1]);
         return fromStack(stacks[0]);
     }
 
-    private ItemStack getModuleItem(int[] indexes) {
+    private ItemStack getModuleItem(int[] indexes, int tier) {
         ItemStack[] stacks = recipe.getIngredient().getItems();
-        if (selectedTier != -1) {
+        if (tier != -1) {
             stacks = Arrays.stream(stacks)
-                    .filter(stack -> GTUtil.getTier(stack.getItem()) == selectedTier)
+                    .filter(stack -> GTUtil.getTier(stack.getItem()) == tier)
                     .toArray(ItemStack[]::new);
         }
         return stacks.length == 0 ? NO_ITEM : stacks[indexes[1]++ % stacks.length];
@@ -172,6 +172,14 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
                     .map(module -> (TieredItemModule) module).toArray(TieredItemModule[]::new);
             int minTier = tieredModules[0].getTier();
             int maxTier = tieredModules[tieredModules.length - 1].getTier();
+            for (int i = minTier; i < maxTier; i++) {
+                if (getModuleItem(new int[] { 0, 0 }, i) == NO_ITEM) minTier++;
+                else break;
+            }
+            for (int i = maxTier; i > minTier; i--) {
+                if (getModuleItem(new int[] { 0, 0 }, i) == NO_ITEM) maxTier--;
+                else break;
+            }
             if (minTier != maxTier) {
                 widgets.addWidget(new LabelWidget(2, y, Component.translatable(
                         "gtceu.equipment_foundry.gui.supports_tiers",
@@ -185,6 +193,8 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
                     GTValues.VNF[selectedTier]));
             widgets.addWidget(tierLabel);
             int finalY = y;
+            int finalMinTier = minTier;
+            int finalMaxTier = maxTier;
             ButtonWidget button = new ButtonWidget(
                     2 + font.width(Component.translatable("gtceu.equipment_foundry.gui.tier", "")),
                     tierLabel.getPositionY(),
@@ -192,14 +202,14 @@ public class GTModuleEMIRecipe extends ModularEmiRecipe<WidgetGroup> implements 
                     click -> {
                         if (click.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) selectedTier++;
                         if (click.button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) selectedTier--;
-                        selectedTier = Mth.clamp(selectedTier, minTier, maxTier);
+                        selectedTier = Mth.clamp(selectedTier, finalMinTier, finalMaxTier);
                         tierLabel.setComponent(Component.translatable("gtceu.equipment_foundry.gui.tier",
                                 GTValues.VNF[selectedTier]));
                         if (!desc.isEmpty()) {
                             desc.forEach(widget -> widget.setComponent(Component.literal("")));
                             int i = 0;
                             for (FormattedCharSequence line : font
-                                    .split(tieredModules[selectedTier - minTier].getInfo(), 196)) {
+                                    .split(tieredModules[selectedTier - finalMinTier].getInfo(), 196)) {
                                 Component component = GTStringUtils.toComponent(line);
                                 if (desc.size() <= i) {
                                     desc.add(new LabelWidget(2, finalY + (i + 2) * font.lineHeight, component));

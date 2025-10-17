@@ -65,7 +65,6 @@ public class IntProviderFluidIngredientTest {
 
     /**
      * How many times to repeat the Batch and Parallel random roll tests to avoid false positives
-     * Currently set to 7, with singleblock recipes processing up to 9 fluids, allowing for stacks of up to 63 fluids.
      */
     @Getter
     private static final int REPLICAS = 7;

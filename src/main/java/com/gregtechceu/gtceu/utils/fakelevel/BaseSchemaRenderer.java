@@ -44,12 +44,18 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 @Accessors(fluent = true)
 public class BaseSchemaRenderer implements IDrawable {
+
+    protected static final FloatBuffer PIXEL_DEPTH_BUFFER = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder())
+            .asFloatBuffer();
 
     private static final RenderTarget FBO = new TextureTarget(1080, 1080, true, Minecraft.ON_OSX);
 
@@ -132,41 +138,21 @@ public class BaseSchemaRenderer implements IDrawable {
         GuiDraw.drawTexture(context.getGraphics().pose().last().pose(), x, y, x + width, y + height, 0f, 0f, 1f, 1f);
     }
 
+    /**
+     * Raytraces at the given mouse pos.
+     *
+     * @param mouseX A mouse x pos from 0 to width
+     * @param mouseY A mouse y pos from 0 to height
+     * @param width  Height of the drawn framebuffer
+     * @param height Width of the drawn framebuffer
+     * @return raytrace result
+     */
     protected BlockHitResult rayTrace(int mouseX, int mouseY, int width, int height) {
-        Vector3f cameraPos = camera.pos();
-        float yaw = camera.yaw();
-        float pitch = camera.pitch();
-
-        Vector3f mouseXShift = new Vector3f(1, 0, 0)
-                .rotateX(pitch)
-                .rotateY(-yaw + GTMath.PI_HALF)
-                .mul(mouseX - width / 2f)
-                .mul(1 / 32f);
-        Vector3f mouseYShift = new Vector3f(0, -1, 0)
-                .rotateX(pitch)
-                .rotateY(-yaw + GTMath.PI_HALF)
-                .mul(mouseY - height / 2f)
-                .mul(1 / 32f);
-        Vector3f levelMouse = cameraPos.add(mouseXShift, new Vector3f()).add(mouseYShift);
-        Vector3f focus = camera.lookAt();
-        float perspectiveCompensation = isIsometric() ? 1 : cameraPos.distance(focus) / 3 * width / 100;
-        Vector3f target = focus.add(mouseXShift.mul(perspectiveCompensation), new Vector3f())
-                .add(mouseYShift.mul(perspectiveCompensation));
-        Vector3f look = target.sub(levelMouse, new Vector3f()).mul(10);
-        levelMouse.add(look, target);
-        // TODO proper raytracing by matrix inversion
-        /*
-         * mouseX = (int) ((float) mouseX / width * this.viewport[2]);
-         * mouseY = (int) ((float) mouseY / height * this.viewport[3]);
-         * Vector3f levelMouse = screenPosToLevelPos(mouseX, mouseY);
-         * Vector3f target = this.camera.getLookVec().mul(20).add(levelMouse);
-         * GTCEu.LOGGER.info("Raytracing at {}, {}. Level pos: {}, Target: {}",
-         * mouseX, mouseY, new BlockPos((int) levelMouse.x, (int) levelMouse.y, (int) levelMouse.z),
-         * new BlockPos((int) target.x, (int) target.y, (int) target.z));
-         */
+        // transform mouse pos into relative mouse pos from 0 - 1
+        Vector3f levelMouse = screenPosToLevelPos((float) mouseX / width, (float) mouseY / height);
+        Vector3f target = this.camera.getLookVec().mul(20).add(levelMouse);
         ClipContext context = new ClipContext(new Vec3(levelMouse), new Vec3(target), ClipContext.Block.VISUAL,
-                ClipContext.Fluid.ANY,
-                null);
+                ClipContext.Fluid.ANY, null);
         return schema.getLevel().clip(context);
     }
 
@@ -195,7 +181,7 @@ public class BaseSchemaRenderer implements IDrawable {
 
         }
 
-        // render TESR
+        // render BER
         if (ber != null && !ber.isEmpty()) {
             renderTesr(mc, bufferSource, poseStack, ber);
         }
@@ -343,12 +329,27 @@ public class BaseSchemaRenderer implements IDrawable {
         RenderSystem.enableBlend();
     }
 
-    protected Vector3f screenPosToLevelPos(int wx, int wy) {
-        // TODO in theory this should work, but the resulting raytracer always hits the block in the center of the
-        // framebuffer texture
-        Matrix4f levelTransform = new Matrix4f(RenderSystem.getProjectionMatrix())
+    /**
+     * Converts a relative screen pos to a world pos.
+     *
+     * @param x X pos from 0 to 1
+     * @param y Y pos from 0 to 1
+     * @return world pos
+     */
+    protected Vector3f screenPosToLevelPos(float x, float y) {
+        // read projection and modelview matrix
+        Matrix4f transform = new Matrix4f(RenderSystem.getProjectionMatrix())
                 .mul(RenderSystem.getModelViewStack().last().pose());
-        return levelTransform.unproject(wx, wy, -1f, this.viewport, new Vector3f());
+        // convert pos to framebuffer pos
+        int wx = (int) (x * this.viewport[2]);
+        int wy = (int) (y * this.viewport[3]);
+        //wy = viewport[3] - wy; // invert y
+        // read depth under mouse
+        GL11.glReadPixels(wx, wy, 1, 1, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, PIXEL_DEPTH_BUFFER);
+        PIXEL_DEPTH_BUFFER.rewind();
+        float depth = PIXEL_DEPTH_BUFFER.get();
+        PIXEL_DEPTH_BUFFER.rewind();
+        return transform.unproject(wx, wy, depth, this.viewport, new Vector3f());
     }
 
     @ApiStatus.OverrideOnly

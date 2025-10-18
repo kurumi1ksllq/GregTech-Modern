@@ -343,7 +343,6 @@ public class BaseSchemaRenderer implements IDrawable {
         // convert pos to framebuffer pos
         int wx = (int) (x * this.viewport[2]);
         int wy = (int) (y * this.viewport[3]);
-        //wy = viewport[3] - wy; // invert y
         // read depth under mouse
         GL11.glReadPixels(wx, wy, 1, 1, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, PIXEL_DEPTH_BUFFER);
         PIXEL_DEPTH_BUFFER.rewind();

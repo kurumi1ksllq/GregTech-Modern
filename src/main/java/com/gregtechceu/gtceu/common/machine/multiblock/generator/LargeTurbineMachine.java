@@ -3,14 +3,19 @@ package com.gregtechceu.gtceu.common.machine.multiblock.generator;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.ITurbineMachine;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
+import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IRotorHolderMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
+import com.gregtechceu.gtceu.api.recipe.ActionResult;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
 import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
@@ -45,6 +50,11 @@ public class LargeTurbineMachine extends WorkableElectricMultiblockMachine imple
         super(holder);
         this.tier = tier;
         this.BASE_EU_OUTPUT = GTValues.V[tier] * 2;
+    }
+
+    @Override
+    public RecipeLogic createRecipeLogic(Object... args) {
+        return new TurbineRecipeLogic(this);
     }
 
     @Nullable
@@ -161,7 +171,8 @@ public class LargeTurbineMachine extends WorkableElectricMultiblockMachine imple
         int maxParallel = (int) (turbineMaxVoltage / EUt.getTotalEU());
         if (turbineMaxVoltage % EUt.getTotalEU() != 0) maxParallel++;
 
-        int actualParallel = ParallelLogic.getParallelAmountFast(turbineMachine, recipe, maxParallel);
+        //int actualParallel = ParallelLogic.getParallelAmountFast(turbineMachine, recipe, maxParallel);
+        int actualParallel = maxParallel;
         double eutMultiplier = (maxParallel == actualParallel) ?
                 turbineMachine.productionBoost() * turbineMaxVoltage / EUt.voltage() :
                 turbineMachine.productionBoost() * actualParallel;
@@ -182,7 +193,7 @@ public class LargeTurbineMachine extends WorkableElectricMultiblockMachine imple
 
     @Override
     public boolean canVoidRecipeOutputs(RecipeCapability<?> capability) {
-        return capability != EURecipeCapability.CAP;
+        return true;
     }
 
     //////////////////////////////////////
@@ -219,6 +230,20 @@ public class LargeTurbineMachine extends WorkableElectricMultiblockMachine imple
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
                 }
             }
+        }
+    }
+
+    public static class TurbineRecipeLogic extends RecipeLogic {
+        public TurbineRecipeLogic(IRecipeLogicMachine machine) {
+            super(machine);
+        }
+
+        @Override
+        protected ActionResult matchRecipe(GTRecipe recipe) {
+            var actionResult = RecipeHelper.matchContents(machine, recipe);
+            // ignore recipe capability failure from eu outputs
+            if(actionResult.capability() == EURecipeCapability.CAP && actionResult.io() == IO.OUT) return ActionResult.SUCCESS;
+            return actionResult;
         }
     }
 }

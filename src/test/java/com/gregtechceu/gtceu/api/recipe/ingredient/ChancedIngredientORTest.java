@@ -3,33 +3,28 @@ package com.gregtechceu.gtceu.api.recipe.ingredient;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
-import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
-import com.gregtechceu.gtceu.common.data.GTMaterials;
+import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ParallelHatchPartMachine;
 import com.gregtechceu.gtceu.gametest.util.TestUtils;
-import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.BeforeBatch;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
@@ -43,34 +38,50 @@ import net.minecraftforge.gametest.PrefixGameTestTemplate;
  */
 @PrefixGameTestTemplate(false)
 @GameTestHolder(GTCEu.MOD_ID)
-public class ChancedIngredientTest {
+public class ChancedIngredientORTest {
 
     private static GTRecipeType CR_RECIPE_TYPE;
+    private static GTRecipeType ASSM_RECIPE_TYPE;
     private static GTRecipeType LCR_RECIPE_TYPE;
     private static GTRecipeType CENTRIFUGE_RECIPE_TYPE;
 
     // fluids used in recipes. Up top here for quick replacements.
-    private static final ItemStack CR_IN_SINGLE = new ItemStack(Items.STRIPPED_SPRUCE_WOOD);
+    private static final ItemStack IN_SINGLE = new ItemStack(Items.STRIPPED_SPRUCE_WOOD);
     private static final ItemStack CR_OUT = new ItemStack(Items.SPRUCE_SLAB);
-    private static final ItemStack LCR_IN = new ItemStack(Items.STRIPPED_BIRCH_WOOD);
-    private static final ItemStack LCR_OUT = new ItemStack(Items.BIRCH_SLAB);
+    private static final ItemStack IN_OR_1 = new ItemStack(Items.STRIPPED_BIRCH_WOOD);
+    private static final ItemStack IN_OR_2 = new ItemStack(Items.BIRCH_SLAB);
     private static final ItemStack LCENT_IN = new ItemStack(Items.STRIPPED_JUNGLE_WOOD);
     private static final ItemStack LCENT_OUT = new ItemStack(Items.JUNGLE_SLAB);
     private static final ItemStack COBBLE = new ItemStack(Items.COBBLESTONE);
     private static final ItemStack STONE = new ItemStack(Items.STONE);
 
 
-    @BeforeBatch(batch = "ChancedIngredients")
+    @BeforeBatch(batch = "ChancedIngredientsOR")
     public static void prepare(ServerLevel level) {
-        CR_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_cr_tests", GTRecipeTypes.CHEMICAL_RECIPES);
-        LCR_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_lcr_tests",
+        CR_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_or_cr_tests", GTRecipeTypes.CHEMICAL_RECIPES);
+        ASSM_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_or_assm_tests", GTRecipeTypes.ASSEMBLER_RECIPES);
+        LCR_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_or_lcr_tests",
                 GTRecipeTypes.LARGE_CHEMICAL_RECIPES);
-        CENTRIFUGE_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_centrifuge_tests",
+        CENTRIFUGE_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_or_centrifuge_tests",
                 GTRecipeTypes.CENTRIFUGE_RECIPES);
 
         CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_single_chanced_input_cr"))
-                .chancedInput(CR_IN_SINGLE.copyWithCount(3), 5000, 0)
+                .chancedInput(IN_SINGLE.copyWithCount(3), 5000, 0)
+                .inputItems(COBBLE)
+                .outputItems(STONE)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(2)
+                .buildRawRecipe());
+
+        CR_RECIPE_TYPE.getLookup().addRecipe(ASSM_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_double_or_chanced_input_cr"))
+                .chance(4000)
+                .inputItems(IN_OR_1.copyWithCount(3))
+                .chance(6000)
+                .inputItems(IN_OR_2.copyWithCount(3))
+                .chance(10000)
+                .chancedItemInputLogic(ChanceLogic.OR)
                 .inputItems(COBBLE)
                 .outputItems(STONE)
                 .EUt(GTValues.V[GTValues.HV])
@@ -153,7 +164,7 @@ public class ChancedIngredientTest {
                 .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
 
         int runs = 10;
-        itemIn.setStackInSlot(0, CR_IN_SINGLE.copyWithCount(2));
+        itemIn.setStackInSlot(0, IN_SINGLE.copyWithCount(2));
         itemIn.setStackInSlot(1, COBBLE.copyWithCount(runs));
         // 1t to turn on, 2t per non- recipe run
         helper.runAfterDelay(runs * 2 + 1, () -> {
@@ -162,7 +173,7 @@ public class ChancedIngredientTest {
             helper.assertTrue(itemOut.isEmpty(),
                     "Singleblock CR should not have run, ran [" +
                             itemOut.getStackInSlot(0).getCount() + "] times");
-            helper.assertTrue(TestUtils.isItemStackEqual(results, CR_IN_SINGLE.copyWithCount(2)),
+            helper.assertTrue(TestUtils.isItemStackEqual(results, IN_SINGLE.copyWithCount(2)),
                     "Singleblock CR should not have consumed items, consumed [" +
                             (2 - results.getCount()) + "]");
 
@@ -184,7 +195,7 @@ public class ChancedIngredientTest {
                 .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
 
         int runs = 21;
-        itemIn.setStackInSlot(0, CR_IN_SINGLE.copyWithCount(63));
+        itemIn.setStackInSlot(0, IN_SINGLE.copyWithCount(63));
         itemIn.setStackInSlot(1, COBBLE.copyWithCount(runs));
         // 1t to turn on, 2t per recipe run
         // check the results of all rolls together

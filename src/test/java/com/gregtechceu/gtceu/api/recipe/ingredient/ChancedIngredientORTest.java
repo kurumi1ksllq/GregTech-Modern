@@ -17,6 +17,7 @@ import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachin
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ParallelHatchPartMachine;
 import com.gregtechceu.gtceu.gametest.util.TestUtils;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.BeforeBatch;
 import net.minecraft.gametest.framework.GameTest;
@@ -30,9 +31,8 @@ import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 /**
  * Test cases:
- * We have 4 chance logics (OR, AND, XOR, FIRST)
- * I have no idea how to test FIRST as opposed to XOR though and I don't know if anyone even has a reason to use FIRST now that XOR works correctly
- * Chance logics are applied to all ingredients within a Handler and IO side. AND and OR roll in those groupings.
+ * We have 3 chance logics (OR, AND, XOR). FIRST isn't real.
+ * Chance logics are applied to all ingredients within a Handler and IO side. AND and XOR roll in those groupings.
  * Singleblock rolls are % chances. Batch/Parallel rolls multiply for an expected "guaranteed" amount.
  * Need to special test Assembly Line and Distillation Tower because they use nonstandard recipe logic
  */
@@ -53,11 +53,11 @@ public class ChancedIngredientORTest {
     private static final ItemStack COBBLE = new ItemStack(Items.COBBLESTONE);
     private static final ItemStack STONE = new ItemStack(Items.STONE);
 
-
     @BeforeBatch(batch = "ChancedIngredientsOR")
     public static void prepare(ServerLevel level) {
         CR_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_or_cr_tests", GTRecipeTypes.CHEMICAL_RECIPES);
-        ASSM_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_or_assm_tests", GTRecipeTypes.ASSEMBLER_RECIPES);
+        ASSM_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_or_assm_tests",
+                GTRecipeTypes.ASSEMBLER_RECIPES);
 
         CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_single_chanced_input_cr"))
@@ -107,7 +107,7 @@ public class ChancedIngredientORTest {
         WorkableMultiblockMachine controller = (WorkableMultiblockMachine) getMetaMachine(
                 helper.getBlockEntity(new BlockPos(1, 2, 0)));
         TestUtils.formMultiblock(controller);
-//        controller.setRecipeType(LCR_RECIPE_TYPE);
+        // controller.setRecipeType(LCR_RECIPE_TYPE);
         ItemBusPartMachine inputBus1 = (ItemBusPartMachine) getMetaMachine(
                 helper.getBlockEntity(new BlockPos(2, 1, 0)));
         FluidHatchPartMachine inputHatch1 = (FluidHatchPartMachine) getMetaMachine(
@@ -129,7 +129,7 @@ public class ChancedIngredientORTest {
         WorkableElectricMultiblockMachine controller = (WorkableElectricMultiblockMachine) getMetaMachine(
                 helper.getBlockEntity(new BlockPos(2, 2, 0)));
         TestUtils.formMultiblock(controller);
-//        controller.setRecipeType(CENTRIFUGE_RECIPE_TYPE);
+        // controller.setRecipeType(CENTRIFUGE_RECIPE_TYPE);
         ItemBusPartMachine inputBus1 = (ItemBusPartMachine) getMetaMachine(
                 helper.getBlockEntity(new BlockPos(1, 2, 0)));
         FluidHatchPartMachine inputHatch1 = (FluidHatchPartMachine) getMetaMachine(
@@ -142,7 +142,6 @@ public class ChancedIngredientORTest {
                 helper.getBlockEntity(new BlockPos(3, 3, 0)));
         return new BusHolderBatchParallel(inputBus1, inputHatch1, outputBus1, outputHatch1, controller, parallelHatch);
     }
-
 
     // Failure Test for singleblock machine with chanced item input
     // Provides too few input items, should not run recipes.
@@ -175,7 +174,6 @@ public class ChancedIngredientORTest {
         });
     }
 
-
     // Test for singleblock machine with single chanced item input
     @GameTest(template = "singleblock_charged_cr", batch = "ChancedIngredientsOR")
     public static void singleblockSingleChancedItemInput(GameTestHelper helper) {
@@ -189,7 +187,7 @@ public class ChancedIngredientORTest {
                 .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
 
         int runs = 16;
-        itemIn.setStackInSlot(0, IN_SINGLE.copyWithCount(runs*3));
+        itemIn.setStackInSlot(0, IN_SINGLE.copyWithCount(runs * 3));
         itemIn.setStackInSlot(1, COBBLE.copyWithCount(runs));
         // 1t to turn on, 2t per recipe run
         // check the results of all rolls together
@@ -207,7 +205,6 @@ public class ChancedIngredientORTest {
                     "Singleblock CR rolled max value on every roll");
             helper.assertFalse((results.getCount() == upperLimit),
                     "Singleblock CR rolled min value on every roll");
-
 
             helper.succeed();
         });
@@ -245,7 +242,6 @@ public class ChancedIngredientORTest {
         });
     }
 
-
     // Test for singleblock machine with two OR chanced item inputs
     @GameTest(template = "singleblock_charged_assembler", batch = "ChancedIngredientsOR")
     public static void singleblockDoubleORChancedItemInput(GameTestHelper helper) {
@@ -259,8 +255,8 @@ public class ChancedIngredientORTest {
                 .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
 
         int runs = 16;
-        itemIn.setStackInSlot(0, IN_OR_1.copyWithCount(runs*3));
-        itemIn.setStackInSlot(1, IN_OR_2.copyWithCount(runs*3));
+        itemIn.setStackInSlot(0, IN_OR_1.copyWithCount(runs * 3));
+        itemIn.setStackInSlot(1, IN_OR_2.copyWithCount(runs * 3));
         itemIn.setStackInSlot(2, COBBLE.copyWithCount(runs));
         // 1t to turn on, 2t per recipe run
         // check the results of all rolls together
@@ -278,7 +274,6 @@ public class ChancedIngredientORTest {
                     "Singleblock Assembler (OR) rolled max value on every roll");
             helper.assertFalse((results.getCount() == upperLimit),
                     "Singleblock Assembler (OR) rolled min value on every roll");
-
 
             helper.succeed();
         });

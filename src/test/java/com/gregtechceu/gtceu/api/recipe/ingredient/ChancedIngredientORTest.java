@@ -42,10 +42,12 @@ public class ChancedIngredientORTest {
 
     private static GTRecipeType CR_RECIPE_TYPE;
     private static GTRecipeType ASSM_RECIPE_TYPE;
+    private static GTRecipeType LCR_RECIPE_TYPE;
+    private static GTRecipeType CENTRIFUGE_RECIPE_TYPE;
 
     // fluids used in recipes. Up top here for quick replacements.
     private static final ItemStack IN_SINGLE = new ItemStack(Items.STRIPPED_SPRUCE_WOOD);
-    private static final ItemStack CR_OUT = new ItemStack(Items.SPRUCE_SLAB);
+    private static final ItemStack OUT_SINGLE = new ItemStack(Items.SPRUCE_SLAB);
     private static final ItemStack IN_OR_1 = new ItemStack(Items.STRIPPED_BIRCH_WOOD);
     private static final ItemStack IN_OR_2 = new ItemStack(Items.BIRCH_SLAB);
     private static final ItemStack LCENT_IN = new ItemStack(Items.STRIPPED_JUNGLE_WOOD);
@@ -58,6 +60,10 @@ public class ChancedIngredientORTest {
         CR_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_or_cr_tests", GTRecipeTypes.CHEMICAL_RECIPES);
         ASSM_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_or_assm_tests",
                 GTRecipeTypes.ASSEMBLER_RECIPES);
+        LCR_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_or_lcr_tests",
+                GTRecipeTypes.LARGE_CHEMICAL_RECIPES);
+        CENTRIFUGE_RECIPE_TYPE = TestUtils.createRecipeType("chanced_ingredient_or_centrifuge_tests",
+                GTRecipeTypes.CENTRIFUGE_RECIPES);
 
         CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_single_chanced_input_cr"))
@@ -81,6 +87,40 @@ public class ChancedIngredientORTest {
                 .EUt(GTValues.V[GTValues.HV])
                 .duration(2)
                 .buildRawRecipe());
+
+        CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_single_chanced_output_cr"))
+                .inputItems(IN_OR_1)
+                .chancedOutput(STONE, 5000, 0)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(2)
+                .buildRawRecipe());
+
+        CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_double_or_chanced_output_assm"))
+                .inputItems(OUT_SINGLE)
+                .chance(4000)
+                .outputItems(IN_OR_1)
+                .chance(6000)
+                .outputItems(IN_OR_2)
+                .chance(10000)
+                .chancedItemOutputLogic(ChanceLogic.OR)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(2)
+                .buildRawRecipe());
+
+//        CENTRIFUGE_RECIPE_TYPE.getLookup().addRecipe(CENTRIFUGE_RECIPE_TYPE
+//                .recipeBuilder(GTCEu.id("test_double_or_chanced_output_cent"))
+//                .inputItems(COBBLE)
+//                .chance(4000)
+//                .outputItems(IN_OR_1.copyWithCount(1))
+//                .chance(6000)
+//                .outputItems(IN_OR_2.copyWithCount(1))
+//                .chance(10000)
+//                .chancedItemOutputLogic(ChanceLogic.OR)
+//                .EUt(GTValues.V[GTValues.IV])
+//                .duration(2)
+//                .buildRawRecipe());
     }
 
     private static MetaMachine getMetaMachine(BlockEntity entity) {
@@ -202,9 +242,9 @@ public class ChancedIngredientORTest {
                     "Singleblock CR didn't consume correct number of items, consumed [" +
                             (64 - results.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
             helper.assertFalse((results.getCount() == lowerLimit),
-                    "Singleblock CR rolled max value on every roll");
+                    "Singleblock CR succeeded every chance roll!");
             helper.assertFalse((results.getCount() == upperLimit),
-                    "Singleblock CR rolled min value on every roll");
+                    "Singleblock CR failed every chance roll!");
 
             helper.succeed();
         });
@@ -261,21 +301,108 @@ public class ChancedIngredientORTest {
         // 1t to turn on, 2t per recipe run
         // check the results of all rolls together
         helper.runAfterDelay(runs * 2 + 1, () -> {
-            ItemStack results = itemIn.getStackInSlot(0);
-            int upperLimit = 64 - (runs * 0);
-            int lowerLimit = 64 - (runs * 3);
+            ItemStack results1 = itemIn.getStackInSlot(0);
+            ItemStack results2 = itemIn.getStackInSlot(0);
+            int upperLimit = 48 - (runs * 0);
+            int lowerLimit = 48 - (runs * 3);
             helper.assertTrue(TestUtils.isItemStackEqual(itemOut.getStackInSlot(0), STONE.copyWithCount(runs)),
                     "Singleblock Assembler (OR) didn't complete correct number of recipes, completed [" +
                             itemOut.getStackInSlot(0).getCount() + "] not [" + runs + "]");
-            helper.assertTrue(TestUtils.isItemWithinRange(results, lowerLimit, upperLimit),
-                    "Singleblock Assembler (OR) didn't consume correct number of items, consumed [" +
-                            (64 - results.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
-            helper.assertFalse((results.getCount() == lowerLimit),
-                    "Singleblock Assembler (OR) rolled max value on every roll");
-            helper.assertFalse((results.getCount() == upperLimit),
-                    "Singleblock Assembler (OR) rolled min value on every roll");
+            helper.assertTrue(TestUtils.isItemWithinRange(results1, lowerLimit, upperLimit),
+                    "Singleblock Assembler (OR) didn't consume correct number of first item, consumed [" +
+                            (48 - results1.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertTrue(TestUtils.isItemWithinRange(results2, lowerLimit, upperLimit),
+                    "Singleblock Assembler (OR) didn't consume correct number of second item, consumed [" +
+                            (48 - results2.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertFalse((results1.getCount() == lowerLimit),
+                    "Singleblock Assembler succeeded every chance roll!");
+            helper.assertFalse((results1.getCount() == upperLimit),
+                    "Singleblock Assembler failed every chance roll!");
+            helper.assertFalse((results2.getCount() == lowerLimit),
+                    "Singleblock Assembler succeeded every chance roll!");
+            helper.assertFalse((results2.getCount() == upperLimit),
+                    "Singleblock Assembler failed every chance roll!");
 
             helper.succeed();
         });
     }
+
+    // Test for singleblock machine with single chanced item output
+    @GameTest(template = "singleblock_charged_cr", batch = "ChancedIngredientsOR")
+    public static void singleblockSingleChancedItemOutput(GameTestHelper helper) {
+        SimpleTieredMachine machine = (SimpleTieredMachine) getMetaMachine(
+                helper.getBlockEntity(new BlockPos(0, 1, 0)));
+
+        machine.setRecipeType(CR_RECIPE_TYPE);
+        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+
+        int runs = 16;
+        itemIn.setStackInSlot(0, IN_OR_1.copyWithCount(runs));
+        // 1t to turn on, 2t per recipe run
+        // check the results of all rolls together
+        helper.runAfterDelay(runs * 2 + 1, () -> {
+            ItemStack results = itemOut.getStackInSlot(0);
+            int upperLimit = runs * 1;
+            int lowerLimit = runs * 0;
+            helper.assertTrue(itemIn.isEmpty(),
+                    "Singleblock CR didn't complete correct number of recipes, completed [" +
+                            (runs - itemIn.getStackInSlot(0).getCount()) + "] not [" + runs + "]");
+            helper.assertTrue(TestUtils.isItemWithinRange(results, lowerLimit, upperLimit),
+                    "Singleblock CR didn't produce correct number of items, produced [" +
+                            results.getCount() + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertFalse((results.getCount() == lowerLimit),
+                    "Singleblock CR succeeded every chance roll!");
+            helper.assertFalse((results.getCount() == upperLimit),
+                    "Singleblock CR failed every chance roll!");
+
+            helper.succeed();
+        });
+    }
+
+    // Test for singleblock machine with two OR chanced item outputs
+    @GameTest(template = "singleblock_charged_cr", batch = "ChancedIngredientsOR")
+    public static void singleblockDoubleORChancedItemOutput(GameTestHelper helper) {
+        SimpleTieredMachine machine = (SimpleTieredMachine) getMetaMachine(
+                helper.getBlockEntity(new BlockPos(0, 1, 0)));
+
+        machine.setRecipeType(CR_RECIPE_TYPE);
+        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+
+        int runs = 16;
+        itemIn.setStackInSlot(0, OUT_SINGLE.copyWithCount(runs));
+        // 1t to turn on, 2t per recipe run
+        // check the results of all rolls together
+        helper.runAfterDelay(runs * 2 + 1, () -> {
+            ItemStack results1 = itemOut.getStackInSlot(0);
+            ItemStack results2 = itemOut.getStackInSlot(0);
+            int upperLimit = runs * 1;
+            int lowerLimit = runs * 0;
+            helper.assertTrue(itemIn.isEmpty(),
+                    "Singleblock Assembler didn't complete correct number of recipes, completed [" +
+                            (runs - itemIn.getStackInSlot(0).getCount()) + "] not [" + runs + "]");
+            helper.assertTrue(TestUtils.isItemWithinRange(results1, lowerLimit, upperLimit),
+                    "Singleblock Assembler (OR) didn't produce correct number of first item, produce [" +
+                            (64 - results1.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertTrue(TestUtils.isItemWithinRange(results2, lowerLimit, upperLimit),
+                    "Singleblock Assembler (OR) didn't produce correct number of second item, produce [" +
+                            (64 - results2.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertFalse((results1.getCount() == lowerLimit),
+                    "Singleblock Assembler (OR) failed every chance roll!");
+            helper.assertFalse((results1.getCount() == upperLimit),
+                    "Singleblock Assembler (OR) succeeded every chance roll!");
+            helper.assertFalse((results2.getCount() == lowerLimit),
+                    "Singleblock Assembler (OR) failed every chance roll!");
+            helper.assertFalse((results2.getCount() == upperLimit),
+                    "Singleblock Assembler (OR) succeeded every chance roll!");
+
+            helper.succeed();
+        });
+    }
+
 }

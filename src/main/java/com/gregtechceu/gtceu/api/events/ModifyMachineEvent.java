@@ -7,12 +7,12 @@ import net.minecraftforge.fml.event.IModBusEvent;
 
 import lombok.Getter;
 
-public class RegisterGTMachineEvent extends Event implements IModBusEvent {
+public class ModifyMachineEvent extends Event implements IModBusEvent {
 
     @Getter
     private final MachineBuilder<?> builder;
 
-    public RegisterGTMachineEvent(MachineBuilder<?> builder) {
+    public ModifyMachineEvent(MachineBuilder<?> builder) {
         this.builder = builder;
     }
 }

@@ -225,6 +225,7 @@ public interface ISpoilableItem extends IItemComponent {
      * 
      * @see ISpoilableItem#freezeSpoiling(ItemStack)
      */
+    @ApiStatus.NonExtendable
     default void unfreezeSpoiling(ItemStack stack) {
         ((ISpoilableItemStack) (Object) stack).gtceu$setFreezeSpoiling(false);
     }

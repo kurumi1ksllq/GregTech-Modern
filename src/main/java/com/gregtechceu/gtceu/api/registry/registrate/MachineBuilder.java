@@ -5,7 +5,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.IMachineBlock;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.data.RotationState;
-import com.gregtechceu.gtceu.api.events.RegisterGTMachineEvent;
+import com.gregtechceu.gtceu.api.events.ModifyMachineEvent;
 import com.gregtechceu.gtceu.api.gui.editor.EditableMachineUI;
 import com.gregtechceu.gtceu.api.item.MetaMachineItem;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -28,9 +28,8 @@ import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.data.models.GTMachineModels;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.model.builder.MachineModelBuilder;
-import com.gregtechceu.gtceu.forge.ForgeCommonEventListener;
 import com.gregtechceu.gtceu.integration.kjs.GTCEuStartupEvents;
-import com.gregtechceu.gtceu.integration.kjs.events.RegisterGTMachineEventJS;
+import com.gregtechceu.gtceu.integration.kjs.events.ModifyMachineEventJS;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.RenderType;
@@ -541,8 +540,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
 
     @HideFromJS
     public DEFINITION register() {
-        RegisterGTMachineEvent event = new RegisterGTMachineEvent(this);
-        ForgeCommonEventListener.addSpoilTransferModifier(event); // ok im putting this back lol FIXME
+        ModifyMachineEvent event = new ModifyMachineEvent(this);
         MinecraftForge.EVENT_BUS.post(event);
         if (GTCEu.Mods.isKubeJSLoaded()) {
             KJSCallWrapper.fireKJSEvent(event);
@@ -722,8 +720,8 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
             }
         }
 
-        public static <T extends MachineDefinition> void fireKJSEvent(RegisterGTMachineEvent event) {
-            GTCEuStartupEvents.REGISTER_GT_MACHINE.post(new RegisterGTMachineEventJS(event));
+        public static <T extends MachineDefinition> void fireKJSEvent(ModifyMachineEvent event) {
+            GTCEuStartupEvents.MACHINE_MODIFICATION.post(new ModifyMachineEventJS(event));
         }
     }
 }

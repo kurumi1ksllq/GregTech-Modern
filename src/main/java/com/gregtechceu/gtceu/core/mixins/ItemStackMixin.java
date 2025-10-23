@@ -156,7 +156,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
     }
 
     @Inject(at = @At("HEAD"), method = "onCraftedBy")
-    private void onCraftedUpdateFreshness(Level level, Player player, int amount, CallbackInfo ci) {
+    private void updateFreshnessOnCraft(Level level, Player player, int amount, CallbackInfo ci) {
         gtceu$updateFreshness(null, true);
     }
 
@@ -239,7 +239,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
                 if (!ISpoilableItem.FROZEN_EQUALITY &&
                         (tag1.contains("frozenRemainingTicks") ^ tag2.contains("frozenRemainingTicks"))) {
                     cir.setReturnValue(false);
-                    cir.cancel();
                     return;
                 }
                 ISpoilableItem spoilable1 = ISpoilableItem.getSpoilable(stack);
@@ -247,7 +246,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
                 if (spoilable1 != null && spoilable2 != null) {
                     cir.setReturnValue(
                             spoilable1.getTicksUntilSpoiled(stack) == spoilable2.getTicksUntilSpoiled(other));
-                    cir.cancel();
                 }
             } else {
                 long tick1 = tag1.getLong("creation_tick");
@@ -264,7 +262,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
             }
         }
         cir.setReturnValue(isSameItem && Objects.equals(stack.getTag(), other.getTag()));
-        cir.cancel();
     }
 
     @Inject(at = @At(value = "INVOKE",
@@ -292,10 +289,8 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         ISpoilableItem spoilable = ISpoilableItem.getSpoilable((ItemStack) (Object) this);
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
             cir.setReturnValue(durabilityBar.isBarVisible((ItemStack) (Object) this));
-            cir.cancel();
         } else if (gtceu$fakeTooltip) {
             cir.setReturnValue(true);
-            cir.cancel();
         }
     }
 
@@ -304,10 +299,8 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         ISpoilableItem spoilable = ISpoilableItem.getSpoilable((ItemStack) (Object) this);
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
             cir.setReturnValue(durabilityBar.getBarColor((ItemStack) (Object) this));
-            cir.cancel();
         } else if (gtceu$fakeTooltip) {
             cir.setReturnValue(FastColor.ARGB32.color(255, 255, 255, 255));
-            cir.cancel();
         }
     }
 
@@ -316,10 +309,8 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         ISpoilableItem spoilable = ISpoilableItem.getSpoilable((ItemStack) (Object) this);
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
             cir.setReturnValue(durabilityBar.getBarWidth((ItemStack) (Object) this));
-            cir.cancel();
         } else if (gtceu$fakeTooltip) {
             cir.setReturnValue(13);
-            cir.cancel();
         }
     }
 }

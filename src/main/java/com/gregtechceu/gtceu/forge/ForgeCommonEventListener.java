@@ -16,7 +16,6 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.events.RegisterGTCapesEvent;
-import com.gregtechceu.gtceu.api.events.RegisterGTMachineEvent;
 import com.gregtechceu.gtceu.api.item.armor.ArmorComponentItem;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -158,11 +157,6 @@ public class ForgeCommonEventListener {
     public static void registerCapes(RegisterGTCapesEvent event) {
         GTCapes.registerGTCapes(event);
         GTCapes.giveDevCapes(event);
-    }
-
-    @SubscribeEvent
-    public static void addSpoilTransferModifier(RegisterGTMachineEvent event) {
-        event.getBuilder().addRecipeModifier(GTRecipeModifiers.SPOILAGE_TRANSFER);
     }
 
     @SubscribeEvent

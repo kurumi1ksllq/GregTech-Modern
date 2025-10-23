@@ -458,6 +458,10 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
         Flow column = Flow.column()
                 .top(24).margin(7, 0)
                 .widthRel(1.0f).coverChildrenHeight();
+//        EnumSyncValue<IO> io = new EnumSyncValue<>(IO.class,
+//                this::getIo, this::setIo);
+        EnumSyncValue<ManualIOMode> manualMode = new EnumSyncValue<>(
+                ManualIOMode.class, this::getManualIOMode, this::setManualIOMode);
 
         EnumSyncValue<DistributionMode> distMode = new EnumSyncValue<>(DistributionMode.class,
                 this::getDistributionMode, this::setDistributionMode);
@@ -466,8 +470,9 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
         StringSyncValue formattedTransferRate = new StringSyncValue(transferRate::getStringValue,
                 transferRate::setStringValue);
 
-        // syncManager.syncValue("io", );
+//        syncManager.syncValue( "io", io  );
         // syncManager.syncValue("mode", );
+        syncManager.syncValue("manualMode", manualMode);
         syncManager.syncValue("distribution", distMode);
         syncManager.syncValue("throughput", transferRate);
         if (createThroughputRow()) {
@@ -511,9 +516,10 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
             // column.child(filter)
         }
         if (createConveyorIORow()) {
-            column.child(new ToggleButton()
-                    .value(new BooleanSyncValue(() -> io == IO.IN, b -> io = (b ? IO.IN : IO.OUT))));
-            // .tooltip(IKey.dynamic(() -> Component.translatable("cover.conveyor.mode", io.tooltip))));
+            /*column.child(new EnumRowBuilder<>(IO.class)
+                    .value(io)
+                    .overlay(16, GTGuiTextures.CONVEYOR_MODE_OVERLAY)
+                    .build());*/
         }
 
         if (createDistributionModeRow()) {
@@ -521,8 +527,18 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
                     .value(distMode)
                     .overlay(16, GTGuiTextures.DISTRIBUTION_MODE_OVERLAY)
                     .lang(IKey
-                            .dynamic(() -> Component.translatable("cover.conveyor.mode", distributionMode.localeName)))
+                            .dynamic(() -> Component.translatable( distributionMode.localeName)))
                     .build());
+        }
+
+        if(createManualIOModeRow()){
+
+            column.child( new EnumRowBuilder<>(ManualIOMode.class)
+                    .value(manualMode)
+                    .overlay(16, GTGuiTextures.MANUAL_IO_OVERLAY_IN)
+                            .lang(IKey.dynamic(() -> Component.translatable(manualIOMode.localeName)))
+                    .build());
+
         }
 
         return column;

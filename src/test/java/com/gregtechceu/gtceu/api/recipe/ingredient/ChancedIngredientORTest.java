@@ -50,8 +50,8 @@ public class ChancedIngredientORTest {
     private static final ItemStack OUT_SINGLE = new ItemStack(Items.SPRUCE_SLAB);
     private static final ItemStack IN_OR_1 = new ItemStack(Items.STRIPPED_BIRCH_WOOD);
     private static final ItemStack IN_OR_2 = new ItemStack(Items.BIRCH_SLAB);
-    private static final ItemStack LCENT_IN = new ItemStack(Items.STRIPPED_JUNGLE_WOOD);
-    private static final ItemStack LCENT_OUT = new ItemStack(Items.JUNGLE_SLAB);
+    private static final ItemStack IN_OR_3 = new ItemStack(Items.STRIPPED_JUNGLE_WOOD);
+    private static final ItemStack IN_OR_4 = new ItemStack(Items.JUNGLE_SLAB);
     private static final ItemStack COBBLE = new ItemStack(Items.COBBLESTONE);
     private static final ItemStack STONE = new ItemStack(Items.STONE);
 
@@ -80,6 +80,24 @@ public class ChancedIngredientORTest {
                 .inputItems(IN_OR_1.copyWithCount(3))
                 .chance(6000)
                 .inputItems(IN_OR_2.copyWithCount(3))
+                .chance(10000)
+                .chancedItemInputLogic(ChanceLogic.OR)
+                .inputItems(COBBLE)
+                .outputItems(STONE)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(2)
+                .buildRawRecipe());
+
+        ASSM_RECIPE_TYPE.getLookup().addRecipe(ASSM_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_quad_or_chanced_input_assm"))
+                .chance(4000)
+                .inputItems(STONE.copyWithCount(3))
+                .chance(5000)
+                .inputItems(IN_OR_2.copyWithCount(3))
+                .chance(6000)
+                .inputItems(IN_OR_3.copyWithCount(3))
+                .chance(7000)
+                .inputItems(IN_OR_4.copyWithCount(3))
                 .chance(10000)
                 .chancedItemInputLogic(ChanceLogic.OR)
                 .inputItems(COBBLE)
@@ -321,6 +339,69 @@ public class ChancedIngredientORTest {
             helper.assertFalse((results2.getCount() == lowerLimit),
                     "Singleblock Assembler succeeded every chance roll!");
             helper.assertFalse((results2.getCount() == upperLimit),
+                    "Singleblock Assembler failed every chance roll!");
+
+            helper.succeed();
+        });
+    }
+
+    // Test for singleblock machine with four OR chanced item inputs
+    @GameTest(template = "singleblock_charged_assembler", batch = "ChancedIngredientsOR")
+    public static void singleblockQuadORChancedItemInput(GameTestHelper helper) {
+        SimpleTieredMachine machine = (SimpleTieredMachine) getMetaMachine(
+                helper.getBlockEntity(new BlockPos(0, 1, 0)));
+
+        machine.setRecipeType(ASSM_RECIPE_TYPE);
+        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+
+        int runs = 16;
+        itemIn.setStackInSlot(0, STONE.copyWithCount(runs * 3));
+        itemIn.setStackInSlot(1, IN_OR_2.copyWithCount(runs * 3));
+        itemIn.setStackInSlot(2, IN_OR_3.copyWithCount(runs * 3));
+        itemIn.setStackInSlot(3, IN_OR_4.copyWithCount(runs * 3));
+        itemIn.setStackInSlot(4, COBBLE.copyWithCount(runs));
+        // 1t to turn on, 2t per recipe run
+        // check the results of all rolls together
+        helper.runAfterDelay(runs * 2 + 1, () -> {
+            ItemStack results1 = itemIn.getStackInSlot(0);
+            ItemStack results2 = itemIn.getStackInSlot(0);
+            ItemStack results3 = itemIn.getStackInSlot(0);
+            ItemStack results4 = itemIn.getStackInSlot(0);
+            int upperLimit = 48 - (runs * 0);
+            int lowerLimit = 48 - (runs * 3);
+            helper.assertTrue(TestUtils.isItemStackEqual(itemOut.getStackInSlot(0), STONE.copyWithCount(runs)),
+                    "Singleblock Assembler (OR) didn't complete correct number of recipes, completed [" +
+                            itemOut.getStackInSlot(0).getCount() + "] not [" + runs + "]");
+            helper.assertTrue(TestUtils.isItemWithinRange(results1, lowerLimit, upperLimit),
+                    "Singleblock Assembler (OR) didn't consume correct number of first item, consumed [" +
+                            (48 - results1.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertTrue(TestUtils.isItemWithinRange(results2, lowerLimit, upperLimit),
+                    "Singleblock Assembler (OR) didn't consume correct number of second item, consumed [" +
+                            (48 - results2.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertTrue(TestUtils.isItemWithinRange(results3, lowerLimit, upperLimit),
+                    "Singleblock Assembler (OR) didn't consume correct number of third item, consumed [" +
+                            (48 - results1.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertTrue(TestUtils.isItemWithinRange(results4, lowerLimit, upperLimit),
+                    "Singleblock Assembler (OR) didn't consume correct number of fourth item, consumed [" +
+                            (48 - results2.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertFalse((results1.getCount() == lowerLimit),
+                    "Singleblock Assembler succeeded every chance roll!");
+            helper.assertFalse((results1.getCount() == upperLimit),
+                    "Singleblock Assembler failed every chance roll!");
+            helper.assertFalse((results2.getCount() == lowerLimit),
+                    "Singleblock Assembler succeeded every chance roll!");
+            helper.assertFalse((results2.getCount() == upperLimit),
+                    "Singleblock Assembler failed every chance roll!");
+            helper.assertFalse((results3.getCount() == lowerLimit),
+                    "Singleblock Assembler succeeded every chance roll!");
+            helper.assertFalse((results3.getCount() == upperLimit),
+                    "Singleblock Assembler failed every chance roll!");
+            helper.assertFalse((results4.getCount() == lowerLimit),
+                    "Singleblock Assembler succeeded every chance roll!");
+            helper.assertFalse((results4.getCount() == upperLimit),
                     "Singleblock Assembler failed every chance roll!");
 
             helper.succeed();

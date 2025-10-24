@@ -87,9 +87,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
     @Nullable
     private Entity entityRepresentation;
 
-    @Shadow
-    public abstract void removeTagKey(String key);
-
     @Unique
     @Override
     public void gtceu$updateFreshness(Level level, boolean createTag) {

@@ -182,6 +182,7 @@ public interface ISpoilableItem extends IItemComponent {
      *         overworld time pauses, as all tick calculations are done with overworld tick time
      * @see ISpoilableItem#setTicksUntilSpoiled(ItemStack, long)
      */
+    @ApiStatus.NonExtendable
     default long getTicksUntilSpoiled(ItemStack stack) {
         return ((ISpoilableItemStack) (Object) stack).gtceu$getRemainingTicks(null);
     }
@@ -195,6 +196,7 @@ public interface ISpoilableItem extends IItemComponent {
      * 
      * @see ISpoilableItem#getTicksUntilSpoiled(ItemStack)
      */
+    @ApiStatus.NonExtendable
     default void setTicksUntilSpoiled(ItemStack stack, long value) {
         ((ISpoilableItemStack) (Object) stack).gtceu$setRemainingTicks(null, value);
     }

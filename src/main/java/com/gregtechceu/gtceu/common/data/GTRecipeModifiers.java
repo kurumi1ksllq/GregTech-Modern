@@ -51,12 +51,14 @@ public class GTRecipeModifiers {
     public static final RecipeModifier OC_PERFECT_SUBTICK = ELECTRIC_OVERCLOCK.apply(PERFECT_OVERCLOCK_SUBTICK);
     public static final RecipeModifier OC_NON_PERFECT_SUBTICK = ELECTRIC_OVERCLOCK.apply(NON_PERFECT_OVERCLOCK_SUBTICK);
     public static final RecipeModifier SPOILAGE_TRANSFER = (machine, recipe) -> ModifierFunction.builder()
-            .modifyItemOutputs((r, stack) -> {
+            .modifyItemOutputs((r, stackObject) -> {
+                if (!(stackObject instanceof ItemStack stack)) return;
                 ISpoilableItem.update(stack);
                 if (!r.transferSpoilingProgress) return;
                 double spoilProgress = 0;
                 int spoilableCount = 0;
-                for (ItemStack in : r.itemInputs) {
+                for (Object inObject : r.consumedInputs) {
+                    if (!(inObject instanceof ItemStack in)) continue;
                     ISpoilableItem spoilable = ISpoilableItem.getSpoilable(in);
                     if (spoilable != null && spoilable.shouldSpoil(in)) {
                         spoilableCount += in.getCount();

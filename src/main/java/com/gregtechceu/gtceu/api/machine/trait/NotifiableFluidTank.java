@@ -179,11 +179,14 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
                             visited[tank] = drained.copy();
                             visited[tank].setAmount(count - drained.getAmount());
                             changed = true;
+                            FluidStack copied = drained.copy();
+                            recipe.consumedInputs.add(copied);
                         }
                         amount -= drained.getAmount();
                     }
                 } else { // IO.OUT && allow same fluids
                     FluidStack output = fluids[0].copy();
+                    recipe.mutateOutput(output);
                     output.setAmount(amount);
                     if (visited[tank] == null || visited[tank].isFluidEqual(output)) {
                         if (count < storages[tank].getCapacity()) {

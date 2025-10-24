@@ -173,13 +173,13 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
                             ItemStack copied = extracted.copy();
                             ISpoilableItem spoilable = ISpoilableItem.getSpoilable(copied);
                             if (spoilable != null) spoilable.freezeSpoiling(copied);
-                            recipe.itemInputs.add(copied);
+                            recipe.consumedInputs.add(copied);
                         }
                         amount -= extracted.getCount();
                     }
                 } else { // IO.OUT
                     ItemStack output = items[0].copyWithCount(amount);
-                    recipe.mutateItemOutput(output);
+                    recipe.mutateOutput(output);
                     // Only try this slot if not visited or if visited with the same type of item
                     if (visited[slot] == null || ItemStack.isSameItemSameTags(visited[slot], output)) {
                         if (count < output.getMaxStackSize() && count < storage.getSlotLimit(slot)) {

@@ -58,15 +58,15 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
     public int batchParallels = 1;
     public int ocLevel = 0;
     /**
-     * Populated after the inputs are already consumed, but the recipe didn't start yet
-     * For use in {@link GTRecipe#itemOutputModifier}
+     * Populated after the inputs are already consumed, but the recipe didn't start yet.
+     * For use in {@link GTRecipe#outputModifier}
      */
-    public List<ItemStack> itemInputs = new ArrayList<>();
+    public List<Object> consumedInputs = new ArrayList<>();
     /**
-     * Called for each {@code ItemStack} output before it is inserted into the output container.
+     * Called for each output before it is inserted into the output container.
      * Does nothing by default, to be modified with {@link BiConsumer#andThen(BiConsumer)} in {@link RecipeModifier}
      */
-    public BiConsumer<GTRecipe, ItemStack> itemOutputModifier = (recipe, stack) -> {};
+    public BiConsumer<GTRecipe, Object> outputModifier = (recipe, object) -> {};
     public final GTRecipeCategory recipeCategory;
     // Lazy fields, since we need the recipe EUt very often
     @Getter(lazy = true)
@@ -266,7 +266,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
         return id.toString();
     }
 
-    public void mutateItemOutput(ItemStack stack) {
-        if (this.itemOutputModifier != null) itemOutputModifier.accept(this, stack);
+    public void mutateOutput(Object stack) {
+        if (this.outputModifier != null) outputModifier.accept(this, stack);
     }
 }

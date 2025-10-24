@@ -9,8 +9,6 @@ import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
 
-import net.minecraft.world.item.ItemStack;
-
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.Contract;
@@ -111,7 +109,7 @@ public interface ModifierFunction {
         private ContentModifier outputModifier = ContentModifier.IDENTITY;
         private ContentModifier tickInputModifier = ContentModifier.IDENTITY;
         private ContentModifier tickOutputModifier = ContentModifier.IDENTITY;
-        private BiConsumer<GTRecipe, ItemStack> itemOutputModifier = (recipe, stack) -> {};
+        private BiConsumer<GTRecipe, Object> actualOutputModifier = (recipe, object) -> {};
         private final List<RecipeCondition> addedConditions = new ArrayList<>();
 
         public FunctionBuilder() {}
@@ -139,8 +137,8 @@ public interface ModifierFunction {
             return this;
         }
 
-        public FunctionBuilder modifyItemOutputs(BiConsumer<GTRecipe, ItemStack> func) {
-            itemOutputModifier = itemOutputModifier.andThen(func);
+        public FunctionBuilder modifyItemOutputs(BiConsumer<GTRecipe, Object> func) {
+            actualOutputModifier = actualOutputModifier.andThen(func);
             return this;
         }
 
@@ -183,7 +181,7 @@ public interface ModifierFunction {
                     EnergyStack eut = EURecipeCapability.CAP.copyWithModifier(preEUt.stack(), eutModifier);
                     EURecipeCapability.putEUContent(preEUt.isInput() ? copied.tickInputs : copied.tickOutputs, eut);
                 }
-                copied.itemOutputModifier = itemOutputModifier;
+                copied.outputModifier = actualOutputModifier;
                 return copied;
             };
         }

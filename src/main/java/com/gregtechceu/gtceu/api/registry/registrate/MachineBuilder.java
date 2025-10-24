@@ -467,7 +467,11 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
     }
 
     public MachineBuilder<DEFINITION> addRecipeModifier(RecipeModifier recipeModifier) {
-        this.recipeModifier(new RecipeModifierList(this.recipeModifier, recipeModifier));
+        if (this.recipeModifier instanceof RecipeModifierList list) {
+            this.recipeModifier = new RecipeModifierList(ArrayUtils.add(list.getModifiers(), recipeModifier));
+        } else {
+            this.recipeModifier = new RecipeModifierList(this.recipeModifier, recipeModifier);
+        }
         return this;
     }
 

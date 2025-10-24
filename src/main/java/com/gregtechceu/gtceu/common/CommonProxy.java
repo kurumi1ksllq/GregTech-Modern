@@ -98,7 +98,6 @@ public class CommonProxy {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.register(this);
         eventBus.addListener(AlloyBlastPropertyAddition::addAlloyBlastProperties);
-        eventBus.addListener(CommonProxy::addSpoilTransferModifier);
         // must be set here because of KubeJS compat
         // trying to read this before the pre-init stage
         GTCEuAPI.materialManager = MaterialRegistryManager.getInstance();
@@ -244,7 +243,7 @@ public class CommonProxy {
     }
 
     @SubscribeEvent
-    public static void addSpoilTransferModifier(ModifyMachineEvent event) {
+    public void addSpoilTransferModifier(ModifyMachineEvent event) {
         event.getBuilder().addRecipeModifier(GTRecipeModifiers.SPOILAGE_TRANSFER);
     }
 

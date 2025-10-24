@@ -49,7 +49,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.builders.BlockBuilder;
@@ -541,7 +541,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
     @HideFromJS
     public DEFINITION register() {
         ModifyMachineEvent event = new ModifyMachineEvent(this);
-        MinecraftForge.EVENT_BUS.post(event);
+        FMLJavaModLoadingContext.get().getModEventBus().post(event);
         if (GTCEu.Mods.isKubeJSLoaded()) {
             KJSCallWrapper.fireKJSEvent(event);
         }

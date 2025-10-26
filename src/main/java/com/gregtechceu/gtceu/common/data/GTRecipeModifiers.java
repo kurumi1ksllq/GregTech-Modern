@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.common.data;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
@@ -59,17 +60,17 @@ public class GTRecipeModifiers {
                 int spoilableCount = 0;
                 for (Object inObject : r.consumedInputs) {
                     if (!(inObject instanceof ItemStack in)) continue;
-                    ISpoilableItem spoilable = ISpoilableItem.getSpoilable(in);
-                    if (spoilable != null && spoilable.shouldSpoil(in)) {
+                    ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(in);
+                    if (spoilable != null && spoilable.shouldSpoil()) {
                         spoilableCount += in.getCount();
-                        spoilProgress += in.getCount() * (double) spoilable.getTicksUntilSpoiled(in) /
-                                spoilable.getSpoilTicks(in);
+                        spoilProgress += in.getCount() * (double) spoilable.getTicksUntilSpoiled() /
+                                spoilable.getSpoilTicks();
                     }
                 }
-                ISpoilableItem spoilable = ISpoilableItem.getSpoilable(stack);
-                if (spoilable != null && spoilable.shouldSpoil(stack) && spoilableCount > 0) {
+                ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
+                if (spoilable != null && spoilable.shouldSpoil() && spoilableCount > 0) {
                     double spoiled = spoilProgress / spoilableCount;
-                    spoilable.setTicksUntilSpoiled(stack, (long) (spoiled * spoilable.getSpoilTicks(stack)));
+                    spoilable.setTicksUntilSpoiled((long) (spoiled * spoilable.getSpoilTicks()));
                 }
             }).build();
 

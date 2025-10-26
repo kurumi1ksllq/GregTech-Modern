@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.capability.forge;
 
 import com.gregtechceu.gtceu.api.capability.*;
+import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 
@@ -42,6 +43,8 @@ public class GTCapability {
             .get(new CapabilityToken<>() {});
     public static final Capability<ICentralMonitor> CAPABILITY_CENTRAL_MONITOR = CapabilityManager
             .get(new CapabilityToken<>() {});
+    public static final Capability<ISpoilableItem> CAPABILITY_SPOILABLE_ITEM = CapabilityManager
+            .get(new CapabilityToken<>() {});
 
     public static final Capability<IMedicalConditionTracker> CAPABILITY_MEDICAL_CONDITION_TRACKER = CapabilityManager
             .get(new CapabilityToken<>() {});
@@ -65,5 +68,6 @@ public class GTCapability {
         event.register(IHazardParticleContainer.class);
         event.register(IMonitorComponent.class);
         event.register(ICentralMonitor.class);
+        event.register(ISpoilableItem.class);
     }
 }

@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.capability;
 
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
+import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 
@@ -137,5 +138,9 @@ public class GTCapabilityHelper {
     @Nullable
     public static IMedicalConditionTracker getMedicalConditionTracker(@NotNull Entity entity) {
         return entity.getCapability(GTCapability.CAPABILITY_MEDICAL_CONDITION_TRACKER, null).resolve().orElse(null);
+    }
+
+    public static @javax.annotation.Nullable ISpoilableItem getSpoilable(ItemStack stack) {
+        return stack.getCapability(GTCapability.CAPABILITY_SPOILABLE_ITEM).resolve().orElse(null);
     }
 }

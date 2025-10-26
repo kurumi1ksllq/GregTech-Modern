@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.machine.trait;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
@@ -171,8 +172,8 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
                             changed = true;
                             visited[slot] = extracted.copyWithCount(count - extracted.getCount());
                             ItemStack copied = extracted.copy();
-                            ISpoilableItem spoilable = ISpoilableItem.getSpoilable(copied);
-                            if (spoilable != null) spoilable.freezeSpoiling(copied);
+                            ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(copied);
+                            if (spoilable != null) spoilable.freezeSpoiling();
                             recipe.consumedInputs.add(copied);
                         }
                         amount -= extracted.getCount();

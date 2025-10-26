@@ -49,8 +49,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class ComponentItem extends Item
-                           implements HeldItemUIFactory.IHeldItemUIHolder, IItemRendererProvider, IComponentItem,
-                           ISpoilableItem {
+                           implements HeldItemUIFactory.IHeldItemUIHolder, IItemRendererProvider, IComponentItem {
 
     protected int burnTime = -1;
 
@@ -443,30 +442,5 @@ public class ComponentItem extends Item
         }
         electricItem.setInfiniteCharge(true);
         return itemStack;
-    }
-
-    @Override
-    public long getSpoilTicks(ItemStack stack) {
-        for (IItemComponent component : getComponents()) {
-            if (component instanceof ISpoilableItem spoilable) return spoilable.getSpoilTicks(stack);
-        }
-        return -1;
-    }
-
-    @Override
-    public ItemStack spoilResult(ItemStack stack) {
-        for (IItemComponent component : getComponents()) {
-            if (component instanceof ISpoilableItem spoilable) return spoilable.spoilResult(stack);
-        }
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public boolean shouldSpoil(ItemStack stack) {
-        boolean out = false;
-        for (IItemComponent component : getComponents()) {
-            if (component instanceof ISpoilableItem spoilable) out = out || spoilable.shouldSpoil(stack);
-        }
-        return out;
     }
 }

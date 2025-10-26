@@ -1,7 +1,8 @@
 package com.gregtechceu.gtceu.core.mixins;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.item.ISpoilableItemStack;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.item.ISpoilableItemStackMixin;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IDurabilityBar;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
@@ -37,7 +38,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 @Mixin(ItemStack.class)
-public abstract class ItemStackMixin implements ISpoilableItemStack {
+public abstract class ItemStackMixin implements ISpoilableItemStackMixin {
 
     @Unique
     private boolean gtceu$isUpdating = false;
@@ -94,9 +95,9 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         gtceu$isUpdating = true;
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (level == null && server != null) level = server.overworld();
-        ISpoilableItem spoilable = ISpoilableItem.getSpoilable((ItemStack) (Object) this);
-        if (spoilable != null && spoilable.shouldSpoil((ItemStack) (Object) this)) {
-            if (spoilable.getSpoilTicks((ItemStack) (Object) this) < 0) {
+        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable((ItemStack) (Object) this);
+        if (spoilable != null && spoilable.shouldSpoil()) {
+            if (spoilable.getSpoilTicks() < 0) {
                 gtceu$isUpdating = false;
                 return;
             }
@@ -112,17 +113,16 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
             if (!tag.contains("creation_tick")) {
                 tag.putLong("creation_tick", level.getGameTime());
             }
-            @SuppressWarnings("DataFlowIssue")
-            long spoilTicks = spoilable.getSpoilTicks((ItemStack) (Object) this);
+            long spoilTicks = spoilable.getSpoilTicks();
             long timeDifference = level.getGameTime() - tag.getLong("creation_tick") - spoilTicks;
             if (timeDifference >= 0) {
                 @SuppressWarnings("DataFlowIssue")
-                ItemStack newStack = spoilable.spoilResult((ItemStack) (Object) this);
+                ItemStack newStack = spoilable.spoilResult();
                 item = newStack.getItem();
                 delegate = ForgeRegistries.ITEMS.getDelegateOrThrow(item);
                 count = newStack.getCount();
                 this.tag = newStack.getTag();
-                ISpoilableItem newSpoilable = ISpoilableItem.getSpoilable((ItemStack) (Object) this);
+                ISpoilableItem newSpoilable = GTCapabilityHelper.getSpoilable((ItemStack) (Object) this);
                 if (newSpoilable != null && (this.tag == null || !this.tag.contains("GTCEu_spoilable"))) {
                     getOrCreateTagElement("GTCEu_spoilable").putLong("creation_tick",
                             level.getGameTime() - timeDifference);
@@ -143,8 +143,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
                     "getItemHolder" })
     private void injectedFreshnessUpdate(CallbackInfoReturnable<Item> cir) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        gtceu$updateFreshness(server == null ? null : server.overworld(),
-                ISpoilableItem.BREAK_EVERYTHING || entityRepresentation != null);
+        gtceu$updateFreshness(server == null ? null : server.overworld(), entityRepresentation != null);
     }
 
     @Inject(at = @At("HEAD"), method = "inventoryTick")
@@ -157,104 +156,36 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
         gtceu$updateFreshness(null, true);
     }
 
-    @Override
-    @Unique
-    public long gtceu$getCreationTick(@Nullable Level level) {
-        CompoundTag tag = getTagElement("GTCEu_spoilable");
-        if (tag == null) return 0;
-        return tag.getLong("creation_tick");
-    }
-
-    @Override
-    @Unique
-    public void gtceu$setCreationTick(@Nullable Level level, long value) {
-        CompoundTag tag = getTagElement("GTCEu_spoilable");
-        if (tag == null) return;
-        tag.putLong("creation_tick", value);
-    }
-
-    @Override
-    @Unique
-    public long gtceu$getRemainingTicks(@Nullable Level level) {
-        gtceu$updateFreshness(level, false);
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        if (level == null && server != null) level = server.overworld();
-        ISpoilableItem spoilable = ISpoilableItem.getSpoilable((ItemStack) (Object) this);
-        CompoundTag spoilTag = getTagElement("GTCEu_spoilable");
-        if (level != null && spoilTag != null && spoilable != null) {
-            if (spoilTag.contains("frozenRemainingTicks")) return spoilTag.getLong("frozenRemainingTicks");
-            return spoilable.getSpoilTicks((ItemStack) (Object) this) - level.getGameTime() +
-                    gtceu$getCreationTick(level);
-        }
-        if (spoilable != null) return spoilable.getSpoilTicks((ItemStack) (Object) this);
-        return 0;
-    }
-
-    @Unique
-    @Override
-    public void gtceu$setRemainingTicks(@Nullable Level level, long value) {
-        gtceu$updateFreshness(level, false);
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        if (level == null && server != null) level = server.overworld();
-        ISpoilableItem spoilable = ISpoilableItem.getSpoilable((ItemStack) (Object) this);
-        if (level != null && getTagElement("GTCEu_spoilable") != null && spoilable != null)
-            gtceu$setCreationTick(level,
-                    level.getGameTime() - spoilable.getSpoilTicks((ItemStack) (Object) this) + value);
-    }
-
-    @Unique
-    @Override
-    public void gtceu$setFreezeSpoiling(boolean freezeUpdates) {
-        if (ISpoilableItem.getSpoilable((ItemStack) (Object) this) == null) return;
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        Level level = server == null ? null : server.overworld();
-        if (level == null) return;
-        if (freezeUpdates) {
-            gtceu$updateFreshness(level, true);
-            getOrCreateTagElement("GTCEu_spoilable").putLong("frozenRemainingTicks", gtceu$getRemainingTicks(null));
-        } else {
-            CompoundTag spoilTag = getTagElement("GTCEu_spoilable");
-            if (spoilTag != null && spoilTag.contains("frozenRemainingTicks")) {
-                gtceu$setRemainingTicks(null, spoilTag.getLong("frozenRemainingTicks"));
-                spoilTag.remove("frozenRemainingTicks");
-            }
-        }
-    }
-
     @Inject(at = @At("HEAD"), method = "isSameItemSameTags", cancellable = true)
     private static void mergeSpoilables(ItemStack stack, ItemStack other, CallbackInfoReturnable<Boolean> cir) {
-        CompoundTag tag1 = stack.getTagElement("GTCEu_spoilable");
-        CompoundTag tag2 = other.getTagElement("GTCEu_spoilable");
+        ISpoilableItem spoilable1 = GTCapabilityHelper.getSpoilable(stack);
+        ISpoilableItem spoilable2 = GTCapabilityHelper.getSpoilable(stack);
         boolean isSameItem = ItemStack.isSameItem(stack, other) && stack.areCapsCompatible(other);
         CompoundTag modifiedTag1 = stack.getTag() == null ? null : stack.getTag().copy();
         CompoundTag modifiedTag2 = other.getTag() == null ? null : other.getTag().copy();
         if (modifiedTag1 != null) modifiedTag1.remove("GTCEu_spoilable");
         if (modifiedTag2 != null) modifiedTag2.remove("GTCEu_spoilable");
         isSameItem = isSameItem && Objects.equals(modifiedTag1, modifiedTag2);
-        if (isSameItem && tag1 != null && tag2 != null) {
-            if (tag1.contains("frozenRemainingTicks") || tag2.contains("frozenRemainingTicks")) {
+        if (isSameItem && spoilable1 != null && spoilable2 != null) {
+            if (spoilable1.isFrozen() || spoilable2.isFrozen()) {
                 if (!ISpoilableItem.FROZEN_EQUALITY &&
-                        (tag1.contains("frozenRemainingTicks") ^ tag2.contains("frozenRemainingTicks"))) {
+                        (spoilable1.isFrozen() ^ spoilable2.isFrozen())) {
                     cir.setReturnValue(false);
                     return;
                 }
-                ISpoilableItem spoilable1 = ISpoilableItem.getSpoilable(stack);
-                ISpoilableItem spoilable2 = ISpoilableItem.getSpoilable(other);
-                if (spoilable1 != null && spoilable2 != null) {
-                    cir.setReturnValue(
-                            spoilable1.getTicksUntilSpoiled(stack) == spoilable2.getTicksUntilSpoiled(other));
-                }
+                cir.setReturnValue(spoilable1.getTicksUntilSpoiled() == spoilable2.getTicksUntilSpoiled());
+                return;
             } else {
-                long tick1 = tag1.getLong("creation_tick");
-                long tick2 = tag2.getLong("creation_tick");
+                long tick1 = spoilable1.getCreationTick();
+                long tick2 = spoilable2.getCreationTick();
                 if (tick1 != tick2) {
                     long avg;
                     if (stack.getCount() + other.getCount() > 0)
                         avg = (tick1 * stack.getCount() + tick2 * other.getCount()) /
                                 (stack.getCount() + other.getCount());
                     else avg = tick1;
-                    tag1.putLong("creation_tick", avg);
-                    tag2.putLong("creation_tick", avg);
+                    spoilable1.setCreationTick(avg);
+                    spoilable2.setCreationTick(avg);
                 }
             }
         }
@@ -267,7 +198,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
             locals = LocalCapture.CAPTURE_FAILSOFT)
     private void aprilFoolsTooltip(Player player, TooltipFlag isAdvanced, CallbackInfoReturnable<List<Component>> cir,
                                    List<Component> list) {
-        ISpoilableItem spoilable = ISpoilableItem.getSpoilable((ItemStack) (Object) this);
+        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable((ItemStack) (Object) this);
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IAddInformation addInformation) {
             addInformation.appendHoverText((ItemStack) (Object) this, player == null ? null : player.level(), list,
                     isAdvanced);
@@ -283,7 +214,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
 
     @Inject(at = @At("HEAD"), method = "isBarVisible", cancellable = true)
     private void aprilFoolsBarVisible(CallbackInfoReturnable<Boolean> cir) {
-        ISpoilableItem spoilable = ISpoilableItem.getSpoilable((ItemStack) (Object) this);
+        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable((ItemStack) (Object) this);
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
             cir.setReturnValue(durabilityBar.isBarVisible((ItemStack) (Object) this));
         } else if (gtceu$fakeTooltip) {
@@ -293,7 +224,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
 
     @Inject(at = @At("HEAD"), method = "getBarColor", cancellable = true)
     private void aprilFoolsBarColor(CallbackInfoReturnable<Integer> cir) {
-        ISpoilableItem spoilable = ISpoilableItem.getSpoilable((ItemStack) (Object) this);
+        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable((ItemStack) (Object) this);
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
             cir.setReturnValue(durabilityBar.getBarColor((ItemStack) (Object) this));
         } else if (gtceu$fakeTooltip) {
@@ -303,7 +234,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStack {
 
     @Inject(at = @At("HEAD"), method = "getBarWidth", cancellable = true)
     private void aprilFoolsBarWidth(CallbackInfoReturnable<Integer> cir) {
-        ISpoilableItem spoilable = ISpoilableItem.getSpoilable((ItemStack) (Object) this);
+        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable((ItemStack) (Object) this);
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
             cir.setReturnValue(durabilityBar.getBarWidth((ItemStack) (Object) this));
         } else if (gtceu$fakeTooltip) {

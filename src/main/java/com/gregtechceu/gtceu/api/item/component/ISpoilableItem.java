@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.item.component;
 
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.item.ISpoilableItemStackMixin;
 import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 
@@ -71,8 +72,11 @@ public interface ISpoilableItem {
      * Should be called when it finishes crafting, for example.
      */
     static void update(ItemStack stack) {
-        ((ISpoilableItemStackMixin) (Object) stack).gtceu$updateFreshness(null, true);
+        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
+        if (spoilable != null) spoilable.updateFreshness(true);
     }
+
+    void updateFreshness(boolean createTag);
 
     /**
      * Should return the amount of ticks that this item can stay fresh.

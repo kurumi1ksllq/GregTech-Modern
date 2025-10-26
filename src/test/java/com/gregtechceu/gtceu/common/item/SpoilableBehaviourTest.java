@@ -62,7 +62,7 @@ public class SpoilableBehaviourTest {
                 .duration(20)
                 .keepSpoilingProgress(false)
                 .buildRawRecipe());
-        Mod.EventBusSubscriber.Bus.FORGE.bus().get().addListener(SpoilableBehaviourTest::attachSpoilables);
+        Mod.EventBusSubscriber.Bus.FORGE.bus().get().addGenericListener(ItemStack.class, SpoilableBehaviourTest::attachSpoilables);
     }
 
     private static void makeSpoilables(GameTestHelper helper) {

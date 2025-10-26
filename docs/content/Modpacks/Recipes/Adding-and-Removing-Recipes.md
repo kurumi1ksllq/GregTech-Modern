@@ -86,13 +86,20 @@ ServerEvents.recipes(event => {
         - `.itemInput()`
         - `.itemInputs()`
         - `.chancedInput()`
-        - `.itemInputsRanged()`
         - `.notConsumable()`
+        - `.itemInputsRanged()`
+        - `.itemInputsRangedMarked()`
+        - `.itemInputsLinked()`
+        - `.itemInputsLinkedMarked()`
+
     - Fluids:
         - `.inputFluids()`
         - `.chancedFluidInput()`
-        - `.inputFluidsRanged()`
         - `.notConsumableFluid()`
+        - `.inputFluidsRanged()`
+        - `.inputFluidsRangedMarked()`
+        - `.inputFluidsLinked()`
+        - `.inputFluidsLinkedMarked()`
     - Misc:
         - `.circuit()`
 - Outputs:
@@ -101,10 +108,16 @@ ServerEvents.recipes(event => {
         - `.itemOutputs()`
         - `.chancedOutput()`
         - `.itemOutputsRanged()`
+        - `.itemOutputsRangedMarked()`
+        - `.itemOutputsLinked()`
+        - `.itemOutputsLinkedMarked()`
     - Fluids:
         - `.outputFluids()`
         - `.chancedFluidOutput()`
         - `.outputFluidsRanged()`
+        - `.outputFluidsRangedMarked()`
+        - `.outputFluidsLinked()`
+        - `.outputFluidsLinkedMarked()`
 - Energy:
     - `.inputEU()`:  
       Makes the recipe consume a lump sum of EU to start the recipe. Most often seen in fusion reactor recipes.
@@ -116,23 +129,43 @@ ServerEvents.recipes(event => {
 - Chanced Ingredients:
     - Ingredients that are not consumed/produced on every run of a recipe. Can be expressed as either a fraction, or as an
       integer chance out of 10,000.
-    - Assigning an Input ingredient with a Chance of `0` causes that ingredient to be flagged as `Non-Consumed` in EMI. 
+    - Assigning an Input ingredient with a Chance of `0` causes that ingredient to be flagged as `Non-Consumed` in EMI.
       This can also be done more easily using `.notConsumable()`.
-    - Recipes with chanced ingredients can also have a Chance Logic designated for each of their input/output sets, using 
+    - Recipes with chanced ingredients can also have a Chance Logic designated for each of their input/output sets, using
       one or more of the functions `.chancedItemInputLogic()`, `.chancedFluidInputLogic()`, `.chancedTickInputLogic()`,
       `.chancedItemOutputLogic()`, `.chancedFluidOutputLogic()`, `.chancedTickOutputLogic()`
     - Valid options for chanced logic are:
         - `or` - (default) Any item/fluid which succeeds on its chance roll is produced/consumed.
-        - `and` - If _all_ items/fluids succeed on their chance roll, all are produced/consumed together. Otherwise, none are. 
-        - `xor` - Guarantees that exactly one of the chanced items/fluids will be produced/consumed on every run. 
-        Behavior was changed in 7.0.0.
-        - `first` - Makes a chance roll for each item/fluid, in order of registration. Only the first item which succeeds 
-        on its roll is returned. Prior to 7.0.0, this was the behavior of `xor` logic.
+        - `and` - If _all_ items/fluids succeed on their chance roll, all are produced/consumed together. Otherwise, none are.
+        - `xor` - Guarantees that exactly one of the chanced items/fluids will be produced/consumed on every run.
+          Behavior was changed in 7.0.0.
+        - `first` - Makes a chance roll for each item/fluid, in order of registration. Only the first item which succeeds
+          on its roll is returned. Prior to 7.0.0, this was the behavior of `xor` logic.
 - Ranged Ingredients:
     - Item or Fluid ingredients that will be consumed or produced in a random amount within a `min, max` range (inclusive).
+    - Ranged Ingredients are created using an ItemStack or FluidStack, and an IntProvider (usually by calling
+      `UniformInt.of(min,max)`, although any IntProvider is valid.)
+- Linked Ranged Ingredients
+    - A special type of Ranged Ingredients which, rather than having a randomly determined amount, have an amount which
+      is calculated based on the amount of one or more other Ranged Ingredients.
+    - Linked Ranged Ingredients are created using an ItemStack or FluidStack and an IntProvider. They also require a Link
+      Mode, and a list of Marks, designating the other ingredients they draw their value from. Linked ingredients can be
+      Items or Fluids, and can be linked to Items or Fluids, Inputs or Outputs. Linked ingredients can be linked to
+      multiple other ingredients, including other linked ingredients.
+    - Do not create cycles of linked ingredients, the recipe will not work.
+    - Valid Link Modes are:
+        - `"direct"` - Linked ingredient calculates its roll based on how high its marked ingredients rolled. This can be
+          used to make a ranged input and output always produce or consume the same amount when a recipe is run.
+        - `"inverse"` - Linked ingredient calculates its roll based on the inverse of how high its marked ingredients rolled.
+          This can be used to have two ingredients which always consume or produce the same _total_ amount of items, but in
+          a random ratio.
+    - Ranged Ingredients are given a Mark using the `.[...]RangedMarked()` series of functions, which take the standard
+      first two parameters, but as their third parameter require a String, which is used to establish the ingredient as a Mark.
+      Linked Ingredients can also be Marked, allowing for chain relations of one ingredient relying on a second, which itself
+      relies on a third.
 - Circuits
     - Many GT recipes use a `Programmed Circuit` item with a Configuration value of `1-32` as a `Non-Consumed` input,
-to distinguish them from other recipes in the same machine with similar ingredients. `.circuit()` adds one to a recipe.
+      to distinguish them from other recipes in the same machine with similar ingredients. `.circuit()` adds one to a recipe.
 - More granular functionality:
     - `.perTick()`:  
       Using this will enable you to control whether a recipe input/output is consumed/produced per tick the recipe is

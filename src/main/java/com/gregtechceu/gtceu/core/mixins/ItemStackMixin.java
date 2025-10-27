@@ -116,7 +116,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStackMixin {
             long spoilTicks = spoilable.getSpoilTicks();
             long timeDifference = level.getGameTime() - tag.getLong("creation_tick") - spoilTicks;
             if (timeDifference >= 0) {
-                @SuppressWarnings("DataFlowIssue")
                 ItemStack newStack = spoilable.spoilResult();
                 item = newStack.getItem();
                 delegate = ForgeRegistries.ITEMS.getDelegateOrThrow(item);

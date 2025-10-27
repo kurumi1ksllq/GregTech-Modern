@@ -3,20 +3,14 @@ package com.gregtechceu.gtceu.api.item.component;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 
+import com.gregtechceu.gtceu.common.item.SpoilableItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ItemLike;
 
 /**
- * The interface items that spoil should implement.
- * <p>
- * If you are developing an addon, and want to make an {@link Item}
- * that does not extend this interface spoilable, use {@link ISpoilableItem#attachSpoilable(ISpoilableItem, ItemLike)}.
- * </p>
- * <p>
- * If you want to make an item that spoils not spoil, use {@link ISpoilableItem#unspoil(ItemLike)}.
- * </p>
- * <p>
+ * This is a capability! {@link Item} subclasses should not implement this directly!
+ * <br>
  * Spoilable items will, as the name implies, spoil (who could've thought).
  * Due to Minecraft's limitations, items will only start spoiling only if:
  * <ul>
@@ -50,9 +44,15 @@ import net.minecraft.world.level.ItemLike;
  * in your own implementation of the {@link ISpoilableItem} interface.
  * </p>
  * <p>
- * You do not have to make your own implementation of {@link ISpoilableItem} to use this mechanic.<br>
- * Instead, you can use {@link SpoilableBehaviour} and {@link SpoilableBehaviour#attachTo(ItemLike)} to
- * make any item from any mod spoil quite easily. This is especially useful for KubeJS devs.
+ * To make an item spoilable, you need to attach an instance of {@link SpoilableItemStack} as a capability to the item.
+ * A capability provider can be easily obtained with {@link SpoilableBehaviour#toCapProvider(ItemStack)}, so that
+ * you are not required to subclass {@link SpoilableItemStack} or this interface directly.
+ * To attach a capability to your own item, override {@link Item#initCapabilities(ItemStack, CompoundTag)} in your
+ * {@link Item} subclass.<br>
+ * To attach a capability to a {@link com.gregtechceu.gtceu.api.item.ComponentItem}, you can use {@link SpoilableBehaviour}, as
+ * it is an {@link IItemComponent}.<br>
+ * To attach a capability to an existing item, use {@code AttachCapabilitiesEvent<ItemStack>}
+ * (fired on the forge event bus).
  * </p>
  */
 public interface ISpoilableItem {
@@ -75,6 +75,10 @@ public interface ISpoilableItem {
         if (spoilable != null) spoilable.updateFreshness(true);
     }
 
+    /**
+     * Checks if this stack is supposed to already be spoiled, and spoils it into the {@link ISpoilableItem#spoilResult()}
+     * @param createTag whether to start spoiling this stack if it didn't start spoiling yet (adds NBT)
+     */
     void updateFreshness(boolean createTag);
 
     /**
@@ -84,8 +88,6 @@ public interface ISpoilableItem {
     long getSpoilTicks();
 
     /**
-     * Please refrain from overriding this method unless absolutely necessary (I have no idea what will happen)
-     * 
      * @return the amount of ticks left until the provided {@link ItemStack} spoils.
      *         The ticks still reduce even when the item is unloaded, and only pause if the
      *         overworld time pauses, as all tick calculations are done with overworld tick time
@@ -94,8 +96,6 @@ public interface ISpoilableItem {
     long getTicksUntilSpoiled();
 
     /**
-     * Please refrain from overriding this method unless absolutely necessary (I have no idea what will happen).
-     * <br>
      * Sets the amount of ticks left until the provided {@link ItemStack} spoils.
      * This modifies the provided stack's NBT data.
      * The provided value may be more than {@link ISpoilableItem#getSpoilTicks()}
@@ -105,7 +105,7 @@ public interface ISpoilableItem {
     void setTicksUntilSpoiled(long value);
 
     /**
-     * Freezes the provided stack's spoiling progress until it is unfrozen by
+     * Freezes the stack's spoiling progress until it is unfrozen by
      * {@link ISpoilableItem#unfreezeSpoiling()}.
      * Frozen stacks will NOT spoil, even if {@link ISpoilableItem#getTicksUntilSpoiled()} is {@code <= 0}.
      * This method modifies the provided stack's NBT data.
@@ -119,17 +119,19 @@ public interface ISpoilableItem {
     void freezeSpoiling();
 
     /**
-     * Please refrain from overriding this method unless absolutely necessary (I have no idea what will happen).
-     * <br>
-     * Unfreezes the provided stack's spoiling progress. If the stack's
+     * Unfreezes the stack's spoiling progress. If the stack's
      * {@link ISpoilableItem#getTicksUntilSpoiled()} is {@code <= 0}, it will spoil
      * immediately after this method call.
      * This method modifies the provided stack's NBT data.
      * 
      * @see ISpoilableItem#freezeSpoiling()
      */
+    @SuppressWarnings("unused")
     void unfreezeSpoiling();
 
+    /**
+     * @return whether this stack's spoiling is frozen
+     */
     boolean isFrozen();
 
     /**
@@ -143,7 +145,14 @@ public interface ISpoilableItem {
      */
     boolean shouldSpoil();
 
+    /**
+     * @return the tick on which this item started spoiling, might not actually be the creation tick in some cases
+     */
     long getCreationTick();
 
+    /**
+     * Sets the tick on which this item started spoiling, modifying its spoiling progress accordingly
+     * @param tick the value to set to
+     */
     void setCreationTick(long tick);
 }

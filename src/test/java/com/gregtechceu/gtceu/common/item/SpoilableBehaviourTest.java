@@ -28,6 +28,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.gametest.GameTestHolder;
@@ -62,7 +63,7 @@ public class SpoilableBehaviourTest {
                 .duration(20)
                 .keepSpoilingProgress(false)
                 .buildRawRecipe());
-        Mod.EventBusSubscriber.Bus.FORGE.bus().get().addGenericListener(ItemStack.class,
+        MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class,
                 SpoilableBehaviourTest::attachSpoilables);
     }
 

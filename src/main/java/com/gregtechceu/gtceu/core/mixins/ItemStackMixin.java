@@ -88,6 +88,9 @@ public abstract class ItemStackMixin implements ISpoilableItemStackMixin {
     @Nullable
     private Entity entityRepresentation;
 
+    @Shadow
+    protected abstract void forgeInit();
+
     @Unique
     @Override
     public void gtceu$updateFreshness(Level level, boolean createTag) {
@@ -121,6 +124,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStackMixin {
                 delegate = ForgeRegistries.ITEMS.getDelegateOrThrow(item);
                 count = newStack.getCount();
                 this.tag = newStack.getTag();
+                forgeInit();
                 ISpoilableItem newSpoilable = GTCapabilityHelper.getSpoilable((ItemStack) (Object) this);
                 if (newSpoilable != null && (this.tag == null || !this.tag.contains("GTCEu_spoilable"))) {
                     getOrCreateTagElement("GTCEu_spoilable").putLong("creation_tick",

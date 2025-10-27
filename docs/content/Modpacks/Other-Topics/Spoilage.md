@@ -13,33 +13,32 @@ or, more specifically, from one of these events (due to Minecraft's limitations)
 - The item was dropped
 - `ISpoilableItem.update(ItemStack)` was called
 
-!!! danger "Dangers of universal spoilage"
-
-    You can make items spoil everywhere, but that comes at a cost. **_Everywhere_** includes the creative inventory, JEI and even
-    recipe ingredients and results. This can be done by setting `ISpoilableItem.BREAK_EVERYTHING` to `true`.<br>
-    If you enable this feature, **prepare for unforeseen consequences...**
-
-If you want to make an item spoil, you can either make it implement the `ISpoilableItem` interface, or
-attach an `ISpoilableItem` to it (most commonly `SpoilableBehaviour`).
+If you want to make an item spoil, you need to attack the `ISpoilableItem` capability to it.
 Please note that the spoilage timer still decrements even if the stack is in an unloaded chunk.
 
 ??? example "Example usages of (almost) all methods in the spoilage API (in Java)"
 
     ```java
     public class Example {
-        public void attachSpoilables() {
-            // Make diamonds spoil into dirt in 100 seconds
-            new SpoilableBehaviour(Items.DIRT, 20*100).attachTo(Items.DIAMOND);
+
+        // Register the event listener so that it can recieve events
+        public void registerListener() {
+            MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class, this::attachSpoilables);
         }
         
-        public void removeSpoilables() {
-            // Make diamonds not spoil anymore
-            ISpoilableItem.unspoil(Items.DIAMOND);
+        // Make diamonds spoil into dirt in 100 seconds, apples into jigsaws in 35 seconds
+        public void attachSpoilables(AttachCapabilitiesEvent<ItemStack> event) {
+            ResourceLocation id = GTCEu.id("spoilable")
+            ItemStack stack = event.getObject();
+            if (stack.getItem() == Items.DIAMOND)
+                event.addCapability(id, new SpoilableBehaviour(Items.DIRT, 20*100).toCapProvider(stack));
+            if (stack.getItem() == Items.APPLE)
+                event.addCapability(id, new SpoilableBehaviour(Items.JIGSAW, 20*35).toCapProvider(stack));
         }
         
         public void getAndSetValuesAndStuff(ItemStack stack) {
-            ISpoilableItem spoilable = ISpoilableItem.getSpoilable(stack);
-            // If spoilable is null, it means the stack can not spoil
+            ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
+            // If spoilable is null, it means the stack cannot spoil
             if (spoilable != null) {
                 // Get amount of ticks until a completely fresh stack spoils
                 long totalTicks = spoilable.getSpoilTicks(stack);
@@ -108,18 +107,3 @@ Results of crafts in a crafting table are always outputted fully fresh.
 !!! note
 
     Items will spoil in machine inputs, and there's no way to automatically remove items from inputs.
-
-??? danger "Example: making everything spoil everywhere"
-
-    ```java
-    public void everythingSpoilsEverywhereRandomly() {
-        ISpoilableItem.DEFAULT_SPOIL_BEHAVIOUR = item -> {
-            List<Item> allItems = ForgeRegistries.ITEMS.getValues().stream().toList();
-            Item randomItem = allItems.get(GTValues.RNG.nextIntBetweenInclusive(0, allItems.size() - 1));
-            // Make everything spoil every 50 seconds into a random item
-            return new SpoilableBehaviour(randomItem, 50*20);
-        };
-        // Make items spoil everywhere
-        ISpoilableItem.BREAK_EVERYTHING = true;
-    }
-    ```

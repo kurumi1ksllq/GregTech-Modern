@@ -92,13 +92,18 @@ public abstract class ItemStackMixin implements ISpoilableItemStackMixin {
     protected abstract void forgeInit();
 
     @Unique
+    private ItemStack gtceu$self() {
+        return (ItemStack) (Object) this;
+    }
+
+    @Unique
     @Override
     public void gtceu$updateFreshness(Level level, boolean createTag) {
         if (gtceu$isUpdating) return;
         gtceu$isUpdating = true;
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (level == null && server != null) level = server.overworld();
-        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable((ItemStack) (Object) this);
+        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
         if (spoilable != null && spoilable.shouldSpoil()) {
             if (spoilable.getSpoilTicks() < 0) {
                 gtceu$isUpdating = false;
@@ -125,14 +130,13 @@ public abstract class ItemStackMixin implements ISpoilableItemStackMixin {
                 count = newStack.getCount();
                 this.tag = newStack.getTag();
                 forgeInit();
-                ISpoilableItem newSpoilable = GTCapabilityHelper.getSpoilable((ItemStack) (Object) this);
+                ISpoilableItem newSpoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
                 if (newSpoilable != null && (this.tag == null || !this.tag.contains("GTCEu_spoilable"))) {
                     getOrCreateTagElement("GTCEu_spoilable").putLong("creation_tick",
                             level.getGameTime() - timeDifference);
                     try {
                         gtceu$isUpdating = false;
                         gtceu$updateFreshness(null, false);
-                        gtceu$isUpdating = true;
                     } catch (StackOverflowError ignored) {} // if some crazy pack dev makes an item spoil into a
                                                             // spoilable that spoils into a spoilable 1000 times
                 }
@@ -201,9 +205,9 @@ public abstract class ItemStackMixin implements ISpoilableItemStackMixin {
             locals = LocalCapture.CAPTURE_FAILSOFT)
     private void aprilFoolsTooltip(Player player, TooltipFlag isAdvanced, CallbackInfoReturnable<List<Component>> cir,
                                    List<Component> list) {
-        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable((ItemStack) (Object) this);
+        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IAddInformation addInformation) {
-            addInformation.appendHoverText((ItemStack) (Object) this, player == null ? null : player.level(), list,
+            addInformation.appendHoverText(gtceu$self(), player == null ? null : player.level(), list,
                     isAdvanced);
         } else if (gtceu$fakeTooltip) {
             list.add(Component.translatable(
@@ -217,9 +221,9 @@ public abstract class ItemStackMixin implements ISpoilableItemStackMixin {
 
     @Inject(at = @At("HEAD"), method = "isBarVisible", cancellable = true)
     private void aprilFoolsBarVisible(CallbackInfoReturnable<Boolean> cir) {
-        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable((ItemStack) (Object) this);
+        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
-            cir.setReturnValue(durabilityBar.isBarVisible((ItemStack) (Object) this));
+            cir.setReturnValue(durabilityBar.isBarVisible(gtceu$self()));
         } else if (gtceu$fakeTooltip) {
             cir.setReturnValue(true);
         }
@@ -227,9 +231,9 @@ public abstract class ItemStackMixin implements ISpoilableItemStackMixin {
 
     @Inject(at = @At("HEAD"), method = "getBarColor", cancellable = true)
     private void aprilFoolsBarColor(CallbackInfoReturnable<Integer> cir) {
-        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable((ItemStack) (Object) this);
+        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
-            cir.setReturnValue(durabilityBar.getBarColor((ItemStack) (Object) this));
+            cir.setReturnValue(durabilityBar.getBarColor(gtceu$self()));
         } else if (gtceu$fakeTooltip) {
             cir.setReturnValue(FastColor.ARGB32.color(255, 255, 255, 255));
         }
@@ -237,9 +241,9 @@ public abstract class ItemStackMixin implements ISpoilableItemStackMixin {
 
     @Inject(at = @At("HEAD"), method = "getBarWidth", cancellable = true)
     private void aprilFoolsBarWidth(CallbackInfoReturnable<Integer> cir) {
-        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable((ItemStack) (Object) this);
+        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
-            cir.setReturnValue(durabilityBar.getBarWidth((ItemStack) (Object) this));
+            cir.setReturnValue(durabilityBar.getBarWidth(gtceu$self()));
         } else if (gtceu$fakeTooltip) {
             cir.setReturnValue(13);
         }

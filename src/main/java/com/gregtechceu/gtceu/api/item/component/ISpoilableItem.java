@@ -2,8 +2,8 @@ package com.gregtechceu.gtceu.api.item.component;
 
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
-
 import com.gregtechceu.gtceu.common.item.SpoilableItemStack;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -49,7 +49,8 @@ import net.minecraft.world.item.ItemStack;
  * you are not required to subclass {@link SpoilableItemStack} or this interface directly.
  * To attach a capability to your own item, override {@link Item#initCapabilities(ItemStack, CompoundTag)} in your
  * {@link Item} subclass.<br>
- * To attach a capability to a {@link com.gregtechceu.gtceu.api.item.ComponentItem}, you can use {@link SpoilableBehaviour}, as
+ * To attach a capability to a {@link com.gregtechceu.gtceu.api.item.ComponentItem}, you can use
+ * {@link SpoilableBehaviour}, as
  * it is an {@link IItemComponent}.<br>
  * To attach a capability to an existing item, use {@code AttachCapabilitiesEvent<ItemStack>}
  * (fired on the forge event bus).
@@ -76,7 +77,9 @@ public interface ISpoilableItem {
     }
 
     /**
-     * Checks if this stack is supposed to already be spoiled, and spoils it into the {@link ISpoilableItem#spoilResult()}
+     * Checks if this stack is supposed to already be spoiled, and spoils it into the
+     * {@link ISpoilableItem#spoilResult()}
+     * 
      * @param createTag whether to start spoiling this stack if it didn't start spoiling yet (adds NBT)
      */
     void updateFreshness(boolean createTag);
@@ -152,6 +155,7 @@ public interface ISpoilableItem {
 
     /**
      * Sets the tick on which this item started spoiling, modifying its spoiling progress accordingly
+     * 
      * @param tick the value to set to
      */
     void setCreationTick(long tick);

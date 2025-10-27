@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.api.item.component;
 
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.item.ISpoilableItemStackMixin;
 import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 
 import net.minecraft.world.item.Item;

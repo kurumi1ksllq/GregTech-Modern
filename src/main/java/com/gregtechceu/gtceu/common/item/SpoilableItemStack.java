@@ -6,8 +6,7 @@ import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IDurabilityBar;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
-import lombok.Getter;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -17,11 +16,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
+
+import it.unimi.dsi.fastutil.ints.IntIntPair;
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformation, IDurabilityBar {
+
     @Getter
     private final ItemStack stack;
 

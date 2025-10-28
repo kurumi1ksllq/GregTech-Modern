@@ -29,5 +29,5 @@ public interface GTCEuStartupEvents {
     EventHandler REGISTRY = GROUP.startup("registry", () -> GTRegistryEventJS.class).extra(REGISTRY_EXTRA);
     EventHandler MATERIAL_MODIFICATION = GROUP.startup("materialModification", () -> MaterialModificationEventJS.class);
     EventHandler CRAFTING_COMPONENTS = GROUP.startup("craftingComponents", () -> CraftingComponentsEventJS.class);
-    EventHandler MACHINE_MODIFICATION = GROUP.startup("registerGTMachine", () -> ModifyMachineEventJS.class);
+    EventHandler MACHINE_MODIFICATION = GROUP.startup("machineModification", () -> ModifyMachineEventJS.class);
 }

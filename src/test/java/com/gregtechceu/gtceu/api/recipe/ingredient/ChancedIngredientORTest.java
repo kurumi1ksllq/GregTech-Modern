@@ -127,18 +127,35 @@ public class ChancedIngredientORTest {
                 .duration(2)
                 .buildRawRecipe());
 
-//        CENTRIFUGE_RECIPE_TYPE.getLookup().addRecipe(CENTRIFUGE_RECIPE_TYPE
-//                .recipeBuilder(GTCEu.id("test_double_or_chanced_output_cent"))
-//                .inputItems(COBBLE)
-//                .chance(4000)
-//                .outputItems(IN_OR_1.copyWithCount(1))
-//                .chance(6000)
-//                .outputItems(IN_OR_2.copyWithCount(1))
-//                .chance(10000)
-//                .chancedItemOutputLogic(ChanceLogic.OR)
-//                .EUt(GTValues.V[GTValues.IV])
-//                .duration(2)
-//                .buildRawRecipe());
+        CENTRIFUGE_RECIPE_TYPE.getLookup().addRecipe(CENTRIFUGE_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_double_or_chanced_output_cent"))
+                .inputItems(COBBLE)
+                .chance(4000)
+                .outputItems(IN_OR_1.copyWithCount(1))
+                .chance(6000)
+                .outputItems(IN_OR_2.copyWithCount(1))
+                .chance(10000)
+                .chancedItemOutputLogic(ChanceLogic.OR)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(16)
+                .buildRawRecipe());
+
+        CENTRIFUGE_RECIPE_TYPE.getLookup().addRecipe(CENTRIFUGE_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_quad_or_chanced_output_cent"))
+                .inputItems(STONE)
+                .chance(4000)
+                .outputItems(IN_OR_1.copyWithCount(1))
+                .chance(5000)
+                .outputItems(IN_OR_2.copyWithCount(1))
+                .chance(6000)
+                .outputItems(IN_OR_3.copyWithCount(1))
+                .chance(7000)
+                .outputItems(IN_OR_4.copyWithCount(1))
+                .chance(10000)
+                .chancedItemOutputLogic(ChanceLogic.OR)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(16)
+                .buildRawRecipe());
     }
 
     private static MetaMachine getMetaMachine(BlockEntity entity) {
@@ -165,7 +182,7 @@ public class ChancedIngredientORTest {
         WorkableMultiblockMachine controller = (WorkableMultiblockMachine) getMetaMachine(
                 helper.getBlockEntity(new BlockPos(1, 2, 0)));
         TestUtils.formMultiblock(controller);
-        // controller.setRecipeType(LCR_RECIPE_TYPE);
+        controller.setRecipeType(LCR_RECIPE_TYPE);
         ItemBusPartMachine inputBus1 = (ItemBusPartMachine) getMetaMachine(
                 helper.getBlockEntity(new BlockPos(2, 1, 0)));
         FluidHatchPartMachine inputHatch1 = (FluidHatchPartMachine) getMetaMachine(
@@ -187,7 +204,7 @@ public class ChancedIngredientORTest {
         WorkableElectricMultiblockMachine controller = (WorkableElectricMultiblockMachine) getMetaMachine(
                 helper.getBlockEntity(new BlockPos(2, 2, 0)));
         TestUtils.formMultiblock(controller);
-        // controller.setRecipeType(CENTRIFUGE_RECIPE_TYPE);
+        controller.setRecipeType(CENTRIFUGE_RECIPE_TYPE);
         ItemBusPartMachine inputBus1 = (ItemBusPartMachine) getMetaMachine(
                 helper.getBlockEntity(new BlockPos(1, 2, 0)));
         FluidHatchPartMachine inputHatch1 = (FluidHatchPartMachine) getMetaMachine(
@@ -319,27 +336,22 @@ public class ChancedIngredientORTest {
         // 1t to turn on, 2t per recipe run
         // check the results of all rolls together
         helper.runAfterDelay(runs * 2 + 1, () -> {
-            ItemStack results1 = itemIn.getStackInSlot(0);
-            ItemStack results2 = itemIn.getStackInSlot(0);
             int upperLimit = 48 - (runs * 0);
             int lowerLimit = 48 - (runs * 3);
             helper.assertTrue(TestUtils.isItemStackEqual(itemOut.getStackInSlot(0), STONE.copyWithCount(runs)),
                     "Singleblock Assembler (OR) didn't complete correct number of recipes, completed [" +
                             itemOut.getStackInSlot(0).getCount() + "] not [" + runs + "]");
-            helper.assertTrue(TestUtils.isItemWithinRange(results1, lowerLimit, upperLimit),
-                    "Singleblock Assembler (OR) didn't consume correct number of first item, consumed [" +
-                            (48 - results1.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
-            helper.assertTrue(TestUtils.isItemWithinRange(results2, lowerLimit, upperLimit),
-                    "Singleblock Assembler (OR) didn't consume correct number of second item, consumed [" +
-                            (48 - results2.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
-            helper.assertFalse((results1.getCount() == lowerLimit),
-                    "Singleblock Assembler succeeded every chance roll!");
-            helper.assertFalse((results1.getCount() == upperLimit),
-                    "Singleblock Assembler failed every chance roll!");
-            helper.assertFalse((results2.getCount() == lowerLimit),
-                    "Singleblock Assembler succeeded every chance roll!");
-            helper.assertFalse((results2.getCount() == upperLimit),
-                    "Singleblock Assembler failed every chance roll!");
+
+            for (int i = 0; i < 2; i++) {
+                ItemStack result = itemIn.getStackInSlot(i);
+                helper.assertTrue(TestUtils.isItemWithinRange(result, lowerLimit, upperLimit),
+                        "Singleblock Assembler (OR) didn't consume correct number of item " + i + ", consumed [" +
+                                (48 - result.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+                helper.assertFalse((result.getCount() == lowerLimit),
+                        "Singleblock Assembler (OR) item " + i + " failed every chance roll!");
+                helper.assertFalse((result.getCount() == upperLimit),
+                        "Singleblock Assembler (OR) item " + i + " succeeded every chance roll!");
+            }
 
             helper.succeed();
         });
@@ -366,43 +378,22 @@ public class ChancedIngredientORTest {
         // 1t to turn on, 2t per recipe run
         // check the results of all rolls together
         helper.runAfterDelay(runs * 2 + 1, () -> {
-            ItemStack results1 = itemIn.getStackInSlot(0);
-            ItemStack results2 = itemIn.getStackInSlot(0);
-            ItemStack results3 = itemIn.getStackInSlot(0);
-            ItemStack results4 = itemIn.getStackInSlot(0);
-            int upperLimit = 48 - (runs * 0);
-            int lowerLimit = 48 - (runs * 3);
+            int upperLimit = runs * 3;
+            int lowerLimit = 0;
             helper.assertTrue(TestUtils.isItemStackEqual(itemOut.getStackInSlot(0), STONE.copyWithCount(runs)),
                     "Singleblock Assembler (OR) didn't complete correct number of recipes, completed [" +
                             itemOut.getStackInSlot(0).getCount() + "] not [" + runs + "]");
-            helper.assertTrue(TestUtils.isItemWithinRange(results1, lowerLimit, upperLimit),
-                    "Singleblock Assembler (OR) didn't consume correct number of first item, consumed [" +
-                            (48 - results1.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
-            helper.assertTrue(TestUtils.isItemWithinRange(results2, lowerLimit, upperLimit),
-                    "Singleblock Assembler (OR) didn't consume correct number of second item, consumed [" +
-                            (48 - results2.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
-            helper.assertTrue(TestUtils.isItemWithinRange(results3, lowerLimit, upperLimit),
-                    "Singleblock Assembler (OR) didn't consume correct number of third item, consumed [" +
-                            (48 - results1.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
-            helper.assertTrue(TestUtils.isItemWithinRange(results4, lowerLimit, upperLimit),
-                    "Singleblock Assembler (OR) didn't consume correct number of fourth item, consumed [" +
-                            (48 - results2.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
-            helper.assertFalse((results1.getCount() == lowerLimit),
-                    "Singleblock Assembler succeeded every chance roll!");
-            helper.assertFalse((results1.getCount() == upperLimit),
-                    "Singleblock Assembler failed every chance roll!");
-            helper.assertFalse((results2.getCount() == lowerLimit),
-                    "Singleblock Assembler succeeded every chance roll!");
-            helper.assertFalse((results2.getCount() == upperLimit),
-                    "Singleblock Assembler failed every chance roll!");
-            helper.assertFalse((results3.getCount() == lowerLimit),
-                    "Singleblock Assembler succeeded every chance roll!");
-            helper.assertFalse((results3.getCount() == upperLimit),
-                    "Singleblock Assembler failed every chance roll!");
-            helper.assertFalse((results4.getCount() == lowerLimit),
-                    "Singleblock Assembler succeeded every chance roll!");
-            helper.assertFalse((results4.getCount() == upperLimit),
-                    "Singleblock Assembler failed every chance roll!");
+
+            for (int i = 0; i < 4; i++) {
+                ItemStack result = itemIn.getStackInSlot(i);
+                helper.assertTrue(TestUtils.isItemWithinRange(result, lowerLimit, upperLimit),
+                        "Singleblock Assembler (OR) didn't consume correct number of item " + i + ", consumed [" +
+                                (48 - result.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+                helper.assertFalse((result.getCount() == lowerLimit),
+                        "Singleblock Assembler (OR) item " + i + " failed every chance roll!");
+                helper.assertFalse((result.getCount() == upperLimit),
+                        "Singleblock Assembler (OR) item " + i + " succeeded every chance roll!");
+            }
 
             helper.succeed();
         });
@@ -460,30 +451,106 @@ public class ChancedIngredientORTest {
         // 1t to turn on, 2t per recipe run
         // check the results of all rolls together
         helper.runAfterDelay(runs * 2 + 1, () -> {
-            ItemStack results1 = itemOut.getStackInSlot(0);
-            ItemStack results2 = itemOut.getStackInSlot(0);
             int upperLimit = runs * 1;
             int lowerLimit = runs * 0;
             helper.assertTrue(itemIn.isEmpty(),
-                    "Singleblock Assembler didn't complete correct number of recipes, completed [" +
+                    "Singleblock CR (OR) didn't complete correct number of recipes, completed [" +
                             (runs - itemIn.getStackInSlot(0).getCount()) + "] not [" + runs + "]");
-            helper.assertTrue(TestUtils.isItemWithinRange(results1, lowerLimit, upperLimit),
-                    "Singleblock Assembler (OR) didn't produce correct number of first item, produce [" +
-                            (64 - results1.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
-            helper.assertTrue(TestUtils.isItemWithinRange(results2, lowerLimit, upperLimit),
-                    "Singleblock Assembler (OR) didn't produce correct number of second item, produce [" +
-                            (64 - results2.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
-            helper.assertFalse((results1.getCount() == lowerLimit),
-                    "Singleblock Assembler (OR) failed every chance roll!");
-            helper.assertFalse((results1.getCount() == upperLimit),
-                    "Singleblock Assembler (OR) succeeded every chance roll!");
-            helper.assertFalse((results2.getCount() == lowerLimit),
-                    "Singleblock Assembler (OR) failed every chance roll!");
-            helper.assertFalse((results2.getCount() == upperLimit),
-                    "Singleblock Assembler (OR) succeeded every chance roll!");
+
+            for (int i = 0; i < 2; i++) {
+                ItemStack result = itemOut.getStackInSlot(i);
+                helper.assertTrue(TestUtils.isItemWithinRange(result, lowerLimit, upperLimit),
+                        "Singleblock CR (OR) didn't consume produce number of item " + i + ", produce [" +
+                                result.getCount() + "] not [" + lowerLimit + "-" + upperLimit + "]");
+                helper.assertFalse((result.getCount() == lowerLimit),
+                        "Singleblock CR (OR) item " + i + " failed every chance roll!");
+                helper.assertFalse((result.getCount() == upperLimit),
+                        "Singleblock CR (OR) item " + i + " succeeded every chance roll!");
+            }
 
             helper.succeed();
         });
     }
 
+    // test for multiblock machine with two OR chanced item outputs
+    @GameTest(template = "large_centrifuge_zpm_batch_parallel16",
+              batch = "ChancedIngredientsOR",
+              timeoutTicks = 500)
+    public static void multiblockLCentDoubleORChancedItemOutput(GameTestHelper helper) {
+        BusHolderBatchParallel busHolder = getBussesAndFormLCENT(helper);
+
+        NotifiableItemStackHandler itemIn = busHolder.inputBus1.getInventory();
+        NotifiableItemStackHandler itemOut = busHolder.outputBus1.getInventory();
+
+        int batches = 1;
+        int parallels = 1;
+        busHolder.controller.setBatchEnabled(false);
+        busHolder.parallelHatch.setCurrentParallel(parallels);
+
+        int runs = 64;
+        itemIn.setStackInSlot(0, COBBLE.copyWithCount(runs));
+
+        helper.runAfterDelay(runs + 1, () -> {
+            int lowerLimit = runs * 0;
+            int upperLimit = runs * 1;
+
+            helper.assertTrue(itemIn.isEmpty(),
+                    "LCent didn't complete correct number of recipes, completed [" +
+                            (runs - itemIn.getTotalContentAmount()) + "] not [" + runs + "]");
+
+            for (int i = 0; i < 2; i++) {
+                ItemStack result = itemOut.getStackInSlot(i);
+                helper.assertTrue(TestUtils.isItemWithinRange(result, lowerLimit, upperLimit),
+                        "LCent (OR) didn't produce correct number of item " + i + ", produced [" +
+                                result.getCount() + "] not [" + lowerLimit + "-" + upperLimit + "]");
+                helper.assertFalse((result.getCount() == lowerLimit),
+                        "LCent (OR) item " + i + " failed every chance roll!");
+                helper.assertFalse((result.getCount() == upperLimit),
+                        "LCent (OR) item " + i + " succeeded every chance roll!");
+            }
+
+            helper.succeed();
+        });
+    }
+
+    // test for multiblock machine with four OR chanced item outputs
+    @GameTest(template = "large_centrifuge_zpm_batch_parallel16",
+              batch = "ChancedIngredientsOR",
+              timeoutTicks = 500)
+    public static void multiblockLCentQuadORChancedItemOutput(GameTestHelper helper) {
+        BusHolderBatchParallel busHolder = getBussesAndFormLCENT(helper);
+
+        NotifiableItemStackHandler itemIn = busHolder.inputBus1.getInventory();
+        NotifiableItemStackHandler itemOut = busHolder.outputBus1.getInventory();
+
+        int batches = 1;
+        int parallels = 1;
+        busHolder.controller.setBatchEnabled(false);
+        busHolder.parallelHatch.setCurrentParallel(parallels);
+
+        int runs = 64;
+        itemIn.setStackInSlot(0, STONE.copyWithCount(runs));
+
+        helper.runAfterDelay(runs + 1, () -> {
+            int lowerLimit = 0;
+            int upperLimit = runs;
+
+            helper.assertTrue(itemIn.isEmpty(),
+                    "LCent didn't complete correct number of recipes, completed [" +
+                            (runs - itemIn.getTotalContentAmount()) + "] not [" + runs + "]");
+
+            for (int i = 0; i < 4; i++) {
+                ItemStack result = itemOut.getStackInSlot(i);
+                helper.assertTrue(TestUtils.isItemWithinRange(result, lowerLimit, upperLimit),
+                        "LCent (OR) didn't produce correct number of item " + i + ", produced [" +
+                                result.getCount() + "] not [" + lowerLimit + "-" + upperLimit + "]");
+                helper.assertFalse((result.getCount() == lowerLimit),
+                        "LCent (OR) item " + i + " failed every chance roll!");
+                helper.assertFalse((result.getCount() == upperLimit),
+                        "LCent (OR) item " + i + " succeeded every chance roll!");
+            }
+
+            helper.succeed();
+        });
+    }
 }

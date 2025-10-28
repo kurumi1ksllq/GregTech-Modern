@@ -2,10 +2,12 @@ package com.gregtechceu.gtceu.api.gui;
 
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+
 import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
@@ -13,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 public record ModuleUIHolder(IItemHandlerModifiable handler, boolean isRemote) implements IUIHolder {
+
     public ModuleUIHolder(Player player) {
         this(player.getInventory().items, player.level().isClientSide);
     }
@@ -38,14 +41,15 @@ public record ModuleUIHolder(IItemHandlerModifiable handler, boolean isRemote) i
         WidgetGroup group = new WidgetGroup();
         int size = handler.getSlots();
         for (int i = 0; i < size; i++) {
-            int row = i/9;
+            int row = i / 9;
             int col = i % 9;
-            SlotWidget slot = new SlotWidget(handler, i, 50 + col*16, 50 + row*16) {
+            SlotWidget slot = new SlotWidget(handler, i, 50 + col * 16, 50 + row * 16) {
+
                 @Override
                 public boolean mouseClicked(double mouseX, double mouseY, int button) {
                     if (slotReference != null && isMouseOverElement(mouseX, mouseY) && gui != null) {
                         ItemStack stack = slotReference.getItem();
-                        //TODO actually make it work
+                        // TODO actually make it work
                     }
                     return true;
                 }

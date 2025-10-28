@@ -90,13 +90,13 @@ public class ChancedIngredientORTest {
 
         ASSM_RECIPE_TYPE.getLookup().addRecipe(ASSM_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_quad_or_chanced_input_assm"))
-                .chance(4000)
+                .chance(3000)
                 .inputItems(STONE.copyWithCount(3))
-                .chance(5000)
+                .chance(4000)
                 .inputItems(IN_OR_2.copyWithCount(3))
-                .chance(6000)
+                .chance(5000)
                 .inputItems(IN_OR_3.copyWithCount(3))
-                .chance(7000)
+                .chance(6000)
                 .inputItems(IN_OR_4.copyWithCount(3))
                 .chance(10000)
                 .chancedItemInputLogic(ChanceLogic.OR)
@@ -140,21 +140,22 @@ public class ChancedIngredientORTest {
                 .duration(16)
                 .buildRawRecipe());
 
+        // will subtick overclock once
         CENTRIFUGE_RECIPE_TYPE.getLookup().addRecipe(CENTRIFUGE_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_quad_or_chanced_output_cent"))
                 .inputItems(STONE)
-                .chance(4000)
+                .chance(3000)
                 .outputItems(IN_OR_1.copyWithCount(1))
-                .chance(5000)
+                .chance(4000)
                 .outputItems(IN_OR_2.copyWithCount(1))
-                .chance(6000)
+                .chance(5000)
                 .outputItems(IN_OR_3.copyWithCount(1))
-                .chance(7000)
+                .chance(6000)
                 .outputItems(IN_OR_4.copyWithCount(1))
                 .chance(10000)
                 .chancedItemOutputLogic(ChanceLogic.OR)
                 .EUt(GTValues.V[GTValues.HV])
-                .duration(16)
+                .duration(8)
                 .buildRawRecipe());
     }
 
@@ -451,8 +452,8 @@ public class ChancedIngredientORTest {
         // 1t to turn on, 2t per recipe run
         // check the results of all rolls together
         helper.runAfterDelay(runs * 2 + 1, () -> {
-            int upperLimit = runs * 1;
-            int lowerLimit = runs * 0;
+            int upperLimit = runs;
+            int lowerLimit = 0;
             helper.assertTrue(itemIn.isEmpty(),
                     "Singleblock CR (OR) didn't complete correct number of recipes, completed [" +
                             (runs - itemIn.getStackInSlot(0).getCount()) + "] not [" + runs + "]");
@@ -491,22 +492,22 @@ public class ChancedIngredientORTest {
         itemIn.setStackInSlot(0, COBBLE.copyWithCount(runs));
 
         helper.runAfterDelay(runs + 1, () -> {
-            int lowerLimit = runs * 0;
-            int upperLimit = runs * 1;
+            int lowerLimit = 0;
+            int upperLimit = runs;
 
             helper.assertTrue(itemIn.isEmpty(),
-                    "LCent didn't complete correct number of recipes, completed [" +
+                    "LCent (double OR) didn't complete correct number of recipes, completed [" +
                             (runs - itemIn.getTotalContentAmount()) + "] not [" + runs + "]");
 
             for (int i = 0; i < 2; i++) {
                 ItemStack result = itemOut.getStackInSlot(i);
                 helper.assertTrue(TestUtils.isItemWithinRange(result, lowerLimit, upperLimit),
-                        "LCent (OR) didn't produce correct number of item " + i + ", produced [" +
+                        "LCent (double OR) didn't produce correct number of item " + i + ", produced [" +
                                 result.getCount() + "] not [" + lowerLimit + "-" + upperLimit + "]");
                 helper.assertFalse((result.getCount() == lowerLimit),
-                        "LCent (OR) item " + i + " failed every chance roll!");
+                        "LCent (double OR) item " + i + " failed every chance roll!");
                 helper.assertFalse((result.getCount() == upperLimit),
-                        "LCent (OR) item " + i + " succeeded every chance roll!");
+                        "LCent (double OR) item " + i + " succeeded every chance roll!");
             }
 
             helper.succeed();
@@ -531,25 +532,106 @@ public class ChancedIngredientORTest {
         int runs = 64;
         itemIn.setStackInSlot(0, STONE.copyWithCount(runs));
 
-        helper.runAfterDelay(runs + 1, () -> {
+        // 1t per recipe but recipe subtick overclocks once
+        helper.runAfterDelay(runs / 2 + 1, () -> {
             int lowerLimit = 0;
             int upperLimit = runs;
 
             helper.assertTrue(itemIn.isEmpty(),
-                    "LCent didn't complete correct number of recipes, completed [" +
+                    "LCent (quad OR) didn't complete correct number of recipes, completed [" +
                             (runs - itemIn.getTotalContentAmount()) + "] not [" + runs + "]");
 
             for (int i = 0; i < 4; i++) {
                 ItemStack result = itemOut.getStackInSlot(i);
                 helper.assertTrue(TestUtils.isItemWithinRange(result, lowerLimit, upperLimit),
-                        "LCent (OR) didn't produce correct number of item " + i + ", produced [" +
+                        "LCent (quad OR) didn't produce correct number of item " + i + ", produced [" +
                                 result.getCount() + "] not [" + lowerLimit + "-" + upperLimit + "]");
                 helper.assertFalse((result.getCount() == lowerLimit),
-                        "LCent (OR) item " + i + " failed every chance roll!");
+                        "LCent (quad OR) item " + i + " failed every chance roll!");
                 helper.assertFalse((result.getCount() == upperLimit),
-                        "LCent (OR) item " + i + " succeeded every chance roll!");
+                        "LCent (quad OR) item " + i + " succeeded every chance roll!");
             }
 
+            helper.succeed();
+        });
+    }
+
+    // test for multiblock machine with two OR chanced item outputs and batched/parallel recipes
+    @GameTest(template = "large_centrifuge_zpm_batch_parallel16",
+              batch = "ChancedIngredientsOR",
+              timeoutTicks = 500)
+    public static void multiblockLCentDoubleORChancedItemOutputBatchParallel(GameTestHelper helper) {
+        BusHolderBatchParallel busHolder = getBussesAndFormLCENT(helper);
+
+        NotifiableItemStackHandler itemIn = busHolder.inputBus1.getInventory();
+        NotifiableItemStackHandler itemOut = busHolder.outputBus1.getInventory();
+
+        int batches = 10;
+        int parallels = 10;
+        busHolder.controller.setBatchEnabled(false);
+        busHolder.parallelHatch.setCurrentParallel(parallels);
+
+        int runs = 100;
+        for (int j = 0; j < batches; j++) {
+            itemIn.setStackInSlot(j, COBBLE.copyWithCount(parallels));
+        }
+
+        // 16t -> 1t OC
+        // 1t -> 4t parallel
+        // 4t -> 40t batch
+        helper.runAfterDelay(41, () -> {
+            helper.assertTrue(itemIn.isEmpty(),
+                    "Batched LCent (double OR) didn't complete correct number of recipes, completed [" +
+                            (runs - itemIn.getTotalContentAmount()) + "] not [" + runs + "]");
+
+            // result counts are guaranteed for batch/parallel runs
+            for (int i = 0; i < 2; i++) {
+                int base = 40 + (20 * i);
+                ItemStack result = itemOut.getStackInSlot(i);
+                helper.assertTrue(result.getCount() == base,
+                        "Batched LCent (double OR) didn't produce correct number of item " + i + ", produced [" +
+                                result.getCount() + "] not [" + base + "]");
+            }
+            helper.succeed();
+        });
+    }
+
+    // test for multiblock machine with four OR chanced item outputs and batched/parallel recipes
+    @GameTest(template = "large_centrifuge_zpm_batch_parallel16",
+              batch = "ChancedIngredientsOR",
+              timeoutTicks = 500)
+    public static void multiblockLCentQuadORChancedItemOutputBatchParallel(GameTestHelper helper) {
+        BusHolderBatchParallel busHolder = getBussesAndFormLCENT(helper);
+
+        NotifiableItemStackHandler itemIn = busHolder.inputBus1.getInventory();
+        NotifiableItemStackHandler itemOut = busHolder.outputBus1.getInventory();
+
+        int batches = 10;
+        int parallels = 10;
+        busHolder.controller.setBatchEnabled(false);
+        busHolder.parallelHatch.setCurrentParallel(parallels);
+
+        int runs = 100;
+        for (int j = 0; j < batches; j++) {
+            itemIn.setStackInSlot(j, STONE.copyWithCount(parallels));
+        }
+
+        // 8t -> 1t OC + 1 subtick OC
+        // 1t -> 4t parallel
+        // 4t -> 40t batch
+        helper.runAfterDelay(21, () -> {
+            helper.assertTrue(itemIn.isEmpty(),
+                    "Batched LCent (double OR) didn't complete correct number of recipes, completed [" +
+                            (runs - itemIn.getTotalContentAmount()) + "] not [" + runs + "]");
+
+            // result counts are guaranteed for batch/parallel runs
+            for (int i = 0; i < 4; i++) {
+                int base = 30 + (10 * i);
+                ItemStack result = itemOut.getStackInSlot(i);
+                helper.assertTrue(result.getCount() == base,
+                        "Batched LCent (double OR) didn't produce correct number of item " + i + ", produced [" +
+                                result.getCount() + "] not [" + base + "]");
+            }
             helper.succeed();
         });
     }

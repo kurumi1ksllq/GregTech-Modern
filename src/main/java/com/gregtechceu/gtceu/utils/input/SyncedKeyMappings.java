@@ -24,19 +24,19 @@ public class SyncedKeyMappings {
             .createFromMC(() -> () -> Minecraft.getInstance().options.keyLeft);
     public static final SyncedKeyMapping VANILLA_RIGHT = SyncedKeyMapping
             .createFromMC(() -> () -> Minecraft.getInstance().options.keyRight);
+    @SuppressWarnings("unused")
     public static final SyncedKeyMapping OPEN_MODULE_GUI = SyncedKeyMapping.createConfigurable(
             "openModuleGui",
             KeyConflictContext.IN_GAME,
             InputConstants.KEY_M
-    );
+    ).registerGlobalListener((player, key, isDown) -> {
+        ModuleUIFactory.INSTANCE.openUI(new ModuleUIHolder(player), player);
+    });
 
     public static void init() {
         if (GTCEu.isClientSide()) {
             MinecraftForge.EVENT_BUS.register(SyncedKeyMapping.class);
         }
-        OPEN_MODULE_GUI.registerGlobalListener((player, key, isDown) -> {
-            if (key == OPEN_MODULE_GUI) ModuleUIFactory.INSTANCE.openUI(new ModuleUIHolder(player), player);
-        });
         ModLoader.get().postEvent(new SyncedKeyMappingEvent());
     }
 }

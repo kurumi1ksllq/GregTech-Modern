@@ -106,6 +106,20 @@ public class ChancedIngredientORTest {
                 .duration(2)
                 .buildRawRecipe());
 
+        LCR_RECIPE_TYPE.getLookup().addRecipe(LCR_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_double_or_chanced_input_lcr"))
+                .chance(4000)
+                .inputItems(IN_OR_1.copyWithCount(3))
+                .chance(6000)
+                .inputItems(IN_OR_2.copyWithCount(3))
+                .chance(10000)
+                .chancedItemInputLogic(ChanceLogic.OR)
+                .inputItems(COBBLE)
+                .outputItems(STONE)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(2)
+                .buildRawRecipe());
+
         CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_single_chanced_output_cr"))
                 .inputItems(IN_OR_1)
@@ -467,6 +481,70 @@ public class ChancedIngredientORTest {
                         "Singleblock CR (OR) item " + i + " failed every chance roll!");
                 helper.assertFalse((result.getCount() == upperLimit),
                         "Singleblock CR (OR) item " + i + " succeeded every chance roll!");
+            }
+
+            helper.succeed();
+        });
+    }
+
+    // Failure Test for multiblock machine with two OR chanced item inputs
+    // Provides too few input items, should not run recipes.
+    @GameTest(template = "lcr_ranged_ingredients", batch = "ChancedIngredientsOR")
+    public static void multiblockLCRDoubleORChancedItemInputFailure(GameTestHelper helper) {
+        BusHolder busHolder = getBussesAndFormLCR(helper);
+
+        NotifiableItemStackHandler itemIn = busHolder.inputBus1.getInventory();
+        NotifiableItemStackHandler itemOut = busHolder.outputBus1.getInventory();
+
+        int runs = 10;
+        itemIn.setStackInSlot(0, IN_OR_1.copyWithCount(63));
+        itemIn.setStackInSlot(1, IN_OR_2.copyWithCount(2));
+        itemIn.setStackInSlot(2, COBBLE.copyWithCount(runs));
+        // 1t to turn on, 2t per non- recipe run
+        helper.runAfterDelay(runs * 2 + 1, () -> {
+            ItemStack results = itemIn.getStackInSlot(1);
+
+            helper.assertTrue(itemOut.isEmpty(),
+                    "Multiblock LCR (OR) should not have run, ran [" +
+                            itemOut.getStackInSlot(0).getCount() + "] times");
+            helper.assertTrue(TestUtils.isItemStackEqual(results, IN_OR_2.copyWithCount(2)),
+                    "Multiblock LCR (OR) should not have consumed items, consumed [" +
+                            (2 - results.getCount()) + "] + [ " + (63 - itemIn.getStackInSlot(0).getCount()) + "]");
+
+            helper.succeed();
+        });
+    }
+
+    // Test for multiblock machine with two OR chanced item inputs
+    @GameTest(template = "lcr_ranged_ingredients", batch = "ChancedIngredientsOR")
+    public static void multiblockLCRDoubleORChancedItemInput(GameTestHelper helper) {
+        BusHolder busHolder = getBussesAndFormLCR(helper);
+
+        NotifiableItemStackHandler itemIn = busHolder.inputBus1.getInventory();
+        NotifiableItemStackHandler itemOut = busHolder.outputBus1.getInventory();
+
+        int runs = 16;
+        itemIn.setStackInSlot(0, IN_OR_1.copyWithCount(runs * 3));
+        itemIn.setStackInSlot(1, IN_OR_2.copyWithCount(runs * 3));
+        itemIn.setStackInSlot(2, COBBLE.copyWithCount(runs));
+        // 1t to turn on, 2t per recipe run
+        // check the results of all rolls together
+        helper.runAfterDelay(runs * 2 + 1, () -> {
+            int upperLimit = 48 - (runs * 0);
+            int lowerLimit = 48 - (runs * 3);
+            helper.assertTrue(TestUtils.isItemStackEqual(itemOut.getStackInSlot(0), STONE.copyWithCount(runs)),
+                    "Multiblock LCR (OR) didn't complete correct number of recipes, completed [" +
+                            itemOut.getStackInSlot(0).getCount() + "] not [" + runs + "]");
+
+            for (int i = 0; i < 2; i++) {
+                ItemStack result = itemIn.getStackInSlot(i);
+                helper.assertTrue(TestUtils.isItemWithinRange(result, lowerLimit, upperLimit),
+                        "Multiblock LCR (OR) didn't consume correct number of item " + i + ", consumed [" +
+                                (48 - result.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+                helper.assertFalse((result.getCount() == lowerLimit),
+                        "Multiblock LCR (OR) item " + i + " failed every chance roll!");
+                helper.assertFalse((result.getCount() == upperLimit),
+                        "Multiblock LCR (OR) item " + i + " succeeded every chance roll!");
             }
 
             helper.succeed();

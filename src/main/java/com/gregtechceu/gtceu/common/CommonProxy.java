@@ -19,6 +19,7 @@ import com.gregtechceu.gtceu.api.data.worldgen.generator.VeinGenerators;
 import com.gregtechceu.gtceu.api.gui.factory.CoverUIFactory;
 import com.gregtechceu.gtceu.api.gui.factory.GTUIEditorFactory;
 import com.gregtechceu.gtceu.api.gui.factory.MachineUIFactory;
+import com.gregtechceu.gtceu.api.gui.factory.ModuleUIFactory;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.ingredient.*;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.*;
@@ -124,6 +125,7 @@ public class CommonProxy {
         UIFactory.register(MachineUIFactory.INSTANCE);
         UIFactory.register(CoverUIFactory.INSTANCE);
         UIFactory.register(GTUIEditorFactory.INSTANCE);
+        UIFactory.register(ModuleUIFactory.INSTANCE);
 
         // Initialize the model generator before any content is loaded so machine models can use the generated data
         GregTechDatagen.initPre();

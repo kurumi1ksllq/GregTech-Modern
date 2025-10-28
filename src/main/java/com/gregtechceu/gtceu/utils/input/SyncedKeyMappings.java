@@ -27,7 +27,7 @@ public class SyncedKeyMappings {
             .createFromMC(() -> () -> Minecraft.getInstance().options.keyRight);
     @SuppressWarnings("unused")
     public static final SyncedKeyMapping OPEN_MODULE_GUI = SyncedKeyMapping.createConfigurable(
-            "openModuleGui",
+            "Open module configuration",
             KeyConflictContext.IN_GAME,
             InputConstants.KEY_M).registerGlobalListener((player, key, isDown) -> {
                 ModuleUIFactory.INSTANCE.openUI(new ModuleUIHolder(player), player);

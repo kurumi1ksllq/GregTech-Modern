@@ -44,6 +44,6 @@ public class LiquidFuelJetpackModule extends ArmorLogicItemModule implements ITi
                                 AppliedItemModule module) {
         super.appendHoverText(level, isAdvanced, tooltips, module);
         tooltips.add(
-                Component.translatable("metaarmor.tooltip.modifier.jetpack", module.getModuleItem().getDisplayName()));
+                Component.translatable("metaarmor.tooltip.modifier.jetpack", module.getModuleItem().getHoverName()));
     }
 }

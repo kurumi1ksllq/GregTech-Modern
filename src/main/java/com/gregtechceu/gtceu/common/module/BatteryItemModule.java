@@ -63,7 +63,7 @@ public class BatteryItemModule extends ItemModule implements ICapabilityModule, 
                                 AppliedItemModule module) {
         super.appendHoverText(level, isAdvanced, tooltips, module);
         tooltips.add(
-                Component.translatable("metaarmor.tooltip.modifier.battery", module.getModuleItem().getDisplayName()));
+                Component.translatable("metaarmor.tooltip.modifier.battery", module.getModuleItem().getHoverName()));
         if (module.getModuleItem() != null) {
             module.getModuleItem().getItem().appendHoverText(module.getModuleItem(), level, tooltips, isAdvanced);
         }
@@ -81,7 +81,7 @@ public class BatteryItemModule extends ItemModule implements ICapabilityModule, 
         IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getModuleItem());
         if (electricItem == null) return;
         EquipmentSlot slot = LivingEntity.getEquipmentSlotForItem(module.getAppliedTo());
-        Component displayName = module.getModuleItem().getDisplayName();
+        Component displayName = module.getModuleItem().getHoverName();
         int x = 10, y;
         switch (slot) {
             case HEAD -> {

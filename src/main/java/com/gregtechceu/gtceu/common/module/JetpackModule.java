@@ -48,6 +48,6 @@ public class JetpackModule extends ArmorLogicItemModule implements ITieredItemMo
                                 AppliedItemModule module) {
         super.appendHoverText(level, isAdvanced, tooltips, module);
         tooltips.add(
-                Component.translatable("metaarmor.tooltip.modifier.jetpack", module.getModuleItem().getDisplayName()));
+                Component.translatable("metaarmor.tooltip.modifier.jetpack", module.getModuleItem().getHoverName()));
     }
 }

@@ -10,8 +10,8 @@ import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
-import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
@@ -59,13 +59,18 @@ public record ModuleUIHolder(IItemHandlerModifiable handler, boolean isRemote) i
         return new ModuleUIHolder(stacks, true);
     }
 
-    public Widget createUIWidget(Player player) {
+    public Widget createUIWidget(Player ignoredPlayer) {
+        int size = handler.getSlots();
+        int slotsHeight = (size / 9) * 18, slotsWidth = 9 * 18;
+        if (size % 9 > 0) slotsHeight += 18;
         WidgetGroup group = new WidgetGroup(0, 50, 400, 300);
-        WidgetGroup modulesList = new WidgetGroup(164, 50, 100, 300);
-        WidgetGroup moduleConfig = new WidgetGroup(164 + modulesList.getSizeWidth(), 50, 100, 300);
+        WidgetGroup modulesList = new WidgetGroup(slotsWidth + 2, 0, 200, slotsHeight);
+        WidgetGroup moduleConfig = new WidgetGroup(0, slotsHeight + 2, slotsWidth + 2 + modulesList.getSizeWidth(),
+                198 - slotsHeight);
+        modulesList.setBackground(new ColorRectTexture(0xFF444444), new ColorBorderTexture(1, 0xFF333333));
+        moduleConfig.setBackground(new ColorRectTexture(0xFF444444), new ColorBorderTexture(1, 0xFF333333));
         group.addWidget(modulesList);
         group.addWidget(moduleConfig);
-        int size = handler.getSlots();
         for (int i = 0; i < size; i++) {
             int row = i / 9;
             int col = i % 9;
@@ -87,8 +92,10 @@ public record ModuleUIHolder(IItemHandlerModifiable handler, boolean isRemote) i
                                     click -> {})
                                     .setBackground(
                                             new ColorRectTexture(0xFF222222),
-                                            new ColorBorderTexture(1, 0xFF111111),
-                                            new TextTexture(tooltip.get(0).getString())));
+                                            new ColorBorderTexture(1, 0xFF111111)));
+                            LabelWidget label = new LabelWidget(0, y, tooltip.get(0));
+                            label.setText("");
+                            modulesList.addWidget(label);
                             y += 10;
                         }
                     }

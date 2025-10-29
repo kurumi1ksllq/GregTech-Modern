@@ -69,18 +69,20 @@ public record ModuleUIHolder(IItemHandlerModifiable handler, boolean isRemote) i
                 198 - slotsHeight);
         modulesList.setBackground(new ColorRectTexture(0xFF444444), new ColorBorderTexture(1, 0xFF333333));
         moduleConfig.setBackground(new ColorRectTexture(0xFF444444), new ColorBorderTexture(1, 0xFF333333));
+        group.addWidget(new LabelWidget(0, -10, Component.translatable("container.inventory")));
+        group.addWidget(new LabelWidget(slotsWidth + 2, -10, Component.translatable("gtceu.modules")));
         group.addWidget(modulesList);
         group.addWidget(moduleConfig);
         for (int i = 0; i < size; i++) {
             int row = i / 9;
             int col = i % 9;
-            final ItemStack stack = handler.getStackInSlot(i);
             SlotWidget slot = new SlotWidget(handler, i, col * 18, row * 18) {
 
                 @Override
                 public ItemStack slotClick(int dragType, ClickType clickType, Player player) {
                     modulesList.clearAllWidgets();
-                    IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
+                    moduleConfig.clearAllWidgets();
+                    IModularItem modularItem = GTCapabilityHelper.getModularItem(getItem());
                     if (modularItem != null) {
                         int y = 0;
                         for (AppliedItemModule module : modularItem.getAppliedModules()) {
@@ -89,7 +91,10 @@ public record ModuleUIHolder(IItemHandlerModifiable handler, boolean isRemote) i
                             modulesList.addWidget(new ButtonWidget(
                                     0, y,
                                     modulesList.getSizeWidth(), 10,
-                                    click -> {})
+                                    click -> {
+                                        moduleConfig.clearAllWidgets();
+                                        moduleConfig.addWidget(module.getModule().createConfigWidget(module));
+                                    })
                                     .setBackground(
                                             new ColorRectTexture(0xFF222222),
                                             new ColorBorderTexture(1, 0xFF111111)));
@@ -99,7 +104,7 @@ public record ModuleUIHolder(IItemHandlerModifiable handler, boolean isRemote) i
                             y += 10;
                         }
                     }
-                    return stack;
+                    return getItem();
                 }
             };
             group.addWidget(slot);

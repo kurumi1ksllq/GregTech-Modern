@@ -3,6 +3,11 @@ package com.gregtechceu.gtceu.api.item.module;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
+import com.gregtechceu.gtceu.api.gui.GuiTextures;
+import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
+
+import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -152,5 +157,16 @@ public abstract class ItemModule {
     public InteractionResult interactLivingEntity(AppliedItemModule module, Player player,
                                                   LivingEntity interactionTarget, InteractionHand usedHand) {
         return InteractionResult.PASS;
+    }
+
+    public WidgetGroup createConfigWidget(AppliedItemModule module) {
+        WidgetGroup group = new WidgetGroup();
+        LabelWidget label = new LabelWidget(5, 5, Component.translatable("gtceu.module.gui.enabled"));
+        group.addWidget(label);
+        group.addWidget(new ToggleButtonWidget(
+                7 + label.getSizeWidth(), 5,
+                16, 16, GuiTextures.BUTTON_WORKING_ENABLE,
+                module::isEnabled, module::setEnabled));
+        return group;
     }
 }

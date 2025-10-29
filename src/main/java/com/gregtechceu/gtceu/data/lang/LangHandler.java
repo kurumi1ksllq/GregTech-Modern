@@ -361,6 +361,7 @@ public class LangHandler {
         provider.add("metaarmor.tooltip.modifier_slot.universal", "Universal");
         provider.add("metaarmor.tooltip.modifier_slot.tiered", "Tiered (%s)");
         provider.add("metaarmor.tooltip.modifiers", "Module slots:");
+        provider.add("gtceu.modules", "Modules:");
         provider.add("gtceu.machine.exploded", "%s exploded at (%d, %d, %d)");
         provider.add("metaarmor.hud.status.enabled", "§aON");
         provider.add("metaarmor.hud.status.disabled", "§cOFF");
@@ -409,6 +410,7 @@ public class LangHandler {
         provider.add("gtceu.module.short_percentage", "... by %s%%");
         provider.add("gtceu.module.wireless_charging.short", "%s blocks, 1A %s max");
         provider.add("gtceu.module.block_reach.short", "... by %s blocks");
+        provider.add("gtceu.module.gui.enabled", "Enabled:");
         provider.add("emi.category.gtceu.equipment_foundry", "Equipment Foundry");
         provider.add("gtceu.equipment_foundry.gui.applied_to", "Applied to:");
         provider.add("gtceu.equipment_foundry.gui.module_item", "Module item:");

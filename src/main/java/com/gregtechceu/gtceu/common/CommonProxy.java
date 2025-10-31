@@ -54,6 +54,7 @@ import com.gregtechceu.gtceu.integration.kjs.GTRegistryInfo;
 import com.gregtechceu.gtceu.integration.kjs.events.MaterialModificationEventJS;
 import com.gregtechceu.gtceu.integration.map.WaypointManager;
 import com.gregtechceu.gtceu.integration.top.forge.TheOneProbePluginImpl;
+import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
 import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
 
@@ -336,6 +337,10 @@ public class CommonProxy {
                     event.getPackType(),
                     Pack.Position.BOTTOM,
                     GTDynamicDataPack::new));
+        }
+
+        for(var category : GTRegistries.RECIPE_CATEGORIES) {
+            GTCEu.LOGGER.error("Recipe Category {} : average total inputs {}, total count {}", category.name, Math.ceil(category.getAverage() + category.getFluidAverage()), category.recipes);
         }
     }
 

@@ -18,6 +18,9 @@ import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Accessors(chain = true)
 public class GTRecipeCategory {
 
@@ -36,6 +39,27 @@ public class GTRecipeCategory {
     @Getter
     @Setter
     private boolean isXEIVisible = true;
+
+    public List<Integer> inputs = new ArrayList<>();
+    public List<Integer> outputs = new ArrayList<>();
+    public List<Integer> fluidInputs = new ArrayList<>();
+    public int recipes = 0;
+
+    public double getAverage() {
+        int sum = 0;
+        for (var i : inputs) {
+            sum += i;
+        }
+        return (double) sum / (double)recipes;
+    }
+
+    public double getFluidAverage() {
+        int sum = 0;
+        for (var i : fluidInputs) {
+            sum += i;
+        }
+        return (double) sum / (double)recipes;
+    }
 
     public GTRecipeCategory(@NotNull GTRecipeType recipeType) {
         this.recipeType = recipeType;

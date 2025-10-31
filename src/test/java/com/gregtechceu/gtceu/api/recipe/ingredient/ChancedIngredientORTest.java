@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
+import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
@@ -52,6 +53,10 @@ public class ChancedIngredientORTest {
     private static final ItemStack IN_OR_2 = new ItemStack(Items.BIRCH_SLAB);
     private static final ItemStack IN_OR_3 = new ItemStack(Items.STRIPPED_JUNGLE_WOOD);
     private static final ItemStack IN_OR_4 = new ItemStack(Items.JUNGLE_SLAB);
+    private static final ItemStack IN_TICK_1 = new ItemStack(Items.STRIPPED_OAK_WOOD);
+    private static final ItemStack IN_TICK_2 = new ItemStack(Items.OAK_SLAB);
+    private static final ItemStack IN_TICK_3 = new ItemStack(Items.STRIPPED_ACACIA_WOOD);
+    private static final ItemStack IN_TICK_4 = new ItemStack(Items.ACACIA_SLAB);
     private static final ItemStack COBBLE = new ItemStack(Items.COBBLESTONE);
     private static final ItemStack STONE = new ItemStack(Items.STONE);
 
@@ -68,6 +73,41 @@ public class ChancedIngredientORTest {
         CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_single_chanced_input_cr"))
                 .chancedInput(IN_SINGLE.copyWithCount(3), 5000, 0)
+                .inputItems(COBBLE)
+                .outputItems(STONE)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(2)
+                .buildRawRecipe());
+
+        CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_single_chanced_output_cr"))
+                .inputItems(IN_OR_3)
+                .chancedOutput(STONE, 5000, 0)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(2)
+                .buildRawRecipe());
+
+        CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_double_or_chanced_output_assm"))
+                .inputItems(OUT_SINGLE)
+                .chance(4000)
+                .outputItems(IN_OR_1)
+                .chance(6000)
+                .outputItems(IN_OR_2)
+                .chance(10000)
+                .chancedItemOutputLogic(ChanceLogic.OR)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(2)
+                .buildRawRecipe());
+
+        LCR_RECIPE_TYPE.getLookup().addRecipe(LCR_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_double_or_chanced_input_lcr"))
+                .chance(4000)
+                .inputItems(IN_OR_1.copyWithCount(3))
+                .chance(6000)
+                .inputItems(IN_OR_2.copyWithCount(3))
+                .chance(10000)
+                .chancedItemInputLogic(ChanceLogic.OR)
                 .inputItems(COBBLE)
                 .outputItems(STONE)
                 .EUt(GTValues.V[GTValues.HV])
@@ -106,41 +146,6 @@ public class ChancedIngredientORTest {
                 .duration(2)
                 .buildRawRecipe());
 
-        LCR_RECIPE_TYPE.getLookup().addRecipe(LCR_RECIPE_TYPE
-                .recipeBuilder(GTCEu.id("test_double_or_chanced_input_lcr"))
-                .chance(4000)
-                .inputItems(IN_OR_1.copyWithCount(3))
-                .chance(6000)
-                .inputItems(IN_OR_2.copyWithCount(3))
-                .chance(10000)
-                .chancedItemInputLogic(ChanceLogic.OR)
-                .inputItems(COBBLE)
-                .outputItems(STONE)
-                .EUt(GTValues.V[GTValues.HV])
-                .duration(2)
-                .buildRawRecipe());
-
-        CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
-                .recipeBuilder(GTCEu.id("test_single_chanced_output_cr"))
-                .inputItems(IN_OR_1)
-                .chancedOutput(STONE, 5000, 0)
-                .EUt(GTValues.V[GTValues.HV])
-                .duration(2)
-                .buildRawRecipe());
-
-        CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
-                .recipeBuilder(GTCEu.id("test_double_or_chanced_output_assm"))
-                .inputItems(OUT_SINGLE)
-                .chance(4000)
-                .outputItems(IN_OR_1)
-                .chance(6000)
-                .outputItems(IN_OR_2)
-                .chance(10000)
-                .chancedItemOutputLogic(ChanceLogic.OR)
-                .EUt(GTValues.V[GTValues.HV])
-                .duration(2)
-                .buildRawRecipe());
-
         CENTRIFUGE_RECIPE_TYPE.getLookup().addRecipe(CENTRIFUGE_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_double_or_chanced_output_cent"))
                 .inputItems(COBBLE)
@@ -170,6 +175,22 @@ public class ChancedIngredientORTest {
                 .chancedItemOutputLogic(ChanceLogic.OR)
                 .EUt(GTValues.V[GTValues.HV])
                 .duration(8)
+                .buildRawRecipe());
+
+        // per tick failure
+        // per tick 2 input
+        // per tick 2 output
+        // per tick 4 input
+        // per tick 4 output
+        CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_single_chanced_tick_input_cr"))
+                .perTick(true)
+                .chancedInput(STONE.copyWithCount(1), 5000, 0)
+                .perTick(false)
+                .inputItems(IN_TICK_1)
+                .outputItems(STONE)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(64)
                 .buildRawRecipe());
     }
 
@@ -427,7 +448,7 @@ public class ChancedIngredientORTest {
                 .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
 
         int runs = 16;
-        itemIn.setStackInSlot(0, IN_OR_1.copyWithCount(runs));
+        itemIn.setStackInSlot(0, IN_OR_3.copyWithCount(runs));
         // 1t to turn on, 2t per recipe run
         // check the results of all rolls together
         helper.runAfterDelay(runs * 2 + 1, () -> {
@@ -713,4 +734,70 @@ public class ChancedIngredientORTest {
             helper.succeed();
         });
     }
+
+    // Failure Test for singleblock machine with chanced per-tick item input
+    // Provides too few input items, should not run recipes.
+    @GameTest(template = "singleblock_charged_cr", batch = "ChancedIngredientsOR")
+    public static void singleblockSingleChancedTickItemInputFailure(GameTestHelper helper) {
+        SimpleTieredMachine machine = (SimpleTieredMachine) getMetaMachine(
+                helper.getBlockEntity(new BlockPos(0, 1, 0)));
+
+        machine.setRecipeType(CR_RECIPE_TYPE);
+        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+
+        itemIn.setStackInSlot(0, IN_TICK_1.copyWithCount(2));
+        itemIn.setStackInSlot(1, STONE.copyWithCount(2));
+        // 1t to turn on, 2t per non- recipe run
+        helper.runAfterDelay(65, () -> {
+            SimpleTieredMachine m = machine;
+            helper.assertTrue(machine.recipeLogic.getStatus() == RecipeLogic.Status.WAITING,
+                    "Singleblock CR (per-tick) should be WAITING but is not!");
+            helper.assertTrue(itemOut.isEmpty(),
+                    "Singleblock CR (per-tick) should not have finished recipe!");
+            helper.assertTrue(TestUtils.isItemStackEqual(itemIn.getStackInSlot(1), COBBLE.copyWithCount(2)),
+                    "Singleblock CR (per-tick) should have consumed per-tick inputs but did not!");
+
+            helper.succeed();
+        });
+    }
+/*
+    // Test for singleblock machine with single chanced item input
+    @GameTest(template = "singleblock_charged_cr", batch = "ChancedIngredientsOR")
+    public static void singleblockSingleChancedTickItemInput(GameTestHelper helper) {
+        SimpleTieredMachine machine = (SimpleTieredMachine) getMetaMachine(
+                helper.getBlockEntity(new BlockPos(0, 1, 0)));
+
+        machine.setRecipeType(CR_RECIPE_TYPE);
+        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+
+
+        itemIn.setStackInSlot(0, IN_TICK_1.copyWithCount(1));
+        itemIn.setStackInSlot(1, STONE.copyWithCount(64));
+        // 1t to turn on, 2t per recipe run
+        // check the results of all rolls together
+        helper.runAfterDelay(65, () -> {
+            ItemStack results = itemIn.getStackInSlot(1);
+            int upperLimit = 64;
+            int lowerLimit = 0;
+            helper.assertTrue(TestUtils.isItemStackEqual(itemOut.getStackInSlot(0), STONE.copyWithCount(1)),
+                    "Singleblock CR (per-tick) didn't complete correct number of recipes, completed [" +
+                            itemOut.getStackInSlot(0).getCount() + "] not [" + 1 + "]");
+            helper.assertTrue(TestUtils.isItemWithinRange(results, lowerLimit, upperLimit),
+                    "Singleblock CR (per-tick) didn't consume correct number of items, consumed [" +
+                            (64 - results.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+            helper.assertFalse((results.getCount() == lowerLimit),
+                    "Singleblock CR (per-tick) succeeded every chance roll!");
+            helper.assertFalse((results.getCount() == upperLimit),
+                    "Singleblock CR (per-tick) failed every chance roll!");
+
+            helper.succeed();
+        });
+    }
+ */
 }

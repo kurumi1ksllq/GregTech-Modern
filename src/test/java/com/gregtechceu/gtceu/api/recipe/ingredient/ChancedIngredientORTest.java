@@ -177,10 +177,7 @@ public class ChancedIngredientORTest {
                 .duration(8)
                 .buildRawRecipe());
 
-        // per tick failure
-        // per tick 2 input
         // per tick 2 output
-        // per tick 4 input
         // per tick 4 output
         CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_single_chanced_tick_input_cr"))
@@ -192,55 +189,93 @@ public class ChancedIngredientORTest {
                 .EUt(GTValues.V[GTValues.HV])
                 .duration(64)
                 .buildRawRecipe());
-/*
+
+        ASSM_RECIPE_TYPE.getLookup().addRecipe(ASSM_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_double_or_tick_chanced_input_assm"))
+                .perTick(true)
+                .chance(4000)
+                .inputItems(IN_TICK_3)
+                .chance(6000)
+                .inputItems(COBBLE)
+                .chance(10000)
+                .perTick(false)
+                .chancedItemInputLogic(ChanceLogic.OR)
+                .inputItems(IN_TICK_4)
+                .outputItems(STONE)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(16)
+                .buildRawRecipe());
+
+        ASSM_RECIPE_TYPE.getLookup().addRecipe(ASSM_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_quad_or_tick_chanced_input_assm"))
+                .perTick(true)
+                .chance(3000)
+                .inputItems(STONE)
+                .chance(4000)
+                .inputItems(IN_OR_2)
+                .chance(5000)
+                .inputItems(IN_TICK_3)
+                .chance(6000)
+                .inputItems(IN_TICK_4)
+                .chance(10000)
+                .perTick(false)
+                .chancedItemInputLogic(ChanceLogic.OR)
+                .inputItems(IN_OR_3)
+                .outputItems(STONE)
+                .EUt(GTValues.V[GTValues.HV])
+                .duration(16)
+                .buildRawRecipe());
+
         LCR_RECIPE_TYPE.getLookup().addRecipe(LCR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_double_or_tick_chanced_input_lcr"))
                 .perTick(true)
                 .chance(4000)
-                .inputItems(IN_OR_2)
+                .inputItems(STONE)
                 .chance(6000)
-                .inputItems(IN_OR_3)
+                .inputItems(COBBLE)
                 .chance(10000)
                 .perTick(false)
                 .chancedItemInputLogic(ChanceLogic.OR)
-                .inputItems(COBBLE)
+                .inputItems(IN_TICK_2)
                 .outputItems(STONE)
                 .EUt(GTValues.V[GTValues.HV])
                 .duration(16)
                 .buildRawRecipe());
-/*
-        ASSM_RECIPE_TYPE.getLookup().addRecipe(ASSM_RECIPE_TYPE
-                .recipeBuilder(GTCEu.id("test_double_or_tick_chanced_input_assm"))
+
+            CENTRIFUGE_RECIPE_TYPE.getLookup().addRecipe(CENTRIFUGE_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_double_or_tick_chanced_output_cent"))
+                .inputItems(IN_TICK_1)
+                .perTick(true)
                 .chance(4000)
-                .inputItems(IN_OR_1.copyWithCount(3))
+                .outputItems(IN_TICK_1.copyWithCount(1))
                 .chance(6000)
-                .inputItems(IN_OR_2.copyWithCount(3))
+                .outputItems(IN_TICK_2.copyWithCount(1))
                 .chance(10000)
-                .chancedItemInputLogic(ChanceLogic.OR)
-                .inputItems(COBBLE)
-                .outputItems(STONE)
+                .perTick(false)
+                .chancedItemOutputLogic(ChanceLogic.OR)
                 .EUt(GTValues.V[GTValues.HV])
-                .duration(16)
+                .duration(400)
                 .buildRawRecipe());
-/*
-        ASSM_RECIPE_TYPE.getLookup().addRecipe(ASSM_RECIPE_TYPE
-                .recipeBuilder(GTCEu.id("test_quad_or_tick_chanced_input_assm"))
+
+        // will subtick overclock once
+        CENTRIFUGE_RECIPE_TYPE.getLookup().addRecipe(CENTRIFUGE_RECIPE_TYPE
+                .recipeBuilder(GTCEu.id("test_quad_or_tick_chanced_output_cent"))
+                .inputItems(IN_TICK_2)
+                .perTick(true)
                 .chance(3000)
-                .inputItems(STONE.copyWithCount(3))
+                .outputItems(IN_TICK_1.copyWithCount(1))
                 .chance(4000)
-                .inputItems(IN_OR_2.copyWithCount(3))
+                .outputItems(IN_TICK_2.copyWithCount(1))
                 .chance(5000)
-                .inputItems(IN_OR_3.copyWithCount(3))
+                .outputItems(IN_TICK_3.copyWithCount(1))
                 .chance(6000)
-                .inputItems(IN_OR_4.copyWithCount(3))
+                .outputItems(IN_TICK_4.copyWithCount(1))
                 .chance(10000)
-                .chancedItemInputLogic(ChanceLogic.OR)
-                .inputItems(COBBLE)
-                .outputItems(STONE)
+                .perTick(false)
+                .chancedItemOutputLogic(ChanceLogic.OR)
                 .EUt(GTValues.V[GTValues.HV])
-                .duration(16)
+                .duration(8)
                 .buildRawRecipe());
- */
     }
 
     private static MetaMachine getMetaMachine(BlockEntity entity) {
@@ -769,7 +804,7 @@ public class ChancedIngredientORTest {
         // 4t -> 40t batch
         helper.runAfterDelay(21, () -> {
             helper.assertTrue(itemIn.isEmpty(),
-                    "Batched LCent (double OR) didn't complete correct number of recipes, completed [" +
+                    "Batched LCent (quad OR) didn't complete correct number of recipes, completed [" +
                             (runs - itemIn.getTotalContentAmount()) + "] not [" + runs + "]");
 
             // result counts are guaranteed for batch/parallel runs
@@ -777,7 +812,7 @@ public class ChancedIngredientORTest {
                 int base = 30 + (10 * i);
                 ItemStack result = itemOut.getStackInSlot(i);
                 helper.assertTrue(result.getCount() == base,
-                        "Batched LCent (double OR) didn't produce correct number of item " + i + ", produced [" +
+                        "Batched LCent (quad OR) didn't produce correct number of item " + i + ", produced [" +
                                 result.getCount() + "] not [" + base + "]");
             }
             helper.succeed();
@@ -848,4 +883,343 @@ public class ChancedIngredientORTest {
             helper.succeed();
         });
     }
+
+    // Failure Test for singleblock machine with two per-tick OR chanced item inputs
+    // Provides too few input items, should not run recipes.
+    @GameTest(template = "singleblock_charged_assembler", batch = "ChancedIngredientsOR")
+    public static void singleblockDoubleORTickChancedItemInputFailure(GameTestHelper helper) {
+        SimpleTieredMachine machine = (SimpleTieredMachine) getMetaMachine(
+                helper.getBlockEntity(new BlockPos(0, 1, 0)));
+
+        machine.setRecipeType(ASSM_RECIPE_TYPE);
+        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+
+        int runs = 3;
+        itemIn.setStackInSlot(0, IN_TICK_3.copyWithCount(64));
+        itemIn.setStackInSlot(1, COBBLE.copyWithCount(2));
+        itemIn.setStackInSlot(2, IN_TICK_4.copyWithCount(runs));
+        // 1t to turn on, 16t per non- recipe run
+        helper.runAfterDelay(runs * 16 + 1, () -> {
+            helper.assertTrue(machine.recipeLogic.getStatus() == RecipeLogic.Status.WAITING,
+                    "Singleblock Assembler (OR) (per-tick) should be WAITING but is not!");
+            helper.assertTrue(itemOut.isEmpty(),
+                    "Singleblock Assembler (OR) (per-tick) should not have finished recipe!");
+            helper.assertFalse(TestUtils.isItemStackEqual(itemIn.getStackInSlot(1), COBBLE.copyWithCount(2)),
+                    "Singleblock Assembler (OR) (per-tick) should have consumed per-tick inputs but did not!");
+
+            helper.succeed();
+        });
+    }
+
+    // Test for singleblock machine with two per-tick OR chanced item inputs
+    @GameTest(template = "singleblock_charged_assembler", batch = "ChancedIngredientsOR")
+    public static void singleblockDoubleORTickChancedItemInput(GameTestHelper helper) {
+        SimpleTieredMachine machine = (SimpleTieredMachine) getMetaMachine(
+                helper.getBlockEntity(new BlockPos(0, 1, 0)));
+
+        machine.setRecipeType(ASSM_RECIPE_TYPE);
+        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+
+        int runs = 4;
+        itemIn.setStackInSlot(0, IN_TICK_3.copyWithCount(runs * 16));
+        itemIn.setStackInSlot(1, COBBLE.copyWithCount(runs * 16));
+        itemIn.setStackInSlot(2, IN_TICK_4.copyWithCount(runs));
+        // 1t to turn on, 16t per recipe run
+        // check the results of all rolls together
+        helper.runAfterDelay(runs * 16 + 1, () -> {
+            int upperLimit = 64;
+            int lowerLimit = 0;
+            helper.assertTrue(TestUtils.isItemStackEqual(itemOut.getStackInSlot(0), STONE.copyWithCount(runs)),
+                    "Singleblock Assembler (OR) (per-tick) didn't complete correct number of recipes, completed [" +
+                            itemOut.getStackInSlot(0).getCount() + "] not [" + runs + "]");
+
+            for (int i = 0; i < 2; i++) {
+                ItemStack result = itemIn.getStackInSlot(i);
+                helper.assertTrue(TestUtils.isItemWithinRange(result, lowerLimit, upperLimit),
+                        "Singleblock Assembler (OR) (per-tick) didn't consume correct number of item " + i + ", consumed [" +
+                                (48 - result.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+                helper.assertFalse((result.getCount() == lowerLimit),
+                        "Singleblock Assembler (OR) (per-tick) item " + i + " failed every chance roll!");
+                helper.assertFalse((result.getCount() == upperLimit),
+                        "Singleblock Assembler (OR) (per-tick) item " + i + " succeeded every chance roll!");
+            }
+
+            helper.succeed();
+        });
+    }
+
+    // Test for singleblock machine with four per-tick OR chanced item inputs
+    @GameTest(template = "singleblock_charged_assembler", batch = "ChancedIngredientsOR")
+    public static void singleblockQuadORTickChancedItemInput(GameTestHelper helper) {
+        SimpleTieredMachine machine = (SimpleTieredMachine) getMetaMachine(
+                helper.getBlockEntity(new BlockPos(0, 1, 0)));
+
+        machine.setRecipeType(ASSM_RECIPE_TYPE);
+        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+
+        int runs = 4;
+        itemIn.setStackInSlot(0, STONE.copyWithCount(runs * 16));
+        itemIn.setStackInSlot(1, IN_OR_2.copyWithCount(runs * 16));
+        itemIn.setStackInSlot(2, IN_TICK_3.copyWithCount(runs * 16));
+        itemIn.setStackInSlot(3, IN_TICK_4.copyWithCount(runs * 16));
+        itemIn.setStackInSlot(4, IN_OR_3.copyWithCount(runs));
+
+        // 1t to turn on, 16t per recipe run
+        // check the results of all rolls together
+        helper.runAfterDelay(runs * 16 + 1, () -> {
+            int upperLimit = 64;
+            int lowerLimit = 0;
+            helper.assertTrue(TestUtils.isItemStackEqual(itemOut.getStackInSlot(0), STONE.copyWithCount(runs)),
+                    "Singleblock Assembler (OR) (per-tick) didn't complete correct number of recipes, completed [" +
+                            itemOut.getStackInSlot(0).getCount() + "] not [" + runs + "]");
+
+            for (int i = 0; i < 4; i++) {
+                ItemStack result = itemIn.getStackInSlot(i);
+                helper.assertTrue(TestUtils.isItemWithinRange(result, lowerLimit, upperLimit),
+                        "Singleblock Assembler (OR) (per-tick) didn't consume correct number of item " + i + ", consumed [" +
+                                (48 - result.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+                helper.assertFalse((result.getCount() == lowerLimit),
+                        "Singleblock Assembler (OR) (per-tick) item " + i + " failed every chance roll!");
+                helper.assertFalse((result.getCount() == upperLimit),
+                        "Singleblock Assembler (OR) (per-tick) item " + i + " succeeded every chance roll!");
+            }
+
+            helper.succeed();
+        });
+    }
+
+    // Failure Test for multiblock machine with two per-tick OR chanced item inputs
+    // Provides too few input items, should not run recipes.
+    @GameTest(template = "lcr_ranged_ingredients", batch = "ChancedIngredientsOR")
+    public static void multiblockLCRDoubleORChancedTickItemInputFailure(GameTestHelper helper) {
+        BusHolder busHolder = getBussesAndFormLCR(helper);
+
+
+        NotifiableItemStackHandler itemIn = busHolder.inputBus1.getInventory();
+        NotifiableItemStackHandler itemOut = busHolder.outputBus1.getInventory();
+
+        int runs = 5;
+        itemIn.setStackInSlot(0, STONE.copyWithCount(63));
+        itemIn.setStackInSlot(1, COBBLE.copyWithCount(2));
+        itemIn.setStackInSlot(2, IN_TICK_2.copyWithCount(runs));
+        // 1t to turn on, 2t per non- recipe run
+        helper.runAfterDelay(runs * 16 + 1, () -> {
+            helper.assertTrue(busHolder.controller.recipeLogic.getStatus() == RecipeLogic.Status.WAITING,
+                    "Multiblock LCR (OR) (per-tick) should be WAITING but is not!");
+            helper.assertTrue(itemOut.isEmpty(),
+                    "Multiblock LCR (OR) (per-tick) should not have finished recipe!");
+            helper.assertFalse(TestUtils.isItemStackEqual(itemIn.getStackInSlot(1), COBBLE.copyWithCount(2)),
+                    "Multiblock LCR (OR) (per-tick) should have consumed per-tick inputs but did not!");
+
+            helper.succeed();
+        });
+    }
+
+    // Test for multiblock machine with two per-tick OR chanced item inputs
+    @GameTest(template = "lcr_ranged_ingredients", batch = "ChancedIngredientsOR", timeoutTicks = 300)
+    public static void multiblockLCRDoubleORChancedTickItemInput(GameTestHelper helper) {
+        BusHolder busHolder = getBussesAndFormLCR(helper);
+
+        NotifiableItemStackHandler itemIn = busHolder.inputBus1.getInventory();
+        NotifiableItemStackHandler itemOut = busHolder.outputBus1.getInventory();
+
+        int runs = 4;
+        itemIn.setStackInSlot(0, STONE.copyWithCount(runs * 16));
+        itemIn.setStackInSlot(1, COBBLE.copyWithCount(runs * 16));
+        itemIn.setStackInSlot(2, IN_TICK_2.copyWithCount(runs));
+        // 1t to turn on, 2t per recipe run
+        // check the results of all rolls together
+        helper.runAfterDelay(runs * 16 + 1, () -> {
+            int upperLimit = 64;
+            int lowerLimit = 0;
+            helper.assertTrue(TestUtils.isItemStackEqual(itemOut.getStackInSlot(0), STONE.copyWithCount(runs)),
+                    "Multiblock LCR (OR) (per-tick) didn't complete correct number of recipes, completed [" +
+                            itemOut.getStackInSlot(0).getCount() + "] not [" + runs + "]");
+
+            for (int i = 0; i < 2; i++) {
+                ItemStack result = itemIn.getStackInSlot(i);
+                helper.assertTrue(TestUtils.isItemWithinRange(result, lowerLimit, upperLimit),
+                        "Multiblock LCR (OR) (per-tick) didn't consume correct number of item " + i + ", consumed [" +
+                                (64 - result.getCount()) + "] not [" + lowerLimit + "-" + upperLimit + "]");
+                helper.assertFalse((result.getCount() == lowerLimit),
+                        "Multiblock LCR (OR) (per-tick) item " + i + " failed every chance roll!");
+                helper.assertFalse((result.getCount() == upperLimit),
+                        "Multiblock LCR (OR) (per-tick) item " + i + " succeeded every chance roll!");
+            }
+
+            helper.succeed();
+        });
+    }
+
+    // test for multiblock machine with two OR chanced item outputs
+    @GameTest(template = "large_centrifuge_zpm_batch_parallel16",
+            batch = "ChancedIngredientsOR",
+            timeoutTicks = 500)
+    public static void multiblockLCentDoubleORChancedTickItemOutput(GameTestHelper helper) {
+        BusHolderBatchParallel busHolder = getBussesAndFormLCENT(helper);
+
+        NotifiableItemStackHandler itemIn = busHolder.inputBus1.getInventory();
+        NotifiableItemStackHandler itemOut = busHolder.outputBus1.getInventory();
+
+        int batches = 1;
+        int parallels = 1;
+        busHolder.controller.setBatchEnabled(false);
+        busHolder.parallelHatch.setCurrentParallel(parallels);
+
+        int runs = 4;
+        itemIn.setStackInSlot(0, IN_TICK_1.copyWithCount(runs));
+
+        helper.runAfterDelay(runs * 25 + 1, () -> {
+            int lowerLimit = 0;
+            int upperLimit = runs * 16;
+
+            helper.assertTrue(itemIn.isEmpty(),
+                    "LCent (double OR) (per-tick) didn't complete correct number of recipes, completed [" +
+                            (runs - itemIn.getTotalContentAmount()) + "] not [" + runs + "]");
+
+            for (int i = 0; i < 2; i++) {
+                ItemStack result = itemOut.getStackInSlot(i);
+                helper.assertTrue(TestUtils.isItemWithinRange(result, lowerLimit, upperLimit),
+                        "LCent (double OR) (per-tick) didn't produce correct number of item " + i + ", produced [" +
+                                result.getCount() + "] not [" + lowerLimit + "-" + upperLimit + "]");
+                helper.assertFalse((result.getCount() == lowerLimit),
+                        "LCent (double OR) (per-tick) item " + i + " failed every chance roll!");
+                helper.assertFalse((result.getCount() == upperLimit),
+                        "LCent (double OR) (per-tick) item " + i + " succeeded every chance roll!");
+            }
+
+            helper.succeed();
+        });
+    }
+
+    // test for multiblock machine with four OR chanced item outputs
+    @GameTest(template = "large_centrifuge_zpm_batch_parallel16",
+            batch = "ChancedIngredientsOR")
+    public static void multiblockLCentQuadORChancedTickItemOutput(GameTestHelper helper) {
+        BusHolderBatchParallel busHolder = getBussesAndFormLCENT(helper);
+
+        NotifiableItemStackHandler itemIn = busHolder.inputBus1.getInventory();
+        NotifiableItemStackHandler itemOut = busHolder.outputBus1.getInventory();
+
+        int batches = 1;
+        int parallels = 1;
+        busHolder.controller.setBatchEnabled(false);
+        busHolder.parallelHatch.setCurrentParallel(parallels);
+
+        int runs = 32;
+        itemIn.setStackInSlot(0, IN_TICK_2.copyWithCount(runs));
+
+        // 1t per recipe but recipe subtick overclocks once
+        helper.runAfterDelay(runs / 2 + 1, () -> {
+            int lowerLimit = 0;
+            int upperLimit = runs*2;
+
+            helper.assertTrue(itemIn.isEmpty(),
+                    "LCent (quad OR) (per-tick) didn't complete correct number of recipes, completed [" +
+                            (runs - itemIn.getTotalContentAmount()) + "] not [" + runs + "]");
+
+            for (int i = 0; i < 4; i++) {
+                ItemStack result = itemOut.getStackInSlot(i);
+                helper.assertTrue(TestUtils.isItemWithinRange(result, lowerLimit, upperLimit),
+                        "LCent (quad OR) (per-tick) didn't produce correct number of item " + i + ", produced [" +
+                                result.getCount() + "] not [" + lowerLimit + "-" + upperLimit + "]");
+                helper.assertFalse((result.getCount() == lowerLimit),
+                        "LCent (quad OR) (per-tick) item " + i + " failed every chance roll!");
+                helper.assertFalse((result.getCount() == upperLimit),
+                        "LCent (quad OR) (per-tick) item " + i + " succeeded every chance roll!");
+            }
+
+            helper.succeed();
+        });
+    }
+/*
+    // test for multiblock machine with two OR chanced item outputs and batched/parallel recipes
+    @GameTest(template = "large_centrifuge_zpm_batch_parallel16",
+            batch = "ChancedIngredientsOR",
+            timeoutTicks = 150)
+    public static void multiblockLCentDoubleORChancedTickItemOutputBatchParallel(GameTestHelper helper) {
+        BusHolderBatchParallel busHolder = getBussesAndFormLCENT(helper);
+
+        NotifiableItemStackHandler itemIn = busHolder.inputBus1.getInventory();
+        NotifiableItemStackHandler itemOut = busHolder.outputBus1.getInventory();
+
+        int batches = 2;
+        int parallels = 4;
+        busHolder.controller.setBatchEnabled(false);
+        busHolder.parallelHatch.setCurrentParallel(parallels);
+
+        int runs = 8;
+        for (int j = 0; j < batches; j++) {
+            itemIn.setStackInSlot(j, IN_TICK_2.copyWithCount(parallels));
+        }
+
+        // 400t -> 25t OC
+        // 25t -> 50t parallel
+        // 50t -> 100t batch
+        helper.runAfterDelay(101, () -> {
+            helper.assertTrue(itemIn.isEmpty(),
+                    "Batched LCent (double OR) (per-tick) didn't complete correct number of recipes, completed [" +
+                            (runs - itemIn.getTotalContentAmount()) + "] not [" + runs + "]");
+
+            // result counts are guaranteed for batch/parallel runs
+            for (int i = 0; i < 2; i++) {
+                int base = 40 + (20 * i);
+                ItemStack result = itemOut.getStackInSlot(i);
+                helper.assertTrue(result.getCount() == base,
+                        "Batched LCent (double OR) (per-tick) didn't produce correct number of item " + i + ", produced [" +
+                                result.getCount() + "] not [" + base + "]");
+            }
+            helper.succeed();
+        });
+    }
+
+    // test for multiblock machine with four OR chanced item outputs and batched/parallel recipes
+    @GameTest(template = "large_centrifuge_zpm_batch_parallel16",
+            batch = "ChancedIngredientsOR",
+    timeoutTicks = 150)
+    public static void multiblockLCentQuadORChancedTickItemOutputBatchParallel(GameTestHelper helper) {
+        BusHolderBatchParallel busHolder = getBussesAndFormLCENT(helper);
+
+        NotifiableItemStackHandler itemIn = busHolder.inputBus1.getInventory();
+        NotifiableItemStackHandler itemOut = busHolder.outputBus1.getInventory();
+
+        int batches = 2;
+        int parallels = 4;
+        busHolder.controller.setBatchEnabled(false);
+        busHolder.parallelHatch.setCurrentParallel(parallels);
+
+        int runs = 8;
+        for (int j = 0; j < batches; j++) {
+            itemIn.setStackInSlot(j, IN_TICK_2.copyWithCount(parallels));
+        }
+
+        // 400t -> 25t OC
+        // 25t -> 50t parallel
+        // 50t -> 100t batch
+        helper.runAfterDelay(101, () -> {
+            helper.assertTrue(itemIn.isEmpty(),
+                    "Batched LCent (quad OR) (per-tick) didn't complete correct number of recipes, completed [" +
+                            (runs - itemIn.getTotalContentAmount()) + "] not [" + runs + "]");
+
+            // result counts are guaranteed for batch/parallel runs
+            for (int i = 0; i < 4; i++) {
+                int base = 30 + (10 * i);
+                ItemStack result = itemOut.getStackInSlot(i);
+                helper.assertTrue(result.getCount() == base,
+                        "Batched LCent (quad OR) (per-tick) didn't produce correct number of item " + i + ", produced [" +
+                                result.getCount() + "] not [" + base + "]");
+            }
+            helper.succeed();
+        });
+    }
+*/
 }

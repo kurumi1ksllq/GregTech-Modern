@@ -2,11 +2,15 @@ package com.gregtechceu.gtceu.utils;
 
 import com.gregtechceu.gtceu.GTCEu;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
@@ -24,6 +28,22 @@ public class NetworkUtils {
     public static void writeByteBuf(FriendlyByteBuf writeTo, ByteBuf writeFrom) {
         writeTo.writeVarInt(writeFrom.readableBytes());
         writeTo.writeBytes(writeFrom.slice());
+    }
+
+    public static void writeFluidStack(@NotNull FriendlyByteBuf writeTo, FluidStack stack) {
+
+        CompoundTag tag = new CompoundTag();
+        if(stack == null){
+            writeTo.writeBoolean(false);
+        }
+        else{
+            writeTo.writeBoolean(true);
+            stack.writeToNBT(tag);
+        }
+        writeTo.writeNbt(tag);
+    }
+    public static void writeItemStack(@NotNull FriendlyByteBuf to, @NotNull ItemStack stack) {
+        to.writeItemStack(stack, false);
     }
 
     public static ByteBuf readByteBuf(FriendlyByteBuf buf) {

@@ -54,7 +54,6 @@ import com.gregtechceu.gtceu.integration.kjs.GTRegistryInfo;
 import com.gregtechceu.gtceu.integration.kjs.events.MaterialModificationEventJS;
 import com.gregtechceu.gtceu.integration.map.WaypointManager;
 import com.gregtechceu.gtceu.integration.top.forge.TheOneProbePluginImpl;
-import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
 import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
 
@@ -339,8 +338,18 @@ public class CommonProxy {
                     GTDynamicDataPack::new));
         }
 
-        for(var category : GTRegistries.RECIPE_CATEGORIES) {
-            GTCEu.LOGGER.error("Recipe Category {} : average total inputs {}, total count {}", category.name, Math.ceil(category.getAverage() + category.getFluidAverage()), category.recipes);
+        for (var type : GTRegistries.RECIPE_TYPES) {
+            double average = 0;
+            int total = 0;
+            for (var category : type.getCategories()) {
+                average += category.getTotalInput() + category.getTotalFluidInput();
+                total += category.recipes;
+            }
+
+            average /= total;
+
+            GTCEu.LOGGER.error("Recipe type {} : average total inputs {}, total count {}", type.registryName,
+                    Math.ceil(average), total);
         }
     }
 

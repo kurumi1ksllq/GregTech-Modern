@@ -45,20 +45,20 @@ public class GTRecipeCategory {
     public List<Integer> fluidInputs = new ArrayList<>();
     public int recipes = 0;
 
-    public double getAverage() {
+    public double getTotalInput() {
         int sum = 0;
         for (var i : inputs) {
             sum += i;
         }
-        return (double) sum / (double)recipes;
+        return (double) sum;
     }
 
-    public double getFluidAverage() {
+    public double getTotalFluidInput() {
         int sum = 0;
         for (var i : fluidInputs) {
             sum += i;
         }
-        return (double) sum / (double)recipes;
+        return (double) sum;
     }
 
     public GTRecipeCategory(@NotNull GTRecipeType recipeType) {

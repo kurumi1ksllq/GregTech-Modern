@@ -1554,10 +1554,14 @@ public class GTRecipeBuilder {
 
         consumer.accept(build());
 
-        int input = (this.input.get(ItemRecipeCapability.CAP) == null ? 0 : this.input.get(ItemRecipeCapability.CAP).size());
-        int fluidinput = (this.input.get(FluidRecipeCapability.CAP) == null ? 0 : this.input.get(FluidRecipeCapability.CAP).size());
-        int tickinput = (this.tickInput.get(ItemRecipeCapability.CAP) == null ? 0 : this.tickInput.get(ItemRecipeCapability.CAP).size());
-        int tickfluidinput = (this.tickInput.get(FluidRecipeCapability.CAP) == null ? 0 : this.tickInput.get(FluidRecipeCapability.CAP).size());
+        int input = (this.input.get(ItemRecipeCapability.CAP) == null ? 0 :
+                this.input.get(ItemRecipeCapability.CAP).size());
+        int fluidinput = (this.input.get(FluidRecipeCapability.CAP) == null ? 0 :
+                this.input.get(FluidRecipeCapability.CAP).size());
+        int tickinput = (this.tickInput.get(ItemRecipeCapability.CAP) == null ? 0 :
+                this.tickInput.get(ItemRecipeCapability.CAP).size());
+        int tickfluidinput = (this.tickInput.get(FluidRecipeCapability.CAP) == null ? 0 :
+                this.tickInput.get(FluidRecipeCapability.CAP).size());
 
         recipeCategory.inputs.add(input + tickinput);
         recipeCategory.fluidInputs.add(fluidinput + tickfluidinput);

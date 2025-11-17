@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.core.mixins;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.item.ISpoilableItemStackMixin;
+import com.gregtechceu.gtceu.api.item.ISpoilableItemStackExtension;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IDurabilityBar;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
@@ -38,7 +38,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 @Mixin(ItemStack.class)
-public abstract class ItemStackMixin implements ISpoilableItemStackMixin {
+public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
 
     @Unique
     private boolean gtceu$isUpdating = false;

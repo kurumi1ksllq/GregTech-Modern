@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.common.item;
 
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.item.ISpoilableItemStackMixin;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IDurabilityBar;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
@@ -32,12 +31,8 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
         this.stack = stack;
     }
 
-    private ISpoilableItemStackMixin mixin() {
-        return (ISpoilableItemStackMixin) (Object) stack;
-    }
-
     public void updateFreshness(boolean createTag) {
-        mixin().gtceu$updateFreshness(null, createTag);
+        stack.gtceu$updateFreshness(null, createTag);
     }
 
     @Override

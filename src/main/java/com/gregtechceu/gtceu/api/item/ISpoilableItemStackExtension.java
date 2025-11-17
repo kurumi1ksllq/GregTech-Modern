@@ -4,7 +4,7 @@ import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface ISpoilableItemStackMixin {
+public interface ISpoilableItemStackExtension {
 
     void gtceu$updateFreshness(@Nullable Level level, boolean createTag);
 }

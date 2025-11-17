@@ -140,7 +140,8 @@ public class GTCapabilityHelper {
         return entity.getCapability(GTCapability.CAPABILITY_MEDICAL_CONDITION_TRACKER, null).resolve().orElse(null);
     }
 
-    public static @javax.annotation.Nullable ISpoilableItem getSpoilable(ItemStack stack) {
+    @Nullable
+    public static ISpoilableItem getSpoilable(ItemStack stack) {
         return stack.getCapability(GTCapability.CAPABILITY_SPOILABLE_ITEM).resolve().orElse(null);
     }
 }

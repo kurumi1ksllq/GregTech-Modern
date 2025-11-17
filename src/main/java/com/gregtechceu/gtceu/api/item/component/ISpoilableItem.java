@@ -56,6 +56,7 @@ import net.minecraft.world.item.ItemStack;
  * (fired on the forge event bus).
  * </p>
  */
+@SuppressWarnings("unused")
 public interface ISpoilableItem {
 
     /**
@@ -126,10 +127,9 @@ public interface ISpoilableItem {
      * {@link ISpoilableItem#getTicksUntilSpoiled()} is {@code <= 0}, it will spoil
      * immediately after this method call.
      * This method modifies the provided stack's NBT data.
-     * 
+     *
      * @see ISpoilableItem#freezeSpoiling()
      */
-    @SuppressWarnings("unused")
     void unfreezeSpoiling();
 
     /**

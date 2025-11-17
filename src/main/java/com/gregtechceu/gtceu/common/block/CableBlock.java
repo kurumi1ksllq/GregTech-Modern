@@ -48,7 +48,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class CableBlock extends MaterialPipeBlock<WireType, WireProperties> {
 
     public CableBlock(Properties properties, WireType wireType, Material material) {
-        super(properties, wireType, material, material.getProperty(PropertyKey.WIRE), wireType.createPipeModel(material));
+        super(properties, wireType, material, material.getProperty(PropertyKey.WIRE),
+                wireType.createPipeModel(material));
     }
 
     @Override

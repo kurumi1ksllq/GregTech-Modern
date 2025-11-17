@@ -16,24 +16,19 @@ or, more specifically, from one of these events (due to Minecraft's limitations)
 If you want to make an item spoil, you need to attack the `ISpoilableItem` capability to it.
 Please note that the spoilage timer still decrements even if the stack is in an unloaded chunk.
 
-??? example "Example usages of (almost) all methods in the spoilage API (in Java)"
-
-    ```java
-    public class Example {
-
-        // Register the event listener so that it can recieve events
-        public void registerListener() {
-            MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class, this::attachSpoilables);
-        }
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = ExampleMod.MOD_ID)
+public class Example {
         
         // Make diamonds spoil into dirt in 100 seconds, apples into jigsaws in 35 seconds
-        public void attachSpoilables(AttachCapabilitiesEvent<ItemStack> event) {
-            ResourceLocation id = GTCEu.id("spoilable")
+        @SubscribeEvent
+        public static void attachSpoilables(AttachCapabilitiesEvent<ItemStack> event) {
+            ResourceLocation id = GTCEu.id("spoilable");
             ItemStack stack = event.getObject();
-            if (stack.getItem() == Items.DIAMOND)
-                event.addCapability(id, new SpoilableBehaviour(Items.DIRT, 20*100).toCapProvider(stack));
-            if (stack.getItem() == Items.APPLE)
-                event.addCapability(id, new SpoilableBehaviour(Items.JIGSAW, 20*35).toCapProvider(stack));
+            if (stack.is(Items.DIAMOND)) {
+                event.addCapability(id, new SpoilableBehaviour(Items.DIRT, 20 * 100).toCapProvider(stack));
+            } else if (stack.is(Items.APPLE)) {
+                event.addCapability(id, new SpoilableBehaviour(Items.JIGSAW, 20 * 35).toCapProvider(stack));
+            }
         }
         
         public void getAndSetValuesAndStuff(ItemStack stack) {

@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.common.item;
 
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.item.ISpoilableItemStackExtension;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IDurabilityBar;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
@@ -32,7 +33,7 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
     }
 
     public void updateFreshness(boolean createTag) {
-        stack.gtceu$updateFreshness(null, createTag);
+        ((ISpoilableItemStackExtension) (Object) stack).gtceu$updateFreshness(null, createTag);
     }
 
     @Override

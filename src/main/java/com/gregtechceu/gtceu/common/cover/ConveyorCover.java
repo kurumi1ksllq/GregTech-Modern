@@ -450,7 +450,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
     }
 
     @Override
-    public IWidget createUIWidget() {
+    public ParentWidget<?> createCoverUI(SidedPosGuiData data, PanelSyncManager syncManager, UISettings settings) {
         return null;
     }
 

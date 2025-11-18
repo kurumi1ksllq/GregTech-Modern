@@ -113,7 +113,7 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
     }
 
     @Override
-    public void applyImplicitComponents(MetaMachineBlockEntity.@NotNull ExDataComponentInput componentInput) {
+    public void applyImplicitComponents(MetaMachineBlockEntity.ExDataComponentInput componentInput) {
         super.applyImplicitComponents(componentInput);
         if (componentInput.get(DataComponents.CONTAINER) != null) {
             var contents = componentInput.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
@@ -123,7 +123,7 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
     }
 
     @Override
-    public void collectImplicitComponents(DataComponentMap.@NotNull Builder components) {
+    public void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
         if (isTaped) {
             components.set(GTDataComponents.TAPED, Unit.INSTANCE);
@@ -132,7 +132,7 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
     }
 
     @Override
-    public void removeItemComponentsFromTag(@NotNull CompoundTag tag) {
+    public void removeItemComponentsFromTag(CompoundTag tag) {
         super.removeItemComponentsFromTag(tag);
         tag.remove("isTaped");
         tag.remove("inventory");

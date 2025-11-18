@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.data.tag.GTIngredientTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
@@ -36,7 +37,9 @@ public class IntProviderFluidIngredient extends FluidIngredient {
     @Getter
     private final FluidIngredient inner;
     @Setter
-    protected @NotNull FluidStack @Nullable [] fluidStacks = null;
+    protected @NotNull FluidStack [] fluidStacks = null;
+
+    public static final FluidStack[] EMPTY_STACK_ARRAY = new FluidStack[0];
 
     protected IntProviderFluidIngredient(FluidIngredient inner, IntProvider provider) {
         this.inner = inner;
@@ -52,9 +55,15 @@ public class IntProviderFluidIngredient extends FluidIngredient {
 
     public FluidStack[] getFluids() {
         if (fluidStacks == null) {
-            fluidStacks = inner.getStacks();
+            int cachedAmount = getSampledCount(GTValues.RNG);
+            if (cachedAmount == 0) {
+                return EMPTY_STACK_ARRAY;
+            }
+            var innerStacks = inner.getStacks();
+            this.fluidStacks = new FluidStack[innerStacks.length];
             for (int i = 0; i < fluidStacks.length; i++) {
-                fluidStacks[i] = fluidStacks[i].copyWithAmount(getSampledCount(GTValues.RNG));
+                fluidStacks[i] = innerStacks[i].copy();
+                fluidStacks[i].setAmount(cachedAmount);
             }
         }
         return fluidStacks;

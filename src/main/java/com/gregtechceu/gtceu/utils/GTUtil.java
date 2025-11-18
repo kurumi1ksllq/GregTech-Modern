@@ -19,6 +19,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Tuple;
@@ -30,6 +32,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SnowLayerBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.Tags;
@@ -445,6 +451,45 @@ public class GTUtil {
         } else return world.isDay();
     }
 
+    /**
+     * @param state the blockstate to check
+     * @return if the block is a snow layer or snow block
+     */
+    public static boolean isBlockSnow(@NotNull BlockState state) {
+        return state.is(Blocks.SNOW) || state.is(Blocks.SNOW_BLOCK);
+    }
+
+    /**
+     * Attempt to break a (single) snow layer at the given BlockPos.
+     * Will also turn snow blocks into snow layers at height 7.
+     *
+     * @return true if the passed IBlockState was valid snow block
+     */
+    public static boolean tryBreakSnow(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state,
+                                       boolean playSound) {
+        boolean success = false;
+        if (state.is(Blocks.SNOW_BLOCK)) {
+            level.setBlock(pos, Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, 7),
+                    Block.UPDATE_ALL_IMMEDIATE);
+            success = true;
+        } else if (state.getBlock() == Blocks.SNOW) {
+            int layers = state.getValue(SnowLayerBlock.LAYERS);
+            if (layers == 1) {
+                level.destroyBlock(pos, false);
+            } else {
+                level.setBlock(pos, Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, layers - 1),
+                        Block.UPDATE_ALL_IMMEDIATE);
+            }
+            success = true;
+        }
+
+        if (success && playSound) {
+            level.playSound(null, pos, SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 1.0f, 1.0f);
+        }
+
+        return success;
+    }
+
     public static void appendHazardTooltips(Material material, List<Component> tooltipComponents) {
         if (!ConfigHolder.INSTANCE.gameplay.hazardsEnabled || !material.hasProperty(HAZARD)) return;
 
@@ -507,5 +552,13 @@ public class GTUtil {
         }
 
         throw new IllegalArgumentException("Invalid slot '" + slotType + "': " + slotIndex);
+    }
+    
+    public static <T> T getLast(List<T> list) {
+        return list.get(list.size() - 1);
+    }
+
+    public static <T> ArrayList<T> list(T obj) {
+        return new ArrayList<>(List.of(obj));
     }
 }

@@ -121,7 +121,6 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<SizedFluid
             }
 
             FluidStack[] fluids;
-            int amount;
 
             if (io == IO.OUT && ingredient.ingredient() instanceof IntProviderFluidIngredient provider) {
                 provider.setFluidStacks(null);
@@ -129,14 +128,8 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<SizedFluid
 
                 if (simulate) {
                     fluids = new FluidStack[] { provider.getMaxSizeStack() };
-                    amount = provider.getCountProvider().getMaxValue();
                 } else {
                     fluids = provider.getStacks();
-                    if (fluids.length == 0 || fluids[0].isEmpty()) {
-                        it.remove();
-                        continue;
-                    }
-                    amount = fluids[0].getAmount();
                 }
             } else {
                 fluids = ingredient.getFluids();
@@ -144,8 +137,12 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<SizedFluid
                     it.remove();
                     continue;
                 }
-                amount = ingredient.amount();
             }
+            if (fluids.length == 0 || fluids[0].isEmpty()) {
+                it.remove();
+                continue;
+            }
+            int amount = fluids[0].getAmount();
 
             if (io == IO.OUT && !allowSameFluids) {
                 CustomFluidTank existing = null;

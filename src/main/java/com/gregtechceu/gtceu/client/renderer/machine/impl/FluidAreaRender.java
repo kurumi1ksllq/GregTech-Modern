@@ -15,6 +15,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.client.RenderTypeHelper;
+import net.minecraft.world.phys.AABB;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
@@ -118,5 +119,20 @@ public class FluidAreaRender extends DynamicRender<IFluidRenderMulti, FluidAreaR
     private Optional<Fluid> getFixedFluid() {
         if (fixedFluid) return Optional.ofNullable(cachedFluid);
         else return Optional.empty();
+    }
+
+    @Override
+    public boolean shouldRenderOffScreen(IFluidRenderMulti machine) {
+        return true;
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(IFluidRenderMulti machine) {
+        AABB box = super.getRenderBoundingBox(machine);
+        var offsets = machine.getFluidOffsets();
+        for (var offset : offsets) {
+            box = box.minmax(new AABB(offset));
+        }
+        return box.inflate(getViewDistance());
     }
 }

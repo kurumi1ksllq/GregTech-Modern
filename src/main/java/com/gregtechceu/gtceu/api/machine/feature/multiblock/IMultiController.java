@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IMachineFeature;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.BlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockState;
+import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
@@ -30,7 +31,7 @@ import java.util.concurrent.locks.Lock;
 
 public interface IMultiController extends IMachineFeature, IInteractedMachine {
 
-    BooleanProperty IS_FORMED_PROPERTY = BooleanProperty.create("is_formed");
+    BooleanProperty IS_FORMED_PROPERTY = GTMachineModelProperties.IS_FORMED;
 
     @Override
     default MultiblockControllerMachine self() {

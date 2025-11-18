@@ -7,6 +7,10 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipeSerializer;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.kind.GTRecipe;
 import com.gregtechceu.gtceu.common.recipe.builder.GTRecipeBuilder;
+import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
+import com.gregtechceu.gtceu.data.item.GTItems;
+import com.gregtechceu.gtceu.data.recipe.GTRecipeTypes;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.item.GTDataComponents;
 import com.gregtechceu.gtceu.data.item.GTItems;
@@ -85,7 +89,8 @@ public final class ResearchManager {
     public static void createDefaultResearchRecipe(@NotNull GTRecipeType recipeType, @NotNull String researchId,
                                                    @NotNull ItemStack researchItem, @NotNull FluidStack researchFluid,
                                                    @NotNull ItemStack dataItem,
-                                                   int duration, int EUt, int CWUt, RecipeOutput provider) {
+                                                   int duration, EnergyStack eut, int CWUt,
+                                                   RecipeOutput provider) {
         if (!ConfigHolder.INSTANCE.machines.enableResearch) return;
 
         dataItem.set(GTDataComponents.RESEARCH_ITEM, new ResearchItem(researchId, recipeType));
@@ -99,7 +104,7 @@ public final class ResearchManager {
             if (!researchFluid.isEmpty()) builder.inputFluids(researchFluid);
 
             builder.outputItems(dataItem)
-                    .EUt(EUt)
+                    .EUt(eut.voltage(), eut.amperage())
                     .CWUt(CWUt)
                     .totalCWU(duration)
                     .save(provider);
@@ -112,7 +117,7 @@ public final class ResearchManager {
 
             builder.outputItems(dataItem)
                     .duration(duration)
-                    .EUt(EUt)
+                    .EUt(eut.voltage(), eut.amperage())
                     .researchScan(true)
                     .save(provider);
         }

@@ -216,6 +216,23 @@ public interface ICoverable extends ITickSubscription, IAppearance {
         return traceCoverSide((BlockHitResult) rayTrace);
     }
 
+    default boolean hasDynamicCovers() {
+        for (Direction face : GTUtil.DIRECTIONS) {
+            CoverBehavior cover = this.getCoverAtSide(face);
+            if (cover != null && cover.getDynamicRenderer().get() != null) return true;
+        }
+        return false;
+    }
+
+    class PrimaryBoxData {
+
+        public final boolean usePlacementGrid;
+
+        public PrimaryBoxData(boolean usePlacementGrid) {
+            this.usePlacementGrid = usePlacementGrid;
+        }
+    }
+
     @Nullable
     static Direction traceCoverSide(BlockHitResult result) {
         return determineGridSideHit(result);

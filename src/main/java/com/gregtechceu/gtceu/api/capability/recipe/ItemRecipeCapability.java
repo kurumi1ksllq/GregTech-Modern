@@ -530,7 +530,7 @@ public class ItemRecipeCapability extends RecipeCapability<SizedIngredient> {
         ItemStackList stackList = new ItemStackList();
         boolean isIntProvider = inner.getCustomIngredient() instanceof IntProviderIngredient;
 
-        UnaryOperator<ItemStack> setCount = stack -> isIntProvider ? stack.copyWithCount(1) : stack;
+        UnaryOperator<ItemStack> setCount = (stack) -> isIntProvider ? stack.copyWithCount(1) : stack;
         Arrays.stream(inner.getItems())
                 .map(setCount)
                 .forEach(stackList::add);
@@ -577,5 +577,11 @@ public class ItemRecipeCapability extends RecipeCapability<SizedIngredient> {
          * @return Limited multiplier
          */
         int limitItemParallel(GTRecipe recipe, int multiplier, boolean tick);
+    }
+
+    // Items should be respected for distinct checks
+    @Override
+    public boolean shouldBypassDistinct() {
+        return false;
     }
 }

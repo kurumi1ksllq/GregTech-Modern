@@ -15,6 +15,7 @@ import com.gregtechceu.gtceu.api.recipe.ingredient.ExDataComponentFluidIngredien
 import com.gregtechceu.gtceu.api.recipe.kind.GTRecipe;
 import com.gregtechceu.gtceu.api.tag.TagUtil;
 import com.gregtechceu.gtceu.common.recipe.builder.GTRecipeBuilder;
+import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -229,15 +230,15 @@ public class RecipeHelper {
         RecipeRunner runner = new RecipeRunner(recipe, io, isTick, holder, chanceCaches, simulated);
         var result = runner.handle(contents);
 
-        if (result.isSuccess() || result.capability() == null) return result.result();
+        if (result.isSuccess() || result.capability() == null) return result;
 
-        if (!simulated) {
+        if (!simulated && ConfigHolder.INSTANCE.dev.debug) {
             GTCEu.LOGGER.warn("IO {} Error while handling recipe {} outputs for {}",
                     Component.translatable(io.tooltip).getString(), recipe, holder);
         }
         String key = "gtceu.recipe_logic.insufficient_" + (io == IO.IN ? "in" : "out");
         return ActionResult.fail(Component.translatable(key)
-                .append(": ").append(result.capability().getName()));
+                .append(": ").append(result.capability().getName()), result.capability(), io);
     }
 
     public static ActionResult matchContents(IRecipeCapabilityHolder holder, GTRecipe recipe) {
@@ -263,7 +264,7 @@ public class RecipeHelper {
             } else if (!condition.check(recipe, recipeLogic)) {
                 return ActionResult.fail(Component.translatable("gtceu.recipe_logic.condition_fails")
                         .append(": ")
-                        .append(condition.getTooltips()));
+                        .append(condition.getTooltips()), null, null);
             }
         }
 
@@ -278,7 +279,7 @@ public class RecipeHelper {
             }
 
             if (!passed) {
-                return ActionResult.fail(component);
+                return ActionResult.fail(component, null, null);
             }
         }
         return ActionResult.SUCCESS;
@@ -356,6 +357,11 @@ public class RecipeHelper {
 
     public static void addToRecipeHandlerMap(RecipeHandlerGroup key, RecipeHandlerList handler,
                                              Map<RecipeHandlerGroup, List<RecipeHandlerList>> map) {
+        // If they should bypass this system, add them to the BYPASS_DISTINCT group.
+        if (handler.doesCapabilityBypassDistinct()) {
+            map.computeIfAbsent(RecipeHandlerGroupDistinctness.BYPASS_DISTINCT, $ -> new ArrayList<>()).add(handler);
+            return;
+        }
         // Add undyed RHL's to every group that's not distinct, and also the undyed group itself.
         if (key.equals(RecipeHandlerGroupColor.UNDYED)) {
             for (var entry : map.entrySet()) {

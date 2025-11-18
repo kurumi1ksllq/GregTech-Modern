@@ -25,6 +25,8 @@ import com.gregtechceu.gtceu.common.item.armor.*;
 import com.gregtechceu.gtceu.common.item.behavior.*;
 import com.gregtechceu.gtceu.common.item.behavior.LighterBehavior;
 import com.gregtechceu.gtceu.common.item.behavior.MetaMachineConfigCopyBehaviour;
+import com.gregtechceu.gtceu.common.item.modules.ImageModuleBehaviour;
+import com.gregtechceu.gtceu.common.item.modules.TextModuleBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.cover.GTCovers;
 import com.gregtechceu.gtceu.data.datagen.lang.LangHandler;
@@ -197,6 +199,7 @@ public class GTItems {
                 .register();
     }
 
+    @SuppressWarnings("unchecked")
     public static final ItemEntry<Item>[] SHAPE_EXTRUDERS = new ItemEntry[27];
     public static ItemEntry<Item> SHAPE_EXTRUDER_PLATE;
     public static ItemEntry<Item> SHAPE_EXTRUDER_ROD;
@@ -1801,6 +1804,11 @@ public class GTItems {
                     new CoverPlaceBehavior(GTCovers.FLUID_FILTER)))
             .onRegister(materialInfo(new ItemMaterialInfo(new MaterialStack(GTMaterials.Zinc, GTValues.M * 3 / 2))))
             .register();
+    public static ItemEntry<ComponentItem> COVER_WIRELESS_TRANSMITTER = REGISTRATE
+            .item("wireless_transmitter_cover", ComponentItem::new)
+            .lang("Wireless Transmitter")
+            .onRegister(attach(new CoverPlaceBehavior(GTCovers.WIRELESS_TRANSMITTER)))
+            .register();
 
     public static ItemEntry<ComponentItem> COVER_MACHINE_CONTROLLER = REGISTRATE
             .item("machine_controller_cover", ComponentItem::new)
@@ -2538,7 +2546,19 @@ public class GTItems {
             .lang("Treated Wood Boat with Chest")
             .register();
 
-    public static void init() {}
+    public static ItemEntry<ComponentItem> TEXT_MODULE = REGISTRATE.item("text_module", ComponentItem::new)
+            .onRegister(attach(new TextModuleBehaviour()))
+            .register();
+
+    public static ItemEntry<ComponentItem> IMAGE_MODULE = REGISTRATE.item("image_module", ComponentItem::new)
+            .onRegister(attach(new ImageModuleBehaviour()))
+            .register();
+
+    public static void init() {
+        GTMaterialItems.generateMaterialItems();
+        GTMaterialItems.generateTools();
+        GTMaterialItems.generateArmors();
+    }
 
     public static <T extends ItemLike> NonNullConsumer<T> materialInfo(ItemMaterialInfo materialInfo) {
         return item -> ItemMaterialData.registerMaterialInfo(item, materialInfo);

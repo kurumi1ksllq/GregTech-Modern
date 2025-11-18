@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyTooltip;
 import com.gregtechceu.gtceu.api.gui.fancy.TooltipsPanel;
 import com.gregtechceu.gtceu.api.recipe.kind.GTRecipe;
+import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.ChatFormatting;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 
 public interface IMaintenanceMachine extends IMultiPart {
 
-    BooleanProperty MAINTENANCE_TAPED_PROPERTY = BooleanProperty.create("maintenance_taped");
+    BooleanProperty MAINTENANCE_TAPED_PROPERTY = GTMachineModelProperties.IS_TAPED;
     int MINIMUM_MAINTENANCE_TIME = 3456000; // 48 real-life hours = 3456000 ticks
     byte ALL_PROBLEMS = 0;
     byte NO_PROBLEMS = 0b111111;

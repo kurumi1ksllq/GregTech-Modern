@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.core.IFireImmuneEntity;
 import com.gregtechceu.gtceu.data.item.GTDataComponents;
 import com.gregtechceu.gtceu.data.item.GTItems;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
+import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -131,9 +132,9 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
             if (player.isOnFire()) player.extinguishFire();
         } else if (type == ArmorItem.Type.LEGGINGS) {
             boolean canUseEnergy = item.canUse(energyPerUse / 100);
-            boolean sprinting = KeyBind.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
-            boolean jumping = KeyBind.VANILLA_JUMP.isKeyDown(player);
-            boolean sneaking = KeyBind.VANILLA_SNEAK.isKeyDown(player);
+            boolean sprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
+            boolean jumping = SyncedKeyMappings.VANILLA_JUMP.isKeyDown(player);
+            boolean sneaking = SyncedKeyMappings.VANILLA_SNEAK.isKeyDown(player);
 
             if (canUseEnergy && sprinting) {
                 if (runningTimer == 0) {
@@ -162,7 +163,7 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
             data.runningTimer(runningTimer);
         } else if (type == ArmorItem.Type.BOOTS) {
             boolean canUseEnergy = item.canUse(energyPerUse / 100);
-            boolean jumping = KeyBind.VANILLA_JUMP.isKeyDown(player);
+            boolean jumping = SyncedKeyMappings.VANILLA_JUMP.isKeyDown(player);
             boolean boostedJump = data.boostedJump();
             if (boostedJumpTimer == 0 && KeyBind.BOOTS_ENABLE.isKeyDown(player)) {
                 boostedJump = !boostedJump;

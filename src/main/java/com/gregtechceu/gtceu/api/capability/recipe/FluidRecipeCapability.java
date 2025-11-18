@@ -413,8 +413,8 @@ public class FluidRecipeCapability extends RecipeCapability<SizedFluidIngredient
     // Maps ingredients to an FluidEntryList for XEI: either an FluidTagList or a FluidStackList
     private static FluidEntryList mapFluid(final SizedFluidIngredient ingredient) {
         int amount;
-        if (ingredient.ingredient() instanceof IntProviderFluidIngredient provider) {
-            amount = provider.getCountProvider().getMaxValue();
+        if (ingredient.ingredient() instanceof IntProviderFluidIngredient) {
+            amount = 1;
         } else {
             amount = ingredient.amount();
         }
@@ -459,5 +459,11 @@ public class FluidRecipeCapability extends RecipeCapability<SizedFluidIngredient
          * @return Limited multiplier
          */
         int limitFluidParallel(GTRecipe recipe, int multiplier, boolean tick);
+    }
+
+    // Fluids should be respected for distinct checks
+    @Override
+    public boolean shouldBypassDistinct() {
+        return false;
     }
 }

@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
+import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.IRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
@@ -138,8 +139,8 @@ public class MultiblockPartMachine extends MetaMachine implements IMultiPart {
 
         if (controllers.isEmpty()) {
             MachineRenderState renderState = getRenderState();
-            if (renderState.hasProperty(IMultiController.IS_FORMED_PROPERTY)) {
-                setRenderState(renderState.setValue(IMultiController.IS_FORMED_PROPERTY, false));
+            if (renderState.hasProperty(GTMachineModelProperties.IS_FORMED)) {
+                setRenderState(renderState.setValue(GTMachineModelProperties.IS_FORMED, false));
             }
         }
     }
@@ -151,8 +152,8 @@ public class MultiblockPartMachine extends MetaMachine implements IMultiPart {
         controllers.add(controller);
 
         MachineRenderState renderState = getRenderState();
-        if (renderState.hasProperty(IMultiController.IS_FORMED_PROPERTY)) {
-            setRenderState(renderState.setValue(IMultiController.IS_FORMED_PROPERTY, true));
+        if (renderState.hasProperty(GTMachineModelProperties.IS_FORMED)) {
+            setRenderState(renderState.setValue(GTMachineModelProperties.IS_FORMED, true));
         }
     }
 }

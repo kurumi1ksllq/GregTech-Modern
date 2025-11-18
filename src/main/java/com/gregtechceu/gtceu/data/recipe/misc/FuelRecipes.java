@@ -15,12 +15,12 @@ public class FuelRecipes {
     public static void init(RecipeOutput provider) {
         STEAM_BOILER_RECIPES.recipeBuilder("lava")
                 .inputFluids(new FluidStack(Fluids.LAVA, 100))
-                .duration(600 * 12)
+                .duration(100 * 12)
                 .save(provider);
 
         STEAM_BOILER_RECIPES.recipeBuilder("creosote")
                 .inputFluids(Creosote.getFluid(250))
-                .duration(600 * 12)
+                .duration(250 * 12)
                 .save(provider);
 
         // semi-fluid fuels, like creosote

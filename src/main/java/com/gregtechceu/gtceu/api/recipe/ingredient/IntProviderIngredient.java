@@ -1,8 +1,10 @@
 package com.gregtechceu.gtceu.api.recipe.ingredient;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.data.tag.GTIngredientTypes;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.item.ItemStack;
@@ -29,6 +31,8 @@ public class IntProviderIngredient implements ICustomIngredient {
             Ingredient.CODEC.fieldOf("inner").forGetter(IntProviderIngredient::getInner),
             IntProvider.CODEC.fieldOf("count_provider").forGetter(IntProviderIngredient::getCountProvider))
             .apply(instance, IntProviderIngredient::new));
+    public static final ResourceLocation TYPE = GTCEu.id("int_provider");
+    public static final ItemStack[] EMPTY_STACK_ARRAY = new ItemStack[0];
 
     @Getter
     protected final IntProvider countProvider;
@@ -37,7 +41,7 @@ public class IntProviderIngredient implements ICustomIngredient {
     @Getter
     protected final Ingredient inner;
     @Setter
-    protected @NotNull ItemStack @Nullable [] itemStacks = null;
+    protected @NotNull ItemStack [] itemStacks = null;
 
     protected IntProviderIngredient(Ingredient inner, IntProvider countProvider) {
         this.inner = inner;
@@ -57,9 +61,14 @@ public class IntProviderIngredient implements ICustomIngredient {
 
     public ItemStack[] getItemStacks() {
         if (itemStacks == null) {
-            itemStacks = inner.getItems();
+            int cachedCount = getSampledCount(GTValues.RNG);
+            if (cachedCount == 0) {
+                return EMPTY_STACK_ARRAY;
+            }
+            var innerStacks = inner.getItems();
+            this.itemStacks = new ItemStack[innerStacks.length];
             for (int i = 0; i < itemStacks.length; i++) {
-                itemStacks[i] = itemStacks[i].copyWithCount(getSampledCount(GTValues.RNG));
+                itemStacks[i] = innerStacks[i].copyWithCount(cachedCount);
             }
         }
         return itemStacks;

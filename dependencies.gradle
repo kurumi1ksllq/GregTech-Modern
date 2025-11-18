@@ -26,6 +26,11 @@ dependencies {
     compileOnly(forge.ae2)
     compileOnly(forge.ae2wtlib)
 
+    // Create
+    // modCompileOnly(forge.ponder)
+    // modCompileOnly(variantOf(forge.create) { classifier("slim") })
+    // modCompileOnly(forge.flywheel.forge.api)
+
     // KJS
     compileOnly(forge.bundles.kjs)
 
@@ -71,6 +76,7 @@ dependencies {
     // Client-only runtime mods //
     clientLocalRuntime(forge.sodium)
     clientLocalRuntime(forge.iris)
+    renderNurseCfg(libs.renderNurse)
 
     //////////////////////////////////////////////////////
     // Runtime mods for dev testing with unclean client //
@@ -106,5 +112,4 @@ dependencies {
     extraLocalRuntime(forge.observable)
     //////////////////////////
 
-    testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }

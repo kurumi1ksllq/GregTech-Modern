@@ -63,7 +63,13 @@ public class RecipeOutputProvider extends CapabilityInfoProvider<RecipeLogic> {
 
                 List<SizedIngredient> itemOutputs = new ArrayList<>();
                 for (var item : itemContents) {
-                    var stacks = ItemRecipeCapability.CAP.of(item.content).getItems();
+                    ItemStack[] stacks;
+                    SizedIngredient content = ItemRecipeCapability.CAP.of(item.content);
+                    // if (content instanceof IntProviderIngredient provider) {
+                    //     stacks = provider.getInner().getItems();
+                    // } else {
+                        stacks = content.getItems();
+                    // }
                     if (stacks.length == 0) continue;
                     if (stacks[0].isEmpty()) continue;
                     var stack = stacks[0].copy();
@@ -116,8 +122,9 @@ public class RecipeOutputProvider extends CapabilityInfoProvider<RecipeLogic> {
                 String spacer = " ";
 
                 if (itemOutput.getContainedCustom() instanceof IntProviderIngredient provider) {
-                    spacer += provider.getCountProvider().getMinValue() + "-" +
-                            provider.getCountProvider().getMaxValue() + " ";
+                    spacer += (Component.translatable("gtceu.gui.content.range",
+                            String.valueOf(provider.getCountProvider().getMinValue()),
+                            String.valueOf(provider.getCountProvider().getMaxValue()))) + " ";
                     provider.setItemStacks(null); // no roll
                     provider.setSampledCount(1);
                 }
@@ -137,10 +144,10 @@ public class RecipeOutputProvider extends CapabilityInfoProvider<RecipeLogic> {
                 IProbeInfo horizontalPane = verticalPane
                         .horizontal(verticalPane.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER));
                 String spacer = " ";
-
                 if (fluidOutput.ingredient() instanceof IntProviderFluidIngredient provider) {
-                    spacer += provider.getCountProvider().getMinValue() + "-" +
-                            provider.getCountProvider().getMaxValue() + " ";
+                    spacer += (Component.translatable("gtceu.gui.content.range",
+                            String.valueOf(provider.getCountProvider().getMinValue()),
+                            String.valueOf(provider.getCountProvider().getMaxValue()))) + " ";
                     provider.setFluidStacks(null); // no roll
                     provider.setSampledCount(1);
                     stack.setAmount(provider.getCountProvider().getMaxValue()); // no roll

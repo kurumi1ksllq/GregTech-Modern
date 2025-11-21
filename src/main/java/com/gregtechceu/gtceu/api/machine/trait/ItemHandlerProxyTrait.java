@@ -6,8 +6,13 @@ import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
+import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import lombok.Getter;
@@ -15,6 +20,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 @Accessors(chain = true)
 public class ItemHandlerProxyTrait extends MachineTrait implements IItemHandlerModifiable, ICapabilityTrait {
@@ -26,6 +33,8 @@ public class ItemHandlerProxyTrait extends MachineTrait implements IItemHandlerM
     @Getter
     @Nullable
     public IItemHandlerModifiable proxy;
+
+    private final Map<Direction, LazyOptional<IItemHandler>> handlers = new Object2ReferenceOpenHashMap<>();
 
     public ItemHandlerProxyTrait(MetaMachine machine, IO capabilityIO) {
         super(machine);
@@ -109,14 +118,27 @@ public class ItemHandlerProxyTrait extends MachineTrait implements IItemHandlerM
         return isEmpty;
     }
 
+    public void setNeighborHandler(Level level, BlockPos pos, Direction facing) {
+        var handler = GTTransferUtils.getAdjacentItemHandler(level, pos, facing);
+        handlers.put(facing, handler);
+    }
+
+    public boolean hasAdjacentHandler(Direction facing) {
+        return handlers.get(facing) != null && !handlers.get(facing).isPresent();
+    }
+
     public void exportToNearby(Direction... facings) {
         if (isEmpty()) return;
         var level = getMachine().getLevel();
         var pos = getMachine().getPos();
         for (Direction facing : facings) {
             var filter = getMachine().getItemCapFilter(facing, IO.OUT);
-            GTTransferUtils.getAdjacentItemHandler(level, pos, facing)
-                    .ifPresent(adj -> GTTransferUtils.transferItemsFiltered(this, adj, filter));
+            var handler = handlers.get(facing);
+            if (handler == null || !handler.isPresent()) {
+                handler = GTTransferUtils.getAdjacentItemHandler(level, pos, facing);
+            }
+            handler.ifPresent(adj -> GTTransferUtils.transferItemsFiltered(this, adj, filter));
+
         }
     }
 }

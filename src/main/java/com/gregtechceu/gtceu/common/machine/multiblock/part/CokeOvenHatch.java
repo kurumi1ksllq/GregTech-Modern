@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.machine.trait.ItemHandlerProxyTrait;
 import com.gregtechceu.gtceu.common.machine.multiblock.primitive.CokeOvenMachine;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.lowdragmc.lowdraglib.syncdata.ISubscription;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
@@ -116,6 +117,8 @@ public class CokeOvenHatch extends MultiblockPartMachine {
     @Override
     public void onNeighborChanged(Block block, BlockPos fromPos, boolean isMoving) {
         super.onNeighborChanged(block, fromPos, isMoving);
+        outputInventory.setNeighborHandler(getLevel(), fromPos, GTUtil.getFacingToNeighbor(getPos(), fromPos));
+        tank.setNeighborHandler(getLevel(), fromPos, GTUtil.getFacingToNeighbor(getPos(), fromPos));
         updateAutoIOSubscription();
     }
 
@@ -126,9 +129,8 @@ public class CokeOvenHatch extends MultiblockPartMachine {
     }
 
     protected void updateAutoIOSubscription() {
-        if ((!outputInventory.isEmpty() &&
-                GTTransferUtils.hasAdjacentItemHandler(getLevel(), getPos(), getFrontFacing())) ||
-                (!tank.isEmpty() && GTTransferUtils.hasAdjacentFluidHandler(getLevel(), getPos(), getFrontFacing()))) {
+        if ((!outputInventory.isEmpty() && outputInventory.hasAdjacentHandler(getFrontFacing())) ||
+                (!tank.isEmpty() && tank.hasAdjacentHandler(getFrontFacing()))) {
             autoIOSubs = subscribeServerTick(autoIOSubs, this::autoIO);
         } else if (autoIOSubs != null) {
             autoIOSubs.unsubscribe();

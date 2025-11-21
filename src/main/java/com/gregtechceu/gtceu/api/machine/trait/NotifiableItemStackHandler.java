@@ -16,9 +16,14 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
+import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
@@ -30,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
@@ -50,6 +56,8 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
     @Setter
     private boolean shouldSearchContent = true;
     private Boolean isEmpty;
+
+    private final Map<Direction, LazyOptional<IItemHandler>> handlers = new Object2ReferenceOpenHashMap<>();
 
     public NotifiableItemStackHandler(MetaMachine machine, int slots, @NotNull IO handlerIO, @NotNull IO capabilityIO,
                                       IntFunction<CustomItemStackHandler> storageFactory) {
@@ -268,14 +276,26 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
         return isEmpty;
     }
 
+    public void setNeighborHandler(Level level, BlockPos pos, Direction facing) {
+        var handler = GTTransferUtils.getAdjacentItemHandler(level, pos, facing);
+        handlers.put(facing, handler);
+    }
+
+    public boolean hasAdjacentHandler(Direction facing) {
+        return handlers.get(facing) != null && !handlers.get(facing).isPresent();
+    }
+
     public void exportToNearby(@NotNull Direction... facings) {
         if (isEmpty()) return;
         var level = getMachine().getLevel();
         var pos = getMachine().getPos();
         for (Direction facing : facings) {
             var filter = getMachine().getItemCapFilter(facing, IO.OUT);
-            GTTransferUtils.getAdjacentItemHandler(level, pos, facing)
-                    .ifPresent(adj -> GTTransferUtils.transferItemsFiltered(this, adj, filter));
+            var handler = handlers.get(facing);
+            if (handler == null || !handler.isPresent()) {
+                handler = GTTransferUtils.getAdjacentItemHandler(level, pos, facing);
+            }
+            handler.ifPresent(adj -> GTTransferUtils.transferItemsFiltered(this, adj, filter));
         }
     }
 
@@ -284,8 +304,11 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
         var pos = getMachine().getPos();
         for (Direction facing : facings) {
             var filter = getMachine().getItemCapFilter(facing, IO.IN);
-            GTTransferUtils.getAdjacentItemHandler(level, pos, facing)
-                    .ifPresent(adj -> GTTransferUtils.transferItemsFiltered(adj, this, filter));
+            var handler = handlers.get(facing);
+            if (handler == null || !handler.isPresent()) {
+                handler = GTTransferUtils.getAdjacentItemHandler(level, pos, facing);
+            }
+            handler.ifPresent(adj -> GTTransferUtils.transferItemsFiltered(adj, this, filter));
         }
     }
 

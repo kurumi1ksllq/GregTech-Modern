@@ -20,6 +20,7 @@ import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
+import com.gregtechceu.gtceu.utils.GTUtil;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.jei.IngredientIO;
@@ -205,6 +206,7 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     @Override
     public void onNeighborChanged(Block block, BlockPos fromPos, boolean isMoving) {
         super.onNeighborChanged(block, fromPos, isMoving);
+        getInventory().setNeighborHandler(getLevel(), fromPos, GTUtil.getFacingToNeighbor(getPos(), fromPos));
         updateInventorySubscription();
     }
 

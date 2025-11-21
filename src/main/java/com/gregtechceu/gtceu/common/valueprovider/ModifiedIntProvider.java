@@ -16,8 +16,13 @@ import net.minecraft.util.valueproviders.UniformInt;
 public class ModifiedIntProvider {
 
     public static IntProvider of(IntProvider source, ContentModifier modifier) {
+        if (source instanceof CentralLimit central) {
+            return CentralLimit.of(modifier.apply(central.getMinValue()), modifier.apply(central.getMaxValue()),
+                    modifier.apply(central.getParallel()));
+        }
         if (source instanceof UniformInt uniform) {
-            return UniformInt.of(modifier.apply(uniform.getMinValue()), modifier.apply(uniform.getMaxValue()));
+            return CentralLimit.of(modifier.apply(uniform.getMinValue()), modifier.apply(uniform.getMaxValue()),
+                    modifier.apply(1));
         }
         if (source instanceof BiasedToBottomInt biased) {
             return BiasedToBottomInt.of(modifier.apply(biased.getMinValue()), modifier.apply(biased.getMaxValue()));

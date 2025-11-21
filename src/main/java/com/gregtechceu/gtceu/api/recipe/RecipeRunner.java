@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeCapabilityHolder;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroup;
-import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroupDistinctness;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
 import com.gregtechceu.gtceu.api.recipe.chance.boost.ChanceBoostFunction;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
@@ -21,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroupDistinctness.BUS_DISTINCT;
+import static com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroupDistinctness.BYPASS_DISTINCT;
 import static com.gregtechceu.gtceu.api.recipe.RecipeHelper.addToRecipeHandlerMap;
 
 public class RecipeRunner {
@@ -122,12 +123,10 @@ public class RecipeRunner {
             addToRecipeHandlerMap(handler.getGroup(), handler, handlerGroups);
         }
         // Specifically check distinct handlers first
-        for (RecipeHandlerList handler : handlerGroups.getOrDefault(RecipeHandlerGroupDistinctness.BUS_DISTINCT,
-                Collections.emptyList())) {
+        for (RecipeHandlerList handler : handlerGroups.getOrDefault(BUS_DISTINCT, Collections.emptyList())) {
             // Handle the contents of this handler and also all the bypassed handlers
             var res = handler.handleRecipe(io, recipe, searchRecipeContents, true);
-            for (RecipeHandlerList bypassHandler : handlerGroups.getOrDefault(
-                    RecipeHandlerGroupDistinctness.BYPASS_DISTINCT,
+            for (RecipeHandlerList bypassHandler : handlerGroups.getOrDefault(BYPASS_DISTINCT,
                     Collections.emptyList())) {
                 res = bypassHandler.handleRecipe(io, recipe, res, true);
             }
@@ -135,8 +134,7 @@ public class RecipeRunner {
                 if (!simulated) {
                     // Actually consume the contents of this handler and also all the bypassed handlers
                     recipeContents = handler.handleRecipe(io, recipe, recipeContents, false);
-                    for (RecipeHandlerList bypassHandler : handlerGroups.getOrDefault(
-                            RecipeHandlerGroupDistinctness.BYPASS_DISTINCT,
+                    for (RecipeHandlerList bypassHandler : handlerGroups.getOrDefault(BYPASS_DISTINCT,
                             Collections.emptyList())) {
                         recipeContents = bypassHandler.handleRecipe(io, recipe, recipeContents, false);
                     }
@@ -149,7 +147,7 @@ public class RecipeRunner {
         // Check the other groups. For every group, try consuming the ingredients,
         // see if it succeeds.
         for (Map.Entry<RecipeHandlerGroup, List<RecipeHandlerList>> handlerListEntry : handlerGroups.entrySet()) {
-            if (handlerListEntry.getKey() == RecipeHandlerGroupDistinctness.BUS_DISTINCT) continue;
+            if (handlerListEntry.getKey().equals(BUS_DISTINCT)) continue;
 
             // List to keep track of the remaining items for this RecipeHandlerGroup
             Map<RecipeCapability<?>, List<Object>> copiedRecipeContents = searchRecipeContents;
@@ -163,9 +161,8 @@ public class RecipeRunner {
                 }
             }
             // If we're already in the bypass_distinct group, don't check it twice.
-            if (handlerListEntry.getKey() != RecipeHandlerGroupDistinctness.BYPASS_DISTINCT) {
-                for (RecipeHandlerList bypassHandler : handlerGroups.getOrDefault(
-                        RecipeHandlerGroupDistinctness.BYPASS_DISTINCT,
+            if (!handlerListEntry.getKey().equals(BYPASS_DISTINCT)) {
+                for (RecipeHandlerList bypassHandler : handlerGroups.getOrDefault(BYPASS_DISTINCT,
                         Collections.emptyList())) {
                     copiedRecipeContents = bypassHandler.handleRecipe(io, recipe, copiedRecipeContents, true);
                     if (copiedRecipeContents.isEmpty()) {
@@ -190,9 +187,8 @@ public class RecipeRunner {
             }
             // Then go through the handlers that bypass the distinctness system and empty those
             // If we're already in the bypass_distinct group, don't check it twice.
-            if (handlerListEntry.getKey() != RecipeHandlerGroupDistinctness.BYPASS_DISTINCT) {
-                for (RecipeHandlerList bypassHandler : handlerGroups.getOrDefault(
-                        RecipeHandlerGroupDistinctness.BYPASS_DISTINCT,
+            if (!handlerListEntry.getKey().equals(BYPASS_DISTINCT)) {
+                for (RecipeHandlerList bypassHandler : handlerGroups.getOrDefault(BYPASS_DISTINCT,
                         Collections.emptyList())) {
                     copiedRecipeContents = bypassHandler.handleRecipe(io, recipe, copiedRecipeContents, false);
                     if (copiedRecipeContents.isEmpty()) {

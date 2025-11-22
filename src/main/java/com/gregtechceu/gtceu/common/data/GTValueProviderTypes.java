@@ -1,7 +1,10 @@
 package com.gregtechceu.gtceu.common.data;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.common.valueprovider.*;
+import com.gregtechceu.gtceu.common.valueprovider.AddedFloat;
+import com.gregtechceu.gtceu.common.valueprovider.CastedFloat;
+import com.gregtechceu.gtceu.common.valueprovider.FlooredInt;
+import com.gregtechceu.gtceu.common.valueprovider.MultipliedFloat;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.valueproviders.FloatProviderType;
@@ -22,9 +25,6 @@ public class GTValueProviderTypes {
     public static final RegistryObject<IntProviderType<FlooredInt>> FLOORED = INT_PROVIDER_TYPE_REGISTER.register(
             "floored",
             () -> () -> FlooredInt.CODEC);
-    public static final RegistryObject<IntProviderType<CentralLimit>> CENTRAL_LIMIT = INT_PROVIDER_TYPE_REGISTER
-            .register("central_limit",
-                    () -> () -> CentralLimit.CODEC);
 
     public static final RegistryObject<FloatProviderType<MultipliedFloat>> MULTIPLIED = FLOAT_PROVIDER_TYPE_REGISTER
             .register("multiplied",

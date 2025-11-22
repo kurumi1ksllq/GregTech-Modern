@@ -2,10 +2,7 @@ package com.gregtechceu.gtceu.common.valueprovider;
 
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 
-import net.minecraft.util.valueproviders.BiasedToBottomInt;
-import net.minecraft.util.valueproviders.ConstantFloat;
-import net.minecraft.util.valueproviders.IntProvider;
-import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.util.valueproviders.*;
 
 /**
  * Returns a new {@link IntProvider} with a {@link ContentModifier} applied. Mainly for use in modifying the providers
@@ -16,13 +13,11 @@ import net.minecraft.util.valueproviders.UniformInt;
 public class ModifiedIntProvider {
 
     public static IntProvider of(IntProvider source, ContentModifier modifier) {
-        if (source instanceof CentralLimit central) {
-            return CentralLimit.of(modifier.apply(central.getMinValue()), modifier.apply(central.getMaxValue()),
-                    modifier.apply(central.getParallel()));
+        if (source instanceof ClampedNormalInt normal) {
+            return ofNormal(normal, modifier);
         }
         if (source instanceof UniformInt uniform) {
-            return CentralLimit.of(modifier.apply(uniform.getMinValue()), modifier.apply(uniform.getMaxValue()),
-                    modifier.apply(1));
+            return ofNormal(uniform, modifier);
         }
         if (source instanceof BiasedToBottomInt biased) {
             return BiasedToBottomInt.of(modifier.apply(biased.getMinValue()), modifier.apply(biased.getMaxValue()));
@@ -33,5 +28,17 @@ public class ModifiedIntProvider {
                                 new CastedFloat(source),
                                 ConstantFloat.of((float) modifier.multiplier())),
                         ConstantFloat.of((float) modifier.addition())));
+    }
+
+    public static ClampedNormalInt ofNormal(IntProvider source, ContentModifier modifier) {
+        int parallel = modifier.apply(1);
+        int min = modifier.apply(source.getMinValue());
+        int max = modifier.apply(source.getMaxValue());
+
+        float mean = parallel * (min + max) / 2f;
+        int s = max - min + 1;
+        float sd = (float) Math.sqrt(parallel * (s * s - 1) / 12f);
+
+        return ClampedNormalInt.of(mean, sd, min, max);
     }
 }

@@ -39,12 +39,11 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
 
     public double parse(String num) {
         ParseResult result = GTMath.parseExpression(num, this.defaultNumber, true);
-        double value = result.getResult();
         if (result.isFailure()) {
-            this.mathFailMessage = result.getError();
+            this.mathFailMessage = result.getErrorMessage();
             GTCEu.LOGGER.error("Math expression error in {}: {}", this, this.mathFailMessage);
         }
-        return value;
+        return result.getResult().getNumberValue().doubleValue();
     }
 
     public IStringValue<?> createMathFailMessageValue() {

@@ -1,12 +1,16 @@
 package com.gregtechceu.gtceu.utils.math;
 
+import com.ezylang.evalex.Expression;
+
+import java.math.BigDecimal;
+
 public enum SIPrefix {
 
     Quetta('Q', 30),
     Ronna('R', 27),
     Yotta('Y', 24),
     Zetta('Z', 21),
-    Exa('E', 18),
+    Exa('X', 18),
     Peta('P', 15),
     Tera('T', 12),
     Giga('G', 9),
@@ -28,18 +32,27 @@ public enum SIPrefix {
     public final String stringSymbol;
     public final double factor;
     public final double oneOverFactor;
+    public final BigDecimal bigFactor;
+    public final BigDecimal bigOneOverFactor;
 
     SIPrefix(char symbol, int powerOfTen) {
         this.symbol = symbol;
         this.stringSymbol = symbol != Character.MIN_VALUE ? Character.toString(symbol) : "";
         this.factor = Math.pow(10, powerOfTen);
         this.oneOverFactor = 1 / this.factor;
+        this.bigFactor = new BigDecimal(this.factor);
+        this.bigOneOverFactor = new BigDecimal(this.oneOverFactor);
     }
 
     public boolean isOne() {
         return this == One;
     }
 
+    public void addToExpression(Expression e) {
+        e.with(String.valueOf(this.symbol), this.factor);
+    }
+
+    public static final SIPrefix[] VALUES = values();
     public static final SIPrefix[] HIGH = new SIPrefix[values().length / 2];
     public static final SIPrefix[] LOW = new SIPrefix[values().length / 2];
 
@@ -48,6 +61,12 @@ public enum SIPrefix {
         for (int i = 0; i < HIGH.length; i++) {
             HIGH[i] = values[HIGH.length - 1 - i];
             LOW[i] = values[HIGH.length + 1 + i];
+        }
+    }
+
+    public static void addAllToExpression(Expression e) {
+        for (SIPrefix siPrefix : VALUES) {
+            siPrefix.addToExpression(e);
         }
     }
 }

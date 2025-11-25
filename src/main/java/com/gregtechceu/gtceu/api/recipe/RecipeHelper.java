@@ -30,6 +30,7 @@ import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import org.jetbrains.annotations.Contract;
@@ -290,7 +291,7 @@ public class RecipeHelper {
      * Returns the recipe itself if no valid trim limits are passed
      */
     @Contract(pure = true)
-    public static GTRecipe trimRecipeOutputs(GTRecipe recipe, Object2IntMap<RecipeCapability<?>> trimLimits) {
+    public static GTRecipe trimRecipeOutputs(GTRecipe recipe, Reference2IntMap<RecipeCapability<?>> trimLimits) {
         // Fast return early if no trimming desired
         if (trimLimits.isEmpty() || trimLimits.values().intStream().allMatch(integer -> integer == -1)) {
             return recipe;
@@ -316,7 +317,7 @@ public class RecipeHelper {
      */
     @Contract(pure = true)
     public static Map<RecipeCapability<?>, List<Content>> doTrim(Map<RecipeCapability<?>, List<Content>> current,
-                                                                 Object2IntMap<RecipeCapability<?>> trimLimits) {
+                                                                 Reference2IntMap<RecipeCapability<?>> trimLimits) {
         Map<RecipeCapability<?>, List<Content>> outputs = new Reference2ObjectOpenHashMap<>(current.size());
 
         for (var entry : current.entrySet()) {

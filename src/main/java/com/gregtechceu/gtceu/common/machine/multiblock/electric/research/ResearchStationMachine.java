@@ -13,7 +13,6 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDisplayUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockDisplayText;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.ActionResult;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
@@ -60,7 +59,6 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
                     return;
                 }
                 this.objectHolder = iObjectHolder;
-                addHandlerList(RecipeHandlerList.of(IO.IN, iObjectHolder.getAsHandler()));
             }
 
             MetaMachine base = part.self();

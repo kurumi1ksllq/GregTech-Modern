@@ -68,7 +68,8 @@ public class GTRecipeTypes {
             .setProgressBar(GuiTextures.PROGRESS_BAR_BOILER_FUEL.get(true), DOWN_TO_UP)
             .setMaxTooltips(1)
             .onRecipeBuild((builder, provider) -> {
-                var duration = (builder.duration / 12 / 80); // copied for large boiler
+                // all LBB recipes' duration is 1/4 the small boiler recipe's duration
+                int duration = builder.duration / 4;
                 if (duration > 0) {
                     GTRecipeTypes.LARGE_BOILER_RECIPES.copyFrom(builder).duration(duration).save(provider);
                 }

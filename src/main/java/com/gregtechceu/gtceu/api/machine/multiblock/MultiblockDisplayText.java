@@ -4,11 +4,12 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
+import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
+import com.gregtechceu.gtceu.api.recipe.kind.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderFluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderIngredient;
-import com.gregtechceu.gtceu.api.recipe.kind.GTRecipe;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -317,6 +318,23 @@ public class MultiblockDisplayText {
         }
 
         /**
+         * Adds a progress line based on the recipe logic.
+         *
+         * @param recipeLogic The recipe logic that provides the progress info
+         *
+         * @see #addProgressLine(double, double, double)
+         * @see #addCustomProgressLine(RecipeLogic)
+         */
+        public Builder addProgressLine(RecipeLogic recipeLogic) {
+            if (recipeLogic.hasCustomProgressLine()) {
+                return this.addCustomProgressLine(recipeLogic);
+            } else {
+                return this.addProgressLine(recipeLogic.getProgress(), recipeLogic.getMaxProgress(),
+                        recipeLogic.getProgressPercent());
+            }
+        }
+
+        /**
          * Adds a simple progress line that displays the current time of a recipe and its progress as a percentage.
          * <br>
          * Added if structure is formed and the machine is active.
@@ -334,6 +352,24 @@ public class MultiblockDisplayText {
             textList.add(Component.translatable("gtceu.multiblock.progress",
                     String.format("%.2f", (float) currentInSec),
                     String.format("%.2f", (float) maxInSec), currentProgress));
+            return this;
+        }
+
+        /**
+         * Adds a customized progress line that is often used to display the current time of a recipe and its progress
+         * as a percentage.
+         * <p>
+         * Added if structure if formed and the machine is active.
+         *
+         * @param recipeLogic The recipe logic that provides the line
+         */
+        public Builder addCustomProgressLine(RecipeLogic recipeLogic) {
+            if (!isStructureFormed || !isActive)
+                return this;
+            Component line = recipeLogic.getCustomProgressLine();
+            if (line != null) {
+                textList.add(line);
+            }
             return this;
         }
 

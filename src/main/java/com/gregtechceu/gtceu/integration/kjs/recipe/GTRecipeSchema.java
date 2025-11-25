@@ -92,6 +92,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
@@ -244,7 +245,21 @@ public interface GTRecipeSchema {
             return output(CWURecipeCapability.CAP, cwu);
         }
 
+        public GTKubeRecipe itemInputs(SizedIngredient... inputs) {
+            return inputItems(inputs);
+        }
+
+        public GTKubeRecipe itemInput(MaterialEntry input) {
+            return inputItems(input);
+        }
+
+        public GTKubeRecipe itemInput(MaterialEntry input, int count) {
+            return inputItems(input, count);
+        }
+
         public GTKubeRecipe inputItems(SizedIngredient... inputs) {
+            validateItems("input", inputs);
+
             for (var stack : inputs) {
                 // test simple item that have pure singular material stack
                 var matStack = ChemicalHelper.getMaterialStack(stack.getItems()[0].getItem());
@@ -267,6 +282,8 @@ public interface GTRecipeSchema {
         }
 
         public GTKubeRecipe inputItems(ItemStack... inputs) {
+            validateItems("input", inputs);
+
             for (ItemStack itemStack : inputs) {
                 // test simple item that have pure singular material stack
                 var matStack = ChemicalHelper.getMaterialStack(itemStack);
@@ -346,10 +363,12 @@ public interface GTRecipeSchema {
         }
 
         public GTKubeRecipe inputItemsRanged(Ingredient ingredient, int min, int max) {
+            validateItems("ranged input", ingredient);
             return input(ItemRecipeCapability.CAP, new SizedIngredient(IntProviderIngredient.of(ingredient, UniformInt.of(min, max)).toVanilla(), 1));
         }
 
         public GTKubeRecipe inputItemsRanged(ItemStack stack, int min, int max) {
+            validateItems("ranged input", stack);
             return input(ItemRecipeCapability.CAP, new SizedIngredient(IntProviderIngredient.of(Ingredient.of(stack), UniformInt.of(min, max)).toVanilla(), 1));
         }
 
@@ -370,6 +389,7 @@ public interface GTRecipeSchema {
         // }
 
         public GTKubeRecipe outputItems(SizedIngredient... outputs) {
+            validateItems("output", outputs);
             for (SizedIngredient itemStack : outputs) {
                 if (itemStack.ingredient().isEmpty()) {
                     throw new KubeRuntimeException(String.format("Output items is empty, id: %s", id));
@@ -383,12 +403,14 @@ public interface GTRecipeSchema {
         }
 
         public GTKubeRecipe outputItemsRanged(Ingredient ingredient, int min, int max) {
+            validateItems("ranged output", ingredient);
             return output(ItemRecipeCapability.CAP,
                     new SizedIngredient(IntProviderIngredient.of(ingredient, UniformInt.of(min, max)).toVanilla(), 1));
         }
 
         @HideFromJS
         public GTKubeRecipe outputItemsRanged(ItemStack stack, int min, int max) {
+            validateItems("ranged output", stack);
             return outputItemsRanged(RecipeHelper.makeItemIngredient(stack), min, max);
         }
 
@@ -397,6 +419,8 @@ public interface GTRecipeSchema {
         }
 
         public GTKubeRecipe notConsumableItem(SizedIngredient itemStack) {
+            validateItems("not consumable", itemStack);
+
             int lastChance = this.chance;
             this.chance = 0;
             inputItems(itemStack);
@@ -404,10 +428,21 @@ public interface GTRecipeSchema {
             return this;
         }
 
-        public GTKubeRecipe notConsumableItem(TagPrefix orePrefix, Material material) {
+        public GTKubeRecipe notConsumable(TagPrefix orePrefix, Material material) {
+            validateItems("not consumable", orePrefix);
             int lastChance = this.chance;
             this.chance = 0;
             inputItems(SizedIngredient.of(ChemicalHelper.get(orePrefix, material).getItem(), 1));
+            this.chance = lastChance;
+            return this;
+        }
+
+        public GTKubeRecipe notConsumableFluid(SizedFluidIngredient fluid) {
+            validateFluids("not consumable", fluid);
+
+            int lastChance = this.chance;
+            this.chance = 0;
+            inputFluids(fluid);
             this.chance = lastChance;
             return this;
         }
@@ -420,6 +455,8 @@ public interface GTRecipeSchema {
         }
 
         public GTKubeRecipe chancedInput(SizedIngredient stack, int chance, int tierChanceBoost) {
+            validateItems("chanced input", stack);
+
             if (0 >= chance || chance > ChanceLogic.getMaxChancedValue()) {
                 throw new KubeRuntimeException(
                         String.format("Chance cannot be less or equal to 0 or more than %s, Actual: %s, id: %s",
@@ -453,6 +490,8 @@ public interface GTRecipeSchema {
         }
 
         public GTKubeRecipe chancedOutput(SizedIngredient stack, int chance, int tierChanceBoost) {
+            validateItems("chanced output", stack);
+
             if (0 >= chance || chance > ChanceLogic.getMaxChancedValue()) {
                 throw new KubeRuntimeException(
                         String.format("Chance cannot be less or equal to 0 or more than %s, Actual: %s, id: %s",
@@ -478,9 +517,7 @@ public interface GTRecipeSchema {
         }
 
         public GTKubeRecipe chancedOutput(SizedIngredient stack, String fraction, int tierChanceBoost) {
-            if (stack.count() == 0 || stack.ingredient().isEmpty()) {
-                return this;
-            }
+            validateItems("chanced output", stack);
 
             String[] split = fraction.split("/");
             if (split.length > 2) {
@@ -551,6 +588,8 @@ public interface GTRecipeSchema {
         }
 
         public GTKubeRecipe chancedFluidOutput(SizedFluidIngredient stack, int chance, int tierChanceBoost) {
+            validateFluids("chanced output", stack);
+
             if (0 >= chance || chance > ChanceLogic.getMaxChancedValue()) {
                 throw new KubeRuntimeException(
                         String.format("Chance cannot be less or equal to 0 or more than %s, Actual: %s, id: %s",
@@ -567,6 +606,7 @@ public interface GTRecipeSchema {
         }
 
         public GTKubeRecipe chancedFluidOutput(SizedFluidIngredient stack, String fraction, int tierChanceBoost) {
+            validateFluids("chanced output", stack);
             if (stack.amount() == 0) {
                 return this;
             }
@@ -674,7 +714,34 @@ public interface GTRecipeSchema {
             return this;
         }
 
+        // public GTKubeRecipe inputFluids(SizedFluidIngredient... inputs) {
+        //     validateFluids("input", inputs);
+
+        //     for (var fluidIng : inputs) {
+        //         for (var stack : fluidIng.ingredient().getStacks()) {
+        //             var mat = ChemicalHelper.getMaterial(stack.getFluid());
+        //             if (!mat.isNull()) {
+        //                 fluidMaterialStacks.add(new MaterialStack(mat,
+        //                         ((long) stack.getAmount() * GTValues.M) / GTValues.L));
+        //             }
+        //         }
+        //     }
+        //     return input(FluidRecipeCapability.CAP, (Object[]) inputs);
+        // }
+
+        public GTKubeRecipe inputFluidsRanged(FluidStack input, int min, int max) {
+            return inputFluidsRanged(input, UniformInt.of(min, max));
+        }
+
+        public GTKubeRecipe inputFluidsRanged(FluidStack input, IntProvider range) {
+            validateFluids("ranged input", input);
+            FluidStack stack = input.copy();
+            return input(FluidRecipeCapability.CAP,
+                    IntProviderFluidIngredient.of(FluidIngredient.of(stack), range));
+        }
+
         public GTKubeRecipe outputFluids(SizedFluidIngredient... outputs) {
+            validateFluids("output", outputs);
             return output(FluidRecipeCapability.CAP, (Object[]) outputs);
         }
 
@@ -683,8 +750,84 @@ public interface GTRecipeSchema {
         }
 
         public GTKubeRecipe outputFluidsRanged(FluidIngredient output, IntProvider range) {
+            validateFluids("ranged output", output);
             IntProviderFluidIngredient ing = IntProviderFluidIngredient.of(output, range);
             return output(FluidRecipeCapability.CAP, new SizedFluidIngredient(ing, 1));
+        }
+
+        //////////////////////////////////////
+        // ********** VALIDATION ***********//
+        //////////////////////////////////////
+
+        private void validateItems(@NotNull String type, SizedIngredient... items) {
+            for (var stack : items) {
+                if (stack == null || stack.getItems().length == 0) {
+                    throw new KubeRuntimeException(String.format("Invalid or empty %s item (recipe ID: %s)", type, id));
+                }
+            }
+        }
+
+        private void validateItems(@NotNull String type, ItemStack... stacks) {
+            for (var stack : stacks) {
+                if (stack == null || stack.isEmpty()) {
+                    throw new KubeRuntimeException(String.format("Invalid or empty %s item (recipe ID: %s)", type, id));
+                }
+            }
+        }
+
+        private void validateItems(@NotNull String type, Ingredient... ingredients) {
+            for (var ingredient : ingredients) {
+                if (ingredient == null || ingredient.isEmpty()) {
+                    throw new KubeRuntimeException(String.format("Invalid or empty %s item (recipe ID: %s)", type, id));
+                }
+            }
+        }
+
+        private void validateItems(@NotNull String type, IntProviderIngredient... items) {
+            for (var item : items) {
+                if (item == null || item.getItemStacks() == null || item.getItemStacks().length == 0) {
+                    throw new KubeRuntimeException(String.format("Invalid or empty %s item (recipe ID: %s)", type, id));
+                }
+            }
+        }
+
+        private void validateItems(@NotNull String type, TagPrefix... items) {
+            for (var item : items) {
+                if (item == null || item.isEmpty()) {
+                    throw new KubeRuntimeException(String.format("Invalid or empty %s item (recipe ID: %s)", type, id));
+                }
+            }
+        }
+
+        private void validateFluids(@NotNull String type, FluidStack... fluids) {
+            for (var fluid : fluids) {
+                if (fluid == null || fluid.getAmount() == 0) {
+                    throw new KubeRuntimeException(String.format("Invalid or empty %s fluid (recipe ID: %s)", type, id));
+                }
+            }
+        }
+
+        private void validateFluids(@NotNull String type, FluidIngredient... fluids) {
+            for (var fluid : fluids) {
+                if (fluid == null || fluid.getStacks() == null) {
+                    throw new KubeRuntimeException(String.format("Invalid or empty %s fluid (recipe ID: %s)", type, id));
+                }
+
+                for (var stack : fluid.getStacks()) {
+                    if (stack == null || stack.isEmpty()) {
+                        throw new KubeRuntimeException(
+                                String.format("Invalid or empty %s fluid (recipe ID: %s)", type, id));
+                    }
+                }
+            }
+        }
+
+        private void validateFluids(@NotNull String type, SizedFluidIngredient... stacks) {
+            for (var stack : stacks) {
+                if (stack == null || stack.getFluids() == null || stack.getFluids().length == 0) {
+                    throw new KubeRuntimeException(String.format("Invalid or empty %s fluid (recipe ID: %s)", type, id));
+                }
+            }
         }
 
         //////////////////////////////////////

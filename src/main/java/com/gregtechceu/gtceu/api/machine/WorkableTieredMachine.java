@@ -13,10 +13,12 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
@@ -30,8 +32,8 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
     @Persisted
     @DescSynced
     public final RecipeLogic recipeLogic;
-    @Getter
-    public final GTRecipeType[] recipeTypes;
+    @Getter(AccessLevel.PUBLIC)
+    private GTRecipeType[] recipeTypes;
     @Getter
     @Setter
     @Persisted
@@ -235,8 +237,8 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
     }
 
     // Recipe compat
+    @ApiStatus.Internal
     public void setRecipeType(@NotNull GTRecipeType type) {
-        GTRecipeType[] recipeTypes = getRecipeTypes();
         int recipeIndex = -1;
         for (int i = 0; i < recipeTypes.length; i++) {
             if (type.equals(recipeTypes[i])) {
@@ -245,7 +247,11 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
             }
         }
         if (recipeIndex == -1) {
-            throw new RuntimeException("Error!");
+            var newer = new GTRecipeType[recipeTypes.length + 1];
+            System.arraycopy(recipeTypes, 0, newer, 0, recipeTypes.length);
+            newer[recipeTypes.length] = type;
+            recipeTypes = newer;
+            recipeIndex = recipeTypes.length-1;
         }
         setActiveRecipeType(recipeIndex);
     }

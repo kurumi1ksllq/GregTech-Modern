@@ -467,6 +467,8 @@ public class CommonInit {
                 duct.attachCapabilities(event);
             } else if (block instanceof IMachineBlock machine) {
                 machine.attachCapabilities(event);
+            } else if (block instanceof OpticalPipeBlock optical) {
+                optical.attachCapabilities(event);
             }
         }
 

@@ -81,6 +81,7 @@ import com.gregtechceu.gtceu.data.misc.GTCreativeModeTabs;
 import com.gregtechceu.gtceu.data.misc.GTDimensionMarkers;
 import com.gregtechceu.gtceu.data.misc.GTValueProviderTypes;
 import com.gregtechceu.gtceu.data.particle.GTParticleTypes;
+import com.gregtechceu.gtceu.data.placeholder.GTPlaceholders;
 import com.gregtechceu.gtceu.data.recipe.*;
 import com.gregtechceu.gtceu.data.sound.GTSoundEntries;
 import com.gregtechceu.gtceu.data.tag.GTIngredientTypes;
@@ -209,6 +210,7 @@ public class CommonInit {
 
         GTSoundEntries.init();
         GTDamageTypes.init();
+        GTPlaceholders.initPlaceholders();
 
         GTBlocks.init();
         GTFluids.init();

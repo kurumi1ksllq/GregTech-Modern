@@ -32,6 +32,7 @@ import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
+import com.gregtechceu.gtceu.common.mui.GTMuiBasePanel;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
@@ -62,7 +63,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class BufferMachine extends TieredMachine implements IMachineLife, IAutoOutputBoth, IMuiMachine {
+public class BufferMachine extends TieredMachine implements IMachineLife, IAutoOutputBoth, GTMuiBasePanel {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(BufferMachine.class,
             MetaMachine.MANAGED_FIELD_HOLDER);
@@ -232,8 +233,8 @@ public class BufferMachine extends TieredMachine implements IMachineLife, IAutoO
     ////////////////////////////////
 
     // TODO MUI: Needs EIO widget
-    @Override
-    public @NotNull ModularPanel buildUI(@NotNull PosGuiData data, @NotNull PanelSyncManager syncManager,
+    // @Override
+    public @NotNull ModularPanel builddUI(@NotNull PosGuiData data, @NotNull PanelSyncManager syncManager,
                                          @NotNull UISettings settings) {
         for (int i = 0; i < tank.getTanks(); i++) {
             syncManager.syncValue("fluids", i, SyncHandlers.fluidSlot(tank.getStorages()[i]));

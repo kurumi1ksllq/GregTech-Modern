@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import static com.gregtechceu.gtceu.api.item.tool.ToolHelper.*;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = GTCEu.MOD_ID)
+@EventBusSubscriber(modid = GTCEu.MOD_ID)
 public class TreeFellingHelper {
 
     private final ServerPlayer player;

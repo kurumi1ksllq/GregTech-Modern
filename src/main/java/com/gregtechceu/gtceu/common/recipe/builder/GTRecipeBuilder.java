@@ -67,6 +67,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.*;
+import java.util.stream.Stream;
 
 @SuppressWarnings({ "unchecked", "UnusedReturnValue" })
 @ExtensionMethod(SizedIngredientExtensions.class)
@@ -399,23 +400,8 @@ public class GTRecipeBuilder {
     public GTRecipeBuilder inputItems(ItemStack input) {
         if (missingIngredientError(0, true, ItemRecipeCapability.CAP, input::isEmpty)) {
             return this;
-        } else {
-            var matInfo = ItemMaterialData.getMaterialInfo(input.getItem());
-            var unresolvedMatInfo = ItemMaterialData.UNRESOLVED_ITEM_MATERIAL_INFO.get(input);
-            if (chance == maxChance && chance != 0) {
-                if (unresolvedMatInfo != null) {
-                    tempItemStacks.add(input);
-                }
-                if (matInfo != null) {
-                    for (var matStack : matInfo.getMaterials()) {
-                        tempItemMaterialStacks.add(matStack.multiply(input.getCount()));
-                    }
-                } else if (unresolvedMatInfo == null) {
-                    tempItemStacks.add(input);
-                }
-
-            }
         }
+        gatherMaterialInfoFromStack(input);
         return input(ItemRecipeCapability.CAP, RecipeHelper.makeSizedIngredient(input));
     }
 
@@ -426,16 +412,7 @@ public class GTRecipeBuilder {
             if (missingIngredientError(i, true, ItemRecipeCapability.CAP, itemStack::isEmpty)) {
                 return this;
             } else {
-                var matInfo = ItemMaterialData.getMaterialInfo(itemStack.getItem());
-                if (chance == maxChance && chance != 0) {
-                    if (matInfo != null) {
-                        for (var matStack : matInfo.getMaterials()) {
-                            tempItemMaterialStacks.add(matStack.multiply(itemStack.getCount()));
-                        }
-                    } else {
-                        tempItemStacks.add(itemStack);
-                    }
-                }
+                gatherMaterialInfoFromStack(itemStack);
                 ingredients.add(RecipeHelper.makeSizedIngredient(itemStack));
             }
         }
@@ -510,8 +487,12 @@ public class GTRecipeBuilder {
         return inputItems(machine.asStack(count));
     }
 
+    public GTRecipeBuilder inputItemRanged(IntProviderIngredient provider) {
+        return inputItems(provider);
+    }
+
     public GTRecipeBuilder inputItemsRanged(ItemStack input, IntProvider intProvider) {
-        return inputItems(IntProviderIngredient.of(input, intProvider));
+        return inputItemRanged(IntProviderIngredient.of(input, intProvider));
     }
 
     public GTRecipeBuilder inputItemsRanged(Item input, IntProvider intProvider) {
@@ -534,6 +515,14 @@ public class GTRecipeBuilder {
     public GTRecipeBuilder inputItemsRanged(MachineDefinition machine, IntProvider intProvider) {
         return inputItemsRanged(machine.asStack(), intProvider);
     }
+
+    // public GTRecipeBuilder inputItemNbtPredicate(ItemStack stack, NBTPredicate predicate) {
+    //     if (missingIngredientError(0, true, ItemRecipeCapability.CAP, stack::isEmpty)) {
+    //         return this;
+    //     }
+    //     gatherMaterialInfoFromStack(stack);
+    //     return inputItems(NBTPredicateIngredient.of(stack, predicate));
+    // }
 
     public GTRecipeBuilder outputItems(Object output) {
         return switch (output) {
@@ -650,9 +639,12 @@ public class GTRecipeBuilder {
         return output(ItemRecipeCapability.CAP, ingredient);
     }
 
+    public GTRecipeBuilder outputItemRanged(IntProviderIngredient provider) {
+        return outputItems(provider);
+    }
+
     public GTRecipeBuilder outputItemsRanged(ItemStack output, IntProvider intProvider) {
-        Ingredient inner = IntProviderIngredient.of(RecipeHelper.makeItemIngredient(output), intProvider).toVanilla();
-        return outputItems(new SizedIngredient(inner, 1));
+        return outputItemRanged(IntProviderIngredient.of(output, intProvider));
     }
 
     public GTRecipeBuilder outputItemsRanged(Item input, IntProvider intProvider) {
@@ -743,7 +735,7 @@ public class GTRecipeBuilder {
         return notConsumable(IntCircuitIngredient.circuit(configuration));
     }
 
-    public GTRecipeBuilder chancedInput(ItemStack stack, int chance, int tierChanceBoost) {
+    public GTRecipeBuilder chancedInput(Ingredient stack, int chance, int tierChanceBoost) {
         if (checkChanceAndPrintError(chance)) {
             return this;
         }
@@ -757,7 +749,7 @@ public class GTRecipeBuilder {
         return this;
     }
 
-    public GTRecipeBuilder chancedInput(FluidStack stack, int chance, int tierChanceBoost) {
+    public GTRecipeBuilder chancedInput(SizedFluidIngredient stack, int chance, int tierChanceBoost) {
         if (checkChanceAndPrintError(chance)) {
             return this;
         }
@@ -771,7 +763,7 @@ public class GTRecipeBuilder {
         return this;
     }
 
-    public GTRecipeBuilder chancedOutput(ItemStack stack, int chance, int tierChanceBoost) {
+    public GTRecipeBuilder chancedOutput(Ingredient stack, int chance, int tierChanceBoost) {
         if (checkChanceAndPrintError(chance)) {
             return this;
         }
@@ -785,7 +777,7 @@ public class GTRecipeBuilder {
         return this;
     }
 
-    public GTRecipeBuilder chancedOutput(FluidStack stack, int chance, int tierChanceBoost) {
+    public GTRecipeBuilder chancedOutput(SizedFluidIngredient stack, int chance, int tierChanceBoost) {
         if (checkChanceAndPrintError(chance)) {
             return this;
         }
@@ -797,6 +789,22 @@ public class GTRecipeBuilder {
         this.chance = lastChance;
         this.tierChanceBoost = lastTierChanceBoost;
         return this;
+    }
+
+    public GTRecipeBuilder chancedInput(ItemStack stack, int chance, int tierChanceBoost) {
+        return chancedInput(Ingredient.of(stack), chance, tierChanceBoost);
+    }
+
+    public GTRecipeBuilder chancedInput(FluidStack stack, int chance, int tierChanceBoost) {
+        return chancedInput(SizedFluidIngredient.of(stack), chance, tierChanceBoost);
+    }
+
+    public GTRecipeBuilder chancedOutput(ItemStack stack, int chance, int tierChanceBoost) {
+        return chancedOutput(Ingredient.of(stack), chance, tierChanceBoost);
+    }
+
+    public GTRecipeBuilder chancedOutput(FluidStack stack, int chance, int tierChanceBoost) {
+        return chancedOutput(SizedFluidIngredient.of(stack), chance, tierChanceBoost);
     }
 
     public GTRecipeBuilder chancedOutput(TagPrefix tag, Material mat, int chance, int tierChanceBoost) {
@@ -1006,17 +1014,23 @@ public class GTRecipeBuilder {
         return input(FluidRecipeCapability.CAP, ingredients.toArray(SizedFluidIngredient[]::new));
     }
 
+    public GTRecipeBuilder inputFluidsRanged(IntProviderFluidIngredient provider) {
+        return inputFluids(provider);
+    }
+
+    protected GTRecipeBuilder inputFluidsRanged(FluidIngredient input, IntProvider intProvider) {
+        return inputFluidsRanged(IntProviderFluidIngredient.of(input, intProvider));
+    }
+
     public GTRecipeBuilder inputFluidsRanged(FluidStack input, IntProvider intProvider) {
         return inputFluidsRanged(FluidIngredient.of(input), intProvider);
     }
 
-    protected GTRecipeBuilder inputFluidsRanged(FluidIngredient input, IntProvider intProvider) {
-        var ing = IntProviderFluidIngredient.of(input, intProvider);
-        return inputFluids(new SizedFluidIngredient(ing, 1));
-    }
-
     public GTRecipeBuilder inputFluids(SizedFluidIngredient... inputs) {
         return input(FluidRecipeCapability.CAP, inputs);
+    }
+    public GTRecipeBuilder inputFluids(IntProviderFluidIngredient... inputs) {
+        return input(FluidRecipeCapability.CAP, Arrays.stream(inputs).<SizedFluidIngredient>map(ingredient -> new SizedFluidIngredient(ingredient, 1)).toList().toArray(new SizedFluidIngredient[0]));
     }
 
     public GTRecipeBuilder outputFluids(FluidStack output) {
@@ -1031,13 +1045,21 @@ public class GTRecipeBuilder {
     public GTRecipeBuilder outputFluids(SizedFluidIngredient... outputs) {
         return output(FluidRecipeCapability.CAP, outputs);
     }
+    public GTRecipeBuilder outputFluids(IntProviderFluidIngredient... outputs) {
+        return output(FluidRecipeCapability.CAP, Arrays.stream(outputs).<SizedFluidIngredient>map(ingredient -> new SizedFluidIngredient(ingredient, 1)).toList().toArray(new SizedFluidIngredient[0]));
+    }
 
-    public GTRecipeBuilder outputFluidsRanged(FluidStack output, IntProvider intProvider) {
-        return outputFluidsRanged(FluidIngredient.of(output), intProvider);
+
+    public GTRecipeBuilder outputFluidsRanged(IntProviderFluidIngredient provider) {
+        return outputFluids(provider);
     }
 
     protected GTRecipeBuilder outputFluidsRanged(FluidIngredient output, IntProvider intProvider) {
-        return outputFluids(new SizedFluidIngredient(IntProviderFluidIngredient.of(output, intProvider), 1));
+        return outputFluidsRanged(IntProviderFluidIngredient.of(output, intProvider));
+    }
+
+    public GTRecipeBuilder outputFluidsRanged(FluidStack output, IntProvider intProvider) {
+        return outputFluidsRanged(FluidIngredient.of(output), intProvider);
     }
 
     //////////////////////////////////////
@@ -1532,6 +1554,24 @@ public class GTRecipeBuilder {
 
         assert recipeType != null;
         output.accept(id.withPrefix(recipeType.registryName.getPath() + "/"), build(), null);
+    }
+
+    private void gatherMaterialInfoFromStack(ItemStack input) {
+        var matInfo = ItemMaterialData.getMaterialInfo(input.getItem());
+        var unresolvedMatInfo = ItemMaterialData.UNRESOLVED_ITEM_MATERIAL_INFO.get(input);
+        if (chance == maxChance && chance != 0) {
+            if (unresolvedMatInfo != null) {
+                tempItemStacks.add(input);
+            }
+            if (matInfo != null) {
+                for (var matStack : matInfo.getMaterials()) {
+                    tempItemMaterialStacks.add(matStack.multiply(input.getCount()));
+                }
+            } else if (unresolvedMatInfo == null) {
+                tempItemStacks.add(input);
+            }
+
+        }
     }
 
     private void addOutputMaterialInfo() {

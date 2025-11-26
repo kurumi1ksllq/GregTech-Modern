@@ -122,7 +122,7 @@ public class ItemRecipeCapability extends RecipeCapability<SizedIngredient> {
                             break;
                         }
                     } else if (obj instanceof ItemStack stack1) {
-                        if (ItemStack.isSameItem(stack, stack1)) {
+                        if (GTUtil.isSameItemSameTags(stack, stack1)) {
                             isEqual = true;
                             break;
                         }

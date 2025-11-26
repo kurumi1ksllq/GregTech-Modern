@@ -20,25 +20,13 @@ import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
-import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
-import com.gregtechceu.gtceu.api.recipe.ingredient.IntCircuitIngredient;
-import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderFluidIngredient;
-import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderIngredient;
+import com.gregtechceu.gtceu.api.recipe.ingredient.*;
+// import com.gregtechceu.gtceu.api.recipe.ingredient.nbtpredicate.NBTPredicate;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.tag.TagPrefix;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.common.recipe.builder.GTRecipeBuilder;
-import com.gregtechceu.gtceu.common.recipe.condition.AdjacentBlockCondition;
-import com.gregtechceu.gtceu.common.recipe.condition.AdjacentFluidCondition;
-import com.gregtechceu.gtceu.common.recipe.condition.BiomeCondition;
-import com.gregtechceu.gtceu.common.recipe.condition.CleanroomCondition;
-import com.gregtechceu.gtceu.common.recipe.condition.DaytimeCondition;
-import com.gregtechceu.gtceu.common.recipe.condition.DimensionCondition;
-import com.gregtechceu.gtceu.common.recipe.condition.EnvironmentalHazardCondition;
-import com.gregtechceu.gtceu.common.recipe.condition.FTBQuestCondition;
-import com.gregtechceu.gtceu.common.recipe.condition.PositionYCondition;
-import com.gregtechceu.gtceu.common.recipe.condition.RainingCondition;
-import com.gregtechceu.gtceu.common.recipe.condition.ResearchCondition;
-import com.gregtechceu.gtceu.common.recipe.condition.ThunderCondition;
+import com.gregtechceu.gtceu.common.recipe.condition.*;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.item.GTDataComponents;
 import com.gregtechceu.gtceu.integration.kjs.recipe.components.CapabilityMap;
@@ -284,25 +272,10 @@ public interface GTRecipeSchema {
             validateItems("input", inputs);
 
             for (ItemStack itemStack : inputs) {
-                // test simple item that have pure singular material stack
-                var matStack = ChemicalHelper.getMaterialStack(itemStack);
-                // test item that has multiple material stacks
-                var matInfo = ChemicalHelper.getMaterialInfo(itemStack);
-                if (chance == maxChance && chance != 0) {
-                    if (!matStack.isEmpty()) {
-                        itemMaterialStacks.add(matStack.multiply(itemStack.getCount()));
-                    }
-                    if (matInfo != null) {
-                        for (var ms : matInfo.getMaterials()) {
-                            itemMaterialStacks.add(ms.multiply(itemStack.getCount()));
-                        }
-                    } else {
-                        tempItemStacks.add(itemStack);
-                    }
-                }
                 if (itemStack.isEmpty()) {
                     throw new KubeRuntimeException(String.format("Input items is empty, id: %s", id));
                 }
+                gatherMaterialInfoFromStacks(itemStack);
             }
             return input(ItemRecipeCapability.CAP,
                     Arrays.stream(inputs)
@@ -376,6 +349,15 @@ public interface GTRecipeSchema {
         public GTKubeRecipe itemInputsRanged(TagPrefix orePrefix, Material material, int min, int max) {
             return inputItemsRanged(ChemicalHelper.get(orePrefix, material), min, max);
         }
+
+        // public GTKubeRecipe inputItemNbtPredicate(ItemStack itemStack, NBTPredicate predicate) {
+        //     if (itemStack.isEmpty()) {
+        //         throw new KubeRuntimeException(String.format("Input items is empty, id: %s", id));
+        //     }
+        //     gatherMaterialInfoFromStacks(itemStack);
+
+        //     return itemInputs(InputItem.of(new NBTPredicateIngredient(itemStack, predicate), itemStack.getCount()));
+        // }
 
         public GTKubeRecipe itemOutputs(SizedIngredient... outputs) {
             return outputItems(outputs);
@@ -1209,6 +1191,25 @@ public interface GTRecipeSchema {
         public GTKubeRecipe removePreviousMaterialInfo() {
             this.removeMaterialInfo = true;
             return this;
+        }
+
+        private void gatherMaterialInfoFromStacks(ItemStack itemStack) {
+            // test simple item that have pure singular material stack
+            var matStack = ChemicalHelper.getMaterialStack(itemStack);
+            // test item that has multiple material stacks
+            var matInfo = ChemicalHelper.getMaterialInfo(itemStack);
+            if (chance == maxChance && chance != 0) {
+                if (!matStack.isEmpty()) {
+                    itemMaterialStacks.add(matStack.multiply(itemStack.getCount()));
+                }
+                if (matInfo != null) {
+                    for (var ms : matInfo.getMaterials()) {
+                        itemMaterialStacks.add(ms.multiply(itemStack.getCount()));
+                    }
+                } else {
+                    tempItemStacks.add(itemStack);
+                }
+            }
         }
 
         /*

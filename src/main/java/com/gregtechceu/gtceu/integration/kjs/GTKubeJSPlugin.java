@@ -40,6 +40,7 @@ import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.component.CraftingComponent;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
+// import com.gregtechceu.gtceu.api.recipe.ingredient.nbtpredicate.NBTPredicates;
 import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.tag.TagPrefix;
@@ -335,6 +336,7 @@ public class GTKubeJSPlugin implements KubeJSPlugin {
         event.add("GTCraftingComponents", GTCraftingComponents.class);
         event.add("EnergyStack", EnergyStack.class);
         event.add("IOEnergyStack", EnergyStack.WithIO.class);
+        // event.add("NBTPredicates", NBTPredicates.class);
         // Sound related
         event.add("GTSoundEntries", GTSoundEntries.class);
         event.add("SoundType", SoundType.class);

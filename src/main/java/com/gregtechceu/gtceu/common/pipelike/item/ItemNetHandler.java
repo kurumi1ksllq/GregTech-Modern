@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.common.cover.RobotArmCover;
 import com.gregtechceu.gtceu.common.cover.data.DistributionMode;
 import com.gregtechceu.gtceu.common.cover.data.FilterMode;
 import com.gregtechceu.gtceu.utils.FacingPos;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -575,7 +576,7 @@ public class ItemNetHandler implements IItemHandlerModifiable {
             ItemStack slot = handler.getStackInSlot(i);
             if (slot.isEmpty()) continue;
             if (ignoreNBT && !ItemStack.isSameItem(stack, slot)) continue;
-            else if (!ItemStack.isSameItemSameComponents(stack, slot)) continue;
+            if (!ignoreNBT && !GTUtil.isSameItemSameTags(stack, slot)) continue;
             if (arm.getFilterHandler().getFilter().test(slot)) {
                 count += slot.getCount();
             }

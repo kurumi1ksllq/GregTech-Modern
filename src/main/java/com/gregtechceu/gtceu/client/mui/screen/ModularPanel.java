@@ -74,6 +74,7 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
     private final Input keyboard = new Input();
     private final Input mouse = new Input();
 
+    private boolean draggable = false;
     // drag resizing
     private IDragResizeable currentResizing = null;
     private LocatedWidget currentResizingWidget = null;
@@ -643,11 +644,16 @@ public class ModularPanel extends ParentWidget<ModularPanel> implements IViewpor
         return result;
     }
 
+    public ModularPanel setDraggable(boolean draggable) {
+        this.draggable = draggable;
+        return this;
+    }
+
     /**
      * @return if this panel can be dragged. Never works on the main panel.
      */
     public boolean isDraggable() {
-        return getScreen().getMainPanel() != this;
+        return draggable || getScreen().getMainPanel() != this;
     }
 
     /**

@@ -173,7 +173,7 @@ public class IntProviderFluidIngredient extends FluidIngredient {
 
     @Override
     public int hashCode() {
-        return this.inner.hashCode() * 31 * this.countProvider.hashCode();
+        return this.inner.hashCode();// * 31 * this.countProvider.hashCode();
     }
 
     @Override

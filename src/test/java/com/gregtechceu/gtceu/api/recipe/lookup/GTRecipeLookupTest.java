@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.fluid.FluidStackMapIng
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.item.ItemStackMapIngredient;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.data.material.GTMaterials;
+import com.gregtechceu.gtceu.gametest.util.TestUtils;
 
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -85,6 +86,7 @@ public class GTRecipeLookupTest {
         .outputItems(Items.CHARCOAL, 1)
         .build();
 
+        lookup.removeAllRecipes();
         for (GTRecipe recipe : List.of(SMELT_STONE,
         SMELT_ACACIA_WOOD,
         SMELT_BIRCH_WOOD,

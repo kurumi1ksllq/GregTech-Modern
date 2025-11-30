@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.machine.multiblock;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeHandler;
@@ -51,7 +52,7 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
     @DescSynced
     public final RecipeLogic recipeLogic;
     @Getter
-    private final GTRecipeType[] recipeTypes;
+    private GTRecipeType[] recipeTypes;
     @Getter
     @Setter
     @Persisted
@@ -295,12 +296,15 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
 
     @NotNull
     public GTRecipeType getRecipeType() {
+        if (activeRecipeType >= recipeTypes.length) {
+            GTCEu.LOGGER.warn("Preventing crash from bad recipe type index!");
+            activeRecipeType = recipeTypes.length - 1;
+        }
         return recipeTypes[activeRecipeType];
     }
 
     // Recipe compat
     public void setRecipeType(@NotNull GTRecipeType type) {
-        GTRecipeType[] recipeTypes = getRecipeTypes();
         int recipeIndex = -1;
         for (int i = 0; i < recipeTypes.length; i++) {
             if (type.equals(recipeTypes[i])) {
@@ -309,7 +313,11 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
             }
         }
         if (recipeIndex == -1) {
-            throw new RuntimeException("Error!");
+            var newer = new GTRecipeType[recipeTypes.length + 1];
+            System.arraycopy(recipeTypes, 0, newer, 0, recipeTypes.length);
+            newer[recipeTypes.length] = type;
+            recipeTypes = newer;
+            recipeIndex = recipeTypes.length-1;
         }
         setActiveRecipeType(recipeIndex);
     }

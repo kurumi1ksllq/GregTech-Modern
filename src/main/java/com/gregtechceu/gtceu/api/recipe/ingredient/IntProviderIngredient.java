@@ -54,7 +54,7 @@ public class IntProviderIngredient implements ICustomIngredient {
     @Getter
     protected final Ingredient inner;
     @Setter
-    protected @NotNull ItemStack[] itemStacks = null;
+    protected ItemStack @NotNull [] itemStacks = null;
 
     protected IntProviderIngredient(Ingredient inner, IntProvider countProvider) {
         this.inner = inner;

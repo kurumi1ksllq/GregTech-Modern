@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.machine;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.feature.*;
@@ -233,6 +234,10 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
 
     @NotNull
     public GTRecipeType getRecipeType() {
+        if (activeRecipeType >= recipeTypes.length) {
+            GTCEu.LOGGER.warn("Preventing crash from bad recipe type index!");
+            activeRecipeType = recipeTypes.length - 1;
+        }
         return recipeTypes[activeRecipeType];
     }
 

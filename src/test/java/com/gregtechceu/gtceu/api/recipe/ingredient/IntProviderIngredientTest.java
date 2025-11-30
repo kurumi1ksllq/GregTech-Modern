@@ -24,7 +24,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
@@ -252,10 +254,8 @@ public class IntProviderIngredientTest {
                 helper.getBlockEntity(new BlockPos(0, 1, 0)));
 
         machine.setRecipeType(CR_RECIPE_TYPE);
-        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
-                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
-        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
-                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemIn = machine.importItems;
+        NotifiableItemStackHandler itemOut = machine.exportItems;
 
         int runs = 7;
         itemIn.setStackInSlot(0, CR_OUT.copyWithCount(runs));
@@ -265,16 +265,21 @@ public class IntProviderIngredientTest {
 
         helper.runAfterDelay(4, () -> {
             if (machine.getRecipeLogic().getLastRecipe().getOutputContents(ItemRecipeCapability.CAP).get(0)
-                    .getContent() instanceof IntProviderIngredient ingredient) {
-                ingredient.setSampledCount(0);
+                    .getContent() instanceof SizedIngredient upperingredient) {
+                if (upperingredient.ingredient().getCustomIngredient() instanceof IntProviderIngredient ingredient) {
+                    ingredient.setSampledCount(0);
 
-                if (ingredient.getSampledCount() != 0) {
+                    if (ingredient.getSampledCount() != 0) {
+                        helper.fail("Singleblock Ranged Item Output sabotage failed! " +
+                                "Output count not was altered!");
+                    }
+                } else {
                     helper.fail("Singleblock Ranged Item Output sabotage failed! " +
-                            "Output count not was altered!");
+                            "Recipe logic did not contain a Ranged Output!");
                 }
             } else {
                 helper.fail("Singleblock Ranged Item Output sabotage failed! " +
-                        "Recipe logic did not contain a Ranged Output!");
+                        "Recipe logic did not contain a Output!");
             }
         });
         for (int i = 0; i < runs; i++) {
@@ -322,10 +327,8 @@ public class IntProviderIngredientTest {
                 helper.getBlockEntity(new BlockPos(0, 1, 0)));
 
         machine.setRecipeType(CR_RECIPE_TYPE);
-        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
-                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
-        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
-                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemIn = machine.importItems;
+        NotifiableItemStackHandler itemOut = machine.exportItems;
 
         int runs = 10;
         itemIn.setStackInSlot(0, CR_IN.copyWithCount(8));
@@ -352,10 +355,8 @@ public class IntProviderIngredientTest {
                 helper.getBlockEntity(new BlockPos(0, 1, 0)));
 
         machine.setRecipeType(CR_RECIPE_TYPE);
-        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
-                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
-        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
-                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemIn = machine.importItems;
+        NotifiableItemStackHandler itemOut = machine.exportItems;
 
         int runs = 7;
         itemIn.setStackInSlot(0, CR_IN.copyWithCount(64));
@@ -411,10 +412,8 @@ public class IntProviderIngredientTest {
                 helper.getBlockEntity(new BlockPos(0, 1, 0)));
 
         machine.setRecipeType(CR_RECIPE_TYPE);
-        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
-                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
-        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
-                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemIn = machine.importItems;
+        NotifiableItemStackHandler itemOut = machine.exportItems;
 
         int runs = 7;
         itemIn.setStackInSlot(0, CR_OUT.copyWithCount(runs));

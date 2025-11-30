@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.filter.SimpleItemFilter;
 import com.gregtechceu.gtceu.common.cover.data.FilterMode;
 import com.gregtechceu.gtceu.common.machine.storage.BufferMachine;
+import com.gregtechceu.gtceu.data.item.GTDataComponents;
 import com.gregtechceu.gtceu.data.item.GTItems;
 import com.gregtechceu.gtceu.data.machine.GTMachines;
 import com.gregtechceu.gtceu.gametest.util.TestUtils;
@@ -28,7 +29,7 @@ public class ItemFilterCoverTest {
         ItemStack stack = GTItems.ITEM_FILTER.asStack();
         SimpleItemFilter filter = SimpleItemFilter.loadFilter(stack);
         filter.getMatches()[0] = Items.DIAMOND.getDefaultInstance();
-        // stack.setTag(filter.saveFilter());
+        stack.set(GTDataComponents.SIMPLE_ITEM_FILTER, filter);
         return stack;
     }
 

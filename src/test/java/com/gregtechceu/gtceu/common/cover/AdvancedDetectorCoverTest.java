@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.cover;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
 import com.gregtechceu.gtceu.common.cover.detector.AdvancedFluidDetectorCover;
 import com.gregtechceu.gtceu.common.cover.detector.AdvancedItemDetectorCover;
 import com.gregtechceu.gtceu.data.item.GTItems;
@@ -14,6 +15,8 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
@@ -54,7 +57,8 @@ public class AdvancedDetectorCoverTest {
     @GameTest(template = "electrolyzer", batch = "coverTests")
     public static void testAdvancedFluidDetectorCover(GameTestHelper helper) {
         helper.pullLever(new BlockPos(2, 2, 2));
-        MetaMachine machine = ((IMachineBlockEntity) helper.getBlockEntity(new BlockPos(1, 2, 1))).getMetaMachine();
+        SimpleTieredMachine machine = (SimpleTieredMachine)((IMachineBlockEntity) helper.getBlockEntity(new BlockPos(1, 2, 1))).getMetaMachine();
+        machine.importFluids.setFluidInTank(0, new FluidStack(Fluids.WATER, 10000));
         AdvancedFluidDetectorCover cover = (AdvancedFluidDetectorCover) TestUtils.placeCover(helper, machine,
                 GTItems.COVER_FLUID_DETECTOR_ADVANCED.asStack(), Direction.WEST);
         cover.setMaxValue(100000);

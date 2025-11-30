@@ -84,7 +84,7 @@ public class IntProviderFluidIngredientTest {
 
         CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_ranged_input_fluid_cr"))
-                .inputFluidsRanged(CR_IN, UniformInt.of(0, 90))
+                .inputFluidsRanged(CR_IN, UniformInt.of(0, 9))
                 .inputItems(COBBLE)
                 .outputFluids(REDSTONE)
                 .EUt(GTValues.V[GTValues.HV])
@@ -94,14 +94,14 @@ public class IntProviderFluidIngredientTest {
         CR_RECIPE_TYPE.getLookup().addRecipe(CR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_ranged_output_fluid_cr"))
                 .inputFluids(CR_OUT)
-                .outputFluidsRanged(REDSTONE, UniformInt.of(0, 90))
+                .outputFluidsRanged(REDSTONE, UniformInt.of(0, 9))
                 .EUt(GTValues.V[GTValues.HV])
                 .duration(2)
                 .build());
 
         LCR_RECIPE_TYPE.getLookup().addRecipe(LCR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_ranged_input_fluid_lcr"))
-                .inputFluidsRanged(LCR_IN, UniformInt.of(0, 90))
+                .inputFluidsRanged(LCR_IN, UniformInt.of(0, 9))
                 .inputFluids(RUBBER)
                 .outputFluids(REDSTONE)
                 .EUt(GTValues.V[GTValues.HV])
@@ -111,7 +111,7 @@ public class IntProviderFluidIngredientTest {
         LCR_RECIPE_TYPE.getLookup().addRecipe(LCR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_ranged_output_fluid_lcr"))
                 .inputFluids(LCR_OUT)
-                .outputFluidsRanged(REDSTONE, UniformInt.of(0, 90))
+                .outputFluidsRanged(REDSTONE, UniformInt.of(0, 9))
                 .EUt(GTValues.V[GTValues.HV])
                 .duration(2)
                 .build());

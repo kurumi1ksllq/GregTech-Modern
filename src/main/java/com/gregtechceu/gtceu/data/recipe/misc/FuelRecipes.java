@@ -8,6 +8,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
@@ -54,6 +55,9 @@ public class FuelRecipes {
         // TODO this all needs to be cleaned up, but this will make it somewhat work for now
         // do these first because for some reason vanilla fuels are not set up yet at this phase?
         Set<Item> addedItems = new HashSet<>();
+        for (var fuelEntry : FurnaceBlockEntity.getFuel().entrySet()) {
+            addBoilerFuel(provider, addedItems, fuelEntry.getKey(), fuelEntry.getValue());
+        }
         for (Item item : BuiltInRegistries.ITEM) {
             int burnTime = GTUtil.getItemBurnTime(item);
             addBoilerFuel(provider, addedItems, item, burnTime);

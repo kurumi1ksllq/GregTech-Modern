@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.data.tag.GTIngredientTypes;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
@@ -17,6 +18,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import lombok.Setter;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
+import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,11 +35,13 @@ import static com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderFluidIngred
  * and an {@link IntProvider}.
  * Functions similarly to {@link IntProviderFluidIngredient}.
  */
-public class IntProviderIngredient implements ICustomIngredient {
+public class IntProviderIngredient implements ICustomIngredient, IRangedIngredient{
 
     public static final MapCodec<IntProviderIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Ingredient.CODEC.fieldOf("inner").forGetter(IntProviderIngredient::getInner),
-            IntProvider.CODEC.fieldOf("count_provider").forGetter(IntProviderIngredient::getCountProvider))
+            IntProvider.CODEC.fieldOf("count_provider").forGetter(IntProviderIngredient::getCountProvider),
+                    NeoForgeExtraCodecs.optionalFieldAlwaysWrite(Codec.INT, "sampledCount", FluidType.BUCKET_VOLUME)
+                            .forGetter(IRangedIngredient::getSampledCount))
             .apply(instance, IntProviderIngredient::new));
     public static final ResourceLocation TYPE = GTCEu.id("int_provider");
     public static final ItemStack[] EMPTY_STACK_ARRAY = new ItemStack[0];
@@ -44,8 +49,9 @@ public class IntProviderIngredient implements ICustomIngredient {
     @Getter
     protected final IntProvider countProvider;
     /**
-     * The last result of {@link IntProviderIngredient#getSampledCount(RandomSource)}. -1 if not rolled.
+     * The last result of {@link IntProviderIngredient#rollSampledCount(RandomSource)}. -1 if not rolled.
      */
+    @Getter
     @Setter
     protected int sampledCount = -1;
     /**
@@ -99,7 +105,7 @@ public class IntProviderIngredient implements ICustomIngredient {
      */
     public ItemStack[] getItemStacks() {
         if (itemStacks == null) {
-            int cachedCount = getSampledCount();
+            int cachedCount = rollSampledCount();
             if (cachedCount == 0) {
                 return EMPTY_STACK_ARRAY;
             }
@@ -158,41 +164,27 @@ public class IntProviderIngredient implements ICustomIngredient {
      * If this ingredient has not yet had its {@link IntProviderIngredient#sampledCount} rolled, rolls it and
      * returns the roll.
      * If it has, returns the existing roll.
-     * Passthrough method, invokes {@link IntProviderIngredient#getSampledCount(RandomSource)} using the threadsafe
-     * {@link GTValues#RNG}.
      *
+     * @param random {@link RandomSource}, must be threadsafe, usually called using {@link GTValues#RNG}.
      * @return the amount rolled
      */
-    public int getSampledCount() {
-        return getSampledCount(GTValues.RNG);
-    }
-
-    /**
-     * If this ingredient has not yet had its {@link IntProviderIngredient#sampledCount} rolled, rolls it and returns
-     * the roll.
-     * If it has, returns the existing roll.
-     * 
-     * @param random {@link RandomSource}, must be threadsafe, usually called using {@link GTValues#RNG}.
-     * @return the count rolled
-     */
-    public int getSampledCount(@NotNull RandomSource random) {
+    @Override
+    public int rollSampledCount(@NotNull RandomSource random) {
         if (sampledCount == -1) {
             sampledCount = countProvider.sample(random);
         }
         return sampledCount;
     }
 
-    /**
-     * @return the average roll of this ranged amount
-     */
-    public double getMidRoll() {
-        return ((countProvider.getMaxValue() + countProvider.getMinValue()) / 2.0);
+    @Override
+    public boolean isRolled() {
+        return sampledCount == -1;
     }
 
     /**
      * Resets the random roll on this ingredient
      */
-    public void reroll() {
+    public void reset() {
         sampledCount = -1;
         itemStacks = null;
     }

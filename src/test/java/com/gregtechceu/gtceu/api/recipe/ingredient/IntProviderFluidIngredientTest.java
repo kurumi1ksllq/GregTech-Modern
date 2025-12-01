@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
-import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
@@ -219,7 +218,7 @@ public class IntProviderFluidIngredientTest {
 //                "IntProviderFluidIngredient should have fluid equal to what it was made with");
         helper.assertTrue(stacks[0].isFluidStackIdentical(ingredient.getStacks()[0]),
                 "IntProviderFluidIngredient.getStacks shouldn't change between getStacks calls");
-        ingredient.reroll();
+        ingredient.reset();
         helper.assertFalse(stacks[0].isFluidStackIdentical(ingredient.getStacks()[0]),
                 "IntProviderFluidIngredient.getStacks should have changed after rerolling");
         helper.succeed();
@@ -283,7 +282,7 @@ public class IntProviderFluidIngredientTest {
                 if (superingredient.ingredient() instanceof IntProviderFluidIngredient ingredient) {
                     ingredient.setSampledCount(0);
 
-                    if (ingredient.getSampledCount() != 0) {
+                    if (ingredient.rollSampledCount() != 0) {
                         helper.fail("Singleblock Ranged Fluid Output sabotage failed! " +
                                 "Output count not was altered!");
                     }

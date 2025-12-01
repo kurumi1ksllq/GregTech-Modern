@@ -354,10 +354,6 @@ public class CommonInit {
                 FluidIngredient inner = ingredient.ingredient();
                 return MapIngredientTypeManager.getFrom(inner, FluidRecipeCapability.CAP);
             });
-            MapIngredientTypeManager.registerMapIngredient(IntProviderFluidIngredient.class, (ingredient) -> {
-                FluidIngredient inner = ingredient.getInner();
-                return MapIngredientTypeManager.getFrom(inner, FluidRecipeCapability.CAP);
-            });
             MapIngredientTypeManager.registerMapIngredient(CompoundFluidIngredient.class, (ingredient) -> {
                 List<AbstractMapIngredient> list = new ObjectArrayList<>();
                 for (FluidIngredient child : ingredient.children()) {

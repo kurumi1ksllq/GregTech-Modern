@@ -4,10 +4,13 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.tag.GTIngredientTypes;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
 
@@ -27,21 +30,23 @@ import java.util.stream.Stream;
  * and either an {@link IntProvider} or {@code int, int} range bounds (inclusive).
  * Functions similarly to {@link IntProviderIngredient}.
  */
-public class IntProviderFluidIngredient extends FluidIngredient {
+public class IntProviderFluidIngredient extends FluidIngredient implements IRangedIngredient {
 
-    // spotless:
     public static final MapCodec<IntProviderFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(
                     FluidIngredient.CODEC.fieldOf("inner").forGetter(IntProviderFluidIngredient::getInner),
-                    IntProvider.CODEC.fieldOf("count_provider").forGetter(IntProviderFluidIngredient::getCountProvider))
+                    IntProvider.CODEC.fieldOf("count_provider").forGetter(IntProviderFluidIngredient::getCountProvider),
+                    NeoForgeExtraCodecs.optionalFieldAlwaysWrite(Codec.INT, "sampledCount", FluidType.BUCKET_VOLUME)
+                            .forGetter(IRangedIngredient::getSampledCount))
             .apply(instance, IntProviderFluidIngredient::new));
-    // spotless:
+    public static final FluidStack[] EMPTY_STACK_ARRAY = new FluidStack[0];
 
     @Getter
     private final IntProvider countProvider;
     /**
-     * The last result of {@link IntProviderFluidIngredient#getSampledCount()}. -1 if not rolled.
+     * The last result of {@link IntProviderFluidIngredient#rollSampledCount()}. -1 if not rolled.
      */
+    @Getter
     @Setter
     protected int sampledCount = -1;
     /**
@@ -50,9 +55,7 @@ public class IntProviderFluidIngredient extends FluidIngredient {
     @Getter
     private final FluidIngredient inner;
     @Setter
-    protected @Nullable FluidStack @NotNull[] fluidStacks = null;
-
-    public static final FluidStack[] EMPTY_STACK_ARRAY = new FluidStack[0];
+    protected @Nullable FluidStack [] fluidStacks = null;
 
     protected IntProviderFluidIngredient(FluidIngredient inner, IntProvider provider) {
         this.inner = inner;
@@ -94,18 +97,38 @@ public class IntProviderFluidIngredient extends FluidIngredient {
     @Override
     public Stream<FluidStack> generateStacks() {
         if (fluidStacks == null) {
-            int cachedAmount = getSampledCount(GTValues.RNG);
+            int cachedAmount = rollSampledCount(GTValues.RNG);
             if (cachedAmount == 0) {
                 return Stream.of(EMPTY_STACK_ARRAY);
             }
             var innerStacks = inner.getStacks();
             this.fluidStacks = new FluidStack[innerStacks.length];
             for (int i = 0; i < fluidStacks.length; i++) {
-                fluidStacks[i] = innerStacks[i].copy();
-                fluidStacks[i].setAmount(cachedAmount);
+                fluidStacks[i] = innerStacks[i].copyWithAmount(cachedAmount);
             }
         }
         return Stream.of(fluidStacks);
+    }
+
+    /**
+     * Gets a usable {@link FluidStack FluidStack[]} from this {@link IntProviderFluidIngredient}.
+     * If this ingredient has not yet had its {@link IntProviderFluidIngredient#sampledCount} rolled, rolls it.
+     *
+     * @return a {@link FluidStack FluidStack[]} with amount {@link IntProviderFluidIngredient#sampledCount}
+     */
+    public FluidStack[] getFluidStacks() {
+        if (fluidStacks == null) {
+            int cachedAmount = rollSampledCount(GTValues.RNG);
+            if (cachedAmount == 0) {
+                return EMPTY_STACK_ARRAY;
+            }
+            var innerStacks = inner.getStacks();
+            this.fluidStacks = new FluidStack[innerStacks.length];
+            for (int i = 0; i < fluidStacks.length; i++) {
+                fluidStacks[i] = innerStacks[i].copyWithAmount(cachedAmount);
+            }
+        }
+        return fluidStacks;
     }
 
     @Override
@@ -140,35 +163,15 @@ public class IntProviderFluidIngredient extends FluidIngredient {
      * If this ingredient has not yet had its {@link IntProviderFluidIngredient#sampledCount} rolled, rolls it and
      * returns the roll.
      * If it has, returns the existing roll.
-     * Passthrough method, invokes {@link IntProviderFluidIngredient#getSampledCount(RandomSource)} using the threadsafe
-     * {@link GTValues#RNG}.
-     *
-     * @return the amount rolled
-     */
-    public int getSampledCount() {
-        return getSampledCount(GTValues.RNG);
-    }
-
-    /**
-     * If this ingredient has not yet had its {@link IntProviderFluidIngredient#sampledCount} rolled, rolls it and
-     * returns the roll.
-     * If it has, returns the existing roll.
      *
      * @param random {@link RandomSource}, must be threadsafe, usually called using {@link GTValues#RNG}.
      * @return the amount rolled
      */
-    public int getSampledCount(@NotNull RandomSource random) {
+    public int rollSampledCount(@NotNull RandomSource random) {
         if (sampledCount == -1) {
             sampledCount = countProvider.sample(random);
         }
         return sampledCount;
-    }
-
-    /**
-     * @return the average roll of this ranged amount
-     */
-    public double getMidRoll() {
-        return ((countProvider.getMaxValue() + countProvider.getMinValue()) / 2.0);
     }
 
     @Override
@@ -192,13 +195,18 @@ public class IntProviderFluidIngredient extends FluidIngredient {
         return o1.getMinValue() == o2.getMinValue() && o1.getMaxValue() == o2.getMaxValue();
     }
 
+    @Override
+    public boolean isRolled() {
+        return sampledCount == -1;
+    }
+
     /**
      * Resets the random roll on this ingredient
      */
-    public void reroll() {
+    @Override
+    public void reset() {
         sampledCount = -1;
         fluidStacks = null;
-//        stacks = null;
     }
 
     /**

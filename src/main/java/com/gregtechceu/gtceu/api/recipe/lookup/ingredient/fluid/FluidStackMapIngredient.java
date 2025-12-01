@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.recipe.lookup.ingredient.fluid;
 
+import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderFluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.AbstractMapIngredient;
 
 import net.minecraft.core.Holder;
@@ -32,6 +33,11 @@ public class FluidStackMapIngredient extends AbstractMapIngredient {
     @NotNull
     public static List<AbstractMapIngredient> from(@NotNull FluidStack stack) {
         return Collections.singletonList(new FluidStackMapIngredient(stack));
+    }
+
+    @NotNull
+    public static List<AbstractMapIngredient> from(@NotNull IntProviderFluidIngredient ingredient) {
+        return Collections.singletonList(new FluidStackMapIngredient(ingredient.getMaxSizeStack()));
     }
 
     @Override

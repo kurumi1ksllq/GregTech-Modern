@@ -198,6 +198,7 @@ public class IntProviderFluidIngredient extends FluidIngredient {
     public void reroll() {
         sampledCount = -1;
         fluidStacks = null;
+//        stacks = null;
     }
 
     /**

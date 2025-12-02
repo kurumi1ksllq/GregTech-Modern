@@ -3,7 +3,6 @@ package com.gregtechceu.gtceu.api.recipe.ingredient;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
@@ -24,7 +23,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.gametest.GameTestHolder;
@@ -208,7 +206,7 @@ public class IntProviderIngredientTest {
                 "IntProviderIngredient should have item equal to what it was made with");
         helper.assertTrue(TestUtils.areItemStacksEqual(stacks, ingredient.getItems().toList()),
                 "IntProviderIngredient.getItems shouldn't change between getStacks calls");
-        ingredient.reroll();
+        ingredient.reset();
         helper.assertFalse(TestUtils.areItemStacksEqual(stacks, ingredient.getItems().toList()),
                 "IntProviderIngredient.getItems should have changed after rerolling");
         helper.succeed();

@@ -28,11 +28,16 @@ public class CustomFluidMapIngredient extends AbstractMapIngredient {
 
     public static List<AbstractMapIngredient> from(FluidIngredient ingredient) {
         List<AbstractMapIngredient> ingredients = new ArrayList<>();
-        FluidStack[] stacks;
-        if (ingredient instanceof IntProviderFluidIngredient provider){
-            stacks = new FluidStack[]{provider.getMaxSizeStack()};
+        FluidStack[] stacks = ingredient.getStacks();
+        for (FluidStack stack : stacks) {
+            ingredients.add(new CustomFluidMapIngredient(stack, ingredient));
         }
-        else stacks = ingredient.getStacks();
+        return ingredients;
+    }
+
+    public static List<AbstractMapIngredient> from(IntProviderFluidIngredient ingredient) {
+        List<AbstractMapIngredient> ingredients = new ArrayList<>();
+        FluidStack[] stacks = new FluidStack[]{ingredient.getMaxSizeStack()};
         for (FluidStack stack : stacks) {
             ingredients.add(new CustomFluidMapIngredient(stack, ingredient));
         }
@@ -53,13 +58,7 @@ public class CustomFluidMapIngredient extends AbstractMapIngredient {
             }
             if (this.ingredient != null) {
                 if (other.ingredient != null) {
-                    for (FluidStack stack : other.ingredient.getStacks()) {
-                        if (!this.ingredient.test(stack)) return false;
-                    }
-                    for (FluidStack stack : this.ingredient.getStacks()) {
-                        if (!other.ingredient.test(stack)) return false;
-                    }
-                    return true;
+                    return ingredient.equals(other.ingredient);
                 } else {
                     return this.ingredient.test(other.stack);
                 }
@@ -72,7 +71,7 @@ public class CustomFluidMapIngredient extends AbstractMapIngredient {
 
     @Override
     protected int hash() {
-        return stack.getFluidHolder().hashCode() * 31;
+        return FluidStack.hashFluidAndComponents(stack);
     }
 
     @Override

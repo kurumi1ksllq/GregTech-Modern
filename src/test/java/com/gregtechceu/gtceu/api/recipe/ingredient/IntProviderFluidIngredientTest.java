@@ -219,7 +219,7 @@ public class IntProviderFluidIngredientTest {
 //                "IntProviderFluidIngredient should have fluid equal to what it was made with");
         helper.assertTrue(FluidStack.matches(stacks[0], ingredient.getStacks()[0]),
                 "IntProviderFluidIngredient.getStacks shouldn't change between getStacks calls");
-        ingredient.reroll();
+        ingredient.reset();
         helper.assertFalse(FluidStack.matches(stacks[0], ingredient.getStacks()[0]),
                 "IntProviderFluidIngredient.getStacks should have changed after rerolling");
         helper.succeed();
@@ -281,7 +281,7 @@ public class IntProviderFluidIngredientTest {
                 if (superingredient.ingredient() instanceof IntProviderFluidIngredient ingredient) {
                     ingredient.setSampledCount(0);
 
-                    if (ingredient.getSampledCount() != 0) {
+                    if (ingredient.rollSampledCount() != 0) {
                         helper.fail("Singleblock Ranged Fluid Output sabotage failed! " +
                                 "Output count not was altered!");
                     }

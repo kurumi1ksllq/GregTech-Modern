@@ -42,7 +42,7 @@ public class FluidStackMapIngredient extends AbstractMapIngredient {
 
     @Override
     protected int hash() {
-        return stack.getFluid().hashCode();
+        return FluidStack.hashFluidAndComponents(stack);
     }
 
     @Override

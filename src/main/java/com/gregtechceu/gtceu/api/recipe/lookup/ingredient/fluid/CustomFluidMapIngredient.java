@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.recipe.lookup.ingredient.fluid;
 
+import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderFluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.AbstractMapIngredient;
 
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -27,7 +28,11 @@ public class CustomFluidMapIngredient extends AbstractMapIngredient {
 
     public static List<AbstractMapIngredient> from(FluidIngredient ingredient) {
         List<AbstractMapIngredient> ingredients = new ArrayList<>();
-        FluidStack[] stacks = ingredient.getStacks();
+        FluidStack[] stacks;
+        if (ingredient instanceof IntProviderFluidIngredient provider){
+            stacks = new FluidStack[]{provider.getMaxSizeStack()};
+        }
+        else stacks = ingredient.getStacks();
         for (FluidStack stack : stacks) {
             ingredients.add(new CustomFluidMapIngredient(stack, ingredient));
         }

@@ -369,7 +369,7 @@ public class CommonInit {
             MapIngredientTypeManager.registerMapIngredient(DataComponentFluidIngredient.class, FluidDataComponentMapIngredient::from);
             MapIngredientTypeManager.registerMapIngredient(FluidIngredient.class, FluidTagMapIngredient::from);
             MapIngredientTypeManager.registerMapIngredient(SingleFluidIngredient.class, FluidStackMapIngredient::from);
-            MapIngredientTypeManager.registerMapIngredient(SingleFluidIngredient.class, FluidStackMapIngredient::from);
+            MapIngredientTypeManager.registerMapIngredient(IntProviderFluidIngredient.class, FluidStackMapIngredient::from);
             MapIngredientTypeManager.registerMapIngredient(IntersectionFluidIngredient.class, IntersectionMapIngredient::from);
 
             MapIngredientTypeManager.registerMapIngredient(FluidStack.class, FluidTagMapIngredient::from);

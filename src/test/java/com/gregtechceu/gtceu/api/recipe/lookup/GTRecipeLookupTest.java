@@ -53,7 +53,7 @@ public class GTRecipeLookupTest {
         RecipeType<?> proxyRecipes = RecipeType.SMELTING;
         GTRecipeType type = new GTRecipeType(GTCEu.id("test_recipes"), ELECTRIC, proxyRecipes)
         .setEUIO(IO.IN)
-        .setMaxIOSize(1, 1, 0, 0);
+        .setMaxIOSize(1, 1, 1, 1);
         lookup = new GTRecipeLookup(type);
 
         SMELT_STONE = type.recipeBuilder("smelt_stone")

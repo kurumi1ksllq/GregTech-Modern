@@ -115,7 +115,8 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<SizedFluid
         FluidStack[] visited = new FluidStack[storages.length];
         for (var it = left.listIterator(); it.hasNext();) {
             var ingredient = it.next();
-            if (ingredient.ingredient().hasNoFluids()) {
+            if (!(ingredient.ingredient() instanceof IntProviderFluidIngredient) &&
+                    ingredient.ingredient().hasNoFluids()) {
                 it.remove();
                 continue;
             }

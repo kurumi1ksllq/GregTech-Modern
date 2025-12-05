@@ -261,7 +261,7 @@ public class IntProviderIngredientTest {
         // get the result of each roll independently
         int[] addedRolls = new int[runs];
 
-        helper.runAfterDelay(4, () -> {
+        helper.runAfterDelay(2, () -> {
             if (machine.getRecipeLogic().getLastRecipe().getOutputContents(ItemRecipeCapability.CAP).get(0)
                     .getContent() instanceof SizedIngredient upperingredient) {
                 if (upperingredient.ingredient().getCustomIngredient() instanceof IntProviderIngredient ingredient) {
@@ -289,14 +289,15 @@ public class IntProviderIngredientTest {
         // check the results of all rolls together
         helper.runAfterDelay(runs * 2 + 1, () -> {
             ItemStack results = itemOut.getStackInSlot(0);
-            helper.assertTrue(TestUtils.isItemWithinRange(results, runs, runs * 9),
-                    "Sabotaged Singleblock CR didn't produce correct number of items, produced [" +
-                            results.getCount() + "] not [" + runs + "-" + (runs * 9) + "]");
-            helper.assertFalse((results.getCount() == runs * 9),
-                    "Sabotaged Singleblock CR rolled max value on every roll (how??)");
             helper.assertFalse((results.getCount() == runs * 0),
-                    "Sabotaged Singleblock CR rolled min value on every roll! " +
+                    "Sabotaged Singleblock Ranged Item Output rolled min value on every roll! " +
                             "This is the failure this sabotage was intended to induce.");
+            helper.assertFalse((results.getCount() == runs * 9),
+                    "Sabotaged Singleblock Ranged Item Output rolled max value on every roll (how??)");
+            helper.assertTrue(TestUtils.isItemWithinRange(results, runs, runs * 9),
+                    "Sabotaged Singleblock Ranged Item Output didn't produce correct number of items, " +
+                            "produced [" + results.getCount() + "] not [" + runs + "-" + (runs * 9) + "]");
+
 
             // check if all the rolls were equal, but not min/max
             int[] rolls = new int[runs];

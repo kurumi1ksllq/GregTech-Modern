@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.common.data.mui;
 
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.mui.base.IPanelHandler;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
@@ -99,8 +100,8 @@ public class GTMuiWidgets {
         } else {
             machine = null;
         }
-        //intellij doesn't like machine being nullable even though childIf is used
-        //noinspection DataFlowIssue
+        // intellij doesn't like machine being nullable even though childIf is used
+        // noinspection DataFlowIssue
         return createEmptySidePanel(false)
                 .bottom(16)
                 .child(GTMuiWidgets.createPowerButton(workableMachine, syncManager))
@@ -188,7 +189,7 @@ public class GTMuiWidgets {
                                 "cover.voiding.label.disabled")))));
     }
 
-    public static ButtonWidget<?> createCircuitSlotPanel(SimpleTieredMachine machine, ModularPanel parentPanel,
+    public static ButtonWidget<?> createCircuitSlotPanel(IHasCircuitSlot machine, ModularPanel parentPanel,
                                                          PanelSyncManager syncManager) {
         IntSyncValue circuitSyncValue = new IntSyncValue(() -> {
             if (machine.getCircuitInventory().getStackInSlot(0).isEmpty()) return -1;

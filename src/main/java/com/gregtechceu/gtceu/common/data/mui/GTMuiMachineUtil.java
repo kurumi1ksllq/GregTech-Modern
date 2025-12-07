@@ -1,5 +1,8 @@
 package com.gregtechceu.gtceu.common.data.mui;
 
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
@@ -8,6 +11,7 @@ import com.gregtechceu.gtceu.api.mui.widgets.slot.FluidSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ModularSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
+import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 
 import net.minecraftforge.items.IItemHandler;
 
@@ -75,5 +79,25 @@ public class GTMuiMachineUtil {
                 .build();
 
         return slotWidget;
+    }
+
+    public static ModularPanel createTemplateForMachine(MetaMachine machine, PanelSyncManager syncManager) {
+        IRecipeLogicMachine workable;
+        if (machine instanceof IRecipeLogicMachine recipeLogicMachine) {
+            workable = recipeLogicMachine;
+        } else workable = null;
+        IHasCircuitSlot circuit;
+        if (machine instanceof IHasCircuitSlot hasCircuitSlot) {
+            circuit = hasCircuitSlot;
+        } else circuit = null;
+        ModularPanel panel = new ModularPanel(machine.getDefinition().getName());
+        return panel
+                .child(GTMuiWidgets.createTitleBar(machine.getDefinition(), 176))
+                .childIf(workable != null, () -> GTMuiWidgets.createRightSidePanel(workable, syncManager))
+                .child(GTMuiWidgets.createEmptySidePanel(true)
+                        .bottom(16)
+                        .childIf(circuit != null, GTMuiWidgets.createCircuitSlotPanel(circuit, panel, syncManager)))
+                .child(GTMuiWidgets.createGTLogo()
+                        .right(7).bottom(7 + 78));
     }
 }

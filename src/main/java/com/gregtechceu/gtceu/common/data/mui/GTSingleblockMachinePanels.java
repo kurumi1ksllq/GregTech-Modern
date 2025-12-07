@@ -18,6 +18,7 @@ import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 
 public class GTSingleblockMachinePanels {
+
     private static void logNotSimpleTieredMachine(MetaMachine machine) {
         GTCEu.LOGGER.error("{} is not a SimpleTieredMachine, can not add slots to its content",
                 machine.getDefinition().getName());
@@ -42,9 +43,11 @@ public class GTSingleblockMachinePanels {
         var outputFluidGrid = GTMuiWidgets.createGrid(simpleTieredMachine.exportFluids.getSize(), 3, true, 'f');
 
         int inputWidth = 18 *
-                Math.min(3, Math.max(simpleTieredMachine.importItems.getSize(), simpleTieredMachine.importFluids.getSize()));
+                Math.min(3, Math.max(simpleTieredMachine.importItems.getSize(),
+                        simpleTieredMachine.importFluids.getSize()));
         int outputWidth = 18 *
-                Math.min(3, Math.max(simpleTieredMachine.exportItems.getSize(), simpleTieredMachine.exportFluids.getSize()));
+                Math.min(3, Math.max(simpleTieredMachine.exportItems.getSize(),
+                        simpleTieredMachine.exportFluids.getSize()));
 
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
@@ -59,15 +62,15 @@ public class GTSingleblockMachinePanels {
         // input slots + centering gap + output slots
 
         /*
-          1 -> 1.5
-          2 -> 1
-          3 -> .5
-          36 - (inputWidth / 2)
-         
-          1:1 -> 18 + 18 + 36
-          1:2 -> 18 + 36 + 27
-          1:3 -> 18 + 54 + 3
-          2 - input + 2 - output
+         * 1 -> 1.5
+         * 2 -> 1
+         * 3 -> .5
+         * 36 - (inputWidth / 2)
+         * 
+         * 1:1 -> 18 + 18 + 36
+         * 1:2 -> 18 + 36 + 27
+         * 1:3 -> 18 + 54 + 3
+         * 2 - input + 2 - output
          */
         int fullWidth = (inputWidth + outputWidth) + (90 - ((inputWidth + outputWidth) / 2));
 
@@ -95,8 +98,10 @@ public class GTSingleblockMachinePanels {
                                                 .alignX(Alignment.CenterLeft))
                                 .childIf(!(inputFluidGrid.length == 0),
                                         GTMuiMachineUtil
-                                                .createSlotGroupFromInventory(syncManager, simpleTieredMachine.importFluids,
-                                                        "input_fluid_inv", simpleTieredMachine.importFluids.getSize(), 'f',
+                                                .createSlotGroupFromInventory(syncManager,
+                                                        simpleTieredMachine.importFluids,
+                                                        "input_fluid_inv", simpleTieredMachine.importFluids.getSize(),
+                                                        'f',
                                                         inputFluidGrid)
                                                 .alignX(Alignment.CenterLeft))
                                 .align(Alignment.CenterLeft))
@@ -110,8 +115,10 @@ public class GTSingleblockMachinePanels {
                                                 .alignX(Alignment.CenterRight))
                                 .childIf(!(outputFluidGrid.length == 0),
                                         GTMuiMachineUtil
-                                                .createSlotGroupFromInventory(syncManager, simpleTieredMachine.exportFluids,
-                                                        "output_fluid_inv", simpleTieredMachine.exportFluids.getSize(), 'f',
+                                                .createSlotGroupFromInventory(syncManager,
+                                                        simpleTieredMachine.exportFluids,
+                                                        "output_fluid_inv", simpleTieredMachine.exportFluids.getSize(),
+                                                        'f',
                                                         outputFluidGrid)
                                                 .alignX(Alignment.CenterRight))
                                 .align(Alignment.CenterRight))
@@ -128,8 +135,9 @@ public class GTSingleblockMachinePanels {
                 .child(GTMuiWidgets.createGTLogo()
                         .right(7).bottom(7 + 78));
         if (hasXEI) {
-            panel.child(GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType()))
-                    .left(190));
+            panel.child(
+                    GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType()))
+                            .left(190));
         }
         panel.excludeAreaInXei();
         return panel;
@@ -161,7 +169,8 @@ public class GTSingleblockMachinePanels {
         simpleTieredMachine.hasAutoOutputItem();
 
         int inputWidth = 18 *
-                Math.min(3, Math.max(simpleTieredMachine.importItems.getSize(), simpleTieredMachine.importFluids.getSize()));
+                Math.min(3, Math.max(simpleTieredMachine.importItems.getSize(),
+                        simpleTieredMachine.importFluids.getSize()));
         int outputWidth = 18 * outputGrid[0].length();
 
         int fullWidth = (inputWidth + outputWidth) + (90 - ((inputWidth + outputWidth) / 2));
@@ -280,15 +289,15 @@ public class GTSingleblockMachinePanels {
         // input slots + centering gap + output slots
 
         /*
-          1 -> 1.5
-          2 -> 1
-          3 -> .5
-          36 - (inputWidth / 2)
-         
-          1:1 -> 18 + 18 + 36
-          1:2 -> 18 + 36 + 27
-          1:3 -> 18 + 54 + 3
-          2 - input + 2 - output
+         * 1 -> 1.5
+         * 2 -> 1
+         * 3 -> .5
+         * 36 - (inputWidth / 2)
+         * 
+         * 1:1 -> 18 + 18 + 36
+         * 1:2 -> 18 + 36 + 27
+         * 1:3 -> 18 + 54 + 3
+         * 2 - input + 2 - output
          */
         int fullWidth = (inputWidth + outputWidth) + (90 - ((inputWidth + outputWidth) / 2));
 
@@ -378,15 +387,15 @@ public class GTSingleblockMachinePanels {
         // input slots + centering gap + output slots
 
         /*
-          1 -> 1.5
-          2 -> 1
-          3 -> .5
-          36 - (inputWidth / 2)
-         
-          1:1 -> 18 + 18 + 36
-          1:2 -> 18 + 36 + 27
-          1:3 -> 18 + 54 + 3
-          2 - input + 2 - output
+         * 1 -> 1.5
+         * 2 -> 1
+         * 3 -> .5
+         * 36 - (inputWidth / 2)
+         * 
+         * 1:1 -> 18 + 18 + 36
+         * 1:2 -> 18 + 36 + 27
+         * 1:3 -> 18 + 54 + 3
+         * 2 - input + 2 - output
          */
         int fullWidth = (inputWidth + outputWidth) + (90 - ((inputWidth + outputWidth) / 2));
 

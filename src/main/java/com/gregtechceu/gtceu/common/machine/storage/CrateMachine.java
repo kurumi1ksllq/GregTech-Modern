@@ -48,7 +48,7 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(CrateMachine.class,
             MetaMachine.MANAGED_FIELD_HOLDER);
 
-    public static final BooleanProperty TAPED_PROPERTY = BooleanProperty.create("taped");
+    public static final BooleanProperty TAPED_PROPERTY = GTMachineModelProperties.IS_TAPED;
 
     @Override
     public @NotNull ManagedFieldHolder getFieldHolder() {

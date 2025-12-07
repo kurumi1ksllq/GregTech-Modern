@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.material.material.properties;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.material.ChemicalHelper;
 import com.gregtechceu.gtceu.api.material.material.Material;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
@@ -58,6 +59,8 @@ public class ArmorProperty implements IMaterialProperty {
     private Supplier<Ingredient> repairIngredient;
     private boolean noRepair;
 
+    @Setter
+    private String name = "metal";
     @Getter
     @Setter
     private CustomTextureGetter customTextureGetter = (stack, entity, slot, overlay) -> null;
@@ -100,11 +103,11 @@ public class ArmorProperty implements IMaterialProperty {
         }
 
         if (this.layers == null) {
-            this.layers = List.of(new ArmorMaterial.Layer(this.material.getResourceLocation(), "", this.dyeable));
+            this.layers = List.of(new ArmorMaterial.Layer(GTCEu.id(this.name), "", this.dyeable));
         }
         if (this.armorMaterial == null) {
             GTRegistrate registrate = GTRegistrate.createIgnoringListenerErrors(this.material.getModid());
-            this.armorMaterial = registrate.generic(this.material.getName(), Registries.ARMOR_MATERIAL,
+            this.armorMaterial = registrate.generic(this.name, Registries.ARMOR_MATERIAL,
                     () -> new ArmorMaterial(protectionValues, enchantability, sound, repairIngredient,
                             layers, toughness, knockbackResistance))
                     .register();

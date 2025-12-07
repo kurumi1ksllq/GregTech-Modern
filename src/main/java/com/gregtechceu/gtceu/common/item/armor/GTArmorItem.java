@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.client.renderer.item.ArmorItemRenderer;
 import com.lowdragmc.lowdraglib.Platform;
 
 import net.minecraft.client.color.item.ItemColor;
+import net.minecraft.core.Holder;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -18,16 +19,19 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 public class GTArmorItem extends ArmorItem {
 
     public final Material material;
     public final ArmorProperty armorProperty;
 
-    public GTArmorItem(ArmorItem.Type type, Properties properties, Material material, ArmorProperty armorProperty) {
-        super(armorProperty.getArmorMaterial(), type, properties);
+    public GTArmorItem(Holder<ArmorMaterial> armorMaterial, ArmorItem.Type type, Properties properties, Material material, ArmorProperty armorProperty) {
+        super(armorMaterial, type, properties);
         this.material = material;
         this.armorProperty = armorProperty;
         if (Platform.isClient()) {

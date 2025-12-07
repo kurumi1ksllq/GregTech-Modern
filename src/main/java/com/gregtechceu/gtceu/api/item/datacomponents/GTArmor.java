@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.item.datacomponents;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.utils.codec.StreamCodecUtils;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 

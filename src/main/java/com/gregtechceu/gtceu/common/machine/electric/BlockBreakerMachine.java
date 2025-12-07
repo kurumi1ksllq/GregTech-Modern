@@ -450,18 +450,10 @@ public class BlockBreakerMachine extends TieredEnergyMachine
                         .alignX(Alignment.CENTER)
                         .top(10))
                 .child(SlotGroupWidget.playerInventory(false).left(7).bottom(7))
-                .child(new Column()
-                        .coverChildren()
-                        .leftRel(1.0f)
-                        .reverseLayout(true)
-                        .bottom(16)
-                        .padding(0, 8, 4, 4)
-                        .childPadding(2)
-                        .background(GTGuiTextures.BACKGROUND.getSubArea(0.25f, 0f, 1.0f, 1.0f))
+                .child(GTMuiWidgets.createEmptySidePanel(false)
                         .child(createPowerButton(syncManager))
                         .child(createBatterySlot(syncManager))
-                        .child(createAutoOutputItemButton(syncManager))
-                        .excludeAreaInXei());
+                        .child(createAutoOutputItemButton(syncManager)));
         return panel;
     }
 

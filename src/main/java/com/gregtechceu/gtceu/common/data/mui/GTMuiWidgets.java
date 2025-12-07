@@ -34,6 +34,8 @@ import net.minecraft.world.item.Items;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
+import java.util.function.UnaryOperator;
+
 public class GTMuiWidgets {
 
     public static Flow createTitleBar(MachineDefinition definition, int panelWidth) {
@@ -73,6 +75,40 @@ public class GTMuiWidgets {
                         .paddingTop(1)
                         .margin(borderRadius, borderRadius, borderRadius, 1)
                         .size(Math.min(minPanelWidth, textTitleWidth), textHeight));
+    }
+
+    public static Flow createEmptySidePanel(boolean left) {
+        UnaryOperator<Flow> side = left ? f -> f.leftRel(1) : f -> f.rightRel(1);
+        return side.apply(new Column()
+                .coverChildren())
+                .reverseLayout(true)
+                .padding(0, 8, 4, 4)
+                .childPadding(2)
+                .background(GTGuiTextures.BACKGROUND.getSubArea(0.25f, 0f, 1.0f, 1.0f))
+                .excludeAreaInXei();
+    }
+
+    public static Flow createRightSidePanel(IRecipeLogicMachine workableMachine, PanelSyncManager syncManager) {
+        boolean item = false;
+        boolean fluid = false;
+        SimpleTieredMachine machine;
+        if (workableMachine instanceof SimpleTieredMachine simpleTieredMachine) {
+            machine = simpleTieredMachine;
+            item = machine.hasAutoOutputItem();
+            fluid = machine.hasAutoOutputFluid();
+        } else {
+            machine = null;
+        }
+        //intellij doesn't like machine being nullable even though childIf is used
+        //noinspection DataFlowIssue
+        return createEmptySidePanel(false)
+                .bottom(16)
+                .child(GTMuiWidgets.createPowerButton(workableMachine, syncManager))
+                .childIf(machine != null, () -> GTMuiWidgets.createBatterySlot(machine, syncManager))
+                .childIf(item, () -> GTMuiWidgets.createAutoOutputItemButton(machine, syncManager))
+                .childIf(fluid, () -> GTMuiWidgets.createAutoOutputFluidButton(machine, syncManager))
+                .childIf(item, () -> GTMuiWidgets.createInputFromOutputItem(machine, syncManager))
+                .childIf(fluid, () -> GTMuiWidgets.createInputFromOutputFluid(machine, syncManager));
     }
 
     public static ToggleButton createPowerButton(IRecipeLogicMachine recipeLogicMachine, PanelSyncManager syncManager) {

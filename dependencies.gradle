@@ -1,6 +1,8 @@
 dependencies {
     compileOnly(libs.jetbrains.annotations)
 
+    testJarJar(testApi(libs.testframework.get()))
+
     jarJar(api(forge.ldlib.get()))
 
     // Registrate

@@ -2,18 +2,15 @@ package com.gregtechceu.gtceu.common.item;
 
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
-import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.misc.ProspectorMode;
-import com.gregtechceu.gtceu.api.gui.widget.ProspectingMapWidget;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
-import com.gregtechceu.gtceu.api.item.component.IItemUIFactory;
+import com.gregtechceu.gtceu.api.mui.factory.IComponentUIHolder;
+import com.gregtechceu.gtceu.api.mui.factory.PlayerInventoryGuiData;
+import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
+import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-
-import com.lowdragmc.lowdraglib.gui.factory.HeldItemUIFactory;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
-import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
-import com.lowdragmc.lowdraglib.gui.widget.SwitchWidget;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -33,7 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class ProspectorScannerBehavior implements IItemUIFactory, IInteractionItem, IAddInformation {
+public class ProspectorScannerBehavior implements IComponentUIHolder, IInteractionItem, IAddInformation {
 
     private final int radius;
     private final long cost;
@@ -72,6 +69,11 @@ public class ProspectorScannerBehavior implements IItemUIFactory, IInteractionIt
     }
 
     @Override
+    public ModularPanel buildUI(PlayerInventoryGuiData<?> data, PanelSyncManager syncManager, UISettings settings) {
+        return new ModularPanel("Prospector");
+    }
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Item item, Level level, Player player, InteractionHand usedHand) {
         ItemStack heldItem = player.getItemInHand(usedHand);
         if (player.isShiftKeyDown() && modes.length > 1) {
@@ -86,25 +88,27 @@ public class ProspectorScannerBehavior implements IItemUIFactory, IInteractionIt
             player.sendSystemMessage(Component.translatable("behavior.prospector.not_enough_energy"));
             return InteractionResultHolder.success(heldItem);
         }
-        return IItemUIFactory.super.use(item, level, player, usedHand);
+        return IComponentUIHolder.super.use(item, level, player, usedHand);
     }
 
-    @Override
-    public ModularUI createUI(HeldItemUIFactory.HeldItemHolder holder, Player entityPlayer) {
-        var mode = getMode(entityPlayer.getItemInHand(InteractionHand.MAIN_HAND));
-        var map = new ProspectingMapWidget(4, 4, 332 - 8, 200 - 8, radius, mode, 1);
-        return new ModularUI(332, 200, holder, entityPlayer)
-                .background(GuiTextures.BACKGROUND)
-                .widget(map)
-                .widget(new SwitchWidget(-20, 4, 18, 18, (cd, pressed) -> map.setDarkMode(pressed))
-                        .setSupplier(map::isDarkMode)
-                        .setTexture(
-                                new GuiTextureGroup(GuiTextures.BUTTON,
-                                        GuiTextures.PROGRESS_BAR_SOLAR_STEAM.get(true).copy()
-                                                .getSubTexture(0, 0.5, 1, 0.5).scale(0.8f)),
-                                new GuiTextureGroup(GuiTextures.BUTTON, GuiTextures.PROGRESS_BAR_SOLAR_STEAM.get(true)
-                                        .copy().getSubTexture(0, 0, 1, 0.5).scale(0.8f))));
-    }
+    /*
+     * @Override
+     * public ModularUI createUI(HeldItemUIFactory.HeldItemHolder holder, Player entityPlayer) {
+     * var mode = getMode(entityPlayer.getItemInHand(InteractionHand.MAIN_HAND));
+     * var map = new ProspectingMapWidget(4, 4, 332 - 8, 200 - 8, radius, mode, 1);
+     * return new ModularUI(332, 200, holder, entityPlayer)
+     * .background(GuiTextures.BACKGROUND)
+     * .widget(map)
+     * .widget(new SwitchWidget(-20, 4, 18, 18, (cd, pressed) -> map.setDarkMode(pressed))
+     * .setSupplier(map::isDarkMode)
+     * .setTexture(
+     * new GuiTextureGroup(GuiTextures.BUTTON,
+     * GuiTextures.PROGRESS_BAR_SOLAR_STEAM.get(true).copy()
+     * .getSubTexture(0, 0.5, 1, 0.5).scale(0.8f)),
+     * new GuiTextureGroup(GuiTextures.BUTTON, GuiTextures.PROGRESS_BAR_SOLAR_STEAM.get(true)
+     * .copy().getSubTexture(0, 0, 1, 0.5).scale(0.8f))));
+     * }
+     */
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,

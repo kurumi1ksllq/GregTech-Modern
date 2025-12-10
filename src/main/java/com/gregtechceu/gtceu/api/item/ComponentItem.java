@@ -4,11 +4,15 @@ import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.capability.ElectricItem;
 import com.gregtechceu.gtceu.api.item.component.*;
+import com.gregtechceu.gtceu.api.mui.base.IUIHolder;
+import com.gregtechceu.gtceu.api.mui.factory.IComponentUIHolder;
+import com.gregtechceu.gtceu.api.mui.factory.PlayerInventoryGuiData;
+import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
+import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 
 import com.lowdragmc.lowdraglib.client.renderer.IItemRendererProvider;
 import com.lowdragmc.lowdraglib.client.renderer.IRenderer;
-import com.lowdragmc.lowdraglib.gui.factory.HeldItemUIFactory;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -49,7 +53,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class ComponentItem extends Item
-                           implements HeldItemUIFactory.IHeldItemUIHolder, IItemRendererProvider, IComponentItem {
+                           implements IUIHolder<PlayerInventoryGuiData<?>>, IItemRendererProvider, IComponentItem {
 
     protected int burnTime = -1;
 
@@ -295,11 +299,10 @@ public class ComponentItem extends Item
     }
 
     @Override
-    @Nullable
-    public ModularUI createUI(Player entityPlayer, HeldItemUIFactory.HeldItemHolder holder) {
+    public ModularPanel buildUI(PlayerInventoryGuiData<?> data, PanelSyncManager syncManager, UISettings settings) {
         for (IItemComponent component : components) {
-            if (component instanceof IItemUIFactory uiFactory) {
-                return uiFactory.createUI(holder, entityPlayer);
+            if (component instanceof IComponentUIHolder UIHolder) {
+                return UIHolder.buildUI(data, syncManager, settings);
             }
         }
         return null;

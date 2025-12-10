@@ -52,6 +52,8 @@ configurations {
     clientRuntimeOnly.canBeResolved = false
     extraRuntimeOnly.canBeResolved = false
     clientExtraRuntimeOnly.canBeResolved = false
+    testImplementation.canBeResolved = false
+    testRuntimeOnly.canBeResolved = false
 
     runtimeClasspath.extendsFrom localRuntime
     extraRuntimeClasspath.extendsFrom extraLocalRuntime

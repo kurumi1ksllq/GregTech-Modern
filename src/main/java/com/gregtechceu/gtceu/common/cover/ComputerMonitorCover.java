@@ -55,16 +55,16 @@ public class ComputerMonitorCover extends CoverBehavior
     private final CoverTextRenderer renderer;
     @SaveField
     @Getter
-    private final List<String> formatStringArgs = new ArrayList<>(8);
+    private List<String> formatStringArgs = new ArrayList<>(8);
     @SaveField
     @Getter
-    private final List<String> formatStringLines = new ArrayList<>(8);
+    private List<String> formatStringLines = new ArrayList<>(8);
     @SaveField
     @SyncToClient
     @Getter
     private List<MutableComponent> text = new ArrayList<>();
     @SaveField
-    public final CustomItemStackHandler itemStackHandler = new CustomItemStackHandler(8);
+    public CustomItemStackHandler itemStackHandler = new CustomItemStackHandler(8);
     @Setter
     private String placeholderSearch = "";
     @Setter
@@ -76,13 +76,13 @@ public class ComputerMonitorCover extends CoverBehavior
     private long ticksSincePlaced = 0;
     @SaveField
     @Getter
-    private final List<MutableComponent> createDisplayTargetBuffer = new ArrayList<>();
+    private List<MutableComponent> createDisplayTargetBuffer = new ArrayList<>();
     @SaveField
     @Getter
-    private final List<MutableComponent> computerCraftTextBuffer = new ArrayList<>();
+    private List<MutableComponent> computerCraftTextBuffer = new ArrayList<>();
     @SaveField
     @Getter
-    private final UUID placeholderUUID;
+    private UUID placeholderUUID;
 
     public ComputerMonitorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);

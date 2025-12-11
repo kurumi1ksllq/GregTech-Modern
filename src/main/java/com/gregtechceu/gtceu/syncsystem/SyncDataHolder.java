@@ -144,6 +144,7 @@ public class SyncDataHolder {
 
             if (savedValue instanceof CompoundTag compound && compound.getBoolean("null")) {
                 field.handle.set(holder, null);
+                continue;
             }
 
             try {

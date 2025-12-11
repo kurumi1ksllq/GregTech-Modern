@@ -28,7 +28,7 @@ public class EnderRedstoneLinkCover extends AbstractEnderLinkCover<VirtualRedsto
     private VirtualRedstone storage;
     @SaveField
     @SyncToClient
-    private final UUID uuid;
+    private UUID uuid;
 
     public EnderRedstoneLinkCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);

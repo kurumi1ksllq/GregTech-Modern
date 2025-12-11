@@ -20,8 +20,8 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
-import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
 

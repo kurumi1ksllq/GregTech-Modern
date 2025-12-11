@@ -17,8 +17,9 @@ import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
 
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ComponentPanelWidget;
@@ -37,7 +38,6 @@ import net.minecraft.world.level.material.Fluids;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.*;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -244,8 +244,8 @@ public class LargeBoilerMachine extends WorkableMultiblockMachine implements IEx
 
     public static class LargeBoilerRecipeLogic extends RecipeLogic {
 
-        @Persisted
-        @DescSynced
+        @SaveField
+        @SyncToClient
         @Getter
         int currentThrottle;
 

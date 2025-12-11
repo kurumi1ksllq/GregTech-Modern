@@ -13,8 +13,8 @@ import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
 import com.gregtechceu.gtceu.api.machine.MachineCoverContainer;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.cover.data.ControllerMode;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
-import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;

@@ -17,8 +17,8 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
-import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -74,8 +74,8 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
     protected LongSet activeBlocks;
 
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected VoidingMode voidingMode = VoidingMode.VOID_NONE;
 
     public WorkableMultiblockMachine(IMachineBlockEntity holder, Object... args) {

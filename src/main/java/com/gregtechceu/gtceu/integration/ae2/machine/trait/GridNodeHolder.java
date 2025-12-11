@@ -4,7 +4,7 @@ import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.ae2.machine.feature.IGridConnectedMachine;
 import com.gregtechceu.gtceu.integration.ae2.utils.SerializableManagedGridNode;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
 
 import net.minecraft.core.Direction;
 import net.minecraft.server.TickTask;

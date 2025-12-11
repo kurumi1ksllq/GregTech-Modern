@@ -4,19 +4,16 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
-import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.common.blockentity.FluidPipeBlockEntity;
 import com.gregtechceu.gtceu.common.blockentity.ItemPipeBlockEntity;
-import com.gregtechceu.gtceu.syncdata.ISyncManaged;
-import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
-import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
-import com.gregtechceu.gtceu.syncdata.annotations.*;
+import com.gregtechceu.gtceu.syncsystem.ISyncManaged;
+import com.gregtechceu.gtceu.syncsystem.ManagedSyncBlockEntity;
+import com.gregtechceu.gtceu.syncsystem.SyncDataHolder;
+import com.gregtechceu.gtceu.syncsystem.annotations.*;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,8 +22,6 @@ import net.minecraftforge.items.wrapper.EmptyHandler;
 
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 public class PipeCoverContainer implements ICoverable, ISyncManaged {
 

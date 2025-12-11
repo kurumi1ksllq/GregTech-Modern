@@ -32,12 +32,12 @@ import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
 import com.gregtechceu.gtceu.common.item.tool.behavior.ToolModeSwitchBehavior;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.common.machine.owner.PlayerOwner;
-import com.gregtechceu.gtceu.syncdata.ISyncManaged;
-import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
-import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
-import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
-import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
+import com.gregtechceu.gtceu.syncsystem.ISyncManaged;
+import com.gregtechceu.gtceu.syncsystem.ManagedSyncBlockEntity;
+import com.gregtechceu.gtceu.syncsystem.SyncDataHolder;
+import com.gregtechceu.gtceu.syncsystem.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;

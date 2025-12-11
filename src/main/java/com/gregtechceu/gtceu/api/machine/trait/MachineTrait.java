@@ -2,8 +2,8 @@ package com.gregtechceu.gtceu.api.machine.trait;
 
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
-import com.gregtechceu.gtceu.syncdata.ISyncManaged;
-import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
+import com.gregtechceu.gtceu.syncsystem.ISyncManaged;
+import com.gregtechceu.gtceu.syncsystem.SyncDataHolder;
 
 import net.minecraft.core.Direction;
 import net.minecraftforge.client.model.data.ModelData;

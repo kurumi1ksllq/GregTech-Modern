@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.cover.filter;
 
-import com.gregtechceu.gtceu.syncdata.ISyncManaged;
+import com.gregtechceu.gtceu.syncsystem.ISyncManaged;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;

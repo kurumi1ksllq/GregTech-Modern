@@ -9,7 +9,7 @@ import com.gregtechceu.gtceu.common.network.packets.hazard.SPacketSyncLevelHazar
 import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectBedrockFluid;
 import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectBedrockOre;
 import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectOre;
-import com.gregtechceu.gtceu.syncdata.network.SPacketUpdateBESyncValue;
+import com.gregtechceu.gtceu.syncsystem.network.SPacketUpdateBESyncValue;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;

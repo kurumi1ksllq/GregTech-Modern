@@ -14,7 +14,7 @@ import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.item.tool.behavior.LighterBehavior;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
-import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
 

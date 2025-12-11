@@ -10,11 +10,11 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.cover.ICoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.cover.IDynamicCoverRenderer;
-import com.gregtechceu.gtceu.syncdata.ISyncManaged;
-import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
-import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
-import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
+import com.gregtechceu.gtceu.syncsystem.ISyncManaged;
+import com.gregtechceu.gtceu.syncsystem.ManagedSyncBlockEntity;
+import com.gregtechceu.gtceu.syncsystem.SyncDataHolder;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 

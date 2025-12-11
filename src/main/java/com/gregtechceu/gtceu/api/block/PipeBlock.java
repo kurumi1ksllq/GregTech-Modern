@@ -20,7 +20,7 @@ import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.item.CoverPlaceBehavior;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
-import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
+import com.gregtechceu.gtceu.syncsystem.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.client.renderer.IBlockRendererProvider;

@@ -8,9 +8,9 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.GridNodeHostTrait;
-import com.gregtechceu.gtceu.syncdata.annotations.CustomDataField;
-import com.gregtechceu.gtceu.syncdata.annotations.FieldDataModifier;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.CustomDataField;
+import com.gregtechceu.gtceu.syncsystem.annotations.FieldDataModifier;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 

@@ -4,7 +4,7 @@ import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
+import com.gregtechceu.gtceu.syncsystem.ManagedSyncBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

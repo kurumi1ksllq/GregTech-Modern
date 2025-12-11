@@ -16,11 +16,11 @@ import com.gregtechceu.gtceu.api.misc.LaserContainerList;
 import com.gregtechceu.gtceu.client.model.IBlockEntityRendererBakedModel;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.common.datafixers.TagFixer;
-import com.gregtechceu.gtceu.syncdata.ManagedSyncBlockEntity;
-import com.gregtechceu.gtceu.syncdata.SyncDataHolder;
-import com.gregtechceu.gtceu.syncdata.annotations.RerenderOnChanged;
-import com.gregtechceu.gtceu.syncdata.annotations.SaveField;
-import com.gregtechceu.gtceu.syncdata.annotations.SyncToClient;
+import com.gregtechceu.gtceu.syncsystem.ManagedSyncBlockEntity;
+import com.gregtechceu.gtceu.syncsystem.SyncDataHolder;
+import com.gregtechceu.gtceu.syncsystem.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 

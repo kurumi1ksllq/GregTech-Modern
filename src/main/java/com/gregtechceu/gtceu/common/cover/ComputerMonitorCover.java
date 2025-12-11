@@ -79,13 +79,19 @@ public class ComputerMonitorCover extends CoverBehavior
     private final List<MutableComponent> createDisplayTargetBuffer = new ArrayList<>();
     @SaveField
     @Getter
-    private UUID placeholderUUID;
+    private final List<MutableComponent> computerCraftTextBuffer = new ArrayList<>();
+    @SaveField
+    @Getter
+    private final UUID placeholderUUID;
 
     public ComputerMonitorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
         renderer = new CoverTextRenderer(this::getText);
         placeholderUUID = UUID.randomUUID();
-        for (int i = 0; i < 100; i++) createDisplayTargetBuffer.add(MutableComponent.create(ComponentContents.EMPTY));
+        for (int i = 0; i < 100; i++) {
+            createDisplayTargetBuffer.add(MutableComponent.create(ComponentContents.EMPTY));
+            computerCraftTextBuffer.add(MutableComponent.create(ComponentContents.EMPTY));
+        }
     }
 
     public List<MutableComponent> getRenderedText() {
@@ -100,6 +106,11 @@ public class ComputerMonitorCover extends CoverBehavior
 
     public void setDisplayTargetBufferLine(int line, MutableComponent component) {
         createDisplayTargetBuffer.set(line, component);
+    }
+
+    @Override
+    public void setComputerCraftTextBufferLine(int line, MutableComponent component) {
+        computerCraftTextBuffer.set(line, component);
     }
 
     @Override

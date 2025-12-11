@@ -302,7 +302,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
         } else {
             setWaiting(conditionResult.reason());
         }
-        if (isWaiting()) {
+        if (isWaiting() || isSuspend()) {
             regressRecipe();
         }
     }
@@ -391,7 +391,8 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
             if (this.status == Status.WORKING) {
                 this.totalContinuousRunningTime = 0;
             }
-            if (status == Status.SUSPEND && suspendAfterFinish) {
+            if ((status == Status.WAITING || status == Status.SUSPEND) && suspendAfterFinish) {
+                status = Status.SUSPEND;
                 suspendAfterFinish = false;
             }
             machine.notifyStatusChanged(this.status, status);
@@ -462,6 +463,21 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
 
     public boolean isActive() {
         return isWorking() || isWaiting() || (isSuspend() && isActive);
+    }
+
+    public boolean hasCustomProgressLine() {
+        return false;
+    }
+
+    /**
+     * Show the customized progress line instead of the regular duration progress time in the machine display.
+     * <p>
+     * Must override and return {@code true} in {@link #hasCustomProgressLine()}.
+     *
+     * @return the customized progress line
+     */
+    public @Nullable Component getCustomProgressLine() {
+        return null;
     }
 
     public void onRecipeFinish() {

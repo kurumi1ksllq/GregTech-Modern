@@ -4,6 +4,7 @@ title: "Migrating from LDLib SyncData"
 # Migrating from LDLib SyncData
 
 ### General migration guidelines
+
 - Remove all `ManagedFieldHolder` fields.
 - Replace `FieldManagedStorage` fields with `SyncDataHolder` fields.
 - Replace `IEnhancedManaged` objects with `ISyncManaged`.

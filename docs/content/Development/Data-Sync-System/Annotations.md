@@ -17,8 +17,6 @@ public int mySaveInt = 10;
 
 The `@SyncToClient` annotation defines a field with a value that should be synced to clients.
 
-Annotating a `@SyncToClient` field with `@RerenderOnChanged` will cause clients to rerender the block entity when this field changes.
-
 !!! warning 
     Client sync fields **do not** automatically detect changes. When changing a client sync field, call `ISyncManaged.getSyncDataHolder().markClientSyncFieldDirty(FIELD_NAME)`
 ```java
@@ -44,16 +42,21 @@ public void serverTick() {
 }
 ```
 
-### `@ClientFieldChangeListener`
+### `@ClientFieldChangeListener` and `@RerenderOnChanged`
 
 The `@ClientFieldChangeListener` annotation defines a method to be called on the client when a client sync field has changed value;
+
+Annotating a `@SyncToClient` field with `@RerenderOnChanged` will cause clients to rerender the block entity when this field changes.
+
 ```java
 @SyncToClient
-public long mySyncCallbackLong = 10000L;
+@SaveField
+@RerenderOnChanged
+public boolean isWorkingEnabled = true;
 
-@ClientFieldChangeListener(fieldName="mySyncCallbackLong")
-public void syncLongHasChanged() {
-    
+@ClientFieldChangeListener(fieldName="isWorkingEnabled")
+public void isWorkingChanged() {
+    setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_WORKING_ENABLED, isWorkingEnabled));
 }
 ```
 
@@ -79,8 +82,8 @@ public void loadVeryComplexValue(CompoundTag tag) {
 }
 
 @FieldDataModifier(fieldName="myVeryComplexValue", target=FieldDataModifier.MODIFY_TARGET.SAVE_NBT)
-public Tag saveVeryComplexValue() {
-    // Create tag here.
-    return new CompoundTag();
+public CompoundTag saveVeryComplexValue(CompoundTag tag, boolean isSendingToClient) {
+    // Save data here.
+    return tag;
 }
 ```

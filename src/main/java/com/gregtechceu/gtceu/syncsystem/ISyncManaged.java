@@ -29,9 +29,4 @@ public interface ISyncManaged {
      * Function called to notify the server that this object has been updated and must be synced to clients
      */
     void markAsChanged();
-
-    /**
-     * Function called after the saved data for this object has been loaded.
-     */
-    default void onSaveDataLoaded() {}
 }

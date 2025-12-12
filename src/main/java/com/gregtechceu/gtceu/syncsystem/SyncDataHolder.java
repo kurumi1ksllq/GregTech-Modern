@@ -61,7 +61,9 @@ public class SyncDataHolder {
         CompoundTag tag = new CompoundTag();
         for (var fieldEntry : fieldsToSerialize.entrySet()) {
 
-            if (writeClientFields && (!fullSync && !dirtySyncFields.contains(fieldEntry.getKey()) && !fieldEntry.getValue().isComplex)) continue;
+            if (writeClientFields &&
+                    (!fullSync && !dirtySyncFields.contains(fieldEntry.getKey()) && !fieldEntry.getValue().isComplex))
+                continue;
             var field = fieldEntry.getValue();
             if (field.isCustomData) {
                 try {
@@ -137,11 +139,11 @@ public class SyncDataHolder {
                 if (field.triggerClientRerender) holder.scheduleRenderUpdate();
             }
         }
-
     }
 
     @SuppressWarnings("unchecked")
-    private static Tag serialiseField(ISyncManaged holder, ClassSyncData.FieldSyncData field, boolean writeClientFields) {
+    private static Tag serialiseField(ISyncManaged holder, ClassSyncData.FieldSyncData field,
+                                      boolean writeClientFields) {
         Object currentValue = field.handle.get(holder);
 
         if (!field.isComplex && currentValue == null) {
@@ -155,8 +157,7 @@ public class SyncDataHolder {
             if (field.transformer != null) {
                 if (writeClientFields) {
                     return ((IValueTransformer<Object>) field.transformer).serializeClientSyncNBT(currentValue, holder);
-                }
-                else {
+                } else {
                     return ((IValueTransformer<Object>) field.transformer).serializeNBT(currentValue, holder);
                 }
             } else if (field.isComplex && currentValue instanceof ISyncManaged syncObj) {
@@ -172,7 +173,8 @@ public class SyncDataHolder {
     }
 
     @SuppressWarnings("unchecked")
-    private static void deserialiseField(ISyncManaged holder, ClassSyncData.FieldSyncData field, Tag savedValue, boolean readingClientFields) {
+    private static void deserialiseField(ISyncManaged holder, ClassSyncData.FieldSyncData field, Tag savedValue,
+                                         boolean readingClientFields) {
         Object currentVal = field.handle.get(holder);
 
         if (savedValue == null || savedValue instanceof CompoundTag compound && compound.isEmpty()) return;
@@ -216,6 +218,5 @@ public class SyncDataHolder {
             GTCEu.LOGGER.error("Sync: Failed to deserialise field {}", field.fieldName);
             GTCEu.LOGGER.error(e);
         }
-
     }
 }

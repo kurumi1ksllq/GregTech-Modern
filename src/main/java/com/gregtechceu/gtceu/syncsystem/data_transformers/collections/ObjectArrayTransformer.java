@@ -6,6 +6,8 @@ import com.gregtechceu.gtceu.syncsystem.IValueTransformer;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 
+import java.util.Arrays;
+
 public class ObjectArrayTransformer<T> implements IValueTransformer<T[]> {
 
     private final IValueTransformer<T> elementTransformer;
@@ -31,6 +33,10 @@ public class ObjectArrayTransformer<T> implements IValueTransformer<T[]> {
     @Override
     public T[] deserializeNBT(Tag tag, ISyncManaged holder, T[] currentVal) {
         if (!(tag instanceof ListTag listTag)) throw new IllegalArgumentException("Expected ListTag");
+
+        if (listTag.size() != currentVal.length) {
+            currentVal = Arrays.copyOf(currentVal, listTag.size());
+        }
 
         for (int i = 0; i < listTag.size(); i++) {
             if (elementTransformer.mustProvideObject())

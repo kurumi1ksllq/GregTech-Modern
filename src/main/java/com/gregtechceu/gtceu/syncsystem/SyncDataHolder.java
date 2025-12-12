@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.WrongMethodTypeException;
 import java.util.*;
 
 /**
@@ -70,7 +71,7 @@ public class SyncDataHolder {
                     Object result = field.nbtSaveModifiers[0].invoke(holder, new CompoundTag(), writeClientFields);
                     tag.put(field.nbtSaveKey, (CompoundTag) result);
                 } catch (Throwable e) {
-                    GTCEu.LOGGER.error("Error while invoking nbtSaveModifier for field {}", field.fieldName);
+                    GTCEu.LOGGER.error("Sync: Error while invoking nbtSaveModifier for field {}", field.fieldName);
                     GTCEu.LOGGER.error(e.getMessage());
                     return new CompoundTag();
                 }
@@ -83,7 +84,7 @@ public class SyncDataHolder {
                 try {
                     nbtValue = (Tag) modifier.invoke(holder, nbtValue, writeClientFields);
                 } catch (Throwable e) {
-                    GTCEu.LOGGER.error("Error while invoking nbtSaveModifier for field {}", field.fieldName);
+                    GTCEu.LOGGER.error("Sync: Error while invoking nbtSaveModifier for field {}", field.fieldName);
                     GTCEu.LOGGER.error(e.getMessage());
                     return new CompoundTag();
                 }
@@ -106,7 +107,7 @@ public class SyncDataHolder {
                 try {
                     field.nbtLoadModifiers[0].invoke(holder, tag, readingClientFields);
                 } catch (Throwable e) {
-                    GTCEu.LOGGER.error("Error while invoking nbtLoadModifier for field {}", field.fieldName);
+                    GTCEu.LOGGER.error("Sync: Error while invoking nbtLoadModifier for field {}", field.fieldName);
                     GTCEu.LOGGER.error(e.getMessage());
                     return;
                 }
@@ -120,7 +121,7 @@ public class SyncDataHolder {
                 try {
                     modifier.invoke(holder, savedValue, readingClientFields);
                 } catch (Throwable e) {
-                    GTCEu.LOGGER.error("Error while invoking nbtLoadModifier for field {}", field.fieldName);
+                    GTCEu.LOGGER.error("Sync: Error while invoking nbtLoadModifier for field {}", field.fieldName);
                     GTCEu.LOGGER.error(e.getMessage());
                     return;
                 }
@@ -129,9 +130,12 @@ public class SyncDataHolder {
             if (readingClientFields) {
                 try {
                     for (MethodHandle changeListenerHandle : field.changeListenerHandles) {
-                        changeListenerHandle.invoke();
+                        changeListenerHandle.invoke(holder);
                     }
                 } catch (Throwable e) {
+                    if (e instanceof WrongMethodTypeException) {
+                        throw new IllegalArgumentException("Invalid method signature for change listener for field %s %s".formatted(field.fieldName, holder.getClass().getCanonicalName()));
+                    }
                     GTCEu.LOGGER.error("Sync: Error while invoking change listener for field {}", field.fieldName);
                     GTCEu.LOGGER.error(e);
                 }
@@ -201,13 +205,13 @@ public class SyncDataHolder {
                             field.handle.set(holder, transformer.deserializeNBT(savedValue, holder, null));
                         }
                     } catch (UnsupportedOperationException e) {
-                        GTCEu.LOGGER.error("Sync error: failed to perform VarHandle set: unsupported op {} {}",
+                        GTCEu.LOGGER.error("Sync: failed to perform VarHandle set: unsupported op {} {}",
                                 field.fieldName, field.handle.toString());
                     }
                 }
             } else if (field.isComplex && savedValue instanceof CompoundTag compound) {
                 if (currentVal == null) {
-                    GTCEu.LOGGER.error("Sync error: ISyncManaged field was null, cannot instantiate {}",
+                    GTCEu.LOGGER.error("Sync: ISyncManaged field was null, cannot instantiate {}",
                             field.fieldName);
                     return;
                 }

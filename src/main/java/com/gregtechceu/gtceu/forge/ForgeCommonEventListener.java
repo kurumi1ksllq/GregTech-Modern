@@ -395,6 +395,7 @@ public class ForgeCommonEventListener {
                 modularItem.getAppliedModules().forEach(appliedItemModule -> appliedItemModule.inventoryTick(player));
             }
         }
+    }
 
     public static void playerTickEvent(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
@@ -436,6 +437,7 @@ public class ForgeCommonEventListener {
     @SubscribeEvent
     public static void stepAssistHandler(LivingEvent.LivingTickEvent event) {
         float MAGIC_STEP_HEIGHT = 1.0023f;
+        LivingEntity entity = event.getEntity();
         if (!entity.isCrouching() && entity.getItemBySlot(EquipmentSlot.FEET).is(CustomTags.STEP_BOOTS)) {
             if (entity.getStepHeight() < MAGIC_STEP_HEIGHT) {
                 entity.setMaxUpStep(MAGIC_STEP_HEIGHT);

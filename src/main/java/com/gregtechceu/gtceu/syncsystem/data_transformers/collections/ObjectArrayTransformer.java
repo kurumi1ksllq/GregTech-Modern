@@ -40,8 +40,8 @@ public class ObjectArrayTransformer<T> implements IValueTransformer<T[]> {
 
         for (int i = 0; i < listTag.size(); i++) {
             if (elementTransformer.mustProvideObject())
-                elementTransformer.deserializeNBT(listTag.get(i), null, currentVal[i]);
-            else currentVal[i] = elementTransformer.deserializeNBT(listTag.get(i), null, null);
+                elementTransformer.deserializeNBT(IValueTransformer.stripLdlibWrapper(listTag.get(i)), null, currentVal[i]);
+            else currentVal[i] = elementTransformer.deserializeNBT(IValueTransformer.stripLdlibWrapper(listTag.get(i)), null, null);
         }
         return currentVal;
     }

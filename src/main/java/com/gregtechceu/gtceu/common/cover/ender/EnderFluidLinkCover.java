@@ -47,8 +47,8 @@ public class EnderFluidLinkCover extends AbstractEnderLinkCover<VirtualTank> {
         super(definition, coverHolder, attachedSide);
         this.mBLeftToTransferLastSecond = TRANSFER_RATE * 20;
         filterHandler = FilterHandlers.fluid(this);
-        if (!isRemote()) visualTank = VirtualEnderRegistry.getInstance()
-                .getOrCreateEntry(getOwner(), EntryTypes.ENDER_FLUID, getChannelName());
+        if (!isRemote()) setEntry(VirtualEnderRegistry.getInstance()
+                .getOrCreateEntry(getOwner(), EntryTypes.ENDER_FLUID, getChannelName()));
     }
 
     @Override

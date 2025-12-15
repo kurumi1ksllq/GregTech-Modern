@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.syncsystem;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
 import org.jetbrains.annotations.Nullable;
@@ -9,6 +10,17 @@ import org.jetbrains.annotations.Nullable;
  * {@link Tag}
  */
 public interface IValueTransformer<T> {
+
+    static Tag stripLdlibWrapper(Tag t) {
+        if (!(t instanceof CompoundTag tag)) return t;
+        if (tag.contains("p") && tag.contains("t")) {
+            return tag.getCompound("p");
+        }
+        if (tag.contains("t", Tag.TAG_COMPOUND)) {
+            return tag.getCompound("t").getCompound("p");
+        }
+        return tag;
+    }
 
     default boolean mustProvideObject() {
         return false;

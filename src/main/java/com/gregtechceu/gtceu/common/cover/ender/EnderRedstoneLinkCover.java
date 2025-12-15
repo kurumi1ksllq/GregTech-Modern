@@ -58,6 +58,7 @@ public class EnderRedstoneLinkCover extends AbstractEnderLinkCover<VirtualRedsto
         if (storage != null) storage.removeMember(uuid);
         storage = (VirtualRedstone) entry;
         storage.addMember(uuid);
+        getSyncDataHolder().markClientSyncFieldDirty("storage");
     }
 
     @Override

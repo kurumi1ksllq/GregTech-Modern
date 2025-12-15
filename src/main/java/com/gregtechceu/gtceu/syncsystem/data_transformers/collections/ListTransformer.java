@@ -29,6 +29,7 @@ public class ListTransformer<T> implements IValueTransformer<List<T>> {
     @Override
     public List<T> deserializeNBT(Tag tag, ISyncManaged holder, List<T> current) {
         if (!(tag instanceof ListTag listTag) || elementTransformer == null) return List.of();
-        return listTag.stream().map((t) -> elementTransformer.deserializeNBT(t, null, null)).toList();
+
+        return listTag.stream().map((t) -> elementTransformer.deserializeNBT(IValueTransformer.stripLdlibWrapper(t), null, null)).toList();
     }
 }

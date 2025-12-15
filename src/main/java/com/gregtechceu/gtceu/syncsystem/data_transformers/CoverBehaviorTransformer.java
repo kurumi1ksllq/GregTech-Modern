@@ -12,6 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -90,6 +91,12 @@ public class CoverBehaviorTransformer implements IValueTransformer<CoverBehavior
         }
 
         Objects.requireNonNull(holder.getCoverAtSide(side)).getSyncDataHolder().deserializeNBT(tag.getCompound("data"), isSync);
+
+        if (!isSync && holder.getCoverAtSide(side).getAttachItem() == ItemStack.EMPTY) {
+            GTCEu.LOGGER.error("Invalid cover save state, this should never happen unless loading corrupted data.");
+            holder.setCoverAtSide(null, side);
+        }
+
         return holder.getCoverAtSide(side);
     }
 }

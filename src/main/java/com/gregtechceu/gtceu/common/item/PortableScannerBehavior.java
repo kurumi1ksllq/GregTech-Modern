@@ -25,6 +25,7 @@ import com.gregtechceu.gtceu.common.capability.LocalizedHazardSavedData;
 import com.gregtechceu.gtceu.common.data.GTSoundEntries;
 import com.gregtechceu.gtceu.common.network.GTNetwork;
 import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectBedrockFluid;
+import com.gregtechceu.gtceu.syncsystem.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -71,8 +72,8 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
         SHOW_MACHINE_INFO("behavior.portable_scanner.mode.show_machine_info"),
         SHOW_ELECTRICAL_INFO("behavior.portable_scanner.mode.show_electrical_info"),
         SHOW_RECIPE_INFO("behavior.portable_scanner.mode.show_recipe_info"),
-        SHOW_ENVIRONMENTAL_INFO("behavior.portable_scanner.mode.show_environmental_info");
-
+        SHOW_ENVIRONMENTAL_INFO("behavior.portable_scanner.mode.show_environmental_info"),
+        SHOW_SYNC_INFO("behavior.portable_scanner.mode.show_sync_info");
         private final String langKey;
 
         DisplayMode(String langKey) {
@@ -447,6 +448,15 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
             if (debugInfo != null) {
                 list.addAll(debugInfo);
             }
+        }
+
+        if ((mode == DisplayMode.SHOW_ALL || mode == DisplayMode.SHOW_SYNC_INFO) && tileEntity instanceof ManagedSyncBlockEntity syncBlockEntity) {
+            list.add(Component.translatable("behavior.portable_scanner.divider"));
+            list.add(Component.literal("Save data"));
+            list.add(Component.literal(syncBlockEntity.getSyncDataHolder().serializeNBT(false).toString()));
+            list.add(Component.translatable("behavior.portable_scanner.divider"));
+            list.add(Component.literal("Update packet"));
+            list.add(Component.literal(syncBlockEntity.getSyncDataHolder().serializeNBT(true, true).toString()));
         }
 
         return energyCost;

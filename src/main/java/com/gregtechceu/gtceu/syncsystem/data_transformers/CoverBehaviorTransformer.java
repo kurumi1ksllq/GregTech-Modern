@@ -56,13 +56,22 @@ public class CoverBehaviorTransformer implements IValueTransformer<CoverBehavior
         compound.putInt("side", cover.attachedSide.ordinal());
         compound.putString("coverType", cover.coverDefinition.getId().toString());
         CompoundTag serialisedCover = cover.getSyncDataHolder().serializeNBT(isSync);
-        compound.merge(serialisedCover);
+        compound.put("data", serialisedCover);
 
         return compound;
     }
 
     public CoverBehavior deserialize(CompoundTag tag, ICoverable holder, @Nullable CoverBehavior cover,
                                      boolean isSync) {
+
+        /// Ldlib backwards compat
+        if (tag.contains("payload") && tag.contains("uid")) {
+            tag.putInt("side", tag.getCompound("uid").getInt("side"));
+            tag.putString("coverType", tag.getCompound("uid").getString("id"));
+            tag.put("data", tag.getCompound("payload").getCompound("d"));
+        }
+
+
         Direction side = Direction.values()[tag.getInt("side")];
 
         if (tag.isEmpty() || tag.getString("coverType").isEmpty()) {
@@ -80,7 +89,7 @@ public class CoverBehaviorTransformer implements IValueTransformer<CoverBehavior
             holder.setCoverAtSide(coverReg.createCoverBehavior(holder, side), side);
         }
 
-        Objects.requireNonNull(holder.getCoverAtSide(side)).getSyncDataHolder().deserializeNBT(tag, isSync);
+        Objects.requireNonNull(holder.getCoverAtSide(side)).getSyncDataHolder().deserializeNBT(tag.getCompound("data"), isSync);
         return holder.getCoverAtSide(side);
     }
 }

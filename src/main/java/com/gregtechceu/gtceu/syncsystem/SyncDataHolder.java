@@ -134,7 +134,9 @@ public class SyncDataHolder {
                     }
                 } catch (Throwable e) {
                     if (e instanceof WrongMethodTypeException) {
-                        throw new IllegalArgumentException("Invalid method signature for change listener for field %s %s".formatted(field.fieldName, holder.getClass().getCanonicalName()));
+                        throw new IllegalArgumentException(
+                                "Invalid method signature for change listener for field %s %s"
+                                        .formatted(field.fieldName, holder.getClass().getCanonicalName()));
                     }
                     GTCEu.LOGGER.error("Sync: Error while invoking change listener for field {}", field.fieldName);
                     GTCEu.LOGGER.error(e);

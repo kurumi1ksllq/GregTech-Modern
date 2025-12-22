@@ -11,8 +11,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraft.world.item.ItemStack;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -64,14 +64,12 @@ public class CoverBehaviorTransformer implements IValueTransformer<CoverBehavior
 
     public CoverBehavior deserialize(CompoundTag tag, ICoverable holder, @Nullable CoverBehavior cover,
                                      boolean isSync) {
-
         /// Ldlib backwards compat
         if (tag.contains("payload") && tag.contains("uid")) {
             tag.putInt("side", tag.getCompound("uid").getInt("side"));
             tag.putString("coverType", tag.getCompound("uid").getString("id"));
             tag.put("data", tag.getCompound("payload").getCompound("d"));
         }
-
 
         Direction side = Direction.values()[tag.getInt("side")];
 
@@ -90,7 +88,8 @@ public class CoverBehaviorTransformer implements IValueTransformer<CoverBehavior
             holder.setCoverAtSide(coverReg.createCoverBehavior(holder, side), side);
         }
 
-        Objects.requireNonNull(holder.getCoverAtSide(side)).getSyncDataHolder().deserializeNBT(tag.getCompound("data"), isSync);
+        Objects.requireNonNull(holder.getCoverAtSide(side)).getSyncDataHolder().deserializeNBT(tag.getCompound("data"),
+                isSync);
 
         if (!isSync && holder.getCoverAtSide(side).getAttachItem() == ItemStack.EMPTY) {
             GTCEu.LOGGER.error("Invalid cover save state, this should never happen unless loading corrupted data.");

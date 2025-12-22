@@ -73,6 +73,7 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
         SHOW_RECIPE_INFO("behavior.portable_scanner.mode.show_recipe_info"),
         SHOW_ENVIRONMENTAL_INFO("behavior.portable_scanner.mode.show_environmental_info"),
         SHOW_INTERNAL_JAVA_INFO("behavior.portable_scanner.mode.show_internal_info");
+
         private final String langKey;
 
         DisplayMode(String langKey) {
@@ -449,9 +450,10 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
             }
         }
 
-        if (mode == DisplayMode.SHOW_INTERNAL_JAVA_INFO && tileEntity instanceof ManagedSyncBlockEntity syncBlockEntity) {
+        if (mode == DisplayMode.SHOW_INTERNAL_JAVA_INFO &&
+                tileEntity instanceof ManagedSyncBlockEntity syncBlockEntity) {
             MetaMachineBlockEntity mmbe = (syncBlockEntity instanceof MetaMachineBlockEntity m) ? m : null;
-            PipeBlockEntity<?, ?> pipe = (syncBlockEntity instanceof PipeBlockEntity<?,?> p) ? p : null;
+            PipeBlockEntity<?, ?> pipe = (syncBlockEntity instanceof PipeBlockEntity<?, ?> p) ? p : null;
 
             list.add(Component.literal(syncBlockEntity.toString()));
             if (mmbe != null) list.add(Component.literal(mmbe.getMetaMachine().toString()));
@@ -462,14 +464,15 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
             list.add(Component.translatable("behavior.portable_scanner.divider"));
 
             list.add(Component.literal("Covers"));
-            ICoverable coverable = mmbe != null ? mmbe.getMetaMachine().getCoverContainer() : (pipe != null ? pipe.getCoverContainer() : null);
+            ICoverable coverable = mmbe != null ? mmbe.getMetaMachine().getCoverContainer() :
+                    (pipe != null ? pipe.getCoverContainer() : null);
             if (coverable != null) {
-                for (var dir: GTUtil.DIRECTIONS) {
+                for (var dir : GTUtil.DIRECTIONS) {
                     var cover = coverable.getCoverAtSide(dir);
                     list.add(Component.literal(dir.getName() + ": " + (cover != null ? cover.toString() : "null")));
                 }
             }
-                
+
             list.add(Component.translatable("behavior.portable_scanner.divider"));
             list.add(Component.literal("Save data"));
             nbtFormat(list, syncBlockEntity.getSyncDataHolder().serializeNBT(false));

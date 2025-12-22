@@ -51,7 +51,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public abstract class CoverBehavior implements ISyncManaged, IToolGridHighlight {
 
     @Getter
-    private final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
+    protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
 
     public final CoverDefinition coverDefinition;
     public final ICoverable coverHolder;

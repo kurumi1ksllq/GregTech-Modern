@@ -255,11 +255,16 @@ public class LargeBoilerMachine extends WorkableMultiblockMachine implements IEx
             currentThrottle = 100;
         }
 
+        public void setCurrentThrottle(int currentThrottle) {
+            this.currentThrottle = currentThrottle;
+            syncDataHolder.markClientSyncFieldDirty("currentThrottle");
+        }
+
         @Override
         public void setupRecipe(GTRecipe recipe) {
             super.setupRecipe(recipe);
             if (lastRecipe != null) {
-                currentThrottle = ((LargeBoilerMachine) machine).getThrottle();
+                setCurrentThrottle(((LargeBoilerMachine) machine).getThrottle());
                 duration = (int) Math.round(lastRecipe.duration / (currentThrottle / 100.0));
             }
         }
@@ -270,7 +275,7 @@ public class LargeBoilerMachine extends WorkableMultiblockMachine implements IEx
                 duration = (int) Math.round(lastRecipe.duration / (newThrottle / 100.0));
                 progress = (int) Math.round(newThrottleMultiplier * progress);
             }
-            currentThrottle = newThrottle;
+            setCurrentThrottle(newThrottle);
         }
     }
 }

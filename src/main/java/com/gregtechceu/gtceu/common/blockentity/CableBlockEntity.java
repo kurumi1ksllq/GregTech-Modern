@@ -297,7 +297,7 @@ public class CableBlockEntity extends PipeBlockEntity<Insulation, WireProperties
 
     public void setTemperature(int temperature) {
         this.temperature = temperature;
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("temperature");
+        syncDataHolder.markClientSyncFieldDirty("temperature");
         level.getLightEngine().checkBlock(worldPosition);
         if (!level.isClientSide && temperature >= meltTemp) {
             var facing = Direction.UP;

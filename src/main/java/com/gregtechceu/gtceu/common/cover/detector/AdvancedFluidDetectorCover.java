@@ -64,7 +64,7 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IU
 
     public void setLatched(boolean latched) {
         isLatched = latched;
-        if (!coverHolder.isRemote()) getSyncDataHolder().markClientSyncFieldDirty("isLatched");
+        syncDataHolder.markClientSyncFieldDirty("isLatched");
     }
 
     @Override

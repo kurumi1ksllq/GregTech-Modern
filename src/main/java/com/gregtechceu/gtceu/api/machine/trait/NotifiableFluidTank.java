@@ -79,7 +79,7 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
 
     public void onContentsChanged() {
         isEmpty = null;
-        getSyncDataHolder().markClientSyncFieldDirty("storages");
+        syncDataHolder.markClientSyncFieldDirty("storages");
         notifyListeners();
     }
 
@@ -242,7 +242,7 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
             this.lockedFluid.setFluid(FluidStack.EMPTY);
             setFilter(stack -> true);
         }
-        getSyncDataHolder().markClientSyncFieldDirty("lockedFluid");
+        syncDataHolder.markClientSyncFieldDirty("lockedFluid");
         onContentsChanged();
     }
 

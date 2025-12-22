@@ -25,7 +25,7 @@ public abstract class NotifiableRecipeHandlerTrait<T> extends MachineTrait imple
 
     public void setDistinct(boolean distinct) {
         isDistinct = distinct;
-        if (!machine.isRemote()) syncDataHolder.markClientSyncFieldDirty("isDistinct");
+        syncDataHolder.markClientSyncFieldDirty("isDistinct");
     }
 
     @Override

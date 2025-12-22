@@ -115,7 +115,7 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
     public void setMaintenanceProblems(byte problems) {
         this.maintenanceProblems = problems;
         updateMaintenanceSubscription();
-        getSyncDataHolder().markClientSyncFieldDirty("maintenanceProblems");
+        syncDataHolder.markClientSyncFieldDirty("maintenanceProblems");
     }
 
     @Override

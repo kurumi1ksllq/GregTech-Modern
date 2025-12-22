@@ -152,7 +152,7 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
 
     public void setOwnerUUID(UUID uuid) {
         ownerUUID = uuid;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("ownerUUID");
+        syncDataHolder.markClientSyncFieldDirty("ownerUUID");
     }
 
     public boolean isRemote() {
@@ -180,7 +180,7 @@ public class MetaMachine implements ISyncManaged, IToolable, ITickSubscription, 
         if (color == this.paintingColor) return;
 
         this.paintingColor = color;
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("paintingColor");
+        syncDataHolder.markClientSyncFieldDirty("paintingColor");
         this.onPaintingColorChanged(color);
 
         MachineRenderState renderState = getRenderState();

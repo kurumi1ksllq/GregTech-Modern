@@ -103,7 +103,7 @@ public class PumpMachine extends TieredEnergyMachine implements IAutoOutputFluid
 
     public void setAutoOutputFluids(boolean autoOutputFluids) {
         this.autoOutputFluids = autoOutputFluids;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("autoOutputFluids");
+        syncDataHolder.markClientSyncFieldDirty("autoOutputFluids");
     }
 
     @Override

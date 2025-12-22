@@ -99,7 +99,7 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
                 }
                 isTaped = true;
                 setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_TAPED, isTaped));
-                if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isTaped");
+                syncDataHolder.markClientSyncFieldDirty("isTaped");
                 return InteractionResult.sidedSuccess(world.isClientSide);
             }
         }
@@ -115,7 +115,7 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IMachineLif
                 this.inventory.storage.deserializeNBT(tag.getCompound("inventory"));
             }
             setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_TAPED, isTaped));
-            if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isTaped");
+            syncDataHolder.markClientSyncFieldDirty("isTaped");
         }
     }
 

@@ -442,10 +442,10 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
         public void tick() {
             if (cachedCWUt != allocatedCWUt) {
                 cachedCWUt = allocatedCWUt;
-                getSyncDataHolder().markClientSyncFieldDirty("cachedCWUt");
+                syncDataHolder.markClientSyncFieldDirty("cachedCWUt");
             }
             cachedEUt = getCurrentEUt();
-            getSyncDataHolder().markClientSyncFieldDirty("cachedEUt");
+            syncDataHolder.markClientSyncFieldDirty("cachedEUt");
             if (allocatedCWUt != 0) {
                 allocatedCWUt = 0;
             }

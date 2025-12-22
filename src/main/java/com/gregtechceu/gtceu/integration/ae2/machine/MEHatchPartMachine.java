@@ -43,7 +43,7 @@ public abstract class MEHatchPartMachine extends FluidHatchPartMachine implement
 
     public void setOnline(boolean online) {
         isOnline = online;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isOnline");
+        syncDataHolder.markClientSyncFieldDirty("isOnline");
     }
 
     protected GridNodeHolder createNodeHolder() {

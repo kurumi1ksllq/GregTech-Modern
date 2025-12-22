@@ -122,22 +122,22 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
 
     public void setConnections(int connections) {
         this.connections = connections;
-        getSyncDataHolder().markClientSyncFieldDirty("connections");
+        syncDataHolder.markClientSyncFieldDirty("connections");
     }
 
     public void setBlockedConnections(int blocked) {
         this.blockedConnections = blocked;
-        getSyncDataHolder().markClientSyncFieldDirty("blockedConnections");
+        syncDataHolder.markClientSyncFieldDirty("blockedConnections");
     }
 
     public void setPaintingColor(int col) {
         paintingColor = col;
-        getSyncDataHolder().markClientSyncFieldDirty("paintingColor");
+        syncDataHolder.markClientSyncFieldDirty("paintingColor");
     }
 
     public void setFrameMaterial(Material mat) {
         frameMaterial = mat;
-        getSyncDataHolder().markClientSyncFieldDirty("frameMaterial");
+        syncDataHolder.markClientSyncFieldDirty("frameMaterial");
     }
 
     @Override
@@ -214,7 +214,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     public void setBlocked(Direction side, boolean isBlocked) {
         if (level instanceof ServerLevel serverLevel && canHaveBlockedFaces()) {
             blockedConnections = withSideConnection(blockedConnections, side, isBlocked);
-            getSyncDataHolder().markClientSyncFieldDirty("blockedConnections");
+            syncDataHolder.markClientSyncFieldDirty("blockedConnections");
             setChanged();
             LevelPipeNet<?, ?> worldPipeNet = getPipeBlock().getWorldPipeNet(serverLevel);
             PipeNet<?> net = worldPipeNet.getNetFromPos(getBlockPos());
@@ -258,7 +258,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
             }
 
             connections = withSideConnection(connections, side, connected);
-            getSyncDataHolder().markClientSyncFieldDirty("connections");
+            syncDataHolder.markClientSyncFieldDirty("connections");
             updateNetworkConnection(side, connected);
             // notify neighbor of change so Auto Output updates its ticking status
             getLevel().neighborChanged(getBlockPos().relative(side), getPipeBlock(), getBlockPos());

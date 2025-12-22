@@ -117,9 +117,7 @@ public class QuantumChestMachine extends TieredMachine implements IAutoOutputIte
         this.maxAmount = maxAmount;
         this.cache = createCacheItemHandler(args);
         this.lockedItem = new CustomItemStackHandler();
-        lockedItem.setOnContentsChanged(() -> {
-            if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("lockedItem");
-        });
+        lockedItem.setOnContentsChanged(() -> syncDataHolder.markClientSyncFieldDirty("lockedItem"));
     }
 
     //////////////////////////////////////
@@ -195,14 +193,14 @@ public class QuantumChestMachine extends TieredMachine implements IAutoOutputIte
     @Override
     public void setAutoOutputItems(boolean allow) {
         this.autoOutputItems = allow;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("autoOutputItems");
+        syncDataHolder.markClientSyncFieldDirty("autoOutputItems");
         updateAutoOutputSubscription();
     }
 
     @Override
     public void setOutputFacingItems(@Nullable Direction outputFacing) {
         this.outputFacingItems = outputFacing;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("outputFacingItems");
+        syncDataHolder.markClientSyncFieldDirty("outputFacingItems");
         updateAutoOutputSubscription();
     }
 

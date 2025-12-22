@@ -140,7 +140,7 @@ public class MultiblockPartMachine extends MetaMachine implements IMultiPart {
                 setRenderState(renderState.setValue(GTMachineModelProperties.IS_FORMED, false));
             }
         }
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("controllerPositions");
+        syncDataHolder.markClientSyncFieldDirty("controllerPositions");
     }
 
     @MustBeInvokedByOverriders
@@ -149,7 +149,7 @@ public class MultiblockPartMachine extends MetaMachine implements IMultiPart {
         controllerPositions.add(controller.self().getPos());
         controllers.add(controller);
 
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("controllerPositions");
+        syncDataHolder.markClientSyncFieldDirty("controllerPositions");
         MachineRenderState renderState = getRenderState();
         if (renderState.hasProperty(GTMachineModelProperties.IS_FORMED)) {
             setRenderState(renderState.setValue(GTMachineModelProperties.IS_FORMED, true));

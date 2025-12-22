@@ -102,7 +102,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
     public void setFlipped(boolean flipped) {
         isFlipped = flipped;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isFlipped");
+        syncDataHolder.markClientSyncFieldDirty("isFlipped");
     }
 
     @SuppressWarnings("unused")
@@ -119,7 +119,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     protected void updatePartPositions() {
         this.partPositions = this.parts.isEmpty() ? new BlockPos[0] :
                 this.parts.stream().map(part -> part.self().getPos()).toArray(BlockPos[]::new);
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("partPositions");
+        syncDataHolder.markClientSyncFieldDirty("partPositions");
     }
 
     @Override
@@ -170,7 +170,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     @Override
     public void onStructureFormed() {
         isFormed = true;
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("isFormed");
+        syncDataHolder.markClientSyncFieldDirty("isFormed");
         MachineRenderState renderState = getRenderState();
         if (renderState.hasProperty(GTMachineModelProperties.IS_FORMED)) {
             setRenderState(renderState.setValue(GTMachineModelProperties.IS_FORMED, true));

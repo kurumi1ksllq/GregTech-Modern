@@ -73,7 +73,7 @@ public abstract class HPCAComponentPartMachine extends MultiblockPartMachine
         if (!canBeDamaged()) return;
         if (this.damaged != damaged) {
             this.damaged = damaged;
-            if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("damaged");
+            syncDataHolder.markClientSyncFieldDirty("damaged");
             MachineRenderState state = getRenderState();
             if (state.hasProperty(GTMachineModelProperties.IS_HPCA_PART_DAMAGED)) {
                 setRenderState(state.setValue(GTMachineModelProperties.IS_HPCA_PART_DAMAGED, damaged));

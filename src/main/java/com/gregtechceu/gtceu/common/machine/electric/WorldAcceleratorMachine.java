@@ -217,7 +217,7 @@ public class WorldAcceleratorMachine extends TieredEnergyMachine implements ICon
     public void setWorkingEnabled(boolean workingEnabled) {
         isWorkingEnabled = workingEnabled;
         setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_WORKING_ENABLED, isWorkingEnabled));
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isWorkingEnabled");
+        syncDataHolder.markClientSyncFieldDirty("isWorkingEnabled");
         updateSubscription();
     }
 
@@ -250,7 +250,7 @@ public class WorldAcceleratorMachine extends TieredEnergyMachine implements ICon
         if (!isRemote()) {
             isRandomTickMode = !isRandomTickMode;
             setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_RANDOM_TICK_MODE, isRandomTickMode));
-            if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isRandomTickMode");
+            syncDataHolder.markClientSyncFieldDirty("isRandomTickMode");
             playerIn.sendSystemMessage(Component.translatable(isRandomTickMode ?
                     "gtceu.machine.world_accelerator.mode_entity" : "gtceu.machine.world_accelerator.mode_tile"));
             scheduleRenderUpdate();

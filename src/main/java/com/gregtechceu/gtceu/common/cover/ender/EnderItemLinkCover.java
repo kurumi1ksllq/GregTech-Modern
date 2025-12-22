@@ -66,7 +66,7 @@ public class EnderItemLinkCover extends AbstractEnderLinkCover<VirtualItemStorag
     @Override
     protected void setEntry(VirtualEntry entry) {
         storage = (VirtualItemStorage) entry;
-        getSyncDataHolder().markClientSyncFieldDirty("storage");
+        syncDataHolder.markClientSyncFieldDirty("storage");
     }
 
     @Override

@@ -180,7 +180,7 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
 
     public void setMuffled(boolean muffled) {
         isMuffled = muffled;
-        getSyncDataHolder().markClientSyncFieldDirty("isMuffled");
+        syncDataHolder.markClientSyncFieldDirty("isMuffled");
     }
 
     //////////////////////////////////////

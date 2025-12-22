@@ -38,7 +38,7 @@ public class TieredIOPartMachine extends TieredPartMachine implements IControlla
     @Override
     public void setWorkingEnabled(boolean workingEnabled) {
         this.workingEnabled = workingEnabled;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("workingEnabled");
+        syncDataHolder.markClientSyncFieldDirty("workingEnabled");
     }
 
     //////////////////////////////////////

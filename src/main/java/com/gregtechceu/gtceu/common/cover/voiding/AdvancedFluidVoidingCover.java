@@ -96,7 +96,7 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
 
     public void setVoidingMode(VoidingMode voidingMode) {
         this.voidingMode = voidingMode;
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("voidingMode");
+        syncDataHolder.markClientSyncFieldDirty("voidingMode");
         configureStackSizeInput();
 
         if (!this.isRemote()) {
@@ -105,11 +105,8 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
     }
 
     private void setTransferBucketMode(BucketMode transferBucketMode) {
-        var oldMultiplier = this.transferBucketMode.multiplier;
-        var newMultiplier = transferBucketMode.multiplier;
-
         this.transferBucketMode = transferBucketMode;
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("transferBucketMode");
+        syncDataHolder.markClientSyncFieldDirty("transferBucketMode");
 
         if (stackSizeInput == null) return;
         stackSizeInput.setValue(getCurrentBucketModeTransferSize());
@@ -146,7 +143,7 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
 
     private void setCurrentBucketModeTransferSize(int transferSize) {
         this.globalTransferSizeMillibuckets = Math.max(transferSize * this.transferBucketMode.multiplier, 0);
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("globalTransferSizeMillibuckets");
+        syncDataHolder.markClientSyncFieldDirty("globalTransferSizeMillibuckets");
     }
 
     @Override

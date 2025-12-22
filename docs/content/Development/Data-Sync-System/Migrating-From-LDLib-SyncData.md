@@ -13,7 +13,7 @@ title: "Migrating from LDLib SyncData"
 ### Annotations
 
 !!! warning
-Client sync fields **do not** automatically detect changes. When changing a client sync field, call `ISyncManaged.getSyncDataHolder().markClientSyncFieldDirty(FIELD_NAME)`
+Client sync fields **do not** automatically detect changes. When changing a client sync field, call `ISyncManaged.syncDataHolder.markClientSyncFieldDirty(FIELD_NAME)`
 
 - `@DescSynced` -> `@SyncToClient`
 - `@RequireRerender` -> `@RerenderOnChanged`

@@ -163,7 +163,7 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IMiner, I
 
     public void setNeedsVenting(boolean venting) {
         this.needsVenting = venting;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("needsVenting");
+        syncDataHolder.markClientSyncFieldDirty("needsVenting");
     }
 
     //////////////////////////////////////

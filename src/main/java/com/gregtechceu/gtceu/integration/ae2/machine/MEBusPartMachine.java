@@ -42,7 +42,7 @@ public abstract class MEBusPartMachine extends ItemBusPartMachine implements IGr
 
     public void setOnline(boolean online) {
         isOnline = online;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isOnline");
+        syncDataHolder.markClientSyncFieldDirty("isOnline");
     }
 
     protected GridNodeHolder createNodeHolder() {

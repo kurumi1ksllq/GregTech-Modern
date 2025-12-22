@@ -101,7 +101,7 @@ public class AdvancedItemVoidingCover extends ItemVoidingCover {
         configureStackSizeInput();
 
         if (!this.isRemote()) {
-            getSyncDataHolder().markClientSyncFieldDirty("voidingMode");
+            syncDataHolder.markClientSyncFieldDirty("voidingMode");
             configureFilter();
         }
     }

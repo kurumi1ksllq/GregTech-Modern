@@ -109,7 +109,7 @@ public class MachineControllerCover extends CoverBehavior implements IUICover {
         resetCurrentControllable();
 
         this.controllerMode = controllerMode;
-        if (!coverHolder.isRemote()) getSyncDataHolder().markClientSyncFieldDirty("filterMode");
+        syncDataHolder.markClientSyncFieldDirty("filterMode");
 
         updateAll();
     }

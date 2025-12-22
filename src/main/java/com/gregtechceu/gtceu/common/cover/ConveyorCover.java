@@ -131,7 +131,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
 
     public void setDistributionMode(DistributionMode mode) {
         distributionMode = mode;
-        getSyncDataHolder().markClientSyncFieldDirty("distributionMode");
+        syncDataHolder.markClientSyncFieldDirty("distributionMode");
     }
 
     //////////////////////////////////////

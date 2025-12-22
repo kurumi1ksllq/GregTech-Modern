@@ -90,7 +90,7 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
 
     public void setMuffled(boolean muffled) {
         isMuffled = muffled;
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("isMuffled");
+        syncDataHolder.markClientSyncFieldDirty("isMuffled");
     }
 
     //////////////////////////////////////

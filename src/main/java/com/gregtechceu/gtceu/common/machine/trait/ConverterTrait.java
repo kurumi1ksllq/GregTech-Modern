@@ -51,7 +51,7 @@ public class ConverterTrait extends NotifiableEnergyContainer {
     public void setFeToEu(boolean feToEu) {
         this.feToEu = feToEu;
         setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_FE_TO_EU, feToEu));
-        if (!machine.isRemote()) syncDataHolder.markClientSyncFieldDirty("feToEu");
+        syncDataHolder.markClientSyncFieldDirty("feToEu");
         machine.notifyBlockUpdate();
     }
 

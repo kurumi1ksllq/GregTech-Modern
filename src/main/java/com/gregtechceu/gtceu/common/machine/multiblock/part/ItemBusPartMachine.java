@@ -143,7 +143,7 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     @Override
     public void setDistinct(boolean distinct) {
         isDistinct = (io != IO.OUT && distinct);
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isDistinct");
+        syncDataHolder.markClientSyncFieldDirty("isDistinct");
         getHandlerList().setDistinctAndNotify(isDistinct);
     }
 

@@ -161,7 +161,7 @@ public class LargeCombustionEngineMachine extends WorkableElectricMultiblockMach
             this.isOxygenBoosted = RecipeHelper.matchRecipe(this, boosterRecipe).isSuccess() &&
                     RecipeHelper.handleRecipeIO(this, boosterRecipe, IO.IN, this.recipeLogic.getChanceCaches())
                             .isSuccess();
-            if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isOxygenBoosted");
+            syncDataHolder.markClientSyncFieldDirty("isOxygenBoosted");
         }
 
         runningTimer++;

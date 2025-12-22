@@ -107,7 +107,7 @@ public abstract class CoverBehavior implements ISyncManaged, IToolGridHighlight 
     public void onAttached(ItemStack itemStack, @Nullable ServerPlayer player) {
         attachItem = itemStack.copy();
         attachItem.setCount(1);
-        getSyncDataHolder().markClientSyncFieldDirty("attachItem");
+        syncDataHolder.markClientSyncFieldDirty("attachItem");
     }
 
     public void onLoad() {}

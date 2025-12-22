@@ -172,14 +172,14 @@ public class QuantumTankMachine extends TieredMachine implements IAutoOutputFlui
     @Override
     public void setAutoOutputFluids(boolean allow) {
         this.autoOutputFluids = allow;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("autoOutputFluids");
+        syncDataHolder.markClientSyncFieldDirty("autoOutputFluids");
         updateAutoOutputSubscription();
     }
 
     @Override
     public void setOutputFacingFluids(@Nullable Direction outputFacing) {
         this.outputFacingFluids = outputFacing;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("outputFacingFluids");
+        syncDataHolder.markClientSyncFieldDirty("outputFacingFluids");
         updateAutoOutputSubscription();
     }
 
@@ -291,14 +291,14 @@ public class QuantumTankMachine extends TieredMachine implements IAutoOutputFlui
         } else if (!locked) {
             lockedFluid.setFluid(FluidStack.EMPTY);
         }
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("lockedFluid");
+        syncDataHolder.markClientSyncFieldDirty("lockedFluid");
     }
 
     protected void setLocked(FluidStack fluid) {
         if (fluid.isEmpty()) setLocked(false);
         else if (stored.isEmpty()) lockedFluid.setFluid(fluid);
         else if (stored.isFluidEqual(fluid)) setLocked(true);
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("lockedFluid");
+        syncDataHolder.markClientSyncFieldDirty("lockedFluid");
     }
 
     public FluidStack getLockedFluid() {

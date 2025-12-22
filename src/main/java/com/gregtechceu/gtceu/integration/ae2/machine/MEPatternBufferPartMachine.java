@@ -145,9 +145,7 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
 
     public MEPatternBufferPartMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, IO.IN, args);
-        patternInventory.setOnContentsChanged(() -> {
-            if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("patternInventory");
-        });
+        patternInventory.setOnContentsChanged(() -> syncDataHolder.markClientSyncFieldDirty("patternInventory"));
         this.patternInventory.setFilter(stack -> stack.getItem() instanceof ProcessingPatternItem);
         for (int i = 0; i < this.internalInventory.length; i++) {
             this.internalInventory[i] = new InternalSlot();
@@ -187,7 +185,7 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
 
     public void setCustomName(String newName) {
         customName = newName;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("customName");
+        syncDataHolder.markClientSyncFieldDirty("customName");
         markAsDirty();
     }
 

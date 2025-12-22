@@ -126,7 +126,7 @@ public class RotorHolderPartMachine extends TieredPartMachine
 
     public void setRotorMaterial(Material mat) {
         this.rotorMaterial = mat;
-        getSyncDataHolder().markClientSyncFieldDirty("rotorMaterial");
+        syncDataHolder.markClientSyncFieldDirty("rotorMaterial");
     }
 
     private void onRotorInventoryChanged() {
@@ -146,7 +146,7 @@ public class RotorHolderPartMachine extends TieredPartMachine
                     .setValue(HAS_ROTOR, false)
                     .setValue(IS_EMISSIVE_ROTOR, false));
         }
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("rotorMaterial");
+        syncDataHolder.markClientSyncFieldDirty("rotorMaterial");
     }
 
     @Override
@@ -180,7 +180,7 @@ public class RotorHolderPartMachine extends TieredPartMachine
             setRenderState(getRenderState().setValue(IS_ROTOR_SPINNING, rotorSpeed > 0));
         }
         this.rotorSpeed = rotorSpeed;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("rotorSpeed");
+        syncDataHolder.markClientSyncFieldDirty("rotorSpeed");
     }
 
     @Override

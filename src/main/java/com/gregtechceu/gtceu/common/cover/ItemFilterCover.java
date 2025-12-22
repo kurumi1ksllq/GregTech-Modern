@@ -64,7 +64,7 @@ public class ItemFilterCover extends CoverBehavior implements IUICover {
 
     public void setFilterMode(FilterMode filterMode) {
         this.filterMode = filterMode;
-        getSyncDataHolder().markClientSyncFieldDirty("filterMode");
+        syncDataHolder.markClientSyncFieldDirty("filterMode");
     }
 
     @Override

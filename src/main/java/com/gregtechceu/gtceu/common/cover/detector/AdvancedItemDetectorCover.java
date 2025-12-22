@@ -104,7 +104,7 @@ public class AdvancedItemDetectorCover extends ItemDetectorCover implements IUIC
 
     public void setLatched(boolean latched) {
         isLatched = latched;
-        getSyncDataHolder().markClientSyncFieldDirty("isLatched");
+        syncDataHolder.markClientSyncFieldDirty("isLatched");
     }
 
     //////////////////////////////////////

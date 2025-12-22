@@ -49,7 +49,7 @@ public class ObjectHolderMachine extends MultiblockPartMachine implements IObjec
 
     public void setLocked(boolean locked) {
         isLocked = locked;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("isLocked");
+        syncDataHolder.markClientSyncFieldDirty("isLocked");
     }
 
     @Override

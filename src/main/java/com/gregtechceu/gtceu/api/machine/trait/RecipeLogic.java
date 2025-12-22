@@ -176,7 +176,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
 
     public void setProgress(int progress) {
         this.progress = progress;
-        getSyncDataHolder().markClientSyncFieldDirty("progress");
+        syncDataHolder.markClientSyncFieldDirty("progress");
     }
 
     public double getProgressPercent() {
@@ -397,7 +397,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
             }
             machine.notifyStatusChanged(this.status, status);
             this.status = status;
-            getSyncDataHolder().markClientSyncFieldDirty("status");
+            syncDataHolder.markClientSyncFieldDirty("status");
             setRenderState(getRenderState().setValue(GTMachineModelProperties.RECIPE_LOGIC_STATUS, status));
             updateTickSubscription();
             if (this.status != Status.WAITING) {

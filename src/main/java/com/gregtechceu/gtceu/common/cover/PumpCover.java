@@ -168,7 +168,7 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
     public void setWorkingEnabled(boolean isWorkingAllowed) {
         if (this.isWorkingEnabled != isWorkingAllowed) {
             this.isWorkingEnabled = isWorkingAllowed;
-            if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("isWorkingEnabled");
+            syncDataHolder.markClientSyncFieldDirty("isWorkingEnabled");
             subscriptionHandler.updateSubscription();
         }
     }
@@ -186,7 +186,7 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
         var newMultiplier = bucketMode.multiplier;
 
         this.bucketMode = bucketMode;
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("bucketMode");
+        syncDataHolder.markClientSyncFieldDirty("bucketMode");
         if (transferRateWidget == null) return;
 
         if (oldMultiplier > newMultiplier) {
@@ -202,7 +202,7 @@ public class PumpCover extends CoverBehavior implements IIOCover, IUICover, ICon
 
     protected void setManualIOMode(ManualIOMode manualIOMode) {
         this.manualIOMode = manualIOMode;
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("manualIOMode");
+        syncDataHolder.markClientSyncFieldDirty("manualIOMode");
     }
 
     protected void update() {

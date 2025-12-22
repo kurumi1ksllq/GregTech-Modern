@@ -187,7 +187,7 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
     private void changeState(State newState) {
         if (state != newState) {
             state = newState;
-            if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("state");
+            syncDataHolder.markClientSyncFieldDirty("state");
             setRenderState(getRenderState().setValue(GTMachineModelProperties.CHARGER_STATE, newState));
         }
     }

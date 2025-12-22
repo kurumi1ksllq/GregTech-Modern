@@ -225,7 +225,7 @@ public class FusionReactorMachine extends WorkableElectricMultiblockMachine impl
                 int newColor = 0xFF000000 | GTUtil.getFluidColor(stack);
                 if (!Objects.equals(color, newColor)) {
                     color = newColor;
-                    if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("color");
+                    syncDataHolder.markClientSyncFieldDirty("color");
                 }
             }
         }
@@ -254,14 +254,14 @@ public class FusionReactorMachine extends WorkableElectricMultiblockMachine impl
     public void onWaiting() {
         super.onWaiting();
         color = -1;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("color");
+        syncDataHolder.markClientSyncFieldDirty("color");
     }
 
     @Override
     public void afterWorking() {
         super.afterWorking();
         color = -1;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("color");
+        syncDataHolder.markClientSyncFieldDirty("color");
     }
 
     @Override

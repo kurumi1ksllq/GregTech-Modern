@@ -136,7 +136,7 @@ public abstract class AbstractEnderLinkCover<T extends VirtualEntry> extends Cov
     public void setIo(IO io) {
         if (io == IO.IN || io == IO.OUT) {
             this.io = io;
-            if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("io");
+            syncDataHolder.markClientSyncFieldDirty("io");
             subscriptionHandler.updateSubscription();
         }
     }
@@ -168,7 +168,7 @@ public abstract class AbstractEnderLinkCover<T extends VirtualEntry> extends Cov
         VirtualEnderRegistry.getInstance().deleteEntryIf(getOwner(), getEntryType(), getChannelName(),
                 VirtualEntry::canRemove);
         this.colorStr = name;
-        getSyncDataHolder().markClientSyncFieldDirty("colorStr");
+        syncDataHolder.markClientSyncFieldDirty("colorStr");
         setVirtualEntry();
     }
 
@@ -181,7 +181,7 @@ public abstract class AbstractEnderLinkCover<T extends VirtualEntry> extends Cov
         VirtualEnderRegistry.getInstance().deleteEntryIf(getOwner(), getEntryType(), getChannelName(),
                 VirtualEntry::canRemove);
         this.permission = permission;
-        getSyncDataHolder().markClientSyncFieldDirty("permission");
+        syncDataHolder.markClientSyncFieldDirty("permission");
 
         setVirtualEntry();
     }
@@ -189,7 +189,7 @@ public abstract class AbstractEnderLinkCover<T extends VirtualEntry> extends Cov
     protected void setVirtualEntry() {
         setEntry(VirtualEnderRegistry.getInstance().getOrCreateEntry(getOwner(), getEntryType(), getChannelName()));
         getEntry().setColor(this.colorStr);
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("isAnyChanged");
+        syncDataHolder.markClientSyncFieldDirty("isAnyChanged");
         this.isAnyChanged = true;
         subscriptionHandler.updateSubscription();
     }
@@ -223,7 +223,7 @@ public abstract class AbstractEnderLinkCover<T extends VirtualEntry> extends Cov
 
     protected void setManualIOMode(ManualIOMode manualIOMode) {
         this.manualIOMode = manualIOMode;
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("manualIOMode");
+        syncDataHolder.markClientSyncFieldDirty("manualIOMode");
         subscriptionHandler.updateSubscription();
     }
 

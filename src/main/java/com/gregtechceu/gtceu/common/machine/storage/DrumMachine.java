@@ -146,7 +146,7 @@ public class DrumMachine extends MetaMachine implements IAutoOutputFluid, IDropS
     @Override
     public void setAutoOutputFluids(boolean allow) {
         this.autoOutputFluids = allow;
-        if (!isRemote()) syncDataHolder.markClientSyncFieldDirty("autoOutputFluids");
+        syncDataHolder.markClientSyncFieldDirty("autoOutputFluids");
         updateAutoOutputSubscription();
     }
 

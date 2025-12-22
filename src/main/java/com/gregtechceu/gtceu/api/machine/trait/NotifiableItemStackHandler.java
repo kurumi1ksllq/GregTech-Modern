@@ -72,7 +72,7 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
 
     public void onContentsChanged() {
         isEmpty = null;
-        if (!machine.isRemote()) getSyncDataHolder().markClientSyncFieldDirty("storage");
+        syncDataHolder.markClientSyncFieldDirty("storage");
         notifyListeners();
     }
 

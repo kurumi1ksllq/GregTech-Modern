@@ -59,7 +59,7 @@ public class EnderFluidLinkCover extends AbstractEnderLinkCover<VirtualTank> {
     @Override
     protected void setEntry(VirtualEntry entry) {
         visualTank = (VirtualTank) entry;
-        if (!isRemote()) getSyncDataHolder().markClientSyncFieldDirty("visualTank");
+        syncDataHolder.markClientSyncFieldDirty("visualTank");
     }
 
     @Override

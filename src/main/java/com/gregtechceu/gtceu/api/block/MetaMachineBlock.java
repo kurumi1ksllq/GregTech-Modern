@@ -60,7 +60,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @SuppressWarnings("deprecation")
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
+public class MetaMachineBlock extends Block implements IMachineBlock {
 
     @Getter
     public final MachineDefinition definition;
@@ -118,7 +118,6 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
             if (machine != null) {
                 if (player instanceof ServerPlayer sPlayer) {
                     machine.setOwnerUUID(sPlayer.getUUID());
-                    machine.markDirty();
                 }
             }
             if (machine instanceof IDropSaveMachine dropSaveMachine) {
@@ -285,7 +284,6 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
 
         if (machine != null && machine.getOwnerUUID() == null && player instanceof ServerPlayer sPlayer) {
             machine.setOwnerUUID(sPlayer.getUUID());
-            machine.markDirty();
         }
 
         Set<GTToolType> types = ToolHelper.getToolTypes(itemStack);
@@ -350,13 +348,13 @@ public class MetaMachineBlock extends AppearanceBlock implements IMachineBlock {
     }
 
     @Override
-    public BlockState getBlockAppearance(BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side,
-                                         BlockState sourceState, BlockPos sourcePos) {
+    public BlockState getAppearance(BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side,
+                                    @Nullable BlockState sourceState, @Nullable BlockPos sourcePos) {
         var machine = getMachine(level, pos);
         if (machine != null) {
             return machine.getBlockAppearance(state, level, pos, side, sourceState, sourcePos);
         }
-        return super.getBlockAppearance(state, level, pos, side, sourceState, sourcePos);
+        return super.getAppearance(state, level, pos, side, sourceState, sourcePos);
     }
 
     @Override

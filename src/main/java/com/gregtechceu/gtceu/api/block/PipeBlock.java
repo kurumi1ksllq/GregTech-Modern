@@ -20,6 +20,7 @@ import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.item.CoverPlaceBehavior;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
+import com.gregtechceu.gtceu.syncsystem.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.client.renderer.IBlockRendererProvider;
@@ -73,7 +74,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<NodeDataType>, NodeDataType,
-        WorldPipeNetType extends LevelPipeNet<NodeDataType, ? extends PipeNet<NodeDataType>>> extends AppearanceBlock
+        WorldPipeNetType extends LevelPipeNet<NodeDataType, ? extends PipeNet<NodeDataType>>> extends Block
                                implements EntityBlock, IBlockRendererProvider, SimpleWaterloggedBlock {
 
     public final PipeType pipeType;
@@ -413,7 +414,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
                 }
 
                 if ((player.isShiftKeyDown() && held.isEmpty() && coverable.hasAnyCover()) ||
-                        types.stream().anyMatch(type -> type.itemTags.stream().anyMatch(held::is)) ||
+                        types.stream().anyMatch(type -> type.matchTags.stream().anyMatch(held::is)) ||
                         CoverPlaceBehavior.isCoverBehaviorItem(held, coverable::hasAnyCover,
                                 coverDef -> ICoverable.canPlaceCover(coverDef, coverable)) ||
                         (held.getItem() instanceof BlockItem blockItem &&
@@ -437,6 +438,9 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
                     if (pTile instanceof IPipeNode<?, ?> pipeNode) {
                         pipeNode.serverTick();
                     }
+                    if (pTile instanceof ManagedSyncBlockEntity syncObj) {
+                        syncObj.updateTick();
+                    }
                 };
             }
         }
@@ -444,15 +448,15 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
     }
 
     @Override
-    public BlockState getBlockAppearance(BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side,
-                                         BlockState sourceState, BlockPos sourcePos) {
+    public BlockState getAppearance(BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side,
+                                    @Nullable BlockState sourceState, @Nullable BlockPos sourcePos) {
         var pipe = getPipeTile(level, pos);
         if (pipe != null) {
             var appearance = pipe.getCoverContainer().getBlockAppearance(state, level, pos, side, sourceState,
                     sourcePos);
             if (appearance != null) return appearance;
         }
-        return super.getBlockAppearance(state, level, pos, side, sourceState, sourcePos);
+        return super.getAppearance(state, level, pos, side, sourceState, sourcePos);
     }
 
     @Override
@@ -470,5 +474,9 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
             }
         }
         return drops;
+    }
+
+    public GTToolType getPipeTuneTool() {
+        return GTToolType.WRENCH;
     }
 }

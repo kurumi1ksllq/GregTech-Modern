@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.api.capability;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.block.IAppearance;
 import com.gregtechceu.gtceu.api.blockentity.ITickSubscription;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
@@ -32,15 +31,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public interface ICoverable extends ITickSubscription, IAppearance {
+public interface ICoverable extends ITickSubscription {
 
     Level getLevel();
 
     BlockPos getPos();
 
-    long getOffsetTimer();
+    BlockState getState();
 
-    void markDirty();
+    long getOffsetTimer();
 
     boolean isInValid();
 
@@ -89,7 +88,6 @@ public interface ICoverable extends ITickSubscription, IAppearance {
         coverBehavior.onLoad();
         setCoverAtSide(coverBehavior, side);
         notifyBlockUpdate();
-        markDirty();
         scheduleNeighborShapeUpdate();
         // TODO achievement
         // AdvancementTriggers.FIRST_COVER_PLACE.trigger((PlayerMP) player);
@@ -115,7 +113,6 @@ public interface ICoverable extends ITickSubscription, IAppearance {
 
         }
         notifyBlockUpdate();
-        markDirty();
         scheduleNeighborShapeUpdate();
         return true;
     }
@@ -230,12 +227,13 @@ public interface ICoverable extends ITickSubscription, IAppearance {
     }
 
     @Nullable
-    static Direction traceCoverSide(BlockHitResult result) {
+    static Direction traceCoverSide(@Nullable BlockHitResult result) {
         return determineGridSideHit(result);
     }
 
     @Nullable
-    static Direction determineGridSideHit(BlockHitResult result) {
+    static Direction determineGridSideHit(@Nullable BlockHitResult result) {
+        if (result == null) return null;
         return GTUtil.determineWrenchingSide(result.getDirection(),
                 (float) (result.getLocation().x - result.getBlockPos().getX()),
                 (float) (result.getLocation().y - result.getBlockPos().getY()),
@@ -266,7 +264,6 @@ public interface ICoverable extends ITickSubscription, IAppearance {
     }
 
     @Nullable
-    @Override
     default BlockState getBlockAppearance(BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side,
                                           BlockState sourceState, BlockPos sourcePos) {
         if (hasCover(side)) {

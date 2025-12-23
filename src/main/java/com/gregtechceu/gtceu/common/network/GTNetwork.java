@@ -7,6 +7,10 @@ import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectB
 import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectBedrockOre;
 import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectOre;
 
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -28,6 +32,41 @@ public class GTNetwork {
         registar.playToClient(SPacketProspectBedrockOre.TYPE, SPacketProspectBedrockOre.CODEC, SPacketProspectBedrockOre::execute);
         registar.playToClient(SPacketSendWorldID.TYPE, SPacketSendWorldID.CODEC, SPacketSendWorldID::execute);
         registar.playBidirectional(SCPacketShareProspection.TYPE, SCPacketShareProspection.CODEC, SCPacketShareProspection::execute);
-        // spotless:on
+        // spotless:on        
     }
+
+    public static void sendToServer(CustomPacketPayload packet) {
+        PacketDistributor.sendToServer(packet);
+    }
+
+    // public static void sendToPlayersInLevel(ResourceKey<Level> level, INetPacket packet) {
+    // INSTANCE.send(PacketDistributor.DIMENSION.with(() -> level), packet);
+    // }
+
+    // public static void sendToPlayersNearPoint(PacketDistributor.TargetPoint point, INetPacket packet) {
+    // INSTANCE.send(PacketDistributor.NEAR.with(() -> point), packet);
+    // }
+
+    // public static void sendToAllPlayersTrackingEntity(Entity entity, boolean includeSelf, INetPacket packet) {
+    // INSTANCE.send(includeSelf ? PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity) :
+    // PacketDistributor.TRACKING_ENTITY.with(() -> entity), packet);
+    // }
+
+    public static void sendToAllPlayersTrackingChunk(LevelChunk chunk, CustomPacketPayload packet) {
+        PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) chunk.getLevel(), chunk.getPos(), packet);
+    }
+
+    // public static void sendToAll(INetPacket packet) {
+    // INSTANCE.send(PacketDistributor.ALL.noArg(), packet);
+    // }
+
+    // public static void sendToPlayer(ServerPlayer player, INetPacket packet) {
+    // INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), packet);
+    // }
+
+    // public static void reply(NetworkEvent.Context context, INetPacket packet) {
+    // INSTANCE.reply(packet, context);
+    // }
+
+    // public interface INetPacket {
 }

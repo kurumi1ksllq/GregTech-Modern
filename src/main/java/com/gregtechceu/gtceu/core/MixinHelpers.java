@@ -192,13 +192,32 @@ public class MixinHelpers {
                     tagMap.computeIfAbsent(CustomTags.TOOL_TIERS[material.getBlockHarvestLevel()].location(),
                             path -> new ArrayList<>()).addAll(entries);
                     if (material.hasProperty(PropertyKey.WOOD)) {
-                        tagMap.computeIfAbsent(BlockTags.MINEABLE_WITH_AXE.location(), path -> new ArrayList<>())
-                                .addAll(entries);
+                        // Wood blocks with this tag always allow a Wrench, but only allow an Axe if the config is
+                        // not set. Pickaxe is never allowed (special case)
+                        if (entry.tagPrefix().miningToolTag()
+                                .contains(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WRENCH)) {
+                            tagMap.computeIfAbsent(CustomTags.MINEABLE_WITH_WRENCH.location(),
+                                    path -> new ArrayList<>()).addAll(entries);
+                            if (!ConfigHolder.INSTANCE.machines.requireGTToolsForBlocks) {
+                                tagMap.computeIfAbsent(BlockTags.MINEABLE_WITH_AXE.location(),
+                                        path -> new ArrayList<>())
+                                        .addAll(entries);
+                            }
+                        } else {
+                            // Other wood stuff should still get the Axe tag
+                            tagMap.computeIfAbsent(BlockTags.MINEABLE_WITH_AXE.location(), path -> new ArrayList<>())
+                                    .addAll(entries);
+                        }
                     } else {
                         for (var tag : entry.tagPrefix().miningToolTag()) {
                             tagMap.computeIfAbsent(tag.location(), path -> new ArrayList<>()).addAll(entries);
                         }
                     }
+                }
+
+                if (entry.tagPrefix() == TagPrefix.frameGt) {
+                    tagMap.computeIfAbsent(CustomTags.SLOW_WALKABLE_BLOCKS.location(), path -> new ArrayList<>())
+                            .addAll(entries);
                 }
             });
 
@@ -293,11 +312,6 @@ public class MixinHelpers {
                     ResourceLocation lootTableId = blockEntry.getId().withPrefix("blocks/");
                     Block block = blockEntry.get();
 
-                    if (!type.shouldDropAsItem() && !ConfigHolder.INSTANCE.worldgen.allUniqueStoneTypes) {
-                        TagPrefix orePrefix = type.isDoubleDrops() ? TagPrefix.oreNetherrack : TagPrefix.ore;
-                        block = ChemicalHelper.getBlock(orePrefix, material);
-                    }
-
                     ItemStack dropItem = ChemicalHelper.get(TagPrefix.rawOre, material);
                     if (dropItem.isEmpty()) dropItem = ChemicalHelper.get(TagPrefix.gem, material);
                     if (dropItem.isEmpty()) dropItem = ChemicalHelper.get(TagPrefix.dust, material);
@@ -308,8 +322,8 @@ public class MixinHelpers {
                                     LootItem.lootTableItem(dropItem.getItem())
                                             .apply(SetItemCountFunction
                                                     .setCount(ConstantValue.exactly(oreMultiplier)))));
-                    // .apply(ApplyBonusCount.addOreBonusCount(Enchantments.FORTUNE)))); //disable fortune for
-                    // balance reasons. (for now, until we can think of a better solution.)
+                    // disable fortune for balance reasons. (for now, until we can think of a better solution.)
+                    // .apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE))));
 
                     LootPool.Builder pool = LootPool.lootPool();
                     boolean isEmpty = true;
@@ -319,7 +333,7 @@ public class MixinHelpers {
                             pool.add(LootItem.lootTableItem(dustStack.getItem())
                                     .when(blockLoot.doesNotHaveSilkTouch())
                                     .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 1)))
-                                    .apply(ApplyBonusCount.addUniformBonusCount(fortune))
+                                    // .apply(ApplyBonusCount.addUniformBonusCount(fortune))
                                     .apply(LimitCount.limitCount(IntRange.range(0, 2)))
                                     .apply(ApplyExplosionDecay.explosionDecay()));
                             isEmpty = false;

@@ -14,19 +14,32 @@ repositories {
 
     maven { // LDLib, Shimmer
         name = "FirstDarkDev Maven"
-        url = "https://maven.firstdarkdev.xyz/snapshots/"
+        url = "https://maven.firstdark.dev/snapshots"
     }
 
+    maven { url = "https://maven.createmod.net" }
+
+
+    exclusiveContent { // Create, Ponder, Flywheel
+        forRepository {
+            maven { url = "https://maven.createmod.net" }
+        }
+        filter {
+            includeGroup("net.createmod.ponder")
+            includeGroup("com.simibubi.create")
+            includeGroup("dev.engine-room.flywheel")
+        }
+    }
+    exclusiveContent { // Configuration
+        forRepository { maven { url = "https://repo.repsy.io/mvn/toma/public" } }
+        filter { includeGroup("dev.toma.configuration")}
+    }
     exclusiveContent { // KubeJS and Rhino
         forRepository { maven { url = "https://maven.latvian.dev/releases" } }
         filter {
             includeGroup("dev.latvian.mods")
             includeGroup("dev.latvian.apps")
         }
-    }
-    exclusiveContent { // Configuration
-        forRepository { maven { url = "https://repo.repsy.io/mvn/toma/public/" } }
-        filter { includeGroup('dev.toma.configuration') }
     }
     exclusiveContent { // FTB mods
         forRepository { maven { url = "https://maven.ftb.dev/releases/" } }

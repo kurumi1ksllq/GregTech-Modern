@@ -12,6 +12,7 @@ import com.gregtechceu.gtceu.common.recipe.condition.ResearchCondition;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -117,6 +118,12 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
         RecipeCondition<?> condition = GTRegistries.RECIPE_CONDITIONS.get(buf.readResourceLocation()).factory
                 .createDefault();
         return condition.fromNetwork(buf);
+    }
+
+    public static RecipeCondition<?> conditionReader(FriendlyByteBuf buf) {
+        // Consume the condition key that's set in conditionWriter
+        buf.readUtf();
+        return RecipeCondition.fromNetwork(buf);
     }
 
     public static void conditionWriter(RegistryFriendlyByteBuf buf, RecipeCondition<?> condition) {

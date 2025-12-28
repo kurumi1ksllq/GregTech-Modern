@@ -6,13 +6,13 @@ import com.gregtechceu.gtceu.api.item.ISpoilableItemStackExtension;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IDurabilityBar;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
+import com.gregtechceu.gtceu.api.item.component.SpoilContext;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -23,8 +23,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -42,6 +42,9 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
 
     @Unique
     private boolean gtceu$isUpdating = false;
+
+    @Unique
+    private @Nullable SpoilContext gtceu$lastSpoilContext = new SpoilContext();
 
     @Unique
     private boolean gtceu$fakeTooltip;
@@ -98,11 +101,17 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
 
     @Unique
     @Override
-    public void gtceu$updateFreshness(Level level, boolean createTag) {
+    public SpoilContext gtceu$getSpoilContext() {
+        return gtceu$lastSpoilContext;
+    }
+
+    @Unique
+    @Override
+    public void gtceu$updateFreshness(@NotNull SpoilContext spoilContext, boolean createTag) {
         if (gtceu$isUpdating) return;
         gtceu$isUpdating = true;
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        if (level == null && server != null) level = server.overworld();
+        if (!spoilContext.isEmpty()) gtceu$lastSpoilContext = spoilContext;
+        Level level = SpoilContext.getDefaultLevel();
         ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
         if (spoilable != null && spoilable.shouldSpoil()) {
             if (spoilable.getSpoilTicks() < 0) {
@@ -124,7 +133,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
             long spoilTicks = spoilable.getSpoilTicks();
             long timeDifference = level.getGameTime() - tag.getLong("creation_tick") - spoilTicks;
             if (timeDifference >= 0) {
-                ItemStack newStack = spoilable.spoilResult();
+                ItemStack newStack = spoilable.spoilResult(gtceu$lastSpoilContext, false);
                 item = newStack.getItem();
                 delegate = ForgeRegistries.ITEMS.getDelegateOrThrow(item);
                 count = newStack.getCount();
@@ -136,7 +145,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
                             level.getGameTime() - timeDifference);
                     try {
                         gtceu$isUpdating = false;
-                        gtceu$updateFreshness(null, false);
+                        gtceu$updateFreshness(spoilContext, false);
                     } catch (StackOverflowError ignored) {} // if some crazy pack dev makes an item spoil into a
                                                             // spoilable that spoils into a spoilable 1000 times
                 }
@@ -149,19 +158,21 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
             method = { "getItem", "getCount", "getTag", "getOrCreateTag", "getTagElement", "getOrCreateTagElement",
                     "getItemHolder" })
     private void gtceu$injectedFreshnessUpdate(CallbackInfoReturnable<Item> cir) {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        gtceu$updateFreshness(server == null ? null : server.overworld(), entityRepresentation != null);
+        if (entityRepresentation != null)
+            gtceu$updateFreshness(new SpoilContext(entityRepresentation), true);
+        else gtceu$updateFreshness(new SpoilContext(), false);
     }
 
     @Inject(at = @At("HEAD"), method = "inventoryTick")
     private void gtceu$tickFreshness(Level level, Entity entity, int inventorySlot, boolean isCurrentItem,
                                      CallbackInfo ci) {
-        gtceu$updateFreshness(null, true);
+        if (entity instanceof Player player) gtceu$updateFreshness(new SpoilContext(player, inventorySlot), true);
+        else gtceu$updateFreshness(new SpoilContext(entity), true);
     }
 
     @Inject(at = @At("HEAD"), method = "onCraftedBy")
     private void gtceu$updateFreshnessOnCraft(Level level, Player player, int amount, CallbackInfo ci) {
-        gtceu$updateFreshness(null, true);
+        gtceu$updateFreshness(new SpoilContext(player, -1), true);
     }
 
     @Inject(at = @At("HEAD"), method = "isSameItemSameTags", cancellable = true)

@@ -1,48 +1,42 @@
 package com.gregtechceu.gtceu.common.item;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.component.IItemComponent;
+import com.gregtechceu.gtceu.api.item.component.SpoilContext;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SpoilableBehaviour implements IItemComponent, IComponentCapability {
 
     private final Function<ItemStack, Long> ticks;
-    private final Function<ItemStack, ItemStack> spoilResult;
-    private final Function<ItemStack, Component> spoilsInto;
+    private final SpoilResultProvider spoilResult;
+    private final Function<ItemStack, Component> spoilsIntoTooltip;
 
-    public SpoilableBehaviour(
-                              Function<ItemStack, Long> tickProvider,
-                              Function<ItemStack, ItemStack> spoilResultProvider,
-                              Function<ItemStack, Component> spoilsIntoTooltip) {
-        this.ticks = tickProvider;
-        this.spoilResult = spoilResultProvider;
-        this.spoilsInto = spoilsIntoTooltip;
-    }
-
-    public SpoilableBehaviour(Function<ItemStack, Long> tickProvider,
-                              Function<ItemStack, ItemStack> spoilResultProvider) {
-        this(tickProvider, spoilResultProvider, stack -> spoilResultProvider.apply(stack).getDisplayName());
-    }
-
-    public SpoilableBehaviour(long ticks, ItemStack spoilResult) {
-        this(stack -> ticks, stack -> spoilResult.copyWithCount(stack.getCount()));
-    }
-
-    public SpoilableBehaviour(long ticks, ItemLike spoilResult) {
-        this(stack -> ticks, stack -> spoilResult.asItem().getDefaultInstance().copyWithCount(stack.getCount()));
+    public static Builder builder() {
+        return new Builder();
     }
 
     @Override
@@ -56,13 +50,13 @@ public class SpoilableBehaviour implements IItemComponent, IComponentCapability 
                     }
 
                     @Override
-                    public ItemStack spoilResult() {
-                        return spoilResult.apply(getStack());
+                    public ItemStack spoilResult(SpoilContext spoilContext, boolean simulate) {
+                        return spoilResult.getSpoilResult(getStack(), spoilContext, simulate);
                     }
 
                     @Override
                     protected Component getSpoilResultTooltip() {
-                        return spoilsInto.apply(getStack());
+                        return spoilsIntoTooltip.apply(getStack());
                     }
                 }));
     }
@@ -76,5 +70,113 @@ public class SpoilableBehaviour implements IItemComponent, IComponentCapability 
                 return SpoilableBehaviour.this.getCapability(stack, capability);
             }
         };
+    }
+
+    @FunctionalInterface
+    public interface SpoilResultProvider {
+
+        ItemStack getSpoilResult(@NotNull ItemStack stack, @NotNull SpoilContext spoilContext, boolean simulate);
+    }
+
+    public static class Builder {
+
+        private Function<ItemStack, Long> ticks;
+        private SpoilResultProvider result;
+        private Function<ItemStack, Component> tooltip;
+
+        private Builder() {
+            ticks(100);
+            result(ItemStack.EMPTY);
+        }
+
+        public SpoilableBehaviour build() {
+            return new SpoilableBehaviour(ticks, result, tooltip);
+        }
+
+        public Builder ticks(Function<ItemStack, Long> ticks) {
+            this.ticks = ticks;
+            return this;
+        }
+
+        public Builder result(SpoilResultProvider result) {
+            this.result = result;
+            return this;
+        }
+
+        public Builder tooltip(Function<ItemStack, Component> tooltip) {
+            this.tooltip = tooltip;
+            return this;
+        }
+
+        public Builder ticks(long ticks) {
+            return ticks(stack -> ticks);
+        }
+
+        public Builder result(ItemLike itemLike) {
+            return result(stack -> itemLike.asItem().getDefaultInstance().copyWithCount(stack.getCount()));
+        }
+
+        public Builder result(ItemStack stack) {
+            return result(stack1 -> stack.copyWithCount(stack1.getCount()));
+        }
+
+        public Builder result(Function<ItemStack, ItemStack> result) {
+            return result((stack, spoilContext, simulate) -> result.apply(stack))
+                    .tooltip(stack -> {
+                        ItemStack resultStack = result.apply(stack);
+                        if (resultStack.isEmpty()) return Component.empty();
+                        return resultStack.getHoverName();
+                    });
+        }
+
+        public Builder result(EntityType<? extends Mob> entityType) {
+            return result(() -> entityType);
+        }
+
+        public Builder result(Supplier<? extends EntityType<? extends Mob>> entityType) {
+            SpoilResultProvider previousResult = result;
+            Function<ItemStack, Component> previousTooltip = tooltip;
+            return result((stack, spoilContext, simulate) -> {
+                if (!simulate && spoilContext.level() instanceof ServerLevel level) {
+                    GTCEu.LOGGER.info("{} {}", stack, spoilContext);
+                    EntityType<? extends Mob> type = entityType.get();
+                    BlockPos pos = null;
+                    if (spoilContext.entity() != null) pos = spoilContext.entity().blockPosition();
+                    else if (spoilContext.pos() != null) pos = spoilContext.pos();
+                    if (pos != null && type != null) {
+                        for (int i = 0; i < stack.getCount(); i++) type.spawn(level, pos, MobSpawnType.SPAWN_EGG);
+                    }
+                }
+                return previousResult.getSpoilResult(stack, spoilContext, simulate);
+            }).tooltip(stack -> {
+                EntityType<? extends Mob> type = entityType.get();
+                MutableComponent component = type.getDescription().copy();
+                Component previous = previousTooltip.apply(stack);
+                if (!previous.getString().isEmpty()) component.append(", ").append(previous);
+                return component;
+            });
+        }
+
+        public Builder multiplyResult(int mult) {
+            SpoilResultProvider prevResult = result;
+            Function<ItemStack, Component> previousTooltip = tooltip;
+            return result((stack, spoilContext, simulate) -> {
+                ItemStack total = prevResult.getSpoilResult(stack, spoilContext, simulate);
+                for (int i = 1; i < mult; i++) {
+                    ItemStack temp = prevResult.getSpoilResult(stack, spoilContext, simulate);
+                    if (ItemStack.isSameItemSameTags(total, temp)) total.grow(temp.getCount());
+                }
+                return total;
+            }).tooltip(stack -> {
+                MutableComponent component = Component.literal("(");
+                component.append(previousTooltip.apply(stack));
+                component.append(") x").append(Integer.toString(mult));
+                return component;
+            });
+        }
+
+        public Builder tooltip(Component tooltip) {
+            return tooltip(stack -> tooltip);
+        }
     }
 }

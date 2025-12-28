@@ -35,6 +35,7 @@ import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.common.data.machines.GTAEMachines;
 import com.gregtechceu.gtceu.common.fluid.potion.BottleItemFluidHandler;
 import com.gregtechceu.gtceu.common.fluid.potion.PotionItemFluidHandler;
+import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 import com.gregtechceu.gtceu.common.item.ToggleEnergyConsumerBehavior;
 import com.gregtechceu.gtceu.common.item.armor.IJetpack;
 import com.gregtechceu.gtceu.common.item.armor.QuarkTechSuite;
@@ -66,6 +67,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Zombie;
@@ -119,6 +121,22 @@ public class ForgeCommonEventListener {
             event.addCapability(GTCEu.id("potion_item_handler"), new PotionItemFluidHandler(itemStack));
         } else if (itemStack.is(Items.GLASS_BOTTLE)) {
             event.addCapability(GTCEu.id("bottle_item_handler"), new BottleItemFluidHandler(itemStack));
+        } else if (itemStack.is(Items.EGG)) {
+            event.addCapability(GTCEu.id("egg_spoilable"), SpoilableBehaviour.builder()
+                    .result(Items.JIGSAW)
+                    .result(EntityType.CHICKEN)
+                    .multiplyResult(4)
+                    .ticks(200)
+                    .build()
+                    .toCapProvider(itemStack));
+        } else if (itemStack.is(Items.DRAGON_EGG)) {
+            event.addCapability(GTCEu.id("dragon_egg_spoilable"), SpoilableBehaviour.builder()
+                    .result(ItemStack.EMPTY)
+                    .result(EntityType.ENDER_DRAGON)
+                    .multiplyResult(64)
+                    .ticks(2000)
+                    .build()
+                    .toCapProvider(itemStack));
         }
     }
 

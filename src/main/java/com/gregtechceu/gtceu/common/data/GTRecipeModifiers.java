@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
+import com.gregtechceu.gtceu.api.item.component.SpoilContext;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
@@ -54,7 +55,7 @@ public class GTRecipeModifiers {
     public static final RecipeModifier SPOILAGE_TRANSFER = (machine, recipe) -> ModifierFunction.builder()
             .modifyItemOutputs((r, stackObject) -> {
                 if (!(stackObject instanceof ItemStack stack)) return;
-                ISpoilableItem.update(stack);
+                ISpoilableItem.update(stack, new SpoilContext(machine, null, -1));
                 if (!r.transferSpoilingProgress) return;
                 double spoilProgress = 0;
                 int spoilableCount = 0;

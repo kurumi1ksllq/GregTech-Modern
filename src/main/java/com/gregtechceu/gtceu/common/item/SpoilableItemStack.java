@@ -5,17 +5,16 @@ import com.gregtechceu.gtceu.api.item.ISpoilableItemStackExtension;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IDurabilityBar;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
+import com.gregtechceu.gtceu.api.item.component.SpoilContext;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import lombok.Getter;
@@ -32,8 +31,8 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
         this.stack = stack;
     }
 
-    public void updateFreshness(boolean createTag) {
-        ((ISpoilableItemStackExtension) (Object) stack).gtceu$updateFreshness(null, createTag);
+    public void updateFreshness(SpoilContext spoilContext, boolean createTag) {
+        ((ISpoilableItemStackExtension) (Object) stack).gtceu$updateFreshness(spoilContext, createTag);
     }
 
     @Override
@@ -52,10 +51,8 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
 
     @Override
     public long getTicksUntilSpoiled() {
-        updateFreshness(false);
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        Level level = null;
-        if (server != null) level = server.overworld();
+        updateFreshness(new SpoilContext(), false);
+        Level level = SpoilContext.getDefaultLevel();
         CompoundTag spoilTag = stack.getTagElement("GTCEu_spoilable");
         if (level != null && spoilTag != null) {
             if (spoilTag.contains("frozenRemainingTicks")) return spoilTag.getLong("frozenRemainingTicks");
@@ -67,21 +64,16 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
 
     @Override
     public void setTicksUntilSpoiled(long value) {
-        updateFreshness(false);
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        Level level = null;
-        if (server != null) level = server.overworld();
+        updateFreshness(new SpoilContext(), false);
+        Level level = SpoilContext.getDefaultLevel();
         ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
         if (level != null && stack.getTagElement("GTCEu_spoilable") != null && spoilable != null)
             setCreationTick(level.getGameTime() - spoilable.getSpoilTicks() + value);
     }
 
     private void setFreezeSpoiling(boolean freeze) {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        Level level = server == null ? null : server.overworld();
-        if (level == null) return;
         if (freeze) {
-            updateFreshness(true);
+            updateFreshness(new SpoilContext(), true);
             stack.getOrCreateTagElement("GTCEu_spoilable").putLong("frozenRemainingTicks", getTicksUntilSpoiled());
         } else {
             CompoundTag spoilTag = stack.getTagElement("GTCEu_spoilable");
@@ -123,7 +115,7 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
                 Component.literal(FormattingUtil.formatTime(spoilable.getTicksUntilSpoiled()))
                         .withStyle(ChatFormatting.DARK_AQUA)));
         tooltipComponents.add(Component.translatable(
-                "gtceu.tooltip.spoils_into", spoilResult()));
+                "gtceu.tooltip.spoils_into", getSpoilResultTooltip()));
         if (isAdvanced.isAdvanced()) {
             tooltipComponents.add(Component.translatable(
                     "gtceu.tooltip.spoil_time_total",
@@ -132,11 +124,20 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
             tooltipComponents.add(Component.translatable(
                     "gtceu.tooltip.creation_tick",
                     spoilable.getCreationTick()));
+            SpoilContext ctx = ((ISpoilableItemStackExtension) (Object) stack).gtceu$getSpoilContext();
+            if (ctx.level() != null && ctx.pos() != null)
+                tooltipComponents.add(Component.translatable("gtceu.tooltip.location",
+                        ctx.level().dimensionTypeId().location().toString(),
+                        ctx.pos().getX(), ctx.pos().getY(), ctx.pos().getZ()));
+            if (ctx.entity() != null) tooltipComponents.add(Component.translatable("gtceu.tooltip.location_entity",
+                    ctx.entity().getType().getDescription()));
+            if (ctx.itemHandler() != null)
+                tooltipComponents.add(Component.translatable("gtceu.tooltip.location_slot", ctx.slot()));
         }
     }
 
     protected Component getSpoilResultTooltip() {
-        return spoilResult().getDisplayName();
+        return spoilResult(new SpoilContext(), false).getDisplayName();
     }
 
     @Override

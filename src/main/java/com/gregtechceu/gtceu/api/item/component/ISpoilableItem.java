@@ -3,9 +3,13 @@ package com.gregtechceu.gtceu.api.item.component;
 import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 import com.gregtechceu.gtceu.common.item.SpoilableItemStack;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.items.IItemHandler;
 
 /**
  * This is a capability! {@link Item} subclasses should not implement this directly!
@@ -13,10 +17,9 @@ import net.minecraft.world.item.ItemStack;
  * Spoilable items will, as the name implies, spoil (who could've thought).
  * Due to Minecraft's limitations, items will only start spoiling only if:
  * <ul>
+ * <li>It is in an {@link IItemHandler}, which is a capability of a {@link BlockEntity} that had
+ * {@link Level#getBlockEntity(BlockPos)} called (should cover most cases)</li>
  * <li>It is an output of a {@link com.gregtechceu.gtceu.api.recipe.GTRecipe}</li>
- * <li>It is crafted in a crafting table</li>
- * <li>It is put into a {@link com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler} (almost any GregTech
- * container)</li>
  * <li>It enters a player's inventory and gets ticked at least once</li>
  * <li>It is dropped (exists as an entity)</li>
  * <li>Any other mod calls {@link SpoilUtils#update} on the item</li>

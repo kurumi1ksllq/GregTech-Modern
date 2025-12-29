@@ -6,28 +6,79 @@ title: Spoilage
 Spoilable items spoil based on the amount of ticks that passed from their creation,
 or, more specifically, from one of these events (due to Minecraft's limitations):
 
+- The item was in an `IItemHandler` that is a capability of a `BlockEntity` that had `Level#getBlockEntity` called
 - The item was crafted in a GregTech recipe
 - The item was crafted in a crafting table
-- The item was in a GregTech inventory at any point in time
 - The item was in a player's inventory for at least 1 tick
 - The item was dropped
-- `ISpoilableItem.update(ItemStack)` was called
+- `ISpoilableItem.update(ItemStack, SpoilContext)` was called
 
 If you want to make an item spoil, you need to attack the `ISpoilableItem` capability to it.
 Please note that the spoilage timer still decrements even if the stack is in an unloaded chunk.
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = ExampleMod.MOD_ID)
-public class Example {
-        
-        // Make diamonds spoil into dirt in 100 seconds, apples into jigsaws in 35 seconds
+### SpoilContext
+A `SpoilContext` is an object that represents the environment in which an item spoils.
+It may represent:
+
+- Nothing (all values are null, obtained by just calling the constructor without arguments)
+- A block (contains `Level` and `BlockPos`)
+- A block and an item handler (contains `Level`, `BlockPos`, `IItemHandler` and an `int` slot, that may be `-1`)
+- An entity, usually a player (contains `Entity` and an `int` slot, that may be `-1`)
+
+This info is used to spawn entities when the item spoils, or do something more complex.
+The `SpoilableBehaviour.builder()` can accept a function as a `result`, so you can do whatever you want there :)
+
+### SpoilableBehaviour
+`SpoilableBehaviour` is an `IItemComponent` that can be attached to a `ComponentItem` like any other component,
+or attached to ANY item as a capability, using `SpoilableBehaviour#toCapProvider` in an `AttachCapabilitiesEvent<ItemStack>`
+listener. For more info on how to do that see the example below.
+
+`SpoilableBehaviour.builder()` is a convenient way to create a `SpoilableBehaviour`, currently it has the following methods:
+
+- `.ticks(long)`
+    used to specify ticks until spoiled
+- `.ticks(Function<ItemStack, Long>)`
+    used to specify a ticks until spoiled value that may depend on the stack itself, for example having more items in the stack may make it spoil slower
+- `.result(ItemLike)`
+    used to specify the resulting item
+- `.result(ItemStack)`
+    used to specify the resulting stack (may be with NBT, but not count)
+- `.result(Function<ItemStack, ItemStack>)`
+    used to specify the resulting stack that may depend on the original stack
+- `.result(EntityType<? extends Mob>)`
+    used to specify the mob into which the item will spoil (it can still spoil into an item as well, but it has to be specified first)
+- `.result(Supplier<? extends EntityType<? extends Mob>>`
+    same as `.result(EntityType<? extends Mob>)`, exists for convenience
+- `.result(SpoilResultProvider)`
+    used to specify a result function ((`ItemStack`, `SpoilContext`, `simulate`) -> `ItemStack`) for custom spoiling logic
+- `.multiplyResult(int)`
+    multiply all previously specified results (spoil into multiple items, spawn multiple mobs, etc.)
+- `.tooltip(Component)`
+    used to specify things to show in `Spoils into: ...` in the tooltip
+- `.tooltip(Function<ItemStack, Component>)`
+    same as `.tooltip(Component)`, but can depend on the stack
+
+!!! example
+    ```java
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = ExampleMod.MOD_ID)
+    public class Example {
+            
+        // Make diamonds spoil into dirt and a dragon in 100 seconds, apples into jigsaws in 35 seconds
         @SubscribeEvent
         public static void attachSpoilables(AttachCapabilitiesEvent<ItemStack> event) {
             ResourceLocation id = GTCEu.id("spoilable");
             ItemStack stack = event.getObject();
             if (stack.is(Items.DIAMOND)) {
-                event.addCapability(id, new SpoilableBehaviour(Items.DIRT, 20 * 100).toCapProvider(stack));
+                event.addCapability(id, SpoilageBehaviour.builder()
+                        .ticks(20*100)
+                        .result(Items.DIRT)
+                        .result(EntityType.ENDER_DRAGON)
+                        .build().toCapProvider(stack));
             } else if (stack.is(Items.APPLE)) {
-                event.addCapability(id, new SpoilableBehaviour(Items.JIGSAW, 20 * 35).toCapProvider(stack));
+                event.addCapability(id, SpoilableBehaviour.builder()
+                        .ticks(20*35)
+                        .result(Items.JIGSAW)
+                        .build().toCapProvider(stack));
             }
         }
         
@@ -52,12 +103,12 @@ public class Example {
             }
         }
         
-        public void makeStackStartSpoiling(ItemStack stack) {
+        public void makeStackStartSpoiling(ItemStack stack, Level level, BlockPos pos) {
             // If for some reason the stack still hasn't started spoiling, you can start the spoiling progress using this
             // That may happen if it is the result of a non-GT recipe and not a crafting result for example
-            ISpoilableItem.update(stack);
+            SpoilUtils.update(stack, new SpoilContext(level, pos));
         }
-
+    
         public void disableFrozenAndNonFrozenEquality() {
             // If you want the player to have frozen stacks in their inventory, do this
             // A side effect of this is that filtering by ticks remaining until spoiled will no longer work

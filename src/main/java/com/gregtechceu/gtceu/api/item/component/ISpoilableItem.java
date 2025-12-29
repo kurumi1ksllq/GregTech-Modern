@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.item.component;
 
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 import com.gregtechceu.gtceu.common.item.SpoilableItemStack;
 
@@ -20,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
  * container)</li>
  * <li>It enters a player's inventory and gets ticked at least once</li>
  * <li>It is dropped (exists as an entity)</li>
- * <li>Any other mod calls {@link ISpoilableItem#update} on the item</li>
+ * <li>Any other mod calls {@link SpoilUtils#update} on the item</li>
  * </ul>
  * If you are a developer of a mod that adds any other way to obtain items, that doesn't involve
  * any of the conditions above being true at any tick, consider adding compatibility with this feature :)
@@ -67,15 +66,6 @@ public interface ISpoilableItem {
      * entirely bypassing the spoilage system.
      */
     boolean FROZEN_EQUALITY = true;
-
-    /**
-     * Initializes this ItemStack's spoilage timer if it wasn't initialized before.
-     * Should be called when it finishes crafting, for example.
-     */
-    static void update(ItemStack stack, SpoilContext spoilContext) {
-        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-        if (spoilable != null) spoilable.updateFreshness(spoilContext, true);
-    }
 
     /**
      * Checks if this stack is supposed to already be spoiled, and spoils it into the

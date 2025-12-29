@@ -1,19 +1,16 @@
 package com.gregtechceu.gtceu.common.item;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.component.IItemComponent;
 import com.gregtechceu.gtceu.api.item.component.SpoilContext;
+import com.gregtechceu.gtceu.api.item.component.SpoilUtils;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.capabilities.Capability;
@@ -137,16 +134,8 @@ public class SpoilableBehaviour implements IItemComponent, IComponentCapability 
             SpoilResultProvider previousResult = result;
             Function<ItemStack, Component> previousTooltip = tooltip;
             return result((stack, spoilContext, simulate) -> {
-                if (!simulate && spoilContext.level() instanceof ServerLevel level) {
-                    GTCEu.LOGGER.info("{} {}", stack, spoilContext);
-                    EntityType<? extends Mob> type = entityType.get();
-                    BlockPos pos = null;
-                    if (spoilContext.entity() != null) pos = spoilContext.entity().blockPosition();
-                    else if (spoilContext.pos() != null) pos = spoilContext.pos();
-                    if (pos != null && type != null) {
-                        for (int i = 0; i < stack.getCount(); i++) type.spawn(level, pos, MobSpawnType.SPAWN_EGG);
-                    }
-                }
+                EntityType<? extends Mob> type = entityType.get();
+                SpoilUtils.spawnEntity(spoilContext, type, stack.getCount());
                 return previousResult.getSpoilResult(stack, spoilContext, simulate);
             }).tooltip(stack -> {
                 EntityType<? extends Mob> type = entityType.get();

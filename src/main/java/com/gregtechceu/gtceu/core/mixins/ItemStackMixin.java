@@ -67,7 +67,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     @Nullable
     private Item item;
 
-    @Shadow
+    @Shadow(remap = false)
     @Mutable
     @Final
     @Nullable
@@ -91,7 +91,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     @Nullable
     private Entity entityRepresentation;
 
-    @Shadow
+    @Shadow(remap = false)
     protected abstract void forgeInit();
 
     @Unique

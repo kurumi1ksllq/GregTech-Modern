@@ -1,8 +1,5 @@
 package com.gregtechceu.gtceu.api.transfer.item;
 
-import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
-import com.gregtechceu.gtceu.api.item.component.SpoilContext;
-
 import com.lowdragmc.lowdraglib.syncdata.IContentChangeAware;
 import com.lowdragmc.lowdraglib.syncdata.ITagSerializable;
 
@@ -26,9 +23,6 @@ public class CustomItemStackHandler extends ItemStackHandler
     @Getter
     @Setter
     protected Predicate<ItemStack> filter = stack -> true;
-    @Getter
-    @Setter
-    protected SpoilContext spoilContext = new SpoilContext(this);
 
     public CustomItemStackHandler() {
         super();
@@ -54,9 +48,6 @@ public class CustomItemStackHandler extends ItemStackHandler
     @Override
     public void onContentsChanged(int slot) {
         onContentsChanged.run();
-        ItemStack stack = stacks.get(slot).copy();
-        ISpoilableItem.update(stack, spoilContext.withSlot(slot));
-        stacks.set(slot, stack);
     }
 
     public void clear() {

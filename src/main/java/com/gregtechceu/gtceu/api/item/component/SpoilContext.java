@@ -11,9 +11,11 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
+import lombok.With;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@With
 public record SpoilContext(@Nullable Level level, @Nullable BlockPos pos, @Nullable Entity entity,
                            @Nullable IItemHandler itemHandler, int slot) {
 
@@ -53,9 +55,5 @@ public record SpoilContext(@Nullable Level level, @Nullable BlockPos pos, @Nulla
 
     public boolean isEmpty() {
         return level == null;
-    }
-
-    public SpoilContext withSlot(int slot) {
-        return new SpoilContext(level, pos, entity, itemHandler, slot);
     }
 }

@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.cover.filter.SimpleItemFilter;
 import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.api.item.component.SpoilContext;
+import com.gregtechceu.gtceu.api.item.component.SpoilUtils;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.common.cover.ConveyorCover;
@@ -121,7 +122,7 @@ public class SpoilableBehaviourTest {
         helper.setBlock(1, 1, 1, Blocks.CHEST);
         IItemHandler itemHandler = TestUtils.getItemHandler(helper, new BlockPos(1, 1, 1));
         ItemStack in = Items.APPLE.getDefaultInstance().copyWithCount(41);
-        ISpoilableItem.update(in, new SpoilContext(
+        SpoilUtils.update(in, new SpoilContext(
                 helper.getLevel(),
                 helper.absolutePos(new BlockPos(1, 1, 1)),
                 null,
@@ -163,7 +164,7 @@ public class SpoilableBehaviourTest {
         TestUtils.succeedAfterTest(helper);
         BusHolder busHolder = getBussesAndForm(helper);
         ItemStack input = new ItemStack(Items.JIGSAW);
-        ISpoilableItem.update(input, new SpoilContext());
+        SpoilUtils.update(input, new SpoilContext());
         Objects.requireNonNull(GTCapabilityHelper.getSpoilable(input)).setTicksUntilSpoiled(8);
         busHolder.inputBus1.getInventory().setStackInSlot(0, input);
         helper.runAtTickTime(21, () -> {
@@ -186,7 +187,7 @@ public class SpoilableBehaviourTest {
         TestUtils.succeedAfterTest(helper);
         BusHolder busHolder = getBussesAndForm(helper);
         ItemStack input = new ItemStack(Items.APPLE);
-        ISpoilableItem.update(input, new SpoilContext());
+        SpoilUtils.update(input, new SpoilContext());
         Objects.requireNonNull(GTCapabilityHelper.getSpoilable(input)).setTicksUntilSpoiled(8);
         busHolder.inputBus1.getInventory().setStackInSlot(0, input);
         helper.runAtTickTime(21, () -> {
@@ -265,7 +266,7 @@ public class SpoilableBehaviourTest {
         ItemStack itemForFilter = Items.STRUCTURE_BLOCK.getDefaultInstance();
         ISpoilableItem filterSpoilable = GTCapabilityHelper.getSpoilable(itemForFilter);
         assert filterSpoilable != null;
-        ISpoilableItem.update(itemForFilter, new SpoilContext());
+        SpoilUtils.update(itemForFilter, new SpoilContext());
         filterSpoilable.setTicksUntilSpoiled(5);
         CompoundTag filterTag = SimpleItemFilter.forItems(itemForFilter).saveFilter();
         ItemStack filter = GTItems.ITEM_FILTER.asStack();

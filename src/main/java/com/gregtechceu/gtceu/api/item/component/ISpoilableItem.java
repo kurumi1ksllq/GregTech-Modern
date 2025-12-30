@@ -66,15 +66,6 @@ import net.minecraftforge.items.IItemHandler;
 public interface ISpoilableItem {
 
     /**
-     * Consider frozen and non-frozen spoilables equal. This is done to allow filtering by ticks remaining until
-     * spoiled.<br>
-     * If you want the player to have frozen stacks in their inventory, set this to {@code false} to prevent players
-     * from
-     * entirely bypassing the spoilage system.
-     */
-    boolean FROZEN_EQUALITY = true;
-
-    /**
      * Checks if this stack is supposed to already be spoiled, and spoils it into the
      * {@link ISpoilableItem#spoilResult}
      * 

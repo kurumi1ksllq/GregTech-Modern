@@ -11,7 +11,7 @@ or, more specifically, from one of these events (due to Minecraft's limitations)
 - The item was crafted in a crafting table
 - The item was in a player's inventory for at least 1 tick
 - The item was dropped
-- `ISpoilableItem.update(ItemStack, SpoilContext)` was called
+- `SpoilUtils.update(ItemStack, SpoilContext)` was called
 
 If you want to make an item spoil, you need to attack the `ISpoilableItem` capability to it.
 Please note that the spoilage timer still decrements even if the stack is in an unloaded chunk.
@@ -57,6 +57,15 @@ listener. For more info on how to do that see the example below.
     used to specify things to show in `Spoils into: ...` in the tooltip
 - `.tooltip(Function<ItemStack, Component>)`
     same as `.tooltip(Component)`, but can depend on the stack
+
+### SpoilUtils
+`SpoilUtils` is a utility class with some static methods for updating items and blocks:
+
+- `update`
+    makes an item start spoiling with the specified `SpoilContext`
+- `updateBlock`
+    updates all items in any found `IItemHandler` capabilities of the specified block,
+    the `SpoilContext` is generated automatically
 
 !!! example
     ```java
@@ -112,7 +121,7 @@ listener. For more info on how to do that see the example below.
         public void disableFrozenAndNonFrozenEquality() {
             // If you want the player to have frozen stacks in their inventory, do this
             // A side effect of this is that filtering by ticks remaining until spoiled will no longer work
-            ISpoilableItem.FROZEN_EQUALITY = false;
+            SpoilUtils.FROZEN_EQUALITY = false;
         }
     }
     ```

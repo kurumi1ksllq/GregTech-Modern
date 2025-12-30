@@ -3,10 +3,7 @@ package com.gregtechceu.gtceu.core.mixins;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.item.ISpoilableItemStackExtension;
-import com.gregtechceu.gtceu.api.item.component.IAddInformation;
-import com.gregtechceu.gtceu.api.item.component.IDurabilityBar;
-import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
-import com.gregtechceu.gtceu.api.item.component.SpoilContext;
+import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.ChatFormatting;
@@ -187,7 +184,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
         isSameItem = isSameItem && Objects.equals(modifiedTag1, modifiedTag2);
         if (isSameItem && spoilable1 != null && spoilable2 != null) {
             if (spoilable1.isFrozen() || spoilable2.isFrozen()) {
-                if (!ISpoilableItem.FROZEN_EQUALITY &&
+                if (!SpoilUtils.FROZEN_EQUALITY &&
                         (spoilable1.isFrozen() ^ spoilable2.isFrozen())) {
                     cir.setReturnValue(false);
                     return;

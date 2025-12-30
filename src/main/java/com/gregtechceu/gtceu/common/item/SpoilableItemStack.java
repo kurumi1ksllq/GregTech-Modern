@@ -15,6 +15,7 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import lombok.Getter;
@@ -22,6 +23,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * This class is a basic implementation of the {@link ISpoilableItem} capability,
+ * to be attached to an item in an {@link AttachCapabilitiesEvent<ItemStack>} listener.
+ * It leaves some methods unimplemented, such as {@link ISpoilableItem#getSpoilTicks()} and
+ * {@link ISpoilableItem#spoilResult(SpoilContext, boolean)}.
+ *
+ * @implNote this class uses a mixin in its {@link ISpoilableItem#updateFreshness} implementation
+ *
+ * @see SpoilableBehaviour
+ * @see SpoilableBehaviour#toCapProvider(ItemStack)
+ */
 public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformation, IDurabilityBar {
 
     @Getter

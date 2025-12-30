@@ -1,14 +1,17 @@
 package com.gregtechceu.gtceu.api.item.component;
 
+import com.gregtechceu.gtceu.api.gui.widget.PhantomSlotWidget;
+import com.gregtechceu.gtceu.api.item.ComponentItem;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 import com.gregtechceu.gtceu.common.item.SpoilableItemStack;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.items.IItemHandler;
 
 /**
@@ -19,7 +22,7 @@ import net.minecraftforge.items.IItemHandler;
  * <ul>
  * <li>It is in an {@link IItemHandler}, which is a capability of a {@link BlockEntity} that had
  * {@link Level#getBlockEntity(BlockPos)} called (should cover most cases)</li>
- * <li>It is an output of a {@link com.gregtechceu.gtceu.api.recipe.GTRecipe}</li>
+ * <li>It is an output of a {@link GTRecipe}</li>
  * <li>It enters a player's inventory and gets ticked at least once</li>
  * <li>It is dropped (exists as an entity)</li>
  * <li>Any other mod calls {@link SpoilUtils#update} on the item</li>
@@ -31,12 +34,12 @@ import net.minecraftforge.items.IItemHandler;
  * until any of the above conditions become true.
  * <p>
  * Also due to Minecraft's limitations, merging stacks with different freshness requires overriding
- * {@link ItemStack#isSameItemSameTags(ItemStack, ItemStack)} to make the stacks have the same freshness.
+ * {@link ItemStack#isSameItemSameTags} to make the stacks have the same freshness.
  * The only exception is if one of the stacks is frozen, in which case it works as normal, except that
  * frozen stacks will be equal to non-frozen stacks if all else is equal. This is done to make filtering work correctly.
  * </p>
  * <p>
- * Spoilable stacks will be frozen if they enter a {@link com.gregtechceu.gtceu.api.gui.widget.PhantomSlotWidget},
+ * Spoilable stacks will be frozen if they enter a {@link PhantomSlotWidget},
  * to prevent stacks spoiling in filters. If you are a developer of a mod that adds filters, consider calling
  * {@link ISpoilableItem#freezeSpoiling()} on stacks entering these filters for compatibility :)
  * </p>
@@ -47,18 +50,19 @@ import net.minecraftforge.items.IItemHandler;
  * </p>
  * <p>
  * To make an item spoilable, you need to attach an instance of {@link SpoilableItemStack} as a capability to the item.
- * A capability provider can be easily obtained with {@link SpoilableBehaviour#toCapProvider(ItemStack)}, so that
+ * A capability provider can be easily obtained with {@link SpoilableBehaviour#toCapProvider}, so that
  * you are not required to subclass {@link SpoilableItemStack} or this interface directly.
- * To attach a capability to your own item, override {@link Item#initCapabilities(ItemStack, CompoundTag)} in your
+ * If you want to implement this interface yourself, please note that {@link SpoilableItemStack}
+ * calls a mixin method in its {@link ISpoilableItem#updateFreshness} implementation.
+ * To attach a capability to your own item, override {@link Item#initCapabilities} in your
  * {@link Item} subclass.<br>
- * To attach a capability to a {@link com.gregtechceu.gtceu.api.item.ComponentItem}, you can use
+ * To attach a capability to a {@link ComponentItem}, you can use
  * {@link SpoilableBehaviour}, as
  * it is an {@link IItemComponent}.<br>
- * To attach a capability to an existing item, use {@code AttachCapabilitiesEvent<ItemStack>}
+ * To attach a capability to an existing item, use {@link AttachCapabilitiesEvent<ItemStack>}
  * (fired on the forge event bus).
  * </p>
  */
-@SuppressWarnings("unused")
 public interface ISpoilableItem {
 
     /**

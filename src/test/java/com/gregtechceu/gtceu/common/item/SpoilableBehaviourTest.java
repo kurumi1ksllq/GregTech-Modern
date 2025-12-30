@@ -159,6 +159,38 @@ public class SpoilableBehaviourTest {
                 crate.inventory.getStackInSlot(0)), "jigsaw didn't spoil when should have"));
     }
 
+    @GameTest(template = "empty", batch = "spoilageTests")
+    public static void spoilageFreeze(GameTestHelper helper) {
+        TestUtils.succeedAfterTest(helper);
+        CrateMachine crate = (CrateMachine) TestUtils.setMachine(helper, new BlockPos(1, 1, 1), GTMachines.STEEL_CRATE);
+        crate.inventory.insertItem(0, Items.JIGSAW.getDefaultInstance().copyWithCount(23), false);
+        helper.runAtTickTime(4, () -> {
+            ItemStack stack = crate.inventory.getStackInSlot(0);
+            ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
+            helper.assertTrue(spoilable != null, "spoilable was null when shouldn't have (check #1)");
+            assert spoilable != null;
+            TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(), 6, "incorrect ticks until spoiled");
+            spoilable.freezeSpoiling();
+        });
+        helper.runAtTickTime(9, () -> {
+            ItemStack stack = crate.inventory.getStackInSlot(0);
+            ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
+            helper.assertTrue(spoilable != null, "spoilable was null when shouldn't have (check #2)");
+            assert spoilable != null;
+            TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(), 6,
+                    "ticks until spoiled changed while frozen");
+            spoilable.unfreezeSpoiling();
+        });
+        helper.runAtTickTime(13, () -> {
+            ItemStack stack = crate.inventory.getStackInSlot(0);
+            ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
+            helper.assertTrue(spoilable != null, "spoilable was null when shouldn't have (check #3)");
+            assert spoilable != null;
+            TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(), 2,
+                    "incorrect ticks until spoiled after unfreeze");
+        });
+    }
+
     @GameTest(template = "lcr_input_separation", batch = "spoilageTests")
     public static void spoilageTransfersInRecipe(GameTestHelper helper) {
         TestUtils.succeedAfterTest(helper);

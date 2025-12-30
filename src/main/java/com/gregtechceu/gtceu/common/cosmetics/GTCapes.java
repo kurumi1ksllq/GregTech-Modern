@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.common.cosmetics;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.events.RegisterGTCapesEvent;
+import com.gregtechceu.gtceu.api.cosmetics.event.RegisterGTCapesEvent;
 
 import net.minecraft.resources.ResourceLocation;
 

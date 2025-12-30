@@ -25,18 +25,23 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import net.minecraftforge.items.IItemHandler;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.gregtechceu.gtceu.gametest.util.TestUtils.getMetaMachine;
@@ -73,17 +78,32 @@ public class SpoilableBehaviourTest {
         ResourceLocation id = GTCEu.id("spoilable");
         ItemStack stack = event.getObject();
         if (stack.getItem() == Items.JIGSAW)
-            event.addCapability(id,
-                    SpoilableBehaviour.builder().ticks(10).result(Items.DIRT).build().toCapProvider(stack));
+            event.addCapability(id, SpoilableBehaviour.builder()
+                    .ticks(10)
+                    .result(Items.DIRT)
+                    .build().toCapProvider(stack));
         if (stack.getItem() == Items.APPLE)
-            event.addCapability(id,
-                    SpoilableBehaviour.builder().ticks(10).result(Items.STRUCTURE_BLOCK).build().toCapProvider(stack));
+            event.addCapability(id, SpoilableBehaviour.builder()
+                    .ticks(10)
+                    .result(Items.STRUCTURE_BLOCK)
+                    .build().toCapProvider(stack));
         if (stack.getItem() == Items.STRUCTURE_BLOCK)
-            event.addCapability(id,
-                    SpoilableBehaviour.builder().ticks(40).result(Items.STRUCTURE_VOID).build().toCapProvider(stack));
+            event.addCapability(id, SpoilableBehaviour.builder()
+                    .ticks(40)
+                    .result(Items.STRUCTURE_VOID)
+                    .build().toCapProvider(stack));
         if (stack.getItem() == Items.STRUCTURE_VOID)
-            event.addCapability(id,
-                    SpoilableBehaviour.builder().ticks(10).result(Items.JIGSAW).build().toCapProvider(stack));
+            event.addCapability(id, SpoilableBehaviour.builder()
+                    .ticks(10)
+                    .result(Items.JIGSAW)
+                    .build().toCapProvider(stack));
+        if (stack.getItem() == Items.EGG)
+            event.addCapability(id, SpoilableBehaviour.builder()
+                    .ticks(10)
+                    .result(Items.DRAGON_EGG)
+                    .result(EntityType.PIG)
+                    .multiplyResult(3)
+                    .build().toCapProvider(stack));
     }
 
     private static BusHolder getBussesAndForm(GameTestHelper helper) {
@@ -188,6 +208,20 @@ public class SpoilableBehaviourTest {
             assert spoilable != null;
             TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(), 2,
                     "incorrect ticks until spoiled after unfreeze");
+        });
+    }
+
+    @GameTest(template = "empty", batch = "spoilageTests")
+    public static void entitySpoilage(GameTestHelper helper) {
+        TestUtils.succeedAfterTest(helper);
+        CrateMachine crate = (CrateMachine) TestUtils.setMachine(helper, new BlockPos(1, 1, 1), GTMachines.STEEL_CRATE);
+        crate.inventory.insertItem(0, Items.EGG.getDefaultInstance().copyWithCount(2), false);
+        helper.runAtTickTime(10, () -> {
+            TestUtils.assertEqual(helper, crate.inventory.getStackInSlot(0),
+                    Items.DRAGON_EGG.getDefaultInstance().copyWithCount(6));
+            List<Pig> pigs = helper.getLevel().getEntities(EntityType.PIG,
+                    new AABB(helper.absolutePos(new BlockPos(1, 0, 1))), Entity::isAlive);
+            TestUtils.assertEqual(helper, pigs.size(), 6, "incorrect amount of entities spawned");
         });
     }
 

@@ -2,10 +2,7 @@ package com.gregtechceu.gtceu.common.item;
 
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.item.ISpoilableItemStackExtension;
-import com.gregtechceu.gtceu.api.item.component.IAddInformation;
-import com.gregtechceu.gtceu.api.item.component.IDurabilityBar;
-import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
-import com.gregtechceu.gtceu.api.item.component.SpoilContext;
+import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.ChatFormatting;
@@ -22,6 +19,8 @@ import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * This class is a basic implementation of the {@link ISpoilableItem} capability,
@@ -36,6 +35,14 @@ import java.util.List;
  */
 public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformation, IDurabilityBar {
 
+    /**
+     * Consider frozen and non-frozen spoilables equal. This is done to allow filtering by ticks remaining until
+     * spoiled.<br>
+     * If you want the player to have frozen stacks in their inventory, set this to {@code false} to prevent players
+     * from
+     * entirely bypassing the spoilage system.
+     */
+    public static boolean FROZEN_EQUALITY = true;
     @Getter
     private final ItemStack stack;
 
@@ -43,8 +50,65 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
         this.stack = stack;
     }
 
+    private ISpoilableItemStackExtension cast() {
+        return (ISpoilableItemStackExtension) (Object) stack;
+    }
+
+    /**
+     * Checks if this item should've already spoiled, and calls
+     * {@link ISpoilableItem#spoilResult(SpoilContext, boolean)}
+     * with {@link com.gregtechceu.gtceu.core.mixins.ItemStackMixin#gtceu$getSpoilContext()}
+     * and replaces this item with its return value if so.<br>
+     * Also sets the {@link SpoilContext} stored in the mixin to the provided
+     * context if it is non-empty (determined by {@link SpoilContext#isEmpty()}).<br>
+     * <br>
+     * If {@code createTag = true} and the spoilage tag did not exist, creates
+     * the tag and sets the creation tick to this tick.<br>
+     * If {@code createTag = false} and the spoilage tag isn't present, does nothing.
+     *
+     * @param createTag Whether to create a spoilage tag if it wasn't present.
+     *                  Usually {@code true} for stacks that are present in-world,
+     *                  and {@code false} for stacks in XEI, icons, quests, etc.
+     *
+     * @implNote This method is injected into all of {@link ItemStack}'s getters to
+     *           be called with an empty {@link SpoilContext} and {@code createTag = false}.
+     */
     public void updateFreshness(SpoilContext spoilContext, boolean createTag) {
-        ((ISpoilableItemStackExtension) (Object) stack).gtceu$updateFreshness(spoilContext, createTag);
+        if (!spoilContext.isEmpty()) cast().gtceu$setSpoilContext(spoilContext);
+        Level level = SpoilContext.getDefaultLevel();
+        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
+        if (spoilable != null && spoilable.shouldSpoil()) {
+            if (spoilable.getSpoilTicks() < 0) {
+                return;
+            }
+            CompoundTag tag = createTag ? stack.getOrCreateTagElement("GTCEu_spoilable") :
+                    stack.getTagElement("GTCEu_spoilable");
+            if (tag == null || tag.contains("frozenRemainingTicks")) {
+                return;
+            }
+            if (level == null) {
+                return;
+            }
+            if (!tag.contains("creation_tick")) {
+                tag.putLong("creation_tick", level.getGameTime());
+            }
+            long spoilTicks = spoilable.getSpoilTicks();
+            long timeDifference = level.getGameTime() - tag.getLong("creation_tick") - spoilTicks;
+            if (timeDifference >= 0) {
+                ItemStack newStack = spoilable.spoilResult(cast().gtceu$getSpoilContext(), false);
+                cast().gtceu$setStack(newStack);
+                ISpoilableItem newSpoilable = GTCapabilityHelper.getSpoilable(stack);
+                if (newSpoilable != null && (stack.getTag() == null || !stack.getTag().contains("GTCEu_spoilable"))) {
+                    stack.getOrCreateTagElement("GTCEu_spoilable").putLong("creation_tick",
+                            level.getGameTime() - timeDifference);
+                    try {
+                        updateFreshness(spoilContext, false);
+                    } catch (StackOverflowError ignored) {
+                        // if items spoil in a giant chain or a loop
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -136,7 +200,7 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
             tooltipComponents.add(Component.translatable(
                     "gtceu.tooltip.creation_tick",
                     spoilable.getCreationTick()));
-            SpoilContext ctx = ((ISpoilableItemStackExtension) (Object) stack).gtceu$getSpoilContext();
+            SpoilContext ctx = cast().gtceu$getSpoilContext();
             if (ctx.level() != null && ctx.pos() != null)
                 tooltipComponents.add(Component.translatable("gtceu.tooltip.location",
                         ctx.level().dimensionTypeId().location().toString(),
@@ -172,5 +236,49 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
         ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
         if (spoilable == null) return 0;
         return (float) spoilable.getTicksUntilSpoiled() / spoilable.getSpoilTicks();
+    }
+
+    /**
+     * Since {@link ItemStack#isSameItemSameTags(ItemStack, ItemStack)} is commonly called
+     * right before merging two stacks, this method averages their spoil progress (or, more
+     * accurately, their {@link ISpoilableItem#getCreationTick()}). If {@link SpoilableItemStack#FROZEN_EQUALITY}
+     * is {@code true}, this method will ignore the frozen/not frozen status of stacks when determining its
+     * return value. Other than that, the return value is equal to the normal {@link ItemStack#isSameItemSameTags}.
+     *
+     * @implNote This implementation may lead to spoil progress averaging in situations other
+     *           than stack merging, though I don't think this will lead to any big user-facing bugs.
+     */
+    @Override
+    public Optional<Boolean> isEqualTo(ItemStack other) {
+        ISpoilableItem spoilable1 = this;
+        ISpoilableItem spoilable2 = GTCapabilityHelper.getSpoilable(other);
+        if (spoilable2 != null && !(spoilable2 instanceof SpoilableItemStack)) return spoilable2.isEqualTo(stack);
+        boolean isSameItem = ItemStack.isSameItem(stack, other) && stack.areCapsCompatible(other);
+        CompoundTag modifiedTag1 = stack.getTag() == null ? null : stack.getTag().copy();
+        CompoundTag modifiedTag2 = other.getTag() == null ? null : other.getTag().copy();
+        if (modifiedTag1 != null) modifiedTag1.remove("GTCEu_spoilable");
+        if (modifiedTag2 != null) modifiedTag2.remove("GTCEu_spoilable");
+        isSameItem = isSameItem && Objects.equals(modifiedTag1, modifiedTag2);
+        if (isSameItem && spoilable2 != null) {
+            if (spoilable1.isFrozen() || spoilable2.isFrozen()) {
+                if (!FROZEN_EQUALITY && (spoilable1.isFrozen() ^ spoilable2.isFrozen())) {
+                    return Optional.of(false);
+                }
+                return Optional.of(spoilable1.getTicksUntilSpoiled() == spoilable2.getTicksUntilSpoiled());
+            } else {
+                long tick1 = spoilable1.getCreationTick();
+                long tick2 = spoilable2.getCreationTick();
+                if (tick1 != tick2) {
+                    long avg;
+                    if (stack.getCount() + other.getCount() > 0)
+                        avg = (tick1 * stack.getCount() + tick2 * other.getCount()) /
+                                (stack.getCount() + other.getCount());
+                    else avg = tick1;
+                    spoilable1.setCreationTick(avg);
+                    spoilable2.setCreationTick(avg);
+                }
+            }
+        }
+        return Optional.empty();
     }
 }

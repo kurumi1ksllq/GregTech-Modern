@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 import javax.annotation.Nullable;
 
@@ -40,9 +40,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     // ************************* //
     // Shadow fields and methods //
     // ************************* //
-
-    @Shadow
-    public abstract CompoundTag getOrCreateTagElement(String key);
 
     @Shadow
     public abstract Item getItem();
@@ -71,10 +68,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
 
     @Shadow
     @Nullable
-    public abstract CompoundTag getTagElement(String key);
-
-    @Shadow
-    @Nullable
     private Entity entityRepresentation;
 
     @Shadow(remap = false)
@@ -94,14 +87,12 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     private boolean gtceu$isUpdating = false;
 
     /**
-     * The value of the last non-empty (determined by {@link SpoilContext#isEmpty()})
-     * context passed into {@link ItemStackMixin#gtceu$updateFreshness(SpoilContext, boolean)}.
-     * <br>
-     * Used to as an argument for {@link ISpoilableItem#spoilResult(SpoilContext, boolean)}
-     * when this stack spoils.
+     * This has to be stored here and not in the capability because
+     * it is not serializable, and wouldn't be preserved between calls
+     * to {@link ItemStack#getCapability}
      */
     @Unique
-    private @Nullable SpoilContext gtceu$lastSpoilContext = new SpoilContext();
+    private SpoilContext gtceu$spoilContext = new SpoilContext();
 
     /**
      * Whether to display a fake "spoils into" tooltip for an item if it's not spoilable.
@@ -121,83 +112,34 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     // Interface implementations //
     // ************************* //
 
-    /**
-     * Primarily used as debug info when advanced tooltips are turned on.
-     * 
-     * @return the last known context of this stack
-     */
+    @Unique
+    @Override
+    public void gtceu$setStack(ItemStack newStack) {
+        item = newStack.getItem();
+        delegate = ForgeRegistries.ITEMS.getDelegateOrThrow(item);
+        count = newStack.getCount();
+        this.tag = newStack.getTag();
+        forgeInit();
+    }
+
+    @Unique
+    @Override
+    public void gtceu$setSpoilContext(SpoilContext ctx) {
+        gtceu$spoilContext = ctx;
+    }
+
     @Unique
     @Override
     public SpoilContext gtceu$getSpoilContext() {
-        return gtceu$lastSpoilContext;
+        return gtceu$spoilContext;
     }
 
-    /**
-     * Checks if this item should've already spoiled, and calls
-     * {@link ISpoilableItem#spoilResult(SpoilContext, boolean)}
-     * with {@link ItemStackMixin#gtceu$lastSpoilContext}
-     * and replaces this item with its return value if so.<br>
-     * Also sets {@link ItemStackMixin#gtceu$lastSpoilContext} to the provided
-     * context if it is non-empty (determined by {@link SpoilContext#isEmpty()}).<br>
-     * <br>
-     * If {@code createTag = true} and the spoilage tag did not exist, creates
-     * the tag and sets the creation tick to this tick.<br>
-     * If {@code createTag = false} and the spoilage tag isn't present, does nothing.
-     *
-     * @param createTag Whether to create a spoilage tag if it wasn't present.
-     *                  Usually {@code true} for stacks that are present in-world,
-     *                  and {@code false} for stacks in XEI, icons, quests, etc.
-     *
-     * @implNote This method is injected into all of {@link ItemStack}'s getters to
-     *           be called with an empty {@link SpoilContext} and {@code createTag = false}.
-     */
     @Unique
-    @Override
     public void gtceu$updateFreshness(@NotNull SpoilContext spoilContext, boolean createTag) {
         if (gtceu$isUpdating) return;
         gtceu$isUpdating = true;
-        if (!spoilContext.isEmpty()) gtceu$lastSpoilContext = spoilContext;
-        Level level = SpoilContext.getDefaultLevel();
         ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
-        if (spoilable != null && spoilable.shouldSpoil()) {
-            if (spoilable.getSpoilTicks() < 0) {
-                gtceu$isUpdating = false;
-                return;
-            }
-            CompoundTag tag = createTag ? getOrCreateTagElement("GTCEu_spoilable") : getTagElement("GTCEu_spoilable");
-            if (tag == null || tag.contains("frozenRemainingTicks")) {
-                gtceu$isUpdating = false;
-                return;
-            }
-            if (level == null) {
-                gtceu$isUpdating = false;
-                return;
-            }
-            if (!tag.contains("creation_tick")) {
-                tag.putLong("creation_tick", level.getGameTime());
-            }
-            long spoilTicks = spoilable.getSpoilTicks();
-            long timeDifference = level.getGameTime() - tag.getLong("creation_tick") - spoilTicks;
-            if (timeDifference >= 0) {
-                ItemStack newStack = spoilable.spoilResult(gtceu$lastSpoilContext, false);
-                item = newStack.getItem();
-                delegate = ForgeRegistries.ITEMS.getDelegateOrThrow(item);
-                count = newStack.getCount();
-                this.tag = newStack.getTag();
-                forgeInit();
-                ISpoilableItem newSpoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
-                if (newSpoilable != null && (this.tag == null || !this.tag.contains("GTCEu_spoilable"))) {
-                    getOrCreateTagElement("GTCEu_spoilable").putLong("creation_tick",
-                            level.getGameTime() - timeDifference);
-                    try {
-                        gtceu$isUpdating = false;
-                        gtceu$updateFreshness(spoilContext, false);
-                    } catch (StackOverflowError ignored) {
-                        // if items spoil in a giant chain or a loop
-                    }
-                }
-            }
-        }
+        if (spoilable != null) spoilable.updateFreshness(spoilContext, createTag);
         gtceu$isUpdating = false;
     }
 
@@ -226,52 +168,12 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
         gtceu$updateFreshness(new SpoilContext(player, -1), true);
     }
 
-    /**
-     * Since {@link ItemStack#isSameItemSameTags(ItemStack, ItemStack)} is commonly called
-     * right before merging two stacks, this method averages their spoil progress (or, more
-     * accurately, their {@link ISpoilableItem#getCreationTick()}). If {@link SpoilUtils#FROZEN_EQUALITY}
-     * is {@code true}, this method will ignore the frozen/not frozen status of stacks when determining its
-     * return value. Other than that, the return value is equal to the normal {@link ItemStack#isSameItemSameTags}.
-     * <br>
-     * This method replaces {@link ItemStack#isSameItemSameTags(ItemStack, ItemStack)}.
-     *
-     * @implNote This implementation may lead to spoil progress averaging in situations other
-     *           than stack merging, though I don't think this will lead to any big user-facing bugs.
-     */
     @Inject(at = @At("HEAD"), method = "isSameItemSameTags", cancellable = true)
     private static void gtceu$mergeSpoilables(ItemStack stack, ItemStack other, CallbackInfoReturnable<Boolean> cir) {
-        ISpoilableItem spoilable1 = GTCapabilityHelper.getSpoilable(stack);
-        ISpoilableItem spoilable2 = GTCapabilityHelper.getSpoilable(stack);
-        boolean isSameItem = ItemStack.isSameItem(stack, other) && stack.areCapsCompatible(other);
-        CompoundTag modifiedTag1 = stack.getTag() == null ? null : stack.getTag().copy();
-        CompoundTag modifiedTag2 = other.getTag() == null ? null : other.getTag().copy();
-        if (modifiedTag1 != null) modifiedTag1.remove("GTCEu_spoilable");
-        if (modifiedTag2 != null) modifiedTag2.remove("GTCEu_spoilable");
-        isSameItem = isSameItem && Objects.equals(modifiedTag1, modifiedTag2);
-        if (isSameItem && spoilable1 != null && spoilable2 != null) {
-            if (spoilable1.isFrozen() || spoilable2.isFrozen()) {
-                if (!SpoilUtils.FROZEN_EQUALITY &&
-                        (spoilable1.isFrozen() ^ spoilable2.isFrozen())) {
-                    cir.setReturnValue(false);
-                    return;
-                }
-                cir.setReturnValue(spoilable1.getTicksUntilSpoiled() == spoilable2.getTicksUntilSpoiled());
-                return;
-            } else {
-                long tick1 = spoilable1.getCreationTick();
-                long tick2 = spoilable2.getCreationTick();
-                if (tick1 != tick2) {
-                    long avg;
-                    if (stack.getCount() + other.getCount() > 0)
-                        avg = (tick1 * stack.getCount() + tick2 * other.getCount()) /
-                                (stack.getCount() + other.getCount());
-                    else avg = tick1;
-                    spoilable1.setCreationTick(avg);
-                    spoilable2.setCreationTick(avg);
-                }
-            }
-        }
-        cir.setReturnValue(isSameItem && Objects.equals(stack.getTag(), other.getTag()));
+        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
+        if (spoilable == null) return;
+        Optional<Boolean> result = spoilable.isEqualTo(other);
+        result.ifPresent(cir::setReturnValue);
     }
 
     @Inject(at = @At("RETURN"),

@@ -2,11 +2,13 @@ package com.gregtechceu.gtceu.api.item;
 
 import com.gregtechceu.gtceu.api.item.component.SpoilContext;
 
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.item.ItemStack;
 
 public interface ISpoilableItemStackExtension {
 
-    void gtceu$updateFreshness(@NotNull SpoilContext spoilContext, boolean createTag);
+    void gtceu$setStack(ItemStack newStack);
+
+    void gtceu$setSpoilContext(SpoilContext ctx);
 
     SpoilContext gtceu$getSpoilContext();
 }

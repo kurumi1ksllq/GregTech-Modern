@@ -37,9 +37,9 @@ import javax.annotation.Nullable;
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
 
-    // ***************************//
+    // ************************* //
     // Shadow fields and methods //
-    // ***************************//
+    // ************************* //
 
     @Shadow
     public abstract CompoundTag getOrCreateTagElement(String key);
@@ -80,9 +80,9 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     @Shadow(remap = false)
     protected abstract void forgeInit();
 
-    // ***************************//
+    // ************* //
     // Unique fields //
-    // ***************************//
+    // ************* //
 
     /**
      * Whether {@link ItemStackMixin#gtceu$updateFreshness(SpoilContext, boolean)}
@@ -117,9 +117,9 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
         return (ItemStack) (Object) this;
     }
 
-    // ***************************//
+    // ************************* //
     // Interface implementations //
-    // ***************************//
+    // ************************* //
 
     /**
      * Primarily used as debug info when advanced tooltips are turned on.
@@ -201,9 +201,9 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
         gtceu$isUpdating = false;
     }
 
-    // ***************************//
+    // ********* //
     // Injectors //
-    // ***************************//
+    // ********* //
 
     @Inject(at = @At("HEAD"),
             method = { "getItem", "getCount", "getTag", "getOrCreateTag", "getTagElement", "getOrCreateTagElement",

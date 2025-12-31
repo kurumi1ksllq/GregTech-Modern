@@ -37,20 +37,9 @@ import javax.annotation.Nullable;
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
 
-    @Unique
-    private boolean gtceu$isUpdating = false;
-
-    @Unique
-    private @Nullable SpoilContext gtceu$lastSpoilContext = new SpoilContext();
-
-    @Unique
-    private boolean gtceu$fakeTooltip;
-
-    @Inject(at = @At("RETURN"),
-            method = "<init>(Lnet/minecraft/world/level/ItemLike;ILnet/minecraft/nbt/CompoundTag;)V")
-    private void gtceu$injectFakeTooltipInit(ItemLike item, int count, CompoundTag tag, CallbackInfo ci) {
-        gtceu$fakeTooltip = GTValues.FOOLS.getAsBoolean() && GTValues.RNG.nextFloat() < .1f;
-    }
+    // ***************************//
+    // Shadow fields and methods //
+    // ***************************//
 
     @Shadow
     public abstract CompoundTag getOrCreateTagElement(String key);
@@ -91,17 +80,77 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     @Shadow(remap = false)
     protected abstract void forgeInit();
 
+    // ***************************//
+    // Unique fields //
+    // ***************************//
+
+    /**
+     * Whether {@link ItemStackMixin#gtceu$updateFreshness(SpoilContext, boolean)}
+     * was called and did not return yet.
+     * <br>
+     * Used to prevent stack overflows.
+     */
+    @Unique
+    private boolean gtceu$isUpdating = false;
+
+    /**
+     * The value of the last non-empty (determined by {@link SpoilContext#isEmpty()})
+     * context passed into {@link ItemStackMixin#gtceu$updateFreshness(SpoilContext, boolean)}.
+     * <br>
+     * Used to as an argument for {@link ISpoilableItem#spoilResult(SpoilContext, boolean)}
+     * when this stack spoils.
+     */
+    @Unique
+    private @Nullable SpoilContext gtceu$lastSpoilContext = new SpoilContext();
+
+    /**
+     * Whether to display a fake "spoils into" tooltip for an item if it's not spoilable.
+     * <br>
+     * Has a 10% chance of being {@code true} for any stack on april fools.
+     * The chance is rolled once in the constructor (injected by {@link ItemStackMixin#gtceu$injectFakeTooltipInit}).
+     */
+    @Unique
+    private boolean gtceu$fakeTooltip;
+
     @Unique
     private ItemStack gtceu$self() {
         return (ItemStack) (Object) this;
     }
 
+    // ***************************//
+    // Interface implementations //
+    // ***************************//
+
+    /**
+     * Primarily used as debug info when advanced tooltips are turned on.
+     * 
+     * @return the last known context of this stack
+     */
     @Unique
     @Override
     public SpoilContext gtceu$getSpoilContext() {
         return gtceu$lastSpoilContext;
     }
 
+    /**
+     * Checks if this item should've already spoiled, and calls
+     * {@link ISpoilableItem#spoilResult(SpoilContext, boolean)}
+     * with {@link ItemStackMixin#gtceu$lastSpoilContext}
+     * and replaces this item with its return value if so.<br>
+     * Also sets {@link ItemStackMixin#gtceu$lastSpoilContext} to the provided
+     * context if it is non-empty (determined by {@link SpoilContext#isEmpty()}).<br>
+     * <br>
+     * If {@code createTag = true} and the spoilage tag did not exist, creates
+     * the tag and sets the creation tick to this tick.<br>
+     * If {@code createTag = false} and the spoilage tag isn't present, does nothing.
+     *
+     * @param createTag Whether to create a spoilage tag if it wasn't present.
+     *                  Usually {@code true} for stacks that are present in-world,
+     *                  and {@code false} for stacks in XEI, icons, quests, etc.
+     *
+     * @implNote This method is injected into all of {@link ItemStack}'s getters to
+     *           be called with an empty {@link SpoilContext} and {@code createTag = false}.
+     */
     @Unique
     @Override
     public void gtceu$updateFreshness(@NotNull SpoilContext spoilContext, boolean createTag) {
@@ -143,13 +192,18 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
                     try {
                         gtceu$isUpdating = false;
                         gtceu$updateFreshness(spoilContext, false);
-                    } catch (StackOverflowError ignored) {} // if some crazy pack dev makes an item spoil into a
-                                                            // spoilable that spoils into a spoilable 1000 times
+                    } catch (StackOverflowError ignored) {
+                        // if items spoil in a giant chain or a loop
+                    }
                 }
             }
         }
         gtceu$isUpdating = false;
     }
+
+    // ***************************//
+    // Injectors //
+    // ***************************//
 
     @Inject(at = @At("HEAD"),
             method = { "getItem", "getCount", "getTag", "getOrCreateTag", "getTagElement", "getOrCreateTagElement",
@@ -172,6 +226,18 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
         gtceu$updateFreshness(new SpoilContext(player, -1), true);
     }
 
+    /**
+     * Since {@link ItemStack#isSameItemSameTags(ItemStack, ItemStack)} is commonly called
+     * right before merging two stacks, this method averages their spoil progress (or, more
+     * accurately, their {@link ISpoilableItem#getCreationTick()}). If {@link SpoilUtils#FROZEN_EQUALITY}
+     * is {@code true}, this method will ignore the frozen/not frozen status of stacks when determining its
+     * return value. Other than that, the return value is equal to the normal {@link ItemStack#isSameItemSameTags}.
+     * <br>
+     * This method replaces {@link ItemStack#isSameItemSameTags(ItemStack, ItemStack)}.
+     *
+     * @implNote This implementation may lead to spoil progress averaging in situations other
+     *           than stack merging, though I don't think this will lead to any big user-facing bugs.
+     */
     @Inject(at = @At("HEAD"), method = "isSameItemSameTags", cancellable = true)
     private static void gtceu$mergeSpoilables(ItemStack stack, ItemStack other, CallbackInfoReturnable<Boolean> cir) {
         ISpoilableItem spoilable1 = GTCapabilityHelper.getSpoilable(stack);
@@ -208,13 +274,23 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
         cir.setReturnValue(isSameItem && Objects.equals(stack.getTag(), other.getTag()));
     }
 
+    @Inject(at = @At("RETURN"),
+            method = "<init>(Lnet/minecraft/world/level/ItemLike;ILnet/minecraft/nbt/CompoundTag;)V")
+    private void gtceu$injectFakeTooltipInit(ItemLike item, int count, CompoundTag tag, CallbackInfo ci) {
+        gtceu$fakeTooltip = GTValues.FOOLS.getAsBoolean() && GTValues.RNG.nextFloat() < .1f;
+    }
+
+    /**
+     * Allows {@link ISpoilableItem} subclasses that implement {@link IAddInformation} to
+     * actually display the added tooltip.
+     */
     @Inject(at = @At(value = "INVOKE",
                      target = "Lnet/minecraft/world/item/Item;appendHoverText(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Ljava/util/List;Lnet/minecraft/world/item/TooltipFlag;)V"),
             method = "getTooltipLines",
             locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void gtceu$aprilFoolsTooltip(Player player, TooltipFlag isAdvanced,
-                                         CallbackInfoReturnable<List<Component>> cir,
-                                         List<Component> list) {
+    private void gtceu$spoilageTooltip(Player player, TooltipFlag isAdvanced,
+                                       CallbackInfoReturnable<List<Component>> cir,
+                                       List<Component> list) {
         ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IAddInformation addInformation) {
             addInformation.appendHoverText(gtceu$self(), player == null ? null : player.level(), list,
@@ -229,8 +305,12 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
         }
     }
 
+    /**
+     * Allows {@link ISpoilableItem} subclasses that implement {@link IDurabilityBar} to
+     * actually display the bar.
+     */
     @Inject(at = @At("HEAD"), method = "isBarVisible", cancellable = true)
-    private void gtceu$aprilFoolsBarVisible(CallbackInfoReturnable<Boolean> cir) {
+    private void gtceu$spoilageBarVisible(CallbackInfoReturnable<Boolean> cir) {
         ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
             cir.setReturnValue(durabilityBar.isBarVisible(gtceu$self()));
@@ -239,8 +319,12 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
         }
     }
 
+    /**
+     * Allows {@link ISpoilableItem} subclasses that implement {@link IDurabilityBar} to
+     * actually display the bar.
+     */
     @Inject(at = @At("HEAD"), method = "getBarColor", cancellable = true)
-    private void gtceu$aprilFoolsBarColor(CallbackInfoReturnable<Integer> cir) {
+    private void gtceu$spoilageBarColor(CallbackInfoReturnable<Integer> cir) {
         ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
             cir.setReturnValue(durabilityBar.getBarColor(gtceu$self()));
@@ -249,8 +333,12 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
         }
     }
 
+    /**
+     * Allows {@link ISpoilableItem} subclasses that implement {@link IDurabilityBar} to
+     * actually display the bar.
+     */
     @Inject(at = @At("HEAD"), method = "getBarWidth", cancellable = true)
-    private void gtceu$aprilFoolsBarWidth(CallbackInfoReturnable<Integer> cir) {
+    private void gtceu$spoilageBarWidth(CallbackInfoReturnable<Integer> cir) {
         ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
         if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
             cir.setReturnValue(durabilityBar.getBarWidth(gtceu$self()));

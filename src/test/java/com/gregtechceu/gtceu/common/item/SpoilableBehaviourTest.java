@@ -126,14 +126,30 @@ public class SpoilableBehaviourTest {
                              FluidHatchPartMachine outputHatch1, WorkableMultiblockMachine controller) {}
 
     @GameTest(template = "empty_5x5", batch = "spoilageTests")
-    public static void itemDoesntSpoilInChest(GameTestHelper helper) {
+    public static void itemSpoilsInChest(GameTestHelper helper) {
         TestUtils.succeedAfterTest(helper);
         helper.setBlock(1, 1, 1, Blocks.CHEST);
         IItemHandler itemHandler = TestUtils.getItemHandler(helper, new BlockPos(1, 1, 1));
-        itemHandler.insertItem(0, Items.JIGSAW.getDefaultInstance(), false);
-        helper.failIfEver(() -> helper.assertTrue(TestUtils.isItemStackEqual(
-                Items.JIGSAW.getDefaultInstance(),
-                itemHandler.getStackInSlot(0)), "jigsaw spoiled when shouldn't have"));
+        itemHandler.insertItem(0, Items.JIGSAW.getDefaultInstance().copyWithCount(23), false);
+        TestUtils.getItemHandler(helper, new BlockPos(1, 1, 1));
+        helper.runAtTickTime(9, () -> {
+            ItemStack stack = TestUtils.getItemHandler(helper, new BlockPos(1, 1, 1)).getStackInSlot(0);
+            helper.assertTrue(TestUtils.isItemStackEqual(
+                    Items.JIGSAW.getDefaultInstance().copyWithCount(23),
+                    stack), "jigsaw spoiled 1 tick earlier");
+            ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
+            helper.assertTrue(spoilable != null, "spoilable was null when shouldn't have");
+            assert spoilable != null;
+            helper.assertTrue(spoilable.shouldSpoil(), "shouldSpoil returned false on spoilable item");
+            TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(), 1,
+                    "spoilable didn't return correct ticks until spoiled amount");
+            helper.assertTrue(spoilable.getSpoilTicks() == 10,
+                    "spoilable didn't return correct total tick amount");
+        });
+        helper.runAtTickTime(10, () -> helper.assertTrue(TestUtils.isItemStackEqual(
+                Items.DIRT.getDefaultInstance().copyWithCount(23),
+                TestUtils.getItemHandler(helper, new BlockPos(1, 1, 1)).getStackInSlot(0)),
+                "jigsaw didn't spoil when should have"));
     }
 
     @GameTest(template = "empty_5x5", batch = "spoilageTests")

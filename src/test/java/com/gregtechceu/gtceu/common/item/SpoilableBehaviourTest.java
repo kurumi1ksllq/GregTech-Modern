@@ -138,8 +138,7 @@ public class SpoilableBehaviourTest {
                     Items.JIGSAW.getDefaultInstance().copyWithCount(23),
                     stack), "jigsaw spoiled 1 tick earlier");
             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-            helper.assertTrue(spoilable != null, "spoilable was null when shouldn't have");
-            assert spoilable != null;
+            TestUtils.assertNotNull(helper, spoilable, "spoilable was null when shouldn't have");
             helper.assertTrue(spoilable.shouldSpoil(), "shouldSpoil returned false on spoilable item");
             TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(), 1,
                     "spoilable didn't return correct ticks until spoiled amount");
@@ -182,8 +181,7 @@ public class SpoilableBehaviourTest {
                     Items.JIGSAW.getDefaultInstance().copyWithCount(23),
                     stack), "jigsaw spoiled 1 tick earlier");
             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-            helper.assertTrue(spoilable != null, "spoilable was null when shouldn't have");
-            assert spoilable != null;
+            TestUtils.assertNotNull(helper, spoilable, "spoilable was null when shouldn't have");
             helper.assertTrue(spoilable.shouldSpoil(), "shouldSpoil returned false on spoilable item");
             helper.assertTrue(spoilable.getTicksUntilSpoiled() == 1,
                     "spoilable didn't return correct ticks until spoiled amount");
@@ -203,16 +201,14 @@ public class SpoilableBehaviourTest {
         helper.runAtTickTime(4, () -> {
             ItemStack stack = crate.inventory.getStackInSlot(0);
             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-            helper.assertTrue(spoilable != null, "spoilable was null when shouldn't have (check #1)");
-            assert spoilable != null;
+            TestUtils.assertNotNull(helper, spoilable, "spoilable was null when shouldn't have (check #1)");
             TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(), 6, "incorrect ticks until spoiled");
             spoilable.freezeSpoiling();
         });
         helper.runAtTickTime(9, () -> {
             ItemStack stack = crate.inventory.getStackInSlot(0);
             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-            helper.assertTrue(spoilable != null, "spoilable was null when shouldn't have (check #2)");
-            assert spoilable != null;
+            TestUtils.assertNotNull(helper, spoilable, "spoilable was null when shouldn't have (check #2)");
             TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(), 6,
                     "ticks until spoiled changed while frozen");
             spoilable.unfreezeSpoiling();
@@ -220,8 +216,7 @@ public class SpoilableBehaviourTest {
         helper.runAtTickTime(13, () -> {
             ItemStack stack = crate.inventory.getStackInSlot(0);
             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-            helper.assertTrue(spoilable != null, "spoilable was null when shouldn't have (check #3)");
-            assert spoilable != null;
+            TestUtils.assertNotNull(helper, spoilable, "spoilable was null when shouldn't have (check #3)");
             TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(), 2,
                     "incorrect ticks until spoiled after unfreeze");
         });
@@ -257,8 +252,7 @@ public class SpoilableBehaviourTest {
                     "incorrect recipe output (%s != %s)".formatted(stack.toString(),
                             new ItemStack(Items.STRUCTURE_BLOCK).toString()));
             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-            helper.assertTrue(spoilable != null, "recipe output was not spoilable");
-            assert spoilable != null;
+            TestUtils.assertNotNull(helper, spoilable, "recipe output was not spoilable");
             TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(), 27,
                     "recipe output didn't have correct ticks until spoiled");
         });
@@ -280,8 +274,7 @@ public class SpoilableBehaviourTest {
                     "incorrect recipe output (%s != %s)".formatted(stack.toString(),
                             new ItemStack(Items.STRUCTURE_BLOCK).toString()));
             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-            helper.assertTrue(spoilable != null, "recipe output was not spoilable");
-            assert spoilable != null;
+            TestUtils.assertNotNull(helper, spoilable, "recipe output was not spoilable");
             TestUtils.assertEqual(helper, spoilable.getTicksUntilSpoiled(), 40,
                     "recipe output didn't have correct ticks until spoiled");
         });
@@ -310,7 +303,7 @@ public class SpoilableBehaviourTest {
     }
 
     @GameTest(template = "empty_5x5", batch = "spoilageTests")
-    public static void spoilableFilteringTest(GameTestHelper helper) {
+    public static void spoilableFiltering(GameTestHelper helper) {
         TestUtils.succeedAfterTest(helper);
         CrateMachine crate1 = (CrateMachine) TestUtils.setMachine(helper, new BlockPos(1, 1, 1),
                 GTMachines.STEEL_CRATE);
@@ -330,14 +323,13 @@ public class SpoilableBehaviourTest {
             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
             helper.assertTrue(TestUtils.isItemStackEqual(stack, Items.STRUCTURE_BLOCK.getDefaultInstance()),
                     "wrong item");
-            helper.assertTrue(spoilable != null, "spoilable was null");
-            assert spoilable != null;
+            TestUtils.assertNotNull(helper, spoilable, "spoilable was null");
             TestUtils.assertEqual(helper, 20, spoilable.getTicksUntilSpoiled(), "wrong ticks until spoiled");
         });
     }
 
     @GameTest(template = "empty_5x5", batch = "spoilageTests")
-    public static void spoilableFilteringWithSpoilableTest(GameTestHelper helper) {
+    public static void spoilableFilteringWithSpoilable(GameTestHelper helper) {
         TestUtils.succeedAfterTest(helper);
         CrateMachine crate1 = (CrateMachine) TestUtils.setMachine(helper, new BlockPos(1, 1, 1),
                 GTMachines.STEEL_CRATE);
@@ -362,9 +354,27 @@ public class SpoilableBehaviourTest {
             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
             helper.assertTrue(TestUtils.isItemStackEqual(stack, Items.STRUCTURE_BLOCK.getDefaultInstance()),
                     "wrong item");
-            helper.assertTrue(spoilable != null, "spoilable was null");
-            assert spoilable != null;
+            TestUtils.assertNotNull(helper, spoilable, "spoilable was null");
             TestUtils.assertEqual(helper, 20, spoilable.getTicksUntilSpoiled(), "wrong ticks until spoiled");
         });
+    }
+
+    @GameTest(template = "empty_5x5", batch = "spoilageTests")
+    public static void spoilableMerging(GameTestHelper helper) {
+        TestUtils.succeedAfterTest(helper);
+        ItemStack stack1 = Items.JIGSAW.getDefaultInstance().copyWithCount(9);
+        ItemStack stack2 = Items.JIGSAW.getDefaultInstance().copyWithCount(5);
+        SpoilUtils.update(stack1, new SpoilContext());
+        SpoilUtils.update(stack2, new SpoilContext());
+        ISpoilableItem spoilable1 = GTCapabilityHelper.getSpoilable(stack1);
+        ISpoilableItem spoilable2 = GTCapabilityHelper.getSpoilable(stack2);
+        TestUtils.assertNotNull(helper, spoilable1, "spoilable1 was null");
+        TestUtils.assertNotNull(helper, spoilable2, "spoilable2 was null");
+        spoilable1.setTicksUntilSpoiled(7);
+        spoilable2.setTicksUntilSpoiled(4);
+        helper.assertTrue(ItemStack.isSameItemSameTags(stack1, stack2), "stacks were not equal");
+        // (9*7 + 5*4)/(9 + 5) = 5.928
+        TestUtils.assertEqual(helper, spoilable1.getTicksUntilSpoiled(), 5, "spoilable1 had wrong ticks until spoiled");
+        TestUtils.assertEqual(helper, spoilable2.getTicksUntilSpoiled(), 5, "spoilable2 has wrong ticks until spoiled");
     }
 }

@@ -33,6 +33,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandler;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -229,8 +230,7 @@ public class TestUtils {
                 }
             }
         }
-        helper.assertTrue(coverDefinition != null, "attempted to place cover with item that is not a cover");
-        assert coverDefinition != null;
+        TestUtils.assertNotNull(helper, coverDefinition, "attempted to place cover with item that is not a cover");
         helper.assertTrue(shouldFail ^ machine.getCoverContainer().placeCoverOnSide(
                 direction, stack, coverDefinition, null), "failed to place cover");
         return machine.getCoverContainer().getCoverAtSide(direction);
@@ -306,5 +306,14 @@ public class TestUtils {
 
     public static void assertEqual(GameTestHelper helper, @Nullable BlockPos pos1, @Nullable BlockPos pos2) {
         helper.assertTrue(pos1 != null && pos1.equals(pos2), "Expected %s to equal to %s".formatted(pos1, pos2));
+    }
+
+    /**
+     * Use this instead of {@code helper.assertTrue(obj != null, ...)} to stop IntelliJ from complaining
+     * about nullability.
+     */
+    @Contract("_, null, _ -> fail")
+    public static void assertNotNull(GameTestHelper helper, Object object, String failureMessage) {
+        helper.assertTrue(object != null, failureMessage);
     }
 }

@@ -11,7 +11,6 @@ import com.gregtechceu.gtceu.api.material.material.info.MaterialIconSet;
 import com.gregtechceu.gtceu.api.material.material.properties.*;
 import com.gregtechceu.gtceu.api.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.tag.TagPrefix;
-import com.gregtechceu.gtceu.integration.kjs.helpers.GTResourceLocation;
 import com.gregtechceu.gtceu.integration.kjs.helpers.MaterialStackWrapper;
 
 import net.minecraft.resources.ResourceLocation;

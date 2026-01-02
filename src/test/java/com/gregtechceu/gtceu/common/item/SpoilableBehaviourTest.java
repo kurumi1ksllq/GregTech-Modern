@@ -311,7 +311,8 @@ public class SpoilableBehaviourTest {
                 GTMachines.STEEL_CRATE);
         ConveyorCover cover = (ConveyorCover) TestUtils.placeCover(helper, crate1, GTItems.CONVEYOR_MODULE_HV.asStack(),
                 Direction.UP);
-        CompoundTag filterTag = SimpleItemFilter.forItems(Items.STRUCTURE_BLOCK.getDefaultInstance()).saveFilter();
+        CompoundTag filterTag = SimpleItemFilter.forItems(true, Items.STRUCTURE_BLOCK.getDefaultInstance())
+                .saveFilter();
         ItemStack filter = GTItems.ITEM_FILTER.asStack();
         filter.setTag(filterTag);
         cover.getFilterHandler().loadFilter(filter);
@@ -339,23 +340,28 @@ public class SpoilableBehaviourTest {
                 Direction.UP);
         ItemStack itemForFilter = Items.STRUCTURE_BLOCK.getDefaultInstance();
         ISpoilableItem filterSpoilable = GTCapabilityHelper.getSpoilable(itemForFilter);
-        assert filterSpoilable != null;
+        TestUtils.assertNotNull(helper, filterSpoilable, "filterSpoilable was null");
         SpoilUtils.update(itemForFilter, new SpoilContext());
         filterSpoilable.setTicksUntilSpoiled(5);
-        CompoundTag filterTag = SimpleItemFilter.forItems(itemForFilter).saveFilter();
+        CompoundTag filterTag = SimpleItemFilter.forItems(false, itemForFilter).saveFilter();
         ItemStack filter = GTItems.ITEM_FILTER.asStack();
         filter.setTag(filterTag);
         cover.getFilterHandler().loadFilter(filter);
-        cover.setWorkingEnabled(false);
+        cover.setWorkingEnabled(true);
         crate1.inventory.setStackInSlot(0, Items.STRUCTURE_BLOCK.getDefaultInstance());
-        helper.runAtTickTime(10, () -> cover.setWorkingEnabled(true));
-        helper.runAtTickTime(20, () -> {
+        helper.runAtTickTime(34, () -> {
+            ItemStack stack = crate1.inventory.getStackInSlot(0);
+            ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
+            TestUtils.assertEqual(helper, stack, Items.STRUCTURE_BLOCK.getDefaultInstance());
+            TestUtils.assertNotNull(helper, spoilable, "spoilable was null in crate1");
+            TestUtils.assertEqual(helper, 6, spoilable.getTicksUntilSpoiled(), "wrong ticks until spoiled in crate1");
+        });
+        helper.runAtTickTime(39, () -> {
             ItemStack stack = crate2.inventory.getStackInSlot(0);
             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-            helper.assertTrue(TestUtils.isItemStackEqual(stack, Items.STRUCTURE_BLOCK.getDefaultInstance()),
-                    "wrong item");
-            TestUtils.assertNotNull(helper, spoilable, "spoilable was null");
-            TestUtils.assertEqual(helper, 20, spoilable.getTicksUntilSpoiled(), "wrong ticks until spoiled");
+            TestUtils.assertEqual(helper, stack, Items.STRUCTURE_BLOCK.getDefaultInstance());
+            TestUtils.assertNotNull(helper, spoilable, "spoilable was null in crate2");
+            TestUtils.assertEqual(helper, 1, spoilable.getTicksUntilSpoiled(), "wrong ticks until spoiled in crate2");
         });
     }
 

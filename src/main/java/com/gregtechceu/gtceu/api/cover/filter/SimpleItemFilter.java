@@ -49,9 +49,9 @@ public class SimpleItemFilter implements ItemFilter {
         return loadFilter(itemStack.getOrCreateTag(), filter -> itemStack.setTag(filter.saveFilter()));
     }
 
-    public static SimpleItemFilter forItems(ItemStack... items) {
+    public static SimpleItemFilter forItems(boolean ignoreNbt, ItemStack... items) {
         SimpleItemFilter filter = new SimpleItemFilter();
-        filter.ignoreNbt = true;
+        filter.ignoreNbt = ignoreNbt;
         filter.isBlackList = false;
         int i = 0;
         for (ItemStack item : items) {

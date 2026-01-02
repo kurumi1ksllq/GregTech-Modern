@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.kjs.builders.material;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.material.Element;
 import com.gregtechceu.gtceu.data.material.GTElements;
 
@@ -25,7 +26,7 @@ public class ElementBuilder extends BuilderBase<Element> {
     public transient boolean isIsotope;
 
     public ElementBuilder(ResourceLocation id) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
         name = id.getPath();
         translatableName = Component.translatable(id.toLanguageKey("element"));
     }

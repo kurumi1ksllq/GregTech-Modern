@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.kjs.builders.machine;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +23,7 @@ public class KJSWrappingMachineBuilder extends BuilderBase<MachineDefinition> im
     private final KJSTieredMachineBuilder tieredBuilder;
 
     public KJSWrappingMachineBuilder(ResourceLocation id, KJSTieredMachineBuilder tieredBuilder) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
         this.tieredBuilder = tieredBuilder;
         this.dummyBuilder = true;
     }

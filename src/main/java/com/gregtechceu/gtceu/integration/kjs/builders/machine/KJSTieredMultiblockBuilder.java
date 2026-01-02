@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.kjs.builders.machine;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -38,12 +39,12 @@ public class KJSTieredMultiblockBuilder extends BuilderBase<@Nullable Multiblock
     public transient DefinitionFunction definition = (tier, def) -> def.tier(tier);
 
     public KJSTieredMultiblockBuilder(ResourceLocation id) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
         this.dummyBuilder = true;
     }
 
     public KJSTieredMultiblockBuilder(ResourceLocation id, TieredCreationFunction machine) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
         this.machine = machine;
         this.dummyBuilder = true;
     }

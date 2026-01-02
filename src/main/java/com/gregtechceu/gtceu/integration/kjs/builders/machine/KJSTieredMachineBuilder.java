@@ -55,7 +55,7 @@ public class KJSTieredMachineBuilder extends BuilderBase<@Nullable MachineDefini
     public transient BiFunction<ResourceLocation, GTRecipeType, EditableMachineUI> editableUI;
 
     public KJSTieredMachineBuilder(ResourceLocation id) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
         this.addDefaultTooltips = false;
         this.addDefaultModel = false;
         this.dummyBuilder = true;
@@ -64,7 +64,7 @@ public class KJSTieredMachineBuilder extends BuilderBase<@Nullable MachineDefini
     public KJSTieredMachineBuilder(ResourceLocation id, TieredCreationFunction machine,
                                    BiFunction<ResourceLocation, GTRecipeType, EditableMachineUI> editableUI,
                                    boolean isGenerator) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
         this.machine = machine;
         this.editableUI = editableUI;
         this.isGenerator = isGenerator;

@@ -38,7 +38,7 @@ public class GTRecipeCategoryBuilder extends BuilderBase<GTRecipeCategory> {
     private transient String langValue;
 
     public GTRecipeCategoryBuilder(ResourceLocation id) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
         name = id.getPath();
         recipeType = GTRecipeTypes.DUMMY_RECIPES;
         icon = null;

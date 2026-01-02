@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.kjs.builders.worldgen;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.material.material.Material;
 import com.gregtechceu.gtceu.api.worldgen.BiomeWeightModifier;
 import com.gregtechceu.gtceu.api.worldgen.bedrockore.BedrockOreDefinition;
@@ -40,7 +41,7 @@ public class BedrockOreBuilder extends BuilderBase<BedrockOreDefinition> {
     private final List<BiomeWeightModifier> biomes = new LinkedList<>();
 
     public BedrockOreBuilder(ResourceLocation id) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
     }
 
     public static BedrockOreBuilder from(BedrockOreDefinition definition, ResourceLocation id) {

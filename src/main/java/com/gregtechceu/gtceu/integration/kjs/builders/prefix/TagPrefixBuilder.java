@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.kjs.builders.prefix;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.material.material.Material;
 import com.gregtechceu.gtceu.api.material.material.info.MaterialIconType;
 import com.gregtechceu.gtceu.api.material.material.stack.MaterialStack;
@@ -32,7 +33,7 @@ public class TagPrefixBuilder extends BuilderBase<TagPrefix> {
     private final List<MaterialStack> secondaryMaterials = new ArrayList<>();
 
     public TagPrefixBuilder(ResourceLocation id) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
         this.base = create(id.getPath());
     }
 

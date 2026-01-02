@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.kjs.builders.recipetype;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.gui.SteamTexture;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
@@ -58,7 +59,7 @@ public class GTRecipeTypeBuilder extends BuilderBase<GTRecipeType> {
     protected transient BiConsumer<GTRecipe, WidgetGroup> uiBuilder;
 
     public GTRecipeTypeBuilder(ResourceLocation i) {
-        super(i);
+        super(GTCEu.id(i.getPath()));
         name = i.getPath();
         category = "custom";
         maxInputs = new Object2IntOpenHashMap<>();

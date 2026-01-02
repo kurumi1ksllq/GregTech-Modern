@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.kjs.builders.machine;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
@@ -59,7 +60,7 @@ public class MultiblockMachineBuilderWrapper extends BuilderBase<MultiblockMachi
     private final MultiblockMachineBuilder internal;
 
     public MultiblockMachineBuilderWrapper(ResourceLocation id, MultiblockMachineBuilder internal) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
         this.internal = internal;
         this.dummyBuilder = true;
     }

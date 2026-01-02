@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.kjs.builders.machine;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 
 import net.minecraft.resources.ResourceLocation;
@@ -21,7 +22,7 @@ public class KJSWrappingMultiblockBuilder extends BuilderBase<MultiblockMachineD
     private final KJSTieredMultiblockBuilder tieredBuilder;
 
     public KJSWrappingMultiblockBuilder(ResourceLocation id) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
         this.tieredBuilder = new KJSTieredMultiblockBuilder(id);
         this.dummyBuilder = true;
     }

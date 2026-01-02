@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.kjs.builders.worldgen;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.worldgen.*;
 import com.gregtechceu.gtceu.api.worldgen.generator.IndicatorGenerator;
 import com.gregtechceu.gtceu.api.worldgen.generator.VeinGenerator;
@@ -60,7 +61,7 @@ public class OreVeinDefinitionBuilder extends BuilderBase<OreVeinDefinition> {
     private List<IndicatorGenerator> indicatorGenerators;
 
     public OreVeinDefinitionBuilder(ResourceLocation id) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
     }
 
     @Tolerate

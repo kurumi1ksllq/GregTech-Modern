@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.kjs.builders.prefix;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.OreBlock;
 import com.gregtechceu.gtceu.api.material.material.Material;
 import com.gregtechceu.gtceu.api.material.material.info.MaterialIconType;
@@ -37,7 +38,7 @@ public class OreTagPrefixBuilder extends TagPrefixBuilder {
     public transient boolean shouldDropAsItem = false;
 
     public OreTagPrefixBuilder(ResourceLocation id) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
     }
 
     @Override

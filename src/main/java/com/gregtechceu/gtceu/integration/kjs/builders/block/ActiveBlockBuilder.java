@@ -39,7 +39,7 @@ public class ActiveBlockBuilder extends BlockBuilder {
     public transient String activeTexture;
 
     public ActiveBlockBuilder(ResourceLocation id) {
-        super(id);
+        super(GTCEu.id(id.getPath()));
         property(GTBlockStateProperties.ACTIVE);
         renderType(BlockRenderType.CUTOUT_MIPPED);
         activeTexture = ACTIVE.apply(baseTexture);

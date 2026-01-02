@@ -3,10 +3,12 @@ package com.gregtechceu.gtceu.common.data.loader;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.worldgen.OreVeinDefinition;
 import com.gregtechceu.gtceu.api.worldgen.WorldGeneratorUtils;
+import com.gregtechceu.gtceu.api.worldgen.generator.indicators.SurfaceIndicatorGenerator;
 import com.gregtechceu.gtceu.data.worldgen.GTOreVeins;
 import com.gregtechceu.gtceu.integration.map.cache.server.ServerCache;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -25,11 +27,22 @@ public class PostRegistryListener extends ContextAwareReloadListener implements 
     private PostRegistryListener() {}
 
     protected void apply() {
-        var registry = GTRegistries.builtinRegistry().registryOrThrow(GTRegistries.ORE_VEIN_REGISTRY);
+        // Apply and validate stuff that requires registry access that isn't finished yet during the Registry event
+        var biomeLookup = GTRegistries.builtinRegistry().lookupOrThrow(Registries.BIOME);
 
-        buildVeinGenerators(registry);
-        GTOreVeins.updateLargestVeinSize(registry);
-        ServerCache.instance.oreVeinDefinitionsChanged(registry);
+        var oreVeinRegistry = GTRegistries.builtinRegistry().registryOrThrow(GTRegistries.ORE_VEIN_REGISTRY);
+        oreVeinRegistry.holders().forEach(holder -> {
+            var definition = holder.value();
+            definition.biomeLookup(biomeLookup);
+            definition.indicatorGenerators().stream()
+                    .filter(SurfaceIndicatorGenerator.class::isInstance)
+                    .map(SurfaceIndicatorGenerator.class::cast)
+                    .forEach(SurfaceIndicatorGenerator::validateAfterBlocks);
+        });
+
+        buildVeinGenerators(oreVeinRegistry);
+        GTOreVeins.updateLargestVeinSize(oreVeinRegistry);
+        ServerCache.instance.oreVeinDefinitionsChanged(oreVeinRegistry);
         WorldGeneratorUtils.invalidateOreVeinCache();
     }
 

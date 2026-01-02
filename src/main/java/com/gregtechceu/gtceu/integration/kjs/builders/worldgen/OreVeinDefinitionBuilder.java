@@ -20,6 +20,7 @@ import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
 import com.mojang.datafixers.util.Pair;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
@@ -42,7 +43,7 @@ public class OreVeinDefinitionBuilder extends BuilderBase<OreVeinDefinition> {
     private int weight;
     private IWorldGenLayer layer = WorldGenLayers.STONE;
     @Setter
-    private Set<ResourceKey<Level>> dimensionFilter;
+    private Set<ResourceKey<Level>> dimensionFilter = new HashSet<>();
     @Setter
     private HeightRangePlacement heightRange;
     @Setter
@@ -51,13 +52,13 @@ public class OreVeinDefinitionBuilder extends BuilderBase<OreVeinDefinition> {
     @Nullable
     private HolderSet<Biome> biomes;
     @Setter
-    private BiomeWeightModifier biomeWeightModifier;
+    private BiomeWeightModifier biomeWeightModifier = BiomeWeightModifier.EMPTY;
 
     @Setter
     @Nullable
     private VeinGenerator veinGenerator;
     @Setter
-    private List<IndicatorGenerator> indicatorGenerators;
+    private List<IndicatorGenerator> indicatorGenerators = new ObjectArrayList<>();
 
     public OreVeinDefinitionBuilder(ResourceLocation id) {
         super(id);
@@ -216,6 +217,6 @@ public class OreVeinDefinitionBuilder extends BuilderBase<OreVeinDefinition> {
         return new OreVeinDefinition(clusterSize, density, weight, layer,
                 Set.copyOf(dimensionFilter), heightRange, discardChanceOnAirExposure,
                 biomes, biomeWeightModifier, veinGenerator, indicatorGenerators,
-                RegistryAccessContainer.current.access().lookupOrThrow(Registries.BIOME));
+                RegistryAccessContainer.current.access().lookup(Registries.BIOME).orElse(null));
     }
 }

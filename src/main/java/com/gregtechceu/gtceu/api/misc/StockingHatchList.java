@@ -93,7 +93,7 @@ public class StockingHatchList implements Iterable<StockingHatchList.AEStack> {
     }
 
     @Override
-    public Iterator<AEStack> iterator() {
+    public @NotNull Iterator<AEStack> iterator() {
         return list.iterator();
     }
 
@@ -118,7 +118,7 @@ public class StockingHatchList implements Iterable<StockingHatchList.AEStack> {
         @Setter
         public long amount;
 
-        public AEStack(AEKey key, long amount) {
+        public AEStack(@NotNull AEKey key, long amount) {
             this.key = key;
             this.amount = amount;
         }

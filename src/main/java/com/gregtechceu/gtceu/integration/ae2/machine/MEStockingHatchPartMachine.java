@@ -141,12 +141,8 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
         }
     }
 
+    // Refreshes what things are being watched
     private void syncWatchedStacks() {
-        // Refreshes what things are being watched
-        // TODO: Be smart about this.
-        // We only need to update what we listen to when said list changes, so in
-        // refreshList() or when it's changed in the UI
-        // For now, periodically testing is fine since this is cheap
         if (watcher == null) return;
         watcher.reset();
         if (autoPull) {
@@ -170,17 +166,12 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
     public void onStackChange(AEKey what, long amount) {
         if (!(what instanceof AEFluidKey itemKey)) return;
         if (autoPull) {
-            // TODO: this is expensive? maybe move this somewhere else?
-            boolean changed;
             if (autoPullTest != null && !autoPullTest.test(new GenericStack(itemKey, amount))) {
                 topFluids.remove(what);
-                changed = true;
             } else {
-                changed = topFluids.insert(what, amount);
+                if (!topFluids.insert(what, amount)) return;
             }
 
-            if (!changed) return;
-            // TODO: only do this once all the stacks have changed? Is there any way to know?
             syncListToHandler();
         } else {
             for (ExportOnlyAEFluidSlot slot : this.aeFluidHandler.getInventory()) {

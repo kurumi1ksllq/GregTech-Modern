@@ -300,9 +300,7 @@ public class GTRecipeBuilder {
     }
 
     public GTRecipeBuilder inputItems(Object input) {
-        if (input instanceof Item item) {
-            return inputItems(item);
-        } else if (input instanceof Supplier<?> supplier && supplier.get() instanceof ItemLike item) {
+        if (input instanceof Supplier<?> supplier && supplier.get() instanceof ItemLike item) {
             return inputItems(item.asItem());
         } else if (input instanceof ItemStack stack) {
             return inputItems(stack);
@@ -324,9 +322,7 @@ public class GTRecipeBuilder {
     }
 
     public GTRecipeBuilder inputItems(Object input, int count) {
-        if (input instanceof Item item) {
-            return inputItems(item, count);
-        } else if (input instanceof Supplier<?> supplier && supplier.get() instanceof ItemLike item) {
+        if (input instanceof Supplier<?> supplier && supplier.get() instanceof ItemLike item) {
             return inputItems(item.asItem(), count);
         } else if (input instanceof ItemStack stack) {
             return inputItems(stack.copyWithCount(count));
@@ -404,11 +400,11 @@ public class GTRecipeBuilder {
         return inputItems(tag, 1);
     }
 
-    public GTRecipeBuilder inputItems(Item input, int amount) {
+    public GTRecipeBuilder inputItems(ItemLike input, int amount) {
         return inputItems(new ItemStack(input, amount));
     }
 
-    public GTRecipeBuilder inputItems(Item input) {
+    public GTRecipeBuilder inputItems(ItemLike input) {
         return inputItems(input, 1);
     }
 
@@ -472,7 +468,7 @@ public class GTRecipeBuilder {
         return inputItemRanged(IntProviderIngredient.of(input, intProvider));
     }
 
-    public GTRecipeBuilder inputItemsRanged(Item input, IntProvider intProvider) {
+    public GTRecipeBuilder inputItemsRanged(ItemLike input, IntProvider intProvider) {
         return inputItemsRanged(new ItemStack(input), intProvider);
     }
 
@@ -502,9 +498,7 @@ public class GTRecipeBuilder {
     }
 
     public GTRecipeBuilder outputItems(Object output) {
-        if (output instanceof Item item) {
-            return outputItems(item);
-        } else if (output instanceof Supplier<?> supplier && supplier.get() instanceof ItemLike item) {
+        if (output instanceof Supplier<?> supplier && supplier.get() instanceof ItemLike item) {
             return outputItems(item.asItem());
         } else if (output instanceof ItemStack stack) {
             return outputItems(stack);
@@ -522,9 +516,7 @@ public class GTRecipeBuilder {
     }
 
     public GTRecipeBuilder outputItems(Object output, int count) {
-        if (output instanceof Item item) {
-            return outputItems(item, count);
-        } else if (output instanceof Supplier<?> supplier && supplier.get() instanceof ItemLike item) {
+        if (output instanceof Supplier<?> supplier && supplier.get() instanceof ItemLike item) {
             return outputItems(item.asItem(), count);
         } else if (output instanceof ItemStack stack) {
             return outputItems(stack.copyWithCount(count));
@@ -561,11 +553,11 @@ public class GTRecipeBuilder {
         return output(ItemRecipeCapability.CAP, ingredients.toArray(Ingredient[]::new));
     }
 
-    public GTRecipeBuilder outputItems(Item output, int amount) {
+    public GTRecipeBuilder outputItems(ItemLike output, int amount) {
         return outputItems(new ItemStack(output, amount));
     }
 
-    public GTRecipeBuilder outputItems(Item output) {
+    public GTRecipeBuilder outputItems(ItemLike output) {
         return outputItems(new ItemStack(output));
     }
 
@@ -626,7 +618,7 @@ public class GTRecipeBuilder {
         return outputItemRanged(IntProviderIngredient.of(output, intProvider));
     }
 
-    public GTRecipeBuilder outputItemsRanged(Item input, IntProvider intProvider) {
+    public GTRecipeBuilder outputItemsRanged(ItemLike input, IntProvider intProvider) {
         return outputItemsRanged(new ItemStack(input), intProvider);
     }
 
@@ -663,7 +655,7 @@ public class GTRecipeBuilder {
         return this;
     }
 
-    public GTRecipeBuilder notConsumable(Item item) {
+    public GTRecipeBuilder notConsumable(ItemLike item) {
         int lastChance = this.chance;
         this.chance = 0;
         inputItems(item);
@@ -671,7 +663,7 @@ public class GTRecipeBuilder {
         return this;
     }
 
-    public GTRecipeBuilder notConsumable(Supplier<? extends Item> item) {
+    public GTRecipeBuilder notConsumable(Supplier<? extends ItemLike> item) {
         int lastChance = this.chance;
         this.chance = 0;
         inputItems(item);
@@ -856,11 +848,11 @@ public class GTRecipeBuilder {
         return chancedOutput(prefix, material, 1, fraction, tierChanceBoost);
     }
 
-    public GTRecipeBuilder chancedOutput(Item item, int count, String fraction, int tierChanceBoost) {
+    public GTRecipeBuilder chancedOutput(ItemLike item, int count, String fraction, int tierChanceBoost) {
         return chancedOutput(new ItemStack(item, count), fraction, tierChanceBoost);
     }
 
-    public GTRecipeBuilder chancedOutput(Item item, String fraction, int tierChanceBoost) {
+    public GTRecipeBuilder chancedOutput(ItemLike item, String fraction, int tierChanceBoost) {
         return chancedOutput(item, 1, fraction, tierChanceBoost);
     }
 

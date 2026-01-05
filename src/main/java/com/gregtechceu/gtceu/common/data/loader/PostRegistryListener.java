@@ -3,7 +3,6 @@ package com.gregtechceu.gtceu.common.data.loader;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.worldgen.OreVeinDefinition;
 import com.gregtechceu.gtceu.api.worldgen.WorldGeneratorUtils;
-import com.gregtechceu.gtceu.api.worldgen.generator.indicators.SurfaceIndicatorGenerator;
 import com.gregtechceu.gtceu.data.worldgen.GTOreVeins;
 import com.gregtechceu.gtceu.integration.map.cache.server.ServerCache;
 
@@ -31,14 +30,7 @@ public class PostRegistryListener extends ContextAwareReloadListener implements 
         var biomeLookup = GTRegistries.builtinRegistry().lookupOrThrow(Registries.BIOME);
 
         var oreVeinRegistry = GTRegistries.builtinRegistry().registryOrThrow(GTRegistries.ORE_VEIN_REGISTRY);
-        oreVeinRegistry.holders().forEach(holder -> {
-            var definition = holder.value();
-            definition.biomeLookup(biomeLookup);
-            definition.indicatorGenerators().stream()
-                    .filter(SurfaceIndicatorGenerator.class::isInstance)
-                    .map(SurfaceIndicatorGenerator.class::cast)
-                    .forEach(SurfaceIndicatorGenerator::validateAfterBlocks);
-        });
+        oreVeinRegistry.holders().forEach(holder -> holder.value().biomeLookup(biomeLookup));
 
         buildVeinGenerators(oreVeinRegistry);
         GTOreVeins.updateLargestVeinSize(oreVeinRegistry);

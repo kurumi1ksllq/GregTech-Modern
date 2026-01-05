@@ -71,9 +71,6 @@ public class SurfaceIndicatorGenerator extends IndicatorGenerator {
     }
 
     public SurfaceIndicatorGenerator surfaceRock(Material material) {
-        if (material == null) {
-            throw new IllegalArgumentException("Surface rock material is null");
-        }
         validateSurfaceRockMaterial(material);
 
         this.block = Either.right(material);
@@ -112,14 +109,7 @@ public class SurfaceIndicatorGenerator extends IndicatorGenerator {
         return this;
     }
 
-    public void validateAfterBlocks() {
-        block.ifRight(SurfaceIndicatorGenerator::validateSurfaceRockMaterial);
-    }
-
     private static void validateSurfaceRockMaterial(Material material) {
-        if (GTMaterialBlocks.SURFACE_ROCK_BLOCKS == null) {
-            return;
-        }
         if (GTMaterialBlocks.SURFACE_ROCK_BLOCKS.get(material) == null)
             throw new IllegalArgumentException("No surface rock registered for material " + material.getName());
     }

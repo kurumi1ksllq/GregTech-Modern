@@ -22,6 +22,7 @@ import com.gregtechceu.gtceu.common.item.CoverPlaceBehavior;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.gametest.framework.GameTestAssertPosException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
@@ -315,5 +316,32 @@ public class TestUtils {
     @Contract("_, null, _ -> fail")
     public static void assertNotNull(GameTestHelper helper, Object object, String failureMessage) {
         helper.assertTrue(object != null, failureMessage);
+    }
+
+    public static void assertRedstone(GameTestHelper helper, BlockPos pos, int min, int max) {
+        BlockPos absolutePos = helper.absolutePos(pos);
+        int strength = helper.getLevel().getBestNeighborSignal(absolutePos);
+        if (strength > max || strength < min) {
+            throw new GameTestAssertPosException(
+                    "Expected redstone signal between %d and %d, got %d".formatted(min, max, strength),
+                    absolutePos, pos, helper.getTick());
+        }
+    }
+
+    public static void assertRedstoneEither(GameTestHelper helper, BlockPos pos, int... values) {
+        BlockPos absolutePos = helper.absolutePos(pos);
+        int strength = helper.getLevel().getBestNeighborSignal(absolutePos);
+        boolean pass = false;
+        for (int i : values) {
+            if (i == strength) {
+                pass = true;
+                break;
+            }
+        }
+        if (!pass) {
+            throw new GameTestAssertPosException(
+                    "Expected redstone signal to be one of %s, got %d".formatted(values, strength),
+                    absolutePos, pos, helper.getTick());
+        }
     }
 }

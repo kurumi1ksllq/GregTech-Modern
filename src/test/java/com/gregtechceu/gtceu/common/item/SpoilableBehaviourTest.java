@@ -159,9 +159,9 @@ public class SpoilableBehaviourTest {
         ItemStack in = Items.APPLE.getDefaultInstance().copyWithCount(41);
         SpoilUtils.update(in, new SpoilContext(
                 helper.getLevel(),
-                helper.absolutePos(new BlockPos(1, 1, 1)),
-                null,
-                itemHandler, 0));
+                helper.absolutePos(new BlockPos(1, 1, 1)))
+                .withItemHandlerSide(null)
+                .withSlot(0));
         itemHandler.insertItem(0, in, false);
         helper.runAtTickTime(70, () -> helper.assertTrue(TestUtils.isItemStackEqual(
                 Items.DIRT.getDefaultInstance().copyWithCount(41),

@@ -37,7 +37,8 @@ public class SpoilUtils {
     public static void updateBlock(BlockEntity blockEntity, Direction side) {
         IItemHandler handler = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, side).resolve().orElse(null);
         if (handler != null) {
-            SpoilContext ctx = new SpoilContext(blockEntity.getLevel(), blockEntity.getBlockPos(), null, handler, -1);
+            SpoilContext ctx = new SpoilContext(blockEntity.getLevel(), blockEntity.getBlockPos())
+                    .withItemHandlerSide(side);
             for (int slot = 0; slot < handler.getSlots(); slot++) {
                 update(handler.getStackInSlot(slot), ctx.withSlot(slot));
             }

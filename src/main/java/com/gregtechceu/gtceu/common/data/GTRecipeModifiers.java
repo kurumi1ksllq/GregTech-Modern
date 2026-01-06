@@ -56,7 +56,7 @@ public class GTRecipeModifiers {
     public static final RecipeModifier SPOILAGE_TRANSFER = (machine, recipe) -> ModifierFunction.builder()
             .modifyItemOutputs((r, stackObject) -> {
                 if (!(stackObject instanceof ItemStack stack)) return;
-                SpoilUtils.update(stack, new SpoilContext(machine, null, -1));
+                SpoilUtils.update(stack, new SpoilContext(machine));
                 if (!r.transferSpoilingProgress) return;
                 double spoilProgress = 0;
                 int spoilableCount = 0;

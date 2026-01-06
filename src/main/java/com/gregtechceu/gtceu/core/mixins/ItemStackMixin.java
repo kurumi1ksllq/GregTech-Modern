@@ -64,9 +64,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     private CompoundTag tag;
 
     @Shadow
-    public abstract boolean isEmpty();
-
-    @Shadow
     @Nullable
     private Entity entityRepresentation;
 
@@ -85,14 +82,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
      */
     @Unique
     private boolean gtceu$isUpdating = false;
-
-    /**
-     * This has to be stored here and not in the capability because
-     * it is not serializable, and wouldn't be preserved between calls
-     * to {@link ItemStack#getCapability}
-     */
-    @Unique
-    private SpoilContext gtceu$spoilContext = new SpoilContext();
 
     /**
      * Whether to display a fake "spoils into" tooltip for an item if it's not spoilable.
@@ -120,18 +109,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
         count = newStack.getCount();
         this.tag = newStack.getTag();
         forgeInit();
-    }
-
-    @Unique
-    @Override
-    public void gtceu$setSpoilContext(SpoilContext ctx) {
-        gtceu$spoilContext = ctx;
-    }
-
-    @Unique
-    @Override
-    public SpoilContext gtceu$getSpoilContext() {
-        return gtceu$spoilContext;
     }
 
     @Unique

@@ -35,6 +35,9 @@ import java.util.Optional;
  */
 public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformation, IDurabilityBar {
 
+    public static final String SPOILABLE_KEY = "GTCEu_spoilable";
+    public static final String FROZEN_TICKS_KEY = "frozenRemainingTicks";
+    public static final String CREATION_TICK_KEY = "creationTick";
     /**
      * Consider frozen and non-frozen spoilables equal. This is done to allow filtering by ticks remaining until
      * spoiled.<br>
@@ -50,14 +53,21 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
         this.stack = stack;
     }
 
-    private ISpoilableItemStackExtension cast() {
-        return (ISpoilableItemStackExtension) (Object) stack;
+    public SpoilContext getSpoilContext() {
+        CompoundTag tag = stack.getTagElement(SPOILABLE_KEY);
+        if (tag == null || !tag.contains("spoilContext")) return new SpoilContext();
+        return SpoilContext.deserializeNBT(tag.getCompound("spoilContext"));
+    }
+
+    private void setSpoilContext(SpoilContext ctx) {
+        CompoundTag tag = stack.getTagElement(SPOILABLE_KEY);
+        if (tag != null) tag.put("spoilContext", ctx.serializeNBT());
     }
 
     /**
      * Checks if this item should've already spoiled, and calls
      * {@link ISpoilableItem#spoilResult(SpoilContext, boolean)}
-     * with {@link com.gregtechceu.gtceu.core.mixins.ItemStackMixin#gtceu$getSpoilContext()}
+     * with {@link SpoilableItemStack#getSpoilContext()}
      * and replaces this item with its return value if so.<br>
      * Also sets the {@link SpoilContext} stored in the mixin to the provided
      * context if it is non-empty (determined by {@link SpoilContext#isEmpty()}).<br>
@@ -74,32 +84,31 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
      *           be called with an empty {@link SpoilContext} and {@code createTag = false}.
      */
     public void updateFreshness(SpoilContext spoilContext, boolean createTag) {
-        if (!spoilContext.isEmpty()) cast().gtceu$setSpoilContext(spoilContext);
+        CompoundTag tag = createTag ? stack.getOrCreateTagElement(SPOILABLE_KEY) :
+                stack.getTagElement(SPOILABLE_KEY);
+        if (!spoilContext.isEmpty()) setSpoilContext(spoilContext);
         Level level = SpoilContext.getDefaultLevel();
-        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-        if (spoilable != null && spoilable.shouldSpoil()) {
-            if (spoilable.getSpoilTicks() < 0) {
+        if (this.shouldSpoil()) {
+            if (this.getSpoilTicks() < 0) {
                 return;
             }
-            CompoundTag tag = createTag ? stack.getOrCreateTagElement("GTCEu_spoilable") :
-                    stack.getTagElement("GTCEu_spoilable");
-            if (tag == null || tag.contains("frozenRemainingTicks")) {
+            if (tag == null || tag.contains(FROZEN_TICKS_KEY)) {
                 return;
             }
             if (level == null) {
                 return;
             }
-            if (!tag.contains("creation_tick")) {
-                tag.putLong("creation_tick", level.getGameTime());
+            if (!tag.contains(CREATION_TICK_KEY)) {
+                tag.putLong(CREATION_TICK_KEY, level.getGameTime());
             }
-            long spoilTicks = spoilable.getSpoilTicks();
-            long timeDifference = level.getGameTime() - tag.getLong("creation_tick") - spoilTicks;
+            long spoilTicks = this.getSpoilTicks();
+            long timeDifference = level.getGameTime() - tag.getLong(CREATION_TICK_KEY) - spoilTicks;
             if (timeDifference >= 0) {
-                ItemStack newStack = spoilable.spoilResult(cast().gtceu$getSpoilContext(), false);
-                cast().gtceu$setStack(newStack);
+                ItemStack newStack = this.spoilResult(getSpoilContext(), false);
+                ((ISpoilableItemStackExtension) (Object) stack).gtceu$setStack(newStack);
                 ISpoilableItem newSpoilable = GTCapabilityHelper.getSpoilable(stack);
-                if (newSpoilable != null && (stack.getTag() == null || !stack.getTag().contains("GTCEu_spoilable"))) {
-                    stack.getOrCreateTagElement("GTCEu_spoilable").putLong("creation_tick",
+                if (newSpoilable != null && (stack.getTag() == null || !stack.getTag().contains(SPOILABLE_KEY))) {
+                    stack.getOrCreateTagElement(SPOILABLE_KEY).putLong(CREATION_TICK_KEY,
                             level.getGameTime() - timeDifference);
                     try {
                         updateFreshness(spoilContext, false);
@@ -113,25 +122,25 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
 
     @Override
     public long getCreationTick() {
-        CompoundTag tag = stack.getTagElement("GTCEu_spoilable");
+        CompoundTag tag = stack.getTagElement(SPOILABLE_KEY);
         if (tag == null) return 0;
-        return tag.getLong("creation_tick");
+        return tag.getLong(CREATION_TICK_KEY);
     }
 
     @Override
     public void setCreationTick(long tick) {
-        CompoundTag tag = stack.getTagElement("GTCEu_spoilable");
+        CompoundTag tag = stack.getTagElement(SPOILABLE_KEY);
         if (tag == null) return;
-        tag.putLong("creation_tick", tick);
+        tag.putLong(CREATION_TICK_KEY, tick);
     }
 
     @Override
     public long getTicksUntilSpoiled() {
         updateFreshness(new SpoilContext(), false);
         Level level = SpoilContext.getDefaultLevel();
-        CompoundTag spoilTag = stack.getTagElement("GTCEu_spoilable");
+        CompoundTag spoilTag = stack.getTagElement(SPOILABLE_KEY);
         if (level != null && spoilTag != null) {
-            if (spoilTag.contains("frozenRemainingTicks")) return spoilTag.getLong("frozenRemainingTicks");
+            if (spoilTag.contains(FROZEN_TICKS_KEY)) return spoilTag.getLong(FROZEN_TICKS_KEY);
             return this.getSpoilTicks() - level.getGameTime() +
                     this.getCreationTick();
         }
@@ -142,20 +151,19 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
     public void setTicksUntilSpoiled(long value) {
         updateFreshness(new SpoilContext(), false);
         Level level = SpoilContext.getDefaultLevel();
-        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-        if (level != null && stack.getTagElement("GTCEu_spoilable") != null && spoilable != null)
-            setCreationTick(level.getGameTime() - spoilable.getSpoilTicks() + value);
+        if (level != null && stack.getTagElement(SPOILABLE_KEY) != null)
+            setCreationTick(level.getGameTime() - this.getSpoilTicks() + value);
     }
 
     private void setFreezeSpoiling(boolean freeze) {
         if (freeze) {
             updateFreshness(new SpoilContext(), true);
-            stack.getOrCreateTagElement("GTCEu_spoilable").putLong("frozenRemainingTicks", getTicksUntilSpoiled());
+            stack.getOrCreateTagElement(SPOILABLE_KEY).putLong(FROZEN_TICKS_KEY, getTicksUntilSpoiled());
         } else {
-            CompoundTag spoilTag = stack.getTagElement("GTCEu_spoilable");
-            if (spoilTag != null && spoilTag.contains("frozenRemainingTicks")) {
-                setTicksUntilSpoiled(spoilTag.getLong("frozenRemainingTicks"));
-                spoilTag.remove("frozenRemainingTicks");
+            CompoundTag spoilTag = stack.getTagElement(SPOILABLE_KEY);
+            if (spoilTag != null && spoilTag.contains(FROZEN_TICKS_KEY)) {
+                setTicksUntilSpoiled(spoilTag.getLong(FROZEN_TICKS_KEY));
+                spoilTag.remove(FROZEN_TICKS_KEY);
             }
         }
     }
@@ -172,8 +180,8 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
 
     @Override
     public boolean isFrozen() {
-        CompoundTag tag = stack.getTagElement("GTCEu_spoilable");
-        return tag != null && tag.contains("frozenRemainingTicks");
+        CompoundTag tag = stack.getTagElement(SPOILABLE_KEY);
+        return tag != null && tag.contains(FROZEN_TICKS_KEY);
     }
 
     @Override
@@ -184,30 +192,28 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                 TooltipFlag isAdvanced) {
-        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-        if (spoilable == null) return;
         tooltipComponents.add(Component.translatable(
                 "gtceu.tooltip.spoil_time_remaining",
-                Component.literal(FormattingUtil.formatTime(spoilable.getTicksUntilSpoiled()))
+                Component.literal(FormattingUtil.formatTime(getTicksUntilSpoiled()))
                         .withStyle(ChatFormatting.DARK_AQUA)));
         tooltipComponents.add(Component.translatable(
                 "gtceu.tooltip.spoils_into", getSpoilResultTooltip()));
         if (isAdvanced.isAdvanced()) {
             tooltipComponents.add(Component.translatable(
                     "gtceu.tooltip.spoil_time_total",
-                    Component.literal(FormattingUtil.formatTime(spoilable.getSpoilTicks()))
+                    Component.literal(FormattingUtil.formatTime(getSpoilTicks()))
                             .withStyle(ChatFormatting.GREEN)));
             tooltipComponents.add(Component.translatable(
                     "gtceu.tooltip.creation_tick",
-                    spoilable.getCreationTick()));
-            SpoilContext ctx = cast().gtceu$getSpoilContext();
+                    getCreationTick()));
+            SpoilContext ctx = getSpoilContext();
             if (ctx.level() != null && ctx.pos() != null)
                 tooltipComponents.add(Component.translatable("gtceu.tooltip.location",
                         ctx.level().dimensionTypeId().location().toString(),
                         ctx.pos().getX(), ctx.pos().getY(), ctx.pos().getZ()));
             if (ctx.entity() != null) tooltipComponents.add(Component.translatable("gtceu.tooltip.location_entity",
                     ctx.entity().getType().getDescription()));
-            if (ctx.itemHandler() != null)
+            if (ctx.itemHandlerData() != null)
                 tooltipComponents.add(Component.translatable("gtceu.tooltip.location_slot", ctx.slot()));
         }
     }
@@ -233,9 +239,7 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
 
     @Override
     public float getDurabilityForDisplay(ItemStack stack) {
-        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-        if (spoilable == null) return 0;
-        return (float) spoilable.getTicksUntilSpoiled() / spoilable.getSpoilTicks();
+        return (float) getTicksUntilSpoiled() / getSpoilTicks();
     }
 
     /**
@@ -256,8 +260,8 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
         boolean isSameItem = ItemStack.isSameItem(stack, other) && stack.areCapsCompatible(other);
         CompoundTag modifiedTag1 = stack.getTag() == null ? null : stack.getTag().copy();
         CompoundTag modifiedTag2 = other.getTag() == null ? null : other.getTag().copy();
-        if (modifiedTag1 != null) modifiedTag1.remove("GTCEu_spoilable");
-        if (modifiedTag2 != null) modifiedTag2.remove("GTCEu_spoilable");
+        if (modifiedTag1 != null) modifiedTag1.remove(SPOILABLE_KEY);
+        if (modifiedTag2 != null) modifiedTag2.remove(SPOILABLE_KEY);
         isSameItem = isSameItem && Objects.equals(modifiedTag1, modifiedTag2);
         if (isSameItem && spoilable2 != null) {
             if (spoilable1.isFrozen() || spoilable2.isFrozen()) {

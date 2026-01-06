@@ -20,6 +20,7 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.item.ItemStack;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,6 +40,7 @@ public abstract class FilterHandler<T, F extends Filter<T, F>> implements ISyncM
     @SaveField
     @SyncToClient
     @Getter
+    @Setter
     private @NotNull ItemStack filterItem = ItemStack.EMPTY;
 
     private @Nullable F filter;

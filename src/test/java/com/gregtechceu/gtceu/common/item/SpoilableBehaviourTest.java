@@ -346,22 +346,35 @@ public class SpoilableBehaviourTest {
         CompoundTag filterTag = SimpleItemFilter.forItems(false, itemForFilter).saveFilter();
         ItemStack filter = GTItems.ITEM_FILTER.asStack();
         filter.setTag(filterTag);
-        cover.getFilterHandler().loadFilter(filter);
+        cover.getFilterHandler().setFilterItem(filter);
         cover.setWorkingEnabled(true);
         crate1.inventory.setStackInSlot(0, Items.STRUCTURE_BLOCK.getDefaultInstance());
         helper.runAtTickTime(34, () -> {
             ItemStack stack = crate1.inventory.getStackInSlot(0);
             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-            TestUtils.assertEqual(helper, stack, Items.STRUCTURE_BLOCK.getDefaultInstance());
+            TestUtils.assertEqual(helper, stack, Items.STRUCTURE_BLOCK.getDefaultInstance(),
+                    "incorrect item in crate1");
             TestUtils.assertNotNull(helper, spoilable, "spoilable was null in crate1");
             TestUtils.assertEqual(helper, 6, spoilable.getTicksUntilSpoiled(), "wrong ticks until spoiled in crate1");
         });
-        helper.runAtTickTime(39, () -> {
+        helper.runAtTickTime(35, () -> {
+            ItemStack stack = crate1.inventory.getStackInSlot(0);
+            ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
+            if (spoilable != null) spoilable.freezeSpoiling();
+            else {
+                ItemStack stack2 = crate2.inventory.getStackInSlot(0);
+                ISpoilableItem spoilable2 = GTCapabilityHelper.getSpoilable(stack2);
+                TestUtils.assertNotNull(helper, spoilable2, "spoilables in both crates were null");
+                spoilable2.freezeSpoiling();
+            }
+        });
+        helper.runAtTickTime(60, () -> {
             ItemStack stack = crate2.inventory.getStackInSlot(0);
             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-            TestUtils.assertEqual(helper, stack, Items.STRUCTURE_BLOCK.getDefaultInstance());
+            TestUtils.assertEqual(helper, stack, Items.STRUCTURE_BLOCK.getDefaultInstance(),
+                    "incorrect item in crate2");
             TestUtils.assertNotNull(helper, spoilable, "spoilable was null in crate2");
-            TestUtils.assertEqual(helper, 1, spoilable.getTicksUntilSpoiled(), "wrong ticks until spoiled in crate2");
+            TestUtils.assertEqual(helper, 5, spoilable.getTicksUntilSpoiled(), "wrong ticks until spoiled in crate2");
         });
     }
 

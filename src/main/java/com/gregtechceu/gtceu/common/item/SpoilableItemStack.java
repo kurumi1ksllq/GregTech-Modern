@@ -111,7 +111,7 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
                     stack.getOrCreateTagElement(SPOILABLE_KEY).putLong(CREATION_TICK_KEY,
                             level.getGameTime() - timeDifference);
                     try {
-                        updateFreshness(spoilContext, false);
+                        newSpoilable.updateFreshness(spoilContext, false);
                     } catch (StackOverflowError ignored) {
                         // if items spoil in a giant chain or a loop
                     }

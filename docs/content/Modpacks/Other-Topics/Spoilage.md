@@ -22,8 +22,8 @@ It may represent:
 
 - Nothing (all values are null, obtained by just calling the constructor without arguments)
 - A block (contains `Level` and `BlockPos`)
-- A block and an item handler (contains `Level`, `BlockPos`, `IItemHandler` and an `int` slot, that may be `-1`)
-- An entity, usually a player (contains `Entity` and an `int` slot, that may be `-1`)
+- A block and an item handler (contains `Level`, `BlockPos`, `IItemHandler` and the number of the slot in that `IItemHandler`, that may be `-1`)
+- An entity, usually a player (contains `Entity` and the number of the slot in that entity's inventory, that may be `-1`)
 
 This info is used to spawn entities when the item spoils, or do something more complex.
 The `SpoilableBehaviour.builder()` can accept a function as a `result`, so you can do whatever you want there :)
@@ -46,7 +46,7 @@ listener. For more info on how to do that see the example below.
 - `.result(Function<ItemStack, ItemStack>)`
     used to specify the resulting stack that may depend on the original stack
 - `.result(EntityType<? extends Mob>)`
-    used to specify the mob into which the item will spoil (it can still spoil into an item as well, but it has to be specified first)
+    used to specify the mob into which the item will spoil (it can still spoil into an item as well, but the item has to be specified first)
 - `.result(Supplier<? extends EntityType<? extends Mob>>`
     same as `.result(EntityType<? extends Mob>)`, exists for convenience
 - `.result(SpoilResultProvider)`

@@ -100,8 +100,8 @@ public class PowerlessJetpack implements IArmorLogic, IJetpack, IItemHUDProvider
             if (currentFuel.ingredient().hasNoFluids())
                 findNewRecipe(stack);
 
-        data.burnTimer((short) burnTimer);
-        stack.set(GTDataComponents.ARMOR_DATA, data.toImmutable());
+            data.burnTimer((short) burnTimer);
+            stack.set(GTDataComponents.ARMOR_DATA, data.toImmutable());
         }
     }
 

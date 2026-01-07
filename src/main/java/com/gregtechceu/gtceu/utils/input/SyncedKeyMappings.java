@@ -4,8 +4,8 @@ import com.gregtechceu.gtceu.GTCEu;
 
 import net.minecraft.client.Minecraft;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
+import net.neoforged.neoforge.common.NeoForge;
 
 import com.mojang.blaze3d.platform.InputConstants;
 

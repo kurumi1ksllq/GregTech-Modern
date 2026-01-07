@@ -58,6 +58,8 @@ public class GTRecipeModifiers {
     public static final RecipeModifier SPOILAGE_TRANSFER = (machine, recipe) -> ModifierFunction.builder()
             .modifyItemOutputs((r, stackObject) -> {
                 if (!(stackObject instanceof ItemStack stack)) return;
+                ISpoilableItem outputSpoilable = GTCapabilityHelper.getSpoilable(stack);
+                if (outputSpoilable == null) return;
                 SpoilUtils.update(stack, new SpoilContext(machine));
                 if (!r.transferSpoilingProgress) return;
                 double spoilProgress = 0;
@@ -73,10 +75,9 @@ public class GTRecipeModifiers {
                                 spoilable.getSpoilTicks();
                     }
                 }
-                ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-                if (spoilable != null && spoilable.shouldSpoil() && spoilableCount > 0) {
+                if (outputSpoilable.shouldSpoil() && spoilableCount > 0) {
                     double spoiled = spoilProgress / spoilableCount;
-                    spoilable.setTicksUntilSpoiled((long) (spoiled * spoilable.getSpoilTicks()));
+                    outputSpoilable.setTicksUntilSpoiled((long) (spoiled * outputSpoilable.getSpoilTicks()));
                 }
             }).build();
 

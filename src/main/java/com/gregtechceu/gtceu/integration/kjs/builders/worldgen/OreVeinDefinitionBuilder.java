@@ -3,12 +3,11 @@ package com.gregtechceu.gtceu.integration.kjs.builders.worldgen;
 import com.gregtechceu.gtceu.api.worldgen.*;
 import com.gregtechceu.gtceu.api.worldgen.generator.IndicatorGenerator;
 import com.gregtechceu.gtceu.api.worldgen.generator.VeinGenerator;
-import com.gregtechceu.gtceu.api.worldgen.generator.indicators.SurfaceIndicatorGenerator;
+import com.gregtechceu.gtceu.api.worldgen.generator.indicators.*;
 import com.gregtechceu.gtceu.api.worldgen.generator.veins.*;
 import com.gregtechceu.gtceu.integration.kjs.helpers.GTResourceLocation;
 
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.ConstantInt;
@@ -20,7 +19,6 @@ import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
 
 import com.mojang.datafixers.util.Pair;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
@@ -30,6 +28,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 @Accessors(chain = true, fluent = true)
 public class OreVeinDefinitionBuilder extends BuilderBase<OreVeinDefinition> {
 
@@ -43,25 +42,41 @@ public class OreVeinDefinitionBuilder extends BuilderBase<OreVeinDefinition> {
     private int weight;
     private IWorldGenLayer layer = WorldGenLayers.STONE;
     @Setter
-    private Set<ResourceKey<Level>> dimensionFilter;
+    private Set<ResourceKey<Level>> dimensionFilter = new HashSet<>();
     @Setter
     private HeightRangePlacement heightRange;
     @Setter
     private float discardChanceOnAirExposure;
     @Setter
     @Nullable
-    private HolderSet<Biome> biomes;
+    private HolderSet<Biome> biomes = HolderSet.empty();
     @Setter
-    private BiomeWeightModifier biomeWeightModifier;
+    private BiomeWeightModifier biomeWeightModifier = BiomeWeightModifier.EMPTY;
 
     @Setter
     @Nullable
     private VeinGenerator veinGenerator;
     @Setter
-    private List<IndicatorGenerator> indicatorGenerators;
+    private List<IndicatorGenerator> indicatorGenerators = new ArrayList<>();
 
     public OreVeinDefinitionBuilder(ResourceLocation id) {
         super(GTResourceLocation.implicitAsGtceu(id));
+    }
+
+    public static OreVeinDefinitionBuilder from(OreVeinDefinition definition, ResourceLocation id) {
+        var builder = new OreVeinDefinitionBuilder(id);
+        builder.clusterSize(definition.clusterSize());
+        builder.density(definition.density());
+        builder.weight(definition.weight());
+        builder.layer(definition.layer());
+        builder.dimensionFilter(definition.dimensionFilter());
+        builder.heightRange(definition.heightRange());
+        builder.discardChanceOnAirExposure(definition.discardChanceOnAirExposure());
+        builder.biomes(definition.biomes());
+        builder.biomeWeightModifier(definition.biomeWeightModifier());
+        builder.veinGenerator(definition.veinGenerator().copy());
+        builder.indicatorGenerators.addAll(definition.indicatorGenerators());
+        return builder;
     }
 
     @Tolerate
@@ -210,13 +225,11 @@ public class OreVeinDefinitionBuilder extends BuilderBase<OreVeinDefinition> {
         public Pair<Integer, Integer> heightRange = null;
     }
 
-    // It's simpler than doing the exact same thing via a ton of nested calls.
-    @SuppressWarnings("UnstableApiUsage")
     @Override
     public OreVeinDefinition createObject() {
         return new OreVeinDefinition(clusterSize, density, weight, layer,
                 Set.copyOf(dimensionFilter), heightRange, discardChanceOnAirExposure,
                 biomes, biomeWeightModifier, veinGenerator, indicatorGenerators,
-                RegistryAccessContainer.current.access().lookupOrThrow(Registries.BIOME));
+                null);
     }
 }

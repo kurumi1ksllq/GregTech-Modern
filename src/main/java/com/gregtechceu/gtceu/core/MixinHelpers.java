@@ -17,6 +17,9 @@ import com.gregtechceu.gtceu.api.material.material.stack.MaterialStack;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.registry.registrate.forge.GTClientFluidTypeExtensions;
 import com.gregtechceu.gtceu.api.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.worldgen.OreVeinDefinition;
+import com.gregtechceu.gtceu.api.worldgen.bedrockfluid.BedrockFluidDefinition;
+import com.gregtechceu.gtceu.api.worldgen.bedrockore.BedrockOreDefinition;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.BlockBehaviourAccessor;
 import com.gregtechceu.gtceu.data.block.GTMaterialBlocks;
@@ -33,6 +36,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.packs.VanillaBlockLoot;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.RegistryDataLoader;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.*;
@@ -391,18 +395,24 @@ public class MixinHelpers {
         });
     }
 
-    public static void postKJSVeinEvents(WritableRegistry<?> registry) {
+    public static void updateCachedRegistryAndPostKJSVeinEvents(RegistryAccess staticRegistries,
+                                                                List<RegistryDataLoader.Loader<?>> loaders) {
+        // create a temporary registry access instance from static registries + new dynamic registries
+        RegistryAccess registries = createRegistryContext(staticRegistries, loaders);
+        GTRegistries.updateFrozenRegistry(registries);
+
         if (!GTCEu.Mods.isKubeJSLoaded()) {
             return;
         }
+        KJSCallWrapper.postOreEvents(loaders, registries);
+    }
 
-        if (registry.key() == GTRegistries.ORE_VEIN_REGISTRY) {
-            KJSCallWrapper.postOreVeinEvent();
-        } else if (registry.key() == GTRegistries.BEDROCK_FLUID_REGISTRY) {
-            KJSCallWrapper.postBedrockFluidEvent();
-        } else if (registry.key() == GTRegistries.BEDROCK_ORE_REGISTRY) {
-            KJSCallWrapper.postBedrockOreEvent();
-        }
+    private static RegistryAccess createRegistryContext(RegistryAccess staticRegistries,
+                                                        List<RegistryDataLoader.Loader<?>> registryLoaders) {
+        final Map<ResourceKey<? extends Registry<?>>, Registry<?>> map = new HashMap<>();
+        staticRegistries.registries().forEach(entry -> map.put(entry.key(), entry.value()));
+        registryLoaders.forEach(loader -> map.put(loader.registry().key(), loader.registry()));
+        return new RegistryAccess.ImmutableRegistryAccess(map);
     }
 
     public static void addFluidTexture(Material material, FluidStorage.FluidEntry value) {
@@ -417,16 +427,26 @@ public class MixinHelpers {
 
     private static final class KJSCallWrapper {
 
-        private static void postOreVeinEvent() {
-            GTCEuServerEvents.ORE_VEIN_MODIFICATION.post(new GTOreVeinKubeEvent());
-        }
-
-        private static void postBedrockFluidEvent() {
-            GTCEuServerEvents.FLUID_VEIN_MODIFICATION.post(new GTBedrockFluidVeinKubeEvent());
-        }
-
-        private static void postBedrockOreEvent() {
-            GTCEuServerEvents.BEDROCK_ORE_VEIN_MODIFICATION.post(new GTBedrockOreVeinKubeEvent());
+        @SuppressWarnings("unchecked")
+        private static void postOreEvents(List<RegistryDataLoader.Loader<?>> dynamicRegistryLoaders,
+                                          RegistryAccess registries) {
+            for (RegistryDataLoader.Loader<?> loader : dynamicRegistryLoaders) {
+                switch (loader.registry().key()) {
+                    case ResourceKey<?> key when key ==
+                            GTRegistries.ORE_VEIN_REGISTRY -> GTCEuServerEvents.ORE_VEIN_MODIFICATION.post(
+                                    new GTOreVeinKubeEvent((WritableRegistry<OreVeinDefinition>) loader.registry(),
+                                            registries));
+                    case ResourceKey<?> key when key ==
+                            GTRegistries.BEDROCK_FLUID_REGISTRY -> GTCEuServerEvents.ORE_VEIN_MODIFICATION
+                                    .post(new GTBedrockFluidVeinKubeEvent(
+                                            (WritableRegistry<BedrockFluidDefinition>) loader.registry(), registries));
+                    case ResourceKey<?> key when key ==
+                            GTRegistries.BEDROCK_ORE_REGISTRY -> GTCEuServerEvents.ORE_VEIN_MODIFICATION
+                                    .post(new GTBedrockOreVeinKubeEvent(
+                                            (WritableRegistry<BedrockOreDefinition>) loader.registry(), registries));
+                    default -> {}
+                }
+            }
         }
     }
 

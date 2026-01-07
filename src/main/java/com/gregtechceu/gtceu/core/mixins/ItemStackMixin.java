@@ -38,6 +38,10 @@ import javax.annotation.Nullable;
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
 
+    // ************************* //
+    // Shadow fields and methods //
+    // ************************* //
+
     @Shadow
     @Mutable
     @Final
@@ -52,6 +56,10 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
 
     @Shadow(remap = false)
     protected abstract void forgeInit();
+
+    // ************* //
+    // Unique fields //
+    // ************* //
 
     @Shadow
     @Nullable
@@ -72,6 +80,10 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     private ItemStack gtceu$self() {
         return (ItemStack) (Object) this;
     }
+
+    // ************************* //
+    // Interface implementations //
+    // ************************* //
 
     @Unique
     @Override

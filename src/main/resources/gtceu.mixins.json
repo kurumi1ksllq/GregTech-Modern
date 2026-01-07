@@ -61,7 +61,7 @@
         "TagLoaderMixin",
         "TagManagerMixin",
         "TagValueAccessor",
-        "client.ItemEntityMixin",
+        "ItemEntityMixin",
         "emi.EmiRecipeFillerMixin",
         "emi.FillRecipePacketMixin",
         "emi.FluidEmiStackMixin",

@@ -66,6 +66,14 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     private CompoundTag tag;
     @Shadow
     private int count;
+    /**
+     * Whether {@link ItemStackMixin#gtceu$updateFreshness(SpoilContext, boolean)}
+     * was called and did not return yet.
+     * <br>
+     * Used to prevent stack overflows.
+     */
+    @Unique
+    private boolean gtceu$isUpdating = false;
 
     /**
      * Whether to display a fake "spoils into" tooltip for an item if it's not spoilable.
@@ -97,13 +105,24 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
 
     @Unique
     public void gtceu$updateFreshness(@NotNull SpoilContext spoilContext, boolean createTag) {
-        gtceu$self().getCapability(GTCapability.CAPABILITY_SPOILABLE_ITEM)
-                .ifPresent(spoilable -> spoilable.updateFreshness(spoilContext, createTag));
+        if (!gtceu$isUpdating) {
+            gtceu$isUpdating = true;
+            gtceu$self().getCapability(GTCapability.CAPABILITY_SPOILABLE_ITEM)
+                    .ifPresent(spoilable -> spoilable.updateFreshness(spoilContext, createTag));
+            gtceu$isUpdating = false;
+        }
     }
 
     // ********* //
     // Injectors //
     // ********* //
+
+    @Inject(at = @At("HEAD"), method = { "getItem", "getCount" })
+    private void gtceu$injectedFreshnessUpdate(CallbackInfoReturnable<Item> cir) {
+        if (gtceu$self().getEntityRepresentation() != null)
+            gtceu$updateFreshness(new SpoilContext(gtceu$self().getEntityRepresentation()), true);
+        else gtceu$updateFreshness(new SpoilContext(), false);
+    }
 
     @Inject(at = @At("HEAD"), method = "inventoryTick")
     private void gtceu$tickFreshness(Level level, Entity entity, int inventorySlot, boolean isCurrentItem,

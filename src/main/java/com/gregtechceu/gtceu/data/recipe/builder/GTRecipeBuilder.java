@@ -1685,6 +1685,7 @@ public class GTRecipeBuilder {
         return new GTRecipe(recipeType, id.withPrefix(recipeType.registryName.getPath() + "/"),
                 input, output, tickInput, tickOutput,
                 inputChanceLogic, outputChanceLogic, tickInputChanceLogic, tickOutputChanceLogic,
+                new HashMap<>(),
                 conditions, List.of(), data, duration, recipeCategory, keepSpoilingProgress);
     }
 

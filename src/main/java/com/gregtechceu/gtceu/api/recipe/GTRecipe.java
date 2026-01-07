@@ -61,7 +61,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
      * Populated after the inputs are already consumed, but the recipe didn't start yet.
      * For use in {@link GTRecipe#outputModifier}
      */
-    public List<Object> consumedInputs = new ArrayList<>();
+    public Map<RecipeCapability<?>, List<Object>> consumedInputs = new HashMap<>();
     /**
      * Called for each output before it is inserted into the output container.
      * Does nothing by default, to be modified with {@link BiConsumer#andThen(BiConsumer)} in {@link RecipeModifier}
@@ -83,6 +83,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
                     Map<RecipeCapability<?>, ChanceLogic> outputChanceLogics,
                     Map<RecipeCapability<?>, ChanceLogic> tickInputChanceLogics,
                     Map<RecipeCapability<?>, ChanceLogic> tickOutputChanceLogics,
+                    Map<RecipeCapability<?>, List<?>> consumedInputs,
                     List<RecipeCondition> conditions,
                     List<?> ingredientActions,
                     @NotNull CompoundTag data,
@@ -91,7 +92,8 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
                     boolean keepSpoilingProgress) {
         this(recipeType, null, inputs, outputs, tickInputs, tickOutputs,
                 inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                conditions, ingredientActions, data, duration, recipeCategory, keepSpoilingProgress);
+                (Map) consumedInputs, conditions, ingredientActions, data, duration, recipeCategory,
+                keepSpoilingProgress);
     }
 
     public GTRecipe(GTRecipeType recipeType,
@@ -104,6 +106,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
                     Map<RecipeCapability<?>, ChanceLogic> outputChanceLogics,
                     Map<RecipeCapability<?>, ChanceLogic> tickInputChanceLogics,
                     Map<RecipeCapability<?>, ChanceLogic> tickOutputChanceLogics,
+                    Map<RecipeCapability<?>, List<Object>> consumedInputs,
                     List<RecipeCondition> conditions,
                     List<?> ingredientActions,
                     @NotNull CompoundTag data,
@@ -145,6 +148,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
                 modifier.applyContents(tickInputs), modifier.applyContents(tickOutputs),
                 new HashMap<>(inputChanceLogics), new HashMap<>(outputChanceLogics),
                 new HashMap<>(tickInputChanceLogics), new HashMap<>(tickOutputChanceLogics),
+                new HashMap<>(consumedInputs),
                 new ArrayList<>(conditions),
                 new ArrayList<>(ingredientActions), data, duration, recipeCategory, transferSpoilingProgress);
         if (modifyDuration) {

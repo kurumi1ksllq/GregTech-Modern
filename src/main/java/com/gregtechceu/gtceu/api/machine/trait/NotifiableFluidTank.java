@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderFluidIngredient;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
+import com.gregtechceu.gtceu.common.data.GTRecipeCapabilities;
 import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
 import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -172,7 +173,8 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
                             visited[tank].setAmount(count - drained.getAmount());
                             changed = true;
                             FluidStack copied = drained.copy();
-                            recipe.consumedInputs.add(copied);
+                            recipe.consumedInputs.computeIfAbsent(GTRecipeCapabilities.FLUID, cap -> new ArrayList<>())
+                                    .add(FluidIngredient.of(copied));
                         }
                         amount -= drained.getAmount();
                     }

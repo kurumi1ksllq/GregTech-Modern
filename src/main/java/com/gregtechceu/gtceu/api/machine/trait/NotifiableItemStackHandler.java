@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.common.data.GTRecipeCapabilities;
 import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
 import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -153,7 +154,8 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
                             ItemStack copied = extracted.copy();
                             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(copied);
                             if (spoilable != null) spoilable.freezeSpoiling();
-                            recipe.consumedInputs.add(copied);
+                            recipe.consumedInputs.computeIfAbsent(GTRecipeCapabilities.ITEM, cap -> new ArrayList<>())
+                                    .add(Ingredient.of(copied));
                         }
                         amount -= extracted.getCount();
                     }

@@ -26,9 +26,11 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -60,8 +62,10 @@ public class GTRecipeModifiers {
                 if (!r.transferSpoilingProgress) return;
                 double spoilProgress = 0;
                 int spoilableCount = 0;
-                for (Object inObject : r.consumedInputs) {
-                    if (!(inObject instanceof ItemStack in)) continue;
+                for (Object inObject : r.consumedInputs.getOrDefault(GTRecipeCapabilities.ITEM, List.of())) {
+                    if (!(inObject instanceof Ingredient ingredient)) continue;
+                    if (ingredient.getItems().length == 0) continue;
+                    ItemStack in = ingredient.getItems()[0];
                     ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(in);
                     if (spoilable != null && spoilable.shouldSpoil()) {
                         spoilableCount += in.getCount();

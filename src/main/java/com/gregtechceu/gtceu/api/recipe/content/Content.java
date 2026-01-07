@@ -43,9 +43,13 @@ public class Content {
         this.tierChanceBoost = fixBoost(tierChanceBoost);
     }
 
+    public static <T> Codec<T> ingredientCodec(RecipeCapability<T> capability) {
+        return capability.serializer.codec();
+    }
+
     public static <T> Codec<Content> codec(RecipeCapability<T> capability) {
         return RecordCodecBuilder.create(instance -> instance.group(
-                capability.serializer.codec().fieldOf("content").forGetter(val -> capability.of(val.content)),
+                ingredientCodec(capability).fieldOf("content").forGetter(val -> capability.of(val.content)),
                 ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("chance", ChanceLogic.getMaxChancedValue())
                         .forGetter(val -> val.chance),
                 ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("maxChance", ChanceLogic.getMaxChancedValue())

@@ -143,7 +143,7 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
 
         GTRecipe recipe = new GTRecipe(type, id,
                 inputs, outputs, tickInputs, tickOutputs,
-                inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
+                inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics, new HashMap<>(),
                 conditions, ingredientActions, data, duration, category, keepSpoilingProgress);
 
         recipe.recipeCategory.addRecipe(recipe);
@@ -207,6 +207,7 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
                                     .optionalFieldOf("tickInputChanceLogics", Map.of()).forGetter(val -> val.tickInputChanceLogics),
                             Codec.unboundedMap(RecipeCapability.DIRECT_CODEC, GTRegistries.CHANCE_LOGICS.codec())
                                     .optionalFieldOf("tickOutputChanceLogics", Map.of()).forGetter(val -> val.tickOutputChanceLogics),
+                            RecipeCapability.INGREDIENT_CODEC.optionalFieldOf("consumedInputs", new HashMap<>()).forGetter(val -> (Map) val.consumedInputs),
                             RecipeCondition.CODEC.listOf().optionalFieldOf("recipeConditions", List.of()).forGetter(val -> val.conditions),
                             CompoundTag.CODEC.optionalFieldOf("data", new CompoundTag()).forGetter(val -> val.data),
                             ExtraCodecs.NON_NEGATIVE_INT.fieldOf("duration").forGetter(val -> val.duration),
@@ -215,9 +216,9 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
                     .apply(instance, (type,
                                       inputs, outputs, tickInputs, tickOutputs,
                                       inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                                      conditions, data, duration, recipeCategory, keepSpoilingProgress) ->
+                                      consumedInputs, conditions, data, duration, recipeCategory, keepSpoilingProgress) ->
                             new GTRecipe(type, inputs, outputs, tickInputs, tickOutputs,
-                                    inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
+                                    inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics, consumedInputs,
                                     conditions, List.of(), data, duration, recipeCategory, keepSpoilingProgress)));
         } else {
             return RecordCodecBuilder.create(instance -> instance.group(
@@ -234,6 +235,7 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
                                     .optionalFieldOf("tickInputChanceLogics", Map.of()).forGetter(val -> val.tickInputChanceLogics),
                             Codec.unboundedMap(RecipeCapability.DIRECT_CODEC, GTRegistries.CHANCE_LOGICS.codec())
                                     .optionalFieldOf("tickOutputChanceLogics", Map.of()).forGetter(val -> val.tickOutputChanceLogics),
+                            RecipeCapability.INGREDIENT_CODEC.optionalFieldOf("consumedInputs", new HashMap<>()).forGetter(val -> (Map) val.consumedInputs),
                             RecipeCondition.CODEC.listOf().optionalFieldOf("recipeConditions", List.of()).forGetter(val -> val.conditions),
                             KJSCallWrapper.INGREDIENT_ACTION_CODEC.optionalFieldOf("kubejs:actions", List.of()).forGetter(val -> (List<IngredientAction>) val.ingredientActions),
                             CompoundTag.CODEC.optionalFieldOf("data", new CompoundTag()).forGetter(val -> val.data),

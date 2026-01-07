@@ -67,11 +67,11 @@ public record SpoilContext(@Nullable Level level,
     }
 
     public SpoilContext(@NotNull Entity entity) {
-        this(entity.level(), null, entity, null, null, -1);
+        this(entity.level(), entity.blockPosition(), entity, null, null, -1);
     }
 
     public SpoilContext(@NotNull Player player, int slot) {
-        this(player.level(), null, player, ItemHandlerSource.PLAYER_INVENTORY, null, slot);
+        this(player.level(), player.blockPosition(), player, ItemHandlerSource.PLAYER_INVENTORY, null, slot);
     }
 
     public SpoilContext(@NotNull MetaMachine machine) {
@@ -141,7 +141,7 @@ public record SpoilContext(@Nullable Level level,
      * using {@link SpoilContext#itemHandlerData}. This is used instead of a normal supplier, due to the fact that
      * it is serializable. Note that new instances of this class should not be created dynamically.
      * <br>
-     * Other than that it is basically equivalent to a {@code Function<SpoilContext, IItemHandler>}.
+     * This class is basically equivalent to a serializable {@code Function<SpoilContext, IItemHandler>}.
      */
     public static abstract class ItemHandlerSource {
 
@@ -194,6 +194,11 @@ public record SpoilContext(@Nullable Level level,
 
         private ResourceLocation getId() {
             return id;
+        }
+
+        @Override
+        public String toString() {
+            return id.toString();
         }
 
         abstract protected @Nullable IItemHandler getHandler(SpoilContext ctx);

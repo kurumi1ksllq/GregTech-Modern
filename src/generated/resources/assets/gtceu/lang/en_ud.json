@@ -3835,6 +3835,8 @@
   "gtceu.tooltip.fluid_pipe_hold_shift": "oɟuI ʇuǝɯuıɐʇuoƆ pınןℲ ʍoɥs oʇ ⟘ℲIHS pןoHㄥ§",
   "gtceu.tooltip.hold_ctrl": "oɟuı ǝɹoɯ ɹoɟ Ꞁᴚ⟘Ɔ pןoHㄥ§",
   "gtceu.tooltip.hold_shift": "oɟuı ǝɹoɯ ɹoɟ ⟘ℲIHS pןoHㄥ§",
+  "gtceu.tooltip.item_handler_data": "%s :ɐʇɐp ɹǝןpuɐH",
+  "gtceu.tooltip.item_handler_source": "%s :ǝɔɹnos ɹǝןpuɐH",
   "gtceu.tooltip.location": ")%d '%d '%d( %s :uoıʇɐɔoꞀ",
   "gtceu.tooltip.location_entity": "%s :ʎʇıʇuƎ",
   "gtceu.tooltip.location_slot": "%s :ʇoןS",

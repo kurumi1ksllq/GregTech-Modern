@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.common.item;
 
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.component.IItemComponent;
+import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.api.item.component.SpoilContext;
 import com.gregtechceu.gtceu.api.item.component.SpoilUtils;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
@@ -19,6 +20,7 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,24 +40,30 @@ public class SpoilableBehaviour implements IItemComponent, IComponentCapability 
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(ItemStack itemStack, @NotNull Capability<T> cap) {
-        return GTCapability.CAPABILITY_SPOILABLE_ITEM.orEmpty(cap,
-                LazyOptional.of(() -> new SpoilableItemStack(itemStack) {
+        MutableObject<LazyOptional<ISpoilableItem>> lazyOptional = new MutableObject<>();
+        lazyOptional.setValue(LazyOptional.of(() -> new SpoilableItemStack(itemStack) {
 
-                    @Override
-                    public long getSpoilTicks() {
-                        return ticks.apply(getStack());
-                    }
+            @Override
+            public long getSpoilTicks() {
+                return ticks.apply(getStack());
+            }
 
-                    @Override
-                    public ItemStack spoilResult(SpoilContext spoilContext, boolean simulate) {
-                        return spoilResult.getSpoilResult(getStack(), spoilContext, simulate);
-                    }
+            @Override
+            public ItemStack spoilResult(SpoilContext spoilContext, boolean simulate) {
+                return spoilResult.getSpoilResult(getStack(), spoilContext, simulate);
+            }
 
-                    @Override
-                    protected Component getSpoilResultTooltip() {
-                        return spoilsIntoTooltip.apply(getStack());
-                    }
-                }));
+            @Override
+            protected Component getSpoilResultTooltip() {
+                return spoilsIntoTooltip.apply(getStack());
+            }
+
+            @Override
+            protected void onItemChanged() {
+                lazyOptional.getValue().invalidate();
+            }
+        }));
+        return GTCapability.CAPABILITY_SPOILABLE_ITEM.orEmpty(cap, lazyOptional.getValue());
     }
 
     public ICapabilityProvider toCapProvider(ItemStack stack) {
@@ -134,8 +142,10 @@ public class SpoilableBehaviour implements IItemComponent, IComponentCapability 
             SpoilResultProvider previousResult = result;
             Function<ItemStack, Component> previousTooltip = tooltip;
             return result((stack, spoilContext, simulate) -> {
-                EntityType<? extends Mob> type = entityType.get();
-                SpoilUtils.spawnEntity(spoilContext, type, stack.getCount());
+                if (!simulate) {
+                    EntityType<? extends Mob> type = entityType.get();
+                    SpoilUtils.spawnEntity(spoilContext, type, stack.getCount());
+                }
                 return previousResult.getSpoilResult(stack, spoilContext, simulate);
             }).tooltip(stack -> {
                 EntityType<? extends Mob> type = entityType.get();

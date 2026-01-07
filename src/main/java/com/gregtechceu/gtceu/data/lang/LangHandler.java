@@ -1714,6 +1714,8 @@ public class LangHandler {
         provider.add("gtceu.tooltip.creation_tick", "Created on overworld tick %d");
         provider.add("gtceu.tooltip.location", "Location: %s (%d, %d, %d)");
         provider.add("gtceu.tooltip.location_entity", "Entity: %s");
+        provider.add("gtceu.tooltip.item_handler_source", "Handler source: %s");
+        provider.add("gtceu.tooltip.item_handler_data", "Handler data: %s");
         provider.add("gtceu.tooltip.location_slot", "Slot: %s");
     }
 

@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.item;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.item.ISpoilableItemStackExtension;
 import com.gregtechceu.gtceu.api.item.component.*;
@@ -9,6 +10,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -49,8 +51,11 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
     @Getter
     private final ItemStack stack;
 
+    private final Item originalItem;
+
     public SpoilableItemStack(ItemStack stack) {
         this.stack = stack;
+        this.originalItem = stack.getItem();
     }
 
     public SpoilContext getSpoilContext() {
@@ -84,18 +89,13 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
      *           be called with an empty {@link SpoilContext} and {@code createTag = false}.
      */
     public void updateFreshness(SpoilContext spoilContext, boolean createTag) {
+        if (!stack.is(originalItem)) return;
         CompoundTag tag = createTag ? stack.getOrCreateTagElement(SPOILABLE_KEY) :
                 stack.getTagElement(SPOILABLE_KEY);
         if (!spoilContext.isEmpty()) setSpoilContext(spoilContext);
         Level level = SpoilContext.getDefaultLevel();
-        if (this.shouldSpoil()) {
-            if (this.getSpoilTicks() < 0) {
-                return;
-            }
+        if (level != null && this.shouldSpoil()) {
             if (tag == null || tag.contains(FROZEN_TICKS_KEY)) {
-                return;
-            }
-            if (level == null) {
                 return;
             }
             if (!tag.contains(CREATION_TICK_KEY)) {
@@ -104,12 +104,12 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
             long spoilTicks = this.getSpoilTicks();
             long timeDifference = level.getGameTime() - tag.getLong(CREATION_TICK_KEY) - spoilTicks;
             if (timeDifference >= 0) {
-                ItemStack newStack = this.spoilResult(getSpoilContext(), false);
+                ItemStack newStack = this.spoilResult(getSpoilContext(), GTCEu.isClientThread());
                 ((ISpoilableItemStackExtension) (Object) stack).gtceu$setStack(newStack);
+                onItemChanged();
                 ISpoilableItem newSpoilable = GTCapabilityHelper.getSpoilable(stack);
-                if (newSpoilable != null && (stack.getTag() == null || !stack.getTag().contains(SPOILABLE_KEY))) {
-                    stack.getOrCreateTagElement(SPOILABLE_KEY).putLong(CREATION_TICK_KEY,
-                            level.getGameTime() - timeDifference);
+                if (newSpoilable != null) {
+                    newSpoilable.setCreationTick(level.getGameTime() - timeDifference);
                     try {
                         newSpoilable.updateFreshness(spoilContext, false);
                     } catch (StackOverflowError ignored) {
@@ -129,8 +129,7 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
 
     @Override
     public void setCreationTick(long tick) {
-        CompoundTag tag = stack.getTagElement(SPOILABLE_KEY);
-        if (tag == null) return;
+        CompoundTag tag = stack.getOrCreateTagElement(SPOILABLE_KEY);
         tag.putLong(CREATION_TICK_KEY, tick);
     }
 
@@ -213,7 +212,11 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
                         ctx.pos().getX(), ctx.pos().getY(), ctx.pos().getZ()));
             if (ctx.entity() != null) tooltipComponents.add(Component.translatable("gtceu.tooltip.location_entity",
                     ctx.entity().getType().getDescription()));
+            if (ctx.itemHandlerSource() != null) tooltipComponents
+                    .add(Component.translatable("gtceu.tooltip.item_handler_source", ctx.itemHandlerSource()));
             if (ctx.itemHandlerData() != null)
+                tooltipComponents.add(Component.translatable("gtceu.tooltip.item_handler_data", ctx.itemHandlerData()));
+            if (ctx.slot() != -1)
                 tooltipComponents.add(Component.translatable("gtceu.tooltip.location_slot", ctx.slot()));
         }
     }
@@ -285,4 +288,9 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
         }
         return Optional.empty();
     }
+
+    /**
+     * Called when the stack has spoiled and transformed into a different item.
+     */
+    abstract protected void onItemChanged();
 }

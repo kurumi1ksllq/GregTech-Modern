@@ -3835,6 +3835,8 @@
   "gtceu.tooltip.fluid_pipe_hold_shift": "§7Hold SHIFT to show Fluid Containment Info",
   "gtceu.tooltip.hold_ctrl": "§7Hold CTRL for more info",
   "gtceu.tooltip.hold_shift": "§7Hold SHIFT for more info",
+  "gtceu.tooltip.item_handler_data": "Handler data: %s",
+  "gtceu.tooltip.item_handler_source": "Handler source: %s",
   "gtceu.tooltip.location": "Location: %s (%d, %d, %d)",
   "gtceu.tooltip.location_entity": "Entity: %s",
   "gtceu.tooltip.location_slot": "Slot: %s",

@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.core.mixins;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
+import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.ISpoilableItemStackExtension;
 import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
@@ -42,9 +43,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     // ************************* //
 
     @Shadow
-    public abstract Item getItem();
-
-    @Shadow
     @Mutable
     @Final
     @Nullable
@@ -56,17 +54,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     @Nullable
     private Holder.Reference<Item> delegate;
 
-    @Shadow
-    private int count;
-
-    @Shadow
-    @Nullable
-    private CompoundTag tag;
-
-    @Shadow
-    @Nullable
-    private Entity entityRepresentation;
-
     @Shadow(remap = false)
     protected abstract void forgeInit();
 
@@ -74,6 +61,11 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     // Unique fields //
     // ************* //
 
+    @Shadow
+    @Nullable
+    private CompoundTag tag;
+    @Shadow
+    private int count;
     /**
      * Whether {@link ItemStackMixin#gtceu$updateFreshness(SpoilContext, boolean)}
      * was called and did not return yet.
@@ -107,29 +99,28 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
         item = newStack.getItem();
         delegate = ForgeRegistries.ITEMS.getDelegateOrThrow(item);
         count = newStack.getCount();
-        this.tag = newStack.getTag();
+        tag = newStack.getTag();
         forgeInit();
     }
 
     @Unique
     public void gtceu$updateFreshness(@NotNull SpoilContext spoilContext, boolean createTag) {
-        if (gtceu$isUpdating) return;
-        gtceu$isUpdating = true;
-        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
-        if (spoilable != null) spoilable.updateFreshness(spoilContext, createTag);
-        gtceu$isUpdating = false;
+        if (!gtceu$isUpdating) {
+            gtceu$isUpdating = true;
+            gtceu$self().getCapability(GTCapability.CAPABILITY_SPOILABLE_ITEM)
+                    .ifPresent(spoilable -> spoilable.updateFreshness(spoilContext, createTag));
+            gtceu$isUpdating = false;
+        }
     }
 
     // ********* //
     // Injectors //
     // ********* //
 
-    @Inject(at = @At("HEAD"),
-            method = { "getItem", "getCount", "getTag", "getOrCreateTag", "getTagElement", "getOrCreateTagElement",
-                    "getItemHolder" })
+    @Inject(at = @At("HEAD"), method = { "getItem", "getCount" })
     private void gtceu$injectedFreshnessUpdate(CallbackInfoReturnable<Item> cir) {
-        if (entityRepresentation != null)
-            gtceu$updateFreshness(new SpoilContext(entityRepresentation), true);
+        if (gtceu$self().getEntityRepresentation() != null)
+            gtceu$updateFreshness(new SpoilContext(gtceu$self().getEntityRepresentation()), true);
         else gtceu$updateFreshness(new SpoilContext(), false);
     }
 
@@ -171,7 +162,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
                                        CallbackInfoReturnable<List<Component>> cir,
                                        List<Component> list) {
         ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
-        if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IAddInformation addInformation) {
+        if (spoilable instanceof IAddInformation addInformation) {
             addInformation.appendHoverText(gtceu$self(), player == null ? null : player.level(), list,
                     isAdvanced);
         } else if (gtceu$fakeTooltip) {
@@ -191,7 +182,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     @Inject(at = @At("HEAD"), method = "isBarVisible", cancellable = true)
     private void gtceu$spoilageBarVisible(CallbackInfoReturnable<Boolean> cir) {
         ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
-        if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
+        if (spoilable instanceof IDurabilityBar durabilityBar) {
             cir.setReturnValue(durabilityBar.isBarVisible(gtceu$self()));
         } else if (gtceu$fakeTooltip) {
             cir.setReturnValue(true);
@@ -205,7 +196,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     @Inject(at = @At("HEAD"), method = "getBarColor", cancellable = true)
     private void gtceu$spoilageBarColor(CallbackInfoReturnable<Integer> cir) {
         ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
-        if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
+        if (spoilable instanceof IDurabilityBar durabilityBar) {
             cir.setReturnValue(durabilityBar.getBarColor(gtceu$self()));
         } else if (gtceu$fakeTooltip) {
             cir.setReturnValue(FastColor.ARGB32.color(255, 255, 255, 255));
@@ -219,7 +210,7 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     @Inject(at = @At("HEAD"), method = "getBarWidth", cancellable = true)
     private void gtceu$spoilageBarWidth(CallbackInfoReturnable<Integer> cir) {
         ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(gtceu$self());
-        if (!(getItem() instanceof ISpoilableItem) && spoilable instanceof IDurabilityBar durabilityBar) {
+        if (spoilable instanceof IDurabilityBar durabilityBar) {
             cir.setReturnValue(durabilityBar.getBarWidth(gtceu$self()));
         } else if (gtceu$fakeTooltip) {
             cir.setReturnValue(13);

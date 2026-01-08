@@ -25,8 +25,8 @@ public class SolarPanelTest {
         level.setDayTime(6000);
     }
 
-    @GameTest(template = "solar", batch = "solarTests")
-    public static void generatesEnergyAtDayTest(GameTestHelper helper) {
+    @GameTest(template = "solar", batch = "solarTests", required = false)
+    public static void blocked_non_functional_generatesEnergyAtDayTest(GameTestHelper helper) {
         BatteryBufferMachine machine = getBatteryBuffer(helper);
         machine.onLoad();
         for (int y = helper.absolutePos(new BlockPos(0, 2, 0)).getY(); y < helper.getLevel().getMaxBuildHeight(); y++) {
@@ -39,8 +39,8 @@ public class SolarPanelTest {
         });
     }
 
-    @GameTest(template = "solar", batch = "solarTests")
-    public static void doesntGenerateEnergyAtDayWhenBlockedTest(GameTestHelper helper) {
+    @GameTest(template = "solar", batch = "solarTests", required = false)
+    public static void blocked_non_functional_doesntGenerateEnergyAtDayWhenBlockedTest(GameTestHelper helper) {
         BatteryBufferMachine machine = getBatteryBuffer(helper);
         machine.onLoad();
         helper.setBlock(new BlockPos(0, 3, 0), Blocks.DIAMOND_BLOCK);

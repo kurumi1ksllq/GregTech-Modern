@@ -153,5 +153,4 @@ public abstract class ItemModule {
                                                   LivingEntity interactionTarget, InteractionHand usedHand) {
         return InteractionResult.PASS;
     }
-
 }

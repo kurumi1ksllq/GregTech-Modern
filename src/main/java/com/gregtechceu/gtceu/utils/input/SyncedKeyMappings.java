@@ -1,8 +1,6 @@
 package com.gregtechceu.gtceu.utils.input;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.gui.ModuleUIHolder;
-import com.gregtechceu.gtceu.api.gui.factory.ModuleUIFactory;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -11,8 +9,9 @@ import net.minecraftforge.fml.ModLoader;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
-public class SyncedKeyMappings {
+public final class SyncedKeyMappings {
 
+    // MC keymappings
     public static final SyncedKeyMapping VANILLA_JUMP = SyncedKeyMapping
             .createFromMC(() -> () -> Minecraft.getInstance().options.keyJump);
     public static final SyncedKeyMapping VANILLA_SNEAK = SyncedKeyMapping
@@ -25,13 +24,20 @@ public class SyncedKeyMappings {
             .createFromMC(() -> () -> Minecraft.getInstance().options.keyLeft);
     public static final SyncedKeyMapping VANILLA_RIGHT = SyncedKeyMapping
             .createFromMC(() -> () -> Minecraft.getInstance().options.keyRight);
-    @SuppressWarnings("unused")
-    public static final SyncedKeyMapping OPEN_MODULE_GUI = SyncedKeyMapping.createConfigurable(
-            "Open module configuration",
-            KeyConflictContext.IN_GAME,
-            InputConstants.KEY_M).registerGlobalListener((player, key, isDown) -> {
-                ModuleUIFactory.INSTANCE.openUI(new ModuleUIHolder(player), player);
-            });
+
+    // GT keymappings
+    public static final SyncedKeyMapping ARMOR_MODE_SWITCH = SyncedKeyMapping.createConfigurable(
+            "gtceu.key.armor_mode_switch", KeyConflictContext.IN_GAME, InputConstants.KEY_M);
+    public static final SyncedKeyMapping ARMOR_HOVER = SyncedKeyMapping.createConfigurable(
+            "gtceu.key.armor_hover", KeyConflictContext.IN_GAME, InputConstants.KEY_H);
+    public static final SyncedKeyMapping JETPACK_ENABLE = SyncedKeyMapping.createConfigurable(
+            "gtceu.key.enable_jetpack", KeyConflictContext.IN_GAME, InputConstants.KEY_G);
+    public static final SyncedKeyMapping BOOTS_ENABLE = SyncedKeyMapping.createConfigurable(
+            "gtceu.key.enable_boots", KeyConflictContext.IN_GAME, InputConstants.KEY_PERIOD);
+    public static final SyncedKeyMapping ARMOR_CHARGING = SyncedKeyMapping.createConfigurable(
+            "gtceu.key.armor_charging", KeyConflictContext.IN_GAME, InputConstants.KEY_N);
+    public static final SyncedKeyMapping TOOL_AOE_CHANGE = SyncedKeyMapping.createConfigurable(
+            "gtceu.key.tool_aoe_change", KeyConflictContext.IN_GAME, InputConstants.KEY_V);
 
     public static void init() {
         if (GTCEu.isClientSide()) {
@@ -39,4 +45,6 @@ public class SyncedKeyMappings {
         }
         ModLoader.get().postEvent(new SyncedKeyMappingEvent());
     }
+
+    private SyncedKeyMappings() {}
 }

@@ -1,10 +1,10 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.part;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.UITemplate;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IUIMachine;
@@ -45,8 +45,8 @@ public class MufflerPartMachine extends TieredPartMachine implements IMufflerMac
 
     private TickableSubscription snowSubscription;
 
-    public MufflerPartMachine(IMachineBlockEntity holder, int tier) {
-        super(holder, tier);
+    public MufflerPartMachine(BlockEntityCreationInfo info, int tier) {
+        super(info, tier);
         this.recoveryChance = Math.max(1, tier * 10);
         this.inventory = new CustomItemStackHandler((int) Math.pow(tier + 1, 2));
     }
@@ -105,7 +105,7 @@ public class MufflerPartMachine extends TieredPartMachine implements IMufflerMac
             for (IMultiController controller : getControllers()) {
                 if (controller instanceof IRecipeLogicMachine recipeLogicMachine &&
                         recipeLogicMachine.getRecipeLogic().isWorking()) {
-                    BlockPos mufflerPos = getPos().relative(getFrontFacing());
+                    BlockPos mufflerPos = getBlockPos().relative(getFrontFacing());
                     GTUtil.tryBreakSnow(getLevel(), mufflerPos, getLevel().getBlockState(mufflerPos), true);
                 }
             }

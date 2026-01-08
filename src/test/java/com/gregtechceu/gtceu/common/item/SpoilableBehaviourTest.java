@@ -44,8 +44,6 @@ import net.minecraftforge.items.IItemHandler;
 import java.util.List;
 import java.util.Objects;
 
-import static com.gregtechceu.gtceu.gametest.util.TestUtils.getMetaMachine;
-
 @PrefixGameTestTemplate(false)
 @GameTestHolder(GTCEu.MOD_ID)
 public class SpoilableBehaviourTest {
@@ -107,18 +105,13 @@ public class SpoilableBehaviourTest {
     }
 
     private static BusHolder getBussesAndForm(GameTestHelper helper) {
-        WorkableMultiblockMachine controller = (WorkableMultiblockMachine) getMetaMachine(
-                helper.getBlockEntity(new BlockPos(1, 2, 0)));
+        WorkableMultiblockMachine controller = (WorkableMultiblockMachine) helper.getBlockEntity(new BlockPos(1, 2, 0));
         TestUtils.formMultiblock(controller);
         controller.setRecipeType(LCR_RECIPE_TYPE);
-        ItemBusPartMachine inputBus1 = (ItemBusPartMachine) getMetaMachine(
-                helper.getBlockEntity(new BlockPos(2, 1, 0)));
-        ItemBusPartMachine inputBus2 = (ItemBusPartMachine) getMetaMachine(
-                helper.getBlockEntity(new BlockPos(2, 2, 0)));
-        ItemBusPartMachine outputBus1 = (ItemBusPartMachine) getMetaMachine(
-                helper.getBlockEntity(new BlockPos(0, 1, 0)));
-        FluidHatchPartMachine outputHatch1 = (FluidHatchPartMachine) getMetaMachine(
-                helper.getBlockEntity(new BlockPos(0, 2, 0)));
+        ItemBusPartMachine inputBus1 = (ItemBusPartMachine) helper.getBlockEntity(new BlockPos(2, 1, 0));
+        ItemBusPartMachine inputBus2 = (ItemBusPartMachine) helper.getBlockEntity(new BlockPos(2, 2, 0));
+        ItemBusPartMachine outputBus1 = (ItemBusPartMachine) helper.getBlockEntity(new BlockPos(0, 1, 0));
+        FluidHatchPartMachine outputHatch1 = (FluidHatchPartMachine) helper.getBlockEntity(new BlockPos(0, 2, 0));
         return new BusHolder(inputBus1, inputBus2, outputBus1, outputHatch1, controller);
     }
 

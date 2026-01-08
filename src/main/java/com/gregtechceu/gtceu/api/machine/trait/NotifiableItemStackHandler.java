@@ -77,7 +77,7 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
 
     public void onContentsChanged() {
         isEmpty = null;
-        SpoilUtils.updateBlock(Objects.requireNonNull(machine.getLevel()), machine.getPos());
+        SpoilUtils.updateBlock(Objects.requireNonNull(machine.getLevel()), machine.getBlockPos());
         syncDataHolder.markClientSyncFieldDirty("storage");
         notifyListeners();
     }

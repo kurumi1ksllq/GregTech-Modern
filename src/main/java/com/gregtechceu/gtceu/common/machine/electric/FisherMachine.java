@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.common.machine.electric;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -11,7 +12,6 @@ import com.gregtechceu.gtceu.api.gui.editor.EditableUI;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IAutoOutputItem;
@@ -127,37 +127,22 @@ public class FisherMachine extends TieredEnergyMachine
     @SyncToClient
     protected boolean junkEnabled = true;
 
-    public FisherMachine(IMachineBlockEntity holder, int tier, Object... ignoredArgs) {
-        super(holder, tier);
+    public FisherMachine(BlockEntityCreationInfo info, int tier) {
+        super(info, tier);
         this.inventorySize = (tier + 1) * (tier + 1);
         this.maxProgress = calcMaxProgress(tier);
         this.energyPerTick = GTValues.V[tier - 1];
-        this.cache = createCacheItemHandler();
-        this.baitHandler = createBaitItemHandler();
-        this.chargerInventory = createChargerItemHandler();
-        setOutputFacingItems(getFrontFacing());
-    }
+        this.cache = new NotifiableItemStackHandler(this, inventorySize, IO.BOTH, IO.OUT);
 
-    //////////////////////////////////////
-    // ***** Initialization *****//
-    //////////////////////////////////////
+        this.baitHandler = new NotifiableItemStackHandler(this, 1, IO.BOTH, IO.IN);
+        baitHandler.setFilter(item -> item.is(Items.STRING));
 
-    protected CustomItemStackHandler createChargerItemHandler() {
-        var handler = new CustomItemStackHandler();
-        handler.setFilter(item -> GTCapabilityHelper.getElectricItem(item) != null ||
+        this.chargerInventory = new CustomItemStackHandler();
+        chargerInventory.setFilter(item -> GTCapabilityHelper.getElectricItem(item) != null ||
                 (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE &&
                         GTCapabilityHelper.getForgeEnergyItem(item) != null));
-        return handler;
-    }
 
-    protected NotifiableItemStackHandler createCacheItemHandler() {
-        return new NotifiableItemStackHandler(this, inventorySize, IO.BOTH, IO.OUT);
-    }
-
-    protected NotifiableItemStackHandler createBaitItemHandler() {
-        var handler = new NotifiableItemStackHandler(this, 1, IO.BOTH, IO.IN);
-        handler.setFilter(item -> item.is(Items.STRING));
-        return handler;
+        setOutputFacingItems(getFrontFacing());
     }
 
     public void setWorkingEnabled(boolean enabled) {
@@ -241,7 +226,8 @@ public class FisherMachine extends TieredEnergyMachine
     private void updateHasWater() {
         for (int x = 0; x < WATER_CHECK_SIZE; x++)
             for (int z = 0; z < WATER_CHECK_SIZE; z++) {
-                BlockPos waterCheckPos = getPos().below().offset(x - WATER_CHECK_SIZE / 2, 0, z - WATER_CHECK_SIZE / 2);
+                BlockPos waterCheckPos = getBlockPos().below().offset(x - WATER_CHECK_SIZE / 2, 0,
+                        z - WATER_CHECK_SIZE / 2);
                 if (!getLevel().getBlockState(waterCheckPos).getFluidState().is(Fluids.WATER)) {
                     hasWater = false;
                     return;
@@ -274,7 +260,7 @@ public class FisherMachine extends TieredEnergyMachine
                     .withOptionalParameter(LootContextParams.THIS_ENTITY, simulatedHook)
                     .withParameter(LootContextParams.TOOL, fishingRod)
                     .withParameter(LootContextParams.ORIGIN,
-                            new Vec3(getPos().getX(), getPos().getY(), getPos().getZ()))
+                            new Vec3(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()))
                     .create(LootContextParamSets.FISHING);
 
             NonNullList<ItemStack> generatedLoot = NonNullList.create();
@@ -342,7 +328,7 @@ public class FisherMachine extends TieredEnergyMachine
     protected void updateAutoOutputSubscription() {
         var outputFacing = getOutputFacingItems();
         if ((isAutoOutputItems() && !cache.isEmpty()) && outputFacing != null &&
-                GTTransferUtils.hasAdjacentItemHandler(getLevel(), getPos(), outputFacing))
+                GTTransferUtils.hasAdjacentItemHandler(getLevel(), getBlockPos(), outputFacing))
             autoOutputSubs = subscribeServerTick(autoOutputSubs, this::checkAutoOutput);
         else if (autoOutputSubs != null) {
             autoOutputSubs.unsubscribe();

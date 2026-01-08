@@ -313,7 +313,7 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
     public void exportToNearby(@NotNull Direction... facings) {
         if (isEmpty()) return;
         var level = getMachine().getLevel();
-        var pos = getMachine().getPos();
+        var pos = getMachine().getBlockPos();
         for (Direction facing : facings) {
             var filter = getMachine().getFluidCapFilter(facing, IO.OUT);
             GTTransferUtils.getAdjacentFluidHandler(level, pos, facing)
@@ -323,7 +323,7 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
 
     public void importFromNearby(@NotNull Direction... facings) {
         var level = getMachine().getLevel();
-        var pos = getMachine().getPos();
+        var pos = getMachine().getBlockPos();
         for (Direction facing : facings) {
             var filter = getMachine().getFluidCapFilter(facing, IO.IN);
             GTTransferUtils.getAdjacentFluidHandler(level, pos, facing)

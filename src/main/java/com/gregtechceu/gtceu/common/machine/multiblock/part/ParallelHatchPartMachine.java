@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.part;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
@@ -27,8 +27,8 @@ public class ParallelHatchPartMachine extends TieredPartMachine implements IFanc
     @Getter
     private int currentParallel = 1;
 
-    public ParallelHatchPartMachine(IMachineBlockEntity holder, int tier) {
-        super(holder, tier);
+    public ParallelHatchPartMachine(BlockEntityCreationInfo info, int tier) {
+        super(info, tier);
         this.maxParallel = (int) Math.pow(4, tier - GTValues.EV);
         this.currentParallel = maxParallel;
     }

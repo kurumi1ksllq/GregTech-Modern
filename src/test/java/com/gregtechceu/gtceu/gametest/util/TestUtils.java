@@ -11,7 +11,6 @@ import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.component.IItemComponent;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
@@ -30,7 +29,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedstoneLampBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandler;
 
@@ -239,7 +237,7 @@ public class TestUtils {
 
     public static MetaMachine setMachine(GameTestHelper helper, BlockPos pos, MachineDefinition machineDefinition) {
         helper.setBlock(pos, machineDefinition.getBlock());
-        return ((IMachineBlockEntity) Objects.requireNonNull(helper.getBlockEntity(pos))).getMetaMachine();
+        return ((MetaMachine) Objects.requireNonNull(helper.getBlockEntity(pos)));
     }
 
     public static void assertEqual(GameTestHelper helper, List<MutableComponent> text, String s) {
@@ -276,16 +274,6 @@ public class TestUtils {
 
     public static void assertLampOff(GameTestHelper helper, BlockPos pos) {
         helper.assertBlockProperty(pos, RedstoneLampBlock.LIT, false);
-    }
-
-    /**
-     * Shortcut function to retrieve a metamachine from a blockentity's
-     *
-     * @param entity The MetaMachineBlockEntity
-     * @return the machine held, if any
-     */
-    public static MetaMachine getMetaMachine(BlockEntity entity) {
-        return ((MetaMachineBlockEntity) entity).getMetaMachine();
     }
 
     /**

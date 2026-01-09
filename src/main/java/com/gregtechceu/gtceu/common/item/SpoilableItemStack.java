@@ -18,6 +18,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import lombok.Getter;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -246,11 +247,10 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
     }
 
     /**
-     * Since {@link ItemStack#isSameItemSameTags(ItemStack, ItemStack)} is commonly called
-     * right before merging two stacks, this method averages their spoil progress (or, more
+     * This method averages the spoil progress of the two stacks (or, more
      * accurately, their {@link ISpoilableItem#getCreationTick()}). If {@link SpoilableItemStack#FROZEN_EQUALITY}
      * is {@code true}, this method will ignore the frozen/not frozen status of stacks when determining its
-     * return value. Other than that, the return value is equal to the normal {@link ItemStack#isSameItemSameTags}.
+     * return value. Other than that, the return value is equal to the normal {@link ItemHandlerHelper#canItemStacksStack(ItemStack, ItemStack)}.
      *
      * @implNote This implementation may lead to spoil progress averaging in situations other
      *           than stack merging, though I don't think this will lead to any big user-facing bugs.

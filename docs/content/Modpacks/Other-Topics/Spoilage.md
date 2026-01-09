@@ -133,9 +133,9 @@ listener. For more info on how to do that see the example below.
 To freeze a stack's spoiling progress, you can use `spoilable.freezeSpoiling(stack)`, and `spoilable.unfreezeSpoiling(stack)`
 to unfreeze. A frozen stack's freshness will never be changed unless `spoilable.setTicksUntilSpoiled(stack, value)` is called.
 Currently, a stack is frozen only if it is in a phantom slot (in a GregTech filter).
-!!! warning "`ItemStack.isSameItemSameTag` behaviour is completely different for spoilables"
+!!! warning "`ItemHandlerHelper.canItemStacksStack` behaviour is completely different for spoilables"
 
-    `ItemStack.isSameItemSameTag` returns `true` if:
+    `ItemHandlerHelper.canItemStacksStack` returns `true` if:
 
     - Both items are not frozen and:
         - They are the same item

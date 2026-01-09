@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.Optional;
 
@@ -35,8 +36,6 @@ import java.util.Optional;
  * Items that don't start spoiling will simply not have spoilable NBT, and as a result, won't spoil,
  * until any of the above conditions become true.
  * <p>
- * Also due to Minecraft's limitations, merging stacks with different freshness requires overriding
- * {@link ItemStack#isSameItemSameTags} to make the stacks have the same freshness.
  * The only exception is if one of the stacks is frozen, in which case it works as normal, except that
  * frozen stacks will be equal to non-frozen stacks if all else is equal. This is done to make filtering work correctly.
  * </p>
@@ -103,7 +102,7 @@ public interface ISpoilableItem {
      * {@link ISpoilableItem#unfreezeSpoiling()}.
      * Frozen stacks will NOT spoil, even if {@link ISpoilableItem#getTicksUntilSpoiled()} is {@code <= 0}.
      * This method modifies the provided stack's NBT data.
-     * Calls to {@link ItemStack#isSameItemSameTags(ItemStack, ItemStack)} with a frozen stack as one of the arguments
+     * Calls to {@link ItemHandlerHelper#canItemStacksStack(ItemStack, ItemStack)} with a frozen stack as one of the arguments
      * will check equality of both stacks' {@link ISpoilableItem#getTicksUntilSpoiled()} values, as well as all
      * non-spoilage
      * related tags and the equality of the item itself.
@@ -154,8 +153,8 @@ public interface ISpoilableItem {
     void setCreationTick(long tick);
 
     /**
-     * Called when {@link ItemStack#isSameItemSameTags(ItemStack, ItemStack)} is called.
-     * If this returns an empty optional, {@link ItemStack#isSameItemSameTags} will return its
+     * Called when {@link ItemHandlerHelper#canItemStacksStack(ItemStack, ItemStack)} is called.
+     * If this returns an empty optional, {@link ItemHandlerHelper#canItemStacksStack(ItemStack, ItemStack)} will return its
      * normal value, otherwise it will return the same value as this method.
      * <br>
      * This exists mostly for custom spoilable merging logic.

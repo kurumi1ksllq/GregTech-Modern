@@ -43,6 +43,7 @@
         "IngredientAccessor",
         "IntegerPropertyAccessor",
         "InventoryMixin",
+        "ItemHandlerHelperMixin",
         "ItemStackMixin",
         "ItemValueAccessor",
         "LevelMixin",

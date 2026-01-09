@@ -31,7 +31,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.annotation.Nullable;
 
@@ -134,14 +133,6 @@ public abstract class ItemStackMixin implements ISpoilableItemStackExtension {
     @Inject(at = @At("HEAD"), method = "onCraftedBy")
     private void gtceu$updateFreshnessOnCraft(Level level, Player player, int amount, CallbackInfo ci) {
         gtceu$updateFreshness(new SpoilContext(player, -1), true);
-    }
-
-    @Inject(at = @At("HEAD"), method = "isSameItemSameTags", cancellable = true)
-    private static void gtceu$mergeSpoilables(ItemStack stack, ItemStack other, CallbackInfoReturnable<Boolean> cir) {
-        ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-        if (spoilable == null) return;
-        Optional<Boolean> result = spoilable.isEqualTo(other);
-        result.ifPresent(cir::setReturnValue);
     }
 
     @Inject(at = @At("RETURN"),

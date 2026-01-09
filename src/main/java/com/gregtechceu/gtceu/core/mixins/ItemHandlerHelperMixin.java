@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ItemHandlerHelper.class)
+@Mixin(value = ItemHandlerHelper.class, remap = false)
 public class ItemHandlerHelperMixin {
     @Inject(method = "canItemStacksStack", at = @At("HEAD"), cancellable = true)
     private static void gtceu$canItemStacksStack(ItemStack a, ItemStack b, CallbackInfoReturnable<Boolean> cir) {

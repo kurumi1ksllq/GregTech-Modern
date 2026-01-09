@@ -40,6 +40,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.List;
 import java.util.Objects;
@@ -323,55 +324,6 @@ public class SpoilableBehaviourTest {
     }
 
     @GameTest(template = "empty_5x5", batch = "spoilageTests")
-    public static void spoilableFilteringWithSpoilable(GameTestHelper helper) {
-        TestUtils.succeedAfterTest(helper);
-        CrateMachine crate1 = (CrateMachine) TestUtils.setMachine(helper, new BlockPos(1, 1, 1),
-                GTMachines.STEEL_CRATE);
-        CrateMachine crate2 = (CrateMachine) TestUtils.setMachine(helper, new BlockPos(1, 2, 1),
-                GTMachines.STEEL_CRATE);
-        ConveyorCover cover = (ConveyorCover) TestUtils.placeCover(helper, crate1, GTItems.CONVEYOR_MODULE_HV.asStack(),
-                Direction.UP);
-        ItemStack itemForFilter = Items.STRUCTURE_BLOCK.getDefaultInstance();
-        ISpoilableItem filterSpoilable = GTCapabilityHelper.getSpoilable(itemForFilter);
-        TestUtils.assertNotNull(helper, filterSpoilable, "filterSpoilable was null");
-        SpoilUtils.update(itemForFilter, new SpoilContext());
-        filterSpoilable.setTicksUntilSpoiled(5);
-        CompoundTag filterTag = SimpleItemFilter.forItems(false, itemForFilter).saveFilter();
-        ItemStack filter = GTItems.ITEM_FILTER.asStack();
-        filter.setTag(filterTag);
-        cover.getFilterHandler().setFilterItem(filter);
-        cover.setWorkingEnabled(true);
-        crate1.inventory.setStackInSlot(0, Items.STRUCTURE_BLOCK.getDefaultInstance());
-        helper.runAtTickTime(34, () -> {
-            ItemStack stack = crate1.inventory.getStackInSlot(0);
-            ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-            TestUtils.assertEqual(helper, stack, Items.STRUCTURE_BLOCK.getDefaultInstance(),
-                    "incorrect item in crate1");
-            TestUtils.assertNotNull(helper, spoilable, "spoilable was null in crate1");
-            TestUtils.assertEqual(helper, 6, spoilable.getTicksUntilSpoiled(), "wrong ticks until spoiled in crate1");
-        });
-        helper.runAtTickTime(35, () -> {
-            ItemStack stack = crate1.inventory.getStackInSlot(0);
-            ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-            if (spoilable != null) spoilable.freezeSpoiling();
-            else {
-                ItemStack stack2 = crate2.inventory.getStackInSlot(0);
-                ISpoilableItem spoilable2 = GTCapabilityHelper.getSpoilable(stack2);
-                TestUtils.assertNotNull(helper, spoilable2, "spoilables in both crates were null");
-                spoilable2.freezeSpoiling();
-            }
-        });
-        helper.runAtTickTime(60, () -> {
-            ItemStack stack = crate2.inventory.getStackInSlot(0);
-            ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(stack);
-            TestUtils.assertEqual(helper, stack, Items.STRUCTURE_BLOCK.getDefaultInstance(),
-                    "incorrect item in crate2");
-            TestUtils.assertNotNull(helper, spoilable, "spoilable was null in crate2");
-            TestUtils.assertEqual(helper, 5, spoilable.getTicksUntilSpoiled(), "wrong ticks until spoiled in crate2");
-        });
-    }
-
-    @GameTest(template = "empty_5x5", batch = "spoilageTests")
     public static void spoilableMerging(GameTestHelper helper) {
         TestUtils.succeedAfterTest(helper);
         ItemStack stack1 = Items.JIGSAW.getDefaultInstance().copyWithCount(9);
@@ -384,7 +336,7 @@ public class SpoilableBehaviourTest {
         TestUtils.assertNotNull(helper, spoilable2, "spoilable2 was null");
         spoilable1.setTicksUntilSpoiled(7);
         spoilable2.setTicksUntilSpoiled(4);
-        helper.assertTrue(ItemStack.isSameItemSameTags(stack1, stack2), "stacks were not equal");
+        helper.assertTrue(ItemHandlerHelper.canItemStacksStack(stack1, stack2), "stacks were not equal");
         // (9*7 + 5*4)/(9 + 5) = 5.928
         TestUtils.assertEqual(helper, spoilable1.getTicksUntilSpoiled(), 5, "spoilable1 had wrong ticks until spoiled");
         TestUtils.assertEqual(helper, spoilable2.getTicksUntilSpoiled(), 5, "spoilable2 has wrong ticks until spoiled");

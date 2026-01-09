@@ -102,7 +102,8 @@ public interface ISpoilableItem {
      * {@link ISpoilableItem#unfreezeSpoiling()}.
      * Frozen stacks will NOT spoil, even if {@link ISpoilableItem#getTicksUntilSpoiled()} is {@code <= 0}.
      * This method modifies the provided stack's NBT data.
-     * Calls to {@link ItemHandlerHelper#canItemStacksStack(ItemStack, ItemStack)} with a frozen stack as one of the arguments
+     * Calls to {@link ItemHandlerHelper#canItemStacksStack(ItemStack, ItemStack)} with a frozen stack as one of the
+     * arguments
      * will check equality of both stacks' {@link ISpoilableItem#getTicksUntilSpoiled()} values, as well as all
      * non-spoilage
      * related tags and the equality of the item itself.
@@ -154,7 +155,8 @@ public interface ISpoilableItem {
 
     /**
      * Called when {@link ItemHandlerHelper#canItemStacksStack(ItemStack, ItemStack)} is called.
-     * If this returns an empty optional, {@link ItemHandlerHelper#canItemStacksStack(ItemStack, ItemStack)} will return its
+     * If this returns an empty optional, {@link ItemHandlerHelper#canItemStacksStack(ItemStack, ItemStack)} will return
+     * its
      * normal value, otherwise it will return the same value as this method.
      * <br>
      * This exists mostly for custom spoilable merging logic.

@@ -84,6 +84,7 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
     private IStackWatcher watcher;
 
     private StockingHatchList topFluids = new StockingHatchList(CONFIG_SIZE);
+    private boolean pendingWatcherSync;
 
     public MEStockingHatchPartMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
@@ -137,6 +138,10 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
             ticksPerCycle = ConfigHolder.INSTANCE.compat.ae2.updateIntervals;
         }
         if (getOffsetTimer() % ticksPerCycle == 0) {
+            syncWatchedStacks();
+        }
+        if (pendingWatcherSync) {
+            pendingWatcherSync = false;
             syncWatchedStacks();
         }
     }
@@ -390,7 +395,7 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine
                 if (!config.equals(oldConfig)) {
                     // Refresh to get stack amount from AE2
                     this.setStock(new GenericStack(config.what(), getAmountInNetwork(config.what())));
-                    syncWatchedStacks();
+                    pendingWatcherSync = true;
                 }
             }
         }

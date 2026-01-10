@@ -79,6 +79,7 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     private IStackWatcher watcher;
 
     private StockingHatchList topItems = new StockingHatchList(CONFIG_SIZE);
+    private boolean pendingWatcherSync;
 
     public MEStockingBusPartMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
@@ -133,6 +134,10 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
             ticksPerCycle = ConfigHolder.INSTANCE.compat.ae2.updateIntervals;
         }
         if (getOffsetTimer() % ticksPerCycle == 0) {
+            syncWatchedStacks();
+        }
+        if (pendingWatcherSync) {
+            pendingWatcherSync = false;
             syncWatchedStacks();
         }
     }
@@ -400,7 +405,7 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
                 if (!config.equals(oldConfig)) {
                     // Refresh to get stack amount from AE2
                     this.setStock(new GenericStack(config.what(), getAmountInNetwork(config.what())));
-                    syncWatchedStacks();
+                    pendingWatcherSync = true;
                 }
             }
         }

@@ -3,6 +3,8 @@ package com.gregtechceu.gtceu.api.pipenet;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.MaterialPipeBlock;
 import com.gregtechceu.gtceu.api.block.PipeBlock;
+import com.gregtechceu.gtceu.api.blockentity.IGregtechBlockEntity;
+import com.gregtechceu.gtceu.api.blockentity.IGregtechBlockEntity;
 import com.gregtechceu.gtceu.api.blockentity.IPaintable;
 import com.gregtechceu.gtceu.api.blockentity.ITickSubscription;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
@@ -59,7 +61,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeType<NodeDataType>, NodeDataType>
                                      extends ManagedSyncBlockEntity
-                                     implements IToolGridHighlight, ITickSubscription, IToolable, ICopyable {
+                                     implements IGregtechBlockEntity, IToolGridHighlight, ITickSubscription, IToolable, ICopyable, IPaintable {
 
     private final long offset = GTValues.RNG.nextInt(20);
 
@@ -69,7 +71,6 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     protected final PipeCoverContainer coverContainer;
 
     @Getter
-    @Setter(onMethod_ = @ApiStatus.Internal)
     @SyncToClient
     @SaveField
     @RerenderOnChanged

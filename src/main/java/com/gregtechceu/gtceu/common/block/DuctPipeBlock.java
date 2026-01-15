@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.common.block;
 
 import com.gregtechceu.gtceu.api.block.PipeBlock;
-import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
+import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardCleaner;

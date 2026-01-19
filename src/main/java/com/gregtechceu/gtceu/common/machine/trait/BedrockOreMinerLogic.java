@@ -141,7 +141,6 @@ public class BedrockOreMinerLogic extends RecipeLogic {
     public void onRecipeFinish() {
         machine.afterWorking();
         if (lastRecipe != null) {
-            RecipeHelper.postWorking(this.machine, lastRecipe);
             RecipeHelper.handleRecipeIO(this.machine, lastRecipe, IO.OUT, this.chanceCaches);
         }
         depleteVein();
@@ -179,10 +178,10 @@ public class BedrockOreMinerLogic extends RecipeLogic {
     }
 
     private int getChunkX() {
-        return SectionPos.blockToSectionCoord(getMachine().getPos().getX());
+        return SectionPos.blockToSectionCoord(getMachine().getBlockPos().getX());
     }
 
     private int getChunkZ() {
-        return SectionPos.blockToSectionCoord(getMachine().getPos().getZ());
+        return SectionPos.blockToSectionCoord(getMachine().getBlockPos().getZ());
     }
 }

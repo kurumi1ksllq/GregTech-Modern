@@ -1,11 +1,13 @@
 package com.gregtechceu.gtceu.api.capability;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.block.IAppearance;
+import com.gregtechceu.gtceu.api.blockentity.IGregtechBlockEntity;
 import com.gregtechceu.gtceu.api.blockentity.ITickSubscription;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
+import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
+import com.gregtechceu.gtceu.syncsystem.ISyncManaged;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
@@ -32,23 +34,56 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public interface ICoverable extends ITickSubscription, IAppearance {
+public interface ICoverable extends ITickSubscription, ISyncManaged {
 
-    Level getLevel();
+    IGregtechBlockEntity getHolder();
 
-    BlockPos getPos();
+    default Level getLevel() {
+        return getHolder().getLevel();
+    }
 
-    long getOffsetTimer();
+    default BlockPos getBlockPos() {
+        return getHolder().getBlockPos();
+    }
 
-    void markDirty();
+    default BlockState getBlockState() {
+        return getHolder().getBlockState();
+    }
 
-    boolean isInValid();
+    default long getOffsetTimer() {
+        return getHolder().getOffsetTimer();
+    }
 
-    void notifyBlockUpdate();
+    default boolean isRemoved() {
+        return getHolder().isRemoved();
+    }
 
-    void scheduleRenderUpdate();
+    default void notifyBlockUpdate() {
+        getHolder().notifyBlockUpdate();
+    }
 
-    void scheduleNeighborShapeUpdate();
+    default void scheduleRenderUpdate() {
+        getHolder().notifyBlockUpdate();
+    }
+
+    default void scheduleNeighborShapeUpdate() {
+        getHolder().scheduleNeighborShapeUpdate();
+    }
+
+    default void markAsChanged() {
+        getHolder().markAsChanged();
+    }
+
+    @Nullable
+    @Override
+    default TickableSubscription subscribeServerTick(Runnable runnable) {
+        return getHolder().subscribeServerTick(runnable);
+    }
+
+    @Override
+    default void unsubscribe(@Nullable TickableSubscription current) {
+        getHolder().unsubscribe(current);
+    }
 
     boolean canPlaceCoverOnSide(CoverDefinition definition, Direction side);
 
@@ -77,7 +112,7 @@ public interface ICoverable extends ITickSubscription, IAppearance {
     CoverBehavior getCoverAtSide(Direction side);
 
     default boolean placeCoverOnSide(Direction side, ItemStack itemStack, CoverDefinition coverDefinition,
-                                     ServerPlayer player) {
+                                     @Nullable ServerPlayer player) {
         CoverBehavior coverBehavior = coverDefinition.createCoverBehavior(this, side);
         if (!canPlaceCoverOnSide(coverDefinition, side) || !coverBehavior.canAttach()) {
             return false;
@@ -89,7 +124,6 @@ public interface ICoverable extends ITickSubscription, IAppearance {
         coverBehavior.onLoad();
         setCoverAtSide(coverBehavior, side);
         notifyBlockUpdate();
-        markDirty();
         scheduleNeighborShapeUpdate();
         // TODO achievement
         // AdvancementTriggers.FIRST_COVER_PLACE.trigger((PlayerMP) player);
@@ -111,11 +145,10 @@ public interface ICoverable extends ITickSubscription, IAppearance {
             if (player != null && player.getInventory().add(dropStack))
                 continue;
 
-            Block.popResource(getLevel(), getPos(), dropStack);
+            Block.popResource(getLevel(), getBlockPos(), dropStack);
 
         }
         notifyBlockUpdate();
-        markDirty();
         scheduleNeighborShapeUpdate();
         return true;
     }
@@ -212,6 +245,14 @@ public interface ICoverable extends ITickSubscription, IAppearance {
         return traceCoverSide(rayTrace);
     }
 
+    default boolean hasDynamicCovers() {
+        for (Direction face : GTUtil.DIRECTIONS) {
+            CoverBehavior cover = this.getCoverAtSide(face);
+            if (cover != null && cover.getDynamicRenderer().get() != null) return true;
+        }
+        return false;
+    }
+
     class PrimaryBoxData {
 
         public final boolean usePlacementGrid;
@@ -222,12 +263,13 @@ public interface ICoverable extends ITickSubscription, IAppearance {
     }
 
     @Nullable
-    static Direction traceCoverSide(BlockHitResult result) {
+    static Direction traceCoverSide(@Nullable BlockHitResult result) {
         return determineGridSideHit(result);
     }
 
     @Nullable
-    static Direction determineGridSideHit(BlockHitResult result) {
+    static Direction determineGridSideHit(@Nullable BlockHitResult result) {
+        if (result == null) return null;
         return GTUtil.determineWrenchingSide(result.getDirection(),
                 (float) (result.getLocation().x - result.getBlockPos().getX()),
                 (float) (result.getLocation().y - result.getBlockPos().getY()),
@@ -258,7 +300,6 @@ public interface ICoverable extends ITickSubscription, IAppearance {
     }
 
     @Nullable
-    @Override
     default BlockState getBlockAppearance(BlockState state, BlockAndTintGetter level, BlockPos pos, Direction side,
                                           BlockState sourceState, BlockPos sourcePos) {
         if (hasCover(side)) {

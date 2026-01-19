@@ -1,14 +1,13 @@
 package com.gregtechceu.gtceu.api.machine;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.gui.editor.EditableMachineUI;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardEmitter;
 import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
-import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
 import com.gregtechceu.gtceu.api.recipe.modifier.ParallelLogic;
@@ -44,36 +43,25 @@ public class SimpleGeneratorMachine extends WorkableTieredMachine
     @Getter
     private final float hazardStrengthPerOperation;
 
-    public SimpleGeneratorMachine(IMachineBlockEntity holder, int tier,
-                                  float hazardStrengthPerOperation, Int2IntFunction tankScalingFunction,
-                                  Object... args) {
-        super(holder, tier, tankScalingFunction, args);
+    public SimpleGeneratorMachine(BlockEntityCreationInfo info, int tier,
+                                  float hazardStrengthPerOperation, Int2IntFunction tankScalingFunction) {
+        super(info, tier, tankScalingFunction);
+
+        energyContainer.setSideOutputCondition(side -> !hasFrontFacing() || side == getFrontFacing());
         this.hazardStrengthPerOperation = hazardStrengthPerOperation;
     }
 
-    public SimpleGeneratorMachine(IMachineBlockEntity holder, int tier, Int2IntFunction tankScalingFunction,
-                                  Object... args) {
-        this(holder, tier, 0.25f, tankScalingFunction, args);
+    public SimpleGeneratorMachine(BlockEntityCreationInfo info, int tier, Int2IntFunction tankScalingFunction) {
+        this(info, tier, 0.25f, tankScalingFunction);
     }
+
     //////////////////////////////////////
     // ***** Initialization ******//
     //////////////////////////////////////
 
     @Override
-    protected NotifiableEnergyContainer createEnergyContainer(Object... args) {
-        var energyContainer = super.createEnergyContainer(args);
-        energyContainer.setSideOutputCondition(side -> !hasFrontFacing() || side == getFrontFacing());
-        return energyContainer;
-    }
-
-    @Override
     protected boolean isEnergyEmitter() {
         return true;
-    }
-
-    @Override
-    protected long getMaxInputOutputAmperage() {
-        return 1L;
     }
 
     @Override
@@ -102,7 +90,7 @@ public class SimpleGeneratorMachine extends WorkableTieredMachine
         if (!(machine instanceof SimpleGeneratorMachine generator)) {
             return RecipeModifier.nullWrongType(SimpleGeneratorMachine.class, machine);
         }
-        long EUt = RecipeHelper.getOutputEUt(recipe);
+        long EUt = recipe.getOutputEUt().getTotalEU();
         if (EUt <= 0) return ModifierFunction.NULL;
 
         int maxParallel = (int) (generator.getOverclockVoltage() / EUt);

@@ -1,21 +1,21 @@
 package com.gregtechceu.gtceu.common.machine.storage;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.PhantomFluidWidget;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceBorderTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.*;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DropSaved;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -30,25 +30,24 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class CreativeTankMachine extends QuantumTankMachine {
 
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(CreativeTankMachine.class,
-            QuantumTankMachine.MANAGED_FIELD_HOLDER);
-
     @Getter
-    @Persisted
-    @DropSaved
+    @SaveField
     private int mBPerCycle = 1000;
     @Getter
-    @Persisted
-    @DropSaved
+    @SaveField
     private int ticksPerCycle = 1;
 
-    public CreativeTankMachine(IMachineBlockEntity holder) {
-        super(holder, GTValues.MAX, 1);
+    public CreativeTankMachine(BlockEntityCreationInfo info) {
+        super(info, GTValues.MAX, 1);
     }
 
-    protected FluidCache createCacheFluidHandler(Object... args) {
+    protected FluidCache createCacheFluidHandler() {
         return new InfiniteCache(this);
     }
 
@@ -82,6 +81,18 @@ public class CreativeTankMachine extends QuantumTankMachine {
         if (value.isEmpty()) return;
         mBPerCycle = Integer.parseInt(value);
         onFluidChanged();
+    }
+
+    @Override
+    public void saveToItem(@NotNull CompoundTag tag) {
+        tag.putInt("mBPerCycle", mBPerCycle);
+        tag.putInt("ticksPerCycle", ticksPerCycle);
+    }
+
+    @Override
+    public void loadFromItem(@NotNull CompoundTag tag) {
+        mBPerCycle = tag.getInt("mBPerCycle");
+        ticksPerCycle = tag.getInt("ticksPerCycle");
     }
 
     @Override
@@ -152,11 +163,6 @@ public class CreativeTankMachine extends QuantumTankMachine {
                 .setPressed(isWorkingEnabled()));
 
         return group;
-    }
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 
     private class InfiniteCache extends FluidCache {

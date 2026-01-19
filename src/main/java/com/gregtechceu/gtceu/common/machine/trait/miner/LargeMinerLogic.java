@@ -3,9 +3,7 @@ package com.gregtechceu.gtceu.common.machine.trait.miner;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
-
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -19,6 +17,7 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
@@ -30,9 +29,9 @@ import java.util.List;
 
 public class LargeMinerLogic extends MinerLogic {
 
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(LargeMinerLogic.class,
-            MinerLogic.MANAGED_FIELD_HOLDER);
     private static final int CHUNK_LENGTH = 16;
+    private static final LootItemFunction DROP_MULTIPLIER = ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE)
+            .build();
 
     @Setter
     @Getter
@@ -42,10 +41,10 @@ public class LargeMinerLogic extends MinerLogic {
     private int overclockAmount = 0;
 
     @Getter
-    @Persisted
+    @SaveField
     private boolean isChunkMode;
     @Getter
-    @Persisted
+    @SaveField
     private boolean isSilkTouchMode;
 
     /**
@@ -58,11 +57,6 @@ public class LargeMinerLogic extends MinerLogic {
      */
     public LargeMinerLogic(IRecipeLogicMachine machine, int fortune, int speed, int maximumRadius) {
         super(machine, fortune, speed, maximumRadius);
-    }
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 
     @Override
@@ -121,7 +115,7 @@ public class LargeMinerLogic extends MinerLogic {
 
     @Override
     public BlockPos getMiningPos() {
-        return getMachine().getPos().relative(getMachine().getFrontFacing().getOpposite());
+        return getMachine().getBlockPos().relative(getMachine().getFrontFacing().getOpposite());
     }
 
     @Override
@@ -132,30 +126,21 @@ public class LargeMinerLogic extends MinerLogic {
     @Override
     protected void dropPostProcessing(NonNullList<ItemStack> blockDrops, List<ItemStack> outputs, BlockState blockState,
                                       LootParams.Builder builder) {
+        if (getDropCountMultiplier() <= 0) {
+            super.dropPostProcessing(blockDrops, outputs, blockState, builder);
+            return;
+        }
+        ItemStack fortunePick = this.pickaxeTool.copy();
+        fortunePick.enchant(Enchantments.BLOCK_FORTUNE, getDropCountMultiplier());
+        LootParams params = builder.withParameter(LootContextParams.TOOL, fortunePick)
+                .create(LootContextParamSets.BLOCK);
+        LootContext context = new LootContext.Builder(params).create(null);
+
         for (ItemStack outputStack : outputs) {
             if (ChemicalHelper.getPrefix(outputStack.getItem()) == TagPrefix.crushed) {
-                if (getDropCountMultiplier() > 0) {
-                    ItemStack fortunePick = pickaxeTool.copy();
-                    fortunePick.enchant(Enchantments.BLOCK_FORTUNE, getDropCountMultiplier());
-                    outputStack = ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE).build().apply(
-                            outputStack,
-                            new LootContext.Builder(builder.withParameter(LootContextParams.TOOL, fortunePick)
-                                    .create(LootContextParamSets.BLOCK)).create(null));
-                }
+                outputStack = DROP_MULTIPLIER.apply(outputStack, context);
             }
             blockDrops.add(outputStack);
         }
-    }
-
-    @Override
-    protected boolean doPostProcessing(NonNullList<ItemStack> blockDrops, BlockState blockState,
-                                       LootParams.Builder builder) {
-        if (!super.doPostProcessing(blockDrops, blockState, builder) && getDropCountMultiplier() > 0) {
-            for (ItemStack drop : blockDrops) {
-                if (drop.is(blockState.getBlock().asItem())) continue;
-                drop.setCount(drop.getCount() * getDropCountMultiplier());
-            }
-        }
-        return true;
     }
 }

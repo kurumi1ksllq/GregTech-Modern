@@ -1,10 +1,11 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.part;
 
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
+import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.BlockableSlotWidget;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
@@ -15,14 +16,12 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTDamageTypes;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.item.TurbineRotorBehaviour;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -35,32 +34,28 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import static com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties.*;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class RotorHolderPartMachine extends TieredPartMachine
                                     implements IMachineLife, IRotorHolderMachine, IInteractedMachine {
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            RotorHolderPartMachine.class, TieredPartMachine.MANAGED_FIELD_HOLDER);
-
-    @Persisted
+    @SaveField
     public final NotifiableItemStackHandler inventory;
     @Getter
     public final int maxRotorHolderSpeed;
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     public int rotorSpeed;
-    @Setter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
     @NotNull
     public Material rotorMaterial = GTMaterials.NULL; // 0 - no rotor
     @Nullable
@@ -68,8 +63,8 @@ public class RotorHolderPartMachine extends TieredPartMachine
     @Nullable
     protected ISubscription rotorInvSubs;
 
-    public RotorHolderPartMachine(IMachineBlockEntity holder, int tier) {
-        super(holder, tier);
+    public RotorHolderPartMachine(BlockEntityCreationInfo info, int tier) {
+        super(info, tier);
         this.inventory = new NotifiableItemStackHandler(this, 1, IO.NONE, IO.BOTH);
         this.maxRotorHolderSpeed = 2000 + 1000 * tier;
     }
@@ -77,10 +72,6 @@ public class RotorHolderPartMachine extends TieredPartMachine
     //////////////////////////////////////
     // ***** Initialization ******//
     //////////////////////////////////////
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
 
     @Override
     public void onMachineRemoved() {
@@ -89,8 +80,10 @@ public class RotorHolderPartMachine extends TieredPartMachine
 
     @Override
     public int tintColor(int index) {
-        if (index == 2) {
-            return getRotorMaterial().getMaterialARGB();
+        if (index >= 2) {
+            return getRotorMaterial().getLayerARGB(index - 2);
+        } else if (index <= -103) {
+            return getRotorMaterial().getLayerARGB(index + 2);
         }
         return super.tintColor(index);
     }
@@ -131,14 +124,29 @@ public class RotorHolderPartMachine extends TieredPartMachine
         return rotorMaterial;
     }
 
+    public void setRotorMaterial(Material mat) {
+        this.rotorMaterial = mat;
+        syncDataHolder.markClientSyncFieldDirty("rotorMaterial");
+    }
+
     private void onRotorInventoryChanged() {
         var stack = getRotorStack();
         var rotorBehaviour = TurbineRotorBehaviour.getBehaviour(stack);
         if (rotorBehaviour != null) {
             this.rotorMaterial = rotorBehaviour.getPartMaterial(stack);
+
+            boolean emissive = this.rotorMaterial.hasProperty(PropertyKey.ORE) &&
+                    this.rotorMaterial.getProperty(PropertyKey.ORE).isEmissive();
+            setRenderState(getRenderState()
+                    .setValue(HAS_ROTOR, true)
+                    .setValue(IS_EMISSIVE_ROTOR, emissive));
         } else {
             this.rotorMaterial = GTMaterials.NULL;
+            setRenderState(getRenderState()
+                    .setValue(HAS_ROTOR, false)
+                    .setValue(IS_EMISSIVE_ROTOR, false));
         }
+        syncDataHolder.markClientSyncFieldDirty("rotorMaterial");
     }
 
     @Override
@@ -169,9 +177,10 @@ public class RotorHolderPartMachine extends TieredPartMachine
 
     public void setRotorSpeed(int rotorSpeed) {
         if ((this.rotorSpeed > 0 && rotorSpeed <= 0) || (this.rotorSpeed <= 0 && rotorSpeed > 0)) {
-            scheduleRenderUpdate();
+            setRenderState(getRenderState().setValue(IS_ROTOR_SPINNING, rotorSpeed > 0));
         }
         this.rotorSpeed = rotorSpeed;
+        syncDataHolder.markClientSyncFieldDirty("rotorSpeed");
     }
 
     @Override
@@ -211,8 +220,10 @@ public class RotorHolderPartMachine extends TieredPartMachine
     public InteractionResult onUse(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                    BlockHitResult hit) {
         if (!isRemote() && getRotorSpeed() > 0 && !player.isCreative()) {
-            player.hurt(GTDamageTypes.TURBINE.source(level),
-                    TurbineRotorBehaviour.getBehaviour(getRotorStack()).getDamage(getRotorStack()));
+            TurbineRotorBehaviour behaviour = TurbineRotorBehaviour.getBehaviour(getRotorStack());
+            if (behaviour != null) {
+                player.hurt(GTDamageTypes.TURBINE.source(level), behaviour.getDamage(getRotorStack()));
+            }
             return InteractionResult.FAIL;
         }
         return InteractionResult.PASS;

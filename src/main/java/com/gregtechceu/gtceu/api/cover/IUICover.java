@@ -18,7 +18,7 @@ public interface IUICover extends IUIHolder {
 
     @Override
     default boolean isInvalid() {
-        return self().coverHolder.isInValid() || self().coverHolder.getCoverAtSide(self().attachedSide) != self();
+        return self().coverHolder.isRemoved() || self().coverHolder.getCoverAtSide(self().attachedSide) != self();
     }
 
     @Override
@@ -27,21 +27,23 @@ public interface IUICover extends IUIHolder {
     }
 
     @Override
-    default void markAsDirty() {
-        self().coverHolder.markDirty();
-    }
-
-    @Override
     default ModularUI createUI(Player entityPlayer) {
         var widget = createUIWidget();
         var size = widget.getSize();
         widget.setSelfPosition(new Position((176 - size.width) / 2, 0));
-        return new ModularUI(176, size.height + 82, this, entityPlayer)
+        var modularUI = new ModularUI(176, size.height + 82, this, entityPlayer)
                 .background(GuiTextures.BACKGROUND)
                 .widget(widget)
                 .widget(UITemplate.bindPlayerInventory(entityPlayer.getInventory(), GuiTextures.SLOT, 7, size.height,
                         true));
+        modularUI.registerCloseListener(this::onUIClosed);
+        return modularUI;
     }
 
+    default void onUIClosed() {}
+
     Widget createUIWidget();
+
+    @Override
+    default void markAsDirty() {}
 }

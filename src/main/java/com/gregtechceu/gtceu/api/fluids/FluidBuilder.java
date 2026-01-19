@@ -68,6 +68,7 @@ public class FluidBuilder {
     private boolean hasCustomStill = false;
     private boolean hasCustomFlowing = false;
 
+    @Getter
     private boolean hasFluidBlock = false;
     private boolean hasBucket = true;
 
@@ -240,10 +241,10 @@ public class FluidBuilder {
         return this;
     }
 
-    public @NotNull Supplier<? extends Fluid> build(@NotNull String modid, Material material, FluidStorageKey key,
+    public @NotNull Supplier<? extends Fluid> build(Material material, @NotNull FluidStorageKey key,
                                                     GTRegistrate registrate) {
         determineName(material, key);
-        determineTextures(material, key, modid);
+        determineTextures(material, key, material.getModid());
 
         if (name == null) {
             throw new IllegalStateException("Could not determine fluid name");

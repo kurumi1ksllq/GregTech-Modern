@@ -1,22 +1,25 @@
 package com.gregtechceu.gtceu.api.machine.multiblock;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeHandler;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.gregtechceu.gtceu.api.gui.fancy.FancyMachineUIWidget;
-import com.gregtechceu.gtceu.api.gui.fancy.IFancyUIProvider;
-import com.gregtechceu.gtceu.api.gui.fancy.TooltipsPanel;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.gui.fancy.*;
 import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IVoidable;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDisplayUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
+import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
+import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifierList;
+import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
@@ -29,8 +32,10 @@ import net.minecraft.world.entity.player.Player;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -43,9 +48,17 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
     protected EnergyContainerList energyContainer;
     @Getter
     protected int tier;
+    @SaveField
+    @Getter
+    protected boolean batchEnabled;
 
-    public WorkableElectricMultiblockMachine(IMachineBlockEntity holder, Object... args) {
-        super(holder, args);
+    public WorkableElectricMultiblockMachine(BlockEntityCreationInfo info,
+                                             Function<WorkableMultiblockMachine, RecipeLogic> recipeLogicSupplier) {
+        super(info, recipeLogicSupplier);
+    }
+
+    public WorkableElectricMultiblockMachine(BlockEntityCreationInfo info) {
+        super(info);
     }
 
     //////////////////////////////////////
@@ -72,6 +85,11 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
         this.tier = 0;
     }
 
+    @Override
+    public void setBatchEnabled(boolean batch) {
+        this.batchEnabled = batch;
+    }
+
     //////////////////////////////////////
     // ********** GUI ***********//
     //////////////////////////////////////
@@ -79,14 +97,23 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
     @Override
     public void addDisplayText(List<Component> textList) {
         int numParallels;
+        int subtickParallels;
+        int batchParallels;
+        int totalRuns;
         boolean exact = false;
         if (recipeLogic.isActive() && recipeLogic.getLastRecipe() != null) {
             numParallels = recipeLogic.getLastRecipe().parallels;
+            subtickParallels = recipeLogic.getLastRecipe().subtickParallels;
+            batchParallels = recipeLogic.getLastRecipe().batchParallels;
+            totalRuns = recipeLogic.getLastRecipe().getTotalRuns();
             exact = true;
         } else {
             numParallels = getParallelHatch()
                     .map(IParallelHatch::getCurrentParallel)
                     .orElse(0);
+            subtickParallels = 0;
+            batchParallels = 0;
+            totalRuns = 0;
         }
 
         MultiblockDisplayText.builder(textList, getDefaultPatternState())
@@ -94,10 +121,12 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
                 .addEnergyUsageLine(energyContainer)
                 .addEnergyTierLine(tier)
                 .addMachineModeLine(getRecipeType(), getRecipeTypes().length > 1)
+                .addTotalRunsLine(totalRuns)
                 .addParallelsLine(numParallels, exact)
+                .addSubtickParallelsLine(subtickParallels)
+                .addBatchModeLine(isBatchEnabled(), batchParallels)
                 .addWorkingStatusLine()
-                .addProgressLine(recipeLogic.getProgress(), recipeLogic.getMaxProgress(),
-                        recipeLogic.getProgressPercent())
+                .addProgressLine(recipeLogic)
                 .addOutputLines(recipeLogic.getLastRecipe());
         getDefinition().getAdditionalDisplay().accept(this, textList);
         IDisplayUIMachine.super.addDisplayText(textList);
@@ -124,6 +153,24 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
     @Override
     public List<IFancyUIProvider> getSubTabs() {
         return getParts().stream().filter(Objects::nonNull).map(IFancyUIProvider.class::cast).toList();
+    }
+
+    @Override
+    public void attachConfigurators(ConfiguratorPanel configuratorPanel) {
+        IVoidable.attachConfigurators(configuratorPanel, this);
+        if (getDefinition().getRecipeModifier() instanceof RecipeModifierList list && Arrays.stream(list.getModifiers())
+                .anyMatch(modifier -> modifier == GTRecipeModifiers.BATCH_MODE)) {
+            configuratorPanel.attachConfigurators(new IFancyConfiguratorButton.Toggle(
+                    GuiTextures.BUTTON_BATCH.getSubTexture(0, 0, 1, 0.5),
+                    GuiTextures.BUTTON_BATCH.getSubTexture(0, 0.5, 1, 0.5),
+                    this::isBatchEnabled,
+                    (cd, p) -> setBatchEnabled(p))
+                    .setTooltipsSupplier(
+                            p -> List.of(
+                                    Component.translatable("gtceu.machine.batch_" + (p ? "enabled" : "disabled")))));
+        }
+
+        IFancyUIMachine.super.attachConfigurators(configuratorPanel);
     }
 
     @Override

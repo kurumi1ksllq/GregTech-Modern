@@ -1,11 +1,11 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.part;
 
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.UITemplate;
 import com.gregtechceu.gtceu.api.gui.widget.TankWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
@@ -23,12 +23,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class PumpHatchPartMachine extends FluidHatchPartMachine {
 
-    public PumpHatchPartMachine(IMachineBlockEntity holder, Object... args) {
-        super(holder, 0, IO.OUT, FluidType.BUCKET_VOLUME, 1, args);
+    public PumpHatchPartMachine(BlockEntityCreationInfo info) {
+        super(info, 0, IO.OUT, FluidType.BUCKET_VOLUME, 1);
     }
 
     @Override
-    protected NotifiableFluidTank createTank(int initialCapacity, int slots, Object... args) {
+    protected NotifiableFluidTank createTank(int initialCapacity, int slots) {
         return super.createTank(initialCapacity, slots)
                 .setFilter(fluidStack -> fluidStack.getFluid().is(GTMaterials.Water.getFluidTag()));
     }
@@ -49,5 +49,12 @@ public class PumpHatchPartMachine extends FluidHatchPartMachine {
                         .setShouldUseBaseBackground()
                         .setTooltipText("gtceu.gui.fluid_auto_input.tooltip"))
                 .widget(UITemplate.bindPlayerInventory(entityPlayer.getInventory(), GuiTextures.SLOT, 7, 84, true));
+    }
+
+    // By returning false here, we don't allow shift-clicking
+    // with a screwdriver to swap the IO.
+    @Override
+    public boolean swapIO() {
+        return false;
     }
 }

@@ -8,14 +8,13 @@ import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.LongInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
 import com.gregtechceu.gtceu.utils.GTMath;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextBoxWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -35,23 +34,15 @@ import static com.gregtechceu.gtceu.utils.RedstoneUtil.computeLatchedRedstoneBet
 @MethodsReturnNonnullByDefault
 public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements IUICover {
 
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            AdvancedEnergyDetectorCover.class, DetectorCover.MANAGED_FIELD_HOLDER);
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
-
     private static final int DEFAULT_MIN_PERCENT = 33;
     private static final int DEFAULT_MAX_PERCENT = 66;
 
-    @Persisted
+    @SaveField
     @Getter
     @Setter
     public long minValue, maxValue;
 
-    @Persisted
+    @SaveField
     @Getter
     private boolean usePercent;
 
@@ -72,13 +63,13 @@ public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements 
         IEnergyInfoProvider energyInfoProvider = getEnergyInfoProvider();
         if (energyInfoProvider == null) return;
 
-        var energyInfo = energyInfoProvider.getEnergyInfo();
-        var isBigInt = energyInfoProvider.supportsBigIntEnergyValues();
+        IEnergyInfoProvider.EnergyInfo energyInfo = energyInfoProvider.getEnergyInfo();
+        boolean isBigInt = energyInfoProvider.supportsBigIntEnergyValues();
 
         if (isBigInt) {
             if (usePercent) {
                 if (energyInfo.capacity().compareTo(BigInteger.ZERO) > 0) {
-                    var ratio = GTMath.ratio(energyInfo.stored(), energyInfo.capacity());
+                    float ratio = GTMath.ratio(energyInfo.stored(), energyInfo.capacity());
                     setRedstoneSignalOutput(computeLatchedRedstoneBetweenValues(ratio * 100, maxValue,
                             minValue, isInverted(), redstoneSignalOutput));
                 } else {
@@ -92,7 +83,7 @@ public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements 
         } else {
             if (usePercent) {
                 if (energyInfo.capacity().longValue() > 0) {
-                    var ratio = energyInfo.stored().longValue() / energyInfo.capacity().longValue();
+                    float ratio = energyInfo.stored().floatValue() / energyInfo.capacity().floatValue();
                     setRedstoneSignalOutput(computeLatchedRedstoneBetweenValues(ratio * 100, maxValue,
                             minValue, isInverted(), redstoneSignalOutput));
                 } else {
@@ -182,8 +173,10 @@ public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements 
             // This needs to be after setting the maximum, because otherwise the converted value would be
             // limited to 100.
             if (wasPercent) {
-                minValueInput.setValue(GTMath.clamp((long) ((minValue / 100.0) * energyCapacity), 0, energyCapacity));
-                maxValueInput.setValue(GTMath.clamp((long) ((maxValue / 100.0) * energyCapacity), 0, energyCapacity));
+                minValueInput.setValue(
+                        GTMath.clamp((long) Math.ceil((minValue / 100.0) * energyCapacity), 0, energyCapacity));
+                maxValueInput.setValue(
+                        GTMath.clamp((long) Math.ceil((maxValue / 100.0) * energyCapacity), 0, energyCapacity));
             }
         }
     }

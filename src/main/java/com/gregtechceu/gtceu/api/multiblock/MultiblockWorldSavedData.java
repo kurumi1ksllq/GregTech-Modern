@@ -19,11 +19,9 @@ import java.util.concurrent.*;
 
 public class MultiblockWorldSavedData extends SavedData {
 
-    private final ServerLevel serverLevel;
-
     public static MultiblockWorldSavedData getOrCreate(ServerLevel serverLevel) {
-        return serverLevel.getDataStorage().computeIfAbsent(tag -> new MultiblockWorldSavedData(serverLevel, tag),
-                () -> new MultiblockWorldSavedData(serverLevel), "gtceu_multiblock");
+        return serverLevel.getDataStorage()
+                .computeIfAbsent(MultiblockWorldSavedData::new, MultiblockWorldSavedData::new, "gtceu_multiblock");
     }
 
     /**
@@ -35,14 +33,13 @@ public class MultiblockWorldSavedData extends SavedData {
      */
     public final Map<ChunkPos, Set<PatternState>> chunkPosMapping;
 
-    private MultiblockWorldSavedData(ServerLevel serverLevel) {
-        this.serverLevel = serverLevel;
+    private MultiblockWorldSavedData() {
         this.mapping = new Object2ObjectOpenHashMap<>();
         this.chunkPosMapping = new HashMap<>();
     }
 
-    private MultiblockWorldSavedData(ServerLevel serverLevel, CompoundTag tag) {
-        this(serverLevel);
+    private MultiblockWorldSavedData(CompoundTag tag) {
+        this();
     }
 
     public PatternState[] getPatternsInChunk(ChunkPos chunkPos) {
@@ -54,7 +51,6 @@ public class MultiblockWorldSavedData extends SavedData {
         for (BlockPos blockPos : patternState.getPosCache()) {
             chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c -> new HashSet<>()).add(patternState);
         }
-        setDirty(true);
     }
 
     public void removeMapping(PatternState patternState) {
@@ -65,7 +61,6 @@ public class MultiblockWorldSavedData extends SavedData {
             patternSet.remove(patternState);
         }
         chunkPosMapping.entrySet().removeIf(e -> e.getValue().isEmpty());
-        setDirty(true);
     }
 
     @NotNull

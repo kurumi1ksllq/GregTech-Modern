@@ -4,14 +4,14 @@ import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.trait.IRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableRecipeHandlerTrait;
+import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroupDistinctness;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEPatternBufferPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEPatternBufferProxyPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.InternalSlotRecipeHandler.SlotRHL;
-
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -65,6 +65,7 @@ public final class ProxySlotRecipeHandler {
             sharedFluid = new ProxyFluidRecipeHandler(machine);
             slotFluid = new ProxyFluidRecipeHandler(machine);
             addHandlers(circuit, sharedItem, slotItem, sharedFluid, slotFluid);
+            this.setGroup(RecipeHandlerGroupDistinctness.BUS_DISTINCT);
         }
 
         public void setBuffer(MEPatternBufferPartMachine buffer, SlotRHL slotRHL) {

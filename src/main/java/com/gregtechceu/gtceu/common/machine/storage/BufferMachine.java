@@ -1,12 +1,11 @@
 package com.gregtechceu.gtceu.common.machine.storage;
 
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.TankWidget;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.TieredMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IAutoOutputBoth;
@@ -14,16 +13,15 @@ import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
+import com.gregtechceu.gtceu.syncsystem.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -46,45 +44,42 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class BufferMachine extends TieredMachine implements IMachineLife, IAutoOutputBoth, IFancyUIMachine {
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(BufferMachine.class,
-            MetaMachine.MANAGED_FIELD_HOLDER);
-
     public static final int TANK_SIZE = 64000;
 
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
-    protected Direction outputFacingItems;
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
+    protected @Nullable Direction outputFacingItems;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
-    protected Direction outputFacingFluids;
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
+    protected @Nullable Direction outputFacingFluids;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputItems;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputFluids;
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     protected boolean allowInputFromOutputSideItems;
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     protected boolean allowInputFromOutputSideFluids;
 
-    @Persisted
+    @SaveField
     @Getter
     protected final NotifiableItemStackHandler inventory;
 
-    @Persisted
+    @SaveField
     @Getter
     protected final NotifiableFluidTank tank;
 
@@ -94,20 +89,15 @@ public class BufferMachine extends TieredMachine implements IMachineLife, IAutoO
     @Nullable
     protected ISubscription invSubs, tankSubs;
 
-    public BufferMachine(IMachineBlockEntity holder, int tier, Object... args) {
-        super(holder, tier);
-        this.inventory = createInventory(args);
-        this.tank = createTank(args);
+    public BufferMachine(BlockEntityCreationInfo info, int tier) {
+        super(info, tier);
+        this.inventory = createInventory();
+        this.tank = createTank();
     }
 
     ////////////////////////////////
     // ***** Initialization ******//
     ////////////////////////////////
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
 
     public static int getInventorySize(int tier) {
         return (int) Math.pow(tier + 2, 2);
@@ -117,11 +107,11 @@ public class BufferMachine extends TieredMachine implements IMachineLife, IAutoO
         return tier + 2;
     }
 
-    protected NotifiableItemStackHandler createInventory(Object... args) {
+    protected NotifiableItemStackHandler createInventory() {
         return new NotifiableItemStackHandler(this, getInventorySize(tier), IO.BOTH);
     }
 
-    protected NotifiableFluidTank createTank(Object... args) {
+    protected NotifiableFluidTank createTank() {
         return new NotifiableFluidTank(this, getTankSize(tier), TANK_SIZE, IO.BOTH);
     }
 
@@ -156,24 +146,28 @@ public class BufferMachine extends TieredMachine implements IMachineLife, IAutoO
     @Override
     public void setAutoOutputFluids(boolean allow) {
         this.autoOutputFluids = allow;
+        syncDataHolder.markClientSyncFieldDirty("autoOutputFluids");
         updateAutoOutputSubscription();
     }
 
     @Override
     public void setOutputFacingFluids(@Nullable Direction outputFacing) {
         this.outputFacingFluids = outputFacing;
+        syncDataHolder.markClientSyncFieldDirty("outputFacingFluids");
         updateAutoOutputSubscription();
     }
 
     @Override
     public void setAutoOutputItems(boolean allow) {
         this.autoOutputItems = allow;
+        syncDataHolder.markClientSyncFieldDirty("autoOutputItems");
         updateAutoOutputSubscription();
     }
 
     @Override
     public void setOutputFacingItems(@Nullable Direction outputFacing) {
         this.outputFacingItems = outputFacing;
+        syncDataHolder.markClientSyncFieldDirty("outputFacingItems");
         updateAutoOutputSubscription();
     }
 
@@ -187,9 +181,9 @@ public class BufferMachine extends TieredMachine implements IMachineLife, IAutoO
         var outputFacingItems = getOutputFacingItems();
         var outputFacingFluids = getOutputFacingFluids();
         if ((isAutoOutputItems() && !inventory.isEmpty() && outputFacingItems != null &&
-                GTTransferUtils.hasAdjacentItemHandler(getLevel(), getPos(), outputFacingItems)) ||
+                GTTransferUtils.hasAdjacentItemHandler(getLevel(), getBlockPos(), outputFacingItems)) ||
                 (isAutoOutputFluids() && !tank.isEmpty() && outputFacingFluids != null &&
-                        GTTransferUtils.hasAdjacentFluidHandler(getLevel(), getPos(), outputFacingFluids))) {
+                        GTTransferUtils.hasAdjacentFluidHandler(getLevel(), getBlockPos(), outputFacingFluids))) {
             autoOutputSubs = subscribeServerTick(autoOutputSubs, this::autoOutput);
         } else if (autoOutputSubs != null) {
             autoOutputSubs.unsubscribe();
@@ -244,8 +238,8 @@ public class BufferMachine extends TieredMachine implements IMachineLife, IAutoO
     // ******* Rendering ********//
     ///////////////////////////////
     @Override
-    public ResourceTexture sideTips(Player player, BlockPos pos, BlockState state, Set<GTToolType> toolTypes,
-                                    Direction side) {
+    public @Nullable ResourceTexture sideTips(Player player, BlockPos pos, BlockState state, Set<GTToolType> toolTypes,
+                                              Direction side) {
         if (toolTypes.contains(GTToolType.SCREWDRIVER)) {
             if (side == getOutputFacingItems() || side == getOutputFacingFluids()) {
                 return GuiTextures.TOOL_ALLOW_INPUT;

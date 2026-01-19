@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.common.machine.electric;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -11,7 +12,6 @@ import com.gregtechceu.gtceu.api.gui.editor.EditableUI;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IAutoOutputItem;
@@ -21,16 +21,15 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
+import com.gregtechceu.gtceu.syncsystem.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.lowdragmc.lowdraglib.utils.Position;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -74,30 +73,27 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class FisherMachine extends TieredEnergyMachine
                            implements IAutoOutputItem, IFancyUIMachine, IMachineLife, IWorkable {
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(FisherMachine.class,
-            TieredEnergyMachine.MANAGED_FIELD_HOLDER);
-
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected Direction outputFacingItems;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputItems;
-    @Persisted
+    @SaveField
     protected final NotifiableItemStackHandler cache;
     @Getter
     @Setter
-    @Persisted
+    @SaveField
     protected boolean allowInputFromOutputSideItems;
-    @Persisted
+    @SaveField
     protected final NotifiableItemStackHandler baitHandler;
 
     @Getter
-    @Persisted
+    @SaveField
     protected final CustomItemStackHandler chargerInventory;
     @Nullable
     protected TickableSubscription autoOutputSubs, batterySubs, fishingSubs;
@@ -111,64 +107,52 @@ public class FisherMachine extends TieredEnergyMachine
     public final int maxProgress;
 
     @Getter
-    @Persisted
+    @SaveField
     private int progress = 0;
 
     @Getter
-    @Persisted
-    @Setter
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private boolean isWorkingEnabled = true;
 
     @Getter
-    @Persisted
+    @SaveField
     private boolean active = false;
     public static final int WATER_CHECK_SIZE = 5;
     private static final ItemStack fishingRod = new ItemStack(Items.FISHING_ROD);
     private boolean hasWater = false;
 
     @Getter
-    @Setter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     protected boolean junkEnabled = true;
 
-    public FisherMachine(IMachineBlockEntity holder, int tier, Object... ignoredArgs) {
-        super(holder, tier);
+    public FisherMachine(BlockEntityCreationInfo info, int tier) {
+        super(info, tier);
         this.inventorySize = (tier + 1) * (tier + 1);
         this.maxProgress = calcMaxProgress(tier);
         this.energyPerTick = GTValues.V[tier - 1];
-        this.cache = createCacheItemHandler();
-        this.baitHandler = createBaitItemHandler();
-        this.chargerInventory = createChargerItemHandler();
+        this.cache = new NotifiableItemStackHandler(this, inventorySize, IO.BOTH, IO.OUT);
+
+        this.baitHandler = new NotifiableItemStackHandler(this, 1, IO.BOTH, IO.IN);
+        baitHandler.setFilter(item -> item.is(Items.STRING));
+
+        this.chargerInventory = new CustomItemStackHandler();
+        chargerInventory.setFilter(item -> GTCapabilityHelper.getElectricItem(item) != null ||
+                (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE &&
+                        GTCapabilityHelper.getForgeEnergyItem(item) != null));
+
         setOutputFacingItems(getFrontFacing());
     }
 
-    //////////////////////////////////////
-    // ***** Initialization *****//
-    //////////////////////////////////////
-
-    protected CustomItemStackHandler createChargerItemHandler() {
-        var handler = new CustomItemStackHandler();
-        handler.setFilter(item -> GTCapabilityHelper.getElectricItem(item) != null ||
-                (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE &&
-                        GTCapabilityHelper.getForgeEnergyItem(item) != null));
-        return handler;
+    public void setWorkingEnabled(boolean enabled) {
+        isWorkingEnabled = enabled;
+        syncDataHolder.markClientSyncFieldDirty("isWorkingEnabled");
     }
 
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
-
-    protected NotifiableItemStackHandler createCacheItemHandler() {
-        return new NotifiableItemStackHandler(this, inventorySize, IO.BOTH, IO.OUT);
-    }
-
-    protected NotifiableItemStackHandler createBaitItemHandler() {
-        var handler = new NotifiableItemStackHandler(this, 1, IO.BOTH, IO.IN);
-        handler.setFilter(item -> item.is(Items.STRING));
-        return handler;
+    public void setJunkEnabled(boolean enabled) {
+        junkEnabled = enabled;
+        syncDataHolder.markClientSyncFieldDirty("junkEnabled");
     }
 
     @Override
@@ -242,7 +226,8 @@ public class FisherMachine extends TieredEnergyMachine
     private void updateHasWater() {
         for (int x = 0; x < WATER_CHECK_SIZE; x++)
             for (int z = 0; z < WATER_CHECK_SIZE; z++) {
-                BlockPos waterCheckPos = getPos().below().offset(x - WATER_CHECK_SIZE / 2, 0, z - WATER_CHECK_SIZE / 2);
+                BlockPos waterCheckPos = getBlockPos().below().offset(x - WATER_CHECK_SIZE / 2, 0,
+                        z - WATER_CHECK_SIZE / 2);
                 if (!getLevel().getBlockState(waterCheckPos).getFluidState().is(Fluids.WATER)) {
                     hasWater = false;
                     return;
@@ -275,7 +260,7 @@ public class FisherMachine extends TieredEnergyMachine
                     .withOptionalParameter(LootContextParams.THIS_ENTITY, simulatedHook)
                     .withParameter(LootContextParams.TOOL, fishingRod)
                     .withParameter(LootContextParams.ORIGIN,
-                            new Vec3(getPos().getX(), getPos().getY(), getPos().getZ()))
+                            new Vec3(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()))
                     .create(LootContextParamSets.FISHING);
 
             NonNullList<ItemStack> generatedLoot = NonNullList.create();
@@ -320,12 +305,14 @@ public class FisherMachine extends TieredEnergyMachine
     @Override
     public void setAutoOutputItems(boolean allow) {
         this.autoOutputItems = allow;
+        syncDataHolder.markClientSyncFieldDirty("autoOutputItems");
         updateAutoOutputSubscription();
     }
 
     @Override
     public void setOutputFacingItems(@Nullable Direction outputFacing) {
         this.outputFacingItems = outputFacing;
+        syncDataHolder.markClientSyncFieldDirty("outputFacingItems");
         updateAutoOutputSubscription();
     }
 
@@ -341,7 +328,7 @@ public class FisherMachine extends TieredEnergyMachine
     protected void updateAutoOutputSubscription() {
         var outputFacing = getOutputFacingItems();
         if ((isAutoOutputItems() && !cache.isEmpty()) && outputFacing != null &&
-                GTTransferUtils.hasAdjacentItemHandler(getLevel(), getPos(), outputFacing))
+                GTTransferUtils.hasAdjacentItemHandler(getLevel(), getBlockPos(), outputFacing))
             autoOutputSubs = subscribeServerTick(autoOutputSubs, this::checkAutoOutput);
         else if (autoOutputSubs != null) {
             autoOutputSubs.unsubscribe();
@@ -492,8 +479,8 @@ public class FisherMachine extends TieredEnergyMachine
     // ******* Rendering ********//
     //////////////////////////////////////
     @Override
-    public ResourceTexture sideTips(Player player, BlockPos pos, BlockState state, Set<GTToolType> toolTypes,
-                                    Direction side) {
+    public @Nullable ResourceTexture sideTips(Player player, BlockPos pos, BlockState state, Set<GTToolType> toolTypes,
+                                              Direction side) {
         if (toolTypes.contains(GTToolType.WRENCH)) {
             if (!player.isShiftKeyDown()) {
                 if (!hasFrontFacing() || side != getFrontFacing()) {
@@ -531,8 +518,7 @@ public class FisherMachine extends TieredEnergyMachine
                 // remove the output facing when wrenching the current one to disable it
                 setOutputFacingItems(null);
             }
-            playerIn.swing(hand);
-            return InteractionResult.CONSUME;
+            return InteractionResult.sidedSuccess(playerIn.level().isClientSide);
         }
 
         return super.onWrenchClick(playerIn, hand, gridSide, hitResult);

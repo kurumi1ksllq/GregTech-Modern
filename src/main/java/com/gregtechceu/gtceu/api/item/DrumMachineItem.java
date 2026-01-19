@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.api.item;
 
-import com.gregtechceu.gtceu.api.block.IMachineBlock;
+import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.FluidPipeProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
@@ -8,43 +8,36 @@ import com.gregtechceu.gtceu.api.misc.forge.ThermalFluidHandlerItemStack;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class DrumMachineItem extends MetaMachineItem {
 
     @NotNull
     private Material mat = GTMaterials.NULL;
 
-    protected DrumMachineItem(IMachineBlock block, Properties properties, @NotNull Material mat) {
+    protected DrumMachineItem(MetaMachineBlock block, Properties properties, @NotNull Material mat) {
         super(block, properties);
         this.mat = mat;
     }
 
-    public static DrumMachineItem create(IMachineBlock block, Properties properties, @NotNull Material mat) {
+    public static DrumMachineItem create(MetaMachineBlock block, Properties properties, @NotNull Material mat) {
         return new DrumMachineItem(block, properties, mat);
     }
 
-    public @NotNull <T> LazyOptional<T> getCapability(ItemStack itemStack, @NotNull Capability<T> cap) {
-        FluidPipeProperties property;
-        if (mat.hasProperty(PropertyKey.FLUID_PIPE)) {
-            property = mat.getProperty(PropertyKey.FLUID_PIPE);
-        } else {
-            property = null;
+    @Override
+    public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+        final FluidPipeProperties property = mat.getProperty(PropertyKey.FLUID_PIPE);
+        if (property == null) {
+            return null;
         }
-
-        if (cap == ForgeCapabilities.FLUID_HANDLER_ITEM && property != null) {
-            return ForgeCapabilities.FLUID_HANDLER_ITEM.orEmpty(cap, LazyOptional.of(
-                    () -> new ThermalFluidHandlerItemStack(
-                            itemStack,
-                            GTMachineUtils.DRUM_CAPACITY.getInt(getDefinition()),
-                            property.getMaxFluidTemperature(), property.isGasProof(), property.isAcidProof(),
-                            property.isCryoProof(), property.isPlasmaProof())));
-        }
-        return LazyOptional.empty();
+        return new ThermalFluidHandlerItemStack(stack,
+                GTMachineUtils.DRUM_CAPACITY.getInt(getDefinition()),
+                property.getMaxFluidTemperature(), property.isGasProof(), property.isAcidProof(),
+                property.isCryoProof(), property.isPlasmaProof());
     }
 }

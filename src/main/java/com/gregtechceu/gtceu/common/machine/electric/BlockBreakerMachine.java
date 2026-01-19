@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.common.machine.electric;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -10,7 +11,6 @@ import com.gregtechceu.gtceu.api.gui.editor.EditableMachineUI;
 import com.gregtechceu.gtceu.api.gui.editor.EditableUI;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IAutoOutputItem;
@@ -20,15 +20,14 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
+import com.gregtechceu.gtceu.syncsystem.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.lowdragmc.lowdraglib.utils.Position;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -64,42 +63,39 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class BlockBreakerMachine extends TieredEnergyMachine
                                  implements IAutoOutputItem, IFancyUIMachine, IMachineLife, IControllable {
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(BlockBreakerMachine.class,
-            TieredEnergyMachine.MANAGED_FIELD_HOLDER);
-
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected Direction outputFacingItems;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputItems;
-    @Persisted
+    @SaveField
     protected final NotifiableItemStackHandler cache;
     @Getter
-    @Persisted
+    @SaveField
     protected final CustomItemStackHandler chargerInventory;
     @Nullable
     protected TickableSubscription autoOutputSubs, batterySubs, breakerSubs;
     @Nullable
     protected ISubscription exportItemSubs, energySubs;
     private final int inventorySize;
-    @DescSynced
+    @SyncToClient
     private int blockBreakProgress = 0;
     private float currentHardness;
     private final long energyPerTick;
     public final float efficiencyMultiplier;
 
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private boolean isWorkingEnabled = true;
 
-    public BlockBreakerMachine(IMachineBlockEntity holder, int tier, Object... ignoredArgs) {
-        super(holder, tier);
+    public BlockBreakerMachine(BlockEntityCreationInfo info, int tier) {
+        super(info, tier);
         this.inventorySize = (tier + 1) * (tier + 1);
         this.cache = createCacheItemHandler();
         this.chargerInventory = createChargerItemHandler();
@@ -122,11 +118,6 @@ public class BlockBreakerMachine extends TieredEnergyMachine
     //////////////////////////////////////
     // ***** Initialization *****//
     //////////////////////////////////////
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
 
     protected CustomItemStackHandler createChargerItemHandler() {
         var handler = new CustomItemStackHandler();
@@ -188,7 +179,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
     //////////////////////////////////////
 
     public void updateBreakerSubscription() {
-        if (drainEnergy(true) && !getLevel().getBlockState(getPos().relative(getFrontFacing())).isAir() &&
+        if (drainEnergy(true) && !getLevel().getBlockState(getBlockPos().relative(getFrontFacing())).isAir() &&
                 isWorkingEnabled) {
             breakerSubs = subscribeServerTick(breakerSubs, this::breakerUpdate);
         } else if (breakerSubs != null) {
@@ -204,7 +195,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
             drainEnergy(false);
 
             if (blockBreakProgress == 0) {
-                var pos = getPos().relative(getFrontFacing());
+                var pos = getBlockPos().relative(getFrontFacing());
                 var blockState = getLevel().getBlockState(pos);
                 float hardness = blockState.getBlock().defaultDestroyTime();
                 if (hardness >= 0.0f && Math.abs(hardness - currentHardness) < .5f) {
@@ -213,9 +204,10 @@ public class BlockBreakerMachine extends TieredEnergyMachine
                         var remainder = tryFillCache(drop);
                         if (!remainder.isEmpty()) {
                             if (getOutputFacingItems() == null) {
-                                Block.popResource(getLevel(), getPos(), remainder);
+                                Block.popResource(getLevel(), getBlockPos(), remainder);
                             } else {
-                                Block.popResource(getLevel(), getPos().relative(getOutputFacingItems()), remainder);
+                                Block.popResource(getLevel(), getBlockPos().relative(getOutputFacingItems()),
+                                        remainder);
                             }
                         }
                     }
@@ -225,7 +217,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
         }
 
         if (blockBreakProgress == 0) {
-            var pos = getPos().relative(getFrontFacing());
+            var pos = getBlockPos().relative(getFrontFacing());
             var blockState = getLevel().getBlockState(pos);
             float hardness = blockState.getBlock().defaultDestroyTime();
             boolean skipBlock = blockState.isAir();
@@ -237,6 +229,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
             }
         }
 
+        syncDataHolder.markClientSyncFieldDirty("blockBreakProgress");
         updateBreakerSubscription();
     }
 
@@ -245,7 +238,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
     public void clientTick() {
         super.clientTick();
         if (blockBreakProgress > 0) {
-            var pos = getPos().relative(getFrontFacing());
+            var pos = getBlockPos().relative(getFrontFacing());
             var blockState = getLevel().getBlockState(pos);
             getLevel().addDestroyBlockEffect(pos, blockState);
         }
@@ -283,6 +276,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
     @Override
     public void setAutoOutputItems(boolean allow) {
         this.autoOutputItems = allow;
+        syncDataHolder.markClientSyncFieldDirty("autoOutputItems");
         updateAutoOutputSubscription();
     }
 
@@ -297,13 +291,14 @@ public class BlockBreakerMachine extends TieredEnergyMachine
     @Override
     public void setOutputFacingItems(@Nullable Direction outputFacing) {
         this.outputFacingItems = outputFacing;
+        syncDataHolder.markClientSyncFieldDirty("outputFacingItems");
         updateAutoOutputSubscription();
     }
 
     protected void updateAutoOutputSubscription() {
         var outputFacing = getOutputFacingItems();
         if ((isAutoOutputItems() && !cache.isEmpty()) && outputFacing != null &&
-                GTTransferUtils.hasAdjacentItemHandler(getLevel(), getPos(), outputFacing))
+                GTTransferUtils.hasAdjacentItemHandler(getLevel(), getBlockPos(), outputFacing))
             autoOutputSubs = subscribeServerTick(autoOutputSubs, this::checkAutoOutput);
         else if (autoOutputSubs != null) {
             autoOutputSubs.unsubscribe();
@@ -348,6 +343,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
 
     public void setWorkingEnabled(boolean workingEnabled) {
         isWorkingEnabled = workingEnabled;
+        syncDataHolder.markClientSyncFieldDirty("isWorkingEnabled");
         updateBreakerSubscription();
     }
 
@@ -432,8 +428,8 @@ public class BlockBreakerMachine extends TieredEnergyMachine
     // ******* Rendering ********//
     //////////////////////////////////////
     @Override
-    public ResourceTexture sideTips(Player player, BlockPos pos, BlockState state, Set<GTToolType> toolTypes,
-                                    Direction side) {
+    public @Nullable ResourceTexture sideTips(Player player, BlockPos pos, BlockState state, Set<GTToolType> toolTypes,
+                                              Direction side) {
         if (toolTypes.contains(GTToolType.WRENCH)) {
             if (!player.isShiftKeyDown()) {
                 if (!hasFrontFacing() || side != getFrontFacing()) {
@@ -471,8 +467,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
                 // remove the output facing when wrenching the current one to disable it
                 setOutputFacingItems(null);
             }
-            playerIn.swing(hand);
-            return InteractionResult.CONSUME;
+            return InteractionResult.sidedSuccess(playerIn.level().isClientSide);
         }
 
         return super.onWrenchClick(playerIn, hand, gridSide, hitResult);
@@ -481,7 +476,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
     @Override
     protected InteractionResult onSoftMalletClick(Player playerIn, InteractionHand hand, Direction gridSide,
                                                   BlockHitResult hitResult) {
-        var controllable = GTCapabilityHelper.getControllable(getLevel(), getPos(), gridSide);
+        var controllable = GTCapabilityHelper.getControllable(getLevel(), getBlockPos(), gridSide);
         if (controllable != null) {
             if (!isRemote()) {
                 controllable.setWorkingEnabled(!controllable.isWorkingEnabled());

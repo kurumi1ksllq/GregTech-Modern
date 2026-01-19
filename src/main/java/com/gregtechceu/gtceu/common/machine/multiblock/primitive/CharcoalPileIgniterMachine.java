@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.primitive;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
@@ -16,65 +16,53 @@ import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.item.tool.behavior.LighterBehavior;
-
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
+import com.gregtechceu.gtceu.data.recipe.CustomTags;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.FireChargeItem;
-import net.minecraft.world.item.FlintAndSteelItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import it.unimi.dsi.fastutil.longs.Long2BooleanMap;
+import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implements IWorkable {
 
-    private static final Set<Block> WALL_BLOCKS = new ObjectOpenHashSet<>();
-    static {
-        WALL_BLOCKS.add(Blocks.DIRT);
-        WALL_BLOCKS.add(Blocks.COARSE_DIRT);
-        WALL_BLOCKS.add(Blocks.PODZOL);
-        WALL_BLOCKS.add(Blocks.GRASS_BLOCK);
-        WALL_BLOCKS.add(Blocks.DIRT_PATH);
-        WALL_BLOCKS.add(Blocks.SAND);
-        WALL_BLOCKS.add(Blocks.RED_SAND);
-
-    }
-
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            CharcoalPileIgniterMachine.class,
-            WorkableMultiblockMachine.MANAGED_FIELD_HOLDER);
-
-    private final Collection<BlockPos> logPos = new ObjectOpenHashSet<>();
-
     private static final int MIN_RADIUS = 1;
     private static final int MIN_DEPTH = 2;
     private static final int MAX_DEPTH = 5;
     private static final int MAX_RADIUS = 5;
+    private final Collection<BlockPos> logPos = new ObjectOpenHashSet<>();
 
     private final int[] bounds = new int[] { 0, MIN_DEPTH, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS, MIN_RADIUS };
     private int maxTime = 0;
     private boolean hasAir = false;
 
-    public CharcoalPileIgniterMachine(IMachineBlockEntity holder) {
-        super(holder);
+    private boolean hasAir = false;
+
+    public CharcoalPileIgniterMachine(BlockEntityCreationInfo info) {
+        super(info, (m) -> new CharcoalRecipeLogic((CharcoalPileIgniterMachine) m));
     }
 
     @Override
@@ -92,18 +80,8 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     }
 
     @Override
-    protected CharcoalRecipeLogic createRecipeLogic(Object... args) {
-        return new CharcoalRecipeLogic(this);
-    }
-
-    @Override
     public CharcoalRecipeLogic getRecipeLogic() {
         return (CharcoalRecipeLogic) super.getRecipeLogic();
-    }
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 
     @Override
@@ -115,6 +93,9 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     public boolean isWorkingEnabled() {
         return true;
     }
+
+    @Override
+    public void setWorkingEnabled(boolean isWorkingAllowed) {}
 
     @Override
     public PatternState checkStructurePattern(String name) {
@@ -183,13 +164,14 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         if (level == null) return;
         Direction front = getFrontFacing();
         Direction back = front.getOpposite();
-        Direction left = front.getCounterClockWise();
-        Direction right = left.getOpposite();
+        Direction left = RelativeDirection.LEFT.getRelativeFacing(front, getUpwardsFacing(), false);
+        Direction right = RelativeDirection.RIGHT.getRelativeFacing(front, getUpwardsFacing(), false);
 
-        int l = findWallPos(left, getPos().mutable().move(Direction.DOWN));
-        int r = findWallPos(right, getPos().mutable().move(Direction.DOWN));
-        int b = findWallPos(back, getPos().mutable().move(Direction.DOWN));
-        int f = findWallPos(front, getPos().mutable().move(Direction.DOWN));
+        BlockPos down = getBlockPos().relative(Direction.DOWN);
+        int l = findWallPos(left, down);
+        int r = findWallPos(right, down);
+        int b = findWallPos(back, down);
+        int f = findWallPos(front, down);
         int d = findFloorPos(getPos().mutable());
 
         if (d < MIN_DEPTH || l < MIN_RADIUS || r < MIN_RADIUS || b < MIN_RADIUS || f < MIN_RADIUS) {
@@ -206,8 +188,8 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
 
     private int findWallPos(Direction direction, BlockPos.MutableBlockPos bp) {
         for (int i = 1; i <= MAX_RADIUS; i++) {
-            var block = getLevel().getBlockState(bp.move(direction)).getBlock();
-            if (WALL_BLOCKS.contains(block)) {
+            var block = getLevel().getBlockState(bp.move(direction));
+            if (block.is(CustomTags.CHARCOAL_PILE_IGNITER_WALLS)) {
                 return i;
             }
         }
@@ -216,8 +198,8 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
 
     private int findFloorPos(BlockPos.MutableBlockPos bp) {
         for (int i = 1; i <= MAX_DEPTH; i++) {
-            var block = getLevel().getBlockState(bp.move(Direction.DOWN)).getBlock();
-            if (block == Blocks.BRICKS) {
+            var block = getLevel().getBlockState(bp.move(Direction.DOWN));
+            if (block.is(Blocks.BRICKS)) {
                 return i;
             }
         }
@@ -229,7 +211,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     public void clientTick() {
         super.clientTick();
         if (isActive()) {
-            var pos = this.getPos();
+            var pos = this.getBlockPos();
             var facing = Direction.UP;
             float xPos = facing.getStepX() * 0.76F + pos.getX() + 0.25F + GTValues.RNG.nextFloat() / 2.0F;
             float yPos = facing.getStepY() * 0.76F + pos.getY() + 0.25F;
@@ -256,45 +238,47 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     private void convertLogBlocks() {
         Level level = getLevel();
         for (BlockPos pos : logPos) {
-            level.setBlock(pos, GTBlocks.BRITTLE_CHARCOAL.getDefaultState(), Block.UPDATE_ALL);
+            level.setBlockAndUpdate(pos, GTBlocks.BRITTLE_CHARCOAL.getDefaultState());
         }
         logPos.clear();
     }
 
     @Override
-    public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
+    public InteractionResult onUse(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                    BlockHitResult hit) {
-        BlockEntity be = world.getBlockEntity(pos);
-        if (!(be instanceof IMachineBlockEntity machineBe)) return super.onUse(state, world, pos, player, hand, hit);
-
-        if (!isFormed() || hasAir) return super.onUse(state, world, pos, player, hand, hit);
-        if (world.isClientSide) {
-            player.swing(hand);
+        if (!isFormed() || hasAir) {
+            return super.onUse(state, level, pos, player, hand, hit);
         }
-        if (!world.isClientSide && !isActive()) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (!stack.is(CustomTags.TOOLS_IGNITER)) {
+            return InteractionResult.PASS;
+        }
+
+        if (level.isClientSide && !isActive()) {
+            return InteractionResult.SUCCESS;
+        } else if (!isActive()) {
             boolean shouldActivate = false;
-            ItemStack stack = player.getItemInHand(hand);
-            if (stack.getItem() instanceof FlintAndSteelItem) {
-                stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
-                getLevel().playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
-                shouldActivate = true;
-            } else if (stack.getItem() instanceof FireChargeItem) {
-                stack.shrink(1);
-                getLevel().playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
-                shouldActivate = true;
-            } else if (stack.getItem() instanceof ComponentItem compItem) {
+            if (stack.getItem() instanceof ComponentItem compItem) {
                 for (var component : compItem.getComponents()) {
                     if (component instanceof LighterBehavior lighter && lighter.consumeFuel(player, stack)) {
-                        getLevel().playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f,
-                                1.0f);
                         shouldActivate = true;
                         break;
                     }
                 }
+            } else if (stack.isDamageableItem()) {
+                stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
+                shouldActivate = true;
+            } else {
+                stack.shrink(1);
+                shouldActivate = true;
             }
 
             if (shouldActivate) {
                 getRecipeLogic().setStatus(RecipeLogic.Status.WORKING);
+
+                level.playSound(null, pos,
+                        stack.is(Items.FIRE_CHARGE) ? SoundEvents.FIRECHARGE_USE : SoundEvents.FLINTANDSTEEL_USE,
+                        SoundSource.BLOCKS, 1.0f, 1.0f);
                 return InteractionResult.CONSUME;
             }
         }

@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineFeature;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
+import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
 import com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer;
@@ -16,18 +17,22 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 public interface IMultiController extends IMachineFeature, IInteractedMachine {
+
+    BooleanProperty IS_FORMED_PROPERTY = GTMachineModelProperties.IS_FORMED;
 
     @Override
     default MultiblockControllerMachine self() {
@@ -54,7 +59,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
     /**
      * This method will check if a multiblock aisles predicates are valid and WILL update the patternState each time it
      * is called.
-     * 
+     *
      * @return the new state
      */
     PatternState checkStructurePattern();
@@ -114,7 +119,7 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
 
     /**
      * Call to form a multiblock
-     * 
+     *
      * @param name the structure with which to form
      */
     void formStructure(@NotNull String name);
@@ -181,6 +186,16 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
     Optional<IParallelHatch> getParallelHatch();
 
     /**
+     *
+     * @return Whether batching is enabled on this multiblock
+     */
+    default boolean isBatchEnabled() {
+        return false;
+    }
+
+    default void setBatchEnabled(boolean batch) {}
+
+    /**
      * Called from part, when part is invalid due to chunk unload or broken.
      */
     void onPartUnload();
@@ -206,6 +221,10 @@ public interface IMultiController extends IMachineFeature, IInteractedMachine {
             return self().getDefinition().getPartAppearance().apply(this, part, side);
         }
         return null;
+    }
+
+    default Comparator<IMultiPart> getPartSorter() {
+        return self().getDefinition().getPartSorter().apply(self());
     }
 
     /**

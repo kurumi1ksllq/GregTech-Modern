@@ -46,7 +46,7 @@ public class TheOneProbePlugin {
         oneProbe.registerProvider(new RecipeLogicInfoProvider());
         oneProbe.registerProvider(new ParallelProvider());
         oneProbe.registerProvider(new RecipeOutputProvider());
-        oneProbe.registerProvider(new MulitblockStructureProvider());
+        oneProbe.registerProvider(new MultiblockStructureProvider());
         oneProbe.registerProvider(new MaintenanceInfoProvider());
         oneProbe.registerProvider(new ExhaustVentInfoProvider());
         oneProbe.registerProvider(new SteamBoilerInfoProvider());
@@ -55,6 +55,7 @@ public class TheOneProbePlugin {
         oneProbe.registerProvider(new MachineModeProvider());
         oneProbe.registerProvider(new StainedColorProvider());
         oneProbe.registerProvider(new PrimitivePumpProvider());
+        oneProbe.registerProvider(new DataBankInfoProvider());
         oneProbe.registerProvider(new CoverProvider());
         oneProbe.registerProvider(new HazardCleanerInfoProvider());
         oneProbe.registerProvider(new TransformerInfoProvider());

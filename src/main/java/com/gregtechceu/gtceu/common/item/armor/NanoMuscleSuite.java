@@ -6,7 +6,7 @@ import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.item.armor.ArmorLogicSuite;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.common.data.GTItems;
-import com.gregtechceu.gtceu.utils.input.KeyBind;
+import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -56,7 +56,7 @@ public class NanoMuscleSuite extends ArmorLogicSuite implements IStepAssist {
                 ArmorUtils.NIGHTVISION_DURATION;
         if (type == ArmorItem.Type.HELMET) {
             boolean nightVision = data.contains("nightVision") && data.getBoolean("nightVision");
-            if (toggleTimer == 0 && KeyBind.ARMOR_MODE_SWITCH.isKeyDown(player)) {
+            if (toggleTimer == 0 && SyncedKeyMappings.ARMOR_MODE_SWITCH.isKeyDown(player)) {
                 nightVision = !nightVision;
                 toggleTimer = 5;
                 if (item.getCharge() < ArmorUtils.MIN_NIGHTVISION_CHARGE) {
@@ -121,12 +121,13 @@ public class NanoMuscleSuite extends ArmorLogicSuite implements IStepAssist {
      */
 
     @Override
-    public void damageArmor(LivingEntity entity, ItemStack itemStack, DamageSource source, int damage,
-                            EquipmentSlot equipmentSlot) {
+    public int damageArmor(LivingEntity entity, ItemStack itemStack, DamageSource source, int damage,
+                           EquipmentSlot equipmentSlot) {
         IElectricItem item = GTCapabilityHelper.getElectricItem(itemStack);
         if (item != null) {
-            item.discharge((long) energyPerUse / 10 * damage, item.getTier(), true, false, false);
+            item.discharge(energyPerUse / 10L * damage, item.getTier(), true, false, false);
         }
+        return super.damageArmor(entity, itemStack, source, damage, equipmentSlot);
     }
 
     @Override

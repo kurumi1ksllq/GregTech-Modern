@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.integration.ae2.machine;
 
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
@@ -24,6 +24,8 @@ import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.AETextInputButtonWidget;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.slot.AEPatternViewSlotWidget;
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.InternalSlotRecipeHandler;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
 
@@ -32,11 +34,6 @@ import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.IContentChangeAware;
-import com.lowdragmc.lowdraglib.syncdata.ITagSerializable;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -50,6 +47,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 
@@ -87,8 +85,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class MEPatternBufferPartMachine extends MEBusPartMachine
                                         implements ICraftingProvider, PatternContainer, IDataStickInteractable {
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            MEPatternBufferPartMachine.class, MEBusPartMachine.MANAGED_FIELD_HOLDER);
     protected static final int MAX_PATTERN_COUNT = 27;
     private final InternalInventory internalPatternInventory = new InternalInventory() {
 
@@ -111,38 +107,33 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
     };
 
     @Getter
-    @Persisted
-    @DescSynced // Maybe an Expansion Option in the future? a bit redundant for rn. Maybe Packdevs want to add their own
-                // version.
+    @SaveField
+    @SyncToClient
+    // Maybe an Expansion Option in the future? a bit redundant for rn. Maybe Packdevs want to add their own
+    // version.
     private final CustomItemStackHandler patternInventory = new CustomItemStackHandler(MAX_PATTERN_COUNT);
-    // DO NOT remove this and use a default circuitInventory. It will cause the circuit inventory to vanish entirely and
-    // crash clients as well as cause unintended behaviors.
-    @Getter
-    @Persisted
-    protected final NotifiableItemStackHandler circuitInventorySimulated;
 
     @Getter
-    @Persisted
+    @SaveField
     protected final NotifiableItemStackHandler shareInventory;
 
     @Getter
-    @Persisted
+    @SaveField
     protected final NotifiableFluidTank shareTank;
 
     @Getter
-    @Persisted
+    @SaveField
     protected final InternalSlot[] internalInventory = new InternalSlot[MAX_PATTERN_COUNT];
 
     private final BiMap<IPatternDetails, InternalSlot> detailsSlotMap = HashBiMap.create(MAX_PATTERN_COUNT);
 
-    @DescSynced
-    @Persisted
-    @Setter
+    @SyncToClient
+    @SaveField
     private String customName = "";
 
     private boolean needPatternSync;
 
-    @Persisted
+    @SaveField
     private final Set<BlockPos> proxies = new ObjectOpenHashSet<>();
     private final Set<MEPatternBufferProxyPartMachine> proxyMachines = new ReferenceOpenHashSet<>();
 
@@ -152,16 +143,14 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
     @Nullable
     protected TickableSubscription updateSubs;
 
-    public MEPatternBufferPartMachine(IMachineBlockEntity holder, Object... args) {
-        super(holder, IO.IN, args);
+    public MEPatternBufferPartMachine(BlockEntityCreationInfo info) {
+        super(info, IO.IN);
+        patternInventory.setOnContentsChanged(() -> getSyncDataHolder().markClientSyncFieldDirty("patternInventory"));
         this.patternInventory.setFilter(stack -> stack.getItem() instanceof ProcessingPatternItem);
         for (int i = 0; i < this.internalInventory.length; i++) {
             this.internalInventory[i] = new InternalSlot();
         }
         getMainNode().addService(ICraftingProvider.class, this);
-        this.circuitInventorySimulated = new NotifiableItemStackHandler(this, 1, IO.IN, IO.NONE)
-                .setFilter(IntCircuitBehaviour::isIntegratedCircuit)
-                .shouldSearchContent(false);
         this.shareInventory = new NotifiableItemStackHandler(this, 9, IO.IN, IO.NONE);
         this.shareTank = new NotifiableFluidTank(this, 9, 8 * FluidType.BUCKET_VOLUME, IO.IN, IO.NONE);
         this.internalRecipeHandler = new InternalSlotRecipeHandler(this, internalInventory);
@@ -179,6 +168,7 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                         this.detailsSlotMap.put(patternDetails, this.internalInventory[i]);
                     }
                 }
+                needPatternSync = true;
             }));
         }
     }
@@ -189,13 +179,14 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
     }
 
     @Override
-    public NotifiableItemStackHandler getCircuitInventory() {
-        return getCircuitInventorySimulated();
-    }
-
-    @Override
     public boolean isWorkingEnabled() {
         return true;
+    }
+
+    public void setCustomName(String newName) {
+        customName = newName;
+        syncDataHolder.markClientSyncFieldDirty("customName");
+        markAsDirty();
     }
 
     @Override
@@ -232,12 +223,12 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
     }
 
     public void addProxy(MEPatternBufferProxyPartMachine proxy) {
-        proxies.add(proxy.getPos());
+        proxies.add(proxy.getBlockPos());
         proxyMachines.add(proxy);
     }
 
     public void removeProxy(MEPatternBufferProxyPartMachine proxy) {
-        proxies.remove(proxy.getPos());
+        proxies.remove(proxy.getBlockPos());
         proxyMachines.remove(proxy);
     }
 
@@ -286,8 +277,8 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
         configuratorPanel.attachConfigurators(new ButtonConfigurator(
                 new GuiTextureGroup(GuiTextures.BUTTON, GuiTextures.REFUND_OVERLAY), this::refundAll)
                 .setTooltips(List.of(Component.translatable("gui.gtceu.refund_all.desc"))));
-        if (isCircuitSlotEnabled()) {
-            configuratorPanel.attachConfigurators(new CircuitFancyConfigurator(circuitInventorySimulated.storage));
+        if (isHasCircuitSlot() && isCircuitSlotEnabled()) {
+            configuratorPanel.attachConfigurators(new CircuitFancyConfigurator(circuitInventory.storage));
         }
         configuratorPanel.attachConfigurators(new FancyInvConfigurator(
                 shareInventory.storage, Component.translatable("gui.gtceu.share_inventory.title"))
@@ -377,11 +368,6 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
     }
 
     @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
-
-    @Override
     public @Nullable IGrid getGrid() {
         return getMainNode().getGrid();
     }
@@ -404,7 +390,8 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                         Component.literal(customName),
                         Collections.emptyList());
             } else {
-                ItemStack circuitStack = circuitInventorySimulated.storage.getStackInSlot(0);
+                ItemStack circuitStack = isHasCircuitSlot() ? circuitInventory.storage.getStackInSlot(0) :
+                        ItemStack.EMPTY;
                 int circuitConfiguration = circuitStack.isEmpty() ? -1 :
                         IntCircuitBehaviour.getCircuitConfiguration(circuitStack);
 
@@ -439,7 +426,8 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
 
     @Override
     public InteractionResult onDataStickShiftUse(Player player, ItemStack dataStick) {
-        dataStick.getOrCreateTag().putIntArray("pos", new int[] { getPos().getX(), getPos().getY(), getPos().getZ() });
+        dataStick.getOrCreateTag().putIntArray("pos",
+                new int[] { getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ() });
         return InteractionResult.SUCCESS;
     }
 
@@ -455,7 +443,7 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
         return new BufferData(items, fluids);
     }
 
-    public class InternalSlot implements ITagSerializable<CompoundTag>, IContentChangeAware {
+    public class InternalSlot implements INBTSerializable<CompoundTag> {
 
         @Getter
         @Setter
@@ -506,9 +494,10 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
 
         public List<FluidStack> getFluids() {
             if (fluidStacks == null) {
-                fluidStacks = fluidInventory.object2LongEntrySet().stream()
-                        .map(e -> new FluidStack(e.getKey(), GTMath.saturatedCast(e.getLongValue())))
-                        .toList();
+                fluidStacks = new ArrayList<>();
+                fluidInventory.object2LongEntrySet().stream()
+                        .map(e -> GTMath.splitFluidStacks(e.getKey(), e.getLongValue()))
+                        .forEach(fluidStacks::addAll);
             }
             return fluidStacks;
         }

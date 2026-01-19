@@ -1,23 +1,24 @@
 package com.gregtechceu.gtceu.api.machine;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.editor.EditableUI;
 import com.gregtechceu.gtceu.api.machine.feature.IExplosionMachine;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ProgressWidget;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.util.Mth;
+
+import java.util.function.Function;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -25,73 +26,60 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class TieredEnergyMachine extends TieredMachine implements ITieredMachine, IExplosionMachine {
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(TieredEnergyMachine.class,
-            MetaMachine.MANAGED_FIELD_HOLDER);
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     public final NotifiableEnergyContainer energyContainer;
-    protected TickableSubscription explosionSubs;
-    protected ISubscription energyListener;
+    protected TickableSubscription explosionSub;
 
-    public TieredEnergyMachine(IMachineBlockEntity holder, int tier, Object... args) {
-        super(holder, tier);
-        energyContainer = createEnergyContainer(args);
+    public TieredEnergyMachine(BlockEntityCreationInfo info, int tier,
+                               Function<TieredEnergyMachine, NotifiableEnergyContainer> energyContainerSupplier) {
+        super(info, tier);
+        energyContainer = energyContainerSupplier.apply(this);
+    }
+
+    public TieredEnergyMachine(BlockEntityCreationInfo info, int tier) {
+        super(info, tier);
+
+        long tierVoltage = GTValues.V[tier];
+        if (isEnergyEmitter()) {
+            energyContainer = NotifiableEnergyContainer.emitterContainer(this,
+                    tierVoltage * 64L, tierVoltage, getMaxInputOutputAmperage());
+        } else {
+            energyContainer = NotifiableEnergyContainer.receiverContainer(this,
+                    tierVoltage * 64L, tierVoltage, getMaxInputOutputAmperage());
+        }
     }
 
     //////////////////////////////////////
     // ***** Initialization ******//
     //////////////////////////////////////
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
-
-    protected NotifiableEnergyContainer createEnergyContainer(Object... args) {
-        long tierVoltage = GTValues.V[tier];
-        if (isEnergyEmitter()) {
-            return NotifiableEnergyContainer.emitterContainer(this,
-                    tierVoltage * 64L, tierVoltage, getMaxInputOutputAmperage());
-        } else return NotifiableEnergyContainer.receiverContainer(this,
-                tierVoltage * 64L, tierVoltage, getMaxInputOutputAmperage());
-    }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        // if machine need do check explosion conditions
         if (!isRemote() && ConfigHolder.INSTANCE.machines.shouldWeatherOrTerrainExplosion &&
                 shouldWeatherOrTerrainExplosion()) {
-            energyListener = energyContainer.addChangedListener(this::updateExplosionSubscription);
-            updateExplosionSubscription();
+            explosionSub = subscribeServerTick(this::checkExplosion);
+            checkExplosion();
         }
     }
 
     @Override
     public void onUnload() {
         super.onUnload();
-        if (energyListener != null) {
-            energyListener.unsubscribe();
-            energyListener = null;
+        if (explosionSub != null) {
+            explosionSub.unsubscribe();
+            explosionSub = null;
         }
     }
 
     //////////////////////////////////////
     // ******** Explosion ********//
     //////////////////////////////////////
-
-    protected void updateExplosionSubscription() {
-        if (ConfigHolder.INSTANCE.machines.shouldWeatherOrTerrainExplosion && shouldWeatherOrTerrainExplosion() &&
-                energyContainer.getEnergyStored() > 0) {
-            explosionSubs = subscribeServerTick(explosionSubs, this::checkExplosion);
-        } else if (explosionSubs != null) {
-            explosionSubs.unsubscribe();
-            explosionSubs = null;
-        }
-    }
-
     protected void checkExplosion() {
-        checkWeatherOrTerrainExplosion(tier, tier * 10);
-        updateExplosionSubscription();
+        if (energyContainer.getEnergyStored() > 0) {
+            checkWeatherOrTerrainExplosion(tier, tier * 10);
+        }
     }
 
     //////////////////////////////////////
@@ -135,9 +123,7 @@ public class TieredEnergyMachine extends TieredMachine implements ITieredMachine
             progressBar.setFillDirection(ProgressTexture.FillDirection.DOWN_TO_UP);
             progressBar.setBackground(GuiTextures.ENERGY_BAR_BACKGROUND);
             return progressBar;
-        }, (progressBar, machine) -> {
-            progressBar.setProgressSupplier(
-                    () -> machine.energyContainer.getEnergyStored() * 1d / machine.energyContainer.getEnergyCapacity());
-        });
+        }, (progressBar, machine) -> progressBar.setProgressSupplier(
+                () -> machine.energyContainer.getEnergyStored() * 1d / machine.energyContainer.getEnergyCapacity()));
     }
 }

@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.common.machine.electric;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -12,26 +13,25 @@ import com.gregtechceu.gtceu.api.gui.editor.EditableUI;
 import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IAutoOutputItem;
 import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
+import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
+import com.gregtechceu.gtceu.syncsystem.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
+import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.lowdragmc.lowdraglib.utils.Position;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -70,31 +70,29 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class ItemCollectorMachine extends TieredEnergyMachine
                                   implements IAutoOutputItem, IFancyUIMachine, IMachineLife, IWorkable {
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(ItemCollectorMachine.class,
-            TieredEnergyMachine.MANAGED_FIELD_HOLDER);
-
     @Getter
     private static final int[] INVENTORY_SIZES = { 4, 9, 16, 25, 25 };
     private static final double MOTION_MULTIPLIER = 0.04;
     private static final int BASE_EU_CONSUMPTION = 6;
 
+    @Nullable
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected Direction outputFacingItems;
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
     protected boolean autoOutputItems;
-    @Persisted
+    @SaveField
     protected final NotifiableItemStackHandler output;
 
     @Getter
-    @Persisted
+    @SaveField
     protected final CustomItemStackHandler chargerInventory;
-    @Persisted
+    @SaveField
     protected final CustomItemStackHandler filterInventory;
 
     @Nullable
@@ -107,9 +105,9 @@ public class ItemCollectorMachine extends TieredEnergyMachine
 
     private AABB aabb;
 
-    @Persisted
+    @SaveField
     @Getter
-    @DescSynced
+    @SyncToClient
     private int range;
 
     private boolean rangeDirty = false;
@@ -117,18 +115,18 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     private final int maxRange;
 
     @Getter
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private boolean isWorkingEnabled = true;
 
-    @DescSynced
-    @Persisted
+    @SyncToClient
+    @SaveField
     @Getter
-    @RequireRerender
+    @RerenderOnChanged
     private boolean active = false;
 
-    public ItemCollectorMachine(IMachineBlockEntity holder, int tier, Object... ignoredArgs) {
-        super(holder, tier);
+    public ItemCollectorMachine(BlockEntityCreationInfo info, int tier) {
+        super(info, tier);
         this.inventorySize = INVENTORY_SIZES[Mth.clamp(getTier(), 0, INVENTORY_SIZES.length - 1)];
         this.energyPerTick = (long) BASE_EU_CONSUMPTION * (1L << (tier - 1));
         this.output = createOutputItemHandler();
@@ -157,11 +155,6 @@ public class ItemCollectorMachine extends TieredEnergyMachine
         handler.setFilter(
                 item -> item.is(GTItems.ITEM_FILTER.asItem()) || item.is(GTItems.TAG_FILTER.asItem()));
         return handler;
-    }
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 
     protected NotifiableItemStackHandler createOutputItemHandler() {
@@ -220,6 +213,7 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     public void updateCollectionSubscription() {
         if (drainEnergy(true) && isWorkingEnabled) {
             collectionSubs = subscribeServerTick(collectionSubs, this::update);
+            setActive(true);
             active = true;
         } else if (collectionSubs != null) {
             collectionSubs.unsubscribe();
@@ -228,13 +222,17 @@ public class ItemCollectorMachine extends TieredEnergyMachine
         }
     }
 
+    public void setActive(boolean active) {
+        this.active = active;
+        setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_ACTIVE, active));
+    }
+
     public void update() {
         if (drainEnergy(false)) {
             if (aabb == null || rangeDirty) {
                 rangeDirty = false;
-                BlockPos pos1, pos2;
-                pos1 = getPos().offset(-range, 0, -range);
-                pos2 = getPos().offset(range, 2, range);
+                BlockPos pos1 = getBlockPos().offset(-range, 0, -range);
+                BlockPos pos2 = getBlockPos().offset(range, 2, range);
                 this.aabb = AABB.of(BoundingBox.fromCorners(pos1, pos2));
             }
             moveItemsInRange();
@@ -246,7 +244,7 @@ public class ItemCollectorMachine extends TieredEnergyMachine
         ItemFilter filter = null;
         if (!filterInventory.getStackInSlot(0).isEmpty())
             filter = ItemFilter.loadFilter(filterInventory.getStackInSlot(0));
-        BlockPos centerPos = self().getPos().above();
+        BlockPos centerPos = self().getBlockPos().above();
 
         List<ItemEntity> itemEntities = getLevel().getEntitiesOfClass(ItemEntity.class, aabb);
         for (ItemEntity itemEntity : itemEntities) {
@@ -309,6 +307,7 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     @Override
     public void setAutoOutputItems(boolean allow) {
         this.autoOutputItems = allow;
+        syncDataHolder.markClientSyncFieldDirty("autoOutputItems");
         updateAutoOutputSubscription();
     }
 
@@ -323,6 +322,7 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     @Override
     public void setOutputFacingItems(@Nullable Direction outputFacing) {
         this.outputFacingItems = outputFacing;
+        syncDataHolder.markClientSyncFieldDirty("outputFacingItems");
         updateAutoOutputSubscription();
     }
 
@@ -338,7 +338,7 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     protected void updateAutoOutputSubscription() {
         var outputFacing = getOutputFacingItems();
         if ((isAutoOutputItems() && !output.isEmpty()) && outputFacing != null &&
-                GTTransferUtils.hasAdjacentItemHandler(getLevel(), getPos(), outputFacing))
+                GTTransferUtils.hasAdjacentItemHandler(getLevel(), getBlockPos(), outputFacing))
             autoOutputSubs = subscribeServerTick(autoOutputSubs, this::autoOutput);
         else if (autoOutputSubs != null) {
             autoOutputSubs.unsubscribe();
@@ -355,8 +355,9 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     }
 
     protected void chargeBattery() {
-        if (!energyContainer.dischargeOrRechargeEnergyContainers(chargerInventory, 0, false))
+        if (!energyContainer.dischargeOrRechargeEnergyContainers(chargerInventory, 0, false)) {
             updateBatterySubscription();
+        }
     }
 
     @Override
@@ -385,12 +386,14 @@ public class ItemCollectorMachine extends TieredEnergyMachine
 
     public void setRange(int range) {
         this.range = range;
+        syncDataHolder.markClientSyncFieldDirty("range");
         rangeDirty = true;
     }
 
     @Override
     public void setWorkingEnabled(boolean workingEnabled) {
         isWorkingEnabled = workingEnabled;
+        syncDataHolder.markClientSyncFieldDirty("isWorkingEnabled");
         updateCollectionSubscription();
     }
 
@@ -498,8 +501,8 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     // ******* Rendering ********//
     //////////////////////////////////////
     @Override
-    public ResourceTexture sideTips(Player player, BlockPos pos, BlockState state, Set<GTToolType> toolTypes,
-                                    Direction side) {
+    public @Nullable ResourceTexture sideTips(Player player, BlockPos pos, BlockState state, Set<GTToolType> toolTypes,
+                                              Direction side) {
         if (toolTypes.contains(GTToolType.WRENCH)) {
             if (!player.isShiftKeyDown()) {
                 if (!hasFrontFacing() || side != getFrontFacing()) {
@@ -538,8 +541,7 @@ public class ItemCollectorMachine extends TieredEnergyMachine
                 // remove the output facing when wrenching the current one to disable it
                 setOutputFacingItems(null);
             }
-            playerIn.swing(hand);
-            return InteractionResult.CONSUME;
+            return InteractionResult.sidedSuccess(playerIn.level().isClientSide);
         }
 
         return super.onWrenchClick(playerIn, hand, gridSide, hitResult);
@@ -548,7 +550,7 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     @Override
     protected InteractionResult onSoftMalletClick(Player playerIn, InteractionHand hand, Direction gridSide,
                                                   BlockHitResult hitResult) {
-        var controllable = GTCapabilityHelper.getControllable(getLevel(), getPos(), gridSide);
+        var controllable = GTCapabilityHelper.getControllable(getLevel(), getBlockPos(), gridSide);
         if (controllable != null) {
             if (!isRemote()) {
                 controllable.setWorkingEnabled(!controllable.isWorkingEnabled());

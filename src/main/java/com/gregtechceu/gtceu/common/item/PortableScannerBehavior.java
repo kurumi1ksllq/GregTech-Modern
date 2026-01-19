@@ -1,18 +1,14 @@
 package com.gregtechceu.gtceu.common.item;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.block.IMachineBlock;
+import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.capability.IElectricItem;
-import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
-import com.gregtechceu.gtceu.api.capability.IWorkable;
+import com.gregtechceu.gtceu.api.capability.*;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidVeinSavedData;
 import com.gregtechceu.gtceu.api.gui.misc.ProspectorMode;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IDataInfoProvider;
 import com.gregtechceu.gtceu.api.machine.feature.IMufflableMachine;
@@ -25,11 +21,13 @@ import com.gregtechceu.gtceu.common.capability.LocalizedHazardSavedData;
 import com.gregtechceu.gtceu.common.data.GTSoundEntries;
 import com.gregtechceu.gtceu.common.network.GTNetwork;
 import com.gregtechceu.gtceu.common.network.packets.prospecting.SPacketProspectBedrockFluid;
+import com.gregtechceu.gtceu.syncsystem.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -71,7 +69,8 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
         SHOW_MACHINE_INFO("behavior.portable_scanner.mode.show_machine_info"),
         SHOW_ELECTRICAL_INFO("behavior.portable_scanner.mode.show_electrical_info"),
         SHOW_RECIPE_INFO("behavior.portable_scanner.mode.show_recipe_info"),
-        SHOW_ENVIRONMENTAL_INFO("behavior.portable_scanner.mode.show_environmental_info");
+        SHOW_ENVIRONMENTAL_INFO("behavior.portable_scanner.mode.show_environmental_info"),
+        SHOW_INTERNAL_JAVA_INFO("behavior.portable_scanner.mode.show_internal_info");
 
         private final String langKey;
 
@@ -196,8 +195,7 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
             }
         }
 
-        if (tileEntity instanceof IMachineBlockEntity machineBlockEntity) {
-            MetaMachine machine = machineBlockEntity.getMetaMachine();
+        if (tileEntity instanceof MetaMachine machine) {
 
             list.add(Component.translatable(state.getBlock().getDescriptionId()).withStyle(ChatFormatting.BLUE));
 
@@ -213,7 +211,7 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
                     list.add(Component.translatable("behavior.portable_scanner.machine_front_facing",
                             machine.getFrontFacing().getSerializedName()));
                     list.add(Component.translatable("behavior.portable_scanner.machine_upwards_facing",
-                            machineBlockEntity.self().getBlockState().getValue(IMachineBlock.UPWARDS_FACING_PROPERTY)
+                            machine.getBlockState().getValue(GTBlockStateProperties.UPWARDS_FACING)
                                     .getSerializedName()));
                 }
 
@@ -330,21 +328,16 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
                         list.addAll(recipeLogic.getFancyTooltip());
                     } else if (recipe != null) {
                         list.add(Component.translatable("behavior.portable_scanner.divider"));
-                        var EUt = RecipeHelper.getInputEUt(recipe);
-                        var isInput = true;
-                        if (EUt == 0) {
-                            isInput = false;
-                            EUt = RecipeHelper.getOutputEUt(recipe);
-                        }
+                        var EUt = RecipeHelper.getRealEUtWithIO(recipe);
 
                         list.add(Component.translatable(
-                                isInput ? "behavior.portable_scanner.workable_consumption" :
+                                EUt.isInput() ? "behavior.portable_scanner.workable_consumption" :
                                         "behavior.portable_scanner.workable_production",
-                                Component.translatable(FormattingUtil.formatNumbers(EUt))
+                                // TODO is this supposed to show voltage or total EU/t?
+                                Component.translatable(FormattingUtil.formatNumbers(EUt.getTotalEU()))
                                         .withStyle(ChatFormatting.RED),
-                                // TODO: Change number once there is multi amp behavior
                                 Component.translatable(
-                                        FormattingUtil.formatNumbers(1))
+                                        FormattingUtil.formatNumbers(EUt.amperage()))
                                         .withStyle(ChatFormatting.RED)));
                     }
                 }
@@ -403,7 +396,7 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
                     var fluidInfo = ProspectorMode.FluidInfo
                             .fromVeinWorldEntry(veinData.getFluidVeinWorldEntry(chunkX, chunkZ));
                     var packet = new SPacketProspectBedrockFluid(level.dimension(), pos, fluidInfo);
-                    GTNetwork.NETWORK.sendToPlayer(packet, (ServerPlayer) player);
+                    GTNetwork.sendToPlayer((ServerPlayer) player, packet);
 
                     if (player.isCreative()) {
                         list.add(Component.translatable("behavior.portable_scanner.bedrock_fluid.amount",
@@ -454,7 +447,42 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
             }
         }
 
+        if (mode == DisplayMode.SHOW_INTERNAL_JAVA_INFO &&
+                tileEntity instanceof ManagedSyncBlockEntity syncBlockEntity) {
+            MetaMachine machine = (syncBlockEntity instanceof MetaMachine m) ? m : null;
+            PipeBlockEntity<?, ?> pipe = (syncBlockEntity instanceof PipeBlockEntity<?, ?> p) ? p : null;
+
+            list.add(Component.literal(syncBlockEntity.toString()));
+            if (pipe != null) {
+                var net = pipe.getPipeNet();
+                list.add(Component.literal(net == null ? "null" : net.toString()));
+            }
+            list.add(Component.translatable("behavior.portable_scanner.divider"));
+
+            list.add(Component.literal("Covers"));
+            ICoverable coverable = machine != null ? machine.getCoverContainer() :
+                    (pipe != null ? pipe.getCoverContainer() : null);
+            if (coverable != null) {
+                for (var dir : GTUtil.DIRECTIONS) {
+                    var cover = coverable.getCoverAtSide(dir);
+                    list.add(Component.literal(dir.getName() + ": " + (cover != null ? cover.toString() : "null")));
+                }
+            }
+
+            list.add(Component.translatable("behavior.portable_scanner.divider"));
+            list.add(Component.literal("Save data"));
+            nbtFormat(list, syncBlockEntity.getSyncDataHolder().serializeNBT(false));
+
+            list.add(Component.translatable("behavior.portable_scanner.divider"));
+            list.add(Component.literal("Update packet"));
+            nbtFormat(list, syncBlockEntity.getSyncDataHolder().serializeNBT(true, true));
+        }
+
         return energyCost;
+    }
+
+    private void nbtFormat(List<Component> comp, CompoundTag tag) {
+        comp.add(Component.literal(tag.toString()));
     }
 
     @Override

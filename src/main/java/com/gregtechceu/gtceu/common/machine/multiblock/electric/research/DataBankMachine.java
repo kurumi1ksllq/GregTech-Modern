@@ -1,10 +1,11 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.electric.research;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDisplayUIMachine;
@@ -49,8 +50,8 @@ public class DataBankMachine extends WorkableElectricMultiblockMachine
     @Nullable
     protected TickableSubscription tickSubs;
 
-    public DataBankMachine(IMachineBlockEntity holder) {
-        super(holder);
+    public DataBankMachine(BlockEntityCreationInfo info) {
+        super(info);
         this.energyContainer = new EnergyContainerList(new ArrayList<>());
     }
 
@@ -163,8 +164,9 @@ public class DataBankMachine extends WorkableElectricMultiblockMachine
                 if (consumed == energyToConsume) {
                     getRecipeLogic().setStatus(RecipeLogic.Status.WORKING);
                 } else {
-                    getRecipeLogic().setWaiting(Component.translatable("gtceu.recipe_logic.insufficient_in")
-                            .append(": ").append(EURecipeCapability.CAP.getName()));
+                    getRecipeLogic()
+                            .setWaiting(Component.translatable("gtceu.recipe_logic.insufficient_in")
+                                    .append(": ").append(EURecipeCapability.CAP.getName()));
                 }
             }
         } else {

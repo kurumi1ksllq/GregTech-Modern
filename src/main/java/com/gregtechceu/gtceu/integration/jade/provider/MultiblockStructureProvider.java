@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.integration.jade.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
 
@@ -32,11 +31,9 @@ public class MultiblockStructureProvider implements IBlockComponentProvider, ISe
 
     @Override
     public void appendServerData(CompoundTag compoundTag, BlockAccessor blockAccessor) {
-        if (blockAccessor.getBlockEntity() instanceof MetaMachineBlockEntity blockEntity) {
-            if (blockEntity.getMetaMachine() instanceof IMultiController controller) {
-                PatternState state = controller.getDefaultPatternState();
-                compoundTag.putBoolean("hasError", state.hasError());
-            }
+        if (blockAccessor.getBlockEntity() instanceof IMultiController controller) {
+            PatternState state = controller.getDefaultPatternState();
+            compoundTag.putBoolean("hasError", state.hasError());
         }
     }
 

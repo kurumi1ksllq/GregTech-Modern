@@ -7,7 +7,7 @@ import com.gregtechceu.gtceu.api.item.armor.ArmorLogicSuite;
 import com.gregtechceu.gtceu.api.item.armor.ArmorUtils;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.core.IFireImmuneEntity;
-import com.gregtechceu.gtceu.utils.input.KeyBind;
+import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -86,12 +86,14 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
 
         boolean ret = false;
         if (type == ArmorItem.Type.HELMET) {
-            ret = supplyAir(item, player) || supplyFood(item, player);
 
-            removeNegativeEffects(item, player);
+            if (!world.isClientSide) {
+                ret = supplyAir(item, player) || supplyFood(item, player);
+                removeNegativeEffects(item, player);
+            }
 
             boolean nightVision = data.contains("nightVision") && data.getBoolean("nightVision");
-            if (toggleTimer == 0 && KeyBind.ARMOR_MODE_SWITCH.isKeyDown(player)) {
+            if (toggleTimer == 0 && SyncedKeyMappings.ARMOR_MODE_SWITCH.isKeyDown(player)) {
                 nightVision = !nightVision;
                 toggleTimer = 5;
                 if (item.getCharge() < ArmorUtils.MIN_NIGHTVISION_CHARGE) {
@@ -127,9 +129,9 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
             if (player.isOnFire()) player.extinguishFire();
         } else if (type == ArmorItem.Type.LEGGINGS) {
             boolean canUseEnergy = item.canUse(energyPerUse / 100);
-            boolean sprinting = KeyBind.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
-            boolean jumping = KeyBind.VANILLA_JUMP.isKeyDown(player);
-            boolean sneaking = KeyBind.VANILLA_SNEAK.isKeyDown(player);
+            boolean sprinting = SyncedKeyMappings.VANILLA_FORWARD.isKeyDown(player) && player.isSprinting();
+            boolean jumping = SyncedKeyMappings.VANILLA_JUMP.isKeyDown(player);
+            boolean sneaking = SyncedKeyMappings.VANILLA_SNEAK.isKeyDown(player);
 
             if (canUseEnergy && sprinting) {
                 if (runningTimer == 0) {
@@ -158,9 +160,9 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
             data.putByte("runningTimer", runningTimer);
         } else if (type == ArmorItem.Type.BOOTS) {
             boolean canUseEnergy = item.canUse(energyPerUse / 100);
-            boolean jumping = KeyBind.VANILLA_JUMP.isKeyDown(player);
+            boolean jumping = SyncedKeyMappings.VANILLA_JUMP.isKeyDown(player);
             boolean boostedJump = data.contains("boostedJump") && data.getBoolean("boostedJump");
-            if (boostedJumpTimer == 0 && KeyBind.BOOTS_ENABLE.isKeyDown(player)) {
+            if (boostedJumpTimer == 0 && SyncedKeyMappings.BOOTS_ENABLE.isKeyDown(player)) {
                 boostedJump = !boostedJump;
                 boostedJumpTimer = JUMPING_TIMER;
                 player.displayClientMessage(Component
@@ -297,13 +299,13 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
      */
 
     @Override
-    public void damageArmor(LivingEntity entity, ItemStack itemStack, DamageSource source, int damage,
-                            EquipmentSlot equipmentSlot) {
+    public int damageArmor(LivingEntity entity, ItemStack itemStack, DamageSource source, int damage,
+                           EquipmentSlot equipmentSlot) {
         IElectricItem item = GTCapabilityHelper.getElectricItem(itemStack);
-        if (item == null) {
-            return;
+        if (item != null) {
+            item.discharge(energyPerUse / 100L * damage, item.getTier(), true, false, false);
         }
-        item.discharge(energyPerUse / 100L * damage, item.getTier(), true, false, false);
+        return super.damageArmor(entity, itemStack, source, damage, equipmentSlot);
     }
 
     @Override

@@ -1,28 +1,22 @@
 {
   "variants": {
     "facing=down": {
-      "model": "gtceu:block/machine/max_substation_output_hatch_64a",
-      "x": 90
+      "model": "gtceu:block/machine/max_substation_output_hatch_64a"
     },
     "facing=east": {
-      "model": "gtceu:block/machine/max_substation_output_hatch_64a",
-      "y": 90
+      "model": "gtceu:block/machine/max_substation_output_hatch_64a"
     },
     "facing=north": {
       "model": "gtceu:block/machine/max_substation_output_hatch_64a"
     },
     "facing=south": {
-      "model": "gtceu:block/machine/max_substation_output_hatch_64a",
-      "y": 180
+      "model": "gtceu:block/machine/max_substation_output_hatch_64a"
     },
     "facing=up": {
-      "gtceu:z": 180,
-      "model": "gtceu:block/machine/max_substation_output_hatch_64a",
-      "x": 270
+      "model": "gtceu:block/machine/max_substation_output_hatch_64a"
     },
     "facing=west": {
-      "model": "gtceu:block/machine/max_substation_output_hatch_64a",
-      "y": 270
+      "model": "gtceu:block/machine/max_substation_output_hatch_64a"
     }
   }
 }

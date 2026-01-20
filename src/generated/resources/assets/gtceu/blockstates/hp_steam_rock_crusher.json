@@ -1,28 +1,22 @@
 {
   "variants": {
     "facing=down": {
-      "model": "gtceu:block/machine/hp_steam_rock_crusher",
-      "x": 90
+      "model": "gtceu:block/machine/hp_steam_rock_crusher"
     },
     "facing=east": {
-      "model": "gtceu:block/machine/hp_steam_rock_crusher",
-      "y": 90
+      "model": "gtceu:block/machine/hp_steam_rock_crusher"
     },
     "facing=north": {
       "model": "gtceu:block/machine/hp_steam_rock_crusher"
     },
     "facing=south": {
-      "model": "gtceu:block/machine/hp_steam_rock_crusher",
-      "y": 180
+      "model": "gtceu:block/machine/hp_steam_rock_crusher"
     },
     "facing=up": {
-      "gtceu:z": 180,
-      "model": "gtceu:block/machine/hp_steam_rock_crusher",
-      "x": 270
+      "model": "gtceu:block/machine/hp_steam_rock_crusher"
     },
     "facing=west": {
-      "model": "gtceu:block/machine/hp_steam_rock_crusher",
-      "y": 270
+      "model": "gtceu:block/machine/hp_steam_rock_crusher"
     }
   }
 }

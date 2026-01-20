@@ -1,28 +1,22 @@
 {
   "variants": {
     "facing=down": {
-      "model": "gtceu:block/machine/lp_steam_forge_hammer",
-      "x": 90
+      "model": "gtceu:block/machine/lp_steam_forge_hammer"
     },
     "facing=east": {
-      "model": "gtceu:block/machine/lp_steam_forge_hammer",
-      "y": 90
+      "model": "gtceu:block/machine/lp_steam_forge_hammer"
     },
     "facing=north": {
       "model": "gtceu:block/machine/lp_steam_forge_hammer"
     },
     "facing=south": {
-      "model": "gtceu:block/machine/lp_steam_forge_hammer",
-      "y": 180
+      "model": "gtceu:block/machine/lp_steam_forge_hammer"
     },
     "facing=up": {
-      "gtceu:z": 180,
-      "model": "gtceu:block/machine/lp_steam_forge_hammer",
-      "x": 270
+      "model": "gtceu:block/machine/lp_steam_forge_hammer"
     },
     "facing=west": {
-      "model": "gtceu:block/machine/lp_steam_forge_hammer",
-      "y": 270
+      "model": "gtceu:block/machine/lp_steam_forge_hammer"
     }
   }
 }

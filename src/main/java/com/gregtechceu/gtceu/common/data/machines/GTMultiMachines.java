@@ -18,6 +18,7 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
 import com.gregtechceu.gtceu.api.multiblock.Predicates;
+import com.gregtechceu.gtceu.api.multiblock.error.PatternError;
 import com.gregtechceu.gtceu.api.multiblock.pattern.BasicAisleStrategy;
 import com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryBlockPattern;
@@ -133,7 +134,9 @@ public class GTMultiMachines {
                     .where('X', blocks(CASING_PRIMITIVE_BRICKS.get()))
                     .where('#', Predicates.air())
                     .where('&', Predicates.air()
-                            .or(Predicates.custom(bws -> GTUtil.isBlockSnow(bws.getBlockState()), null)))
+                            .or(Predicates.custom(bws -> GTUtil.isBlockSnow(bws.getBlockState()) ?
+                                    null : PatternError.PLACEHOLDER,
+                                    null)))
                     .where('Y', Predicates.controller(blocks(definition.getBlock())))
                     .build())
             .register();
@@ -1195,15 +1198,15 @@ public class GTMultiMachines {
                     .aisle("CCC", "CBC")
                     .aisle("CSC", "CCC")
                     .where('C', /*
-                     * Predicates.autoAbilities(true, false, false)
-                     * .or(
-                     */Predicates.blocks(CASING_GRATE.get()).setMinGlobalLimited(12))
+                                 * Predicates.autoAbilities(true, false, false)
+                                 * .or(
+                                 */Predicates.blocks(CASING_GRATE.get()).setMinGlobalLimited(12))
                     .where('S', Predicates.controller(Predicates.blocks(def.getBlock())))
                     .where('B', Predicates.frames(GTMaterials.Steel))
                     .build())
             .allowExtendedFacing(false)
             .allowFlip(false)
-            .workableCasingRenderer(GTCEu.id("block/casings/cleanroom/plascrete"),
+            .workableCasingModel(GTCEu.id("block/casings/cleanroom/plascrete"),
                     GTCEu.id("block/multiblock/cleanroom"))
             .register();
 
@@ -1223,7 +1226,7 @@ public class GTMultiMachines {
                     .build())
             .allowExtendedFacing(false)
             .allowFlip(false)
-            .workableCasingRenderer(GTCEu.id("block/casings/cleanroom/plascrete"),
+            .workableCasingModel(GTCEu.id("block/casings/cleanroom/plascrete"),
                     GTCEu.id("block/multiblock/cleanroom"))
             .additionalDisplay((cont, text) -> {
                 var aisles = ((BasicAisleStrategy) ((BlockPattern) cont.getStructurePatterns()

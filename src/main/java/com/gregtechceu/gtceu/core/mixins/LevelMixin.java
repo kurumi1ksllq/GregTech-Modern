@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.core.mixins;
 
-import com.gregtechceu.gtceu.api.multiblock.MultiblockState;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockWorldSavedData;
+import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
 
 import com.lowdragmc.lowdraglib.async.AsyncThreadData;
 
@@ -24,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Mixin(Level.class)
@@ -76,8 +75,8 @@ public abstract class LevelMixin implements LevelAccessor {
         if (!(((Object) this) instanceof ServerLevel serverLevel)) return;
 
         MultiblockWorldSavedData mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
-        Set<MultiblockState> defensiveCopy = new HashSet<>(mwsd.getPatternsInChunk(chunk.getPos()));
-        for (MultiblockState structure : defensiveCopy) {
+        Set<PatternState> defensiveCopy = Set.of(mwsd.getPatternsInChunk(chunk.getPos()));
+        for (PatternState structure : defensiveCopy) {
             if (structure.getPosCache().contains(pos)) {
                 serverLevel.getServer().executeBlocking(() -> structure.onBlockStateChanged(pos, newState));
             }

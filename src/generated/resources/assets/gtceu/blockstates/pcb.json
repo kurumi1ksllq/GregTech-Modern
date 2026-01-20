@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "gtceu:block/machine/pcb"
+    },
+    "facing=east": {
+      "model": "gtceu:block/machine/pcb"
+    },
+    "facing=north": {
+      "model": "gtceu:block/machine/pcb"
+    },
+    "facing=south": {
+      "model": "gtceu:block/machine/pcb"
+    },
+    "facing=up": {
+      "model": "gtceu:block/machine/pcb"
+    },
+    "facing=west": {
+      "model": "gtceu:block/machine/pcb"
+    }
+  }
+}

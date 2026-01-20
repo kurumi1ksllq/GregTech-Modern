@@ -8,7 +8,6 @@ import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.*;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.common.data.GTItems;
@@ -142,7 +141,7 @@ public class MetaMachineBlock extends Block implements EntityBlock {
         var player = context.getPlayer();
         var blockPos = context.getClickedPos();
         var state = defaultBlockState();
-        var machine = getMachine(context.getLevel(), blockPos);
+        var machine = MetaMachine.getMachine(context.getLevel(), blockPos);
         if (player != null && rotationState != RotationState.NONE) {
             Direction newFrontDir;
             Direction newUpFacing;
@@ -172,7 +171,7 @@ public class MetaMachineBlock extends Block implements EntityBlock {
                 Direction frontFacing = state.getValue(rotationState.property);
                 if (frontFacing == Direction.UP || frontFacing == Direction.DOWN) {
                     newUpFacing = player.getDirection();
-                    state = state.setValue(GTBlockStateProperties.UPWARDS_FACING_PROPERTY, player.getDirection());
+                    state = state.setValue(GTBlockStateProperties.UPWARDS_FACING, player.getDirection());
                     if (machine != null) {
                         if (machine instanceof MultiblockControllerMachine controller) {
                             controller.setUpwardsFacing(newUpFacing);
@@ -200,17 +199,19 @@ public class MetaMachineBlock extends Block implements EntityBlock {
         definition.getTooltipBuilder().accept(stack, tooltip);
         String mainKey = String.format("%s.machine.%s.tooltip", definition.getId().getNamespace(),
                 definition.getId().getPath());
-        if (GTUtil.isShiftDown()) {
-            if (definition instanceof MultiblockMachineDefinition multiblockDefinition) {
-                var pattern = multiblockDefinition.getPatternFactory().get();
-                if (pattern != null) {
-                    var aisleDims = pattern.getDimensions();
-                    assert aisleDims.length == 3;
-                    tooltip.add(Component.translatable("gtceu.multiblock.dimension", aisleDims[0], aisleDims[1],
-                            aisleDims[2]));
-                }
-            }
-        }
+        /*
+         * if (GTUtil.isShiftDown()) {
+         * if (definition instanceof MultiblockMachineDefinition multiblockDefinition) {
+         * var pattern = multiblockDefinition.getPatternFactory().get();
+         * if (pattern != null) {
+         * var aisleDims = pattern.getDimensions();
+         * assert aisleDims.length == 3;
+         * tooltip.add(Component.translatable("gtceu.multiblock.dimension", aisleDims[0], aisleDims[1],
+         * aisleDims[2]));
+         * }
+         * }
+         * }
+         */
         if (Language.getInstance().has(mainKey)) {
             tooltip.add(1, Component.translatable(mainKey));
         }

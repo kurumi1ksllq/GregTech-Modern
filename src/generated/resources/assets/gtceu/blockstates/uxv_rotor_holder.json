@@ -1,28 +1,22 @@
 {
   "variants": {
     "facing=down": {
-      "model": "gtceu:block/machine/uxv_rotor_holder",
-      "x": 90
+      "model": "gtceu:block/machine/uxv_rotor_holder"
     },
     "facing=east": {
-      "model": "gtceu:block/machine/uxv_rotor_holder",
-      "y": 90
+      "model": "gtceu:block/machine/uxv_rotor_holder"
     },
     "facing=north": {
       "model": "gtceu:block/machine/uxv_rotor_holder"
     },
     "facing=south": {
-      "model": "gtceu:block/machine/uxv_rotor_holder",
-      "y": 180
+      "model": "gtceu:block/machine/uxv_rotor_holder"
     },
     "facing=up": {
-      "gtceu:z": 180,
-      "model": "gtceu:block/machine/uxv_rotor_holder",
-      "x": 270
+      "model": "gtceu:block/machine/uxv_rotor_holder"
     },
     "facing=west": {
-      "model": "gtceu:block/machine/uxv_rotor_holder",
-      "y": 270
+      "model": "gtceu:block/machine/uxv_rotor_holder"
     }
   }
 }

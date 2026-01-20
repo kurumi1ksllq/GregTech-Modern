@@ -4,11 +4,9 @@ import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.IFilterType;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.ICleanroomReceiver;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.SimpleGeneratorMachine;
 import com.gregtechceu.gtceu.api.machine.feature.ICleanroomProvider;
@@ -150,13 +148,12 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
 
         forEachFormed(name, (info, pos) -> {
             BlockEntity be = info.getBlockEntity();
-            if (!(be instanceof IMachineBlockEntity mbe)) return;
 
-            if (!(mbe instanceof ICleanroomReceiver reciever)) return;
+            if (!(be instanceof ICleanroomReceiver receiver)) return;
 
-            if (reciever.getCleanroom() != this) {
-                reciever.setCleanroom(this);
-                cleanroomReceivers.add(reciever);
+            if (receiver.getCleanroom() != this) {
+                receiver.setCleanroom(this);
+                cleanroomReceivers.add(receiver);
             }
         });
 
@@ -242,11 +239,11 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
         Direction left = front.getCounterClockWise();
         Direction right = left.getOpposite();
 
-        int l = findWallPos(left, getPos().mutable());
-        int r = findWallPos(right, getPos().mutable());
-        int b = findWallPos(back, getPos().mutable());
-        int f = findWallPos(front, getPos().mutable());
-        int d = findFloorPos(Direction.DOWN, getPos().mutable());
+        int l = findWallPos(left, getBlockPos().mutable());
+        int r = findWallPos(right, getBlockPos().mutable());
+        int b = findWallPos(back, getBlockPos().mutable());
+        int f = findWallPos(front, getBlockPos().mutable());
+        int d = findFloorPos(Direction.DOWN, getBlockPos().mutable());
 
         if (d < MIN_DEPTH || l < MIN_RADIUS || r < MIN_RADIUS || b < MIN_RADIUS || f < MIN_RADIUS) {
             pState.setError(new PatternStringError("gtceu.predicate_error.cleanroom.too_small"));
@@ -328,7 +325,7 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
 
     public int findFloorPos(Direction dir, BlockPos.MutableBlockPos pos) {
         for (int i = 1; i <= MAX_DEPTH; i++) {
-            if (isAllFloorBlocks(getPos().mutable().move(dir, i))) {
+            if (isAllFloorBlocks(getBlockPos().mutable().move(dir, i))) {
                 return i;
             }
         }
@@ -602,8 +599,9 @@ public class CleanroomMachine extends WorkableElectricMultiblockMachine
             else textList.add(Component.translatable("gtceu.multiblock.cleanroom.dirty_state"));
             textList.add(Component.translatable("gtceu.multiblock.cleanroom.clean_amount", this.cleanAmount));
             textList.add(Component.translatable("gtceu.multiblock.dimensions.0"));
-            textList.add(Component.translatable("gtceu.multiblock.dimensions.1", bounds[3] + bounds[4] + 1, bounds[1] + 1,
-                    bounds[4] + bounds[5] + 1));
+            textList.add(
+                    Component.translatable("gtceu.multiblock.dimensions.1", bounds[3] + bounds[4] + 1, bounds[1] + 1,
+                            bounds[4] + bounds[5] + 1));
         } else {
             Component tooltip = Component.translatable("gtceu.multiblock.invalid_structure.tooltip")
                     .withStyle(ChatFormatting.GRAY);

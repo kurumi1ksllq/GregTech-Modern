@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
@@ -179,7 +178,7 @@ public class ExpandablePattern implements IBlockPattern {
         Direction front = src.getFrontFacing();
         Direction up = src.getUpwardsFacing();
 
-        int[] bounds = boundsFunc.apply(src.getLevel(), src.getPos().mutable(), front, up);
+        int[] bounds = boundsFunc.apply(src.getLevel(), src.getBlockPos().mutable(), front, up);
         if (tag.isEmpty()) {
             bounds = new int[] { 0, 4, 2, 2, 2, 2 };
         }
@@ -209,7 +208,7 @@ public class ExpandablePattern implements IBlockPattern {
             }
         }
 
-        BlockPos.MutableBlockPos translation = src.getPos().mutable();
+        BlockPos.MutableBlockPos translation = src.getBlockPos().mutable();
 
         for (var pos : BlockPos.betweenClosed(negCorner, posCorner)) {
             BlockPos.MutableBlockPos mPos = pos.mutable();
@@ -259,11 +258,7 @@ public class ExpandablePattern implements IBlockPattern {
 
             level.setBlockAndUpdate(p, info.getBlockState());
 
-            var be = level.getBlockEntity(p);
-            if (!(be instanceof IMachineBlockEntity mbe)) return true;
-            // if (be instanceof IMachineBlockEntity mbe) {
-
-            MetaMachine metaMachine = mbe.getMetaMachine();
+            MetaMachine metaMachine = MetaMachine.getMachine(level, p);
             if (metaMachine == null) return false;
 
             // try to force the front face to an air block

@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.ICentralMonitor;
 import com.gregtechceu.gtceu.api.capability.IMonitorComponent;
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
@@ -18,10 +17,13 @@ import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockDisplayText;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
-import com.gregtechceu.gtceu.api.pattern.*;
-import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
+import com.gregtechceu.gtceu.api.multiblock.*;
+import com.gregtechceu.gtceu.api.multiblock.Predicates;
+import com.gregtechceu.gtceu.api.multiblock.pattern.CurrentBlockInfo;
+import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryBlockPattern;
+import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
+import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
-import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.monitor.MonitorGroup;
 import com.gregtechceu.gtceu.common.machine.trait.CentralMonitorLogic;
@@ -55,7 +57,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -76,33 +77,33 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
     private final Set<IMonitorComponent> selectedComponents = new HashSet<>();
     private final List<IMonitorComponent> selectedTargets = new ArrayList<>();
 
-    private MultiblockState patternFindingState;
+    private CurrentBlockInfo patternFindingState;
 
-    private static TraceabilityPredicate MULTI_PREDICATE = null;
+    private static PatternPredicate MULTI_PREDICATE = null;
 
     public CentralMonitorMachine(BlockEntityCreationInfo info) {
         super(info, CentralMonitorLogic::new);
     }
 
-    public static TraceabilityPredicate getMultiPredicate() {
+    public static PatternPredicate getMultiPredicate() {
         if (MULTI_PREDICATE == null) {
             MULTI_PREDICATE = Predicates.abilities(PartAbility.INPUT_ENERGY)
                     .setMinGlobalLimited(1).setMaxGlobalLimited(2).setPreviewCount(1)
-                    .or(Predicates.abilities(PartAbility.DATA_ACCESS).setPreviewCount(1)
-                            .or(Predicates.machines(GTMachines.BATTERY_BUFFER_4).setPreviewCount(0))
-                            .or(Predicates.machines(GTMachines.BATTERY_BUFFER_16).setPreviewCount(0))
-                            .setMaxGlobalLimited(4))
-                    .or(Predicates.machines(GTMachines.HULL))
-                    .or(Predicates.machines(GTMachines.MONITOR))
-                    .or(Predicates.machines(GTMachines.ADVANCED_MONITOR))
+                    // .or(Predicates.abilities(PartAbility.DATA_ACCESS).setPreviewCount(1)
+                    // .or(Predicates.machines(GTMachines.BATTERY_BUFFER_4).setPreviewCount(0))
+                    // .or(Predicates.machines(GTMachines.BATTERY_BUFFER_16).setPreviewCount(0))
+                    // .setMaxGlobalLimited(4))
+                    // .or(Predicates.machines(GTMachines.HULL))
+                    // .or(Predicates.machines(GTMachines.MONITOR))
+                    // .or(Predicates.machines(GTMachines.ADVANCED_MONITOR))
                     .or(Predicates.blocks(GTBlocks.CASING_ALUMINIUM_FROSTPROOF.get()));
         }
         return MULTI_PREDICATE;
     }
 
     @Override
-    public void onStructureInvalid() {
-        super.onStructureInvalid();
+    public void invalidateStructure(String name) {
+        super.invalidateStructure(name);
         this.clearPatternFindingState();
     }
 
@@ -145,15 +146,17 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
     }
 
     protected void clearPatternFindingState() {
-        if (this.patternFindingState != null)
-            this.patternFindingState.clean();
-        this.patternFindingState = null;
+        // if (this.patternFindingState != null)
+        // this.patternFindingState.clean();
+        // this.patternFindingState = null;
     }
 
-    protected MultiblockState getPatternFindingState() {
+    protected CurrentBlockInfo getPatternFindingState() {
         if (this.patternFindingState == null) {
-            this.patternFindingState = new MultiblockState(getLevel(), getBlockPos());
-            this.patternFindingState.clean();
+            this.patternFindingState = new CurrentBlockInfo();
+            patternFindingState.setLevel(getLevel());
+            patternFindingState.setCurrentPos(getBlockPos());
+            // this.patternFindingState.clean();
         }
         return this.patternFindingState;
     }
@@ -161,14 +164,17 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
     public boolean isValidMonitorBlock(Level level, BlockPos pos) {
         if (level.isOutsideBuildHeight(pos)) return false;
 
-        MultiblockState state = getPatternFindingState();
-        if (!state.update(pos, getMultiPredicate())) {
-            return false;
-        }
-        state.io = IO.BOTH;
-
-        return Stream.concat(state.predicate.common.stream(), state.predicate.limited.stream())
-                .anyMatch(predicate -> predicate.test(state));
+        CurrentBlockInfo state = getPatternFindingState();
+        /*
+         * if (!state.update(pos, getMultiPredicate())) {
+         * return false;
+         * }
+         * state.io = IO.BOTH;
+         * 
+         * return Stream.concat(state.predicate.common.stream(), state.predicate.limited.stream())
+         * .anyMatch(predicate -> predicate.test(state));
+         */
+        return false;
     }
 
     public void updateStructureDimensions() {
@@ -178,10 +184,10 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
         Direction front = getFrontFacing();
         Direction spin = getUpwardsFacing();
 
-        Direction left = RelativeDirection.LEFT.getRelative(front, spin, false);
-        Direction right = RelativeDirection.RIGHT.getRelative(front, spin, false);
-        Direction up = RelativeDirection.UP.getRelative(front, spin, false);
-        Direction down = RelativeDirection.DOWN.getRelative(front, spin, false);
+        Direction left = RelativeDirection.LEFT.getRelativeFacing(front, spin, false);
+        Direction right = RelativeDirection.RIGHT.getRelativeFacing(front, spin, false);
+        Direction up = RelativeDirection.UP.getRelativeFacing(front, spin, false);
+        Direction down = RelativeDirection.DOWN.getRelativeFacing(front, spin, false);
         BlockPos.MutableBlockPos posLeft = getBlockPos().mutable().move(left);
         BlockPos.MutableBlockPos posRight = getBlockPos().mutable().move(right);
         BlockPos.MutableBlockPos posUp = getBlockPos().mutable().move(up);
@@ -221,7 +227,7 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
     }
 
     @Override
-    public BlockPattern getPattern() {
+    public IBlockPattern createStructurePattern() {
         updateStructureDimensions();
         if (leftDist + rightDist < 1 || upDist + downDist < 1) {
             leftDist = 3;
@@ -257,8 +263,8 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
         Direction front = getFrontFacing();
         Direction spin = getUpwardsFacing();
         boolean flipped = isFlipped();
-        Direction right = RelativeDirection.RIGHT.getRelative(front, spin, flipped);
-        Direction up = RelativeDirection.UP.getRelative(front, spin, flipped);
+        Direction right = RelativeDirection.RIGHT.getRelativeFacing(front, spin, flipped);
+        Direction up = RelativeDirection.UP.getRelativeFacing(front, spin, flipped);
 
         BlockPos tmp = getBlockPos().mutable().move(right, rightDist).move(up, upDist);
 
@@ -276,8 +282,8 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
         Direction spin = getUpwardsFacing();
         boolean flipped = isFlipped();
 
-        Direction left = RelativeDirection.LEFT.getRelative(front, spin, flipped);
-        Direction up = RelativeDirection.UP.getRelative(front, spin, flipped);
+        Direction left = RelativeDirection.LEFT.getRelativeFacing(front, spin, flipped);
+        Direction up = RelativeDirection.UP.getRelativeFacing(front, spin, flipped);
 
         col = leftDist + rightDist - col;
         BlockPos pos = getBlockPos().relative(left, leftDist - col).relative(up, upDist - row);
@@ -305,7 +311,7 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
 
     @Override
     public void addDisplayText(List<Component> textList) {
-        MultiblockDisplayText.builder(textList, isFormed())
+        MultiblockDisplayText.builder(textList, getDefaultPatternState())
                 .addWorkingStatusLine();
         getDefinition().getAdditionalDisplay().accept(this, textList);
     }

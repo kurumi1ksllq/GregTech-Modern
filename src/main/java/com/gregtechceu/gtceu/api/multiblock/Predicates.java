@@ -3,7 +3,6 @@ package com.gregtechceu.gtceu.api.multiblock;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.ActiveBlock;
-import com.gregtechceu.gtceu.api.block.IMachineBlock;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
@@ -63,10 +62,12 @@ public class Predicates {
         return new PatternPredicate(new PredicateBlocks(blocks));
     }
 
-    public static PatternPredicate blocks(IMachineBlock... blocks) {
-        return new PatternPredicate(
-                new PredicateBlocks(Arrays.stream(blocks).map(IMachineBlock::self).toArray(Block[]::new)));
-    }
+    /*
+     * public static PatternPredicate blocks(IMachineBlock... blocks) {
+     * return new PatternPredicate(
+     * new PredicateBlocks(Arrays.stream(blocks).map(IMachineBlock::self).toArray(Block[]::new)));
+     * }
+     */
 
     public static PatternPredicate blockTag(TagKey<Block> tag) {
         return new PatternPredicate(new PredicateBlockTag(tag));

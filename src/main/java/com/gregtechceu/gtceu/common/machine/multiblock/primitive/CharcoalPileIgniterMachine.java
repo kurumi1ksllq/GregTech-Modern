@@ -12,19 +12,15 @@ import com.gregtechceu.gtceu.api.multiblock.error.PatternStringError;
 import com.gregtechceu.gtceu.api.multiblock.pattern.FactoryExpandablePattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
 import com.gregtechceu.gtceu.api.multiblock.pattern.PatternState;
-import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.item.tool.behavior.LighterBehavior;
+import com.gregtechceu.gtceu.common.machine.trait.CharcoalPileIgniterLogic;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
-import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
@@ -40,10 +36,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import it.unimi.dsi.fastutil.longs.Long2BooleanMap;
-import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -59,10 +52,8 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     private int maxTime = 0;
     private boolean hasAir = false;
 
-    private boolean hasAir = false;
-
     public CharcoalPileIgniterMachine(BlockEntityCreationInfo info) {
-        super(info, (m) -> new CharcoalRecipeLogic((CharcoalPileIgniterMachine) m));
+        super(info, (m) -> new CharcoalPileIgniterLogic((CharcoalPileIgniterMachine) m));
     }
 
     @Override
@@ -80,8 +71,8 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     }
 
     @Override
-    public CharcoalRecipeLogic getRecipeLogic() {
-        return (CharcoalRecipeLogic) super.getRecipeLogic();
+    public CharcoalPileIgniterLogic getRecipeLogic() {
+        return (CharcoalPileIgniterLogic) super.getRecipeLogic();
     }
 
     @Override
@@ -145,11 +136,9 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
 
     private PatternPredicate wallPredicate() {
         return new PatternPredicate("Wall Blocks",
-                multiblockState -> WALL_BLOCKS.contains(multiblockState.getBlockState().getBlock()) ?
+                multiblockState -> multiblockState.getBlockState().is(CustomTags.CHARCOAL_PILE_IGNITER_WALLS) ?
                         null : new PatternStringError("gtceu.predicate_error.charcoal.walls"),
-                map -> WALL_BLOCKS.stream()
-                        .map(block -> BlockInfo.fromBlockState(block.defaultBlockState()))
-                        .toArray(BlockInfo[]::new));
+                null);
     }
 
     private PatternPredicate logPredicate() {
@@ -168,11 +157,11 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         Direction right = RelativeDirection.RIGHT.getRelativeFacing(front, getUpwardsFacing(), false);
 
         BlockPos down = getBlockPos().relative(Direction.DOWN);
-        int l = findWallPos(left, down);
-        int r = findWallPos(right, down);
-        int b = findWallPos(back, down);
-        int f = findWallPos(front, down);
-        int d = findFloorPos(getPos().mutable());
+        int l = findWallPos(left, down.mutable());
+        int r = findWallPos(right, down.mutable());
+        int b = findWallPos(back, down.mutable());
+        int f = findWallPos(front, down.mutable());
+        int d = findFloorPos(getBlockPos().mutable());
 
         if (d < MIN_DEPTH || l < MIN_RADIUS || r < MIN_RADIUS || b < MIN_RADIUS || f < MIN_RADIUS) {
             invalidateStructure();
@@ -235,7 +224,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
         }
     }
 
-    private void convertLogBlocks() {
+    public void convertLogBlocks() {
         Level level = getLevel();
         for (BlockPos pos : logPos) {
             level.setBlockAndUpdate(pos, GTBlocks.BRITTLE_CHARCOAL.getDefaultState());
@@ -282,32 +271,6 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
                 return InteractionResult.CONSUME;
             }
         }
-        return super.onUse(state, world, pos, player, hand, hit);
-    }
-
-    public class CharcoalRecipeLogic extends RecipeLogic {
-
-        private CharcoalPileIgniterMachine machine;
-
-        public CharcoalRecipeLogic(CharcoalPileIgniterMachine machine) {
-            super(machine);
-        }
-
-        @Override
-        public void serverTick() {
-            super.serverTick();
-            if (isWorking() && duration > 0) {
-                if (++progress == duration) {
-                    progress = 0;
-                    duration = 0;
-                    machine.convertLogBlocks();
-                    setStatus(Status.IDLE);
-                }
-            }
-        }
-
-        public void setDuration(int max) {
-            this.duration = max;
-        }
+        return super.onUse(state, level, pos, player, hand, hit);
     }
 }

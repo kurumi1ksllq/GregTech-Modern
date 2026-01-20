@@ -5,7 +5,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
-import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
+import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.client.model.machine.IControllerModelRenderer;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
@@ -113,7 +113,7 @@ public class BoilerMultiPartRender extends DynamicRender<MultiblockControllerMac
         Direction multiFront = machine.getFrontFacing();
         Direction multiUpward = machine.getUpwardsFacing();
         boolean flipped = machine.isFlipped();
-        Direction relativeDown = RelativeDirection.DOWN.getRelative(multiFront, multiUpward, flipped);
+        Direction relativeDown = RelativeDirection.DOWN.getRelativeFacing(multiFront, multiUpward, flipped);
 
         int belowControllerY = controllerPos.relative(relativeDown).get(relativeDown.getAxis());
         int partY = partPos.get(relativeDown.getAxis());

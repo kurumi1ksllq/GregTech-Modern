@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.common.machine.multiblock.part.monitor;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
-import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
+import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -48,7 +48,7 @@ public class AdvancedMonitorPartMachine extends MonitorPartMachine implements II
             return IInteractedMachine.super.onUse(state, world, pos, player, hand, hit);
         clicked = true;
         clickPosX = hit.getLocation()
-                .get(RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), false).getAxis());
+                .get(RelativeDirection.RIGHT.getRelativeFacing(getFrontFacing(), getUpwardsFacing(), false).getAxis());
         clickPosY = hit.getLocation()
                 .get(getFrontFacing().getAxis().isVertical() ? Direction.Axis.X : Direction.Axis.Y);
         clickPosX -= Math.floor(clickPosX);

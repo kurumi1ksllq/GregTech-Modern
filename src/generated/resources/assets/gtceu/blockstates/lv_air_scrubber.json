@@ -1,19 +1,16 @@
 {
   "variants": {
     "facing=east": {
-      "model": "gtceu:block/machine/lv_air_scrubber",
-      "y": 90
+      "model": "gtceu:block/machine/lv_air_scrubber"
     },
     "facing=north": {
       "model": "gtceu:block/machine/lv_air_scrubber"
     },
     "facing=south": {
-      "model": "gtceu:block/machine/lv_air_scrubber",
-      "y": 180
+      "model": "gtceu:block/machine/lv_air_scrubber"
     },
     "facing=west": {
-      "model": "gtceu:block/machine/lv_air_scrubber",
-      "y": 270
+      "model": "gtceu:block/machine/lv_air_scrubber"
     }
   }
 }

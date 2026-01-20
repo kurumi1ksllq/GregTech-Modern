@@ -54,6 +54,6 @@ public abstract class AisleStrategy {
     }
 
     protected boolean checkAisle(PatternState state, int index, int offset, boolean flip) {
-        return pattern.checkAisle(pos, state, front, up, index, offset, flip);
+        return pattern.checkAisle(this.pos, state, this.front, this.up, index, offset, flip);
     }
 }

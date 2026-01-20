@@ -213,15 +213,15 @@ public class PatternPreviewWidget extends WidgetGroup {
                 .filter(pos -> layer == -1 || layer + pattern.minY == pos.getY());
         if (pattern.controllerBase.isFormed()) {
             /*
-            LongSet modelDisabled = pattern.controllerBase.getMultiblockState().getMatchContext().getOrDefault(
-                    "renderMask",
-                    LongSets.EMPTY_SET);
-            if (!modelDisabled.isEmpty()) {
-                stream = stream.filter(pos -> !modelDisabled.contains(pos.asLong()));
-            }
-        }
-        sceneWidget.setRenderedCore(stream.toList(), null);
-        */
+             * LongSet modelDisabled = pattern.controllerBase.getMultiblockState().getMatchContext().getOrDefault(
+             * "renderMask",
+             * LongSets.EMPTY_SET);
+             * if (!modelDisabled.isEmpty()) {
+             * stream = stream.filter(pos -> !modelDisabled.contains(pos.asLong()));
+             * }
+             * }
+             * sceneWidget.setRenderedCore(stream.toList(), null);
+             */
         } else {
             sceneWidget.setRenderedCore(stream.toList(), null);
         }
@@ -438,14 +438,14 @@ public class PatternPreviewWidget extends WidgetGroup {
         }
         if (controllerBase.isFormed()) {
             /*
-            LongSet modelDisabled = controllerBase.getMultiblockState().getMatchContext().getOrDefault("renderMask",
-                    LongSets.EMPTY_SET);
-            if (!modelDisabled.isEmpty()) {
-                positions = new HashSet<>(positions);
-                positions.removeIf(pos -> modelDisabled.contains(pos.asLong()));
-            }
-            sceneWidget.setRenderedCore(positions, null);
-
+             * LongSet modelDisabled = controllerBase.getMultiblockState().getMatchContext().getOrDefault("renderMask",
+             * LongSets.EMPTY_SET);
+             * if (!modelDisabled.isEmpty()) {
+             * positions = new HashSet<>(positions);
+             * positions.removeIf(pos -> modelDisabled.contains(pos.asLong()));
+             * }
+             * sceneWidget.setRenderedCore(positions, null);
+             * 
              */
         } else {
             GTCEu.LOGGER.warn("Pattern formed checking failed: {}", controllerBase.self().getDefinition());

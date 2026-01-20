@@ -1,28 +1,22 @@
 {
   "variants": {
     "facing=down": {
-      "model": "gtceu:block/machine/uev_input_hatch_4x",
-      "x": 90
+      "model": "gtceu:block/machine/uev_input_hatch_4x"
     },
     "facing=east": {
-      "model": "gtceu:block/machine/uev_input_hatch_4x",
-      "y": 90
+      "model": "gtceu:block/machine/uev_input_hatch_4x"
     },
     "facing=north": {
       "model": "gtceu:block/machine/uev_input_hatch_4x"
     },
     "facing=south": {
-      "model": "gtceu:block/machine/uev_input_hatch_4x",
-      "y": 180
+      "model": "gtceu:block/machine/uev_input_hatch_4x"
     },
     "facing=up": {
-      "gtceu:z": 180,
-      "model": "gtceu:block/machine/uev_input_hatch_4x",
-      "x": 270
+      "model": "gtceu:block/machine/uev_input_hatch_4x"
     },
     "facing=west": {
-      "model": "gtceu:block/machine/uev_input_hatch_4x",
-      "y": 270
+      "model": "gtceu:block/machine/uev_input_hatch_4x"
     }
   }
 }

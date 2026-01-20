@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.api.multiblock.pattern;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
@@ -256,7 +255,7 @@ public class BlockPattern implements IBlockPattern {
         Direction absoluteString = directions[1].getRelativeFacing(src.getFrontFacing(), src.getUpwardsFacing());
         Direction absoluteChar = directions[2].getRelativeFacing(src.getFrontFacing(), src.getUpwardsFacing());
 
-        BlockPos.MutableBlockPos pos = src.getPos().mutable();
+        BlockPos.MutableBlockPos pos = src.getBlockPos().mutable();
         BlockPos.MutableBlockPos start = startPos(pos, src.getFrontFacing(), src.getUpwardsFacing(), false);
         BlockPos.MutableBlockPos serial = start.mutable();
 
@@ -316,11 +315,7 @@ public class BlockPattern implements IBlockPattern {
             level.setBlockAndUpdate(p, info.getBlockState());
 
             var be = level.getBlockEntity(p);
-            if (!(be instanceof IMachineBlockEntity mbe)) return true;
-            // if (be instanceof IMachineBlockEntity mbe) {
-
-            MetaMachine metaMachine = mbe.getMetaMachine();
-            if (metaMachine == null) return false;
+            if (!(be instanceof MetaMachine metaMachine)) return true;
 
             // try to force the front face to an air block
             if (predicates.containsKey(p.relative(metaMachine.getFrontFacing()).asLong())) {

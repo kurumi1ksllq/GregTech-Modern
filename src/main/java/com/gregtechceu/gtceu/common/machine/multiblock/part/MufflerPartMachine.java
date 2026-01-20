@@ -83,8 +83,8 @@ public class MufflerPartMachine extends TieredPartMachine implements IMufflerMac
     }
 
     @Override
-    public void addedToController(IMultiController controller) {
-        super.addedToController(controller);
+    public void addedToController(IMultiController controller, String substructure) {
+        super.addedToController(controller, substructure);
         if (snowSubscription == null) {
             this.snowSubscription = subscribeServerTick(null, this::tryBreakSnow);
         }

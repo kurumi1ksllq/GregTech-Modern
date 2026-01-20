@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.electric.testmultis;
 
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.multiblock.OriginOffset;
 import com.gregtechceu.gtceu.api.multiblock.PatternPredicate;
@@ -20,8 +20,8 @@ import static com.gregtechceu.gtceu.common.data.GTBlocks.CASING_GRATE;
 
 public class PCBFactoryMachine extends WorkableElectricMultiblockMachine {
 
-    public PCBFactoryMachine(IMachineBlockEntity holder, Object... args) {
-        super(holder, args);
+    public PCBFactoryMachine(BlockEntityCreationInfo info) {
+        super(info);
     }
 
     @Override

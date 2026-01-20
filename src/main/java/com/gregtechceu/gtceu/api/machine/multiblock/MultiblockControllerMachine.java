@@ -1,10 +1,8 @@
 package com.gregtechceu.gtceu.api.machine.multiblock;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -54,7 +52,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class MultiblockControllerMachine extends MetaMachine implements IMultiController {
 
-    private MultiblockState multiblockState;
     private CurrentBlockInfo controllerBlockInfo;
     private final List<IMultiPart> parts = new ArrayList<>();
     private @Nullable IParallelHatch parallelHatch = null;
@@ -97,7 +94,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             MultiblockWorldSavedData.getOrCreate(serverLevel).addAsyncLogic(this);
             if (isFormed) {
                 // run a structure check on the first tick
-                asyncCheckPattern(getHolder().getOffset() % 4);
+                asyncCheckPattern(getOffset() % 4);
             }
         }
     }
@@ -118,7 +115,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         if (controllerBlockInfo == null) {
             controllerBlockInfo = new CurrentBlockInfo();
             controllerBlockInfo.setLevel(getLevel());
-            controllerBlockInfo.setCurrentPos(getPos());
+            controllerBlockInfo.setCurrentPos(getBlockPos());
         }
         return controllerBlockInfo;
     }
@@ -177,7 +174,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     @Override
     public void asyncCheckPattern(long periodID) {
         if (getLevel() instanceof ServerLevel serverLevel) {
-            if (getMachine(serverLevel, getPos()) != this) {
+            if (getMachine(serverLevel, getBlockPos()) != this) {
                 MultiblockWorldSavedData.getOrCreate(serverLevel).removeAsyncLogic(this);
             }
         }
@@ -187,7 +184,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             boolean formed = name.equals(DEFAULT_STRUCTURE) ? isFormed : patternState.isFormed();
             if ((patternState.hasError() || !formed ||
                     patternState.getState() == PatternState.CheckState.UNINITIALIZED) &&
-                    (getHolder().getOffset() + periodID) % 4 == 0 &&
+                    (getOffset() + periodID) % 4 == 0 &&
                     checkPatternWithTryLock(name)) { // per second
                 if (getLevel() instanceof ServerLevel serverLevel) {
                     serverLevel.getServer().execute(() -> {
@@ -245,12 +242,13 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
 
         long time = System.nanoTime();
         // .setController(this, getPos());
-        pState.setController(this, getPos());
-        pattern.checkPatternFastAt(getLevel(), pState, getPos(), getFrontFacing(), getUpwardsFacing(), allowFlip());
+        pState.setController(this, getBlockPos());
+        pattern.checkPatternFastAt(getLevel(), pState, getBlockPos(), getFrontFacing(), getUpwardsFacing(),
+                allowFlip());
         // patternStates.put(name, pState);
         // pattern.setActivePatternState(pState);
-        GTCEu.LOGGER.info("Structure check for {} took {} ns", self().getDefinition().getName(),
-                (System.nanoTime() - time));
+        // GTCEu.LOGGER.info("Structure check for {} took {} ns", self().getDefinition().getName(),
+        // (System.nanoTime() - time));
         return pState;
     }
 
@@ -268,7 +266,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
                     forEachMultiPart(name, part -> {
                         if (parts.contains(part)) return true;
 
-                        if (part.hasController(getPos()) && !part.canShared(this, name)) {
+                        if (part.hasController(getBlockPos()) && !part.canShared(this, name)) {
                             invalidateStructure(name);
                             return false;
                         }
@@ -284,7 +282,8 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
                         return true;
                     });
 
-                    this.parts.sort(getDefinition().getPartSorter());
+                    // this.parts.sort(GTMemoizer.memoizeFunctionWeakIdent(getDefinition().getPartSorter()));
+                    // this.parts.sort(getDefinition().getPartSorter());
                     for (var part : parts) {
                         if (part instanceof IParallelHatch pHatch) {
                             parallelHatch = pHatch;
@@ -306,7 +305,7 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             valid[0] = true;
 
             forEachMultiPart(name, part -> {
-                if (part.hasController(getPos()) && !part.canShared(this, name)) {
+                if (part.hasController(getBlockPos()) && !part.canShared(this, name)) {
                     valid[0] = false;
                     return false;
                 }
@@ -338,7 +337,6 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             state.setActualFlipped(flipped);
             this.isFlipped = flipped;
             notifyBlockUpdate();
-            markDirty();
         }
     }
 
@@ -419,11 +417,8 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         var cache = patternStates.get(name).getCache();
         for (BlockInfo info : cache.values()) {
             BlockEntity be = info.getBlockEntity();
-            if (be instanceof MetaMachineBlockEntity mmbe) {
-                var machine = mmbe.metaMachine;
-                if (machine instanceof IMultiPart part) {
-                    if (!action.test(part)) return;
-                }
+            if (be instanceof IMultiPart part) {
+                if (!action.test(part)) return;
             }
         }
     }

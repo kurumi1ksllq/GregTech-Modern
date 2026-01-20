@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "gtceu:block/machine/aisle"
+    },
+    "facing=east": {
+      "model": "gtceu:block/machine/aisle"
+    },
+    "facing=north": {
+      "model": "gtceu:block/machine/aisle"
+    },
+    "facing=south": {
+      "model": "gtceu:block/machine/aisle"
+    },
+    "facing=up": {
+      "model": "gtceu:block/machine/aisle"
+    },
+    "facing=west": {
+      "model": "gtceu:block/machine/aisle"
+    }
+  }
+}

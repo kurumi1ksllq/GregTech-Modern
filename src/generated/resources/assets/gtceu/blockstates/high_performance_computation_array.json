@@ -1,16 +1,22 @@
 {
   "variants": {
+    "facing=east,upwards_facing=down": {
+      "gtceu:z": 180,
+      "model": "gtceu:block/machine/high_performance_computation_array",
+      "y": 90
+    },
     "facing=east,upwards_facing=east": {
       "gtceu:z": 270,
       "model": "gtceu:block/machine/high_performance_computation_array",
       "y": 90
     },
     "facing=east,upwards_facing=north": {
-      "model": "gtceu:block/machine/high_performance_computation_array",
-      "y": 90
+      "model": "gtceu:block/machine/high_performance_computation_array"
     },
     "facing=east,upwards_facing=south": {
-      "gtceu:z": 180,
+      "model": "gtceu:block/machine/high_performance_computation_array"
+    },
+    "facing=east,upwards_facing=up": {
       "model": "gtceu:block/machine/high_performance_computation_array",
       "y": 90
     },
@@ -18,6 +24,10 @@
       "gtceu:z": 90,
       "model": "gtceu:block/machine/high_performance_computation_array",
       "y": 90
+    },
+    "facing=north,upwards_facing=down": {
+      "gtceu:z": 180,
+      "model": "gtceu:block/machine/high_performance_computation_array"
     },
     "facing=north,upwards_facing=east": {
       "gtceu:z": 270,
@@ -27,12 +37,19 @@
       "model": "gtceu:block/machine/high_performance_computation_array"
     },
     "facing=north,upwards_facing=south": {
-      "gtceu:z": 180,
+      "model": "gtceu:block/machine/high_performance_computation_array"
+    },
+    "facing=north,upwards_facing=up": {
       "model": "gtceu:block/machine/high_performance_computation_array"
     },
     "facing=north,upwards_facing=west": {
       "gtceu:z": 90,
       "model": "gtceu:block/machine/high_performance_computation_array"
+    },
+    "facing=south,upwards_facing=down": {
+      "gtceu:z": 180,
+      "model": "gtceu:block/machine/high_performance_computation_array",
+      "y": 180
     },
     "facing=south,upwards_facing=east": {
       "gtceu:z": 270,
@@ -40,11 +57,12 @@
       "y": 180
     },
     "facing=south,upwards_facing=north": {
-      "model": "gtceu:block/machine/high_performance_computation_array",
-      "y": 180
+      "model": "gtceu:block/machine/high_performance_computation_array"
     },
     "facing=south,upwards_facing=south": {
-      "gtceu:z": 180,
+      "model": "gtceu:block/machine/high_performance_computation_array"
+    },
+    "facing=south,upwards_facing=up": {
       "model": "gtceu:block/machine/high_performance_computation_array",
       "y": 180
     },
@@ -53,17 +71,23 @@
       "model": "gtceu:block/machine/high_performance_computation_array",
       "y": 180
     },
+    "facing=west,upwards_facing=down": {
+      "gtceu:z": 180,
+      "model": "gtceu:block/machine/high_performance_computation_array",
+      "y": 270
+    },
     "facing=west,upwards_facing=east": {
       "gtceu:z": 270,
       "model": "gtceu:block/machine/high_performance_computation_array",
       "y": 270
     },
     "facing=west,upwards_facing=north": {
-      "model": "gtceu:block/machine/high_performance_computation_array",
-      "y": 270
+      "model": "gtceu:block/machine/high_performance_computation_array"
     },
     "facing=west,upwards_facing=south": {
-      "gtceu:z": 180,
+      "model": "gtceu:block/machine/high_performance_computation_array"
+    },
+    "facing=west,upwards_facing=up": {
       "model": "gtceu:block/machine/high_performance_computation_array",
       "y": 270
     },

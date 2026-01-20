@@ -1,28 +1,22 @@
 {
   "variants": {
     "facing=down": {
-      "model": "gtceu:block/machine/hv_output_bus",
-      "x": 90
+      "model": "gtceu:block/machine/hv_output_bus"
     },
     "facing=east": {
-      "model": "gtceu:block/machine/hv_output_bus",
-      "y": 90
+      "model": "gtceu:block/machine/hv_output_bus"
     },
     "facing=north": {
       "model": "gtceu:block/machine/hv_output_bus"
     },
     "facing=south": {
-      "model": "gtceu:block/machine/hv_output_bus",
-      "y": 180
+      "model": "gtceu:block/machine/hv_output_bus"
     },
     "facing=up": {
-      "gtceu:z": 180,
-      "model": "gtceu:block/machine/hv_output_bus",
-      "x": 270
+      "model": "gtceu:block/machine/hv_output_bus"
     },
     "facing=west": {
-      "model": "gtceu:block/machine/hv_output_bus",
-      "y": 270
+      "model": "gtceu:block/machine/hv_output_bus"
     }
   }
 }

@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.client.renderer.machine.impl;
 
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IFluidRenderMulti;
-import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
+import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.gregtechceu.gtceu.client.renderer.block.FluidBlockRenderer;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
@@ -106,7 +106,7 @@ public class FluidAreaRender extends DynamicRender<IFluidRenderMulti, FluidAreaR
             poseStack.pushPose();
             var pose = poseStack.last().pose();
 
-            var dir = face.getRelative(machine.self().getFrontFacing(), machine.self().getUpwardsFacing(),
+            var dir = face.getRelativeFacing(machine.self().getFrontFacing(), machine.self().getUpwardsFacing(),
                     machine.self().isFlipped());
             if (dir.getAxis() != Direction.Axis.Y) dir = dir.getOpposite();
 

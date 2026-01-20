@@ -154,7 +154,7 @@ public class GTMatrixUtils {
         var matrix = new Matrix4f();
         var front = rotateMatrixToFront(matrix, frontFace);
         front.absolute();
-        rotateMatrixToUp(matrix, front,  adjustUpwardsToLocal(frontFace, upwardFace.getOpposite()));
+        rotateMatrixToUp(matrix, front, adjustUpwardsToLocal(frontFace, upwardFace.getOpposite()));
         rotations.put(frontFace, upwardFace, matrix);
         return matrix;
     }

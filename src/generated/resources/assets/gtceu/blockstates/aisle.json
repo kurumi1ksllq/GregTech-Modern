@@ -1,22 +1,28 @@
 {
   "variants": {
     "facing=down": {
-      "model": "gtceu:block/machine/aisle"
+      "model": "gtceu:block/machine/aisle",
+      "x": 90
     },
     "facing=east": {
-      "model": "gtceu:block/machine/aisle"
+      "model": "gtceu:block/machine/aisle",
+      "y": 90
     },
     "facing=north": {
       "model": "gtceu:block/machine/aisle"
     },
     "facing=south": {
-      "model": "gtceu:block/machine/aisle"
+      "model": "gtceu:block/machine/aisle",
+      "y": 180
     },
     "facing=up": {
-      "model": "gtceu:block/machine/aisle"
+      "gtceu:z": 180,
+      "model": "gtceu:block/machine/aisle",
+      "x": 270
     },
     "facing=west": {
-      "model": "gtceu:block/machine/aisle"
+      "model": "gtceu:block/machine/aisle",
+      "y": 270
     }
   }
 }

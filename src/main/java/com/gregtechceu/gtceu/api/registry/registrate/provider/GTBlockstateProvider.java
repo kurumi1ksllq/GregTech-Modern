@@ -102,14 +102,14 @@ public class GTBlockstateProvider extends RegistrateBlockstateProvider {
             var disp = PropertyDispatch.property(rotationState.property);
 
             dispatch = disp.generate((front) -> {
-                var orientation = ExtendedBlockModelRotation.get(front, Direction.NORTH);
+                var orientation = ExtendedBlockModelRotation.get(front);
                 return applyOrientation(Variant.variant(), orientation);
             });
         } else {
             var disp = PropertyDispatch.properties(rotationState.property, GTBlockStateProperties.UPWARDS_FACING);
 
             dispatch = disp.generate((front, up) -> {
-                var orientation = ExtendedBlockModelRotation.get(front, up);
+                var orientation = ExtendedBlockModelRotation.getExtended(front, up);
                 return applyOrientation(Variant.variant(), orientation);
             });
         }

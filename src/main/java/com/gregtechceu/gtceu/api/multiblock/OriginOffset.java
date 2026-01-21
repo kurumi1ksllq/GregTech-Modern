@@ -55,4 +55,8 @@ public class OriginOffset {
             pos.move(RelativeDirection.values()[2 * i].getRelativeFacing(front, up, flip), offset[i]);
         }
     }
+
+    public BlockPos toBlockPos() {
+        return new BlockPos(offset[0], offset[1], offset[2]);
+    }
 }

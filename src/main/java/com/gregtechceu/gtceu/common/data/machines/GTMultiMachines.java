@@ -1210,6 +1210,30 @@ public class GTMultiMachines {
                     GTCEu.id("block/multiblock/cleanroom"))
             .register();
 
+    public static final MultiblockMachineDefinition TEST_RENDER = REGISTRATE
+            .multiblock("test_render", WorkableElectricMultiblockMachine::new)
+            .langValue("Test Render")
+            .rotationState(RotationState.ALL)
+            .recipeType(GTRecipeTypes.MACERATOR_RECIPES)
+            .appearanceBlock(CASING_ALUMINIUM_FROSTPROOF)
+            .pattern(def -> FactoryBlockPattern.start(FRONT, UP, RIGHT)
+                    .aisle("ASB", "CD ")
+                    .aisle("EFG", "H  ")
+                    .where('A', blocks(WOODEN_CRATE.getBlock()))
+                    .where('S', Predicates.controller(blocks(def.getBlock())))
+                    .where('B', frames(GTMaterials.TungstenSteel))
+                    .where('C', blocks(CASING_ASSEMBLY_LINE.get()))
+                    .where('D', blocks(CASING_LAMINATED_GLASS.get()))
+                    .where('E', blocks(CASING_TITANIUM_GEARBOX.get()))
+                    .where('F', blocks(GOLD_DRUM.getBlock()))
+                    .where('G', blocks(GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.ore, GTMaterials.Bentonite).get()))
+                    .where('H', Predicates.cleanroomFilters())
+                    .build())
+            .allowExtendedFacing(true)
+            .workableCasingModel(GTCEu.id("block/casings/solid/machine_casing_clean_stainless_steel"),
+                    GTCEu.id("block/multiblock/cracking_unit"))
+            .register();
+
     public static final MultiblockMachineDefinition AISLE_TEST = REGISTRATE
             .multiblock("aisle", WorkableElectricMultiblockMachine::new)
             .rotationState(RotationState.ALL)

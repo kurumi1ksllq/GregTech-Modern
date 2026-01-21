@@ -9,6 +9,7 @@ public class PatternAisle {
     @Setter
     @Getter
     protected int actualRepeats;
+    @Getter
     protected final String[] pattern;
 
     public PatternAisle(int repeats, char[][] pattern) {

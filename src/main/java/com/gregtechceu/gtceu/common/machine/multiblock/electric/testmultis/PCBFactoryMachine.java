@@ -69,6 +69,7 @@ public class PCBFactoryMachine extends WorkableElectricMultiblockMachine {
     public void addDisplayText(List<Component> textList) {
         super.addDisplayText(textList);
         var coolerState = patternStates.get("cooler");
+
         if (coolerState.isFormed()) {
             textList.add(Component.literal("Has Substructure"));
         } else if (coolerState.hasError()) {

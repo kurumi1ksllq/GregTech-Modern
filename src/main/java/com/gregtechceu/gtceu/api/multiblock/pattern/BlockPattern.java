@@ -40,13 +40,16 @@ public class BlockPattern implements IBlockPattern {
 
     protected final RelativeDirection[] directions;
 
+    @Getter
     protected final int[] dimensions;
     protected final OriginOffset offset;
 
     protected final boolean hasStartOffset;
+    @Getter
     protected final PatternAisle[] aisles;
     @Getter
     protected final AisleStrategy aisleStrategy;
+    @Getter
     protected final Char2ObjectMap<PatternPredicate> predicates;
 
     public BlockPattern(@NotNull PatternAisle @NotNull [] aisles, @NotNull AisleStrategy aisleStrategy,
@@ -431,4 +434,5 @@ public class BlockPattern implements IBlockPattern {
         }
         return ItemStack.EMPTY;
     }
+
 }

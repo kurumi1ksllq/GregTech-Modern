@@ -8,9 +8,17 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.multiblock.MultiblockShapeInfo;
 
+import com.gregtechceu.gtceu.api.multiblock.pattern.BlockPattern;
+import com.gregtechceu.gtceu.api.multiblock.pattern.IBlockPattern;
+import com.gregtechceu.gtceu.api.multiblock.pattern.PatternAisle;
+import com.gregtechceu.gtceu.api.multiblock.predicates.PredicateBlocks;
+import com.gregtechceu.gtceu.api.multiblock.predicates.PredicateFluidTag;
+import com.gregtechceu.gtceu.api.multiblock.predicates.PredicateFluids;
+import com.gregtechceu.gtceu.api.multiblock.predicates.PredicateStates;
+import com.gregtechceu.gtceu.api.multiblock.util.BlockInfo;
+import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
 import com.lowdragmc.lowdraglib.client.scene.WorldSceneRenderer;
 import com.lowdragmc.lowdraglib.client.scene.forge.WorldSceneRendererImpl;
-import com.lowdragmc.lowdraglib.utils.BlockInfo;
 import com.lowdragmc.lowdraglib.utils.TrackedDummyWorld;
 
 import net.minecraft.client.Camera;
@@ -109,35 +117,24 @@ public class MultiblockInWorldPreviewRenderer {
         if (!controller.getDefinition().isRenderWorldPreview()) return;
         Direction front = controller.getFrontFacing();
         Direction up = controller.getUpwardsFacing();
-        MultiblockShapeInfo shapeInfo = controller.getDefinition().getMatchingShapes().get(0);
+
+        IBlockPattern pattern = controller.getSubstructure(MultiblockControllerMachine.DEFAULT_STRUCTURE);
+
+        //MultiblockShapeInfo shapeInfo = controller.getDefinition().getMatchingShapes().get(0);
 
         Map<BlockPos, BlockInfo> blockMap = new HashMap<>();
         IMultiController controllerBase = null;
         LEVEL = new TrackedDummyWorld();
 
-        var blocks = shapeInfo.getBlocks();
-        BlockPos controllerPatternPos = null;
-        var maxY = 0;
-        // find the pos of controller
-        for (int x = 0; x < blocks.length; x++) {
-            BlockInfo[][] aisle = blocks[x];
-            maxY = Math.max(maxY, aisle.length);
-            for (int y = 0; y < aisle.length; y++) {
-                BlockInfo[] column = aisle[y];
-                for (int z = 0; z < column.length; z++) {
-                    var blockState = column[z].getBlockState();
-                    // if its controller record its position offset.
-                    if (blockState.getBlock() instanceof MetaMachineBlock machineBlock &&
-                            machineBlock.getDefinition() instanceof MultiblockMachineDefinition) {
-                        controllerPatternPos = new BlockPos(x, y, z);
-                    }
-                }
-            }
-        }
+        //BlockInfo[][][] blocks = pattern.
 
-        if (controllerPatternPos == null) { // if there is no controller found
-            return;
-        }
+        //var blocks = shapeInfo.getBlocks();
+        //BlockPos controllerPatternPos = controller.getSubstructure(MultiblockControllerMachine.DEFAULT_STRUCTURE)
+        //        .getOffset().toBlockPos();
+        BlockPos controllerPos = controller.getBlockPos();
+        BlockPos patternControllerPos = controller.getSubstructure(MultiblockControllerMachine.DEFAULT_STRUCTURE)
+                .getOffset().toBlockPos();
+        var maxY = 0;
 
         if (LAST_POS != null && LAST_POS.equals(pos)) {
             LAST_LAYER++;
@@ -149,7 +146,34 @@ public class MultiblockInWorldPreviewRenderer {
         }
         LAST_POS = pos;
 
-        for (int x = 0; x < blocks.length; x++) {
+
+        if (pattern instanceof BlockPattern blockPattern) {
+            var predicateMapping = blockPattern.getPredicates();
+            int[] dims = blockPattern.getDimensions();
+            for (int x = 0; x < dims[0]; x++) {
+                PatternAisle aisle = blockPattern.getAisles()[x];
+                for (int y = 0; y < dims[1]; y++) {
+                    var string = aisle.getPattern()[y];
+                    for (int z = 0; z < dims[2]; z++) {
+                        var predList = predicateMapping.get(string.charAt(z));
+                        var pred = predList.predicateList.get(0);
+                        BlockState blockState = Blocks.AIR.defaultBlockState();
+                        if (pred instanceof PredicateBlocks blockPred) {
+                            blockState = blockPred.blocks[0].defaultBlockState();
+                        } else if (pred instanceof PredicateStates statePred) {
+                            blockState = statePred.states[0];
+                        }
+                        if (pred instanceof PredicateFluids || pred instanceof PredicateFluidTag) continue;
+
+                        BlockPos offset = RelativeDirection.offsetPos(controllerPos, front, up, false, y, x, z);
+
+                        blockMap.put(offset, BlockInfo.fromBlockState(blockState));
+                    }
+                }
+            }
+        }
+
+        /*for (int x = 0; x < pattern.; x++) {
             BlockInfo[][] aisle = blocks[x];
             for (int y = 0; y < aisle.length; y++) {
                 BlockInfo[] column = aisle[y];
@@ -158,21 +182,8 @@ public class MultiblockInWorldPreviewRenderer {
                 }
                 for (int z = 0; z < column.length; z++) {
                     var blockState = column[z].getBlockState();
-                    var offset = new BlockPos(x, y, z).subtract(controllerPatternPos);
-
-                    // rotation
-                    offset = switch (front) {
-                        case NORTH, UP, DOWN -> offset.rotate(Rotation.NONE);
-                        case SOUTH -> offset.rotate(Rotation.CLOCKWISE_180);
-                        case EAST -> offset.rotate(Rotation.COUNTERCLOCKWISE_90);
-                        case WEST -> offset.rotate(Rotation.CLOCKWISE_90);
-                    };
-
-                    Rotation r = up == Direction.NORTH ? Rotation.NONE : up == Direction.EAST ? Rotation.CLOCKWISE_90 :
-                            up == Direction.SOUTH ? Rotation.CLOCKWISE_180 :
-                                    up == Direction.WEST ? Rotation.COUNTERCLOCKWISE_90 : Rotation.NONE;
-
-                    offset = rotateByFrontAxis(offset, front, r);
+                    //var offset = new BlockPos(x, y, z).subtract(patternControllerPos);
+                    BlockPos offset = RelativeDirection.offsetPos(controllerPos, front, up, false, y, x, z);
 
                     if (blockState.getBlock() instanceof MetaMachineBlock machineBlock) {
                         var rotationState = machineBlock.getRotationState();
@@ -192,62 +203,22 @@ public class MultiblockInWorldPreviewRenderer {
                         }
                     }
 
-                    BlockPos realPos = pos.offset(offset);
-
-                    if (column[z].getBlockEntity(realPos) instanceof IMultiController cont) {
+                    if (column[z].getBlockEntity(offset) instanceof IMultiController cont) {
                         cont.self().setLevel(LEVEL);
                         controllerBase = cont;
                     } else {
-                        blockMap.put(realPos, BlockInfo.fromBlockState(blockState));
+                        blockMap.put(offset, BlockInfo.fromBlockState(blockState));
                     }
                 }
             }
-        }
+        }*/
 
-        LEVEL.addBlocks(blockMap);
-        if (controllerBase != null) {
-            LEVEL.setInnerBlockEntity(controllerBase.self());
-        }
+        //LEVEL.addBlocks(blockMap);
+        //if (controllerBase != null) {
+        //    LEVEL.setInnerBlockEntity(controllerBase.self());
+        //}
 
-        prepareBuffers(LEVEL, blockMap.keySet(), duration);
-    }
-
-    private static BlockPos rotateByFrontAxis(BlockPos pos, Direction front, Rotation rotation) {
-        if (front.getAxis() == Direction.Axis.X) {
-            return switch (rotation) {
-                default -> new BlockPos(-pos.getX(), pos.getY(), -pos.getZ());
-                case CLOCKWISE_90 -> new BlockPos(-pos.getX(), -front.getAxisDirection().getStep() * pos.getZ(),
-                        front.getAxisDirection().getStep() * -pos.getY());
-                case CLOCKWISE_180 -> new BlockPos(-pos.getX(), -pos.getY(), pos.getZ());
-                case COUNTERCLOCKWISE_90 -> new BlockPos(-pos.getX(), front.getAxisDirection().getStep() * pos.getZ(),
-                        front.getAxisDirection().getStep() * pos.getY());
-            };
-        } else if (front.getAxis() == Direction.Axis.Y) {
-            return switch (rotation) {
-                default -> new BlockPos(-front.getAxisDirection().getStep() * pos.getX(),
-                        -front.getAxisDirection().getStep() * pos.getZ(),
-                        -pos.getY());
-                case CLOCKWISE_90 -> new BlockPos(pos.getY(),
-                        -front.getAxisDirection().getStep() * pos.getZ(),
-                        -front.getAxisDirection().getStep() * pos.getX());
-                case CLOCKWISE_180 -> new BlockPos(front.getAxisDirection().getStep() * pos.getX(),
-                        -front.getAxisDirection().getStep() * pos.getZ(),
-                        pos.getY());
-                case COUNTERCLOCKWISE_90 -> new BlockPos(-pos.getY(),
-                        -front.getAxisDirection().getStep() * pos.getZ(),
-                        front.getAxisDirection().getStep() * pos.getX());
-            };
-        } else if (front.getAxis() == Direction.Axis.Z) {
-            return switch (rotation) {
-                default -> pos;
-                case CLOCKWISE_90 -> new BlockPos(front.getAxisDirection().getStep() * pos.getY(),
-                        -front.getAxisDirection().getStep() * pos.getX(), pos.getZ());
-                case CLOCKWISE_180 -> new BlockPos(-pos.getX(), -pos.getY(), pos.getZ());
-                case COUNTERCLOCKWISE_90 -> new BlockPos(front.getAxisDirection().getStep() * -pos.getY(),
-                        front.getAxisDirection().getStep() * pos.getX(), pos.getZ());
-            };
-        }
-        return pos;
+       // prepareBuffers(LEVEL, blockMap.keySet(), duration);
     }
 
     public static void onClientTick() {

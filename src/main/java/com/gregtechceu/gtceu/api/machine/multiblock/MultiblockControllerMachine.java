@@ -241,7 +241,6 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
         if (!pState.shouldUpdate() || getLevel() == null) return pState;
 
         long time = System.nanoTime();
-        // .setController(this, getPos());
         pState.setController(this, getBlockPos());
         pattern.checkPatternFastAt(getLevel(), pState, getBlockPos(), getFrontFacing(), getUpwardsFacing(),
                 allowFlip());

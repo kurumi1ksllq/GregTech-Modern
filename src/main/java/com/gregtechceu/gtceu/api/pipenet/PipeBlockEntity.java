@@ -3,10 +3,8 @@ package com.gregtechceu.gtceu.api.pipenet;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.MaterialPipeBlock;
 import com.gregtechceu.gtceu.api.block.PipeBlock;
+import com.gregtechceu.gtceu.api.blockentity.*;
 import com.gregtechceu.gtceu.api.blockentity.IGregtechBlockEntity;
-import com.gregtechceu.gtceu.api.blockentity.IGregtechBlockEntity;
-import com.gregtechceu.gtceu.api.blockentity.IPaintable;
-import com.gregtechceu.gtceu.api.blockentity.ITickSubscription;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.capability.IToolable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
@@ -75,15 +73,14 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     protected final PipeCoverContainer coverContainer;
 
     @Getter
-    @Setter(onMethod_ = @ApiStatus.Internal)
     @SyncToClient
     @SaveField
     @RerenderOnChanged
-    protected int connections = Node.ALL_CLOSED;
+    protected int connections = ALL_CLOSED;
     @SyncToClient
     @SaveField
     @RerenderOnChanged
-    private int blockedConnections = Node.ALL_CLOSED;
+    private int blockedConnections = ALL_CLOSED;
     private NodeDataType cachedNodeData;
 
     @SaveField

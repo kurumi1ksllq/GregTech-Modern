@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.ae2.machine;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -12,10 +13,15 @@ import com.gregtechceu.gtceu.api.mui.drawable.ItemDrawable;
 import com.gregtechceu.gtceu.api.mui.drawable.text.TextRenderer;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
+import com.gregtechceu.gtceu.api.mui.value.sync.DynamicSyncHandler;
+import com.gregtechceu.gtceu.api.mui.value.sync.GenericListSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.GenericMapSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.EmptyWidget;
 import com.gregtechceu.gtceu.api.mui.widget.Widget;
+import com.gregtechceu.gtceu.api.mui.widgets.DynamicSyncedWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Row;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
@@ -139,13 +145,6 @@ public class MEOutputBusPartMachine extends MEBusPartMachine implements IMachine
         int textHeightPerRow = (int) (IKey.renderer.getFontHeight());
         int textHeight = textHeightPerRow * textRows + borderRadius;
 
-        var keyStorageSyncHandler = new GenericMapSyncHandler<>(() -> internalBuffer.storage,
-                (map) -> internalBuffer.storage = map,
-                AEKey::readKey, FriendlyByteBuf::readLong,
-                AEKey::writeKey, FriendlyByteBuf::writeLong,
-                Objects::equals, ICopy.immutable(), ICopy.immutable());
-
-        syncManager.syncValue("keyStorage", keyStorageSyncHandler);
 
         panel.child(new Row()
                 .coverChildrenHeight()
@@ -164,22 +163,47 @@ public class MEOutputBusPartMachine extends MEBusPartMachine implements IMachine
                         .paddingTop(1)
                         .margin(borderRadius, borderRadius, borderRadius, 1)
                         .size(textTitleWidth, textHeight)));
+        var keyStorageSyncHandler = new GenericMapSyncHandler<>(() -> internalBuffer.storage,
+                (map) -> internalBuffer.storage = map,
+                AEKey::readKey, FriendlyByteBuf::readLong,
+                AEKey::writeKey, FriendlyByteBuf::writeLong,
+                null, null, null);
 
-        var widget = new Column().name("ae_list");
-        for (var entry : keyStorageSyncHandler.getValue().entrySet()) {
-            AEKey key = entry.getKey();
+        syncManager.syncValue("keyStorage", keyStorageSyncHandler);
 
-            var drawable = new ItemDrawable();
-            widget.child(new Row()
-                    .child(new Widget<>()
-                            .overlay(new DynamicDrawable(() -> drawable.setItem(key.wrapForDisplayOrFilter()))))
-                    .child(IKey.dynamic(() -> {
-                        ItemStack stack = key.wrapForDisplayOrFilter();
-                        return Component.literal(stack.getDisplayName().getString() + " " + entry.getValue());
-                    }).asWidget()));
-        }
 
-        panel.child(widget);
+        // use a dynamic sync handler to update every time this changes vs runinng only on list build
+        DynamicSyncHandler slotsHandler = new DynamicSyncHandler().widgetProvider((slotsSyncManger, buffer) -> {
+            if (buffer == null) return new EmptyWidget();
+
+            Flow storageSlots = new Column().name("ae_list");
+            // iterate over every list
+            keyStorageSyncHandler.read(buffer);
+            var storage = keyStorageSyncHandler.getValue();
+
+            for (var item : storage.entrySet()) {
+                var key = item.getKey();
+
+                storageSlots.child(new Row()
+                        .child(new Widget<>()
+                                .overlay(new DynamicDrawable(() -> new ItemDrawable(key.wrapForDisplayOrFilter())))
+                                .width(20))
+                        .child(IKey.dynamic(() -> {
+                            ItemStack stack = key.wrapForDisplayOrFilter();
+                            return Component.literal(stack.getDisplayName().getString() + " " + item.getValue());
+                        }).asWidget()
+                                .width(176-20-4)));
+            }
+            return storageSlots;
+        });
+
+
+        keyStorageSyncHandler.setChangeListener(() -> {
+            slotsHandler.notifyUpdate(buffer -> {
+                keyStorageSyncHandler.write(buffer);
+            });
+        });
+        panel.child(new DynamicSyncedWidget<>().syncHandler(slotsHandler).margin(4));
 
         return panel;
     }

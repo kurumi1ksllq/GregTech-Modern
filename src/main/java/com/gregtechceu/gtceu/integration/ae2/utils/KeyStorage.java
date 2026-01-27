@@ -9,13 +9,13 @@ import appeng.api.config.Actionable;
 import appeng.api.networking.security.IActionSource;
 import appeng.api.stacks.AEKey;
 import appeng.api.storage.MEStorage;
-import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Used to store {@link appeng.api.stacks.GenericStack } in a way that associates key and amount.
@@ -23,9 +23,9 @@ import java.util.Iterator;
  */
 @MethodsReturnNonnullByDefault
 public class KeyStorage implements INBTSerializable<ListTag>,
-                        Iterable<Object2LongMap.Entry<AEKey>> {
+                        Iterable<Map.Entry<AEKey, Long>> {
 
-    public final Object2LongMap<AEKey> storage = new Object2LongOpenHashMap<>(); // TODO trim periodically or not
+    public Map<AEKey, Long> storage = new Object2LongOpenHashMap<>(); // TODO trim periodically or not
 
     @Nullable
     @Getter
@@ -44,7 +44,7 @@ public class KeyStorage implements INBTSerializable<ListTag>,
         while (it.hasNext()) {
             var entry = it.next();
             var key = entry.getKey();
-            var amount = entry.getLongValue();
+            var amount = entry.getValue();
             long inserted = inventory.insert(key, amount, Actionable.MODULATE,
                     source);
             if (inserted > 0) {
@@ -70,10 +70,10 @@ public class KeyStorage implements INBTSerializable<ListTag>,
     @Override
     public ListTag serializeNBT() {
         var list = new ListTag();
-        for (var entry : storage.object2LongEntrySet()) {
+        for (var entry : storage.entrySet()) {
             var tag = new CompoundTag();
             tag.put("key", entry.getKey().toTagGeneric());
-            tag.putLong("value", entry.getLongValue());
+            tag.putLong("value", entry.getValue());
             list.add(tag);
         }
         return list;
@@ -90,8 +90,8 @@ public class KeyStorage implements INBTSerializable<ListTag>,
     }
 
     @Override
-    public Iterator<Object2LongMap.Entry<AEKey>> iterator() {
-        return storage.object2LongEntrySet().iterator();
+    public Iterator<Map.Entry<AEKey, Long>> iterator() {
+        return storage.entrySet().iterator();
     }
 
     public boolean isEmpty() {

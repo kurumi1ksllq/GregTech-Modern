@@ -51,7 +51,7 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine implements IMac
         var grid = getMainNode().getGrid();
         if (grid != null && !internalBuffer.isEmpty()) {
             for (var entry : internalBuffer) {
-                grid.getStorageService().getInventory().insert(entry.getKey(), entry.getLongValue(),
+                grid.getStorageService().getInventory().insert(entry.getKey(), entry.getValue(),
                         Actionable.MODULATE, actionSource);
             }
         }
@@ -194,10 +194,10 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine implements IMac
         public int fill(FluidStack resource, FluidAction action) {
             var key = AEFluidKey.of(resource.getFluid(), resource.getTag());
             int amount = resource.getAmount();
-            int oldValue = GTMath.saturatedCast(internalBuffer.storage.getOrDefault(key, 0));
+            int oldValue = GTMath.saturatedCast(internalBuffer.storage.getOrDefault(key, 0L));
             int changeValue = Math.min(Integer.MAX_VALUE - oldValue, amount);
             if (changeValue > 0 && action.execute()) {
-                internalBuffer.storage.put(key, oldValue + changeValue);
+                internalBuffer.storage.put(key, (long) (oldValue + changeValue));
                 internalBuffer.onChanged();
             }
             return changeValue;

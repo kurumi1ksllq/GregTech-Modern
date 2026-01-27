@@ -71,21 +71,21 @@ public abstract class AEListGridWidget extends DraggableScrollableWidgetGroup {
         this.changeMap.clear();
 
         // Remove
-        var cachedIt = cached.storage.object2LongEntrySet().iterator();
+        var cachedIt = cached.storage.entrySet().iterator();
         while (cachedIt.hasNext()) {
             var entry = cachedIt.next();
             var cachedKey = entry.getKey();
             if (!list.storage.containsKey(cachedKey)) {
-                this.changeMap.put(cachedKey, -entry.getLongValue());
+                this.changeMap.put(cachedKey, -entry.getValue());
                 cachedIt.remove();
             }
         }
 
         // Change/Add
-        for (var entry : list.storage.object2LongEntrySet()) {
+        for (var entry : list.storage.entrySet()) {
             var key = entry.getKey();
-            long value = entry.getLongValue();
-            long cacheValue = cached.storage.getOrDefault(key, 0);
+            long value = entry.getValue();
+            long cacheValue = cached.storage.getOrDefault(key, 0L);
             if (cacheValue == 0) {
                 // Add
                 this.changeMap.put(key, value);

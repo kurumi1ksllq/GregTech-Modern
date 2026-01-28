@@ -1,5 +1,10 @@
 [
   {
+    "version": "mui2-refactor",
+    "title": "mui2-refactor",
+    "aliases": []
+  },
+  {
     "version": "1.21",
     "title": "1.21",
     "aliases": []

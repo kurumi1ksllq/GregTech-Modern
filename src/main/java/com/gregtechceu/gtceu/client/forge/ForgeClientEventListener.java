@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.client.forge;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.BlockAttributes;
+import com.gregtechceu.gtceu.api.blockentity.IDebugOverlayTextSupplier;
 import com.gregtechceu.gtceu.api.cosmetics.CapeRegistry;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -165,9 +166,10 @@ public class ForgeClientEventListener {
         BlockPos hitPos = hit.getBlockPos();
         BlockEntity blockEntity = mc.level.getBlockEntity(hitPos);
         // only try to find the correct location if we have a valid machine
-        if (!(blockEntity instanceof MetaMachine machineBE)) return;
+        if (!(blockEntity instanceof IDebugOverlayTextSupplier overlayTextSupplier)) return;
 
         final List<String> rightLines = event.getRight();
+        final List<String> leftLines = event.getLeft();
         int lineCount = rightLines.size();
 
         // look for the empty line after the "Targeted Block" section
@@ -195,10 +197,12 @@ public class ForgeClientEventListener {
         }
 
         // actually add the text lines
-        MutableInt index = new MutableInt(afterBlockSection);
-
-        rightLines.add(index.getAndIncrement(), "");
-        machineBE.addDebugOverlayText(line -> rightLines.add(index.getAndIncrement(), line));
+        MutableInt indexRight = new MutableInt(afterBlockSection);
+        MutableInt indexLeft = new MutableInt(leftLines.size());
+        rightLines.add(indexRight.getAndIncrement(), "");
+        leftLines.add(indexLeft.getAndIncrement(), "");
+        overlayTextSupplier.addDebugOverlayText(line -> leftLines.add(indexLeft.getAndIncrement(), line),
+                line -> rightLines.add(indexRight.getAndIncrement(), line));
     }
 
     @SubscribeEvent

@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.common.blockentity;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.IDebugOverlayTextSupplier;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -60,6 +61,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPipeProperties>
@@ -544,4 +546,5 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
             this.amount = amount;
         }
     }
+
 }

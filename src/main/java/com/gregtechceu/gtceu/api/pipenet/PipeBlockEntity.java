@@ -25,6 +25,7 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -45,14 +46,13 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import com.mojang.datafixers.util.Pair;
 import lombok.Getter;
-import lombok.Setter;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -60,7 +60,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeType<NodeDataType>, NodeDataType>
                                      extends ManagedSyncBlockEntity
-                                     implements IGregtechBlockEntity, IToolGridHighlight, ITickSubscription, IToolable, ICopyable, IPaintable {
+                                     implements IGregtechBlockEntity, IToolGridHighlight, ITickSubscription, IToolable, ICopyable, IPaintable, IDebugOverlayTextSupplier {
 
     private final long offset = GTValues.RNG.nextInt(20);
 
@@ -535,5 +535,18 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     @Override
     public List<ItemStack> getItemsRequiredToPaste() {
         return coverContainer.getItemsRequiredToPaste();
+    }
+
+    @Override
+    public void addDebugOverlayText(Consumer<String> leftLines, Consumer<String> rightLines) {
+        leftLines.accept(ChatFormatting.UNDERLINE + "Targeted Pipe: " + getBlockPos().toShortString());
+        leftLines.accept(getBlockState().getBlock().getName().getString());
+        leftLines.accept("");
+        leftLines.accept(ChatFormatting.UNDERLINE + "Pipe Network");
+        leftLines.accept(getNetworkType().toString());
+        leftLines.accept(getPipeNet() != null ? getPipeNet().toString(): "<no network>");
+        leftLines.accept("");
+        leftLines.accept(ChatFormatting.UNDERLINE + "Pipe Segment");
+        leftLines.accept(getPipeBlock().defaultSegmentProperties.toString());
     }
 }

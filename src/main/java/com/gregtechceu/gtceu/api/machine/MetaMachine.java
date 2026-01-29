@@ -4,10 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
-import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
-import com.gregtechceu.gtceu.api.blockentity.ICopyable;
-import com.gregtechceu.gtceu.api.blockentity.IGregtechBlockEntity;
-import com.gregtechceu.gtceu.api.blockentity.IPaintable;
+import com.gregtechceu.gtceu.api.blockentity.*;
 import com.gregtechceu.gtceu.api.capability.*;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -107,7 +104,7 @@ import static com.gregtechceu.gtceu.api.item.tool.ToolHelper.getBehaviorsTag;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class MetaMachine extends ManagedSyncBlockEntity implements IGregtechBlockEntity, IToolable, IToolGridHighlight,
-                         IFancyTooltip, IPaintable, IMachineFeature, ICopyable {
+                         IFancyTooltip, IPaintable, IMachineFeature, ICopyable, IDebugOverlayTextSupplier {
 
     public static final ModelProperty<BlockAndTintGetter> MODEL_DATA_LEVEL = new ModelProperty<>();
     public static final ModelProperty<BlockPos> MODEL_DATA_POS = new ModelProperty<>();
@@ -578,14 +575,14 @@ public class MetaMachine extends ManagedSyncBlockEntity implements IGregtechBloc
         return null;
     }
 
-    public void addDebugOverlayText(Consumer<String> lines) {
-        lines.accept(ChatFormatting.UNDERLINE + "Targeted Machine: ");
-        lines.accept(this.getDefinition().getId().toString());
+    public void addDebugOverlayText(Consumer<String> leftLines, Consumer<String> rightLines) {
+        rightLines.accept(ChatFormatting.UNDERLINE + "Targeted Machine: ");
+        rightLines.accept(this.getDefinition().getId().toString());
 
         // add render state info
         MachineRenderState renderState = this.getRenderState();
         for (var property : renderState.getValues().entrySet()) {
-            lines.accept(ModelUtils.getPropertyValueString(property));
+            rightLines.accept(ModelUtils.getPropertyValueString(property));
         }
     }
 

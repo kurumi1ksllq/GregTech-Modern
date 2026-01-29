@@ -547,6 +547,8 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
         leftLines.accept(getPipeNet() != null ? getPipeNet().toString(): "<no network>");
         leftLines.accept("");
         leftLines.accept(ChatFormatting.UNDERLINE + "Pipe Segment");
-        leftLines.accept(getPipeBlock().defaultSegmentProperties.toString());
+        for (var p: getPipeBlock().defaultSegmentProperties.getProperties().entrySet()) {
+            leftLines.accept(p.getKey().getId().toString() + "=" + p.getValue().toString() + ",");
+        }
     }
 }

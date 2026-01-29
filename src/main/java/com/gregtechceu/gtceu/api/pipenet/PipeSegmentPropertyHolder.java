@@ -3,9 +3,13 @@ package com.gregtechceu.gtceu.api.pipenet;
 import com.gregtechceu.gtceu.api.pipenet.property.*;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.Getter;
+
+import java.util.function.Consumer;
 
 public class PipeSegmentPropertyHolder {
 
+    @Getter
     private final Object2ObjectOpenHashMap<SegmentPropertyType, PipeSegmentProperty<?>> properties = new Object2ObjectOpenHashMap<>();
 
     public PipeSegmentPropertyHolder setProperty(SegmentPropertyType prop, PipeSegmentProperty<?> value) {

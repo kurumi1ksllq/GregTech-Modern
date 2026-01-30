@@ -4,7 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import lombok.Getter;
 
-public class SegmentPropertyType {
+public class SegmentPropertyType<T extends PipeSegmentProperty<?>> {
 
     @Getter
     private final ResourceLocation id;

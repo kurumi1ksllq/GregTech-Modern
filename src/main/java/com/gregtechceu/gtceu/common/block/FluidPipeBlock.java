@@ -70,12 +70,12 @@ public class FluidPipeBlock extends MaterialPipeBlock<FluidPipeType, FluidPipePr
                                 TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
 
-        tooltip.add(Component.translatable("gtceu.universal.tooltip.fluid_transfer_rate", defaultSegmentProperties.getIntProperty(SegmentPropertyTypes.FLUID_THROUGHPUT)));
+        tooltip.add(Component.translatable("gtceu.universal.tooltip.fluid_transfer_rate", defaultSegmentProperties.getProperty(SegmentPropertyTypes.FLUID_THROUGHPUT)));
         tooltip.add(Component.translatable("gtceu.fluid_pipe.max_temperature",
-                FormattingUtil.formatTemperature(defaultSegmentProperties.getIntProperty(SegmentPropertyTypes.MAX_TEMPERATURE))));
+                FormattingUtil.formatTemperature(defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.MAX_TEMPERATURE))));
 
-        if (defaultSegmentProperties.getIntProperty(SegmentPropertyTypes.CHANNELS) > 1) {
-            tooltip.add(Component.translatable("gtceu.fluid_pipe.channels", defaultSegmentProperties.getIntProperty(SegmentPropertyTypes.CHANNELS)));
+        if (defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.CHANNELS) > 1) {
+            tooltip.add(Component.translatable("gtceu.fluid_pipe.channels", defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.CHANNELS)));
         }
 
         if (!GTUtil.isShiftDown()) {
@@ -83,14 +83,14 @@ public class FluidPipeBlock extends MaterialPipeBlock<FluidPipeType, FluidPipePr
             return;
         }
 
-        if (defaultSegmentProperties.getBoolProperty(SegmentPropertyTypes.GAS_PROOF))
+        if (defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.GAS_PROOF))
             tooltip.add(Component.translatable("gtceu.fluid_pipe.gas_proof"));
         else
             tooltip.add(Component.translatable("gtceu.fluid_pipe.not_gas_proof"));
 
-        if (defaultSegmentProperties.getBoolProperty(SegmentPropertyTypes.ACID_PROOF)) tooltip.add(Component.translatable("gtceu.fluid_pipe.acid_proof"));
-        if (defaultSegmentProperties.getBoolProperty(SegmentPropertyTypes.CRYO_PROOF)) tooltip.add(Component.translatable("gtceu.fluid_pipe.cryo_proof"));
-        if (defaultSegmentProperties.getBoolProperty(SegmentPropertyTypes.PLASMA_PROOF)) tooltip.add(Component.translatable("gtceu.fluid_pipe.plasma_proof"));
+        if (defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.ACID_PROOF)) tooltip.add(Component.translatable("gtceu.fluid_pipe.acid_proof"));
+        if (defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.CRYO_PROOF)) tooltip.add(Component.translatable("gtceu.fluid_pipe.cryo_proof"));
+        if (defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.PLASMA_PROOF)) tooltip.add(Component.translatable("gtceu.fluid_pipe.plasma_proof"));
     }
 
     @Override

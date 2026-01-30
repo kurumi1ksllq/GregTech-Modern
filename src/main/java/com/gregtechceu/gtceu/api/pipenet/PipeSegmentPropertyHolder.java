@@ -5,37 +5,23 @@ import com.gregtechceu.gtceu.api.pipenet.property.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 
-import java.util.function.Consumer;
-
 public class PipeSegmentPropertyHolder {
 
     @Getter
-    private final Object2ObjectOpenHashMap<SegmentPropertyType, PipeSegmentProperty<?>> properties = new Object2ObjectOpenHashMap<>();
+    private final Object2ObjectOpenHashMap<SegmentPropertyType<?>, PipeSegmentProperty<?>> properties = new Object2ObjectOpenHashMap<>();
 
-    public PipeSegmentPropertyHolder setProperty(SegmentPropertyType prop, PipeSegmentProperty<?> value) {
+    public PipeSegmentPropertyHolder setProperty(SegmentPropertyType<?> prop, PipeSegmentProperty<?> value) {
         properties.put(prop, value);
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends PipeSegmentProperty<?>> T getProperty(SegmentPropertyType prop) {
-        return (T) properties.get(prop);
+    public <T extends PipeSegmentProperty<?>> T getProperty(SegmentPropertyType<T> prop) {
+        return (T)properties.get(prop);
     }
 
-    public int getIntProperty(SegmentPropertyType prop) {
-        return ((IntSegmentProperty)properties.get(prop)).getValue();
-    }
-
-    public long getLongProperty(SegmentPropertyType prop) {
-        return ((LongSegmentProperty)properties.get(prop)).getValue();
-    }
-
-    public float getFloatProperty(SegmentPropertyType prop) {
-        return ((FloatSegmentProperty)properties.get(prop)).getValue();
-    }
-
-    public boolean getBoolProperty(SegmentPropertyType prop) {
-        return ((BoolSegmentProperty)properties.get(prop)).getValue();
+    public <T> T getPropertyValue(SegmentPropertyType<? extends PipeSegmentProperty<T>> prop) {
+        return getProperty(prop).getValue();
     }
 
     public PipeSegmentPropertyHolder copy() {

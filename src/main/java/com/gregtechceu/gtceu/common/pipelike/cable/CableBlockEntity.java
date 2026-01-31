@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IDataInfoProvider;
-import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
@@ -41,9 +40,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -52,16 +49,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class CableBlockEntity extends PipeBlockEntity<WireType, WireProperties> implements IDataInfoProvider {
 
-    protected WeakReference<EnergyNet> currentEnergyNet = new WeakReference<>(null);
-
     @Getter
     private static final int meltTemp = 3000;
 
-    private final EnumMap<Direction, EnergyNetHandler> handlers = new EnumMap<>(Direction.class);
     private final PerTickLongCounter maxVoltageCounter = new PerTickLongCounter();
     private final AveragingPerTickCounter averageVoltageCounter = new AveragingPerTickCounter();
     private final AveragingPerTickCounter averageAmperageCounter = new AveragingPerTickCounter();
-    private EnergyNetHandler defaultHandler;
     private int heatQueue;
     @Getter
     @SaveField
@@ -103,60 +96,16 @@ public class CableBlockEntity extends PipeBlockEntity<WireType, WireProperties> 
         return false;
     }
 
-    @Nullable
-    private EnergyNet getEnergyNet() {
-        if (!(level instanceof ServerLevel serverLevel))
-            return null;
-        EnergyNet currentEnergyNet = this.currentEnergyNet.get();
-        if (currentEnergyNet != null && currentEnergyNet.isValid() &&
-                currentEnergyNet.containsNode(getBlockPos()))
-            return currentEnergyNet; // return current net if it is still valid
-
-        LevelPipeNet worldENet = LevelPipeNet.getLevelPipeNet(serverLevel, GTPipeNetworks.ENERGY);
-        currentEnergyNet = worldENet.getNetFromPos(getBlockPos());
-        if (currentEnergyNet != null) {
-            this.currentEnergyNet = new WeakReference<>(currentEnergyNet);
-        }
-        return currentEnergyNet;
-    }
-
-    public void checkNetwork() {
-        if (defaultHandler != null) {
-            EnergyNet current = getEnergyNet();
-            if (defaultHandler.getNet() != current) {
-                defaultHandler.updateNetwork(current);
-                for (EnergyNetHandler handler : handlers.values()) {
-                    handler.updateNetwork(current);
-                }
-            }
-        }
-    }
 
     @Nullable
     public IEnergyContainer getEnergyContainer(@Nullable Direction side) {
         if (side != null && !isConnected(side)) return null;
-        // the EnergyNetHandler can only be created on the server, so we have an empty placeholder for the client
-        if (isRemote()) return IEnergyContainer.DEFAULT;
-        if (handlers.isEmpty())
-            initHandlers();
-        checkNetwork();
-        return handlers.getOrDefault(side, defaultHandler);
+        return IEnergyContainer.DEFAULT;
     }
 
     @Override
     public boolean canHaveBlockedFaces() {
         return false;
-    }
-
-    private void initHandlers() {
-        EnergyNet net = getEnergyNet();
-        if (net == null) {
-            return;
-        }
-        for (Direction facing : GTUtil.DIRECTIONS) {
-            handlers.put(facing, new EnergyNetHandler(net, this, facing));
-        }
-        defaultHandler = new EnergyNetHandler(net, this, null);
     }
 
     @Override

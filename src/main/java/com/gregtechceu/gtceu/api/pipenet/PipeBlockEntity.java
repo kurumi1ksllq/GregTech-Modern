@@ -14,7 +14,6 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.IToolGridHighlight;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
-import com.gregtechceu.gtceu.api.pipenet.*;
 import com.gregtechceu.gtceu.api.sync_system.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
@@ -82,7 +81,6 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     @SaveField
     @RerenderOnChanged
     private int blockedConnections = ALL_CLOSED;
-    private NodeDataType cachedNodeData;
 
     @SaveField
     @SyncToClient
@@ -218,13 +216,6 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
         return getPipeBlock().pipeType;
     }
 
-    public NodeDataType getNodeData() {
-        if (cachedNodeData == null) {
-            this.cachedNodeData = getPipeBlock().getBaseProperties();
-        }
-        return cachedNodeData;
-    }
-
     @Nullable
     public TickableSubscription subscribeServerTick(Runnable runnable) {
         if (!isRemote()) {
@@ -244,9 +235,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     public final void serverTick() {
         if (!attachedToNet) {
             int activeConnections = getConnections();
-            boolean isActiveNode = activeConnections != 0;
-            LevelPipeNet.getLevelPipeNet((ServerLevel) level, networkType).addNode(getBlockPos(), activeConnections,
-                    isActiveNode);
+            LevelPipeNet.getLevelPipeNet((ServerLevel) level, networkType).addNode(getBlockPos(), this);
         }
 
         if (!waitingToAdd.isEmpty()) {

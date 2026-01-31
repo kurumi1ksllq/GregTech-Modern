@@ -71,12 +71,7 @@ public class PipeCoverContainer implements ICoverable, ISyncManaged {
 
     @Override
     public IItemHandlerModifiable getItemHandlerCap(Direction side, boolean useCoverCapability) {
-        if (pipeTile instanceof ItemPipeBlockEntity itemPipe) {
-            return getLevel() instanceof ServerLevel ? itemPipe.getHandler(side, useCoverCapability) :
-                    (IItemHandlerModifiable) EmptyHandler.INSTANCE;
-        } else {
-            return null;
-        }
+        return null;
     }
 
     @Override

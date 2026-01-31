@@ -3,13 +3,10 @@ package com.gregtechceu.gtceu.common.pipelike.laser;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.ILaserContainer;
-import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
-import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
-import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.TaskHandler;
 
 import net.minecraft.core.BlockPos;
@@ -18,25 +15,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.lang.ref.WeakReference;
-import java.util.EnumMap;
 
 public class LaserPipeBlockEntity extends PipeBlockEntity<LaserPipeType, LaserPipeProperties> {
 
-    @Getter
-    protected final EnumMap<Direction, LaserNetHandler> handlers = new EnumMap<>(Direction.class);
     // the LaserNetHandler can only be created on the server, so we have an empty placeholder for the client
     public final ILaserContainer clientCapability = new DefaultLaserContainer();
-    private WeakReference<LaserPipeNet> currentPipeNet = new WeakReference<>(null);
-    @Getter
-    protected LaserNetHandler defaultHandler;
 
     private int ticksActive = 0;
     private int activeDuration = 0;
@@ -56,65 +41,8 @@ public class LaserPipeBlockEntity extends PipeBlockEntity<LaserPipeType, LaserPi
     public static void onBlockEntityRegister(BlockEntityType<LaserPipeBlockEntity> cableBlockEntityBlockEntityType) {}
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == GTCapability.CAPABILITY_LASER) {
-            if (getLevel().isClientSide())
-                return GTCapability.CAPABILITY_LASER.orEmpty(cap, LazyOptional.of(() -> clientCapability));
-            if (side != null && !isConnected(side)) return LazyOptional.empty();
-            if (handlers.isEmpty()) {
-                initHandlers();
-            }
-            checkNetwork();
-            return GTCapability.CAPABILITY_LASER.orEmpty(cap,
-                    LazyOptional.of(() -> handlers.getOrDefault(side, defaultHandler)));
-        } else if (cap == GTCapability.CAPABILITY_COVERABLE) {
-            return GTCapability.CAPABILITY_COVERABLE.orEmpty(cap, LazyOptional.of(this::getCoverContainer));
-        } else if (cap == GTCapability.CAPABILITY_TOOLABLE) {
-            return GTCapability.CAPABILITY_TOOLABLE.orEmpty(cap, LazyOptional.of(() -> this));
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
     public boolean canHaveBlockedFaces() {
         return false;
-    }
-
-    public void initHandlers() {
-        LaserPipeNet net = getLaserPipeNet();
-        if (net == null) return;
-        for (Direction facing : GTUtil.DIRECTIONS) {
-            handlers.put(facing, new LaserNetHandler(net, this, facing));
-        }
-        defaultHandler = new LaserNetHandler(net, this, null);
-    }
-
-    public void checkNetwork() {
-        if (defaultHandler != null) {
-            LaserPipeNet current = getLaserPipeNet();
-            if (defaultHandler.getNet() != current) {
-                defaultHandler.updateNetwork(current);
-                for (LaserNetHandler handler : handlers.values()) {
-                    handler.updateNetwork(current);
-                }
-            }
-        }
-    }
-
-    public LaserPipeNet getLaserPipeNet() {
-        if (level == null || level.isClientSide) {
-            return null;
-        }
-        LaserPipeNet currentPipeNet = this.currentPipeNet.get();
-        if (currentPipeNet != null && currentPipeNet.isValid() && currentPipeNet.containsNode(this.getBlockPos())) {
-            return currentPipeNet;
-        }
-        LevelPipeNet worldNet = LevelPipeNet.getLevelPipeNet((ServerLevel) getLevel(), GTPipeNetworks.LASER);
-        currentPipeNet = worldNet.getNetFromPos(getBlockPos());
-        if (currentPipeNet != null) {
-            this.currentPipeNet = new WeakReference<>(currentPipeNet);
-        }
-        return currentPipeNet;
     }
 
     /**

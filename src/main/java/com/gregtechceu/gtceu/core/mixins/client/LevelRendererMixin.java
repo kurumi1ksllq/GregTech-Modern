@@ -11,7 +11,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
 import com.gregtechceu.gtceu.api.machine.steam.SteamMachine;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
-import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
+import com.gregtechceu.gtceu.common.pipelike.cable.CableBlockEntity;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -200,7 +200,7 @@ public abstract class LevelRendererMixin {
             if (!pipe.getFrameMaterial().isNull()) {
                 rgb = pipe.getFrameMaterial().getMaterialRGB();
             } else if (pipe instanceof CableBlockEntity cable) {
-                rgb = GTValues.VCM[GTUtil.getTierByVoltage(cable.getNodeData().getVoltage())];
+                rgb = GTValues.VCM[GTUtil.getTierByVoltage(cable.getMaxVoltage())];
             } else if (state.getBlock() instanceof MaterialPipeBlock<?,?> materialPipe) {
                 rgb = materialPipe.material.getMaterialRGB();
             }

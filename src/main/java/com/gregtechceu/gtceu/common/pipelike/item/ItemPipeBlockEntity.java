@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.common.blockentity;
+package com.gregtechceu.gtceu.common.pipelike.item;
 
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
@@ -7,9 +7,6 @@ import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.common.block.ItemPipeBlock;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
-import com.gregtechceu.gtceu.common.pipelike.item.ItemNetHandler;
-import com.gregtechceu.gtceu.common.pipelike.item.ItemPipeNet;
-import com.gregtechceu.gtceu.common.pipelike.item.ItemPipeType;
 import com.gregtechceu.gtceu.utils.FacingPos;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;

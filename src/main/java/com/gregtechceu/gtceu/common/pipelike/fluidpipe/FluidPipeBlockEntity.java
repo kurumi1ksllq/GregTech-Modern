@@ -1,7 +1,6 @@
-package com.gregtechceu.gtceu.common.blockentity;
+package com.gregtechceu.gtceu.common.pipelike.fluidpipe;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.blockentity.IDebugOverlayTextSupplier;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -11,6 +10,7 @@ import com.gregtechceu.gtceu.api.fluids.FluidConstants;
 import com.gregtechceu.gtceu.api.fluids.FluidState;
 import com.gregtechceu.gtceu.api.fluids.GTFluid;
 import com.gregtechceu.gtceu.api.fluids.attribute.FluidAttribute;
+import com.gregtechceu.gtceu.api.fluids.attribute.FluidAttributes;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IDataInfoProvider;
 import com.gregtechceu.gtceu.api.misc.IOFluidHandlerList;
@@ -23,8 +23,7 @@ import com.gregtechceu.gtceu.common.cover.PumpCover;
 import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
-import com.gregtechceu.gtceu.common.pipelike.fluidpipe.FluidPipeType;
-import com.gregtechceu.gtceu.common.pipelike.fluidpipe.PipeTankList;
+import com.gregtechceu.gtceu.common.pipelike.SegmentPropertyTypes;
 import com.gregtechceu.gtceu.utils.EntityDamageUtil;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -61,7 +60,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPipeProperties>
@@ -150,7 +148,7 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
     }
 
     public int getCapacityPerTank() {
-        return getNodeData().getThroughput() * 20;
+        return getPropertyHolder().getPropertyValue(SegmentPropertyTypes.FLUID_THROUGHPUT) * 20;
     }
 
     public void update() {
@@ -162,7 +160,7 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
             }
 
             boolean shouldDistribute = (oldLastReceivedFrom == lastReceivedFrom);
-            int tanks = getNodeData().getChannels();
+            int tanks = getPropertyHolder().getPropertyValue(SegmentPropertyTypes.CHANNELS);
             for (int i = 0, j = GTValues.RNG.nextInt(tanks); i < tanks; i++) {
                 int index = (i + j) % tanks;
                 CustomFluidTank tank = getFluidTanks()[index];
@@ -271,7 +269,7 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
 
     private boolean checkForPumpCover(@Nullable CoverBehavior cover) {
         if (cover instanceof PumpCover coverPump) {
-            int pipeThroughput = getNodeData().getThroughput() * 20;
+            int pipeThroughput = getCapacityPerTank();
             if (coverPump.getTransferRate() > pipeThroughput) {
                 coverPump.setTransferRate(pipeThroughput);
             }
@@ -280,31 +278,44 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
         return false;
     }
 
+    public boolean canContain(@NotNull FluidState state) {
+        return switch (state) {
+            case LIQUID -> true;
+            case GAS -> getPropertyHolder().getPropertyValue(SegmentPropertyTypes.GAS_PROOF);
+            case PLASMA -> getPropertyHolder().getPropertyValue(SegmentPropertyTypes.CRYO_PROOF);
+        };
+    }
+
+    public boolean canContain(@NotNull FluidAttribute attribute) {
+         if (attribute == FluidAttributes.ACID) return getPropertyHolder().getPropertyValue(SegmentPropertyTypes.ACID_PROOF);
+         return true;
+    }
+
     public void checkAndDestroy(@NotNull FluidStack stack) {
         Fluid fluid = stack.getFluid();
-        FluidPipeProperties prop = getNodeData();
 
-        boolean burning = prop.getMaxFluidTemperature() < fluid.getFluidType().getTemperature(stack);
-        boolean leaking = !prop.isGasProof() && fluid.getFluidType().getDensity(stack) < 0;
-        boolean shattering = !prop.isCryoProof() &&
+        var props = getPropertyHolder();
+        boolean burning = props.getPropertyValue(SegmentPropertyTypes.MAX_TEMPERATURE) < fluid.getFluidType().getTemperature(stack);
+        boolean leaking = !props.getPropertyValue(SegmentPropertyTypes.GAS_PROOF) && fluid.getFluidType().getDensity(stack) < 0;
+        boolean shattering = !props.getPropertyValue(SegmentPropertyTypes.CRYO_PROOF) &&
                 fluid.getFluidType().getTemperature(stack) < FluidConstants.CRYOGENIC_FLUID_THRESHOLD;
         boolean corroding = false;
         boolean melting = false;
 
         if (fluid instanceof GTFluid attributedFluid) {
             FluidState state = attributedFluid.getState();
-            if (!prop.canContain(state)) {
+            if (!canContain(state)) {
                 leaking = state == FluidState.GAS;
                 melting = state == FluidState.PLASMA;
             }
 
             // carrying plasmas which are too hot when plasma proof does not burn pipes
-            if (burning && state == FluidState.PLASMA && prop.canContain(FluidState.PLASMA)) {
+            if (burning && state == FluidState.PLASMA && canContain(FluidState.PLASMA)) {
                 burning = false;
             }
 
             for (FluidAttribute attribute : attributedFluid.getAttributes()) {
-                if (!prop.canContain(attribute)) {
+                if (!canContain(attribute)) {
                     // corrodes if the pipe can't handle the attribute, even if it's not an acid
                     corroding = true;
                 }
@@ -433,8 +444,8 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
     }
 
     private void createTanksList() {
-        fluidTanks = new CustomFluidTank[getNodeData().getChannels()];
-        for (int i = 0; i < getNodeData().getChannels(); i++) {
+        fluidTanks = new CustomFluidTank[getPropertyHolder().getPropertyValue(SegmentPropertyTypes.CHANNELS)];
+        for (int i = 0; i < getPropertyHolder().getPropertyValue(SegmentPropertyTypes.CHANNELS); i++) {
             fluidTanks[i] = new CustomFluidTank(getCapacityPerTank());
         }
         pipeTankList = new PipeTankList(this, null, fluidTanks);

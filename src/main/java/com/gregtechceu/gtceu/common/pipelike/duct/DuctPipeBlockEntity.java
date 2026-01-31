@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.common.blockentity;
+package com.gregtechceu.gtceu.common.pipelike.duct;
 
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
@@ -8,9 +8,7 @@ import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardCleaner;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardEmitter;
 import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
-import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
-import com.gregtechceu.gtceu.common.pipelike.duct.*;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;

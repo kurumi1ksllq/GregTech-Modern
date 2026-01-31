@@ -11,7 +11,7 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.pipenet.PipeNetworkType;
-import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
+import com.gregtechceu.gtceu.common.pipelike.cable.CableBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.data.GTDamageTypes;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
@@ -117,7 +117,7 @@ public class CableBlock extends MaterialPipeBlock<WireType, WireProperties> {
         if (wireType.insulationLevel == -1 && entity instanceof LivingEntity entityLiving) {
             CableBlockEntity cable = (CableBlockEntity) getPipeTile(level, pos);
             if (cable != null && cable.getFrameMaterial().isNull() &&
-                    cable.getNodeData().getLossPerBlock() > 0) {
+                    cable.getPropertyHolder().getPropertyValue(SegmentPropertyTypes.LOSS_PER_BLOCK) > 0) {
                 long voltage = cable.getCurrentMaxVoltage();
                 double amperage = cable.getAverageAmperage();
                 if (voltage > 0L && amperage > 0L) {

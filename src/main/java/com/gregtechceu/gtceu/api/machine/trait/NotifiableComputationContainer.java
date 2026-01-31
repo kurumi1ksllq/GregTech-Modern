@@ -11,7 +11,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.common.blockentity.OpticalPipeBlockEntity;
+import com.gregtechceu.gtceu.common.pipelike.optical.OpticalPipeBlockEntity;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.Direction;

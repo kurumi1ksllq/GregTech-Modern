@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.common.blockentity;
+package com.gregtechceu.gtceu.common.pipelike.cable;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
@@ -17,7 +17,7 @@ import com.gregtechceu.gtceu.common.block.CableBlock;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.item.PortableScannerBehavior;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
-import com.gregtechceu.gtceu.common.pipelike.cable.*;
+import com.gregtechceu.gtceu.common.pipelike.SegmentPropertyTypes;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -54,6 +54,7 @@ public class CableBlockEntity extends PipeBlockEntity<WireType, WireProperties> 
 
     protected WeakReference<EnergyNet> currentEnergyNet = new WeakReference<>(null);
 
+    @Getter
     private static final int meltTemp = 3000;
 
     private final EnumMap<Direction, EnergyNetHandler> handlers = new EnumMap<>(Direction.class);
@@ -199,19 +200,15 @@ public class CableBlockEntity extends PipeBlockEntity<WireType, WireProperties> 
     }
 
     public long getMaxAmperage() {
-        return getNodeData().getAmperage();
+        return getPropertyHolder().getPropertyValue(SegmentPropertyTypes.MAX_AMPS);
     }
 
     public long getMaxVoltage() {
-        return getNodeData().getVoltage();
+        return getPropertyHolder().getPropertyValue(SegmentPropertyTypes.MAX_VOLTAGE);
     }
 
     public int getDefaultTemp() {
         return 293;
-    }
-
-    public static int getMeltTemp() {
-        return meltTemp;
     }
 
     /**

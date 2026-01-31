@@ -8,7 +8,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.pipenet.PipeNetworkType;
-import com.gregtechceu.gtceu.common.blockentity.FluidPipeBlockEntity;
+import com.gregtechceu.gtceu.common.pipelike.fluidpipe.FluidPipeBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;

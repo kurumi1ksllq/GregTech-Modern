@@ -1,3 +1,10 @@
 package com.gregtechceu.gtceu.api.pipenet;
 
-public class PipeSegment {}
+public class PipeSegment {
+
+
+
+    public PipeSegment() {
+
+    }
+}

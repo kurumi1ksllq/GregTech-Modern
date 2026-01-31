@@ -102,10 +102,12 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     private final List<TickableSubscription> waitingToAdd;
     @Getter
     private final PipeNetworkType networkType;
-
+    @Getter
+    private final PipeSegmentPropertyHolder propertyHolder;
     public PipeBlockEntity(BlockEntityType<?> type, PipeNetworkType networkType, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
         this.coverContainer = new PipeCoverContainer(this);
+        this.propertyHolder = getPipeBlock().defaultSegmentProperties;
         this.networkType = networkType;
         this.serverTicks = new ArrayList<>();
         this.waitingToAdd = new ArrayList<>();

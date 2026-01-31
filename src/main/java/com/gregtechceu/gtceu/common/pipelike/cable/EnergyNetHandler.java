@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.common.pipelike.cable;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
-import com.gregtechceu.gtceu.common.blockentity.CableBlockEntity;
+import com.gregtechceu.gtceu.common.pipelike.SegmentPropertyTypes;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.BlockPos;
@@ -87,7 +87,7 @@ public class EnergyNetHandler implements IEnergyContainer {
             amperesUsed += amps;
             long voltageTraveled = voltage;
             for (CableBlockEntity cable : path.getPath()) {
-                voltageTraveled -= cable.getNodeData().getLossPerBlock();
+                voltageTraveled -= cable.getPropertyHolder().getPropertyValue(SegmentPropertyTypes.LOSS_PER_BLOCK);
                 if (voltageTraveled <= 0) break;
 
                 if (!cable.isRemoved()) {
@@ -112,12 +112,12 @@ public class EnergyNetHandler implements IEnergyContainer {
 
     @Override
     public long getInputAmperage() {
-        return cable.getNodeData().getAmperage();
+        return cable.getMaxAmperage();
     }
 
     @Override
     public long getInputVoltage() {
-        return cable.getNodeData().getVoltage();
+        return cable.getMaxVoltage();
     }
 
     @Override

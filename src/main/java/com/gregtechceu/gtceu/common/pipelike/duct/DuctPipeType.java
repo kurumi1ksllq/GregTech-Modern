@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.pipenet.IPipeType;
 import com.gregtechceu.gtceu.api.pipenet.PipeSegmentPropertyHolder;
 import com.gregtechceu.gtceu.api.pipenet.property.FloatSegmentProperty;
-import com.gregtechceu.gtceu.client.model.PipeModel;
 import com.gregtechceu.gtceu.common.pipelike.SegmentPropertyTypes;
 
 import net.minecraft.resources.ResourceLocation;
@@ -53,12 +52,6 @@ public enum DuctPipeType implements IPipeType<DuctPipeProperties>, StringReprese
     @Override
     public String getSerializedName() {
         return name().toLowerCase(Locale.ROOT);
-    }
-
-    public PipeModel createPipeModel() {
-        return new PipeModel(thickness, () -> GTCEu.id("block/pipe/pipe_duct_side"),
-                () -> GTCEu.id("block/pipe/pipe_duct_in"),
-                null, null);
     }
 
     @Override

@@ -4,6 +4,9 @@ import com.gregtechceu.gtceu.api.block.MaterialPipeBlock;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.ItemPipeProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
+import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
+import com.gregtechceu.gtceu.client.model.pipe.PipeModel;
+import com.gregtechceu.gtceu.common.pipelike.item.ItemPipeBlockEntity;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.pipenet.PipeNetworkType;
 import com.gregtechceu.gtceu.api.pipenet.property.FloatSegmentProperty;
@@ -34,8 +37,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class ItemPipeBlock extends MaterialPipeBlock<ItemPipeType, ItemPipeProperties> {
 
     public ItemPipeBlock(Properties properties, ItemPipeType itemPipeType, Material material) {
-        super(properties, itemPipeType, material, material.getProperty(PropertyKey.ITEM_PIPE),
-                itemPipeType.createPipeModel(material));
+        super(properties, itemPipeType, material, material.getProperty(PropertyKey.ITEM_PIPE));
     }
 
     @Override
@@ -65,6 +67,11 @@ public class ItemPipeBlock extends MaterialPipeBlock<ItemPipeType, ItemPipePrope
     @Override
     public PipeNetworkType getPipeType() {
         return GTPipeNetworks.ITEM;
+    }
+
+    @Override
+    public PipeModel createPipeModel(GTBlockstateProvider provider) {
+        return pipeType.createPipeModel(this, material, provider);
     }
 
     @Override

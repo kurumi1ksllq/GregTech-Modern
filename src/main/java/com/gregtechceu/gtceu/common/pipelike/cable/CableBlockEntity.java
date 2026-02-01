@@ -66,10 +66,6 @@ public class CableBlockEntity extends PipeBlockEntity<WireType, WireProperties> 
         super(type, GTPipeNetworks.ENERGY, pos, blockState);
     }
 
-    public static CableBlockEntity create(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
-        return new CableBlockEntity(type, pos, blockState);
-    }
-
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == GTCapability.CAPABILITY_ENERGY_CONTAINER) {

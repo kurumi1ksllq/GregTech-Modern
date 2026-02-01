@@ -12,6 +12,8 @@ import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.pipenet.PipeNetworkType;
 import com.gregtechceu.gtceu.common.pipelike.cable.CableBlockEntity;
+import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
+import com.gregtechceu.gtceu.client.model.pipe.PipeModel;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.data.GTDamageTypes;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
@@ -48,13 +50,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class CableBlock extends MaterialPipeBlock<WireType, WireProperties> {
 
     public CableBlock(Properties properties, WireType wireType, Material material) {
-        super(properties, wireType, material, material.getProperty(PropertyKey.WIRE),
-                wireType.createPipeModel(material));
+        super(properties, wireType, material, material.getProperty(PropertyKey.WIRE));
     }
 
     @Override
     public int tinted(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
-        if (pipeType.isCable && index == 0) {
+        if (pipeType.isCable && (index == 0 || index == 2)) {
             return 0x404040;
         }
         return super.tinted(state, level, pos, index);
@@ -75,6 +76,11 @@ public class CableBlock extends MaterialPipeBlock<WireType, WireProperties> {
                                          @Nullable BlockEntity tile) {
         return tile != null &&
                 tile.getCapability(GTCapability.CAPABILITY_ENERGY_CONTAINER, side.getOpposite()).isPresent();
+    }
+
+    @Override
+    public PipeModel createPipeModel(GTBlockstateProvider provider) {
+        return pipeType.createPipeModel(this, material, provider);
     }
 
     @Override

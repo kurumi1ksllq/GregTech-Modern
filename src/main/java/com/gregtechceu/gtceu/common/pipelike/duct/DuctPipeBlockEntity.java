@@ -18,15 +18,9 @@ public class DuctPipeBlockEntity extends PipeBlockEntity<DuctPipeType, DuctPipeP
     // the DuctNetHandler can only be created on the server, so we have an empty placeholder for the client
     public final IHazardParticleContainer clientCapability = new DefaultDuctContainer();
 
-    protected DuctPipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
+    public DuctPipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, GTPipeNetworks.DUCT, pos, blockState);
     }
-
-    public static DuctPipeBlockEntity create(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
-        return new DuctPipeBlockEntity(type, pos, blockState);
-    }
-
-    public static void onBlockEntityRegister(BlockEntityType<DuctPipeBlockEntity> ductBlockEntityBlockEntityType) {}
 
     @Override
     public boolean canHaveBlockedFaces() {

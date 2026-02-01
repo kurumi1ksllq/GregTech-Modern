@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.common.pipelike.cable;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.block.PipeBlock;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconType;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
@@ -11,15 +12,15 @@ import com.gregtechceu.gtceu.api.pipenet.PipeSegmentPropertyHolder;
 import com.gregtechceu.gtceu.api.pipenet.property.BoolSegmentProperty;
 import com.gregtechceu.gtceu.api.pipenet.property.IntSegmentProperty;
 import com.gregtechceu.gtceu.api.pipenet.property.LongSegmentProperty;
-import com.gregtechceu.gtceu.client.model.PipeModel;
 import com.gregtechceu.gtceu.common.pipelike.SegmentPropertyTypes;
+import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
+import com.gregtechceu.gtceu.client.model.pipe.PipeModel;
+import com.gregtechceu.gtceu.common.data.models.GTModels;
 
 import net.minecraft.resources.ResourceLocation;
 
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Supplier;
 
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
 
@@ -86,20 +87,28 @@ public enum WireType implements IMaterialPipeType<WireProperties> {
         return TYPE_ID;
     }
 
-    public PipeModel createPipeModel(Material material) {
-        Supplier<ResourceLocation> wireSideTexturePath = () -> MaterialIconType.wire
+    public PipeModel createPipeModel(PipeBlock<?, ?> block, Material material, GTBlockstateProvider provider) {
+        ResourceLocation side = MaterialIconType.wire
                 .getBlockTexturePath(material.getMaterialIconSet(), "side", true);
-        Supplier<ResourceLocation> wireEndTexturePath = () -> MaterialIconType.wire
+        ResourceLocation end = MaterialIconType.wire
                 .getBlockTexturePath(material.getMaterialIconSet(), "end", true);
-        Supplier<@Nullable ResourceLocation> wireSideOverlayTexturePath = () -> MaterialIconType.wire
+
+        PipeModel model = new PipeModel(block, provider, thickness,
+                isCable ? GTCEu.id("block/cable/insulation_5") : side, end);
+
+        ResourceLocation sideSecondary = MaterialIconType.wire
                 .getBlockTexturePath(material.getMaterialIconSet(), "side_overlay", true);
-        Supplier<@Nullable ResourceLocation> wireEndOverlayTexturePath = () -> MaterialIconType.wire
+        ResourceLocation endSecondary = MaterialIconType.wire
                 .getBlockTexturePath(material.getMaterialIconSet(), "end_overlay", true);
-        PipeModel model = new PipeModel(thickness,
-                isCable ? () -> GTCEu.id("block/cable/insulation_5") : wireSideTexturePath, wireEndTexturePath,
-                wireSideOverlayTexturePath, wireEndOverlayTexturePath);
+
+        if (sideSecondary != null && !sideSecondary.equals(GTModels.BLANK_TEXTURE)) {
+            model.setSideSecondary(sideSecondary);
+        }
+        if (endSecondary != null && !endSecondary.equals(GTModels.BLANK_TEXTURE)) {
+            model.setEndSecondary(endSecondary);
+        }
         if (isCable) {
-            model.setEndOverlayTexture(GTCEu.id("block/cable/insulation_%s".formatted(insulationLevel)));
+            model.setEndOverlay(GTCEu.id("block/cable/insulation_%s".formatted(insulationLevel)));
         }
         return model;
     }

@@ -11,18 +11,15 @@ import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.pipenet.*;
 import com.gregtechceu.gtceu.api.pipenet.IPipeType;
-import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
-import com.gregtechceu.gtceu.api.pipenet.PipeNet;
 import com.gregtechceu.gtceu.api.sync_system.ManagedSyncBlockEntity;
-import com.gregtechceu.gtceu.client.model.PipeModel;
-import com.gregtechceu.gtceu.client.renderer.block.PipeBlockRenderer;
+import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
+import com.gregtechceu.gtceu.client.model.pipe.PipeModel;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.item.CoverPlaceBehavior;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
+import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTUtil;
-
-import com.lowdragmc.lowdraglib.client.renderer.IBlockRendererProvider;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -60,10 +57,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -71,31 +67,39 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<NodeDataType>, NodeDataType> extends Block
-                               implements EntityBlock, IBlockRendererProvider, SimpleWaterloggedBlock {
+                               implements EntityBlock, SimpleWaterloggedBlock {
 
     public final PipeType pipeType;
     @Getter
     protected final NodeDataType baseProperties;
-    private final PipeBlockRenderer renderer;
-    @Getter
-    public final PipeModel pipeModel;
+
+    protected final Map<Direction, VoxelShape> shapes = new IdentityHashMap<>();
 
     public final PipeSegmentPropertyHolder defaultSegmentProperties;
 
-    public PipeBlock(Properties properties, PipeType pipeType, NodeDataType nodeProperties, PipeModel model,
+    public PipeBlock(Properties properties, PipeType pipeType, NodeDataType nodeProperties,
                      PipeSegmentPropertyHolder defaultSegmentProperties) {
         super(properties);
         this.pipeType = pipeType;
         this.baseProperties = pipeType.modifyProperties(nodeProperties);
-        this.renderer = new PipeBlockRenderer(model);
-        this.pipeModel = model;
         this.defaultSegmentProperties = defaultSegmentProperties;
         registerDefaultState(defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, false));
+
+        float min = (16 - pipeType.getThickness() * 16) / 2f;
+        float max = min + pipeType.getThickness() * 16;
+        shapes.put(null, Block.box(min, min, min, max, max, max));
+        for (Direction dir : GTUtil.DIRECTIONS) {
+            var coords = GTMath.getCoordinates(dir, min, max);
+            Vector3f minCoord = coords.getLeft();
+            Vector3f maxCoord = coords.getRight();
+            shapes.put(dir, Block.box(minCoord.x, minCoord.y, minCoord.z, maxCoord.x, maxCoord.y, maxCoord.z));
+        }
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        super.createBlockStateDefinition(builder.add(BlockStateProperties.WATERLOGGED));
+        super.createBlockStateDefinition(builder);
+        builder.add(BlockStateProperties.WATERLOGGED);
     }
 
     @Override
@@ -122,10 +126,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
 
     public abstract BlockEntityType<? extends PipeBlockEntity<PipeType, NodeDataType>> getBlockEntityType();
 
-    @Override
-    public PipeBlockRenderer getRenderer(BlockState state) {
-        return renderer;
-    }
+    public abstract PipeModel createPipeModel(GTBlockstateProvider provider);
 
     @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos,
@@ -307,7 +308,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
                 return Shapes.block();
             }
             connections = pipeNode.getVisualConnections();
-            VoxelShape shape = getPipeModel().getShapes(connections);
+            VoxelShape shape = getShapes(connections);
             shape = Shapes.or(shape, pipeNode.getCoverContainer().addCoverCollisionBoundingBox());
 
             if (context instanceof EntityCollisionContext entityCtx && entityCtx.getEntity() instanceof Player player) {
@@ -331,7 +332,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
             }
             return shape;
         }
-        return getPipeModel().getShapes(connections);
+        return getShapes(connections);
     }
 
     @Nullable
@@ -384,5 +385,12 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
 
     public GTToolType getPipeTuneTool() {
         return GTToolType.WRENCH;
+    }
+
+    public VoxelShape getShapes(int connections) {
+        return this.shapes.entrySet().stream()
+                .filter(entry -> entry.getKey() == null || PipeBlockEntity.isConnected(connections, entry.getKey()))
+                .map(Map.Entry::getValue)
+                .reduce(Shapes.empty(), Shapes::or);
     }
 }

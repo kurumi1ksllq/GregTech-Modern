@@ -5,11 +5,12 @@ import com.gregtechceu.gtceu.api.block.PipeBlock;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
-import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
-import com.gregtechceu.gtceu.api.item.tool.GTToolType;
+import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.api.pipenet.PipeNetworkType;
-import com.gregtechceu.gtceu.api.pipenet.PipeNetworkType;
-import com.gregtechceu.gtceu.client.model.PipeModel;
+import com.gregtechceu.gtceu.api.pipenet.PipeSegmentPropertyHolder;
+import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
+import com.gregtechceu.gtceu.client.model.pipe.ActivablePipeModel;
+import com.gregtechceu.gtceu.client.model.pipe.PipeModel;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.laser.LaserPipeProperties;
@@ -18,8 +19,11 @@ import com.gregtechceu.gtceu.common.pipelike.laser.LaserPipeType;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -31,18 +35,18 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class LaserPipeBlock extends PipeBlock<LaserPipeType, LaserPipeProperties> {
 
+
     public LaserPipeBlock(Properties properties, LaserPipeType type) {
-        super(properties, type, LaserPipeProperties.INSTANCE,
-                new PipeModel(LaserPipeType.NORMAL.getThickness(), () -> GTCEu.id("block/pipe/pipe_laser_side"),
-                        () -> GTCEu.id("block/pipe/pipe_laser_in"), null, null),
-                type.buildSegmentProperties(null));
+        super(properties, type, LaserPipeProperties.INSTANCE, new PipeSegmentPropertyHolder());
+
+        registerDefaultState(defaultBlockState().setValue(GTBlockStateProperties.ACTIVE, false));
     }
 
     @OnlyIn(Dist.CLIENT)
     public static BlockColor tintedColor() {
-        return (blockState, level, blockPos, index) -> {
-            if (blockPos != null && level != null &&
-                    level.getBlockEntity(blockPos) instanceof PipeBlockEntity<?, ?> pipe) {
+        return (state, level, pos, index) -> {
+            if (pos != null && level != null &&
+                    level.getBlockEntity(pos) instanceof PipeBlockEntity<?, ?> pipe) {
                 if (!pipe.getFrameMaterial().isNull()) {
                     if (index == 3) {
                         return pipe.getFrameMaterial().getMaterialRGB();
@@ -56,6 +60,22 @@ public class LaserPipeBlock extends PipeBlock<LaserPipeType, LaserPipeProperties
             }
             return -1;
         };
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(GTBlockStateProperties.ACTIVE);
+    }
+
+    @Override
+    public PipeModel createPipeModel(GTBlockstateProvider provider) {
+        ActivablePipeModel model = new ActivablePipeModel(this, LaserPipeType.NORMAL.getThickness(),
+                GTCEu.id("block/pipe/pipe_laser_side"), GTCEu.id("block/pipe/pipe_laser_in"),
+                provider);
+        model.setSideOverlay(GTCEu.id("block/pipe/pipe_laser_side_overlay"));
+        model.setSideOverlayActive(GTCEu.id("block/pipe/pipe_laser_side_overlay_emissive"));
+        return model;
     }
 
     @Override

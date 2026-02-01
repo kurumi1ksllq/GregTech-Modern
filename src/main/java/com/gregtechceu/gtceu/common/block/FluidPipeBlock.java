@@ -9,6 +9,8 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.pipenet.PipeNetworkType;
 import com.gregtechceu.gtceu.common.pipelike.fluidpipe.FluidPipeBlockEntity;
+import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
+import com.gregtechceu.gtceu.client.model.pipe.PipeModel;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
@@ -45,8 +47,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class FluidPipeBlock extends MaterialPipeBlock<FluidPipeType, FluidPipeProperties> {
 
     public FluidPipeBlock(Properties properties, FluidPipeType fluidPipeType, Material material) {
-        super(properties, fluidPipeType, material, material.getProperty(PropertyKey.FLUID_PIPE),
-                fluidPipeType.createPipeModel(material));
+        super(properties, fluidPipeType, material, material.getProperty(PropertyKey.FLUID_PIPE));
     }
 
     @Override
@@ -63,6 +64,11 @@ public class FluidPipeBlock extends MaterialPipeBlock<FluidPipeType, FluidPipePr
     public boolean canPipeConnectToBlock(PipeBlockEntity<FluidPipeType, FluidPipeProperties> selfTile, Direction side,
                                          @Nullable BlockEntity tile) {
         return tile != null && tile.getCapability(ForgeCapabilities.FLUID_HANDLER, side.getOpposite()).isPresent();
+    }
+
+    @Override
+    public PipeModel createPipeModel(GTBlockstateProvider provider) {
+        return pipeType.createPipeModel(this, material, provider);
     }
 
     @Override

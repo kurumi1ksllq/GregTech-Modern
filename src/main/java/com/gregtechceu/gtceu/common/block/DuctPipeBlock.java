@@ -1,14 +1,16 @@
 package com.gregtechceu.gtceu.common.block;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.PipeBlock;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardCleaner;
 import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardEmitter;
+import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
+import com.gregtechceu.gtceu.client.model.pipe.PipeModel;
 import com.gregtechceu.gtceu.api.pipenet.PipeNetworkType;
 import com.gregtechceu.gtceu.api.pipenet.property.FloatSegmentProperty;
-import com.gregtechceu.gtceu.api.pipenet.property.PipeSegmentProperty;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.SegmentPropertyTypes;
@@ -35,7 +37,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class DuctPipeBlock extends PipeBlock<DuctPipeType, DuctPipeProperties> {
 
     public DuctPipeBlock(Properties properties, DuctPipeType type) {
-        super(properties, type, new DuctPipeProperties(type.getRateMultiplier()), type.createPipeModel(),
+        super(properties, type, new DuctPipeProperties(type.getRateMultiplier()),
                 type.buildSegmentProperties(null));
     }
 
@@ -50,11 +52,17 @@ public class DuctPipeBlock extends PipeBlock<DuctPipeType, DuctPipeProperties> {
     }
 
     @Override
+    public PipeModel createPipeModel(GTBlockstateProvider provider) {
+        return new PipeModel(this, provider, this.pipeType.getThickness(),
+                GTCEu.id("block/pipe/pipe_duct_side"), GTCEu.id("block/pipe/pipe_duct_in"));
+    }
+
+    @Override
     public boolean canPipeConnectToBlock(PipeBlockEntity<DuctPipeType, DuctPipeProperties> selfTile, Direction side,
                                          @Nullable BlockEntity tile) {
         return tile != null &&
                 (tile.getCapability(GTCapability.CAPABILITY_HAZARD_CONTAINER, side.getOpposite()).isPresent() ||
-                        tile instanceof MetaMachine metaMachine && (tile instanceof IEnvironmentalHazardCleaner ||
+                        tile instanceof MetaMachine && (tile instanceof IEnvironmentalHazardCleaner ||
                                 tile instanceof IEnvironmentalHazardEmitter));
     }
 

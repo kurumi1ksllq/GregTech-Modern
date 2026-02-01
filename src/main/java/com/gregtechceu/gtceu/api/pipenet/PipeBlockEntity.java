@@ -58,7 +58,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeType<NodeDataType>, NodeDataType>
+public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeType>
                                      extends ManagedSyncBlockEntity
                                      implements IGregtechBlockEntity, IToolGridHighlight, ITickSubscription, IToolable, ICopyable, IPaintable, IDebugOverlayTextSupplier {
 
@@ -200,8 +200,8 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     }
 
     @SuppressWarnings("unchecked")
-    public PipeBlock<PipeType, NodeDataType> getPipeBlock() {
-        return (PipeBlock<PipeType, NodeDataType>) getBlockState().getBlock();
+    public PipeBlock<PipeType> getPipeBlock() {
+        return (PipeBlock<PipeType>) getBlockState().getBlock();
     }
 
     @Nullable
@@ -325,7 +325,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
             BlockEntity tile = getNeighbor(side);
             // block connections if Pipe Types do not match
             if (connected &&
-                    tile instanceof PipeBlockEntity<?, ?> pipeTile &&
+                    tile instanceof PipeBlockEntity<?> pipeTile &&
                     pipeTile.getPipeType().getClass() != this.getPipeType().getClass()) {
                 return;
             }
@@ -342,13 +342,13 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
             getLevel().neighborChanged(getBlockPos().relative(side), getPipeBlock(), getBlockPos());
             setChanged();
 
-            if (!fromNeighbor && tile instanceof PipeBlockEntity<?, ?> pipeTile) {
+            if (!fromNeighbor && tile instanceof PipeBlockEntity<?> pipeTile) {
                 syncPipeConnections(side, pipeTile);
             }
         }
     }
 
-    private void syncPipeConnections(Direction side, PipeBlockEntity<?, ?> pipe) {
+    private void syncPipeConnections(Direction side, PipeBlockEntity<?> pipe) {
         Direction oppositeSide = side.getOpposite();
         boolean neighbourOpen = pipe.isConnected(oppositeSide);
         if (isConnected(side) == neighbourOpen) {

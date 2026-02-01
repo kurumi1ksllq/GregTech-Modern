@@ -87,7 +87,7 @@ public class PipeModel {
     }
 
     @Getter
-    private final PipeBlock<?, ?> block;
+    private final PipeBlock<?> block;
     public final @NotNull ResourceLocation blockId;
     protected final GTBlockstateProvider provider;
 
@@ -122,7 +122,7 @@ public class PipeModel {
     /// Use {@link #getOrCreateConnectionElement()} instead of referencing this field directly.
     private BlockModelBuilder connectionElement;
 
-    public PipeModel(PipeBlock<?, ?> block, GTBlockstateProvider provider,
+    public PipeModel(PipeBlock<?> block, GTBlockstateProvider provider,
                      float thickness, ResourceLocation side, ResourceLocation end) {
         this.block = block;
         this.blockId = BuiltInRegistries.BLOCK.getKey(this.block);

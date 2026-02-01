@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public class OpticalPipeBlockEntity extends PipeBlockEntity<OpticalPipeType, OpticalPipeProperties> {
+public class OpticalPipeBlockEntity extends PipeBlockEntity<OpticalPipeType> {
 
     // the OpticalNetHandler can only be created on the server, so we have an empty placeholder for the client
     private final IDataAccessHatch clientDataHandler = new DefaultDataHandler();
@@ -56,7 +56,7 @@ public class OpticalPipeBlockEntity extends PipeBlockEntity<OpticalPipeType, Opt
 
             // also check the other pipe
             BlockEntity tile = getLevel().getBlockEntity(getBlockPos().relative(side));
-            if (tile instanceof PipeBlockEntity<?, ?> pipeTile &&
+            if (tile instanceof PipeBlockEntity<?> pipeTile &&
                     pipeTile.getPipeType().getClass() == this.getPipeType().getClass()) {
                 if (pipeTile.getNumConnections() >= 2) return;
             }

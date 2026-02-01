@@ -87,7 +87,7 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
                 metaMachine.getItemsRequiredToPaste()
                         .forEach(v -> itemsTag.add(v.serializeNBT()));
                 configTag.put(ITEMS_TO_PASTE, itemsTag);
-            } else if (blockEntity instanceof PipeBlockEntity<?, ?> pipeBE) {
+            } else if (blockEntity instanceof PipeBlockEntity<?> pipeBE) {
                 configTag.putString(COPY_SOURCE,
                         (new ItemStack(blockEntity.getBlockState().getBlock().asItem())).getDisplayName().getString());
                 configTag.merge(gatherPipeConfig(pipeBE));
@@ -121,7 +121,7 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
 
             if (blockEntity instanceof MetaMachine mm)
                 pasteMachineConfig((ServerPlayer) player, mm, tag);
-            if (blockEntity instanceof PipeBlockEntity<?, ?> pipeBE)
+            if (blockEntity instanceof PipeBlockEntity<?> pipeBE)
                 pastePipeConfig((ServerPlayer) player, pipeBE, tag);
 
             player.displayClientMessage(Component.translatable("behaviour.memory_card.client_msg.pasted"), true);
@@ -151,7 +151,7 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
     private static final String MUFFLED = "muffled";
     private static final String CIRCUIT = "circuit_config";
 
-    private static CompoundTag gatherPipeConfig(PipeBlockEntity<?, ?> pipe) {
+    private static CompoundTag gatherPipeConfig(PipeBlockEntity<?> pipe) {
         var tag = new CompoundTag();
 
         tag.putInt(PIPE_CONNECTIONS, pipe.getConnections());
@@ -160,7 +160,7 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
         return tag;
     }
 
-    private static void pastePipeConfig(ServerPlayer player, PipeBlockEntity<?, ?> pipe, CompoundTag tag) {
+    private static void pastePipeConfig(ServerPlayer player, PipeBlockEntity<?> pipe, CompoundTag tag) {
         if (tag.contains(PIPE_CONNECTIONS)) {
             var connections = tag.getInt(PIPE_CONNECTIONS);
 

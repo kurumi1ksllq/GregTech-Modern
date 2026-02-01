@@ -13,7 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class DuctPipeBlockEntity extends PipeBlockEntity<DuctPipeType, DuctPipeProperties> {
+public class DuctPipeBlockEntity extends PipeBlockEntity<DuctPipeType> {
 
     // the DuctNetHandler can only be created on the server, so we have an empty placeholder for the client
     public final IHazardParticleContainer clientCapability = new DefaultDuctContainer();

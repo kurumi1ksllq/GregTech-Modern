@@ -142,7 +142,7 @@ public class BlockHighlightRenderer {
             // draw pipe connection grid highlight
             var pipeType = held.getItem() instanceof PipeBlockItem pipeBlockItem ? pipeBlockItem.getBlock().pipeType :
                     null;
-            if (pipeType instanceof IPipeType<?> type && blockEntity instanceof PipeBlockEntity<?, ?> pipeBlockEntity &&
+            if (pipeType instanceof IPipeType type && blockEntity instanceof PipeBlockEntity<?> pipeBlockEntity &&
                     pipeBlockEntity.getPipeType().type().equals(type.type())) {
                 poseStack.pushPose();
 

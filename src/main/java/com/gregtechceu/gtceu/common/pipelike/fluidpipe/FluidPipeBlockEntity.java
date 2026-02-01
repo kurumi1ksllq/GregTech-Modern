@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.FluidPipeProperties;
 import com.gregtechceu.gtceu.api.fluids.FluidConstants;
 import com.gregtechceu.gtceu.api.fluids.FluidState;
 import com.gregtechceu.gtceu.api.fluids.GTFluid;
@@ -62,7 +61,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPipeProperties>
+public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType>
                                   implements IDataInfoProvider {
 
     public static final int FREQUENCY = 5;

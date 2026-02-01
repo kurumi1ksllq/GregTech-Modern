@@ -20,13 +20,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public abstract class MaterialPipeBlock<
-        PipeType extends Enum<PipeType> & IPipeType<NodeDataType> & IMaterialPipeType<NodeDataType>, NodeDataType>
-                                       extends PipeBlock<PipeType, NodeDataType> {
+        PipeType extends Enum<PipeType> & IPipeType & IMaterialPipeType<NodeDataType>, NodeDataType>
+                                       extends PipeBlock<PipeType> {
 
     public final Material material;
 
     public MaterialPipeBlock(Properties properties, PipeType pipeType, Material material, NodeDataType nodeProperties) {
-        super(properties, pipeType, nodeProperties, pipeType.buildSegmentProperties(material));
+        super(properties, pipeType, pipeType.buildSegmentProperties(material));
         this.material = material;
     }
 

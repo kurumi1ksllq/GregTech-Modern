@@ -56,12 +56,12 @@ public class FluidPipeBlock extends MaterialPipeBlock<FluidPipeType, FluidPipePr
     }
 
     @Override
-    public BlockEntityType<? extends PipeBlockEntity<FluidPipeType, FluidPipeProperties>> getBlockEntityType() {
+    public BlockEntityType<? extends PipeBlockEntity<FluidPipeType>> getBlockEntityType() {
         return GTBlockEntities.FLUID_PIPE.get();
     }
 
     @Override
-    public boolean canPipeConnectToBlock(PipeBlockEntity<FluidPipeType, FluidPipeProperties> selfTile, Direction side,
+    public boolean canPipeConnectToBlock(PipeBlockEntity<FluidPipeType> selfTile, Direction side,
                                          @Nullable BlockEntity tile) {
         return tile != null && tile.getCapability(ForgeCapabilities.FLUID_HANDLER, side.getOpposite()).isPresent();
     }

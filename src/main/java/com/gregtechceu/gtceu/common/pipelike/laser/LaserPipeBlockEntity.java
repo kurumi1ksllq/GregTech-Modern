@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class LaserPipeBlockEntity extends PipeBlockEntity<LaserPipeType, LaserPipeProperties> {
+public class LaserPipeBlockEntity extends PipeBlockEntity<LaserPipeType> {
 
     public LaserPipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, GTPipeNetworks.LASER, pos, blockState);
@@ -63,7 +63,7 @@ public class LaserPipeBlockEntity extends PipeBlockEntity<LaserPipeType, LaserPi
 
             // check the same for the targeted pipe
             BlockEntity tile = getLevel().getBlockEntity(getBlockPos().relative(side));
-            if (tile instanceof PipeBlockEntity<?, ?> pipeTile &&
+            if (tile instanceof PipeBlockEntity<?> pipeTile &&
                     pipeTile.getPipeType().getClass() == this.getPipeType().getClass()) {
                 connections = pipeTile.getConnections();
                 connections &= ~(1 << side.ordinal());
@@ -79,7 +79,7 @@ public class LaserPipeBlockEntity extends PipeBlockEntity<LaserPipeType, LaserPi
         return GTToolType.WIRE_CUTTER;
     }
 
-    public static BlockState setPipeActive(PipeBlockEntity<?, ?> blockEntity,
+    public static BlockState setPipeActive(PipeBlockEntity<?> blockEntity,
                                            BlockState state, boolean newActive, int duration) {
         if (!state.hasProperty(GTBlockStateProperties.ACTIVE) ||
                 state.getValue(GTBlockStateProperties.ACTIVE) == newActive) {

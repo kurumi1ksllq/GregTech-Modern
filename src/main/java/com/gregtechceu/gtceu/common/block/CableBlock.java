@@ -62,7 +62,7 @@ public class CableBlock extends MaterialPipeBlock<WireType, WireProperties> {
     }
 
     @Override
-    public BlockEntityType<? extends PipeBlockEntity<WireType, WireProperties>> getBlockEntityType() {
+    public BlockEntityType<? extends PipeBlockEntity<WireType>> getBlockEntityType() {
         return GTBlockEntities.CABLE.get();
     }
 
@@ -72,7 +72,7 @@ public class CableBlock extends MaterialPipeBlock<WireType, WireProperties> {
     }
 
     @Override
-    public boolean canPipeConnectToBlock(PipeBlockEntity<WireType, WireProperties> selfTile, Direction side,
+    public boolean canPipeConnectToBlock(PipeBlockEntity<WireType> selfTile, Direction side,
                                          @Nullable BlockEntity tile) {
         return tile != null &&
                 tile.getCapability(GTCapability.CAPABILITY_ENERGY_CONTAINER, side.getOpposite()).isPresent();

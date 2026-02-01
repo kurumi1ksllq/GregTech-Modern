@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.api.pipenet;
 
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 
-public interface IMaterialPipeType<NodeDataType> extends IPipeType<NodeDataType> {
+public interface IMaterialPipeType<NodeDataType> extends IPipeType {
 
     /**
      * Determines tag prefix used for this pipe type, which gives pipe tag key

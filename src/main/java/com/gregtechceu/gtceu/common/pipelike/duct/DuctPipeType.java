@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
-public enum DuctPipeType implements IPipeType<DuctPipeProperties>, StringRepresentable {
+public enum DuctPipeType implements IPipeType, StringRepresentable {
 
     SMALL("small", 0.375f, 2f),
     NORMAL("normal", 0.5f, 4f),

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
-public enum LaserPipeType implements IPipeType<LaserPipeProperties>, StringRepresentable {
+public enum LaserPipeType implements IPipeType, StringRepresentable {
 
     NORMAL;
 

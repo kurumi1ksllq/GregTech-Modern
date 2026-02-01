@@ -58,18 +58,6 @@ public enum FluidPipeType implements IMaterialPipeType<FluidPipeProperties> {
     }
 
     @Override
-    public FluidPipeProperties modifyProperties(FluidPipeProperties fluidPipeData) {
-        return new FluidPipeProperties(
-                fluidPipeData.getMaxFluidTemperature(),
-                fluidPipeData.getThroughput() * capacityMultiplier,
-                fluidPipeData.isGasProof(),
-                fluidPipeData.isAcidProof(),
-                fluidPipeData.isCryoProof(),
-                fluidPipeData.isPlasmaProof(),
-                channels);
-    }
-
-    @Override
     public boolean isPaintable() {
         return true;
     }
@@ -79,7 +67,7 @@ public enum FluidPipeType implements IMaterialPipeType<FluidPipeProperties> {
         return TYPE_ID;
     }
 
-    public PipeModel createPipeModel(PipeBlock<?, ?> block, Material material, GTBlockstateProvider provider) {
+    public PipeModel createPipeModel(PipeBlock<?> block, Material material, GTBlockstateProvider provider) {
         String side = "block/pipe/pipe%s_side";
         String end = "block/pipe/pipe_%s_in".formatted(name);
         if (material.hasProperty(PropertyKey.WOOD)) {

@@ -55,7 +55,6 @@ import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -66,22 +65,19 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @SuppressWarnings("deprecation")
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<NodeDataType>, NodeDataType> extends Block
+public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType> extends Block
                                implements EntityBlock, SimpleWaterloggedBlock {
 
     public final PipeType pipeType;
-    @Getter
-    protected final NodeDataType baseProperties;
 
     protected final Map<Direction, VoxelShape> shapes = new IdentityHashMap<>();
 
     public final PipeSegmentPropertyHolder defaultSegmentProperties;
 
-    public PipeBlock(Properties properties, PipeType pipeType, NodeDataType nodeProperties,
+    public PipeBlock(Properties properties, PipeType pipeType,
                      PipeSegmentPropertyHolder defaultSegmentProperties) {
         super(properties);
         this.pipeType = pipeType;
-        this.baseProperties = pipeType.modifyProperties(nodeProperties);
         this.defaultSegmentProperties = defaultSegmentProperties;
         registerDefaultState(defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, false));
 
@@ -118,13 +114,13 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
     }
 
     @Override
-    public final PipeBlockEntity<PipeType, NodeDataType> newBlockEntity(BlockPos pos, BlockState state) {
+    public final PipeBlockEntity<PipeType> newBlockEntity(BlockPos pos, BlockState state) {
         return getBlockEntityType().create(pos, state);
     }
 
     public abstract PipeNetworkType getPipeType();
 
-    public abstract BlockEntityType<? extends PipeBlockEntity<PipeType, NodeDataType>> getBlockEntityType();
+    public abstract BlockEntityType<? extends PipeBlockEntity<PipeType>> getBlockEntityType();
 
     public abstract PipeModel createPipeModel(GTBlockstateProvider provider);
 
@@ -133,7 +129,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
                                 boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
         if (level.isClientSide()) return;
-        PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
+        PipeBlockEntity<PipeType> pipeTile = getPipeTile(level, pos);
         if (pipeTile != null) {
             pipeTile.onNeighbourChange(state, pos, neighborPos);
         }
@@ -142,7 +138,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
     @Override
     public void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor) {
         if (level.isClientSide()) return;
-        PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
+        PipeBlockEntity<PipeType> pipeTile = getPipeTile(level, pos);
         if (pipeTile != null) {
             pipeTile.onNeighbourChange(state, pos, neighbor);
         }
@@ -153,15 +149,15 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    public PipeBlockEntity<PipeType, NodeDataType> getPipeTile(BlockGetter level, BlockPos pos) {
-        if (level.getBlockEntity(pos) instanceof PipeBlockEntity<?, ?> pipeTile &&
+    public PipeBlockEntity<PipeType> getPipeTile(BlockGetter level, BlockPos pos) {
+        if (level.getBlockEntity(pos) instanceof PipeBlockEntity<?> pipeTile &&
                 pipeTile.getPipeType().type().equals(pipeType.type())) {
-            return (PipeBlockEntity<PipeType, NodeDataType>) pipeTile;
+            return (PipeBlockEntity<PipeType>) pipeTile;
         }
         return null;
     }
 
-    public boolean canConnect(PipeBlockEntity<PipeType, NodeDataType> selfTile, Direction facing) {
+    public boolean canConnect(PipeBlockEntity<PipeType> selfTile, Direction facing) {
         if (selfTile.getLevel().getBlockState(selfTile.getBlockPos().relative(facing)).getBlock() == Blocks.AIR)
             return false;
         CoverBehavior cover = selfTile.getCoverContainer().getCoverAtSide(facing);
@@ -169,7 +165,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
             return false;
         }
         BlockEntity other = selfTile.getNeighbor(facing);
-        if (other instanceof PipeBlockEntity<?, ?> node) {
+        if (other instanceof PipeBlockEntity<?> node) {
             cover = node.getCoverContainer().getCoverAtSide(facing.getOpposite());
             if (cover != null && !cover.canPipePassThrough())
                 return false;
@@ -178,14 +174,14 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         return canPipeConnectToBlock(selfTile, facing, other);
     }
 
-    public abstract boolean canPipeConnectToBlock(PipeBlockEntity<PipeType, NodeDataType> selfTile, Direction side,
+    public abstract boolean canPipeConnectToBlock(PipeBlockEntity<PipeType> selfTile, Direction side,
                                                   @Nullable BlockEntity tile);
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer,
                             ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
+        PipeBlockEntity<PipeType> pipeTile = getPipeTile(level, pos);
         if (pipeTile != null) {
             // Color pipes/cables on place if holding spray can in off-hand
             if (placer instanceof Player player) {
@@ -204,7 +200,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
 
     @Override
     public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
-        PipeBlockEntity<PipeType, NodeDataType> pipeTile = getPipeTile(level, pos);
+        PipeBlockEntity<PipeType> pipeTile = getPipeTile(level, pos);
         if (pipeTile != null) {
             pipeTile.getCoverContainer().dropAllCovers();
         }
@@ -216,8 +212,8 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         ItemStack itemStack = player.getItemInHand(hand);
         BlockEntity entity = level.getBlockEntity(pos);
 
-        PipeBlockEntity<?, ?> pipeBlockEntity = null;
-        if (entity instanceof PipeBlockEntity<?, ?> pbe) {
+        PipeBlockEntity<?> pipeBlockEntity = null;
+        if (entity instanceof PipeBlockEntity<?> pbe) {
             pipeBlockEntity = pbe;
         }
         if (pipeBlockEntity == null) {
@@ -316,7 +312,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
                 var held = player.getMainHandItem();
                 Set<GTToolType> types = Set.of(GTToolType.WIRE_CUTTER, GTToolType.WRENCH);
                 BlockEntity tile = pLevel.getBlockEntity(pPos);
-                if (tile instanceof PipeBlockEntity<?, ?> pipeTile) {
+                if (tile instanceof PipeBlockEntity<?> pipeTile) {
                     types = Set.of(pipeTile.getPipeTuneTool());
                 }
 
@@ -325,7 +321,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
                         CoverPlaceBehavior.isCoverBehaviorItem(held, coverable::hasAnyCover,
                                 coverDef -> ICoverable.canPlaceCover(coverDef, coverable)) ||
                         (held.getItem() instanceof BlockItem blockItem &&
-                                blockItem.getBlock() instanceof PipeBlock<?, ?> pipeBlock &&
+                                blockItem.getBlock() instanceof PipeBlock<?> pipeBlock &&
                                 pipeBlock.pipeType.type().equals(pipeType.type()))) {
                     return Shapes.block();
                 }
@@ -342,7 +338,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         if (blockEntityType == getBlockEntityType()) {
             if (!level.isClientSide) {
                 return (pLevel, pPos, pState, pTile) -> {
-                    if (pTile instanceof PipeBlockEntity<?, ?> pipeNode) {
+                    if (pTile instanceof PipeBlockEntity<?> pipeNode) {
                         pipeNode.serverTick();
                     }
                     if (pTile instanceof ManagedSyncBlockEntity syncObj) {
@@ -371,7 +367,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         var context = builder.withParameter(LootContextParams.BLOCK_STATE, state).create(LootContextParamSets.BLOCK);
         BlockEntity tileEntity = context.getParamOrNull(LootContextParams.BLOCK_ENTITY);
         List<ItemStack> drops = new ArrayList<>(super.getDrops(state, builder));
-        if (tileEntity instanceof PipeBlockEntity<?, ?> pipeTile) {
+        if (tileEntity instanceof PipeBlockEntity<?> pipeTile) {
             if (!pipeTile.getFrameMaterial().isNull()) {
                 drops.addAll(GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.frameGt, pipeTile.getFrameMaterial())
                         .getDefaultState().getDrops(builder));

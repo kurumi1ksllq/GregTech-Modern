@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 public class BakedPipeModel extends BaseBakedModel implements ICoverableRenderer,
-                            IBlockEntityRendererBakedModel<PipeBlockEntity<?, ?>> {
+                            IBlockEntityRendererBakedModel<PipeBlockEntity<?>> {
 
     public final static int ITEM_CONNECTIONS = 0b001100;
 
@@ -75,7 +75,7 @@ public class BakedPipeModel extends BaseBakedModel implements ICoverableRenderer
                 }
             }
         }
-        if (level == null || pos == null || !(level.getBlockEntity(pos) instanceof PipeBlockEntity<?, ?> pipeNode)) {
+        if (level == null || pos == null || !(level.getBlockEntity(pos) instanceof PipeBlockEntity<?> pipeNode)) {
             return quads;
         }
         ICoverableRenderer.super.renderCovers(quads, pipeNode.getCoverContainer(), pos, level, side, rand,
@@ -125,7 +125,7 @@ public class BakedPipeModel extends BaseBakedModel implements ICoverableRenderer
                 .with(GTModelProperties.LEVEL, level)
                 .with(GTModelProperties.POS, pos);
 
-        if (!(level.getBlockEntity(pos) instanceof PipeBlockEntity<?, ?> blockEntity)) {
+        if (!(level.getBlockEntity(pos) instanceof PipeBlockEntity<?> blockEntity)) {
             return builder.build();
         }
         return builder.with(GTModelProperties.PIPE_CONNECTION_MASK, blockEntity.getVisualConnections())
@@ -140,11 +140,11 @@ public class BakedPipeModel extends BaseBakedModel implements ICoverableRenderer
     }
 
     @Override
-    public @Nullable BlockEntityType<? extends PipeBlockEntity<?, ?>> getBlockEntityType() {
+    public @Nullable BlockEntityType<? extends PipeBlockEntity<?>> getBlockEntityType() {
         return null;
     }
 
     @Override
-    public void render(PipeBlockEntity<?, ?> blockEntity, float partialTick, PoseStack poseStack,
+    public void render(PipeBlockEntity<?> blockEntity, float partialTick, PoseStack poseStack,
                        MultiBufferSource buffer, int packedLight, int packedOverlay) {}
 }

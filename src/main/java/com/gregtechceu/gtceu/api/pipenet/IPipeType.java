@@ -6,19 +6,12 @@ import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface IPipeType<NodeDataType> {
+public interface IPipeType {
 
     /**
      * the thickness of the pipe.
      */
     float getThickness();
-
-    /**
-     * modify the node data by the pipe type.
-     */
-    default NodeDataType modifyProperties(NodeDataType baseProperties) {
-        return baseProperties;
-    }
 
     /**
      * can the pipe be painted as other color.

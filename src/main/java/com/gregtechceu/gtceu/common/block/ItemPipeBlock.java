@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.ItemPipePrope
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
 import com.gregtechceu.gtceu.client.model.pipe.PipeModel;
-import com.gregtechceu.gtceu.common.pipelike.item.ItemPipeBlockEntity;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.pipenet.PipeNetworkType;
 import com.gregtechceu.gtceu.api.pipenet.property.FloatSegmentProperty;
@@ -41,7 +40,7 @@ public class ItemPipeBlock extends MaterialPipeBlock<ItemPipeType, ItemPipePrope
     }
 
     @Override
-    public BlockEntityType<? extends PipeBlockEntity<ItemPipeType, ItemPipeProperties>> getBlockEntityType() {
+    public BlockEntityType<? extends PipeBlockEntity<ItemPipeType>> getBlockEntityType() {
         return GTBlockEntities.ITEM_PIPE.get();
     }
 
@@ -75,7 +74,7 @@ public class ItemPipeBlock extends MaterialPipeBlock<ItemPipeType, ItemPipePrope
     }
 
     @Override
-    public boolean canPipeConnectToBlock(PipeBlockEntity<ItemPipeType, ItemPipeProperties> selfTile, Direction side,
+    public boolean canPipeConnectToBlock(PipeBlockEntity<ItemPipeType> selfTile, Direction side,
                                          @Nullable BlockEntity tile) {
         return tile != null &&
                 tile.getCapability(ForgeCapabilities.ITEM_HANDLER, side.getOpposite()).isPresent();

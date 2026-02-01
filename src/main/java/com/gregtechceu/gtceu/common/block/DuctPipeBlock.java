@@ -14,7 +14,6 @@ import com.gregtechceu.gtceu.api.pipenet.property.FloatSegmentProperty;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.common.pipelike.SegmentPropertyTypes;
-import com.gregtechceu.gtceu.common.pipelike.duct.DuctPipeProperties;
 import com.gregtechceu.gtceu.common.pipelike.duct.DuctPipeType;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -34,15 +33,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class DuctPipeBlock extends PipeBlock<DuctPipeType, DuctPipeProperties> {
+public class DuctPipeBlock extends PipeBlock<DuctPipeType> {
 
     public DuctPipeBlock(Properties properties, DuctPipeType type) {
-        super(properties, type, new DuctPipeProperties(type.getRateMultiplier()),
+        super(properties, type,
                 type.buildSegmentProperties(null));
     }
 
     @Override
-    public BlockEntityType<? extends PipeBlockEntity<DuctPipeType, DuctPipeProperties>> getBlockEntityType() {
+    public BlockEntityType<? extends PipeBlockEntity<DuctPipeType>> getBlockEntityType() {
         return GTBlockEntities.DUCT_PIPE.get();
     }
 
@@ -58,7 +57,7 @@ public class DuctPipeBlock extends PipeBlock<DuctPipeType, DuctPipeProperties> {
     }
 
     @Override
-    public boolean canPipeConnectToBlock(PipeBlockEntity<DuctPipeType, DuctPipeProperties> selfTile, Direction side,
+    public boolean canPipeConnectToBlock(PipeBlockEntity<DuctPipeType> selfTile, Direction side,
                                          @Nullable BlockEntity tile) {
         return tile != null &&
                 (tile.getCapability(GTCapability.CAPABILITY_HAZARD_CONTAINER, side.getOpposite()).isPresent() ||

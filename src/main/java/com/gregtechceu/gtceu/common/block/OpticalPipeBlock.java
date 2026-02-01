@@ -13,7 +13,6 @@ import com.gregtechceu.gtceu.client.model.pipe.ActivablePipeModel;
 import com.gregtechceu.gtceu.client.model.pipe.PipeModel;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
-import com.gregtechceu.gtceu.common.pipelike.optical.OpticalPipeProperties;
 import com.gregtechceu.gtceu.common.pipelike.optical.OpticalPipeType;
 
 import net.minecraft.client.color.block.BlockColor;
@@ -33,10 +32,10 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class OpticalPipeBlock extends PipeBlock<OpticalPipeType, OpticalPipeProperties> {
+public class OpticalPipeBlock extends PipeBlock<OpticalPipeType> {
 
     public OpticalPipeBlock(BlockBehaviour.Properties properties, @NotNull OpticalPipeType pipeType) {
-        super(properties, pipeType, OpticalPipeProperties.INSTANCE, new PipeSegmentPropertyHolder());
+        super(properties, pipeType, new PipeSegmentPropertyHolder());
         registerDefaultState(defaultBlockState().setValue(GTBlockStateProperties.ACTIVE, false));
     }
 
@@ -62,7 +61,7 @@ public class OpticalPipeBlock extends PipeBlock<OpticalPipeType, OpticalPipeProp
     }
 
     @Override
-    public BlockEntityType<? extends PipeBlockEntity<OpticalPipeType, OpticalPipeProperties>> getBlockEntityType() {
+    public BlockEntityType<? extends PipeBlockEntity<OpticalPipeType>> getBlockEntityType() {
         return GTBlockEntities.OPTICAL_PIPE.get();
     }
 
@@ -70,7 +69,7 @@ public class OpticalPipeBlock extends PipeBlock<OpticalPipeType, OpticalPipeProp
     public static BlockColor tintedColor() {
         return (blockState, level, blockPos, index) -> {
             if (blockPos != null && level != null &&
-                    level.getBlockEntity(blockPos) instanceof PipeBlockEntity<?, ?> pipe) {
+                    level.getBlockEntity(blockPos) instanceof PipeBlockEntity<?> pipe) {
                 if (!pipe.getFrameMaterial().isNull()) {
                     if (index == 3) {
                         return pipe.getFrameMaterial().getMaterialRGB();
@@ -87,7 +86,7 @@ public class OpticalPipeBlock extends PipeBlock<OpticalPipeType, OpticalPipeProp
     }
 
     @Override
-    public boolean canPipeConnectToBlock(PipeBlockEntity<OpticalPipeType, OpticalPipeProperties> selfTile,
+    public boolean canPipeConnectToBlock(PipeBlockEntity<OpticalPipeType> selfTile,
                                          Direction side,
                                          @Nullable BlockEntity tile) {
         if (tile == null) return false;

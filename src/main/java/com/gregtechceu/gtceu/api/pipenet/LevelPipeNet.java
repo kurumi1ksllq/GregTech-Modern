@@ -32,7 +32,7 @@ public class LevelPipeNet extends SavedData {
         return serverLevel;
     }
 
-    public void addNode(BlockPos nodePos, PipeBlockEntity<?, ?> pipe) {
+    public void addNode(BlockPos nodePos, PipeBlockEntity<?> pipe) {
     }
 
     protected void addPipeNetToChunk(ChunkPos chunkPos, PipeNet pipeNet) {

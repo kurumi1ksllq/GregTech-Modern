@@ -67,17 +67,6 @@ public enum WireType implements IMaterialPipeType<WireProperties> {
     }
 
     @Override
-    public WireProperties modifyProperties(WireProperties baseProperties) {
-        int lossPerBlock;
-        if (!baseProperties.isSuperconductor() && baseProperties.getLossPerBlock() == 0)
-            lossPerBlock = (int) (0.75 * lossMultiplier);
-        else lossPerBlock = baseProperties.getLossPerBlock() * lossMultiplier;
-
-        return new WireProperties(baseProperties.getVoltage(), baseProperties.getAmperage() * amperage, lossPerBlock,
-                baseProperties.isSuperconductor());
-    }
-
-    @Override
     public boolean isPaintable() {
         return true;
     }
@@ -87,7 +76,7 @@ public enum WireType implements IMaterialPipeType<WireProperties> {
         return TYPE_ID;
     }
 
-    public PipeModel createPipeModel(PipeBlock<?, ?> block, Material material, GTBlockstateProvider provider) {
+    public PipeModel createPipeModel(PipeBlock<?> block, Material material, GTBlockstateProvider provider) {
         ResourceLocation side = MaterialIconType.wire
                 .getBlockTexturePath(material.getMaterialIconSet(), "side", true);
         ResourceLocation end = MaterialIconType.wire

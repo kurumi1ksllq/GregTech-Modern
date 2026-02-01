@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.common.pipelike.item;
 
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.ItemPipeProperties;
 import com.gregtechceu.gtceu.api.pipenet.PipeBlockEntity;
 import com.gregtechceu.gtceu.common.pipelike.GTPipeNetworks;
 import com.gregtechceu.gtceu.utils.FacingPos;
@@ -17,7 +16,7 @@ import lombok.Getter;
 
 import java.util.Objects;
 
-public class ItemPipeBlockEntity extends PipeBlockEntity<ItemPipeType, ItemPipeProperties> {
+public class ItemPipeBlockEntity extends PipeBlockEntity<ItemPipeType> {
 
     @Getter
     private final Object2IntMap<FacingPos> transferred = new Object2IntOpenHashMap<>();

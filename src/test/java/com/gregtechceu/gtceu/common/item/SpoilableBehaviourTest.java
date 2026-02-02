@@ -54,14 +54,15 @@ public class SpoilableBehaviourTest {
     @BeforeBatch(batch = "spoilageTests")
     public static void prepare(Level ignoredLevel) {
         LCR_RECIPE_TYPE = TestUtils.createRecipeType("spoilage_lcr_tests", GTRecipeTypes.LARGE_CHEMICAL_RECIPES);
-        LCR_RECIPE_TYPE.getLookup().addRecipe(LCR_RECIPE_TYPE
+        LCR_RECIPE_TYPE.getAdditionHandler().beginStaging();
+        LCR_RECIPE_TYPE.getAdditionHandler().addStaging(LCR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_overclock_logic"))
                 .inputItems(new ItemStack(Items.JIGSAW))
                 .outputItems(new ItemStack(Items.STRUCTURE_BLOCK))
                 .EUt(GTValues.V[GTValues.HV])
                 .duration(20)
                 .buildRawRecipe());
-        LCR_RECIPE_TYPE.getLookup().addRecipe(LCR_RECIPE_TYPE
+        LCR_RECIPE_TYPE.getAdditionHandler().addStaging(LCR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_overclock_logic"))
                 .inputItems(new ItemStack(Items.APPLE))
                 .outputItems(new ItemStack(Items.STRUCTURE_BLOCK))
@@ -69,6 +70,7 @@ public class SpoilableBehaviourTest {
                 .duration(20)
                 .keepSpoilingProgress(false)
                 .buildRawRecipe());
+        LCR_RECIPE_TYPE.getAdditionHandler().completeStaging();
         MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class,
                 SpoilableBehaviourTest::attachSpoilables);
     }
@@ -107,6 +109,7 @@ public class SpoilableBehaviourTest {
 
     private static BusHolder getBussesAndForm(GameTestHelper helper) {
         WorkableMultiblockMachine controller = (WorkableMultiblockMachine) helper.getBlockEntity(new BlockPos(1, 2, 0));
+        assert controller != null;
         TestUtils.formMultiblock(controller);
         controller.setRecipeType(LCR_RECIPE_TYPE);
         ItemBusPartMachine inputBus1 = (ItemBusPartMachine) helper.getBlockEntity(new BlockPos(2, 1, 0));

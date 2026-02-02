@@ -582,7 +582,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
         } else {
             this.recipeModifier = new RecipeModifierList(this.recipeModifier, recipeModifier);
         }
-        return this;
+        return getThis();
     }
 
     public TYPE recipeModifier(RecipeModifier recipeModifier, boolean alwaysTryModifyRecipe) {

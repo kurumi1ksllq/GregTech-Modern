@@ -4813,40 +4813,35 @@
 <h2 id="sizing">Sizing</h2>
 <ul>
 <li><code>width(int)</code> sets the widget width in pixels</li>
-<li><code>widthRel(float)</code> sets the widget width relative to its parent (f.e. if the parent is 120 wide and we
-  call<code>widthRel(0.5f)</code> then our widget will be 60 wide</li>
+<li><code>widthRel(float)</code> sets the widget width relative to its parent (e.g. if the parent is 120 px wide and we
+  call <code>widthRel(0.5f)</code>, our widget will be 60 px wide)</li>
 <li><code>height(int)</code> and <code>heightRel(float)</code> work analogous to previous methods</li>
 <li><code>size(int width, int height)</code> is equivalent to <code>.width(width).height(height)</code></li>
 <li><code>size(int val)</code> is equivalent to <code>.width(val).height(val)</code></li>
 <li><code>sizeRel(float width, float height)</code> and <code>sizeRel(float val)</code> work analogous to previous methods</li>
 <li><code>fullWidth()</code> and <code>fullHeight()</code> are shortcuts for <code>widthRel(1f)</code> and <code>heightRel(1f)</code> respectively</li>
 <li><code>full()</code> combines the previous two methods</li>
-<li><code>coverChildrenWidth()</code> makes the widget width wrapping tightly around its children</li>
+<li><code>coverChildrenWidth()</code> makes the widget width wrap tightly around its children</li>
 <li><code>coverChildrenHeight()</code> works analogous to previous method</li>
 <li><code>coverChildren()</code> wraps width and height tightly</li>
 <li><code>expanded()</code> is only useful for children of <code>Row</code> and <code>Column</code> widgets. It will make the widget expand as much as
   possible in the widgets axis (width in row and height in column)</li>
 </ul>
 <h2 id="positioning">Positioning</h2>
-<p>We can set position on four different points. Two for each axis. <code>left()</code>, <code>right()</code>, <code>top()</code> and <code>bottom()</code>.
+<p>We can set position on four different points, two for each axis. <code>left()</code>, <code>right()</code>, <code>top()</code> and <code>bottom()</code>.
 To understand what they are doing take a look at the following picture:</p>
 <p><img alt="grafik" src="https://github.com/CleanroomMC/ModularUI/assets/45517902/ab173431-1509-414c-8db4-4545c985a9bd" /></p>
 <p>As you can see the methods are fairly self-explanatory. Each of those methods has multiple variants much like <code>width()</code>
 and <code>widthRel()</code>. Only methods for <code>left()</code> will be listed here.</p>
 <ul>
-<li><code>left(int)</code> sets the x position in pixels relative to its parent</li>
-<li><code>leftRel(float)</code> sets the relative x position relative to its parent (f.e. 0.5f will center the widget) (it might not
-  be too easy to fully understand how this works right now</li>
-<li><code>leftRelOffset(float val, int offset)</code> is the same as <code>leftRel()</code>, but also adds an <code>offset</code> in pixels after the
-  calculation</li>
-<li><code>leftRelAnchor(float val, float anchor)</code> is the same as <code>leftRel()</code>, but with a different anchor
+<li><code>left(int x)</code> sets the x position in pixels relative to its parent</li>
+<li><code>leftRel(float x)</code> sets the x position relative to its parent (f.e. 0.5f will center the widget) </li>
+<li><code>leftRelOffset(float val, int offset)</code> is the same as <code>leftRel(float x)</code>, but also adds an <code>offset</code> in pixels after the calculation</li>
+<li><code>leftRelAnchor(float val, float anchor)</code> is the same as <code>leftRel(float x)</code>, but with a different anchor
   (see <a href="#anchor">Anchor</a>)</li>
 <li><code>leftRel(float val, int offset, float anchor)</code> combines <code>leftRelOffset()</code> and <code>leftRelAnchor()</code></li>
-<li><code>left(float val, int offset, float anchor, Measure measure)</code> is <code>leftRel(float val, int offset, float anchor)</code>, but
-  you can define the measure (pixels or relative yourself) (this method is mostly useless since offset and anchor are
-  only effective with relative measure)</li>
 <li><code>left(DoubleSupplier val, Measure measure)</code> is like <code>left()</code> and <code>leftRel()</code>, but with a dynamic value. Note that the
-  supplier is only evaluated during resizing. You can't use for animating widgets.</li>
+  supplier is only evaluated during resizing. You can't use it for animating widgets.</li>
 <li><code>leftRelOffset(DoubleSupplier val, int offset)</code> is like <code>leftRelOffset(float val, int offset)</code> with a dynamic value</li>
 <li><code>leftRelAnchor(DoubleSupplier val, float anchor)</code> is like <code>leftRelAnchor(float val, float anchor)</code> with a dynamic
   value</li>
@@ -4861,7 +4856,6 @@ Additionally, there is</p>
 <li><code>alignY(float y)</code> is short for <code>topRelAnchor(y, y)</code></li>
 <li><code>align(Alignment a)</code> combines <code>alignX(float x)</code> and <code>alignY(float y)</code></li>
 <li><code>center()</code> is short for <code>align(Alignment.Center)</code></li>
-<li>various setters for margin and padding (margin puts space inside itself, padding puts space outside itself)</li>
 </ul>
 <h2 id="anchor">Anchor</h2>
 <p>The anchor is the point of the widget at which the widget will be positioned with the relative value. The following
@@ -4873,21 +4867,21 @@ Try imagining what happens with different anchor values and play around with it 
 <p>If we had called <code>leftRel(float val, int offset, float anchor)</code>, then the offset would be added after the anchor
 and relative position calculation.</p>
 <h2 id="combining-size-and-position">Combining Size and Position</h2>
-<p>Of course, you can call multiple position and size methods, but you should be aware of its effects and limitations.</p>
-<p>Each axis (x and y) has 3 setters (x has <code>left()</code>, <code>right()</code> and <code>width()</code>, y has <code>top()</code>, <code>bottom()</code> and <code>height()</code>)
+<p>You can call multiple different position and size methods, but you should be aware of its effects and limitations.</p>
+<p>Each axis (x and y) has three setters (x has <code>left()</code>, <code>right()</code> and <code>width()</code>, y has <code>top()</code>, <code>bottom()</code> and <code>height()</code>)
 without including all the variations.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You can call at most 2 setters for each axis, since with two properties set the last one can always be calculated!</p>
+<p>You can call at most two setters for each axis, since with two properties set the last one can always be calculated.</p>
 </div>
 <p>For example of you call <code>left()</code> and <code>right()</code> then the width can be calculated with <code>right - left</code>.
 Setting all three properties for an axis will remove one of the other properties and log an info message.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You don't need to call any setters. The position defaults to (0|0) and the size defaults to 18 by 18 (for most widgets).</p>
+<p>By default, the position is (0, 0) and the size is 18x18 in pixels for most widgets.</p>
 </div>
 <h2 id="changing-the-relative-parent">Changing the relative Parent</h2>
-<p>By default, the size and position are calculated relative to the direct widgets parent. But that can be changed with
+<p>By default, the size and position are calculated relative to the widget's parent, but that can be changed with
 <code>relative(Area)</code>, <code>relative(IGuiElement)</code> and <code>relativeToScreen()</code>.
 The parent of all panels is by default the screen.</p>
 <div class="admonition warning">
@@ -4905,12 +4899,12 @@ into one of those.</p>
 <li>e.g. <code>Flow.row().mainAxisAlignment(Alignment.MainAxis.CENTER)</code> centers the row's children horizontally, given that it has a set width</li>
 </ul>
 </li>
-<li><code>crossAxisAlignment(...)</code> controls alignment on the cross axis:<ul>
+<li><code>crossAxisAlignment(...)</code> controls alignment on the perpendicular axis:<ul>
 <li><code>START</code>, <code>CENTER</code>, <code>END</code></li>
 <li>e.g. <code>Flow.row().crossAxisAlignment(Alignment.CrossAxis.CENTER)</code> centers the row's children vertically, given that it has a set height</li>
 </ul>
 </li>
-<li><code>childPadding(int)</code> adds fixed spacing <em>between</em> children.</li>
+<li><code>childPadding(int)</code> adds fixed spacing between children.</li>
 <li><code>coverChildren()</code> / <code>coverChildrenWidth()</code> / <code>coverChildrenHeight()</code> sizes the flow to fit its children.</li>
 <li><code>collapseDisabledChild()</code> does not consider disabled children during position calculations.<ul>
 <li>This is useful when the enabled state of children changes dynamically.</li>
@@ -4930,12 +4924,12 @@ into one of those.</p>
 <p>1) Center a widget within its parent (positioning)</p>
 <ul>
 <li><code>widget.center()</code> or <code>widget.align(Alignment.Center)</code></li>
-<li><code>widget.horizontalCenter()</code> / <code>widget.verticalCenter()</code></li>
+<li><code>widget.horizontalCenter()</code> or <code>widget.verticalCenter()</code></li>
 </ul>
 <p>2) Center children inside a Row/Column (layout)</p>
 <ul>
-<li><code>row.mainAxisAlignment(Alignment.MainAxis.CENTER)</code> to center along the row direction.</li>
-<li><code>row.crossAxisAlignment(Alignment.CrossAxis.CENTER)</code> to center across the row direction.</li>
+<li><code>Flow.row().mainAxisAlignment(Alignment.MainAxis.CENTER)</code> centers children along the flow's direction.</li>
+<li><code>Flow.column().crossAxisAlignment(Alignment.CrossAxis.CENTER)</code> centers children perpendicular to the flow's direction.</li>
 <li>Remember to give the row/column a size on that axis (e.g. <code>widthRel(1f)</code> for a row).</li>
 </ul>
 <h2 id="margin-vs-padding">Margin vs padding</h2>

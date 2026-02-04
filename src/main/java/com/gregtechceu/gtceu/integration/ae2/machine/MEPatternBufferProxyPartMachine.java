@@ -8,6 +8,10 @@ import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
+import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
+import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
+import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.ProxySlotRecipeHandler;
 import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
 import com.gregtechceu.gtceu.syncsystem.annotations.SyncToClient;
@@ -91,13 +95,11 @@ public class MEPatternBufferProxyPartMachine extends TieredIOPartMachine
         return getBuffer() != null;
     }
 
-    /*
-     * @Override
-     * public ModularUI createUI(Player entityPlayer) {
-     * assert getBuffer() != null; // UI should never be able to be opened when buffer is null
-     * return getBuffer().createUI(entityPlayer);
-     * }
-     */
+    @Override
+    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        assert getBuffer() != null;
+        return getBuffer().buildUI(data, syncManager, settings);
+    }
 
     @Override
     public void onMachineRemoved() {

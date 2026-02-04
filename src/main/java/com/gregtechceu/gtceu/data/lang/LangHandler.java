@@ -1325,6 +1325,7 @@ public class LangHandler {
         provider.add("gtceu.gui.content.units.per_tick", "/t");
         provider.add("gtceu.gui.content.units.per_second", "/s");
 
+        provider.add("gtceu.gui.pattern_buffer.set_custom_name", "Set Custom Name: ");
         provider.add("gtceu.gui.me_network.online", "Network Status: §2Online§r");
         provider.add("gtceu.gui.me_network.offline", "Network Status: §4Offline§r");
         provider.add("gtceu.gui.waiting_list", "Sending Queue:");

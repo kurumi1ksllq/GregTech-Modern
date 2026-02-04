@@ -147,7 +147,7 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType>
     }
 
     public int getCapacityPerTank() {
-        return getPropertyHolder().getPropertyValue(SegmentPropertyTypes.FLUID_THROUGHPUT) * 20;
+        return getPipeBlock().defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.FLUID_THROUGHPUT) * 20;
     }
 
     public void update() {
@@ -159,7 +159,7 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType>
             }
 
             boolean shouldDistribute = (oldLastReceivedFrom == lastReceivedFrom);
-            int tanks = getPropertyHolder().getPropertyValue(SegmentPropertyTypes.CHANNELS);
+            int tanks = getPipeBlock().defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.CHANNELS);
             for (int i = 0, j = GTValues.RNG.nextInt(tanks); i < tanks; i++) {
                 int index = (i + j) % tanks;
                 CustomFluidTank tank = getFluidTanks()[index];
@@ -280,20 +280,20 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType>
     public boolean canContain(@NotNull FluidState state) {
         return switch (state) {
             case LIQUID -> true;
-            case GAS -> getPropertyHolder().getPropertyValue(SegmentPropertyTypes.GAS_PROOF);
-            case PLASMA -> getPropertyHolder().getPropertyValue(SegmentPropertyTypes.CRYO_PROOF);
+            case GAS -> getPipeBlock().defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.GAS_PROOF);
+            case PLASMA -> getPipeBlock().defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.CRYO_PROOF);
         };
     }
 
     public boolean canContain(@NotNull FluidAttribute attribute) {
-         if (attribute == FluidAttributes.ACID) return getPropertyHolder().getPropertyValue(SegmentPropertyTypes.ACID_PROOF);
+         if (attribute == FluidAttributes.ACID) return getPipeBlock().defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.ACID_PROOF);
          return true;
     }
 
     public void checkAndDestroy(@NotNull FluidStack stack) {
         Fluid fluid = stack.getFluid();
 
-        var props = getPropertyHolder();
+        var props = getPipeBlock().defaultSegmentProperties;
         boolean burning = props.getPropertyValue(SegmentPropertyTypes.MAX_TEMPERATURE) < fluid.getFluidType().getTemperature(stack);
         boolean leaking = !props.getPropertyValue(SegmentPropertyTypes.GAS_PROOF) && fluid.getFluidType().getDensity(stack) < 0;
         boolean shattering = !props.getPropertyValue(SegmentPropertyTypes.CRYO_PROOF) &&
@@ -443,8 +443,8 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType>
     }
 
     private void createTanksList() {
-        fluidTanks = new CustomFluidTank[getPropertyHolder().getPropertyValue(SegmentPropertyTypes.CHANNELS)];
-        for (int i = 0; i < getPropertyHolder().getPropertyValue(SegmentPropertyTypes.CHANNELS); i++) {
+        fluidTanks = new CustomFluidTank[getPipeBlock().defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.CHANNELS)];
+        for (int i = 0; i < getPipeBlock().defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.CHANNELS); i++) {
             fluidTanks[i] = new CustomFluidTank(getCapacityPerTank());
         }
         pipeTankList = new PipeTankList(this, null, fluidTanks);

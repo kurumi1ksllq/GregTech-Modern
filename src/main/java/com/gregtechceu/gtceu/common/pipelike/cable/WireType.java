@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.block.PipeBlock;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconType;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.WireProperties;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.pipenet.IMaterialPipeType;
 import com.gregtechceu.gtceu.api.pipenet.PipeSegmentPropertyHolder;
@@ -24,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
 
-public enum WireType implements IMaterialPipeType<WireProperties> {
+public enum WireType implements IMaterialPipeType {
 
     WIRE_SINGLE("single_wire", 0.1875f, 1, 2, wireGtSingle, -1, false),
     WIRE_DOUBLE("double_wire", 0.3125f, 2, 2, wireGtDouble, -1, false),

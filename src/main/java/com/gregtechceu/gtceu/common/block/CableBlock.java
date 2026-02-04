@@ -123,7 +123,7 @@ public class CableBlock extends MaterialPipeBlock<WireType, WireProperties> {
         if (wireType.insulationLevel == -1 && entity instanceof LivingEntity entityLiving) {
             CableBlockEntity cable = (CableBlockEntity) getPipeTile(level, pos);
             if (cable != null && cable.getFrameMaterial().isNull() &&
-                    cable.getPropertyHolder().getPropertyValue(SegmentPropertyTypes.LOSS_PER_BLOCK) > 0) {
+                    defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.LOSS_PER_BLOCK) > 0) {
                 long voltage = cable.getCurrentMaxVoltage();
                 double amperage = cable.getAverageAmperage();
                 if (voltage > 0L && amperage > 0L) {

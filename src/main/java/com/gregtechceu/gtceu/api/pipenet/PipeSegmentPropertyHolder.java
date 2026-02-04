@@ -33,6 +33,16 @@ public class PipeSegmentPropertyHolder {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof PipeSegmentPropertyHolder other)) return false;
+        for (var prop: properties.keySet()) {
+            if (!other.properties.containsKey(prop)) return false;
+            if (!getProperties().get(prop).equals(other.getProperties().get(prop))) return false;
+        }
+        return true;
+    }
+
+    @Override
     public String toString() {
         String str = "PipeSegmentPropertyHolder{";
         for (var p : properties.entrySet()) {

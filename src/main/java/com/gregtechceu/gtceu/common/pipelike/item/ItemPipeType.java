@@ -3,7 +3,6 @@ package com.gregtechceu.gtceu.common.pipelike.item;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.PipeBlock;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.ItemPipeProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.pipenet.IMaterialPipeType;
@@ -19,7 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
-public enum ItemPipeType implements IMaterialPipeType<ItemPipeProperties> {
+public enum ItemPipeType implements IMaterialPipeType {
 
     SMALL("small", 0.375f, TagPrefix.pipeSmallItem, 0.5f, 1.5f),
     NORMAL("normal", 0.5f, TagPrefix.pipeNormalItem, 1f, 1f),

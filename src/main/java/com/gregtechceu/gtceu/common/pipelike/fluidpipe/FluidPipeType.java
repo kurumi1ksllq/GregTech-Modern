@@ -3,7 +3,6 @@ package com.gregtechceu.gtceu.common.pipelike.fluidpipe;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.PipeBlock;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.FluidPipeProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.pipenet.IMaterialPipeType;
@@ -21,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
 
-public enum FluidPipeType implements IMaterialPipeType<FluidPipeProperties> {
+public enum FluidPipeType implements IMaterialPipeType {
 
     TINY("tiny", 0.25f, 1, pipeTinyFluid),
     SMALL("small", 0.375f, 2, pipeSmallFluid),

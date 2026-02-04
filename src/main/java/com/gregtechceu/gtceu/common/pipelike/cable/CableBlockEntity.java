@@ -144,11 +144,11 @@ public class CableBlockEntity extends PipeBlockEntity<WireType> implements IData
     }
 
     public long getMaxAmperage() {
-        return getPropertyHolder().getPropertyValue(SegmentPropertyTypes.MAX_AMPS);
+        return getPipeBlock().defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.MAX_AMPS);
     }
 
     public long getMaxVoltage() {
-        return getPropertyHolder().getPropertyValue(SegmentPropertyTypes.MAX_VOLTAGE);
+        return getPipeBlock().defaultSegmentProperties.getPropertyValue(SegmentPropertyTypes.MAX_VOLTAGE);
     }
 
     public int getDefaultTemp() {

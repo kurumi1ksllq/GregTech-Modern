@@ -204,15 +204,6 @@ public class MetaMachineBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public boolean triggerEvent(BlockState pState, Level pLevel, BlockPos pPos, int pId, int pParam) {
-        BlockEntity tile = pLevel.getBlockEntity(pPos);
-        if (tile != null) {
-            return tile.triggerEvent(pId, pParam);
-        }
-        return false;
-    }
-
-    @Override
     public BlockState rotate(BlockState pState, Rotation pRotation) {
         if (getRotationState() == RotationState.NONE) {
             return pState;

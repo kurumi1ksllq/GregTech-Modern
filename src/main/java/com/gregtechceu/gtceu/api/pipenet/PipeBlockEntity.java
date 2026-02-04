@@ -80,7 +80,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     @SyncToClient
     @SaveField
     @RerenderOnChanged
-    private int blockedConnections = ALL_CLOSED;
+    protected int blockedConnections = ALL_CLOSED;
 
     @SaveField
     @SyncToClient
@@ -100,12 +100,10 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     private final List<TickableSubscription> waitingToAdd;
     @Getter
     private final PipeNetworkType networkType;
-    @Getter
-    private final PipeSegmentPropertyHolder propertyHolder;
+
     public PipeBlockEntity(BlockEntityType<?> type, PipeNetworkType networkType, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
         this.coverContainer = new PipeCoverContainer(this);
-        this.propertyHolder = getPipeBlock().defaultSegmentProperties;
         this.networkType = networkType;
         this.serverTicks = new ArrayList<>();
         this.waitingToAdd = new ArrayList<>();
@@ -136,16 +134,6 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     public void clearRemoved() {
         super.clearRemoved();
         coverContainer.onLoad();
-    }
-
-    public void setConnections(int connections) {
-        this.connections = connections;
-        syncDataHolder.markClientSyncFieldDirty("connections");
-    }
-
-    public void setBlockedConnections(int blocked) {
-        this.blockedConnections = blocked;
-        syncDataHolder.markClientSyncFieldDirty("blockedConnections");
     }
 
     public void setPaintingColor(int col) {
@@ -212,6 +200,12 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
         return null;
     }
 
+    @Nullable
+    public PipeNode getNode() {
+        if (!isRemote()) return LevelPipeNet.getLevelPipeNet((ServerLevel)getLevel(), networkType).getNodeFromPos(getBlockPos());
+        return null;
+    }
+
     public PipeType getPipeType() {
         return getPipeBlock().pipeType;
     }
@@ -234,8 +228,8 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
 
     public final void serverTick() {
         if (!attachedToNet) {
-            int activeConnections = getConnections();
             LevelPipeNet.getLevelPipeNet((ServerLevel) level, networkType).addNode(getBlockPos(), this);
+            attachedToNet = true;
         }
 
         if (!waitingToAdd.isEmpty()) {
@@ -296,11 +290,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
             blockedConnections = withSideConnection(blockedConnections, side, isBlocked);
             syncDataHolder.markClientSyncFieldDirty("blockedConnections");
             setChanged();
-            LevelPipeNet worldPipeNet = LevelPipeNet.getLevelPipeNet(serverLevel, networkType);
-            PipeNet net = worldPipeNet.getNetFromPos(getBlockPos());
-            if (net != null) {
-                net.onPipeConnectionsUpdate();
-            }
+            updateNetworkConnection();
         }
     }
 
@@ -337,7 +327,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
 
             connections = withSideConnection(connections, side, connected);
             syncDataHolder.markClientSyncFieldDirty("connections");
-            updateNetworkConnection(side, connected);
+            updateNetworkConnection();
             // notify neighbor of change so Auto Output updates its ticking status
             getLevel().neighborChanged(getBlockPos().relative(side), getPipeBlock(), getBlockPos());
             setChanged();
@@ -359,9 +349,9 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
         }
     }
 
-    private void updateNetworkConnection(Direction side, boolean connected) {
+    private void updateNetworkConnection() {
         LevelPipeNet worldPipeNet = LevelPipeNet.getLevelPipeNet((ServerLevel) getLevel(), networkType);
-        worldPipeNet.updateBlockedConnections(getBlockPos(), side, !connected);
+        worldPipeNet.updateConnections(getBlockPos(), connections, blockedConnections);
     }
 
     protected int withSideConnection(int blockedConnections, Direction side, boolean connected) {
@@ -375,24 +365,6 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
 
     public void notifyBlockUpdate() {
         getLevel().updateNeighborsAt(getBlockPos(), getPipeBlock());
-    }
-
-    @Override
-    public boolean triggerEvent(int id, int para) {
-        if (id == 1) { // chunk re render
-            if (level != null && level.isClientSide) {
-                scheduleRenderUpdate();
-            }
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void setChanged() {
-        if (getLevel() != null) {
-            getLevel().blockEntityChanged(getBlockPos());
-        }
     }
 
     //////////////////////////////////////

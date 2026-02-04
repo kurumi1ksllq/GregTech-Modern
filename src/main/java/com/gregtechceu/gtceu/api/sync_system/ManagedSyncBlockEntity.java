@@ -87,6 +87,17 @@ public abstract class ManagedSyncBlockEntity extends BlockEntity implements ISyn
         isDirty = true;
     }
 
+    @Override
+    public boolean triggerEvent(int id, int para) {
+        if (id == 1) { // chunk re render
+            if (level != null && level.isClientSide) {
+                scheduleRenderUpdate();
+            }
+            return true;
+        }
+        return false;
+    }
+
     public final void updateTick() {
         setChanged();
         if (isDirty) {

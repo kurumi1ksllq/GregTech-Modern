@@ -20,7 +20,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public abstract class MaterialPipeBlock<
-        PipeType extends Enum<PipeType> & IPipeType & IMaterialPipeType<NodeDataType>, NodeDataType>
+        PipeType extends Enum<PipeType> & IPipeType & IMaterialPipeType, NodeDataType>
                                        extends PipeBlock<PipeType> {
 
     public final Material material;

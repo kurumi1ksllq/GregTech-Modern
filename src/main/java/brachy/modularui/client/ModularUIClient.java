@@ -18,8 +18,9 @@ public class ModularUIClient {
 
     @SubscribeEvent
     public static void registerScreens(FMLClientSetupEvent event) {
-        //noinspection deprecation
-        event.enqueueWork(() -> MenuScreens.register(ModularUIMenuTypes.MODULAR_CONTAINER.get(), ContainerScreenWrapper::new));
+        //noinspection deprecation,RedundantCast
+        event.enqueueWork(() -> MenuScreens.register(ModularUIMenuTypes.MODULAR_CONTAINER.get(),
+                (MenuScreens.ScreenConstructor<ModularContainerMenu, ContainerScreenWrapper>) ContainerScreenWrapper::new));
     }
 
     @SubscribeEvent

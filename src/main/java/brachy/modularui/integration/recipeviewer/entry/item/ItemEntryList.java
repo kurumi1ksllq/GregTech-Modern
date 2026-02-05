@@ -9,7 +9,7 @@ import java.util.List;
 public sealed interface ItemEntryList extends EntryList<ItemStack>
         permits ItemStackList, ItemTagList, ItemHolderSetList {
 
-    List<ItemStack> stacks();
+    List<ItemStack> getStacks();
 
     boolean isEmpty();
 }

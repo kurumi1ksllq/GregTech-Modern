@@ -38,7 +38,7 @@ public final class ItemHolderSetList implements ItemEntryList {
     }
 
     @Override
-    public List<ItemStack> stacks() {
+    public List<ItemStack> getStacks() {
         return entries.stream()
                 .flatMap(ItemHolderSetEntry::stacks)
                 .toList();

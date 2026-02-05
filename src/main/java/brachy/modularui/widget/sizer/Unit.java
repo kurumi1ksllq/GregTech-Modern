@@ -4,10 +4,9 @@ import brachy.modularui.api.GuiAxis;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.DoubleSupplier;
-
-import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public class Unit {

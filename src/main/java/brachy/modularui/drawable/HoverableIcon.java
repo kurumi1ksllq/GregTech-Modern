@@ -7,7 +7,6 @@ import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.widget.sizer.Area;
 
 import lombok.Getter;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -4,12 +4,12 @@ import brachy.modularui.api.MCHelper;
 import brachy.modularui.network.ModularNetwork;
 import brachy.modularui.network.NetworkHandler;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
+
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor

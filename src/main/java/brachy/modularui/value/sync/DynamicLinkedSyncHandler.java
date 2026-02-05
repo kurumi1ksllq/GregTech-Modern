@@ -1,16 +1,16 @@
 package brachy.modularui.value.sync;
 
 import brachy.modularui.api.widget.IWidget;
-import brachy.modularui.widgets.DynamicSyncedWidget;
 import brachy.modularui.widget.WidgetTree;
+import brachy.modularui.widgets.DynamicSyncedWidget;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class DynamicLinkedSyncHandler<S extends ValueSyncHandler<?>> extends SyncHandler
         implements IDynamicSyncNotifiable {

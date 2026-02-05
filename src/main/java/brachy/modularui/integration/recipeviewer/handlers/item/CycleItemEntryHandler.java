@@ -8,14 +8,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.annotation.ParametersAreNonnullByDefault;
-
-import org.jetbrains.annotations.Nullable;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -40,7 +38,7 @@ public class CycleItemEntryHandler implements IItemHandlerModifiable {
 
     private static @Nullable List<ItemStack> getStacksNullable(@Nullable ItemEntryList list) {
         if (list == null) return null;
-        return list.getStacks();
+        return list.stacks();
     }
 
     public ItemEntryList getEntry(int index) {

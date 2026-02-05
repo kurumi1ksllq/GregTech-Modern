@@ -1,11 +1,11 @@
 package brachy.modularui.client;
 
+import brachy.modularui.ModularUI;
+
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.TextureAtlasHolder;
 import net.minecraft.resources.ResourceLocation;
-
-import brachy.modularui.ModularUI;
 
 import org.jetbrains.annotations.NotNull;
 

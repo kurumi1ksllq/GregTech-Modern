@@ -35,6 +35,7 @@ import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.display.Display;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.impl.client.gui.widget.EntryWidget;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -42,8 +43,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
 
 public class ModularUIREIDisplay<T extends Recipe<?>, W extends IWidget> implements Display {
 
@@ -87,7 +86,7 @@ public class ModularUIREIDisplay<T extends Recipe<?>, W extends IWidget> impleme
             if (converter == null) {
                 continue;
             }
-            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @SuppressWarnings({"rawtypes", "unchecked"})
             EntryIngredient ingredient = ((REIStackConverter.Converter) converter).convertTo(provider);
 
             switch (role) {
@@ -119,7 +118,7 @@ public class ModularUIREIDisplay<T extends Recipe<?>, W extends IWidget> impleme
             if (converter == null) {
                 continue;
             }
-            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @SuppressWarnings({"rawtypes", "unchecked"})
             EntryIngredient ingredient = ((REIStackConverter.Converter) converter).convertTo(provider);
             Area area = widget.getArea();
 

@@ -1,12 +1,12 @@
 package brachy.modularui.widgets.textfield;
 
-import brachy.modularui.api.widget.ITooltip;
 import brachy.modularui.ModularUI;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.IKey;
 import brachy.modularui.api.drawable.ITextLine;
 import brachy.modularui.api.value.IStringValue;
 import brachy.modularui.api.value.ISyncOrValue;
+import brachy.modularui.api.widget.ITooltip;
 import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.utils.MathUtil;
@@ -18,6 +18,7 @@ import net.minecraft.util.Mth;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.ParsePosition;
 import java.util.function.Consumer;
@@ -29,8 +30,6 @@ import java.util.function.IntUnaryOperator;
 import java.util.function.LongSupplier;
 import java.util.function.LongUnaryOperator;
 import java.util.regex.Pattern;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Text input widget with one line only. Can be synced between client and server. Can handle text validation.

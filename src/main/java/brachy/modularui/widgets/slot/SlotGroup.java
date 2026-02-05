@@ -1,6 +1,7 @@
 package brachy.modularui.widgets.slot;
 
 import brachy.modularui.value.sync.PanelSyncManager;
+
 import net.minecraft.world.inventory.Slot;
 
 import lombok.Getter;

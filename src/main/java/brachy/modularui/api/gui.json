@@ -1,9 +1,9 @@
 {
-  "name": "test",
-  "gui": [
-    {
-      "widget": "image",
-      "min": 50
-    }
-  ]
+    "name": "test",
+    "gui": [
+        {
+            "widget": "image",
+            "min": 50
+        }
+    ]
 }

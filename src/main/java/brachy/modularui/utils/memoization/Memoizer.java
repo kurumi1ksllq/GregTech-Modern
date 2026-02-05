@@ -13,7 +13,7 @@ public final class Memoizer {
      * If you need thread safety, you should use
      * {@link Suppliers#memoize(com.google.common.base.Supplier) Suppliers#memoize} instead.
      * </p>
-     * 
+     *
      * @param delegate the supplier to memoize
      * @return memoized supplier for the delegate
      * @see #memoize(Supplier, long)

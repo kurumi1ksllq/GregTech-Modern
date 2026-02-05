@@ -5,11 +5,10 @@ import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.utils.Stencil;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.EmptyHandler;
-
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.EmptyHandler;
 
 import org.jetbrains.annotations.ApiStatus;
 

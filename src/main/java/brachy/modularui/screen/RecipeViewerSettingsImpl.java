@@ -9,13 +9,13 @@ import brachy.modularui.utils.Rectangle;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.UnmodifiableView;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.UnmodifiableView;
 
 /**
  * Keeps track of everything related to recipe viewer integration in a Modular GUI.
@@ -155,7 +155,7 @@ public class RecipeViewerSettingsImpl implements RecipeViewerSettings {
     public List<Rectangle> getAllExclusionAreas() {
         this.exclusionWidgets.removeIf(widget -> !widget.isValid());
         List<Rectangle> areas = new ArrayList<>(this.exclusionAreas);
-        for (Iterator<IWidget> iterator = this.exclusionWidgets.iterator(); iterator.hasNext();) {
+        for (Iterator<IWidget> iterator = this.exclusionWidgets.iterator(); iterator.hasNext(); ) {
             IWidget widget = iterator.next();
             if (!widget.isValid()) {
                 iterator.remove();

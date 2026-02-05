@@ -16,13 +16,12 @@ import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 
 import org.apache.commons.lang3.mutable.MutableInt;
-
-import java.util.NoSuchElementException;
-import java.util.Set;
-
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * Helper class to perform operations on widget trees such as traversing, drawing, resizing, finding widgets and

@@ -17,7 +17,6 @@ import brachy.modularui.widget.sizer.Box;
 import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

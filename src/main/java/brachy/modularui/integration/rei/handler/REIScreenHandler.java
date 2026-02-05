@@ -22,14 +22,13 @@ import me.shedaniel.rei.api.client.registry.screen.ExclusionZonesProvider;
 import me.shedaniel.rei.api.client.registry.screen.OverlayDecider;
 import me.shedaniel.rei.api.client.registry.screen.ScreenRegistry;
 import me.shedaniel.rei.api.common.entry.EntryStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
-
 public class REIScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewerHandler
-                             implements DraggableStackProvider<T>, ExclusionZonesProvider<T> {
+        implements DraggableStackProvider<T>, ExclusionZonesProvider<T> {
 
     private static final Map<Class<?>, REIScreenHandler<?>> CACHE = new Reference2ReferenceOpenHashMap<>();
 
@@ -76,7 +75,7 @@ public class REIScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
             if (converter == null) {
                 return null;
             }
-            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @SuppressWarnings({"rawtypes", "unchecked"})
             var converted = ((REIStackConverter.Converter) converter).convertTo(provider);
             return new DraggableStack() {
 

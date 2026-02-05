@@ -1,9 +1,9 @@
 package brachy.modularui.api.drawable;
 
-import brachy.modularui.drawable.text.RichText;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.drawable.HoverableIcon;
 import brachy.modularui.drawable.InteractableIcon;
+import brachy.modularui.drawable.text.RichText;
 import brachy.modularui.widget.sizer.Box;
 
 import org.jetbrains.annotations.Nullable;

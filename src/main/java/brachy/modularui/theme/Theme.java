@@ -3,10 +3,10 @@ package brachy.modularui.theme;
 import brachy.modularui.api.ITheme;
 import brachy.modularui.api.IThemeApi;
 
+import org.jetbrains.annotations.UnmodifiableView;
+
 import java.util.Collection;
 import java.util.Collections;
-
-import org.jetbrains.annotations.UnmodifiableView;
 
 public class Theme extends AbstractTheme {
 

@@ -7,9 +7,9 @@ import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.theme.WidgetThemeKey;
 
-import java.util.Collection;
-
 import org.jetbrains.annotations.UnmodifiableView;
+
+import java.util.Collection;
 
 /**
  * A theme is parsed from json and contains style information like color or background texture.

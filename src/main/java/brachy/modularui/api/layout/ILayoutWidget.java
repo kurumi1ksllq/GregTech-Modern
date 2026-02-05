@@ -1,9 +1,9 @@
 package brachy.modularui.api.layout;
 
-import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.widget.INotifyEnabled;
 import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.widget.sizer.Area;
 
 /**
  * This is responsible for laying out widgets. This method responsible for laying out its children

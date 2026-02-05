@@ -3,11 +3,10 @@ package brachy.modularui.widget;
 import brachy.modularui.api.widget.IWidget;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
 
 public class SingleChildWidget<W extends SingleChildWidget<W>> extends Widget<W> {
 

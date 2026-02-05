@@ -4,9 +4,9 @@ import brachy.modularui.api.drawable.IKey;
 
 import net.minecraft.network.chat.MutableComponent;
 
-import java.util.function.Supplier;
-
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 public class DynamicKey extends BaseKey {
 

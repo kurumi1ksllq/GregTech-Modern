@@ -11,11 +11,10 @@ import brachy.modularui.widgets.slot.SlotGroup;
 import net.minecraft.world.inventory.Slot;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
 
 public class SortButtons extends Widget<SortButtons> {
 

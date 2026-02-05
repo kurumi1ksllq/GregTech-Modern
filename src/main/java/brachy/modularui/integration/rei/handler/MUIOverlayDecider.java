@@ -3,12 +3,12 @@ package brachy.modularui.integration.rei.handler;
 import brachy.modularui.api.IMuiScreen;
 import brachy.modularui.screen.ModularScreen;
 
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.InteractionResult;
+
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.gui.config.DisplayPanelLocation;
 import me.shedaniel.rei.api.client.registry.screen.OverlayDecider;
-
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.world.InteractionResult;
 
 public class MUIOverlayDecider implements OverlayDecider {
 

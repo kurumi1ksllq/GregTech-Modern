@@ -4,10 +4,10 @@ import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.entry.EntryList;
 
-import java.util.function.UnaryOperator;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.UnaryOperator;
 
 /**
  * An interface for recipe viewers to get the ingredient from a widget to show recipes for example.

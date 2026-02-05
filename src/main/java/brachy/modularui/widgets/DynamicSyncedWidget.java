@@ -1,19 +1,19 @@
 package brachy.modularui.widgets;
 
-import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.value.sync.DynamicLinkedSyncHandler;
 import brachy.modularui.value.sync.DynamicSyncHandler;
 import brachy.modularui.value.sync.IDynamicSyncNotifiable;
+import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.value.sync.SyncHandler;
 import brachy.modularui.widget.Widget;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A widget which can update its child based on a function in {@link DynamicSyncHandler}.

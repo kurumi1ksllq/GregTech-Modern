@@ -21,6 +21,7 @@ import net.minecraft.network.chat.Component;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.text.DecimalFormat;
@@ -28,8 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * The base of a text input widget. Handles mouse/InputConstants input and rendering.

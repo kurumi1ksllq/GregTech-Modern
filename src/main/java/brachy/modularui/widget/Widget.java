@@ -1,8 +1,5 @@
 package brachy.modularui.widget;
 
-import brachy.modularui.screen.UISettings;
-import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widgets.slot.ItemSlot;
 import brachy.modularui.api.ITheme;
 import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.IUIHolder;
@@ -18,28 +15,30 @@ import brachy.modularui.api.widget.ITooltip;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.factory.GuiData;
 import brachy.modularui.screen.RichTooltip;
+import brachy.modularui.screen.UISettings;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.theme.WidgetThemeKey;
 import brachy.modularui.value.sync.ISyncRegistrar;
 import brachy.modularui.value.sync.ModularSyncManager;
+import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.value.sync.SyncHandler;
 import brachy.modularui.value.sync.ValueSyncHandler;
 import brachy.modularui.widget.sizer.StandardResizer;
+import brachy.modularui.widgets.slot.ItemSlot;
 
 import lombok.Getter;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A very modular implementation of {@link IWidget}. This is the base class for almost all UI elements.

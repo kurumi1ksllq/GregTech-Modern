@@ -6,11 +6,11 @@ import brachy.modularui.integration.jei.handler.JeiScreenHandler;
 import brachy.modularui.integration.rei.handler.REIScreenHandler;
 import brachy.modularui.screen.ScreenWrapper;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public abstract class RecipeViewerHandler {
 

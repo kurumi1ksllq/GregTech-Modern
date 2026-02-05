@@ -16,11 +16,10 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
-
-import org.jetbrains.annotations.Nullable;
 
 public class JeiContainerHandler<T extends ModularContainerMenu> implements IUniversalRecipeTransferHandler<T> {
 

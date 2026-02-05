@@ -7,7 +7,6 @@ import net.minecraft.network.chat.MutableComponent;
 
 import lombok.Getter;
 import org.apache.commons.lang3.NotImplementedException;
-
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BaseKey implements IKey {

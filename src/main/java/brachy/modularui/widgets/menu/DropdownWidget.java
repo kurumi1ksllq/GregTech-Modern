@@ -8,11 +8,11 @@ import brachy.modularui.utils.MutableSingletonList;
 import brachy.modularui.widgets.ButtonWidget;
 import brachy.modularui.widgets.ListWidget;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A button which displays a list of options when clicked. When an option is clicked, the menu closes and the button

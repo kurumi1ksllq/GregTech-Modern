@@ -7,13 +7,13 @@ import brachy.modularui.api.value.sync.IStringSyncValue;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import java.util.Objects;
-import java.util.function.DoubleConsumer;
-import java.util.function.DoubleSupplier;
-
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
 
 public class DoubleSyncValue extends ValueSyncHandler<Double>
         implements IDoubleSyncValue<Double>, IFloatSyncValue<Double>, IStringSyncValue<Double> {

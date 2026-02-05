@@ -10,7 +10,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
-
 import org.jetbrains.annotations.NotNull;
 
 @Accessors(fluent = true)

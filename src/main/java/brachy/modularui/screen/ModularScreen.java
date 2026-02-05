@@ -1,20 +1,20 @@
 package brachy.modularui.screen;
 
-import brachy.modularui.api.widget.IFocusedWidget;
-import brachy.modularui.api.widget.Interactable;
-import brachy.modularui.widget.Widget;
 import brachy.modularui.ModularUI;
 import brachy.modularui.api.IMuiScreen;
 import brachy.modularui.api.ITheme;
 import brachy.modularui.api.IThemeApi;
 import brachy.modularui.api.MCHelper;
+import brachy.modularui.api.widget.IFocusedWidget;
 import brachy.modularui.api.widget.IGuiAction;
 import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.api.widget.Interactable;
 import brachy.modularui.drawable.GuiDraw;
 import brachy.modularui.overlay.OverlayScreenWrapper;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.utils.Color;
 import brachy.modularui.value.sync.ModularSyncManager;
+import brachy.modularui.widget.Widget;
 import brachy.modularui.widget.WidgetTree;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widget.sizer.ScreenResizeNode;
@@ -46,6 +46,10 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import lombok.Getter;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -56,11 +60,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
-
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * This is the base class for all modular UIs. It only exists on client side.

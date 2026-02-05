@@ -7,10 +7,10 @@ import brachy.modularui.widget.sizer.ResizeNode;
 import brachy.modularui.widget.sizer.StandardResizer;
 import brachy.modularui.widget.sizer.Unit;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
-
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Helper interface for position and size builder methods for widgets.

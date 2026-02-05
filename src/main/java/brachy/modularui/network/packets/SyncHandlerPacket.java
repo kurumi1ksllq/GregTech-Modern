@@ -10,7 +10,6 @@ import net.minecraftforge.network.NetworkEvent;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-
 import org.jetbrains.annotations.ApiStatus;
 
 @NoArgsConstructor

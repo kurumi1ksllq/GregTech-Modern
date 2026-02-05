@@ -1,9 +1,9 @@
 package brachy.modularui.widget.sizer;
 
-import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.animation.IAnimatable;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.layout.IViewportStack;
+import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.utils.Interpolations;
 import brachy.modularui.utils.MathUtil;
 import brachy.modularui.utils.Point;

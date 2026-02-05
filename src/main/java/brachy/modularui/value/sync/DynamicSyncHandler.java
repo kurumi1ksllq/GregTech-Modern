@@ -1,17 +1,17 @@
 package brachy.modularui.value.sync;
 
-import brachy.modularui.widgets.DynamicSyncedWidget;
 import brachy.modularui.api.IPacketWriter;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.widget.WidgetTree;
+import brachy.modularui.widgets.DynamicSyncedWidget;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * This sync handler is used to update a widget dynamically. The update can be called from client and server side.

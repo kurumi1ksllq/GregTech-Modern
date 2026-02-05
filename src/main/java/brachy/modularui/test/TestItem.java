@@ -45,15 +45,14 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import static net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER;
 
@@ -87,21 +86,21 @@ public class TestItem extends Item implements ICurioItem, IUIHolder<PlayerInvent
         }
         ModularPanel panel = ModularPanel.defaultPanel("knapping_gui").resizeableOnDrag(true);
         panel.child(new Column().margin(7)
-                .child(new ParentWidget<>().widthRel(1f).expanded()
-                        .child(SlotGroupWidget.builder()
-                                .row("I I")
-                                .row("  I")
-                                .row("   ")
-                                .row(" I ")
-                                .key('I', index -> new ItemSlot().slot(SyncHandlers.itemSlot(ihm, index)
-                                        .ignoreMaxStackSize(true)
-                                        .slotGroup("mixer_items")
-                                        // do not allow putting items which can hold other items into the item
-                                        // some mods don't do this on their backpacks, so it won't catch those cases
-                                        .filter(stack -> !stack.getCapability(ITEM_HANDLER).isPresent())))
-                                .build()
-                                .align(Alignment.TopLeft)))
-                .child(SlotGroupWidget.playerInventory(false)))
+                        .child(new ParentWidget<>().widthRel(1f).expanded()
+                                .child(SlotGroupWidget.builder()
+                                        .row("I I")
+                                        .row("  I")
+                                        .row("   ")
+                                        .row(" I ")
+                                        .key('I', index -> new ItemSlot().slot(SyncHandlers.itemSlot(ihm, index)
+                                                .ignoreMaxStackSize(true)
+                                                .slotGroup("mixer_items")
+                                                // do not allow putting items which can hold other items into the item
+                                                // some mods don't do this on their backpacks, so it won't catch those cases
+                                                .filter(stack -> !stack.getCapability(ITEM_HANDLER).isPresent())))
+                                        .build()
+                                        .align(Alignment.TopLeft)))
+                        .child(SlotGroupWidget.playerInventory(false)))
                 .child(GuiTextures.ANIMATED_TEXTURE_TEST.asWidget().size(32).align(Alignment.TopRight).margin(7));
 
         return panel;

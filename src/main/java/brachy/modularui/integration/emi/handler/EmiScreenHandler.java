@@ -21,16 +21,15 @@ import dev.emi.emi.api.stack.EmiStackInteraction;
 import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.screen.EmiScreenManager;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.jetbrains.annotations.Nullable;
-
 public class EmiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewerHandler
-                             implements EmiExclusionArea<T>, EmiDragDropHandler<T>, EmiStackProvider<T> {
+        implements EmiExclusionArea<T>, EmiDragDropHandler<T>, EmiStackProvider<T> {
 
     private static final Map<Class<?>, EmiScreenHandler<?>> CACHE = new Reference2ReferenceOpenHashMap<>();
 
@@ -107,7 +106,7 @@ public class EmiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
             if (converter == null) {
                 return EmiStackInteraction.EMPTY;
             }
-            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @SuppressWarnings({"rawtypes", "unchecked"})
             var converted = ((EmiStackConverter.Converter) converter).convertTo(provider);
             return new EmiStackInteraction(converted, null, false);
         }

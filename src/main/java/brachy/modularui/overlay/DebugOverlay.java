@@ -1,7 +1,5 @@
 package brachy.modularui.overlay;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-
 import brachy.modularui.ModularUI;
 import brachy.modularui.ModularUIConfig;
 import brachy.modularui.api.IMuiScreen;
@@ -24,6 +22,8 @@ import brachy.modularui.widgets.ListWidget;
 import brachy.modularui.widgets.ToggleButton;
 import brachy.modularui.widgets.menu.ContextMenuButton;
 import brachy.modularui.widgets.menu.Menu;
+
+import net.minecraftforge.common.ForgeConfigSpec;
 
 import org.jetbrains.annotations.NotNull;
 

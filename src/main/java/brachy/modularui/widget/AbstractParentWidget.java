@@ -6,11 +6,11 @@ import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.theme.WidgetThemeEntry;
 import brachy.modularui.widgets.VoidWidget;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A widget which can hold any amount of children.

@@ -16,10 +16,9 @@ import brachy.modularui.widget.Widget;
 import net.minecraft.util.Mth;
 
 import lombok.experimental.Accessors;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.DoubleSupplier;
-
-import org.jetbrains.annotations.NotNull;
 
 @Accessors(fluent = true, chain = true)
 public class ProgressWidget extends Widget<ProgressWidget> {

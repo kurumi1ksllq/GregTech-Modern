@@ -14,11 +14,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import java.util.function.IntSupplier;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.IntSupplier;
 
 @Accessors(fluent = true, chain = true)
 public class AnimatedText extends StyledText {

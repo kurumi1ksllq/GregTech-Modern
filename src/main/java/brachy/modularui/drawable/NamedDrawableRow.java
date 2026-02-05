@@ -8,7 +8,6 @@ import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.utils.Alignment;
 
 import lombok.Getter;
-
 import org.jetbrains.annotations.Nullable;
 
 public class NamedDrawableRow implements IDrawable {

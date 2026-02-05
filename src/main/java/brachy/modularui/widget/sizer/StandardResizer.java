@@ -11,12 +11,12 @@ import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.core.mixins.client.SlotAccessor;
 import brachy.modularui.utils.Alignment;
 
-import java.util.List;
-import java.util.function.DoubleSupplier;
-
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.function.DoubleSupplier;
 
 /**
  * This class handles resizing and positioning of widgets.

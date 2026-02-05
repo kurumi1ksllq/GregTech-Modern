@@ -6,13 +6,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public final class ItemHolderSetList implements ItemEntryList {
 
@@ -39,7 +38,7 @@ public final class ItemHolderSetList implements ItemEntryList {
     }
 
     @Override
-    public List<ItemStack> getStacks() {
+    public List<ItemStack> stacks() {
         return entries.stream()
                 .flatMap(ItemHolderSetEntry::stacks)
                 .toList();

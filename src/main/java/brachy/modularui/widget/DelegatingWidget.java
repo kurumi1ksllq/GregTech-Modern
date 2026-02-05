@@ -7,9 +7,9 @@ import brachy.modularui.utils.MutableSingletonList;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widget.sizer.StandardResizer;
 
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class DelegatingWidget extends AbstractWidget implements IDelegatingWidget {
 

@@ -1,16 +1,16 @@
 package brachy.modularui.api.widget;
 
-import brachy.modularui.api.value.IValue;
 import brachy.modularui.api.value.ISyncOrValue;
+import brachy.modularui.api.value.IValue;
 import brachy.modularui.value.sync.GenericSyncValue;
 import brachy.modularui.value.sync.ModularSyncManager;
 import brachy.modularui.value.sync.SyncHandler;
 
-import java.util.function.Consumer;
-
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 /**
  * Marks a widget as synced

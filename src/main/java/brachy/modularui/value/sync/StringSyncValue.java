@@ -5,13 +5,13 @@ import brachy.modularui.utils.NetworkUtils;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class StringSyncValue extends AbstractGenericSyncValue<String> implements IStringSyncValue<String> {
 

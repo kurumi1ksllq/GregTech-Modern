@@ -8,10 +8,9 @@ import brachy.modularui.api.widget.IWidget;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.IntSupplier;
-
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Handles calculating size and position in one dimension (x or y).

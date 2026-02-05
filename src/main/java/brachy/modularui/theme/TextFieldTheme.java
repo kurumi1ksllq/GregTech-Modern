@@ -8,7 +8,6 @@ import brachy.modularui.utils.serialization.json.JsonHelper;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;
-
 import org.jetbrains.annotations.Nullable;
 
 public class TextFieldTheme extends WidgetTheme {

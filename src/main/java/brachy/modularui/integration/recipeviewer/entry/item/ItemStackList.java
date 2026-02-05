@@ -7,16 +7,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
-public final class ItemStackList implements ItemEntryList {
-
-    private final List<ItemStack> stacks;
+public record ItemStackList(List<ItemStack> stacks) implements ItemEntryList {
 
     public ItemStackList() {
-        this.stacks = new ArrayList<>();
+        this(new ArrayList<>());
     }
 
-    public ItemStackList(List<ItemStack> list) {
-        this.stacks = new ArrayList<>(list);
+    public ItemStackList(List<ItemStack> stacks) {
+        this.stacks = new ArrayList<>(stacks);
     }
 
     public static ItemStackList of(ItemStack stack) {
@@ -42,11 +40,6 @@ public final class ItemStackList implements ItemEntryList {
     @Override
     public boolean isEmpty() {
         return stacks.isEmpty();
-    }
-
-    @Override
-    public List<ItemStack> getStacks() {
-        return stacks;
     }
 
     public Stream<ItemStack> stream() {

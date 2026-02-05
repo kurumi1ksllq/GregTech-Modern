@@ -11,14 +11,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 
 @Accessors(fluent = true)
-public class RecipeViewerScreenWrapper implements IMuiScreen {
-
-    @Getter
-    private final ModularScreen screen;
-
-    public RecipeViewerScreenWrapper(ModularScreen screen) {
-        this.screen = screen;
-    }
+public record RecipeViewerScreenWrapper(ModularScreen screen) implements IMuiScreen {
 
     @Override
     public Screen wrappedScreen() {

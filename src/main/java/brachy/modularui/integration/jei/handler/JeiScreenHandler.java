@@ -24,16 +24,15 @@ import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IClickableIngredient;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
-
 public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewerHandler
-                             implements IGhostIngredientHandler<T>, IScreenHandler<T> {
+        implements IGhostIngredientHandler<T>, IScreenHandler<T> {
 
     private static final Map<Class<?>, JeiScreenHandler<?>> CACHE = new Reference2ReferenceOpenHashMap<>();
 
@@ -115,8 +114,8 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
     }
 
     public static class ContainerScreen<T extends AbstractContainerMenu, T1 extends AbstractContainerScreen<T> & IMuiScreen>
-                                       extends JeiScreenHandler<T1>
-                                       implements IGuiContainerHandler<T1> {
+            extends JeiScreenHandler<T1>
+            implements IGuiContainerHandler<T1> {
 
         @SuppressWarnings("unchecked")
         public static <M extends AbstractContainerMenu,

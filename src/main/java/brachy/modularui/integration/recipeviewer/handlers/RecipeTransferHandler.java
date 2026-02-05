@@ -1,6 +1,7 @@
 package brachy.modularui.integration.recipeviewer.handlers;
 
 import brachy.modularui.screen.ModularScreen;
+
 import org.jetbrains.annotations.ApiStatus;
 
 /**

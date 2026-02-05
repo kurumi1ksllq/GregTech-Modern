@@ -11,7 +11,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import lombok.Getter;
-
 import org.jetbrains.annotations.Nullable;
 
 public class TextIcon implements IIcon {

@@ -7,10 +7,10 @@ import brachy.modularui.drawable.text.StyledText;
 import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.utils.Alignment;
 
-import java.util.function.Consumer;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 /**
  * Helper interface with tooltip builder methods for widgets.

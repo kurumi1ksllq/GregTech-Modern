@@ -34,13 +34,12 @@ import dev.emi.emi.api.widget.TankWidget;
 import dev.emi.emi.api.widget.Widget;
 import dev.emi.emi.api.widget.WidgetHolder;
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
 
 public abstract class ModularUIEmiRecipe<T extends Recipe<?>, W extends IWidget> implements EmiRecipe {
 
@@ -94,7 +93,7 @@ public abstract class ModularUIEmiRecipe<T extends Recipe<?>, W extends IWidget>
             if (converter == null) {
                 continue;
             }
-            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @SuppressWarnings({"rawtypes", "unchecked"})
             EmiIngredient ingredient = ((EmiStackConverter.Converter) converter).convertTo(provider);
 
             switch (role) {
@@ -126,7 +125,7 @@ public abstract class ModularUIEmiRecipe<T extends Recipe<?>, W extends IWidget>
             if (converter == null) {
                 continue;
             }
-            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @SuppressWarnings({"rawtypes", "unchecked"})
             EmiIngredient ingredient = ((EmiStackConverter.Converter) converter).convertTo(provider);
             Area widgetArea = widget.getArea();
 

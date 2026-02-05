@@ -1,6 +1,7 @@
 package brachy.modularui.api.value;
 
 import brachy.modularui.value.sync.SyncHandler;
+
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

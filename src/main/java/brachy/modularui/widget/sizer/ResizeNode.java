@@ -4,11 +4,11 @@ import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.ITreeNode;
 import brachy.modularui.api.layout.IResizeable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class ResizeNode implements IResizeable, ITreeNode<ResizeNode> {
 

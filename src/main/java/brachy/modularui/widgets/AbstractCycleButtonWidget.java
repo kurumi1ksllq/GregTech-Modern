@@ -18,11 +18,11 @@ import brachy.modularui.utils.Alignment;
 import brachy.modularui.value.IntValue;
 import brachy.modularui.widget.SingleChildWidget;
 
-import java.util.Arrays;
-import java.util.function.Consumer;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class AbstractCycleButtonWidget<W extends AbstractCycleButtonWidget<W>> extends SingleChildWidget<W>
         implements Interactable {

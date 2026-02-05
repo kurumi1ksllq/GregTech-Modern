@@ -6,7 +6,6 @@ import brachy.modularui.api.widget.Interactable;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
 import org.jetbrains.annotations.NotNull;
 
 @Accessors(fluent = true, chain = true)

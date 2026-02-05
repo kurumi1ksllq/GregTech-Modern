@@ -8,11 +8,10 @@ import brachy.modularui.value.ObjectValue;
 import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
-
-import java.util.function.BiConsumer;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.BiConsumer;
 
 public class FluidDisplayWidget extends AbstractFluidDisplayWidget<FluidDisplayWidget> {
 

@@ -4,9 +4,9 @@ import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 
-import java.util.Optional;
-
 import org.jetbrains.annotations.NotNullByDefault;
+
+import java.util.Optional;
 
 @NotNullByDefault
 public record FormattedTextContents(FormattedText text) implements ComponentContents {

@@ -4,7 +4,11 @@ import brachy.modularui.screen.RichTooltip;
 
 import net.minecraft.ChatFormatting;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.*;
+import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
+import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
+import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
+import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 
 import java.util.Objects;
 
@@ -16,6 +20,7 @@ public class ModularUIConfig {
     static {
         BUILDER.push("ui");
     }
+
     public static final IntValue DEFAULT_SCROLL_SPEED = BUILDER
             .comment("Amount of pixels scrolled")
             .translation("config.modularui.defaultScrollSpeed")
@@ -59,6 +64,7 @@ public class ModularUIConfig {
             .comment("The format prefix of the mod name tooltip line.", "Default: 'blue italic' (converted to §9§o)")
             .translation("config.modularui.modNameFormat")
             .define("modNameFormat", ChatFormatting.BLUE.getName() + " " + ChatFormatting.ITALIC.getName());
+
     static {
         BUILDER.pop().push("dev");
     }

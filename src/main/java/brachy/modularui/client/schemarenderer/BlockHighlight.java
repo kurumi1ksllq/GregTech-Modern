@@ -18,11 +18,10 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 @Accessors(fluent = true, chain = true)
 public class BlockHighlight {

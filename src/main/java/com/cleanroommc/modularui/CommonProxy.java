@@ -4,6 +4,7 @@ import com.cleanroommc.modularui.factory.UIFactories;
 import com.cleanroommc.modularui.factory.inventory.InventoryTypes;
 import com.cleanroommc.modularui.network.MUINetwork;
 import com.cleanroommc.modularui.screen.ModularContainerMenu;
+import com.cleanroommc.modularui.test.EventHandler;
 import com.cleanroommc.modularui.theme.ThemeManager;
 
 import net.minecraftforge.common.MinecraftForge;
@@ -24,6 +25,7 @@ public class CommonProxy {
         eventBus.register(this);
         MinecraftForge.EVENT_BUS.addListener(this::registerReloadListeners);
         MinecraftForge.EVENT_BUS.addListener(this::onTick);
+        MinecraftForge.EVENT_BUS.register(new EventHandler());
         // used for forge events (ClientProxy + CommonProxy)
         ConfigHolder.init();
 

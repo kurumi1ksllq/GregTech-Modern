@@ -28,7 +28,6 @@ import lombok.ToString;
  *
  * <p>For operators and functions, the operator and function definition is also set during parsing.
  */
-@AllArgsConstructor
 public record Token(int startPosition, String value, TokenType type,
                     @EqualsAndHashCode.Exclude @ToString.Exclude FunctionIfc functionDefinition,
                     @EqualsAndHashCode.Exclude @ToString.Exclude OperatorIfc operatorDefinition) {

@@ -39,8 +39,7 @@ import java.util.stream.Collectors;
 public record ASTNode(Token token, List<ASTNode> parameters) {
 
     public ASTNode(Token token, ASTNode... parameters) {
-        this.token = token;
-        this.parameters = Arrays.asList(parameters);
+        this(token, Arrays.asList(parameters));
     }
 
     /**

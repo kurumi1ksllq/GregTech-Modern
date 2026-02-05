@@ -37,4 +37,9 @@ public class ScreenWrapper extends Screen implements IMuiScreen {
     public String toString() {
         return "Wrapper(" + screen() + ")";
     }
+
+    @Override
+    public @NotNull ModularScreen screen() {
+        return screen;
+    }
 }

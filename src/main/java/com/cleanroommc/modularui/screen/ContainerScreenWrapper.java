@@ -53,6 +53,11 @@ public class ContainerScreenWrapper extends AbstractContainerScreen<ModularConta
     protected void renderBg(@NotNull GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {}
 
     @Override
+    public @NotNull ModularScreen screen() {
+        return screen;
+    }
+
+    @Override
     public void updateGuiArea(Rectangle area) {
         this.leftPos = area.x;
         this.topPos = area.y;

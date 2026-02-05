@@ -73,6 +73,9 @@ public class ConfigHolder {
                     "Default: false"})
             public boolean replaceVanillaTooltips = false;
 
+            @Configurable
+            public boolean enableTestOverlays = false;
+
             public int getDefaultUIColor() {
                 return Long.decode(ConfigHolder.INSTANCE.client.ui.defaultUIColor).intValue() | 0xFF000000;
             }

@@ -38,6 +38,11 @@ public record ItemStackList(List<ItemStack> stacks) implements ItemEntryList {
     }
 
     @Override
+    public List<ItemStack> getStacks() {
+        return stacks;
+    }
+
+    @Override
     public boolean isEmpty() {
         return stacks.isEmpty();
     }

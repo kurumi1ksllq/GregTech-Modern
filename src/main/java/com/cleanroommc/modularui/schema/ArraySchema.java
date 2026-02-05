@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiPredicate;
 
 public class ArraySchema implements ISchema {
@@ -175,12 +174,13 @@ public class ArraySchema implements ISchema {
             return where(c, block.defaultBlockState());
         }
 
+        public Builder where(char c, String registryName) {
+            return where(c, new ResourceLocation(registryName));
+        }
+
         public Builder where(char c, ResourceLocation registryName) {
-            Optional<Block> block = BuiltInRegistries.BLOCK.getOptional(registryName);
-            if (block.isEmpty()) {
-                throw new IllegalArgumentException(registryName + " isn't a valid block");
-            }
-            return where(c, block.get());
+            return where(c, BuiltInRegistries.BLOCK.getOptional(registryName)
+                    .orElseThrow(() -> new IllegalArgumentException(registryName + " isn't a valid block")));
         }
 
         private void validate() {

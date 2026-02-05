@@ -6,7 +6,7 @@ import com.cleanroommc.modularui.base.IThemeApi;
 import com.cleanroommc.modularui.utils.serialization.json.JsonBuilder;
 import com.cleanroommc.modularui.utils.serialization.json.JsonHelper;
 
-import net.minecraft.resources.FileToIdConverter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -47,6 +47,13 @@ public class ThemeManager extends SimplePreparableReloadListener<Map<String, Lis
     private static final JsonObject emptyJson = new JsonObject();
 
     public ThemeManager() {}
+
+    public static void reload() {
+        ThemeManager tm = new ThemeManager();
+        ResourceManager rm = Minecraft.getInstance().getResourceManager();
+        ProfilerFiller p = Minecraft.getInstance().getProfiler();
+        tm.apply(tm.prepare(rm, p), rm, p);
+    }
 
     @Override
     protected @NotNull Map<String, List<ResourceLocation>> prepare(ResourceManager resourceManager,

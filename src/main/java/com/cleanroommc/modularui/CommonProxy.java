@@ -1,5 +1,6 @@
 package com.cleanroommc.modularui;
 
+import com.cleanroommc.modularui.base.drawable.IKey;
 import com.cleanroommc.modularui.factory.UIFactories;
 import com.cleanroommc.modularui.factory.inventory.InventoryTypes;
 import com.cleanroommc.modularui.network.MUINetwork;
@@ -7,8 +8,12 @@ import com.cleanroommc.modularui.screen.ModularContainerMenu;
 import com.cleanroommc.modularui.test.EventHandler;
 import com.cleanroommc.modularui.theme.ThemeManager;
 
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import com.mojang.brigadier.Command;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,6 +30,7 @@ public class CommonProxy {
         eventBus.register(this);
         MinecraftForge.EVENT_BUS.addListener(this::registerReloadListeners);
         MinecraftForge.EVENT_BUS.addListener(this::onTick);
+        MinecraftForge.EVENT_BUS.addListener(this::registerCommand);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
         // used for forge events (ClientProxy + CommonProxy)
         ConfigHolder.init();
@@ -65,5 +71,17 @@ public class CommonProxy {
         if (ModularUI.isClientThread()) {
             event.addListener(new ThemeManager());
         }
+    }
+
+    public void registerCommand(RegisterCommandsEvent event) {
+        event.getDispatcher().register(
+                Commands.literal("mui")
+                        .then(Commands.literal("reloadThemes")
+                                .executes(ctx -> {
+                                    ThemeManager.reload();
+                                    ctx.getSource().source.sendSystemMessage(Component.literal("ModularUI Themes reloaded").withStyle(IKey.GREEN));
+                                    return Command.SINGLE_SUCCESS;
+                                }))
+        );
     }
 }

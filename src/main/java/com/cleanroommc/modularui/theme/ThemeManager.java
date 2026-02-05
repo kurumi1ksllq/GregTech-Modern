@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
 public class ThemeManager extends SimplePreparableReloadListener<Map<String, List<ResourceLocation>>> {
 
     public static final String THEMES_PATH = "themes.json";
-    public static final FileToIdConverter THEME_LISTER = new FileToIdConverter("gtceu/themes", ".json");
     protected static final WidgetThemeEntry<WidgetTheme> defaultFallbackWidgetTheme = IThemeApi.get().getDefaultTheme()
             .getWidgetTheme(IThemeApi.FALLBACK);
     private static final JsonObject emptyJson = new JsonObject();
@@ -210,11 +209,12 @@ public class ThemeManager extends SimplePreparableReloadListener<Map<String, Lis
         boolean override = false;
         for (ResourceLocation path : paths) {
             profiler.push(path.toString());
-            ResourceLocation rl = THEME_LISTER.idToFile(path);
+            ResourceLocation rl = new ResourceLocation(path.getNamespace(), "themes/" + path.getPath() + ".json");
             Resource resource = resourceManager.getResource(rl).orElse(null);
             if (resource == null) {
                 profiler.pop();
-                return null;
+                ModularUI.LOGGER.warn("Theme '{}' was not found at path '{}'", id, rl);
+                continue;
             }
             JsonElement element;
             try (InputStream stream = resource.open()) {

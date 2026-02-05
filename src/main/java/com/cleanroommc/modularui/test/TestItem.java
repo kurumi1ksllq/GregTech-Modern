@@ -1,14 +1,17 @@
 package com.cleanroommc.modularui.test;
 
+import com.cleanroommc.modularui.ModularUI;
 import com.cleanroommc.modularui.api.IPanelHandler;
 import com.cleanroommc.modularui.api.IUIHolder;
 import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.drawable.GuiDraw;
+import com.cleanroommc.modularui.drawable.GuiTextures;
 import com.cleanroommc.modularui.drawable.Rectangle;
 import com.cleanroommc.modularui.factory.PlayerInventoryGuiData;
 import com.cleanroommc.modularui.factory.inventory.InventoryTypes;
 import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
 import com.cleanroommc.modularui.utils.Alignment;
@@ -62,6 +65,11 @@ public class TestItem extends Item implements ICurioItem, IUIHolder<PlayerInvent
     }
 
     @Override
+    public ModularScreen createScreen(PlayerInventoryGuiData<?> data, ModularPanel mainPanel) {
+        return new ModularScreen(ModularUI.MOD_ID, mainPanel);
+    }
+
+    @Override
     public ModularPanel buildUI(PlayerInventoryGuiData<?> data, PanelSyncManager syncManager, UISettings settings) {
         var cap = data.getUsedItemStack().getCapability(ITEM_HANDLER);
         if (!cap.isPresent() || cap.resolve().isEmpty()) return null;
@@ -70,7 +78,7 @@ public class TestItem extends Item implements ICurioItem, IUIHolder<PlayerInvent
         if (!(itemHandler instanceof IItemHandlerModifiable ihm)) return null;
 
         // if the player slot is the slot with this item, then disallow any interaction
-        // if the item is not in the player inventory (bauble for example), then this items slot is not on the screen,
+        // if the item is not in the player inventory (curio for example), then this items slot is not on the screen,
         // and we don't need to limit accessibility
         if (data.getInventoryType() == InventoryTypes.PLAYER) {
             syncManager.bindPlayerInventory(data.getPlayer(), (inv, index) -> index == data.getSlotIndex() ?
@@ -93,7 +101,8 @@ public class TestItem extends Item implements ICurioItem, IUIHolder<PlayerInvent
                                         .filter(stack -> !stack.getCapability(ITEM_HANDLER).isPresent())))
                                 .build()
                                 .align(Alignment.TopLeft)))
-                .child(SlotGroupWidget.playerInventory(false)));
+                .child(SlotGroupWidget.playerInventory(false)))
+                .child(GuiTextures.ANIMATED_TEXTURE_TEST.asWidget().size(32).align(Alignment.TopRight).margin(7));
 
         return panel;
     }

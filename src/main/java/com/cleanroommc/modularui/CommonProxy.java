@@ -1,6 +1,6 @@
 package com.cleanroommc.modularui;
 
-import com.cleanroommc.modularui.base.drawable.IKey;
+import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.factory.UIFactories;
 import com.cleanroommc.modularui.factory.inventory.InventoryTypes;
 import com.cleanroommc.modularui.network.NetworkHandler;
@@ -16,6 +16,8 @@ import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class CommonProxy {
@@ -26,6 +28,8 @@ public class CommonProxy {
         MinecraftForge.EVENT_BUS.addListener(this::registerReloadListeners);
         MinecraftForge.EVENT_BUS.addListener(this::onTick);
         MinecraftForge.EVENT_BUS.addListener(this::registerCommand);
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ModularUIConfig.CONFIG, ModularUI.MOD_ID + ".toml");
 
         /* MUI Initialization */
         UIFactories.init();

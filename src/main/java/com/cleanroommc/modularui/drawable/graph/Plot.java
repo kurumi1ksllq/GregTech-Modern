@@ -10,8 +10,8 @@ import com.cleanroommc.modularui.utils.Interpolations;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
-
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import lombok.Getter;
 
 public class Plot {

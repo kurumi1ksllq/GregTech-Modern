@@ -3,9 +3,9 @@ package com.cleanroommc.modularui.schemarenderer;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.SectionPos;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 

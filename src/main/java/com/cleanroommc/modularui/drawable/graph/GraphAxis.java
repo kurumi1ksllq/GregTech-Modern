@@ -8,8 +8,8 @@ import com.cleanroommc.modularui.utils.DAM;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-
 import com.mojang.blaze3d.vertex.VertexConsumer;
+
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;

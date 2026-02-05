@@ -5,13 +5,13 @@ import com.cleanroommc.modularui.base.drawable.IInterpolation;
 import com.cleanroommc.modularui.utils.serialization.json.JsonHelper;
 
 import net.minecraft.util.Mth;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.blaze3d.systems.RenderSystem;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Locale;

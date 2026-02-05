@@ -5,8 +5,8 @@ import com.cleanroommc.modularui.drawable.DrawableSerialization;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Timer;
-
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import lombok.Getter;
 
 public class ClientProxy extends CommonProxy {

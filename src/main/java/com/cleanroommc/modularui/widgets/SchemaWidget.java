@@ -11,8 +11,8 @@ import com.cleanroommc.modularui.widget.Widget;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-
 import com.mojang.blaze3d.platform.InputConstants;
+
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;

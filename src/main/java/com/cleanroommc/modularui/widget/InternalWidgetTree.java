@@ -9,9 +9,9 @@ import com.cleanroommc.modularui.widget.sizer.ResizeNode;
 import com.cleanroommc.modularui.widgets.layout.IExpander;
 
 import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import com.google.common.base.Joiner;
-import com.mojang.blaze3d.systems.RenderSystem;
 import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;

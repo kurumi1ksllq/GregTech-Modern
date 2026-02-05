@@ -4,9 +4,9 @@ import com.cleanroommc.modularui.screen.viewport.GuiContext;
 
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 public class TiledUITexture extends UITexture {
 

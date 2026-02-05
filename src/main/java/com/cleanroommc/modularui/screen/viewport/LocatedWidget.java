@@ -66,6 +66,7 @@ public class LocatedWidget extends LocatedElement<IWidget> {
         public int hashCode(LocatedWidget o) {
             return Objects.hashCode(o == null ? null : o.getElement());
         }
+
         @Override
         public boolean equals(LocatedWidget a, LocatedWidget b) {
             if (a == b) return true;

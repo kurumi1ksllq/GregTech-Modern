@@ -10,9 +10,9 @@ import com.cleanroommc.modularui.utils.Color;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
-
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+
 import lombok.Getter;
 
 import java.util.ArrayList;

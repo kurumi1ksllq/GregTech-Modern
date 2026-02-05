@@ -499,33 +499,33 @@ public class ModularGuiContext extends GuiContext {
     private record HoveredIterable(PanelManager panelManager) implements Iterable<IWidget> {
 
         @NotNull
-            @Override
-            public Iterator<IWidget> iterator() {
-                return new Iterator<>() {
+        @Override
+        public Iterator<IWidget> iterator() {
+            return new Iterator<>() {
 
-                    private final Iterator<ModularPanel> panelIt = HoveredIterable.this.panelManager.getOpenPanels()
-                            .iterator();
-                    private Iterator<LocatedWidget> widgetIt;
+                private final Iterator<ModularPanel> panelIt = HoveredIterable.this.panelManager.getOpenPanels()
+                        .iterator();
+                private Iterator<LocatedWidget> widgetIt;
 
-                    @Override
-                    public boolean hasNext() {
-                        if (this.widgetIt == null) {
-                            if (!this.panelIt.hasNext()) {
-                                return false;
-                            }
-                            this.widgetIt = this.panelIt.next().getHovering().iterator();
+                @Override
+                public boolean hasNext() {
+                    if (this.widgetIt == null) {
+                        if (!this.panelIt.hasNext()) {
+                            return false;
                         }
-                        return this.widgetIt.hasNext();
+                        this.widgetIt = this.panelIt.next().getHovering().iterator();
                     }
+                    return this.widgetIt.hasNext();
+                }
 
-                    @Override
-                    public IWidget next() {
-                        if (this.widgetIt == null || !this.widgetIt.hasNext()) {
-                            this.widgetIt = this.panelIt.next().getHovering().iterator();
-                        }
-                        return this.widgetIt.next().getElement();
+                @Override
+                public IWidget next() {
+                    if (this.widgetIt == null || !this.widgetIt.hasNext()) {
+                        this.widgetIt = this.panelIt.next().getHovering().iterator();
                     }
-                };
-            }
+                    return this.widgetIt.next().getElement();
+                }
+            };
         }
+    }
 }

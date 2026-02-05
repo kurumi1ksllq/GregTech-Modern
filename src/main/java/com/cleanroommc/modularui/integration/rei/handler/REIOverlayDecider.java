@@ -3,12 +3,12 @@ package com.cleanroommc.modularui.integration.rei.handler;
 import com.cleanroommc.modularui.base.IMuiScreen;
 import com.cleanroommc.modularui.screen.ModularScreen;
 
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.world.InteractionResult;
-
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.gui.config.DisplayPanelLocation;
 import me.shedaniel.rei.api.client.registry.screen.OverlayDecider;
+
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.InteractionResult;
 
 public class REIOverlayDecider implements OverlayDecider {
 

@@ -1,10 +1,11 @@
 package com.cleanroommc.modularui.base;
 
-import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
+
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.ApiStatus;
 
 public interface IJsonSerializable<T extends IJsonSerializable<T>> {

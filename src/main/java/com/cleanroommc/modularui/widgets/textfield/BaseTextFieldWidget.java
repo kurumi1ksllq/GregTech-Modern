@@ -18,8 +18,8 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-
 import com.mojang.blaze3d.platform.InputConstants;
+
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;

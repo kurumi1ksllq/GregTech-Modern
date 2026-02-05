@@ -14,40 +14,40 @@ displayURL = "${mod_url}"
 credits = "People"
 
 
-[[dependencies.${mod_id}]]
+[[dependencies.${ mod_id }]]
 modId = "forge"
 mandatory = true
 versionRange = "[${forge_version},)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.${mod_id}]]
+[[dependencies.${ mod_id }]]
 modId = "minecraft"
 mandatory = true
 versionRange = "${minecraft_version}"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.${mod_id}]]
+[[dependencies.${ mod_id }]]
 modId = "configuration"
 mandatory = true
 embedded = true
 versionRange = "[${configuration_version},)"
 ordering = "AFTER"
 side = "BOTH"
-[dependencies.${mod_id}.mc-publish]
-    ignore = false
-    modrinth = "configuration"
-    curseforge = "configuration"
+[dependencies.${ mod_id }.mc-publish]
+ignore = false
+modrinth = "configuration"
+curseforge = "configuration"
 
-[[dependencies.${mod_id}]]
+[[dependencies.${ mod_id }]]
 modId = "jei"
 mandatory = false
 versionRange = "[${jei_version},)"
 ordering = "AFTER"
 side = "BOTH"
 
-[[dependencies.${mod_id}]]
+[[dependencies.${ mod_id }]]
 modId = "emi"
 mandatory = false
 versionRange = "[${emi_version},)"

@@ -4,12 +4,12 @@ import com.cleanroommc.modularui.base.MCHelper;
 import com.cleanroommc.modularui.network.MUINetwork;
 import com.cleanroommc.modularui.network.ModularNetwork;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
-
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor

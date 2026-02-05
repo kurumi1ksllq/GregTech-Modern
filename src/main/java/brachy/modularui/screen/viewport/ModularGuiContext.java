@@ -11,7 +11,6 @@ import brachy.modularui.client.CursorHandler;
 import brachy.modularui.screen.DraggablePanelWrapper;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
-import brachy.modularui.screen.PanelManager;
 import brachy.modularui.screen.RecipeViewerSettingsImpl;
 import brachy.modularui.screen.UISettings;
 
@@ -89,7 +88,7 @@ public class ModularGuiContext extends GuiContext {
 
     public ModularGuiContext(ModularScreen screen) {
         this.screen = screen;
-        this.hoveredWidgets = new HoveredIterable(this.screen.getPanelManager());
+        this.hoveredWidgets = new HoveredIterable();
     }
 
     /**
@@ -496,34 +495,24 @@ public class ModularGuiContext extends GuiContext {
         return this.settings != null;
     }
 
-    private record HoveredIterable(PanelManager panelManager) implements Iterable<IWidget> {
+    private class HoveredIterable implements Iterable<IWidget> {
 
         @NotNull
         @Override
         public Iterator<IWidget> iterator() {
-            return new Iterator<>() {
+            return new AbstractIterator<>() {
 
-                private final Iterator<ModularPanel> panelIt = HoveredIterable.this.panelManager.getOpenPanels()
-                        .iterator();
+                private final Iterator<ModularPanel> panelIt = ModularGuiContext.this.getScreen()
+                        .getPanelManager().getOpenPanels().iterator();
                 private Iterator<LocatedWidget> widgetIt;
 
                 @Override
-                public boolean hasNext() {
-                    if (this.widgetIt == null) {
-                        if (!this.panelIt.hasNext()) {
-                            return false;
-                        }
-                        this.widgetIt = this.panelIt.next().getHovering().iterator();
+                protected IWidget computeNext() {
+                    while (widgetIt == null || !widgetIt.hasNext()) {
+                        if (!panelIt.hasNext()) return endOfData();
+                        widgetIt = panelIt.next().getHovering().iterator();
                     }
-                    return this.widgetIt.hasNext();
-                }
-
-                @Override
-                public IWidget next() {
-                    if (this.widgetIt == null || !this.widgetIt.hasNext()) {
-                        this.widgetIt = this.panelIt.next().getHovering().iterator();
-                    }
-                    return this.widgetIt.next().getElement();
+                    return widgetIt.next().getElement();
                 }
             };
         }

@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://gregtechceu.github.io/GregTech-Modern/mui2-refactor/Development/MUI2/Syncing/Basic-Sync-Example/">
+        <link rel="canonical" href="https://gregtechceu.github.io/GregTech-Modern/mui2-refactor/Development/MUI2/Syncing/Sync-Basics/">
       
       
         <link rel="prev" href="../">
       
       
-        <link rel="next" href="../SyncManager/">
+        <link rel="next" href="../Synced-Actions/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Basic Sync Example - GregTech Modern Docs</title>
+        <title>Sync Basics - GregTech Modern Docs</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#basic-sync-example" class="md-skip">
+        <a href="#sync-basics" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Basic Sync Example
+              Sync Basics
             
           </span>
         </div>
@@ -4058,8 +4058,6 @@
       
         
       
-        
-      
     
     
     
@@ -4130,6 +4128,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync Basics
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -4137,7 +4153,7 @@
   <span class="md-ellipsis">
     
   
-    Basic Sync Example
+    Sync Basics
   
 
     
@@ -4147,34 +4163,119 @@
 
       </a>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../SyncManager/" class="md-nav__link">
         
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
-  <span class="md-ellipsis">
+  
     
   
-    SyncManager
   
-
-    
-  </span>
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basics-of-syncing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basics of Syncing
+      
+    </span>
+  </a>
   
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method-1-dynamic-widgets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 1: Dynamic Widgets
+      
+    </span>
+  </a>
   
-
-      </a>
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method-2-dynamiclinkedsynchandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 2: DynamicLinkedSyncHandler
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method-3-types-that-take-synchandlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 3: Types that take SyncHandlers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method-4-manually-notifying-dynamicsynchandlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 4: Manually notifying DynamicSyncHandlers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-sync-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other sync information
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other sync information">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#synchandler-panel-separation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SyncHandler panel separation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#valuedynamic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Value.Dynamic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -4436,6 +4537,108 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basics-of-syncing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basics of Syncing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method-1-dynamic-widgets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 1: Dynamic Widgets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method-2-dynamiclinkedsynchandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 2: DynamicLinkedSyncHandler
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method-3-types-that-take-synchandlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 3: Types that take SyncHandlers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method-4-manually-notifying-dynamicsynchandlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 4: Manually notifying DynamicSyncHandlers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-sync-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other sync information
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other sync information">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#synchandler-panel-separation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SyncHandler panel separation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#valuedynamic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Value.Dynamic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -4455,39 +4658,241 @@
     
       
     
-    <a href="https://github.com/GregTechCEu/GregTech-Modern/raw/1.20.1/docs/content/Development/MUI2/Syncing/Basic-Sync-Example.md" title="View source of this page" class="md-content__button md-icon">
+    <a href="https://github.com/GregTechCEu/GregTech-Modern/raw/1.20.1/docs/content/Development/MUI2/Syncing/Sync-Basics.md" title="View source of this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
     </a>
   
 
 
-<h1 id="basic-sync-example">Basic Sync Example</h1>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MuiTestMachine</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">MetaMachine</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">IMuiMachine</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ticks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">MuiTestMachine</span><span class="p">(</span><span class="n">BlockEntityCreationInfo</span><span class="w"> </span><span class="n">info</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">info</span><span class="p">);</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">subscribeServerTick</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ticks</span><span class="o">++</span><span class="p">);</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="nd">@Override</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ModularPanel</span><span class="w"> </span><span class="nf">buildUI</span><span class="p">(</span><span class="n">PosGuiData</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">PanelSyncManager</span><span class="w"> </span><span class="n">syncManager</span><span class="p">,</span><span class="w"> </span><span class="n">UISettings</span><span class="w"> </span><span class="n">settings</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">panel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GTGuis</span><span class="p">.</span><span class="na">createPanel</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="mi">176</span><span class="p">,</span><span class="w"> </span><span class="mi">168</span><span class="p">);</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">tickSyncValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IntSyncValue</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">ticks</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">newValue</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">ticks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newValue</span><span class="p">);</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">        </span><span class="n">syncManager</span><span class="p">.</span><span class="na">syncValue</span><span class="p">(</span><span class="s">&quot;tickSyncValue&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">tickSyncValue</span><span class="p">);</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">        </span><span class="n">panel</span><span class="p">.</span><span class="na">child</span><span class="p">(</span><span class="n">IKey</span><span class="p">.</span><span class="na">dynamic</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Component</span><span class="p">.</span><span class="na">literal</span><span class="p">(</span><span class="s">&quot;Ticks: &quot;</span><span class="o">+</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">ticks</span><span class="p">))</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">                </span><span class="p">.</span><span class="na">asWidget</span><span class="p">()</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">                </span><span class="p">.</span><span class="na">margin</span><span class="p">(</span><span class="mi">4</span><span class="p">));</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">panel</span><span class="p">;</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="p">}</span>
+<h1 id="sync-basics">Sync Basics</h1>
+<h2 id="basics-of-syncing">Basics of Syncing</h2>
+<p>To display dynamic values on the client, you have to send the data from the server to the client. When making UIs, it is very important to keep track of if and how your data is being synced to the client. There are a few ways to do so, which will be discussed below.  </p>
+<p>When opening a UI, a copy of the UI is created both on the server and on the client. It is important to note here that the server's copy will have access to most everything about e.g. the machine, block state, the world etc., but the client's copy will not.  </p>
+<p>To sync this data back and forth, you need to use <code>SyncHandler</code>s. These will send your data from the server to the client when it updates.  </p>
+<p>Because of this, you cannot just use values you create SyncHandlers for directly in the client. An example:</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">var</span><span class="w"> </span><span class="n">tickSyncValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IntSyncValue</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">ticks</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">newValue</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">ticks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newValue</span><span class="p">);</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">tickSyncValue</span><span class="p">.</span><span class="na">getValue</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">){</span><span class="w"> </span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="c1">//...</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">}</span>
+</code></pre></div>
+This would not work, intSyncValue hasn't had time to send data over yet and thus int is still 0 on the client side.</p>
+<p>If you try to access values on the client that aren't synced or don't have a <code>SyncValue</code> or <code>SyncHandler</code>, they will have a default value, but they will not reflect the values or changes happening on the server.</p>
+<h2 id="method-1-dynamic-widgets">Method 1: Dynamic Widgets</h2>
+<p>The first method is using dynamic widgets, which update every frame regardless of what happens.
+This method is easiest if you just need to sync some data over and display or edit it in a single widget. 
+Some examples are:</p>
+<ul>
+<li><code>IKey.dynamic(Supplier&lt;Component&gt;)</code> - Queries the supplier every frame to retrieve the component to display  </li>
+<li><code>new DynamicDrawable(Supplier&lt;IDrawable&gt;)</code> - Queries the supplier every frame to retrieve the drawable to display  </li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To convert IKeys or Drawables to Widgets, you need to chain <code>.asWidget()</code></p>
+</div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MuiTestMachine</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">MetaMachine</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">IMuiMachine</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ticks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">MuiTestMachine</span><span class="p">(</span><span class="n">BlockEntityCreationInfo</span><span class="w"> </span><span class="n">info</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">info</span><span class="p">);</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">subscribeServerTick</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ticks</span><span class="o">++</span><span class="p">);</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="nd">@Override</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ModularPanel</span><span class="w"> </span><span class="nf">buildUI</span><span class="p">(</span><span class="n">PosGuiData</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">PanelSyncManager</span><span class="w"> </span><span class="n">syncManager</span><span class="p">,</span><span class="w"> </span><span class="n">UISettings</span><span class="w"> </span><span class="n">settings</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">panel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GTGuis</span><span class="p">.</span><span class="na">createPanel</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="mi">176</span><span class="p">,</span><span class="w"> </span><span class="mi">168</span><span class="p">);</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">tickSyncValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IntSyncValue</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">ticks</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">newValue</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">ticks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newValue</span><span class="p">);</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">        </span><span class="n">syncManager</span><span class="p">.</span><span class="na">syncValue</span><span class="p">(</span><span class="s">&quot;tickSyncValue&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">tickSyncValue</span><span class="p">);</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">column</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Flow</span><span class="p">.</span><span class="na">column</span><span class="p">();</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">        </span><span class="n">column</span><span class="p">.</span><span class="na">child</span><span class="p">(</span><span class="n">IKey</span><span class="p">.</span><span class="na">dynamic</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Component</span><span class="p">.</span><span class="na">literal</span><span class="p">(</span><span class="s">&quot;Ticks: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">ticks</span><span class="p">))</span><span class="w"> </span><span class="c1">// note that this is a Supplier&lt;Component&gt; instead of a Component</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">                </span><span class="p">.</span><span class="na">asWidget</span><span class="p">()</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">                </span><span class="p">.</span><span class="na">margin</span><span class="p">(</span><span class="mi">4</span><span class="p">));</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">        </span><span class="n">column</span><span class="p">.</span><span class="na">child</span><span class="p">(</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">                </span><span class="k">new</span><span class="w"> </span><span class="n">DynamicDrawable</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// note that this is a Supplier&lt;IDrawable&gt; instead of an IDrawable</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ticks</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">40</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// flip every second</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">                        </span><span class="k">return</span><span class="w"> </span><span class="n">GTGuiTextures</span><span class="p">.</span><span class="na">BUTTON_FLUID_OUTPUT</span><span class="p">;</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">                    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">                        </span><span class="k">return</span><span class="w"> </span><span class="n">GTGuiTextures</span><span class="p">.</span><span class="na">BUTTON_ITEM_OUTPUT</span><span class="p">;</span>
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">                    </span><span class="p">}</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">                </span><span class="p">})</span>
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">                </span><span class="p">.</span><span class="na">asWidget</span><span class="p">()</span>
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="w">                </span><span class="p">.</span><span class="na">background</span><span class="p">(</span><span class="n">GTGuiTextures</span><span class="p">.</span><span class="na">BACKGROUND_STEEL</span><span class="p">)</span>
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="w">        </span><span class="n">panel</span><span class="p">.</span><span class="na">child</span><span class="p">(</span><span class="n">column</span><span class="p">);</span>
+<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>
+<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">panel</span><span class="p">;</span>
+<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a><span class="p">}</span>
 </code></pre></div>
 <p>Here, we create a basic <code>SyncValue</code> for an integer. This takes a <code>Supplier&lt;Integer&gt;</code> and a <code>Consumer&lt;Integer&gt;</code>, more commonly known as a getter and a setter. Generally speaking, <code>SyncValue</code>s will take a <code>Supplier</code> and <code>Consumer</code> of the type of value they are syncing.  </p>
 <p>If the value returned by the getter changed on the server, the value gets serialized and sent to the client by the <code>SyncManager</code>. The <code>SyncHandler</code>'s value can always be manually updated, for example to do client-to-server syncing.</p>
-<p>If you try to access values on the client that aren't synced or don't have a <code>SyncValue</code> or <code>SyncHandler</code>, they will have a default value, but they will not reflect the values or changes happening on the server.</p>
+<p>Then, the value on the client (being set every time the server sends an update) is retrieved every frame by the lambdas used in the dynamic widgets.</p>
+<p>If you want to update the value from the client, you can call <code>syncValue.setValue()</code> on the client. This will also update the value on the server side.</p>
+<h2 id="method-2-dynamiclinkedsynchandler">Method 2: DynamicLinkedSyncHandler</h2>
+<p>This method is great for widgets whose structure and layout can change depending on your synced values.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MuiTestMachine</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">MetaMachine</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">IMuiMachine</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ticks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">MuiTestMachine</span><span class="p">(</span><span class="n">BlockEntityCreationInfo</span><span class="w"> </span><span class="n">info</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">info</span><span class="p">);</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">subscribeServerTick</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ticks</span><span class="o">++</span><span class="p">);</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="nd">@Override</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ModularPanel</span><span class="w"> </span><span class="nf">buildUI</span><span class="p">(</span><span class="n">PosGuiData</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">PanelSyncManager</span><span class="w"> </span><span class="n">syncManager</span><span class="p">,</span><span class="w"> </span><span class="n">UISettings</span><span class="w"> </span><span class="n">settings</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">panel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GTGuis</span><span class="p">.</span><span class="na">createPanel</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="mi">176</span><span class="p">,</span><span class="w"> </span><span class="mi">168</span><span class="p">);</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">tickSyncValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IntSyncValue</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">ticks</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">newValue</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">ticks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newValue</span><span class="p">);</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">        </span><span class="n">syncManager</span><span class="p">.</span><span class="na">syncValue</span><span class="p">(</span><span class="s">&quot;tickSyncValue&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">tickSyncValue</span><span class="p">);</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">        </span><span class="n">DynamicLinkedSyncHandler</span><span class="o">&lt;</span><span class="n">IntSyncValue</span><span class="o">&gt;</span><span class="w"> </span><span class="n">dynamicLinkedSyncHandler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DynamicLinkedSyncHandler</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">tickSyncValue</span><span class="p">)</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">                </span><span class="p">.</span><span class="na">widgetProvider</span><span class="p">((</span><span class="n">widgetSyncManager</span><span class="p">,</span><span class="w"> </span><span class="n">intSyncHandler</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">                    </span><span class="kd">var</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ListWidget</span><span class="o">&lt;&gt;</span><span class="p">()</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">                            </span><span class="p">.</span><span class="na">widthRel</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">                            </span><span class="p">.</span><span class="na">coverChildrenHeight</span><span class="p">()</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">                            </span><span class="p">.</span><span class="na">crossAxisAlignment</span><span class="p">(</span><span class="n">Alignment</span><span class="p">.</span><span class="na">CrossAxis</span><span class="p">.</span><span class="na">START</span><span class="p">);</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">                    </span><span class="kt">int</span><span class="w"> </span><span class="n">tickValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">intSyncHandler</span><span class="p">.</span><span class="na">getValue</span><span class="p">();</span><span class="w"> </span><span class="c1">// It is also possible to just reference this.ticks directly</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">                    </span><span class="kt">int</span><span class="w"> </span><span class="n">amountOfItems</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">tickValue</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">200</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">                    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">amountOfItems</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">                        </span><span class="n">list</span><span class="p">.</span><span class="na">child</span><span class="p">(</span><span class="n">IKey</span><span class="p">.</span><span class="na">str</span><span class="p">(</span><span class="s">&quot;Value nr. &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)).</span><span class="na">asWidget</span><span class="p">());</span><span class="w"> </span><span class="c1">// No need for IKey.dynamic since we have the value as a variable here, inside the lambda</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">                    </span><span class="p">}</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="n">list</span><span class="p">;</span>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">                </span><span class="p">});</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">        </span><span class="n">panel</span><span class="p">.</span><span class="na">child</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DynamicSyncedWidget</span><span class="o">&lt;&gt;</span><span class="p">()</span>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">                </span><span class="p">.</span><span class="na">widthRel</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">                </span><span class="p">.</span><span class="na">coverChildrenHeight</span><span class="p">()</span>
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">                </span><span class="p">.</span><span class="na">syncHandler</span><span class="p">(</span><span class="n">dynamicLinkedSyncHandler</span><span class="p">)</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">                </span><span class="p">.</span><span class="na">padding</span><span class="p">(</span><span class="mi">3</span><span class="p">));</span>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">panel</span><span class="p">;</span>
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="p">}</span>
+</code></pre></div>
+<p>This method works in three steps:</p>
+<p>The first step is creating a <code>SyncHandler</code> and registering it to the <code>PanelSyncManager</code>.<br />
+The second step is creating a <code>DynamicLinkedSyncHandler</code> based on the first <code>SyncHandler</code>. This is effectively a wrapper class to provide your widget whenever your initial <code>SyncHandler</code> updates.<br />
+The third step is creating a <code>DynamicSyncedWidget</code> with that <code>DynamicLinkedSyncHandler</code> as its <code>SyncHandler</code>.  </p>
+<p>This effectively lets us create a new "version" of the widget whenever our value (in this case the <code>ticks</code> int) changes. Furthermore, in this example we have the actual values of the things we want to sync when constructing our widget tree on the client, allowing for much greater customization.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For even more complex systems where you need to dynamically register sync handlers within the <code>DynamicLinkedSyncHandler</code>'s <code>.widgetProvider(...)</code>, this can be done by calling <code>.getOrCreateSyncHandler(...)</code> on the <code>widgetSyncManager</code> parameter of the lambda.</p>
+</div>
+<h2 id="method-3-types-that-take-synchandlers">Method 3: Types that take SyncHandlers</h2>
+<p>There are some widgets that have built in support for working directly with SyncHandlers.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MuiTestMachine</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">MetaMachine</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">IMuiMachine</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">buttonPressed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">MuiTestMachine</span><span class="p">(</span><span class="n">BlockEntityCreationInfo</span><span class="w"> </span><span class="n">info</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">info</span><span class="p">);</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="nd">@Override</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ModularPanel</span><span class="w"> </span><span class="nf">buildUI</span><span class="p">(</span><span class="n">PosGuiData</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">PanelSyncManager</span><span class="w"> </span><span class="n">syncManager</span><span class="p">,</span><span class="w"> </span><span class="n">UISettings</span><span class="w"> </span><span class="n">settings</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">panel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GTGuis</span><span class="p">.</span><span class="na">createPanel</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="mi">176</span><span class="p">,</span><span class="w"> </span><span class="mi">168</span><span class="p">);</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">column</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Flow</span><span class="p">.</span><span class="na">column</span><span class="p">().</span><span class="na">paddingTop</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">        </span><span class="n">column</span><span class="p">.</span><span class="na">child</span><span class="p">(</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">                </span><span class="n">IKey</span><span class="p">.</span><span class="na">dynamic</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Component</span><span class="p">.</span><span class="na">literal</span><span class="p">(</span><span class="s">&quot;Pressed: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">buttonPressed</span><span class="p">))</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">                    </span><span class="p">.</span><span class="na">asWidget</span><span class="p">());</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">buttonSyncValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BooleanSyncValue</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">buttonPressed</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">newValue</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">buttonPressed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newValue</span><span class="p">);</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="w">        </span><span class="n">column</span><span class="p">.</span><span class="na">child</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ToggleButton</span><span class="p">().</span><span class="na">value</span><span class="p">(</span><span class="n">buttonSyncValue</span><span class="p">));</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="w">        </span><span class="n">panel</span><span class="p">.</span><span class="na">child</span><span class="p">(</span><span class="n">column</span><span class="p">);</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">panel</span><span class="p">;</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="p">}</span>
+</code></pre></div>
+<p>Note that in this case, the ToggleButton takes care of registering the SyncValue for us, so we do not register it to the syncManager ourselves. This method is great for simple functions using widgets that support it.</p>
+<p>A few examples of this would be:</p>
+<ul>
+<li><code>new ToggleButton().value(BooleanSyncValue)</code> - A ToggleButton that affects the Boolean sync value</li>
+<li><code>new TextFieldWidget().value(StringSyncValue)</code> - A TextField that updates the String sync value</li>
+<li><code>new ProgressWidget().value(DoubleSyncValue)</code> - A ProgressWidget (e.g. bar) that shows progress, can also be constructed with <code>new ProgressWidget().progress(() -&gt; this.progress)</code></li>
+<li><code>new SliderWidget().value(DoubleSyncValue)</code> - A SliderWidget that updates the Double sync value</li>
+</ul>
+<h2 id="method-4-manually-notifying-dynamicsynchandlers">Method 4: Manually notifying DynamicSyncHandlers</h2>
+<p>This method is useful when your custom widget needs complex data coming in, like through multiple sync handlers.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MuiTestMachine</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">MetaMachine</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">IMuiMachine</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">columns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">MuiTestMachine</span><span class="p">(</span><span class="n">BlockEntityCreationInfo</span><span class="w"> </span><span class="n">info</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">info</span><span class="p">);</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">subscribeServerTick</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">            </span><span class="n">counter</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">counter</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">                </span><span class="n">rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">rows</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">            </span><span class="p">}</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">counter</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">15</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">                </span><span class="n">columns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">columns</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">            </span><span class="p">}</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">        </span><span class="p">});</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">    </span><span class="nd">@Override</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ModularPanel</span><span class="w"> </span><span class="nf">buildUI</span><span class="p">(</span><span class="n">PosGuiData</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">PanelSyncManager</span><span class="w"> </span><span class="n">syncManager</span><span class="p">,</span><span class="w"> </span><span class="n">UISettings</span><span class="w"> </span><span class="n">settings</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">panel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GTGuis</span><span class="p">.</span><span class="na">createPanel</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">);</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">rowsSyncValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IntSyncValue</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">rows</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">newValue</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newValue</span><span class="p">);</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="w">        </span><span class="n">syncManager</span><span class="p">.</span><span class="na">syncValue</span><span class="p">(</span><span class="s">&quot;rows&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">rowsSyncValue</span><span class="p">);</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">columnsSyncValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IntSyncValue</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">columns</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">newValue</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">columns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newValue</span><span class="p">);</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="w">        </span><span class="n">syncManager</span><span class="p">.</span><span class="na">syncValue</span><span class="p">(</span><span class="s">&quot;columns&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">columnsSyncValue</span><span class="p">);</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a>
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a><span class="w">        </span><span class="n">DynamicSyncHandler</span><span class="w"> </span><span class="n">gridWidgetHandler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DynamicSyncHandler</span><span class="p">().</span><span class="na">widgetProvider</span><span class="p">((</span><span class="n">slotsSyncManger</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a>
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a><span class="w">            </span><span class="n">Flow</span><span class="w"> </span><span class="n">grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Flow</span><span class="p">.</span><span class="na">column</span><span class="p">().</span><span class="na">width</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">rowNr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">rowNr</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">rows</span><span class="p">;</span><span class="w"> </span><span class="n">rowNr</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="w">                </span><span class="n">Flow</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Flow</span><span class="p">.</span><span class="na">row</span><span class="p">();</span>
+<a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a><span class="w">                </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">columnNr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">columnNr</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">columns</span><span class="p">;</span><span class="w"> </span><span class="n">columnNr</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a><span class="w">                    </span><span class="n">row</span><span class="p">.</span><span class="na">child</span><span class="p">(</span><span class="n">IKey</span><span class="p">.</span><span class="na">str</span><span class="p">(</span><span class="n">rowNr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">columnNr</span><span class="p">).</span><span class="na">asWidget</span><span class="p">().</span><span class="na">width</span><span class="p">(</span><span class="mi">20</span><span class="p">));</span>
+<a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a><span class="w">                </span><span class="p">}</span>
+<a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a><span class="w">                </span><span class="n">grid</span><span class="p">.</span><span class="na">child</span><span class="p">(</span><span class="n">row</span><span class="p">);</span>
+<a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a><span class="w">            </span><span class="p">}</span>
+<a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">grid</span><span class="p">;</span>
+<a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a><span class="w">        </span><span class="p">});</span>
+<a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a>
+<a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a><span class="w">        </span><span class="n">rowsSyncValue</span><span class="p">.</span><span class="na">setChangeListener</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a><span class="w">            </span><span class="n">gridWidgetHandler</span><span class="p">.</span><span class="na">notifyUpdate</span><span class="p">(</span><span class="n">buffer</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{});</span>
+<a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a><span class="w">        </span><span class="p">});</span>
+<a id="__codelineno-4-46" name="__codelineno-4-46" href="#__codelineno-4-46"></a><span class="w">        </span><span class="n">columnsSyncValue</span><span class="p">.</span><span class="na">setChangeListener</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-47" name="__codelineno-4-47" href="#__codelineno-4-47"></a><span class="w">            </span><span class="n">gridWidgetHandler</span><span class="p">.</span><span class="na">notifyUpdate</span><span class="p">(</span><span class="n">buffer</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{});</span>
+<a id="__codelineno-4-48" name="__codelineno-4-48" href="#__codelineno-4-48"></a><span class="w">        </span><span class="p">});</span>
+<a id="__codelineno-4-49" name="__codelineno-4-49" href="#__codelineno-4-49"></a>
+<a id="__codelineno-4-50" name="__codelineno-4-50" href="#__codelineno-4-50"></a><span class="w">        </span><span class="n">panel</span><span class="p">.</span><span class="na">child</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DynamicSyncedWidget</span><span class="o">&lt;&gt;</span><span class="p">().</span><span class="na">syncHandler</span><span class="p">(</span><span class="n">gridWidgetHandler</span><span class="p">));</span>
+<a id="__codelineno-4-51" name="__codelineno-4-51" href="#__codelineno-4-51"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">panel</span><span class="p">;</span>
+<a id="__codelineno-4-52" name="__codelineno-4-52" href="#__codelineno-4-52"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-53" name="__codelineno-4-53" href="#__codelineno-4-53"></a><span class="p">}</span>
+</code></pre></div>
+<p>This is very similar to method 2, but instead of a <code>DynamicLinkedSyncHandler</code> we use a normal <code>DynamicSyncHandler</code> where we have to manually let it know when to update. We do this in the change listener of our two <code>SyncValue</code>s by calling notifyUpdate. </p>
+<p>Do note there's also a buffer where you can serialize data to, to be consumed in the <code>.widgetProvider(...)</code> in the spot where in a <code>DynamicLinkedSyncHandler</code> our syncValue would be. It is usually not needed to put anything in this buffer.</p>
+<h2 id="other-sync-information">Other sync information</h2>
+<h3 id="synchandler-panel-separation">SyncHandler panel separation</h3>
+<p>SyncValues are separated across panels. So if you do <code>mainPanelSyncManager.syncValue("rows", rowsSyncValue);</code> in one panel, you can't just call <code>popupSyncManager.getSyncHandlerFromMapKey("rows:0")</code>. <br />
+You can, however, call <code>syncManager.getModularSyncManager().getPanelSyncManager("panel name here").getSyncHandlerFromMapKey("rows:0");</code>.  </p>
+<h3 id="valuedynamic">Value.Dynamic</h3>
+<p>Sometimes you need to quickly create a Value for something that already exists client side. For this you can use <code>new [Type]Value.Dynamic(...)</code>.<br />
+For example, if you have a client-only value that's affected by a button, you could do <br />
+<code>panel.child(new ToggleButton().value(new BoolValue.Dynamic(() -&gt; this.toggled, (newValue) -&gt; this.toggled = newValue)));</code>  </p>
+<p>Another reason to use a dynamic value is if you want to change the type of a variable, e.g. <code>.value(new DoubleValue.Dynamic(() -&gt; (double) this.x, val -&gt; this.x = (double) val)</code> where x is an int.  </p>
+<p>The third reason is if you want to use a <code>SyncHandler</code> in two separate widgets that would both auto-register it.<br />
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>        var boolSyncValue = new BooleanSyncValue(() -&gt; this.toggled, (newValue) -&gt; this.toggled = newValue);
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>        panel.child(new ToggleButton().value(boolSyncValue));
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>        panel.child(new ToggleButton().value(BoolValue.wrap(boolSyncValue)).left(32));
+</code></pre></div>
+Without the wrap around the second boolSyncValue call, it would complain of registration of an already registered SyncValue.</p>
 
 
 

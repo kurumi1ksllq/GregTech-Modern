@@ -175,6 +175,11 @@ public class UITexture implements IDrawable, IJsonSerializable<UITexture> {
     }
 
     @Override
+    public boolean canApplyTheme() {
+        return this.colorType != null;
+    }
+
+    @Override
     public void applyColor(int themeColor) {
         if (this.colorOverride != 0) {
             Color.setGlColor(this.colorOverride);

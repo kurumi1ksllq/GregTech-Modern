@@ -16,8 +16,6 @@ import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.mui.factory.PanelFactory;
 import com.gregtechceu.gtceu.api.mui.theme.ThemeAPI;
-import com.gregtechceu.gtceu.api.mui.factory.PanelFactory;
-import com.gregtechceu.gtceu.api.mui.theme.ThemeAPI;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
@@ -148,7 +146,6 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
     @Getter
     private boolean regressWhenWaiting = true;
     private boolean allowCoverOnFront = false;
-    @Setter
     @Getter
     private PanelFactory UI = null;
     @Getter
@@ -302,6 +299,11 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
 
     public TYPE appearance(Supplier<BlockState> appearance) {
         this.appearance = appearance;
+        return getThis();
+    }
+
+    public TYPE UI(PanelFactory ui) {
+        this.UI = ui;
         return getThis();
     }
 

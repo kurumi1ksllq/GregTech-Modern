@@ -188,7 +188,7 @@ public class GuiDraw {
         for (int i = 1; i <= segments; i++) {
             float x = x0 + cornerRadius - Mth.cos(HALF_PI / segments * i) * cornerRadius;
             float y = y1 - cornerRadius + Mth.sin(HALF_PI / segments * i) * cornerRadius;
-            bufferbuilder.vertex(x, y, 0.0f)
+            bufferbuilder.vertex(pose, x, y, 0.0f)
                     .color(Color.getRed(colorBL), Color.getGreen(colorBL), Color.getBlue(colorBL),
                             Color.getAlpha(colorBL))
                     .endVertex();

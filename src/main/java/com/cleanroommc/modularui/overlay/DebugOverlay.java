@@ -50,7 +50,7 @@ public class DebugOverlay extends CustomModularScreen {
                         .background(
                                 new Rectangle()
                                         .color(Color.withAlpha(Color.parseString(ConfigHolder.INSTANCE.dev.mui.outlineColor),
-                                                0.4f)))
+                                                0.4f)).cornerRadius(4))
                         .disableHoverBackground()
                         .overlay(IKey.str("Debug Options"))
                         .openUp()

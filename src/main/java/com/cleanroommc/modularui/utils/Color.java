@@ -903,6 +903,49 @@ public class Color {
         return s;
     }
 
+    public static int parseString(String colorString) {
+        if (colorString.isEmpty()) return WHITE.main;
+        char c = colorString.charAt(0);
+        // a normal int string
+        if (Character.isDigit(c) || c == '-' || c == '#') {
+            int color;
+            try {
+                color = (int) (long) Long.decode(colorString); // bruh
+            } catch (NumberFormatException e) {
+                ModularUI.LOGGER.error("Failed to decode color of string '{}'. Exception: ", colorString);
+                ModularUI.LOGGER.catching(e);
+                return WHITE.main;
+            }
+            if (color != 0 && getAlpha(color) == 0) {
+                return withAlpha(color, 255);
+            }
+            return color;
+        }
+
+        if ("invisible".equals(colorString)) {
+            return withAlpha(WHITE.main, 0);
+        }
+        int i = colorString.indexOf(':');
+        int index = 0;
+        if (i > 0) {
+            try {
+                index = Integer.parseInt(colorString.substring(i + 1));
+            } catch (NumberFormatException e) {
+                ModularUI.LOGGER.error("[THEME] If the color is a word then after teh : must come a negative or " +
+                        "positive integer, but got '{}'", colorString.substring(i + 1));
+            }
+            colorString = colorString.substring(0, i);
+        }
+        ColorShade colorShade = ColorShade.getFromName(colorString);
+        if (colorShade != null) {
+            if (index == 0) return colorShade.main;
+            if (index > 0) return colorShade.brighterSafe(index - 1);
+            return colorShade.darkerSafe(-index - 1);
+        }
+        ModularUI.LOGGER.error("[THEME] No color shade for name '{}' was found", colorString);
+        return WHITE.main;
+    }
+
     /**
      * Parses a ARGB color of a json element.
      *
@@ -912,40 +955,7 @@ public class Color {
      */
     public static int ofJson(JsonElement jsonElement) {
         if (jsonElement.isJsonPrimitive()) {
-            String colorString = jsonElement.getAsString();
-            if (colorString.isEmpty()) return WHITE.main;
-            char c = colorString.charAt(0);
-            // a normal int string
-            if (Character.isDigit(c) || c == '-' || c == '#') {
-                int color = (int) (long) Long.decode(jsonElement.getAsString()); // bruh
-                if (color != 0 && getAlpha(color) == 0) {
-                    return withAlpha(color, 255);
-                }
-                return color;
-            }
-
-            if ("invisible".equals(jsonElement.getAsString())) {
-                return withAlpha(WHITE.main, 0);
-            }
-            int i = colorString.indexOf(':');
-            int index = 0;
-            if (i > 0) {
-                try {
-                    index = Integer.parseInt(colorString.substring(i + 1));
-                } catch (NumberFormatException e) {
-                    ModularUI.LOGGER.error("[THEME] If the color is a word then after teh : must come a negative or " +
-                            "positive integer, but got '{}'", colorString.substring(i + 1));
-                }
-                colorString = colorString.substring(0, i);
-            }
-            ColorShade colorShade = ColorShade.getFromName(colorString);
-            if (colorShade != null) {
-                if (index == 0) return colorShade.main;
-                if (index > 0) return colorShade.brighterSafe(index - 1);
-                return colorShade.darkerSafe(-index - 1);
-            }
-            ModularUI.LOGGER.error("[THEME] No color shade for name '{}' was found", colorString);
-            return WHITE.main;
+            return parseString(jsonElement.getAsString());
         }
         if (jsonElement.isJsonObject()) {
             JsonObject json = jsonElement.getAsJsonObject();

@@ -1,7 +1,6 @@
 package brachy.modularui.integration.recipeviewer.handlers;
 
 import brachy.modularui.api.RecipeViewerSettings;
-import brachy.modularui.api.widget.IGuiElement;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.GuiDraw;
 import brachy.modularui.screen.viewport.GuiContext;
@@ -20,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <I> type of the ingredient
  */
-public interface GhostIngredientSlot<I> extends IGuiElement {
+public interface GhostIngredientSlot<I> extends IWidget {
 
     /**
      * Puts the ingredient in this ghost slot.

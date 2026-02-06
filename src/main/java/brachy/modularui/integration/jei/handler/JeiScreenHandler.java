@@ -1,7 +1,7 @@
 package brachy.modularui.integration.jei.handler;
 
 import brachy.modularui.api.IMuiScreen;
-import brachy.modularui.api.widget.IGuiElement;
+import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.core.mixins.jei.IngredientListOverlayAccessor;
 import brachy.modularui.integration.jei.GhostIngredientTarget;
 import brachy.modularui.integration.jei.ModularUIJeiPlugin;
@@ -143,7 +143,7 @@ public class JeiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
 
         @Override
         public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(T1 screen, double mouseX, double mouseY) {
-            IGuiElement hovered = screen.screen().getContext().getTopHovered();
+            IWidget hovered = screen.screen().getContext().getTopHovered();
             if (hovered instanceof IngredientProvider<?> provider) {
                 var override = provider.ingredientOverride();
                 if (override instanceof IClickableIngredient<?> clickableIngredient) {

@@ -4,7 +4,6 @@ import brachy.modularui.ModularUI;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -109,18 +108,6 @@ public abstract class AbstractGenericSyncValue<T> extends ValueSyncHandler<T> {
     @Override
     public Class<T> getValueType() {
         return type;
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public @Nullable Class<? extends T> getType() {
-        return type;
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public boolean isOfType(Class<?> expectedType) {
-        return isValueOfType(expectedType);
     }
 
     @Override

@@ -26,7 +26,6 @@ public class ObjectValue<T> implements IValue<T> {
         this.value = value;
     }
 
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
     @Deprecated
     public ObjectValue(T value) {
         this.type = value != null ? (Class<T>) value.getClass() : null;

@@ -48,97 +48,18 @@ public class GenericSyncValue<T> extends AbstractGenericSyncValue<T> {
 
     public static GenericSyncValue<ItemStack> forItem(@NotNull Supplier<ItemStack> getter,
                                                       @Nullable Consumer<ItemStack> setter) {
-        return new GenericSyncValue<>(getter, setter, ByteBufAdapters.ITEM_STACK);
+        return new GenericSyncValue<>(ItemStack.class, getter, setter, ByteBufAdapters.ITEM_STACK);
     }
 
     public static GenericSyncValue<FluidStack> forFluid(@NotNull Supplier<FluidStack> getter,
                                                         @Nullable Consumer<FluidStack> setter) {
-        return new GenericSyncValue<>(getter, setter, ByteBufAdapters.FLUID_STACK);
+        return new GenericSyncValue<>(FluidStack.class, getter, setter, ByteBufAdapters.FLUID_STACK);
     }
 
     private final IByteBufDeserializer<T> deserializer;
     private final IByteBufSerializer<T> serializer;
     private final EqualityTest<T> equals;
     private final ICopy<T> copy;
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public GenericSyncValue(@NotNull Supplier<T> getter,
-                            @Nullable Consumer<T> setter,
-                            @NotNull IByteBufAdapter<T> adapter) {
-        this(getter, setter, adapter, adapter, adapter, null);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public GenericSyncValue(@NotNull Supplier<T> getter,
-                            @Nullable Consumer<T> setter,
-                            @NotNull IByteBufAdapter<T> adapter,
-                            @Nullable ICopy<T> copy) {
-        this(getter, setter, adapter, adapter, adapter, copy);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public GenericSyncValue(@NotNull Supplier<T> getter,
-                            @Nullable Consumer<T> setter,
-                            @NotNull IByteBufDeserializer<T> deserializer,
-                            @NotNull IByteBufSerializer<T> serializer) {
-        this(getter, setter, deserializer, serializer, null, null);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public GenericSyncValue(@NotNull Supplier<T> getter,
-                            @Nullable Consumer<T> setter,
-                            @NotNull IByteBufDeserializer<T> deserializer,
-                            @NotNull IByteBufSerializer<T> serializer,
-                            @Nullable ICopy<T> copy) {
-        this(getter, setter, deserializer, serializer, null, copy);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public GenericSyncValue(@NotNull Supplier<T> getter,
-                            @NotNull IByteBufAdapter<T> adapter) {
-        this(getter, null, adapter, adapter, adapter, null);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public GenericSyncValue(@NotNull Supplier<T> getter,
-                            @NotNull IByteBufAdapter<T> adapter,
-                            @Nullable ICopy<T> copy) {
-        this(getter, null, adapter, adapter, adapter, copy);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public GenericSyncValue(@NotNull Supplier<T> getter,
-                            @NotNull IByteBufDeserializer<T> deserializer,
-                            @NotNull IByteBufSerializer<T> serializer) {
-        this(getter, null, deserializer, serializer, null, null);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public GenericSyncValue(@NotNull Supplier<T> getter,
-                            @NotNull IByteBufDeserializer<T> deserializer,
-                            @NotNull IByteBufSerializer<T> serializer,
-                            @Nullable ICopy<T> copy) {
-        this(getter, null, deserializer, serializer, null, copy);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public GenericSyncValue(@NotNull Supplier<T> getter,
-                            @Nullable Consumer<T> setter,
-                            @NotNull IByteBufDeserializer<T> deserializer,
-                            @NotNull IByteBufSerializer<T> serializer,
-                            @Nullable EqualityTest<T> equals,
-                            @Nullable ICopy<T> copy) {
-        this(null, getter, setter, deserializer, serializer, equals, copy);
-    }
 
     @ApiStatus.Obsolete
     public GenericSyncValue(@NotNull Class<T> type,
@@ -150,34 +71,12 @@ public class GenericSyncValue<T> extends AbstractGenericSyncValue<T> {
         this(type, getter, setter, adapter, adapter, adapter, copy, nullable);
     }
 
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public GenericSyncValue(@NotNull Class<T> type,
-                            @NotNull Supplier<T> getter,
-                            @Nullable Consumer<T> setter,
-                            @NotNull IByteBufAdapter<T> adapter,
-                            @Nullable ICopy<T> copy) {
-        this(type, getter, setter, adapter, adapter, adapter, copy);
-    }
-
     @ApiStatus.Obsolete
     public GenericSyncValue(@NotNull Class<T> type,
                             @NotNull Supplier<T> getter,
                             @Nullable Consumer<T> setter,
                             @NotNull IByteBufAdapter<T> adapter) {
-        this(type, getter, setter, adapter, adapter, adapter, null);
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.3.0")
-    @Deprecated
-    public GenericSyncValue(@NotNull Class<T> type,
-                            @NotNull Supplier<T> getter,
-                            @Nullable Consumer<T> setter,
-                            @NotNull IByteBufDeserializer<T> deserializer,
-                            @NotNull IByteBufSerializer<T> serializer,
-                            @Nullable EqualityTest<T> equals,
-                            @Nullable ICopy<T> copy) {
-        this(type, getter, setter, deserializer, serializer, equals, copy, false);
+        this(type, getter, setter, adapter, adapter, adapter, null, false);
     }
 
     @ApiStatus.Obsolete

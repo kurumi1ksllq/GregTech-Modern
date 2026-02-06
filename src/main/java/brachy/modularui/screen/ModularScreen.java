@@ -1,6 +1,5 @@
 package brachy.modularui.screen;
 
-import brachy.modularui.ModularUI;
 import brachy.modularui.api.IMuiScreen;
 import brachy.modularui.api.ITheme;
 import brachy.modularui.api.IThemeApi;
@@ -126,19 +125,6 @@ public class ModularScreen implements GuiEventListener, Renderable, LayoutElemen
      */
     @Getter
     private boolean overlay = false;
-
-    /**
-     * @deprecated use the other constructor
-     */
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    public ModularScreen(@NotNull ModularPanel mainPanel) {
-        this(ModularUI.MOD_ID, mainPanel);
-        if (ModularUI.isDev()) {
-            ModularUI.LOGGER.warn("The single arg ModularScreen constructor should not be used. " +
-                    "Use the any of the other ones and pass in your mod id.");
-        }
-    }
 
     /**
      * Creates a new screen with a given owner and {@link ModularPanel}.

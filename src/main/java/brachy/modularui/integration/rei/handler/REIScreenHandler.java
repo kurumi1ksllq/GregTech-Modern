@@ -1,7 +1,7 @@
 package brachy.modularui.integration.rei.handler;
 
 import brachy.modularui.api.IMuiScreen;
-import brachy.modularui.api.widget.IGuiElement;
+import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import brachy.modularui.integration.recipeviewer.handlers.RecipeViewerHandler;
 import brachy.modularui.integration.rei.REIStackConverter;
@@ -63,7 +63,7 @@ public class REIScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
 
     @Override
     public @Nullable DraggableStack getHoveredStack(DraggingContext<T> context, double mouseX, double mouseY) {
-        IGuiElement hovered = context.getScreen().screen().getContext().getTopHovered();
+        IWidget hovered = context.getScreen().screen().getContext().getTopHovered();
         if (hovered instanceof IngredientProvider<?> provider) {
             var override = provider.ingredientOverride();
             if (override != null) {

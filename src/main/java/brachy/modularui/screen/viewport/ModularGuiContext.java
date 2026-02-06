@@ -98,39 +98,6 @@ public class ModularGuiContext extends GuiContext {
         return !this.hovered.isEmpty();
     }
 
-    /**
-     * @return true if the widget is directly below the mouse
-     */
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.7.0")
-    @Deprecated
-    public boolean isHovered(IWidget guiElement) {
-        return guiElement.isHovering();
-    }
-
-    /**
-     * Checks if a widget is hovered for a certain amount of ticks
-     *
-     * @param guiElement widget
-     * @param ticks      time hovered
-     * @return true if the widget is hovered for at least a certain number of ticks
-     */
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.7.0")
-    @Deprecated
-    public boolean isHoveredFor(IWidget guiElement, int ticks) {
-        // convert from frames per second to ticks per second
-        return guiElement.isHoveringFor(ticks);
-    }
-
-    /**
-     * @return the hovered widget (widget directly below the mouse)
-     */
-    @ApiStatus.ScheduledForRemoval(inVersion = "2.7.0")
-    @Deprecated
-    @Nullable
-    public IWidget getHovered() {
-        return getTopHovered();
-    }
-
     public @Nullable IWidget getTopHovered() {
         return this.hovered.isEmpty() ? null : this.hovered.get(0).getElement();
     }

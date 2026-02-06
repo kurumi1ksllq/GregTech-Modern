@@ -1,7 +1,7 @@
 package brachy.modularui.integration.emi.handler;
 
 import brachy.modularui.api.IMuiScreen;
-import brachy.modularui.api.widget.IGuiElement;
+import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.integration.emi.EmiStackConverter;
 import brachy.modularui.integration.recipeviewer.handlers.GhostIngredientSlot;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
@@ -94,7 +94,7 @@ public class EmiScreenHandler<T extends Screen & IMuiScreen> extends RecipeViewe
 
     @Override
     public EmiStackInteraction getStackAt(T screen, int x, int y) {
-        IGuiElement hovered = screen.screen().getContext().getTopHovered();
+        IWidget hovered = screen.screen().getContext().getTopHovered();
         if (hovered instanceof IngredientProvider<?> provider) {
             var override = provider.ingredientOverride();
             if (override != null) {

@@ -220,19 +220,6 @@ public class PanelSyncManager implements ISyncRegistrar<PanelSyncManager> {
     }
 
     /**
-     * @deprecated replaced by {@link #syncedPanel(String, boolean, PanelSyncHandler.IPanelBuilder)}
-     */
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.3.0")
-    @Deprecated
-    public IPanelHandler panel(String key, PanelSyncHandler.IPanelBuilder panelBuilder, boolean subPanel) {
-        SyncHandler sh = this.subPanels.get(key);
-        if (sh != null) return (IPanelHandler) sh;
-        PanelSyncHandler syncHandler = new PanelSyncHandler(panelBuilder, subPanel);
-        this.subPanels.put(key, syncHandler);
-        return syncHandler;
-    }
-
-    /**
      * Creates a synced panel handler. This can be used to automatically handle syncing for synced panels.
      * Synced panels do not need to be synced themselves, but contain at least one widget which is synced.
      * <p>
@@ -380,12 +367,6 @@ public class PanelSyncManager implements ISyncRegistrar<PanelSyncManager> {
 
     public Collection<SlotGroup> getSlotGroups() {
         return this.slotGroups.values();
-    }
-
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public @Nullable SyncHandler getSyncHandler(String mapKey) {
-        return getSyncHandlerFromMapKey(mapKey);
     }
 
     public @Nullable SyncHandler getSyncHandlerFromMapKey(String mapKey) {

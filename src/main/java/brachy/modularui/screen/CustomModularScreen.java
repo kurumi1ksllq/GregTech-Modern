@@ -1,6 +1,5 @@
 package brachy.modularui.screen;
 
-import brachy.modularui.ModularUI;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,19 +13,6 @@ import org.jetbrains.annotations.NotNull;
  */
 @OnlyIn(Dist.CLIENT)
 public abstract class CustomModularScreen extends ModularScreen {
-
-    /**
-     * Creates a new screen with ModularUI as its owner.
-     */
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public CustomModularScreen() {
-        super(ModularUI.MOD_ID);
-        if (ModularUI.isDev()) {
-            ModularUI.LOGGER.error("The single arg ModularScreen constructor should not be used. " +
-                    "Use the other one and pass in your mod id.");
-        }
-    }
 
     /**
      * Creates a new screen with a given owner.

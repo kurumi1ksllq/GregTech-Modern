@@ -7,8 +7,6 @@ import brachy.modularui.widget.sizer.ResizeNode;
 import brachy.modularui.widget.sizer.StandardResizer;
 import brachy.modularui.widget.sizer.Unit;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 
@@ -50,12 +48,6 @@ public interface IPositioned<W extends IPositioned<W>> {
     default W expanded() {
         resizer().expanded();
         return getThis();
-    }
-
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    default W relative(IGuiElement guiElement) {
-        return relative(guiElement.getArea());
     }
 
     @Deprecated

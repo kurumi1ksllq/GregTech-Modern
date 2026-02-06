@@ -1,7 +1,6 @@
 package brachy.modularui.widgets.slot;
 
 import brachy.modularui.api.ITheme;
-import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.IKey;
 import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.widget.Interactable;
@@ -31,7 +30,6 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.ModList;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -230,19 +228,6 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         return this.syncHandler == null ? EMPTY : this.syncHandler.fluidTank();
     }
 
-    /**
-     * Set the offset in x and y (on both sides) at which the fluid should be rendered.
-     * Default is 1 for both.
-     *
-     * @param x x offset
-     * @param y y offset
-     */
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public FluidSlot contentOffset(int x, int y) {
-        return contentPaddingLeft(x).contentPaddingTop(y);
-    }
-
     public FluidSlot displayAmount(boolean displayAmount) {
         this.displayAmount = displayAmount;
         return this;
@@ -254,15 +239,6 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
     public FluidSlot alwaysShowFull(boolean alwaysShowFull) {
         this.alwaysShowFull = alwaysShowFull;
         return this;
-    }
-
-    /**
-     * @param overlayTexture texture that is rendered on top of the fluid
-     */
-    @ApiStatus.ScheduledForRemoval(inVersion = "3.2.0")
-    @Deprecated
-    public FluidSlot overlayTexture(@Nullable IDrawable overlayTexture) {
-        return overlay(overlayTexture);
     }
 
     public FluidSlot syncHandler(IFluidTank fluidTank) {

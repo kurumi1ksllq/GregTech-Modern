@@ -10,6 +10,7 @@ import brachy.modularui.api.widget.ITooltip;
 import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.utils.math.MathUtils;
+import brachy.modularui.utils.math.NumberFormat;
 import brachy.modularui.utils.math.ParseResult;
 import brachy.modularui.value.StringValue;
 import brachy.modularui.value.sync.ValueSyncHandler;
@@ -20,6 +21,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
@@ -37,6 +39,7 @@ import java.util.regex.Pattern;
 @Accessors(chain = true)
 public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
 
+    @Getter
     private IStringValue<?> stringValue;
     private Function<String, String> validator = val -> val;
     private boolean numbers = false;
@@ -44,8 +47,20 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
     private String mathFailMessage = null;
     private double defaultNumber = 0;
     private boolean tooltipOverride = false;
+    @Getter
+    private boolean autoUpdateOnChange = false;
+    @Getter
+    private boolean acceptsExpression = true;
 
     public double parse(String num) {
+        if (!this.acceptsExpression) {
+            try {
+                return NumberFormat.AMOUNT_TEXT.format.parse(num).doubleValue();
+            } catch (ParseException ex) {
+                this.mathFailMessage = "Unable to parse number.";
+                return 0.0;
+            }
+        }
         ParseResult result = MathUtils.parseExpression(num, this.defaultNumber, true);
         if (result.isFailure()) {
             this.mathFailMessage = result.getErrorMessage();
@@ -144,8 +159,34 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
     }
 
     @Override
+    protected void onTextChanged() {
+        super.onTextChanged();
+        if (this.autoUpdateOnChange) {
+            String text = this.validator.apply(getText());
+            this.stringValue.setStringValue(this.numbers ? format.parse(text, new ParsePosition(0)).toString() : getText());
+        }
+    }
+
+    @Override
     public boolean canHover() {
         return true;
+    }
+
+    public TextFieldWidget acceptsExpressions(boolean acceptsExpression) {
+        this.acceptsExpression = acceptsExpression;
+        return this;
+    }
+
+    /**
+     * Sets if the string value should be updated every time the text changes and not just when the widget is unfocused.
+     * This is useful for search text fields.
+     *
+     * @param autoUpdateOnChange if the string value should be updated when text changes
+     * @return this
+     */
+    public TextFieldWidget autoUpdateOnChange(boolean autoUpdateOnChange) {
+        this.autoUpdateOnChange = autoUpdateOnChange;
+        return this;
     }
 
     public TextFieldWidget setMaxLength(int maxLength) {

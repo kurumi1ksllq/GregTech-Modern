@@ -40,6 +40,7 @@ import brachy.modularui.widgets.ColorPickerDialog;
 import brachy.modularui.widgets.ListWidget;
 import brachy.modularui.widgets.RichTextWidget;
 import brachy.modularui.widgets.SchemaWidget;
+import brachy.modularui.widgets.ScrollingTextWidget;
 import brachy.modularui.widgets.TextWidget;
 import brachy.modularui.widgets.ToggleButton;
 import brachy.modularui.widgets.TransformWidget;
@@ -60,6 +61,9 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.google.common.base.CaseFormat;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+
+import net.minecraftforge.registries.ForgeRegistries;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -428,26 +432,37 @@ public class TestGuis extends CustomModularScreen {
     }
 
     public static @NotNull ModularPanel buildSearchTest() {
-        List<String> items = Arrays.asList("Chicken", "Jockey", "Flint", "Steel", "Steve", "Diamond", "Ingot", "Iron", "Armor", "Greg");
         StringValue searchValue = new StringValue("");
-        return ModularPanel.defaultPanel("search", 100, 150)
+        return ModularPanel.defaultPanel("search", 130, 200)
                 .child(Flow.column()
                         .padding(5)
                         .child(new TextFieldWidget()
                                 .value(searchValue)
                                 .height(16)
-                                .widthRel(1f))
+                                .widthRel(1f)
+                                .autoUpdateOnChange(true))
                         .child(new ListWidget<>()
                                 .collapseDisabledChild()
                                 .expanded()
                                 .widthRel(1f)
-                                .children(items.size(), i -> new TextWidget<>(IKey.str(items.get(i)))
-                                        .alignment(Alignment.Center)
-                                        .color(Color.WHITE.main)
-                                        .widthRel(1f)
-                                        .height(16)
-                                        .background(GuiTextures.MC_BUTTON)
-                                        .setEnabledIf(w -> items.get(i).toLowerCase().contains(searchValue.getStringValue())))));
+                                .children(ForgeRegistries.ITEMS, item -> {
+                                    ItemStack stack = new ItemStack(item);
+                                    String text = stack.getDisplayName().getString();
+                                    return Flow.row()
+                                            .height(20).widthRel(1f)
+                                            .padding(2)
+                                            .marginBottom(-1)
+                                            .widgetTheme(IThemeApi.BUTTON)
+                                            .mainAxisAlignment(Alignment.MainAxis.SPACE_BETWEEN)
+                                            .setEnabledIf(w -> text.toLowerCase().contains(searchValue.getStringValue()))
+                                            .child(new ItemDrawable(stack).asWidget())
+                                            .child(new ScrollingTextWidget(IKey.str(text))
+                                                    .widgetTheme(IThemeApi.BUTTON)
+                                                    .textAlign(Alignment.CENTER)
+                                                    .expanded()
+                                                    .height(16)
+                                                    .invisible());
+                                })));
     }
 
     public static @NotNull ModularPanel buildColorTheoryUI() {

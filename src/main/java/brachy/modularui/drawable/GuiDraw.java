@@ -705,8 +705,7 @@ public class GuiDraw {
 
     public static void drawAmountText(ModularGuiContext context, int amount, String format,
                                       int x, int y, int width, int height, Alignment alignment, float z) {
-        if (amount == 1) return;
-
+        if (amount <= 1) return;
         String amountText = FormattingUtil.formatNumberReadable(amount, false);
         if (format != null) {
             amountText = format + amountText;

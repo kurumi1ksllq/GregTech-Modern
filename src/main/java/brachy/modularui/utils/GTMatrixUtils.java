@@ -1,5 +1,6 @@
 package brachy.modularui.utils;
 
+import brachy.modularui.utils.math.MathUtils;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -181,7 +182,7 @@ public class GTMatrixUtils {
      * @see Matrix4f#lookAt(Vector3fc, Vector3fc, Vector3fc)
      */
     public static Matrix4f lookAt(Vector3fc eyePos, Vector3fc target) {
-        return new Matrix4f().lookAt(eyePos, target, MathUtil.UNIT_Y);
+        return new Matrix4f().lookAt(eyePos, target, MathUtils.UNIT_Y);
     }
 
     /**
@@ -203,8 +204,8 @@ public class GTMatrixUtils {
      * @param target the point to look at
      */
     public static void lookAt(PoseStack.Pose pose, Vector3fc eyePos, Vector3fc target) {
-        pose.pose().lookAt(eyePos, target, MathUtil.UNIT_Y);
-        pose.normal().lookAlong(target, MathUtil.UNIT_Y);
+        pose.pose().lookAt(eyePos, target, MathUtils.UNIT_Y);
+        pose.normal().lookAlong(target, MathUtils.UNIT_Y);
     }
 
     /**

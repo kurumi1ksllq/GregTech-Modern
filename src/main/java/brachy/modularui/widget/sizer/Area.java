@@ -5,7 +5,7 @@ import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.layout.IViewportStack;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.utils.Interpolations;
-import brachy.modularui.utils.MathUtil;
+import brachy.modularui.utils.math.MathUtils;
 import brachy.modularui.utils.Point;
 import brachy.modularui.utils.Rectangle;
 
@@ -505,10 +505,10 @@ public class Area extends Rectangle implements IAnimatable<Area> {
                 xBL = stack.transformX(this.x, ey()), xBR = stack.transformX(ex(), ey());
         int yTL = stack.transformY(this.x, this.y), yTR = stack.transformY(ex(), this.y),
                 yBL = stack.transformY(this.x, ey()), yBR = stack.transformY(ex(), ey());
-        int x0 = MathUtil.min(xTL, xTR, xBL, xBR);
-        int x1 = MathUtil.max(xTL, xTR, xBL, xBR);
-        int y0 = MathUtil.min(yTL, yTR, yBL, yBR);
-        int y1 = MathUtil.max(yTL, yTR, yBL, yBR);
+        int x0 = MathUtils.min(xTL, xTR, xBL, xBR);
+        int x1 = MathUtils.max(xTL, xTR, xBL, xBR);
+        int y0 = MathUtils.min(yTL, yTR, yBL, yBR);
+        int y1 = MathUtils.max(yTL, yTR, yBL, yBR);
         setPos(x0, y0, x1, y1);
     }
 

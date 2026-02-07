@@ -6,7 +6,7 @@ import brachy.modularui.integration.recipeviewer.entry.fluid.FluidTagList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
 import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
-import brachy.modularui.utils.MathUtil;
+import brachy.modularui.utils.math.MathUtils;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -75,7 +75,7 @@ public class REIStackConverter {
                 return null;
             }
             dev.architectury.fluid.FluidStack fluidStack = stack.castValue();
-            return new FluidStack(fluidStack.getFluid(), MathUtil.saturatedCast(fluidStack.getAmount()),
+            return new FluidStack(fluidStack.getFluid(), MathUtils.saturatedCast(fluidStack.getAmount()),
                     fluidStack.getTag());
         }
 

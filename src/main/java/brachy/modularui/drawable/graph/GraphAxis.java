@@ -4,7 +4,7 @@ import brachy.modularui.api.GuiAxis;
 import brachy.modularui.drawable.GuiDraw;
 import brachy.modularui.drawable.text.TextRenderer;
 import brachy.modularui.utils.Alignment;
-import brachy.modularui.utils.DAM;
+import brachy.modularui.utils.math.DAM;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;

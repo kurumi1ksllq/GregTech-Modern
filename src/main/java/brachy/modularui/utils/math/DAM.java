@@ -1,4 +1,4 @@
-package brachy.modularui.utils;
+package brachy.modularui.utils.math;
 
 import net.minecraft.util.Mth;
 

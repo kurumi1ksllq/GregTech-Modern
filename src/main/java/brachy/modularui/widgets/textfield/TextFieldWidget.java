@@ -9,7 +9,7 @@ import brachy.modularui.api.value.ISyncOrValue;
 import brachy.modularui.api.widget.ITooltip;
 import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.screen.viewport.ModularGuiContext;
-import brachy.modularui.utils.MathUtil;
+import brachy.modularui.utils.math.MathUtils;
 import brachy.modularui.utils.math.ParseResult;
 import brachy.modularui.value.StringValue;
 import brachy.modularui.value.sync.ValueSyncHandler;
@@ -46,7 +46,7 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
     private boolean tooltipOverride = false;
 
     public double parse(String num) {
-        ParseResult result = MathUtil.parseExpression(num, this.defaultNumber, true);
+        ParseResult result = MathUtils.parseExpression(num, this.defaultNumber, true);
         if (result.isFailure()) {
             this.mathFailMessage = result.getErrorMessage();
             ModularUI.LOGGER.error("Math expression error in {}: {}", this, this.mathFailMessage);
@@ -208,7 +208,7 @@ public class TextFieldWidget extends BaseTextFieldWidget<TextFieldWidget> {
     }
 
     public TextFieldWidget setNumbersLong(LongSupplier min, LongSupplier max) {
-        return setNumbersLong(val -> MathUtil.clamp(val, min.getAsLong(), max.getAsLong()));
+        return setNumbersLong(val -> MathUtils.clamp(val, min.getAsLong(), max.getAsLong()));
     }
 
     public TextFieldWidget setNumbersDouble(DoubleSupplier min, DoubleSupplier max) {

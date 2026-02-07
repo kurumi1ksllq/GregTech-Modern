@@ -27,7 +27,7 @@ import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.utils.Alignment;
 import brachy.modularui.utils.Color;
 import brachy.modularui.utils.ColorShade;
-import brachy.modularui.utils.DAM;
+import brachy.modularui.utils.math.DAM;
 import brachy.modularui.utils.Interpolation;
 import brachy.modularui.utils.Interpolations;
 import brachy.modularui.value.BoolValue;

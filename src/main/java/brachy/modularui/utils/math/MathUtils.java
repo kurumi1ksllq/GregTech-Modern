@@ -1,8 +1,4 @@
-package brachy.modularui.utils;
-
-import brachy.modularui.utils.math.ParseResult;
-import brachy.modularui.utils.math.PostfixPercentOperator;
-import brachy.modularui.utils.math.SIPrefix;
+package brachy.modularui.utils.math;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.util.Mth;
@@ -30,7 +26,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class MathUtil {
+public class MathUtils {
 
     public static final float PI = (float) Math.PI;
     public static final float PI2 = 2f * PI;
@@ -219,5 +215,18 @@ public class MathUtil {
     public static float rescaleLinear(float v, float fromMin, float fromMax, float toMin, float toMax) {
         v = (v - fromMin) / (fromMax - fromMin); // reverse lerp
         return toMin + (toMax - toMin) * v; // forward lerp
+    }
+
+    public static int intPlaces(BigDecimal x) {
+        return Math.max(1, x.precision() - x.scale());
+    }
+
+    public static int intPlaces(double x) {
+        if (x == 0.0) return 1;
+        x = Math.abs(x);
+        int d = (int) Math.floor(Math.log10(x)) + 1;
+        // correct rounding errors
+        if (Math.pow(10, d - 1) > x) d--;
+        return Math.max(d, 1);
     }
 }

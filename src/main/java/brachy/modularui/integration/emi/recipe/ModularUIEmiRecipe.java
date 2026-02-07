@@ -11,9 +11,9 @@ import brachy.modularui.integration.recipeviewer.handlers.fluid.EmptyFluidTank;
 import brachy.modularui.integration.recipeviewer.util.RecipeScreenRenderingUtil;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
-import brachy.modularui.utils.WidgetUtil;
 import brachy.modularui.utils.memoization.MemoizedSupplier;
 import brachy.modularui.utils.memoization.Memoizer;
+import brachy.modularui.widget.WidgetTree;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widgets.slot.FluidSlot;
 import brachy.modularui.widgets.slot.ItemSlot;
@@ -80,18 +80,18 @@ public abstract class ModularUIEmiRecipe<T extends Recipe<?>, W extends IWidget>
             return new ModularScreen(recipe.getId().getNamespace(), panel);
         }, Duration.ofSeconds(10));
 
-        for (IWidget widget : WidgetUtil.getFlatWidgetCollection(recipeWidget)) {
+        WidgetTree.foreachChildBFS(recipeWidget, widget -> {
             if (!(widget instanceof IngredientProvider<?> provider)) {
-                continue;
+                return true;
             }
             RecipeSlotRole role = provider.recipeRole();
             if (role == RecipeSlotRole.RENDER_ONLY) {
-                continue;
+                return true;
             }
 
             EmiStackConverter.Converter<?> converter = EmiStackConverter.getForNullable(provider.ingredientClass());
             if (converter == null) {
-                continue;
+                return true;
             }
             @SuppressWarnings({"rawtypes", "unchecked"})
             EmiIngredient ingredient = ((EmiStackConverter.Converter) converter).convertTo(provider);
@@ -106,25 +106,22 @@ public abstract class ModularUIEmiRecipe<T extends Recipe<?>, W extends IWidget>
                 }
                 case CATALYST -> catalysts.add(ingredient);
             }
-        }
+            return true;
+        }, true);
     }
 
     @Override
     public void addWidgets(WidgetHolder widgets) {
         widgets.add(new UIWrapperWidget());
+        WidgetTree.foreachChildBFS(this.screen.get().getMainPanel(), widget -> {
+            if (!(widget instanceof IngredientProvider<?> provider)) return true;
 
-        for (IWidget widget : WidgetUtil.getFlatWidgetCollection(this.screen.get())) {
-            if (!(widget instanceof IngredientProvider<?> provider)) {
-                continue;
-            }
             RecipeSlotRole role = provider.recipeRole();
-            if (role == RecipeSlotRole.RENDER_ONLY) {
-                continue;
-            }
+            if (role == RecipeSlotRole.RENDER_ONLY) return true;
+
             EmiStackConverter.Converter<?> converter = EmiStackConverter.getForNullable(provider.ingredientClass());
-            if (converter == null) {
-                continue;
-            }
+            if (converter == null) return true;
+
             @SuppressWarnings({"rawtypes", "unchecked"})
             EmiIngredient ingredient = ((EmiStackConverter.Converter) converter).convertTo(provider);
             Area widgetArea = widget.getArea();
@@ -164,7 +161,8 @@ public abstract class ModularUIEmiRecipe<T extends Recipe<?>, W extends IWidget>
                 }
             }
             widgets.add(slotWidget);
-        }
+            return true;
+        }, true);
         widgets.add(new UIForegroundRenderWidget());
     }
 

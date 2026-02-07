@@ -7,7 +7,7 @@ import brachy.modularui.integration.recipeviewer.handlers.IngredientProvider;
 import brachy.modularui.integration.recipeviewer.util.RecipeScreenRenderingUtil;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
-import brachy.modularui.utils.WidgetUtil;
+import brachy.modularui.widget.WidgetTree;
 import brachy.modularui.widget.sizer.Area;
 
 import net.minecraft.client.Minecraft;
@@ -33,6 +33,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.util.Collections;
 import java.util.List;
@@ -107,15 +108,15 @@ public abstract class ModularUIRecipeCategory<T extends Recipe<?>, W extends IWi
     public void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {
         ModularScreen screen = getModularScreen(recipe);
 
-        int i = 0;
-        for (IWidget widget : WidgetUtil.getFlatWidgetCollection(screen)) {
+        MutableInt i = new MutableInt(0);
+        WidgetTree.foreachChildBFS(screen.getMainPanel(), widget -> {
             if (!(widget instanceof IngredientProvider<?> provider)) {
-                continue;
+                return true;
             }
             RecipeIngredientRole role = mapToRole(provider.recipeRole());
-            addJEISlot(builder, provider, role, i);
-            i++;
-        }
+            addJEISlot(builder, provider, role, i.getAndIncrement());
+            return true;
+        }, true);
     }
 
     @Override

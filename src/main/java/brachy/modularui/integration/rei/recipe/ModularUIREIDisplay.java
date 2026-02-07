@@ -12,9 +12,9 @@ import brachy.modularui.integration.recipeviewer.util.RecipeScreenRenderingUtil;
 import brachy.modularui.integration.rei.REIStackConverter;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
-import brachy.modularui.utils.WidgetUtil;
 import brachy.modularui.utils.memoization.MemoizedSupplier;
 import brachy.modularui.utils.memoization.Memoizer;
+import brachy.modularui.widget.WidgetTree;
 import brachy.modularui.widget.sizer.Area;
 import brachy.modularui.widgets.slot.FluidSlot;
 import brachy.modularui.widgets.slot.ItemSlot;
@@ -73,19 +73,15 @@ public class ModularUIREIDisplay<T extends Recipe<?>, W extends IWidget> impleme
             return new ModularScreen(recipe.getId().getNamespace(), panel);
         }, Duration.ofSeconds(10));
 
-        for (IWidget widget : WidgetUtil.getFlatWidgetCollection(widgetSupplier.get())) {
-            if (!(widget instanceof IngredientProvider<?> provider)) {
-                continue;
-            }
+        WidgetTree.foreachChildBFS(widgetSupplier.get(), widget -> {
+            if (!(widget instanceof IngredientProvider<?> provider)) return true;
+
             RecipeSlotRole role = provider.recipeRole();
-            if (role == RecipeSlotRole.RENDER_ONLY) {
-                continue;
-            }
+            if (role == RecipeSlotRole.RENDER_ONLY) return true;
 
             REIStackConverter.Converter<?> converter = REIStackConverter.getForNullable(provider.ingredientClass());
-            if (converter == null) {
-                continue;
-            }
+            if (converter == null) return true;
+
             @SuppressWarnings({"rawtypes", "unchecked"})
             EntryIngredient ingredient = ((REIStackConverter.Converter) converter).convertTo(provider);
 
@@ -94,7 +90,8 @@ public class ModularUIREIDisplay<T extends Recipe<?>, W extends IWidget> impleme
                 case OUTPUT -> outputEntries.add(ingredient);
                 case CATALYST -> catalysts.add(ingredient);
             }
-        }
+            return true;
+        }, true);
     }
 
     @Override
@@ -106,18 +103,15 @@ public class ModularUIREIDisplay<T extends Recipe<?>, W extends IWidget> impleme
         List<Widget> widgets = new ArrayList<>();
         widgets.add(new UIWrapperWidget());
 
-        for (IWidget widget : WidgetUtil.getFlatWidgetCollection(this.screen.get())) {
-            if (!(widget instanceof IngredientProvider<?> provider)) {
-                continue;
-            }
+        WidgetTree.foreachChildBFS(this.screen.get().getMainPanel(), widget -> {
+            if (!(widget instanceof IngredientProvider<?> provider)) return true;
+
             RecipeSlotRole role = provider.recipeRole();
-            if (role == RecipeSlotRole.RENDER_ONLY) {
-                continue;
-            }
+            if (role == RecipeSlotRole.RENDER_ONLY) return true;
+
             REIStackConverter.Converter<?> converter = REIStackConverter.getForNullable(provider.ingredientClass());
-            if (converter == null) {
-                continue;
-            }
+            if (converter == null) return true;
+
             @SuppressWarnings({"rawtypes", "unchecked"})
             EntryIngredient ingredient = ((REIStackConverter.Converter) converter).convertTo(provider);
             Area area = widget.getArea();
@@ -151,9 +145,9 @@ public class ModularUIREIDisplay<T extends Recipe<?>, W extends IWidget> impleme
                 }
             }
             widgets.add(entryWidget);
-        }
+            return true;
+        }, true);
         widgets.add(new UIForegroundRenderWidget());
-
         return widgets;
     }
 

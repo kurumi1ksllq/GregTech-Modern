@@ -3412,6 +3412,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#gtrecipebuilderadjacentfluidtag-and-gtrecipebuilderadjacentblocktag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GTRecipeBuilder#adjacentFluidTag() and GTRecipeBuilder#adjacentBlockTag()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#machine-recipe-failure-diagnostics" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4472,6 +4483,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#gtrecipebuilderadjacentfluidtag-and-gtrecipebuilderadjacentblocktag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GTRecipeBuilder#adjacentFluidTag() and GTRecipeBuilder#adjacentBlockTag()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#machine-recipe-failure-diagnostics" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4603,6 +4625,14 @@ you should <strong>NOT</strong> use <code>PipeModel#dynamicModel()</code> and in
 <p>Previously, lamps were not useable with the terminal in multiblocks. There are new lamp predicates that will help solve this problem.
 The predicate to use all lamps is: <code>Predicates.anyLamp()</code>
 The predicate to use a specific color is: <code>Predicates.lampsByColor(DyeColor.DYE_COLOR)</code>. Where DYE_COLOR is the name of the color you want.</p>
+<h2 id="gtrecipebuilderadjacentfluidtag-and-gtrecipebuilderadjacentblocktag"><code>GTRecipeBuilder#adjacentFluidTag()</code> and <code>GTRecipeBuilder#adjacentBlockTag()</code></h2>
+<p><em>This is only relevant to <strong>add-on mods</strong> with custom recipe types that use the condition(s). <strong>KubeJS recipes are not affected.</strong></em></p>
+<p>The renames of <code>GTRecipeBuilder#adjacentFluid(TagKey&lt;Fluid&gt;...)</code> -&gt; <code>#adjacentFluidTag(TagKey&lt;Fluid&gt;...)</code> and <code>GTRecipeBuilder#adjacentBlock(TagKey&lt;Block&gt;...)</code> -&gt; <code>#adjacentBlockTag(TagKey&lt;Block&gt;...)</code>
+have been deprecated in favor of naming every variant <code>adjacentFluids</code> and <code>adjacentBlocks</code>, respectively.<br />
+Please update your addon mods' recipes to use these new methods, as the now deprecated methods will be removed come 8.0.0.</p>
+<p>A full list of all deprecated methods &amp; their replacement is as follows:<br />
+Fluids: <code>adjacentFluid</code>, <code>adjacentFluidTag</code> -&gt; <code>adjacentFluids</code><br />
+Blocks: <code>adjacentBlock</code>, <code>adjacentBlockTag</code> -&gt; <code>adjacentBlocks</code></p>
 <h2 id="machine-recipe-failure-diagnostics">Machine Recipe Failure Diagnostics</h2>
 <p>Machines now provide detailed diagnostics explaining why recipes fail to start.</p>
 <p>Failure reasons are displayed in:

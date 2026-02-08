@@ -602,7 +602,7 @@ public class GTMachines {
     // ********** Part **********//
     //////////////////////////////////////
     public static final MachineDefinition[] ITEM_IMPORT_BUS = registerTieredMachines("input_bus",
-            (holder, tier) -> new ItemBusPartMachine(holder, tier, IN),
+            (holder, tier) -> ItemBusPartMachine.create(holder, tier, IN),
             (tier, builder) -> builder
                     .langValue(VNF[tier] + " Input Bus")
                     .rotationState(RotationState.ALL)
@@ -611,13 +611,13 @@ public class GTMachines {
                     .colorOverlayTieredHullModel(OVERLAY_ITEM_HATCH_INPUT, "overlay_pipe", "overlay_pipe_in_emissive")
                     .tooltips(Component.translatable("gtceu.machine.item_bus.import.tooltip"),
                             Component.translatable("gtceu.universal.tooltip.item_storage_capacity",
-                                    (1 + Math.min(9, tier)) * (1 + Math.min(9, tier))))
+                                    ItemBusPartMachine.getInventorySize(tier)))
                     .allowCoverOnFront(true)
                     .register(),
             ALL_TIERS);
 
     public static final MachineDefinition[] ITEM_EXPORT_BUS = registerTieredMachines("output_bus",
-            (holder, tier) -> new ItemBusPartMachine(holder, tier, OUT),
+            (holder, tier) -> ItemBusPartMachine.create(holder, tier, OUT),
             (tier, builder) -> builder
                     .langValue(VNF[tier] + " Output Bus")
                     .rotationState(RotationState.ALL)
@@ -626,7 +626,7 @@ public class GTMachines {
                     .colorOverlayTieredHullModel(OVERLAY_ITEM_HATCH_OUTPUT, "overlay_pipe", "overlay_pipe_out_emissive")
                     .tooltips(Component.translatable("gtceu.machine.item_bus.export.tooltip"),
                             Component.translatable("gtceu.universal.tooltip.item_storage_capacity",
-                                    (1 + Math.min(9, tier)) * (1 + Math.min(9, tier))))
+                                    ItemBusPartMachine.getInventorySize(tier)))
                     .allowCoverOnFront(true)
                     .register(),
             ALL_TIERS);
@@ -830,7 +830,7 @@ public class GTMachines {
             ELECTRIC_TIERS);
 
     public static final MachineDefinition STEAM_IMPORT_BUS = REGISTRATE
-            .machine("steam_input_bus", holder -> new SteamItemBusPartMachine(holder, IN))
+            .machine("steam_input_bus", holder -> SteamItemBusPartMachine.create(holder, IN))
             .rotationState(RotationState.ALL)
             .abilities(PartAbility.STEAM_IMPORT_ITEMS)
             .modelProperty(IS_FORMED, false)
@@ -838,12 +838,13 @@ public class GTMachines {
             .langValue("Steam Input Bus")
             .tooltips(Component.translatable("gtceu.machine.item_bus.import.tooltip"),
                     Component.translatable("gtceu.machine.steam_bus.tooltip"),
-                    Component.translatable("gtceu.universal.tooltip.item_storage_capacity", 4))
+                    Component.translatable("gtceu.universal.tooltip.item_storage_capacity",
+                            ItemBusPartMachine.getInventorySize(LV)))
             .allowCoverOnFront(true)
             .register();
 
     public static final MachineDefinition STEAM_EXPORT_BUS = REGISTRATE
-            .machine("steam_output_bus", holder -> new SteamItemBusPartMachine(holder, OUT))
+            .machine("steam_output_bus", holder -> SteamItemBusPartMachine.create(holder, OUT))
             .rotationState(RotationState.ALL)
             .abilities(PartAbility.STEAM_EXPORT_ITEMS)
             .modelProperty(IS_FORMED, false)
@@ -851,7 +852,8 @@ public class GTMachines {
             .langValue("Steam Output Bus")
             .tooltips(Component.translatable("gtceu.machine.item_bus.export.tooltip"),
                     Component.translatable("gtceu.machine.steam_bus.tooltip"),
-                    Component.translatable("gtceu.universal.tooltip.item_storage_capacity", 4))
+                    Component.translatable("gtceu.universal.tooltip.item_storage_capacity",
+                            ItemBusPartMachine.getInventorySize(LV)))
             .allowCoverOnFront(true)
             .register();
 
@@ -932,7 +934,7 @@ public class GTMachines {
             .register();
 
     public static final MachineDefinition[] ITEM_PASSTHROUGH_HATCH = registerTieredMachines("item_passthrough_hatch",
-            (holder, tier) -> new ItemBusPartMachine(holder, tier, IO.BOTH),
+            (holder, tier) -> ItemBusPartMachine.create(holder, tier, IO.BOTH),
             (tier, builder) -> builder
                     .langValue("%s Item Passthrough Hatch".formatted(VNF[tier]))
                     .rotationState(RotationState.ALL)
@@ -941,7 +943,7 @@ public class GTMachines {
                     .overlayTieredHullModel("item_passthrough_hatch")
                     .tooltips(
                             Component.translatable("gtceu.universal.tooltip.item_storage_capacity",
-                                    (1 + Math.min(9, tier)) * (1 + Math.min(9, tier))),
+                                    ItemBusPartMachine.getInventorySize(tier)),
                             Component.translatable("gtceu.part_sharing.enabled"))
                     .register(),
             ELECTRIC_TIERS);
@@ -978,7 +980,7 @@ public class GTMachines {
 
     public static final MachineDefinition[] DUAL_IMPORT_HATCH = registerTieredMachines(
             "dual_input_hatch",
-            (holder, tier) -> new DualHatchPartMachine(holder, tier, IN),
+            (holder, tier) -> DualHatchPartMachine.create(holder, tier, IN),
             (tier, builder) -> builder
                     .langValue("%s Dual Input Hatch".formatted(VNF[tier]))
                     .rotationState(RotationState.ALL)
@@ -1001,7 +1003,7 @@ public class GTMachines {
 
     public static final MachineDefinition[] DUAL_EXPORT_HATCH = registerTieredMachines(
             "dual_output_hatch",
-            (holder, tier) -> new DualHatchPartMachine(holder, tier, OUT),
+            (holder, tier) -> DualHatchPartMachine.create(holder, tier, OUT),
             (tier, builder) -> builder
                     .langValue("%s Dual Output Hatch".formatted(VNF[tier]))
                     .rotationState(RotationState.ALL)

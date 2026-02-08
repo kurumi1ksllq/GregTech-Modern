@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.ae2.machine;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
@@ -23,6 +24,7 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.machines.GTAEMachines;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
+import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.AETextInputButtonWidget;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.slot.AEPatternViewSlotWidget;
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.InternalSlotRecipeHandler;
@@ -75,6 +77,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -141,9 +144,16 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
     @Nullable
     protected TickableSubscription updateSubs;
 
-    public MEPatternBufferPartMachine(BlockEntityCreationInfo info) {
-        super(info, IO.IN);
-        patternInventory.setOnContentsChanged(() -> getSyncDataHolder().markClientSyncFieldDirty("patternInventory"));
+    public static MEPatternBufferPartMachine create(BlockEntityCreationInfo info) {
+        return new MEPatternBufferPartMachine(info, GTValues.LuV,
+                m -> new NotifiableItemStackHandler(m, 0, IO.IN));
+    }
+
+    public MEPatternBufferPartMachine(BlockEntityCreationInfo info, int tier,
+                                      Function<ItemBusPartMachine, NotifiableItemStackHandler> inventory) {
+        super(info, tier, IO.IN, inventory);
+        this.patternInventory
+                .setOnContentsChanged(() -> getSyncDataHolder().markClientSyncFieldDirty("patternInventory"));
         this.patternInventory.setFilter(stack -> stack.getItem() instanceof ProcessingPatternItem);
         for (int i = 0; i < this.internalInventory.length; i++) {
             this.internalInventory[i] = new InternalSlot();

@@ -1,12 +1,13 @@
 package com.gregtechceu.gtceu.integration.ae2.machine;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
 import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
+import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.AEItemConfigWidget;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemList;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemSlot;
@@ -28,6 +29,8 @@ import appeng.api.config.Actionable;
 import appeng.api.stacks.GenericStack;
 import appeng.api.storage.MEStorage;
 
+import java.util.function.Function;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -35,12 +38,17 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class MEInputBusPartMachine extends MEBusPartMachine
                                    implements IDataStickInteractable, IMachineLife, IHasCircuitSlot {
 
-    protected final static int CONFIG_SIZE = 16;
-
     protected ExportOnlyAEItemList aeItemHandler;
 
-    public MEInputBusPartMachine(BlockEntityCreationInfo info) {
-        super(info, IO.IN);
+    public static MEInputBusPartMachine create(BlockEntityCreationInfo info) {
+        return new MEInputBusPartMachine(info, GTValues.EV,
+                m -> new ExportOnlyAEItemList(m, 16));
+    }
+
+    public MEInputBusPartMachine(BlockEntityCreationInfo info, int tier,
+                                 Function<ItemBusPartMachine, ExportOnlyAEItemList> inventory) {
+        super(info, tier, IO.IN, inventory::apply);
+        this.aeItemHandler = inventory.apply(this);
     }
 
     /////////////////////////////////
@@ -50,12 +58,6 @@ public class MEInputBusPartMachine extends MEBusPartMachine
     @Override
     public void onMachineRemoved() {
         flushInventory();
-    }
-
-    @Override
-    protected NotifiableItemStackHandler createInventory() {
-        this.aeItemHandler = new ExportOnlyAEItemList(this, CONFIG_SIZE);
-        return this.aeItemHandler;
     }
 
     /////////////////////////////////
@@ -171,7 +173,8 @@ public class MEInputBusPartMachine extends MEBusPartMachine
         CompoundTag tag = new CompoundTag();
         CompoundTag configStacks = new CompoundTag();
         tag.put("ConfigStacks", configStacks);
-        for (int i = 0; i < CONFIG_SIZE; i++) {
+        int slots = getInventory().getSlots();
+        for (int i = 0; i < slots; i++) {
             var slot = this.aeItemHandler.getInventory()[i];
             GenericStack config = slot.getConfig();
             if (config == null) {
@@ -189,7 +192,8 @@ public class MEInputBusPartMachine extends MEBusPartMachine
     protected void readConfigFromTag(CompoundTag tag) {
         if (tag.contains("ConfigStacks")) {
             CompoundTag configStacks = tag.getCompound("ConfigStacks");
-            for (int i = 0; i < CONFIG_SIZE; i++) {
+            int slots = getInventory().getSlots();
+            for (int i = 0; i < slots; i++) {
                 String key = Integer.toString(i);
                 if (configStacks.contains(key)) {
                     CompoundTag configTag = configStacks.getCompound(key);

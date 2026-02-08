@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.part;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
@@ -7,6 +8,7 @@ import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.TankWidget;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
+import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -22,6 +24,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.FluidType;
 
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Function;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -40,10 +44,20 @@ public class DualHatchPartMachine extends ItemBusPartMachine {
     private boolean hasFluidHandler;
     private boolean hasItemHandler;
 
-    public DualHatchPartMachine(BlockEntityCreationInfo info, int tier, IO io) {
-        super(info, tier, io);
-        this.tank = new NotifiableFluidTank(this, (int) Math.sqrt(getInventorySize()),
-                getTankCapacity(INITIAL_TANK_CAPACITY, getTier()), io);
+    public static DualHatchPartMachine create(BlockEntityCreationInfo info, int tier, IO io) {
+        int inventorySize = getInventorySize(tier);
+        int tanks = (int) Math.sqrt(inventorySize);
+        int tankCapacity = getTankCapacity(INITIAL_TANK_CAPACITY, tier);
+        return new DualHatchPartMachine(info, tier, io,
+                m -> new NotifiableItemStackHandler(m, inventorySize, io),
+                m -> new NotifiableFluidTank(m, tanks, tankCapacity, io));
+    }
+
+    public DualHatchPartMachine(BlockEntityCreationInfo info, int tier, IO io,
+                                Function<ItemBusPartMachine, NotifiableItemStackHandler> inventory,
+                                Function<DualHatchPartMachine, NotifiableFluidTank> tank) {
+        super(info, tier, io, inventory);
+        this.tank = tank.apply(this);
     }
 
     ////////////////////////////////
@@ -51,12 +65,12 @@ public class DualHatchPartMachine extends ItemBusPartMachine {
     ////////////////////////////////
 
     public static int getTankCapacity(int initialCapacity, int tier) {
-        return initialCapacity * (1 << (tier - 6));
+        return initialCapacity * (1 << (tier - GTValues.LuV));
     }
 
-    @Override
-    public int getInventorySize() {
-        return (int) Math.pow((getTier() - 4), 2);
+    public static int getInventorySize(int tier) {
+        int sizeRoot = tier - GTValues.EV;
+        return sizeRoot * sizeRoot;
     }
 
     @Override
@@ -154,14 +168,15 @@ public class DualHatchPartMachine extends ItemBusPartMachine {
 
     @Override
     public Widget createUIWidget() {
-        int slots = getInventorySize();
-        int tanks = (int) Math.sqrt(slots);
+        int slots = getInventory().getSlots();
+        int gridSize = (int) Math.sqrt(slots);
+        int tanks = tank.getTanks();
         var group = new WidgetGroup(0, 0, 18 * (tanks + 1) + 16, 18 * tanks + 16);
         var container = new WidgetGroup(4, 4, 18 * (tanks + 1) + 8, 18 * tanks + 8);
 
         int index = 0;
-        for (int y = 0; y < tanks; y++) {
-            for (int x = 0; x < tanks; x++) {
+        for (int y = 0; y < gridSize; y++) {
+            for (int x = 0; x < gridSize; x++) {
                 container.addWidget(new SlotWidget(
                         getInventory().storage, index++, 4 + x * 18, 4 + y * 18, true, io.support(IO.IN))
                         .setBackgroundTexture(GuiTextures.SLOT)

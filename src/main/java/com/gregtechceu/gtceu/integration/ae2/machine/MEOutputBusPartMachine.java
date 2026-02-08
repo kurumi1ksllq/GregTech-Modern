@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.ae2.machine;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -8,6 +9,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.list.AEListGridWidget;
 import com.gregtechceu.gtceu.integration.ae2.utils.KeyStorage;
 
@@ -25,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -36,22 +39,24 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class MEOutputBusPartMachine extends MEBusPartMachine implements IMachineLife, IInteractedMachine {
 
     @SaveField
-    private KeyStorage internalBuffer; // Do not use KeyCounter, use our simple implementation
+    private final KeyStorage internalBuffer = new KeyStorage(); // Do not use KeyCounter, use our simple implementation
 
-    public MEOutputBusPartMachine(BlockEntityCreationInfo info) {
-        super(info, IO.OUT);
+    public static MEOutputBusPartMachine create(BlockEntityCreationInfo info) {
+        return new MEOutputBusPartMachine(info, GTValues.EV, m -> {
+            var machine = (MEOutputBusPartMachine) m;
+            return machine.new InaccessibleInfiniteHandler(m);
+        });
+    }
+
+    public MEOutputBusPartMachine(BlockEntityCreationInfo info, int tier,
+                                  Function<ItemBusPartMachine, NotifiableItemStackHandler> inventory) {
+        super(info, tier, IO.OUT, inventory);
+        internalBuffer.setOnContentsChanged(getInventory()::onContentsChanged);
     }
 
     /////////////////////////////////
     // ***** Machine LifeCycle ****//
     /////////////////////////////////
-
-    @Override
-    protected NotifiableItemStackHandler createInventory() {
-        this.internalBuffer = new KeyStorage();
-        return new InaccessibleInfiniteHandler(this);
-    }
-
     @Override
     public void onMachineRemoved() {
         var grid = getMainNode().getGrid();
@@ -106,7 +111,6 @@ public class MEOutputBusPartMachine extends MEBusPartMachine implements IMachine
 
         public InaccessibleInfiniteHandler(MetaMachine holder) {
             super(holder, 1, IO.OUT, IO.NONE, ItemStackHandlerDelegate::new);
-            internalBuffer.setOnContentsChanged(this::onContentsChanged);
         }
 
         @Override

@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.integration.ae2.machine;
 
-import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
+import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
@@ -17,6 +17,7 @@ import appeng.api.networking.security.IActionSource;
 import lombok.Getter;
 
 import java.util.EnumSet;
+import java.util.function.Function;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -34,10 +35,11 @@ public abstract class MEBusPartMachine extends ItemBusPartMachine implements IGr
 
     protected final IActionSource actionSource;
 
-    public MEBusPartMachine(BlockEntityCreationInfo info, IO io) {
-        super(info, GTValues.LuV, io);
+    protected MEBusPartMachine(BlockEntityCreationInfo info, int tier, IO io,
+                               Function<ItemBusPartMachine, NotifiableItemStackHandler> inventory) {
+        super(info, tier, io, inventory);
         this.nodeHolder = createNodeHolder();
-        this.actionSource = IActionSource.ofMachine(nodeHolder.getMainNode()::getNode);
+        this.actionSource = IActionSource.ofMachine(this.nodeHolder.getMainNode()::getNode);
     }
 
     public void setOnline(boolean online) {

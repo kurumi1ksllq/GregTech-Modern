@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.part;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.blockentity.IPaintable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -44,6 +45,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Function;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -63,7 +66,7 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     @Getter
     @SaveField
     @SyncToClient
-    protected boolean circuitSlotEnabled;
+    protected boolean circuitSlotEnabled = true;
     @Getter
     @SaveField
     protected final NotifiableItemStackHandler circuitInventory;
@@ -72,10 +75,16 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     @SyncToClient
     private boolean isDistinct = false;
 
-    public ItemBusPartMachine(BlockEntityCreationInfo info, int tier, IO io) {
+    public static ItemBusPartMachine create(BlockEntityCreationInfo info, int tier, IO io) {
+        int inventorySize = getInventorySize(tier);
+        return new ItemBusPartMachine(info, tier, io,
+                (m) -> new NotifiableItemStackHandler(m, inventorySize, io));
+    }
+
+    public ItemBusPartMachine(BlockEntityCreationInfo info, int tier, IO io,
+                              Function<ItemBusPartMachine, NotifiableItemStackHandler> inventory) {
         super(info, tier, io);
-        this.inventory = createInventory();
-        this.circuitSlotEnabled = true;
+        this.inventory = inventory.apply(this);
         this.circuitInventory = createCircuitItemHandler(io).shouldSearchContent(false);
     }
 
@@ -83,13 +92,9 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     // ***** Initialization ******//
     //////////////////////////////////////
 
-    protected int getInventorySize() {
-        int sizeRoot = 1 + Math.min(9, getTier());
+    public static int getInventorySize(int tier) {
+        int sizeRoot = 1 + Math.min(GTValues.UHV, tier);
         return sizeRoot * sizeRoot;
-    }
-
-    protected NotifiableItemStackHandler createInventory() {
-        return new NotifiableItemStackHandler(this, getInventorySize(), io);
     }
 
     protected NotifiableItemStackHandler createCircuitItemHandler(IO io) {
@@ -289,9 +294,10 @@ public class ItemBusPartMachine extends TieredIOPartMachine
 
     @Override
     public Widget createUIWidget() {
-        int rowSize = (int) Math.sqrt(getInventorySize());
+        int slots = inventory.getSlots();
+        int rowSize = (int) Math.sqrt(slots);
         int colSize = rowSize;
-        if (getInventorySize() == 8) {
+        if (slots == 8) {
             rowSize = 4;
             colSize = 2;
         }

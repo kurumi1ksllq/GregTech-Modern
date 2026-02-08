@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.ae2.machine;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
 import com.gregtechceu.gtceu.api.gui.fancy.TabsWidget;
@@ -7,10 +8,10 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.fancyconfigurator.AutoStockingFancyConfigurator;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
+import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.ae2.machine.feature.multiblock.IMEStockingPart;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemList;
@@ -41,6 +42,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -64,11 +66,18 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     private int ticksPerCycle = 40;
 
     @Setter
-    private Predicate<GenericStack> autoPullTest;
+    private Predicate<GenericStack> autoPullTest = $ -> false;
 
-    public MEStockingBusPartMachine(BlockEntityCreationInfo info) {
-        super(info);
-        this.autoPullTest = $ -> false;
+    public static MEStockingBusPartMachine create(BlockEntityCreationInfo info) {
+        return new MEStockingBusPartMachine(info, GTValues.LuV, m -> {
+            var machine = (MEStockingBusPartMachine) m;
+            return machine.new ExportOnlyAEStockingItemList(m, 16);
+        });
+    }
+
+    public MEStockingBusPartMachine(BlockEntityCreationInfo info, int tier,
+                                    Function<ItemBusPartMachine, ExportOnlyAEItemList> inventory) {
+        super(info, tier, inventory);
     }
 
     /////////////////////////////////
@@ -85,12 +94,6 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     public void removedFromController(IMultiController controller) {
         IMEStockingPart.super.removedFromController(controller);
         super.removedFromController(controller);
-    }
-
-    @Override
-    protected NotifiableItemStackHandler createInventory() {
-        this.aeItemHandler = new ExportOnlyAEStockingItemList(this, CONFIG_SIZE);
-        return this.aeItemHandler;
     }
 
     /////////////////////////////////
@@ -223,7 +226,7 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
             // Ensure that it is valid to configure with this stack
             if (autoPullTest != null && !autoPullTest.test(new GenericStack(itemKey, amount))) continue;
             if (amount >= minStackSize) {
-                if (topItems.size() < CONFIG_SIZE) {
+                if (topItems.size() < getInventory().getSlots()) {
                     topItems.offer(entry);
                 } else if (amount > topItems.peek().getLongValue()) {
                     topItems.poll();
@@ -233,9 +236,10 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
         }
 
         // Now, topItems is a PQ with CONFIG_SIZE highest amount items in the system.
+        int slots = getInventory().getSlots();
         int index;
         int itemAmount = topItems.size();
-        for (index = 0; index < CONFIG_SIZE; index++) {
+        for (index = 0; index < slots; index++) {
             if (topItems.isEmpty()) break;
             Object2LongMap.Entry<AEKey> entry = topItems.poll();
 

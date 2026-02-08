@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.part;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
@@ -7,6 +8,7 @@ import com.gregtechceu.gtceu.api.gui.UITemplate;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
+import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
@@ -19,19 +21,30 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Function;
+
 public class SteamItemBusPartMachine extends ItemBusPartMachine {
 
     private final String autoTooltipKey;
 
-    public SteamItemBusPartMachine(BlockEntityCreationInfo info, IO io) {
-        super(info, 1, io);
-        autoTooltipKey = io == IO.IN ? "gtceu.gui.item_auto_input.tooltip" : "gtceu.gui.item_auto_output.tooltip";
+    public static SteamItemBusPartMachine create(BlockEntityCreationInfo info, IO io) {
+        int tier = GTValues.LV;
+        int inventorySize = ItemBusPartMachine.getInventorySize(tier);
+        return new SteamItemBusPartMachine(info, tier, io,
+                m -> new NotifiableItemStackHandler(m, inventorySize, io));
+    }
+
+    public SteamItemBusPartMachine(BlockEntityCreationInfo info, int tier, IO io,
+                                   Function<ItemBusPartMachine, NotifiableItemStackHandler> inventory) {
+        super(info, tier, io, inventory);
+        this.autoTooltipKey = io == IO.IN ? "gtceu.gui.item_auto_input.tooltip" : "gtceu.gui.item_auto_output.tooltip";
     }
 
     @NotNull
     @Override
     public ModularUI createUI(@NotNull Player entityPlayer) {
-        int rowSize = (int) Math.sqrt(getInventorySize());
+        int slots = getInventory().getSlots();
+        int rowSize = (int) Math.sqrt(slots);
         int xOffset = rowSize == 10 ? 9 : 0;
         var modular = new ModularUI(176 + xOffset * 2,
                 18 + 18 * rowSize + 105, this, entityPlayer)

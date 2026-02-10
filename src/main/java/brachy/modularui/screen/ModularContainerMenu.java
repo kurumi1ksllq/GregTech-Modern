@@ -245,6 +245,11 @@ public class ModularContainerMenu extends AbstractContainerMenu {
     public void onSlotChanged(ModularSlot slot, ItemStack stack, boolean onlyAmountChanged) {}
 
     @Override
+    public boolean canDragTo(@NotNull Slot slot) {
+        return !(slot instanceof ModularSlot modularSlot) || modularSlot.canDragIntoSlot();
+    }
+
+    @Override
     public boolean stillValid(@NotNull Player playerIn) {
         return this.settings.canPlayerInteractWithUI(playerIn);
     }

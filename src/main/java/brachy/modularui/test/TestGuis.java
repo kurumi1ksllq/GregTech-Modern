@@ -447,7 +447,7 @@ public class TestGuis extends CustomModularScreen {
                                 .widthRel(1f)
                                 .children(ForgeRegistries.ITEMS, item -> {
                                     ItemStack stack = new ItemStack(item);
-                                    String text = stack.getDisplayName().getString();
+                                    String text = stack.getHoverName().getString();
                                     return Flow.row()
                                             .height(20).widthRel(1f)
                                             .padding(2)

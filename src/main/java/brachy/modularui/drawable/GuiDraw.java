@@ -1,7 +1,6 @@
 package brachy.modularui.drawable;
 
 import brachy.modularui.GTRenderTypes;
-import brachy.modularui.ModularUI;
 import brachy.modularui.client.GuiSpriteManager;
 import brachy.modularui.drawable.text.TextRenderer;
 import brachy.modularui.screen.RichTooltip;
@@ -268,7 +267,6 @@ public class GuiDraw {
             // REMOVE THE MULTIPLICATION IN 1.21!!!
             return new RectangleF(sprite.getU(u0 * 16), sprite.getV(v0 * 16), sprite.getU(u1 * 16), sprite.getV(v1 * 16));
         } else {
-            ModularUI.LOGGER.warn("Could not find texture {} in GUI atlas", location);
             RenderSystem.setShaderTexture(0, location);
             return new RectangleF(u0, v0, u1, v1);
         }

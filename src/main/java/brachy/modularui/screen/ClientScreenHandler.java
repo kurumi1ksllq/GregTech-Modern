@@ -85,9 +85,10 @@ public class ClientScreenHandler {
         onGuiChanged(event.getCurrentScreen(), event.getNewScreen());
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onOpenScreen(ScreenEvent.Closing event) {
-        onGuiChanged(event.getScreen(), null);
+    public static void onCloseScreens(Screen closing) {
+        // called when the next screen is null, so that the player returns to the world
+        // we cant use ScreenEvent.Closing since that's also called when transitioning screens
+        onGuiChanged(closing, null);
     }
 
     @SubscribeEvent

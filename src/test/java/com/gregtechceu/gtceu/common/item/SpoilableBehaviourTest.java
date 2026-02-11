@@ -56,14 +56,14 @@ public class SpoilableBehaviourTest {
         LCR_RECIPE_TYPE = TestUtils.createRecipeType("spoilage_lcr_tests", GTRecipeTypes.LARGE_CHEMICAL_RECIPES);
         LCR_RECIPE_TYPE.getAdditionHandler().beginStaging();
         LCR_RECIPE_TYPE.getAdditionHandler().addStaging(LCR_RECIPE_TYPE
-                .recipeBuilder(GTCEu.id("test_overclock_logic"))
+                .recipeBuilder(GTCEu.id("test_spoilage_transfers"))
                 .inputItems(new ItemStack(Items.JIGSAW))
                 .outputItems(new ItemStack(Items.STRUCTURE_BLOCK))
                 .EUt(GTValues.V[GTValues.HV])
                 .duration(20)
                 .buildRawRecipe());
         LCR_RECIPE_TYPE.getAdditionHandler().addStaging(LCR_RECIPE_TYPE
-                .recipeBuilder(GTCEu.id("test_overclock_logic"))
+                .recipeBuilder(GTCEu.id("test_spoilage_doesnt_transfer"))
                 .inputItems(new ItemStack(Items.APPLE))
                 .outputItems(new ItemStack(Items.STRUCTURE_BLOCK))
                 .EUt(GTValues.V[GTValues.HV])

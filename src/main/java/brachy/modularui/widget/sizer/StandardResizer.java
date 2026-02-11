@@ -1,6 +1,7 @@
 package brachy.modularui.widget.sizer;
 
 import brachy.modularui.GuiError;
+import brachy.modularui.ModularUI;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.api.layout.ILayoutWidget;
 import brachy.modularui.api.layout.IResizeable;
@@ -10,6 +11,8 @@ import brachy.modularui.api.widget.IVanillaSlot;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.core.mixins.client.SlotAccessor;
 import brachy.modularui.utils.Alignment;
+
+import brachy.modularui.widgets.layout.IExpander;
 
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
@@ -57,6 +60,9 @@ public class StandardResizer extends WidgetResizeNode implements IPositioned<Sta
         this.childrenResized = false;
         this.layoutResized = false;
         super.initResizing(onOpen);
+        if (onOpen) {
+            detectConflictingConfiguration();
+        }
     }
 
     @Override
@@ -68,6 +74,15 @@ public class StandardResizer extends WidgetResizeNode implements IPositioned<Sta
     public void resetPosition() {
         this.x.resetPosition();
         this.y.resetPosition();
+    }
+
+    public void detectConflictingConfiguration() {
+        if (!ModularUI.isDev()) return;
+        if (this.expanded && !(getParent() instanceof IExpander)) {
+            ModularUI.LOGGER.warn("Resizer '{}' has expanded() but the parent is not a Flow!", this);
+        }
+        this.x.detectConflictingConfiguration();
+        this.y.detectConflictingConfiguration();
     }
 
     @Override

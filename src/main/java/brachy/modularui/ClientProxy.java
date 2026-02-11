@@ -10,6 +10,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import lombok.Getter;
 
+import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
+
 public class ClientProxy extends CommonProxy {
 
     @Getter
@@ -19,10 +21,16 @@ public class ClientProxy extends CommonProxy {
         if (!ModularUI.isDataGen()) {
             CursorHandler.init();
             AnimatorManager.init();
+            DrawableSerialization.init();
+        }
+    }
+
+    @Override
+    public void preInit(FMLConstructModEvent event) {
+        super.preInit(event);
+        if (!ModularUI.isDataGen()) {
             // enable stencil bits, must call on render thread
             RenderSystem.recordRenderCall(() -> Minecraft.getInstance().getMainRenderTarget().enableStencil());
-
-            DrawableSerialization.init();
         }
     }
 }

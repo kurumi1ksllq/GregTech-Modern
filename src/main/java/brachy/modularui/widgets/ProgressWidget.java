@@ -16,6 +16,7 @@ import brachy.modularui.widget.Widget;
 import net.minecraft.util.Mth;
 
 import lombok.experimental.Accessors;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.DoubleSupplier;
@@ -174,10 +175,6 @@ public class ProgressWidget extends Widget<ProgressWidget> {
     public ProgressWidget value(IDoubleValue<?> value) {
         setSyncOrValue(ISyncOrValue.orEmpty(value));
         return this;
-    }
-
-    public ProgressWidget progress(DoubleSupplier progress) {
-        return value(new DoubleValue.Dynamic(progress, null));
     }
 
     public ProgressWidget progress(double progress) {

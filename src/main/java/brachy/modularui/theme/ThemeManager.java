@@ -51,7 +51,9 @@ public class ThemeManager extends SimplePreparableReloadListener<Map<String, Lis
     public ThemeManager() {}
 
     public static void reload() {
-        // wtf is this hackery??
+        // hackery to reload themes on this thread
+        // usually resources are loaded off-thread to not block the main thread
+        // but this should be fine since it is currently not expected to take longer than a second
         ThemeManager themeManager = new ThemeManager();
         ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
         ProfilerFiller profiler = Minecraft.getInstance().getProfiler();

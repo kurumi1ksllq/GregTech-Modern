@@ -41,7 +41,6 @@ import brachy.modularui.widgets.ListWidget;
 import brachy.modularui.widgets.RichTextWidget;
 import brachy.modularui.widgets.SchemaWidget;
 import brachy.modularui.widgets.ScrollingTextWidget;
-import brachy.modularui.widgets.TextWidget;
 import brachy.modularui.widgets.ToggleButton;
 import brachy.modularui.widgets.TransformWidget;
 import brachy.modularui.widgets.layout.Column;
@@ -72,7 +71,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
@@ -175,7 +173,7 @@ public class TestGuis extends CustomModularScreen {
             @Override
             public void onInit() {
                 super.onInit();
-                getScreen().useTheme(ClientTestEventHandler.TEST_THEME);
+                getScreen().useTheme(TestHandler.TEST_THEME);
             }
         }.height(100)
                 .coverChildrenWidth()

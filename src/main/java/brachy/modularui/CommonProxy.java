@@ -5,7 +5,8 @@ import brachy.modularui.factory.UIFactories;
 import brachy.modularui.factory.inventory.InventoryTypes;
 import brachy.modularui.network.NetworkHandler;
 import brachy.modularui.screen.ModularContainerMenu;
-import brachy.modularui.test.ModularUITestingRegistration;
+import brachy.modularui.test.TestHandler;
+import brachy.modularui.test.TestRegistration;
 import brachy.modularui.theme.ThemeManager;
 
 import net.minecraft.commands.Commands;
@@ -18,6 +19,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class CommonProxy {
@@ -38,9 +40,11 @@ public class CommonProxy {
         NetworkHandler.init();
         ModularUIMenuTypes.register(modBus);
         if (ModularUI.isDev()) {
-            ModularUITestingRegistration.register(modBus);
+            TestRegistration.register(modBus);
         }
     }
+
+    public void preInit(FMLConstructModEvent event) {}
 
     public void onTick(TickEvent.PlayerTickEvent event) {
         if (event.player.containerMenu instanceof ModularContainerMenu containerMenu) {

@@ -3,11 +3,14 @@ package brachy.modularui.widgets;
 import brachy.modularui.api.ITheme;
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.value.IBoolValue;
+import brachy.modularui.api.value.IIntValue;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.theme.SelectableTheme;
 import brachy.modularui.theme.WidgetTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
+
+import brachy.modularui.value.BoolValue;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -48,6 +51,10 @@ public class ToggleButton extends AbstractCycleButtonWidget<ToggleButton> {
 
     public ToggleButton value(IBoolValue<?> boolValue) {
         return super.value(boolValue);
+    }
+
+    public ToggleButton valueWrapped(IIntValue<?> intValue, int trueValue) {
+        return value(new BoolValue.Dynamic(() -> intValue.getIntValue() == trueValue, v -> intValue.setIntValue(trueValue)));
     }
 
     public ToggleButton selectedBackground(IDrawable... selectedBackground) {

@@ -25,15 +25,14 @@ import brachy.modularui.utils.Color;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import org.jetbrains.annotations.NotNull;
 
-@Mod.EventBusSubscriber(modid = ModularUI.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class ClientTestEventHandler {
+@Mod.EventBusSubscriber(modid = ModularUI.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+public class TestHandler {
 
     public static boolean enabledRichTooltipEventTest = false;
     public static final String TEST_THEME = "mui:test_theme";
@@ -63,12 +62,7 @@ public class ClientTestEventHandler {
             ItemStack itemStack = event.getItemStack();
             if (itemStack.getItem() == Items.DIAMOND) {
                 ClientGUI.open(new TestGuis());
-            } /*else if (itemStack.getItem() == Items.EMERALD) {
-                HoloUI.builder()
-                        .inFrontOf(MCHelper.getPlayer(), 5, false)
-                        .screenScale(0.5f)
-                        .open(new TestGui());
-            }*/
+            }
         }
     }
 

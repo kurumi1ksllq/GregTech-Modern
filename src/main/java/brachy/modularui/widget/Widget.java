@@ -653,6 +653,8 @@ public class Widget<W extends Widget<W>> extends AbstractWidget implements IPosi
     protected void setSyncOrValue(@NotNull ISyncOrValue syncOrValue) {
         if (!syncOrValue.isSyncHandler() && !syncOrValue.isValueHandler()) return;
         checkValidSyncOrValue(syncOrValue);
+        if (syncOrValue instanceof SyncHandler syncHandler) this.syncHandler = syncHandler;
+        if (syncOrValue instanceof IValue<?> value) this.value = value;
     }
 
     // -------------

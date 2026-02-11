@@ -314,6 +314,11 @@ public interface IPositioned<W extends IPositioned<W>> {
         return getThis();
     }
 
+    default W heightRelOffset(float val, int offset) {
+        resizer().height(val, offset, Unit.Measure.RELATIVE);
+        return getThis();
+    }
+
     default W heightRelOffset(DoubleSupplier val, int offset) {
         resizer().height(val, offset, Unit.Measure.RELATIVE);
         return getThis();

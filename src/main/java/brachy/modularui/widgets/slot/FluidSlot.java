@@ -11,6 +11,7 @@ import brachy.modularui.screen.RichTooltip;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.SlotTheme;
 import brachy.modularui.theme.WidgetThemeEntry;
+import brachy.modularui.utils.IMultiFluidTankHandler;
 import brachy.modularui.utils.MouseData;
 import brachy.modularui.value.sync.FluidSlotSyncHandler;
 import brachy.modularui.widgets.AbstractFluidDisplayWidget;
@@ -245,9 +246,21 @@ public class FluidSlot extends AbstractFluidDisplayWidget<FluidSlot>
         return syncHandler(new FluidSlotSyncHandler(fluidTank));
     }
 
+    public FluidSlot syncHandler(IMultiFluidTankHandler fluidTank, int index) {
+        return syncHandler(fluidTank.getFluidTank(index));
+    }
+
     public FluidSlot syncHandler(FluidSlotSyncHandler syncHandler) {
         setSyncOrValue(ISyncOrValue.orEmpty(syncHandler));
         return this;
+    }
+
+    public FluidSlot tank(IFluidTank fluidTank) {
+        return syncHandler(fluidTank);
+    }
+
+    public FluidSlot tank(IMultiFluidTankHandler fluidTank, int index) {
+        return syncHandler(fluidTank, index);
     }
 
     /* === Jei ghost slot === */

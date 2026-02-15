@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.placeholder;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.client.renderer.monitor.IMonitorRenderer;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.CentralMonitorMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.monitor.MonitorGroup;

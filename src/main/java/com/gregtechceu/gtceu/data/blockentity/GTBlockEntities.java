@@ -4,9 +4,10 @@ import com.gregtechceu.gtceu.common.blockentity.*;
 import com.gregtechceu.gtceu.data.block.GTBlocks;
 import com.gregtechceu.gtceu.data.block.GTMaterialBlocks;
 
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 import com.tterrag.registrate.util.entry.BlockEntry;
-import net.minecraft.world.level.block.entity.SignBlockEntity;
 
 import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 

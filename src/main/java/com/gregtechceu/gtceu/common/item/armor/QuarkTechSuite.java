@@ -206,9 +206,10 @@ public class QuarkTechSuite extends ArmorLogicSuite implements IStepAssist {
 
             if (data.boostedJumpTimer() == 0 && SyncedKeyMappings.STEP_ASSIST_ENABLE.isKeyDown(player)) {
                 data.stepAssist(!data.stepAssist());
-                data.boostedJumpTimer((byte)5);
+                data.boostedJumpTimer((byte) 5);
                 if (level.isClientSide()) player.displayClientMessage(Component
-                        .translatable("metaarmor.qts.step_assist." + (data.stepAssist() ? "enabled" : "disabled")), true);
+                        .translatable("metaarmor.qts.step_assist." + (data.stepAssist() ? "enabled" : "disabled")),
+                        true);
             }
 
             data.boostedJump(boostedJump);

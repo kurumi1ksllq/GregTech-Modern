@@ -66,7 +66,8 @@ public class TextModuleBehaviour implements IMonitorModuleItem, IAddInformation 
     @Override
     public IMonitorRenderer getRenderer(ItemStack stack) {
         return new MonitorTextRenderer(
-                (MultiLineComponent)stack.getOrDefault(GTDataComponents.TEXT_MODULE_TEXT, List.<MultiLineComponent>of()),
+                (MultiLineComponent) stack.getOrDefault(GTDataComponents.TEXT_MODULE_TEXT,
+                        List.<MultiLineComponent>of()),
                 Math.max(stack.getOrDefault(GTDataComponents.TEXT_MODULE_SCALE, 1.0).doubleValue(), .0001));
     }
 

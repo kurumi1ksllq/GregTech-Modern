@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.api.recipe;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
@@ -26,12 +25,12 @@ import static com.gregtechceu.gtceu.gametest.util.TestUtils.getMetaMachine;
 @GameTestHolder(GTCEu.MOD_ID)
 public class InputSeparationTest {
 
-
     static GTRecipeType LCR_RECIPE_TYPE;
 
     @BeforeBatch(batch = "InputSeparation")
     public static void prepare(ServerLevel level) {
-        LCR_RECIPE_TYPE = TestUtils.createRecipeType("input_separation_logic_lcr_tests", GTRecipeTypes.LARGE_CHEMICAL_RECIPES);
+        LCR_RECIPE_TYPE = TestUtils.createRecipeType("input_separation_logic_lcr_tests",
+                GTRecipeTypes.LARGE_CHEMICAL_RECIPES);
         LCR_RECIPE_TYPE.getAdditionHandler().beginStaging();
         LCR_RECIPE_TYPE.getAdditionHandler().addStaging(LCR_RECIPE_TYPE
                 .recipeBuilder(GTCEu.id("test_multiblock_input_separation"))

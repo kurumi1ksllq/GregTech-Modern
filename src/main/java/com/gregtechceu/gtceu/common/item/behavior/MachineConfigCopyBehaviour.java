@@ -95,7 +95,8 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
                 configTag.merge(gatherPipeConfig(pipeBE));
 
                 ListTag itemsTag = new ListTag();
-                pipeBE.getItemsRequiredToPaste().forEach(v -> itemsTag.add(v.save(context.getLevel().registryAccess())));
+                pipeBE.getItemsRequiredToPaste()
+                        .forEach(v -> itemsTag.add(v.save(context.getLevel().registryAccess())));
                 configTag.put(ITEMS_TO_PASTE, itemsTag);
             } else {
                 stack.remove(GTDataComponents.DATA_COPY_TAG);
@@ -108,7 +109,8 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
         } else {
             List<ItemStack> items = new ArrayList<>();
             configTag.getList("itemsToPaste", CompoundTag.TAG_COMPOUND).forEach(t -> {
-                if (t instanceof CompoundTag c) items.add(ItemStack.parse(context.getLevel().registryAccess(), c).orElse(ItemStack.EMPTY));
+                if (t instanceof CompoundTag c)
+                    items.add(ItemStack.parse(context.getLevel().registryAccess(), c).orElse(ItemStack.EMPTY));
             });
 
             if (!player.isCreative() && !GTTransferUtils.extractItemsFromPlayerInv(player, items, true)) {
@@ -251,7 +253,6 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
     }
 
     private static void addConfigTooltips(List<Component> tooltip, CompoundTag tag, Item.TooltipContext context) {
-
         if (context.level() == null) return;
 
         tooltip.add(Component.translatable("behaviour.memory_card.copy_target", tag.getString(COPY_SOURCE)));
@@ -307,7 +308,8 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
         if (tag.contains("itemsToPaste")) {
             List<ItemStack> items = new ArrayList<>();
             tag.getList("itemsToPaste", CompoundTag.TAG_COMPOUND).forEach(t -> {
-                if (t instanceof CompoundTag c) items.add(ItemStack.parse(context.level().registryAccess(), c).orElse(ItemStack.EMPTY));
+                if (t instanceof CompoundTag c)
+                    items.add(ItemStack.parse(context.level().registryAccess(), c).orElse(ItemStack.EMPTY));
             });
 
             if (items.isEmpty()) return;
@@ -323,7 +325,8 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents,
+                                TooltipFlag isAdvanced) {
         tooltipComponents.add(Component.translatable("behaviour.memory_card.tooltip.copy"));
         tooltipComponents.add(Component.translatable("behaviour.memory_card.tooltip.paste"));
         CustomData data = stack.get(GTDataComponents.DATA_COPY_TAG);
@@ -334,6 +337,5 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
         } else {
             tooltipComponents.add(Component.translatable("behaviour.memory_card.tooltip.view_stored"));
         }
-
     }
 }

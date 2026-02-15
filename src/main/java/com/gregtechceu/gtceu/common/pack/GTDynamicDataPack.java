@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.common.pack;
 
-import com.google.gson.JsonObject;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.addon.AddonFinder;
 import com.gregtechceu.gtceu.config.ConfigHolder;
@@ -28,6 +27,7 @@ import net.neoforged.neoforge.registries.datamaps.DataMapType;
 
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;

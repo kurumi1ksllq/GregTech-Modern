@@ -156,7 +156,8 @@ public class ItemFilterCover extends CoverBehavior implements IUICover {
     public void pasteConfig(ServerPlayer player, CompoundTag tag) {
         setAllowFlow(ManualIOMode.values()[tag.getInt("manualIO")]);
         setFilterMode(FilterMode.values()[tag.getInt("filterMode")]);
-        itemFilter = ItemFilter.loadFilter(ItemStack.parse(coverHolder.getLevel().registryAccess(), tag.getCompound("filter")).orElse(ItemStack.EMPTY));
+        itemFilter = ItemFilter.loadFilter(ItemStack
+                .parse(coverHolder.getLevel().registryAccess(), tag.getCompound("filter")).orElse(ItemStack.EMPTY));
         super.pasteConfig(player, tag);
     }
 }

@@ -83,13 +83,15 @@ public class BatteryStorageInfoProvider implements IBlockComponentProvider, ISer
             if (blockEntity.getMetaMachine() instanceof ChargerMachine machine) {
                 CompoundTag tag = new CompoundTag();
                 tag.put("energy", getEnergyData(machine.energyContainer));
-                tag.put("storage", machine.getChargerInventory().serializeNBT(blockAccessor.getLevel().registryAccess()));
+                tag.put("storage",
+                        machine.getChargerInventory().serializeNBT(blockAccessor.getLevel().registryAccess()));
                 compoundTag.put("batteries", tag);
             } else if (blockEntity.getMetaMachine() instanceof BatteryBufferMachine machine) {
                 CompoundTag tag = new CompoundTag();
                 IEnergyContainer container = machine.energyContainer;
                 tag.put("energy", getEnergyData(machine.energyContainer));
-                tag.put("storage", machine.getBatteryInventory().serializeNBT(blockAccessor.getLevel().registryAccess()));
+                tag.put("storage",
+                        machine.getBatteryInventory().serializeNBT(blockAccessor.getLevel().registryAccess()));
                 compoundTag.put("batteries", tag);
             }
         }

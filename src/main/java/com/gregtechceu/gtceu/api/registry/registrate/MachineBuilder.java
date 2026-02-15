@@ -28,8 +28,6 @@ import com.gregtechceu.gtceu.data.datagen.model.builder.MachineModelBuilder;
 import com.gregtechceu.gtceu.data.recipe.GTRecipeModifiers;
 import com.gregtechceu.gtceu.data.recipe.GTRecipeTypes;
 
-import dev.latvian.mods.kubejs.registry.BuilderBase;
-import lombok.Setter;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
@@ -59,11 +57,13 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
 import com.tterrag.registrate.util.nullness.NonNullUnaryOperator;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
 import org.apache.commons.lang3.ArrayUtils;
@@ -801,7 +801,6 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
         }
     }
     // spotless:on
-
 
     @Override
     public DEFINITION createObject() {

@@ -30,7 +30,6 @@ import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTStringUtils;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
-import com.tterrag.registrate.util.RegistrateDistExecutor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
@@ -53,6 +52,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 
+import com.tterrag.registrate.util.RegistrateDistExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -890,7 +890,7 @@ public class GTPlaceholders {
                 return MultiLineComponent.empty().addGraphics(new GraphicsComponent(
                         x, y, x, y,
                         "module",
-                        (CompoundTag)stack.save(ctx.level().registryAccess())));
+                        (CompoundTag) stack.save(ctx.level().registryAccess())));
             }
         });
         PlaceholderHandler.addPlaceholder(new Placeholder("setImage") {

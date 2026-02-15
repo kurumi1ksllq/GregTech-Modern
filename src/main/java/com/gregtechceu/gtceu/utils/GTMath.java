@@ -1,13 +1,11 @@
 package com.gregtechceu.gtceu.utils;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.core.Direction;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
@@ -110,7 +108,7 @@ public class GTMath {
         return min;
     }
 
-    public static float max(float @NotNull ... values) {
+    public static float max(float @NotNull... values) {
         // noinspection ConstantValue
         if (values == null || values.length == 0) throw new IllegalArgumentException();
         if (values.length == 1) return values[0];

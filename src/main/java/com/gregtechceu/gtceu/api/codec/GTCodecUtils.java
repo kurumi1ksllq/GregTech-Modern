@@ -2,14 +2,14 @@ package com.gregtechceu.gtceu.api.codec;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.utils.memoization.GTMemoizer;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.MapCodec;
 
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
 
 import java.util.function.Function;
 import java.util.function.Supplier;

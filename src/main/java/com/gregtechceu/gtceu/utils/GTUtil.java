@@ -57,8 +57,8 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.gregtechceu.gtceu.utils.FormattingUtil.DECIMAL_FORMAT_SIC_2F;
 import static com.gregtechceu.gtceu.api.material.material.properties.PropertyKey.HAZARD;
+import static com.gregtechceu.gtceu.utils.FormattingUtil.DECIMAL_FORMAT_SIC_2F;
 
 public class GTUtil {
 

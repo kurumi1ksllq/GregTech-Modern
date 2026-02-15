@@ -3,8 +3,8 @@ package com.gregtechceu.gtceu.client.model.pipe;
 import com.gregtechceu.gtceu.api.block.PipeBlock;
 import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
-
 import com.gregtechceu.gtceu.data.datagen.model.builder.PipeModelBuilder;
+
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;

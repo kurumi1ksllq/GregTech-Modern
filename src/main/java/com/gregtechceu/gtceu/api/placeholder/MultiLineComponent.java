@@ -1,8 +1,5 @@
 package com.gregtechceu.gtceu.api.placeholder;
 
-import com.mojang.serialization.Codec;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -11,7 +8,10 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.*;
 
+import com.mojang.serialization.Codec;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;

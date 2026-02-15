@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.api.recipe.lookup;
 
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
-
 import com.gregtechceu.gtceu.api.recipe.kind.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.AbstractMapIngredient;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.BitSet;

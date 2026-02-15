@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.client.renderer.block;
 
 import com.gregtechceu.gtceu.api.item.LampBlockItem;
-
 import com.gregtechceu.gtceu.common.block.LampBlock;
 import com.gregtechceu.gtceu.data.item.GTDataComponents;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;

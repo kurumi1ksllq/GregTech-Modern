@@ -15,8 +15,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.mariuszgromada.math.mxparser.Constant;
 import org.mariuszgromada.math.mxparser.Expression;
@@ -181,7 +179,6 @@ public class GTMath {
         return count <= 0 ? 1 : (int) Math.ceil(x);
     }
 
-
     public static float min(float @NotNull... values) {
         // noinspection ConstantValue
         if (values == null || values.length == 0) throw new IllegalArgumentException();
@@ -223,7 +220,6 @@ public class GTMath {
         }
         return max;
     }
-
 
     public static int max(int @NotNull... values) {
         // noinspection ConstantValue

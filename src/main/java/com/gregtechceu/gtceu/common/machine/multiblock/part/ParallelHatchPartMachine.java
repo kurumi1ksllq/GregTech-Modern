@@ -27,7 +27,7 @@ import net.minecraft.util.Mth;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-public class ParallelHatchPartMachine extends TieredPartMachine implements IMuiMachine, IParallelHatch {
+public class ParallelHatchPartMachine extends TieredPartMachine implements IMuiMachine {
 
     private static final int MIN_PARALLEL = 1;
 

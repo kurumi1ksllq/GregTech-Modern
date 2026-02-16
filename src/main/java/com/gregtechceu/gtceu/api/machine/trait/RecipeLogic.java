@@ -93,7 +93,6 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
     @Nullable
     @SaveField
     @SyncToClient
-    @Getter
     private Component waitingReason = null;
 
     @Getter

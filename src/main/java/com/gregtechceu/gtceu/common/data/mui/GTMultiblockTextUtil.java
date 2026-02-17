@@ -34,6 +34,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class GTMultiblockTextUtil {
 
@@ -101,6 +102,24 @@ public class GTMultiblockTextUtil {
             float max = (float) maxProgress.getDoubleValue() / 20.f;
             return Component.translatable("gtceu.multiblock.progress",
                     String.format("%.2f", current), String.format("%.2f", max), progress);
+        })
+                .color(Color.WHITE.main)
+                .asWidget()
+                .setEnabledIf(widget -> isFormed.getBoolValue() && isActive.getBoolValue());
+    }
+
+    public static TextWidget<?> addProgressLinePercentOnly(WorkableMultiblockMachine rlMachine,
+                                                           PanelSyncManager syncManager) {
+        BooleanSyncValue isFormed = syncManager.getOrCreateSyncHandler("isFormed", BooleanSyncValue.class,
+                () -> new BooleanSyncValue(rlMachine::isFormed));
+        BooleanSyncValue isActive = syncManager.getOrCreateSyncHandler("isActive", BooleanSyncValue.class,
+                () -> new BooleanSyncValue(() -> rlMachine.getRecipeLogic().isActive()));
+        DoubleSyncValue progressPercent = syncManager.getOrCreateSyncHandler("progressPercent", DoubleSyncValue.class,
+                () -> new DoubleSyncValue(() -> rlMachine.getRecipeLogic().getProgressPercent()));
+
+        return IKey.dynamic(() -> {
+            int currentProgress = (int) (progressPercent.getDoubleValue() * 100);
+            return Component.translatable("gtceu.multiblock.progress_percent", currentProgress);
         })
                 .color(Color.WHITE.main)
                 .asWidget()
@@ -220,6 +239,41 @@ public class GTMultiblockTextUtil {
                 .color(Color.WHITE.main)
                 .asWidget()
                 .setEnabledIf((w) -> hasSteamHandler.getBoolValue());
+    }
+
+    public static TextWidget<?> addWorkingStatusLine(WorkableMultiblockMachine rlMachine,
+                                                     PanelSyncManager syncManager) {
+        return addWorkingStatusLine(rlMachine, syncManager,
+                () -> Component.translatable("gtceu.multiblock.work_paused").withStyle(ChatFormatting.GOLD),
+                () -> Component.translatable("gtceu.multiblock.running").withStyle(ChatFormatting.GREEN),
+                () -> Component.translatable("gtceu.multiblock.idling").withStyle(ChatFormatting.GRAY));
+    }
+
+    public static TextWidget<?> addWorkingStatusLine(WorkableMultiblockMachine rlMachine, PanelSyncManager syncManager,
+                                                     Supplier<Component> workPaused,
+                                                     Supplier<Component> runningPerfectly,
+                                                     Supplier<Component> idling) {
+        BooleanSyncValue isFormed = syncManager.getOrCreateSyncHandler("isFormed", BooleanSyncValue.class,
+                () -> new BooleanSyncValue(rlMachine::isFormed));
+        BooleanSyncValue isActive = syncManager.getOrCreateSyncHandler("isActive", BooleanSyncValue.class,
+                () -> new BooleanSyncValue(() -> rlMachine.getRecipeLogic().isActive()));
+        BooleanSyncValue isWorkingEnabled = syncManager.getOrCreateSyncHandler("isWorkingEnabled",
+                BooleanSyncValue.class,
+                () -> new BooleanSyncValue(() -> rlMachine.getRecipeLogic().isWorkingEnabled()));
+
+        return IKey
+                .dynamic(() -> {
+                    if (!isFormed.getBoolValue()) return Component.empty();
+                    if (!isWorkingEnabled.getBoolValue()) {
+                        return workPaused.get();
+                    }
+                    if (isActive.getBoolValue()) {
+                        return runningPerfectly.get();
+                    }
+                    return idling.get();
+                })
+                .asWidget()
+                .setEnabledIf((w) -> isFormed.getBoolValue());
     }
 
     public static DynamicSyncedWidget<?> addOutputLines(WorkableMultiblockMachine rlmachine,

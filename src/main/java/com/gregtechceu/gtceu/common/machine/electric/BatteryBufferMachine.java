@@ -192,7 +192,7 @@ public class BatteryBufferMachine extends TieredEnergyMachine
     @Override
     public void onMachineDestroyed() {
         super.onMachineDestroyed();
-        clearInventory(batteryInventory);
+        batteryInventory.dropInventoryInWorld(getLevel(), getBlockPos());
     }
 
     @Override
@@ -289,7 +289,7 @@ public class BatteryBufferMachine extends TieredEnergyMachine
 
             if (side == null || inputsEnergy(side)) {
                 if (voltage > getInputVoltage()) {
-                    machine.doExplosion(GTUtil.getExplosionPower(voltage));
+                    GTUtil.doExplosion(getLevel(), getBlockPos(), GTUtil.getExplosionPower(voltage));
                     return usedAmps;
                 }
 

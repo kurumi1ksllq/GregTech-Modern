@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.common.blockentity;
 
-import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.capability.IDataAccessHatch;
 import com.gregtechceu.gtceu.api.capability.IOpticalComputationProvider;
@@ -8,8 +7,12 @@ import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.common.pipelike.optical.*;
 import com.gregtechceu.gtceu.utils.GTUtil;
+import com.gregtechceu.gtceu.utils.TaskHandler;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,6 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +39,12 @@ public class OpticalPipeBlockEntity extends PipeBlockEntity<OpticalPipeType, Opt
     private final IOpticalComputationProvider clientComputationHandler = new DefaultComputationHandler();
     private WeakReference<OpticalPipeNet> currentPipeNet = new WeakReference<>(null);
     private OpticalNetHandler defaultHandler;
+
+    @Getter
+    @SaveField
+    @SyncToClient
+    @RerenderOnChanged
+    private boolean isActive;
 
     public OpticalPipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
@@ -142,11 +152,22 @@ public class OpticalPipeBlockEntity extends PipeBlockEntity<OpticalPipeType, Opt
      * @param duration how long the pipe should be active for
      */
     public void setActive(boolean active, int duration) {
-        LaserPipeBlockEntity.setPipeActive(this, this.getBlockState(), active, duration);
-    }
+        boolean stateChanged = false;
+        if (this.isActive && !active) {
+            this.isActive = false;
+            syncDataHolder.markClientSyncFieldDirty("isActive");
+            stateChanged = true;
+        } else if (!this.isActive && active) {
+            this.isActive = true;
+            syncDataHolder.markClientSyncFieldDirty("isActive");
+            stateChanged = true;
+            TaskHandler.enqueueServerTask((ServerLevel) getLevel(), () -> setActive(false, -1), duration);
+        }
 
-    public boolean isActive() {
-        return this.getBlockState().getValue(GTBlockStateProperties.ACTIVE);
+        if (stateChanged) {
+            notifyBlockUpdate();
+            setChanged();
+        }
     }
 
     @Override

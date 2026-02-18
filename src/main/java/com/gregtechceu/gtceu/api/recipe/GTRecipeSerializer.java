@@ -131,7 +131,6 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
         if (data == null) {
             data = new CompoundTag();
         }
-        int groupColor = buf.readInt();
         ResourceLocation categoryLoc = buf.readResourceLocation();
 
         GTRecipeType type = (GTRecipeType) BuiltInRegistries.RECIPE_TYPE.get(recipeType);
@@ -141,8 +140,8 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
 
         GTRecipe recipe = new GTRecipe(type, id,
                 inputs, outputs, tickInputs, tickOutputs,
-                inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                conditions, ingredientActions, data, duration, category, groupColor, keepSpoilingProgress);
+                inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics, new HashMap<>(),
+                conditions, ingredientActions, data, duration, category, keepSpoilingProgress);
 
         recipe.recipeCategory.addRecipe(recipe);
 
@@ -185,7 +184,6 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
             KJSCallWrapper.writeIngredientActions(recipe.ingredientActions, buf);
         }
         buf.writeNbt(recipe.data);
-        buf.writeInt(recipe.groupColor);
         buf.writeResourceLocation(recipe.recipeCategory.registryKey);
     }
 
@@ -211,14 +209,14 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
                             CompoundTag.CODEC.optionalFieldOf("data", new CompoundTag()).forGetter(val -> val.data),
                             ExtraCodecs.NON_NEGATIVE_INT.fieldOf("duration").forGetter(val -> val.duration),
                             GTRegistries.RECIPE_CATEGORIES.codec().optionalFieldOf("category", GTRecipeCategory.DEFAULT).forGetter(val -> val.recipeCategory),
-                            Codec.INT.fieldOf("groupColor").forGetter(val -> val.groupColor))
+                            Codec.BOOL.optionalFieldOf("keepSpoilingProgress", true).forGetter(val -> val.transferSpoilingProgress))
                     .apply(instance, (type,
                                       inputs, outputs, tickInputs, tickOutputs,
                                       inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                                      conditions, data, duration, recipeCategory, groupColor) ->
+                                      consumedInputs, conditions, data, duration, recipeCategory, keepSpoilingProgress) ->
                             new GTRecipe(type, inputs, outputs, tickInputs, tickOutputs,
-                                    inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                                    conditions, List.of(), data, duration, recipeCategory, groupColor, keepSpoilingProgress)));
+                                    inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics, consumedInputs,
+                                    conditions, List.of(), data, duration, recipeCategory, keepSpoilingProgress)));
         } else {
             return RecordCodecBuilder.create(instance -> instance.group(
                             GTRegistries.RECIPE_TYPES.codec().fieldOf("type").forGetter(val -> val.recipeType),
@@ -240,7 +238,6 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
                             CompoundTag.CODEC.optionalFieldOf("data", new CompoundTag()).forGetter(val -> val.data),
                             ExtraCodecs.NON_NEGATIVE_INT.fieldOf("duration").forGetter(val -> val.duration),
                             GTRegistries.RECIPE_CATEGORIES.codec().optionalFieldOf("category", GTRecipeCategory.DEFAULT).forGetter(val -> val.recipeCategory),
-                            Codec.INT.optionalFieldOf("groupColor", -1).forGetter(val -> val.groupColor)),
                             Codec.BOOL.optionalFieldOf("keepSpoilingProgress", true).forGetter(val -> val.transferSpoilingProgress))
                     .apply(instance, GTRecipe::new));
         }

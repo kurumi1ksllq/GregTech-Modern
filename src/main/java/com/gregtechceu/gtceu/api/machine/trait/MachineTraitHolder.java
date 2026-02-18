@@ -10,7 +10,6 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public final class MachineTraitHolder {
 
@@ -47,10 +46,6 @@ public final class MachineTraitHolder {
         List<MachineTrait> traitList = traitsByType.get(type);
         if (traitList == null || traitList.isEmpty()) return null;
         return type.castTrait(traitList.get(0));
-    }
-
-    public <T extends MachineTrait> Optional<T> getTraitOptional(MachineTraitType<T> type) {
-        return Optional.ofNullable(getTrait(type));
     }
 
     /**

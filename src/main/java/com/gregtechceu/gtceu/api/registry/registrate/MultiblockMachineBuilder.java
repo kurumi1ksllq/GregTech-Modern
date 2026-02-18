@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.item.MetaMachineItem;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
@@ -47,9 +48,9 @@ public class MultiblockMachineBuilder<DEFINITION extends MultiblockMachineDefini
     private boolean allowFlip = true;
     private final List<Supplier<ItemStack[]>> recoveryItems = new ArrayList<>();
     private Function<MultiblockControllerMachine, Comparator<IMultiPart>> partSorter = (c) -> (a, b) -> 0;
-    private TriFunction<MultiblockControllerMachine, IMultiPart, Direction, BlockState> partAppearance;
+    private TriFunction<IMultiController, IMultiPart, Direction, BlockState> partAppearance;
     @Getter
-    private BiConsumer<MultiblockControllerMachine, List<Component>> additionalDisplay = (m, l) -> {};
+    private BiConsumer<IMultiController, List<Component>> additionalDisplay = (m, l) -> {};
 
     public MultiblockMachineBuilder(GTRegistrate registrate, String name,
                                     BiFunction<BlockBehaviour.Properties, DEFINITION, MetaMachineBlock> blockFactory,
@@ -84,12 +85,12 @@ public class MultiblockMachineBuilder<DEFINITION extends MultiblockMachineDefini
         return getThis();
     }
 
-    public TYPE partAppearance(TriFunction<MultiblockControllerMachine, IMultiPart, Direction, BlockState> partAppearance) {
+    public TYPE partAppearance(TriFunction<IMultiController, IMultiPart, Direction, BlockState> partAppearance) {
         this.partAppearance = partAppearance;
         return getThis();
     }
 
-    public TYPE additionalDisplay(BiConsumer<MultiblockControllerMachine, List<Component>> additionalDisplay) {
+    public TYPE additionalDisplay(BiConsumer<IMultiController, List<Component>> additionalDisplay) {
         this.additionalDisplay = additionalDisplay;
         return getThis();
     }

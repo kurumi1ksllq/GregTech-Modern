@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.machine;
 
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.pattern.BlockPattern;
@@ -51,10 +52,10 @@ public class MultiblockMachineDefinition extends MachineDefinition {
     private Function<MultiblockControllerMachine, Comparator<IMultiPart>> partSorter;
     @Getter
     @Setter
-    private TriFunction<MultiblockControllerMachine, IMultiPart, Direction, BlockState> partAppearance;
+    private TriFunction<IMultiController, IMultiPart, Direction, BlockState> partAppearance;
     @Getter
     @Setter
-    private BiConsumer<MultiblockControllerMachine, List<Component>> additionalDisplay;
+    private BiConsumer<IMultiController, List<Component>> additionalDisplay;
 
     public MultiblockMachineDefinition(ResourceLocation id) {
         super(id);

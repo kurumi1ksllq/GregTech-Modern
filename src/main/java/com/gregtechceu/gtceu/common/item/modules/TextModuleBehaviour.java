@@ -39,42 +39,32 @@ import java.util.function.Supplier;
 
 public class TextModuleBehaviour implements IMonitorModuleItem, IAddInformation {
 
-    private void updateText(ItemStack stack, PlaceholderContext ctx) {
+    private void updateText(ItemStack stack, CentralMonitorMachine machine, MonitorGroup group) {
         if (!stack.getOrCreateTag().contains("placeholderUUID")) {
             stack.getOrCreateTag().putUUID("placeholderUUID", UUID.randomUUID());
         }
         MultiLineComponent text = PlaceholderHandler.processPlaceholders(
                 getPlaceholderText(stack),
-                ctx);
+                new PlaceholderContext(
+                        group.getTargetLevel(machine.getLevel()),
+                        group.getTarget(machine.getLevel()),
+                        group.getTargetCoverSide(),
+                        group.getPlaceholderSlotsHandler(),
+                        group.getTargetCover(machine.getLevel()),
+                        null,
+                        stack.getOrCreateTag().getUUID("placeholderUUID")));
         stack.getOrCreateTag().put("text", text.toTag());
-    }
-
-    private PlaceholderContext makeContext(ItemStack stack, CentralMonitorMachine machine, MonitorGroup group) {
-        return new PlaceholderContext(
-                group.getTargetLevel(machine.getLevel()),
-                group.getTarget(machine.getLevel()),
-                group.getTargetCoverSide(),
-                group.getPlaceholderSlotsHandler(),
-                group.getTargetCover(machine.getLevel()),
-                null,
-                stack.getOrCreateTag().contains("placeholderUUID") ? stack.getOrCreateTag().getUUID("placeholderUUID") :
-                        null);
     }
 
     @Override
     public void tick(ItemStack stack, CentralMonitorMachine machine, MonitorGroup group) {
-        this.updateText(stack, makeContext(stack, machine, group));
+        this.updateText(stack, machine, group);
     }
 
     @Override
-    public void tickInPlaceholder(ItemStack stack, PlaceholderContext context) {
-        this.updateText(stack, context);
-    }
-
-    @Override
-    public IMonitorRenderer getRenderer(ItemStack stack) {
+    public IMonitorRenderer getRenderer(ItemStack stack, CentralMonitorMachine machine, MonitorGroup group) {
         return new MonitorTextRenderer(
-                getText(stack),
+                getText(stack).toImmutable(),
                 Math.max(getScale(stack), .0001));
     }
 
@@ -91,7 +81,7 @@ public class TextModuleBehaviour implements IMonitorModuleItem, IAddInformation 
         ButtonWidget saveButton = new ButtonWidget(-40, 22, 20, 20, click -> {
             if (!click.isRemote) return;
             ListTag listTag = new ListTag();
-            editor.getLines().forEach(line -> listTag.add(StringTag.valueOf(line.replaceAll("\r", ""))));
+            editor.getLines().forEach(line -> listTag.add(StringTag.valueOf(line)));
             CompoundTag tag2 = stack.getOrCreateTag();
             tag2.put("formatStringLines", listTag);
             try {
@@ -133,7 +123,7 @@ public class TextModuleBehaviour implements IMonitorModuleItem, IAddInformation 
     }
 
     public MultiLineComponent getText(ItemStack stack) {
-        return MultiLineComponent.fromTag(stack.getOrCreateTag().get("text"));
+        return MultiLineComponent.fromTag(stack.getOrCreateTag().getList("text", Tag.TAG_STRING));
     }
 
     public double getScale(ItemStack stack) {
@@ -146,7 +136,7 @@ public class TextModuleBehaviour implements IMonitorModuleItem, IAddInformation 
 
     public void setPlaceholderText(ItemStack stack, String text) {
         ListTag listTag = new ListTag();
-        for (String line : text.split("\n")) listTag.add(StringTag.valueOf(line.replaceAll("\r", "")));
+        for (String line : text.split("\n")) listTag.add(StringTag.valueOf(line));
         stack.getOrCreateTag().put("formatStringLines", listTag);
     }
 

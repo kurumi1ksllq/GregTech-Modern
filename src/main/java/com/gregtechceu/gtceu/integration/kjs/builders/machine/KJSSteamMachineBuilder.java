@@ -24,14 +24,14 @@ import org.jetbrains.annotations.Nullable;
 public class KJSSteamMachineBuilder extends BuilderBase<MachineDefinition> {
 
     @Setter
-    public transient boolean hasLowPressure = true, hasHighPressure = true;
+    public volatile boolean hasLowPressure = true, hasHighPressure = true;
     @Setter
-    public transient SteamCreationFunction machine = SimpleSteamMachine::new;
+    public volatile SteamCreationFunction machine = SimpleSteamMachine::new;
     @Setter
-    public transient SteamDefinitionFunction definition = (isHP, def) -> def.tier(isHP ? 1 : 0);
+    public volatile SteamDefinitionFunction definition = (isHP, def) -> def.tier(isHP ? 1 : 0);
 
-    private transient MachineBuilder<?, ?> lowPressureBuilder = null, highPressureBuilder = null;
-    private transient MachineDefinition hpValue = null;
+    private volatile MachineBuilder<?, ?> lowPressureBuilder = null, highPressureBuilder = null;
+    private volatile MachineDefinition hpValue = null;
 
     public KJSSteamMachineBuilder(ResourceLocation id) {
         super(id);

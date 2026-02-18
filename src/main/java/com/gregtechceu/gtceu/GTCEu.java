@@ -32,8 +32,6 @@ public class GTCEu {
     public static final String NAME = "GregTechCEu";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
 
-    public static final Path GTCEU_FOLDER = getGameDir().resolve("gtceu");
-
     public GTCEu() {
         GTCEu.init();
         GTCEuAPI.instance = this;

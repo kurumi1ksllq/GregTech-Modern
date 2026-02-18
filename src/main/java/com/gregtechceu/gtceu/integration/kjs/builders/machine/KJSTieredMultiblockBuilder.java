@@ -29,11 +29,11 @@ public class KJSTieredMultiblockBuilder extends BuilderBase<MultiblockMachineDef
     private final MultiblockMachineBuilder[] builders = new MultiblockMachineBuilder[TIER_COUNT];
 
     @Setter
-    public transient int[] tiers = GTMachineUtils.ELECTRIC_TIERS;
+    public volatile int[] tiers = GTMachineUtils.ELECTRIC_TIERS;
     @Setter
-    public transient TieredCreationFunction machine;
+    public volatile TieredCreationFunction machine;
     @Setter
-    public transient DefinitionFunction definition = (tier, def) -> def.tier(tier);
+    public volatile DefinitionFunction definition = (tier, def) -> def.tier(tier);
 
     public KJSTieredMultiblockBuilder(ResourceLocation id) {
         super(id);

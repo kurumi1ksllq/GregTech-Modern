@@ -30,7 +30,6 @@ import java.util.function.UnaryOperator;
 
 public class MonitorGroup {
 
-    @Getter
     private final Set<BlockPos> monitorPositions = new HashSet<>();
     @Getter
     private final String name;
@@ -104,6 +103,10 @@ public class MonitorGroup {
 
     public boolean isEmpty() {
         return monitorPositions.isEmpty();
+    }
+
+    public Set<BlockPos> getRelativePositions() {
+        return monitorPositions;
     }
 
     public @Nullable CoverBehavior getTargetCover(Level level) {

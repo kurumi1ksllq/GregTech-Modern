@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.part;
 
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.CleanroomType;
-import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.trait.CleanroomProviderTrait;
 import com.gregtechceu.gtceu.api.machine.trait.CleanroomReceiverTrait;
 
@@ -34,17 +34,17 @@ public class CleaningMaintenanceHatchPartMachine extends AutoMaintenanceHatchPar
     }
 
     @Override
-    public void addedToController(MultiblockControllerMachine controller) {
+    public void addedToController(IMultiController controller) {
         super.addedToController(controller);
-        controller.self().getTraitHolder().getTraitOptional(CleanroomReceiverTrait.TYPE)
-                .ifPresent(t -> t.setCleanroomProvider(cleanroomProvider));
+        CleanroomReceiverTrait receiverTrait = controller.self().getTraitHolder().getTrait(CleanroomReceiverTrait.TYPE);
+        if (receiverTrait != null) receiverTrait.setCleanroomProvider(cleanroomProvider);
     }
 
     @Override
-    public void removedFromController(MultiblockControllerMachine controller) {
+    public void removedFromController(IMultiController controller) {
         super.removedFromController(controller);
-        controller.self().getTraitHolder().getTraitOptional(CleanroomReceiverTrait.TYPE)
-                .ifPresent(CleanroomReceiverTrait::removeCleanroom);
+        CleanroomReceiverTrait receiverTrait = controller.self().getTraitHolder().getTrait(CleanroomReceiverTrait.TYPE);
+        if (receiverTrait != null) receiverTrait.removeCleanroom();
     }
 
     @Override

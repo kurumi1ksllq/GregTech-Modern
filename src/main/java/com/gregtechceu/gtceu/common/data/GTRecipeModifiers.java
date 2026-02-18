@@ -9,8 +9,8 @@ import com.gregtechceu.gtceu.api.item.component.SpoilContext;
 import com.gregtechceu.gtceu.api.item.component.SpoilUtils;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.CoilWorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.OverclockingLogic;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
@@ -24,7 +24,6 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -46,8 +45,7 @@ public class GTRecipeModifiers {
             .memoize(logic -> (machine, recipe) -> {
                 if (!(machine instanceof IOverclockMachine overclockMachine)) return ModifierFunction.IDENTITY;
                 if (RecipeHelper.getRecipeEUtTier(recipe) > overclockMachine.getMaxOverclockTier()) {
-                    return ModifierFunction
-                            .cancel(Component.translatable("gtceu.recipe_modifier.insufficient_voltage"));
+                    return ModifierFunction.NULL;
                 }
                 return logic.getModifier(machine, recipe, overclockMachine.getOverclockVoltage());
             });
@@ -116,12 +114,12 @@ public class GTRecipeModifiers {
      * Looks for the Parallel Hatch on a Multiblock and attempts to parallelize the recipe up to the set amount
      * </p>
      *
-     * @param machine a {@link MultiblockControllerMachine} machine
+     * @param machine an {@link IMultiController} machine
      * @param recipe  recipe
      * @return A {@link ModifierFunction} for the given Parallel Multiblock
      */
     public static @NotNull ModifierFunction hatchParallel(@NotNull MetaMachine machine, @NotNull GTRecipe recipe) {
-        if (machine instanceof MultiblockControllerMachine controller && controller.isFormed()) {
+        if (machine instanceof IMultiController controller && controller.isFormed()) {
             int parallels = controller.getParallelHatch()
                     .map(hatch -> ParallelLogic.getParallelAmount(machine, recipe, hatch.getCurrentParallel()))
                     .orElse(1);
@@ -137,8 +135,7 @@ public class GTRecipeModifiers {
     }
 
     public static @NotNull ModifierFunction batchMode(@NotNull MetaMachine machine, @NotNull GTRecipe recipe) {
-        if (machine instanceof MultiblockControllerMachine controller && controller.isFormed() &&
-                controller.isBatchEnabled()) {
+        if (machine instanceof IMultiController controller && controller.isFormed() && controller.isBatchEnabled()) {
             if (recipe.duration < ConfigHolder.INSTANCE.machines.batchDuration) {
                 int parallel = ConfigHolder.INSTANCE.machines.batchDuration / recipe.duration;
                 parallel = ParallelLogic.getParallelAmountWithoutEU(machine, recipe, parallel);
@@ -209,11 +206,11 @@ public class GTRecipeModifiers {
                 (100 * Math.max(0, coilMachine.getTier() - GTValues.MV));
         int recipeTemp = recipe.data.getInt("ebf_temp");
         if (!recipe.data.contains("ebf_temp") || recipeTemp > blastFurnaceTemperature) {
-            return ModifierFunction.cancel(Component.translatable("gtceu.recipe_modifier.coil_temperature_too_low"));
+            return ModifierFunction.NULL;
         }
 
         if (RecipeHelper.getRecipeEUtTier(recipe) > coilMachine.getTier()) {
-            return ModifierFunction.cancel(Component.translatable("gtceu.recipe_modifier.insufficient_voltage"));
+            return ModifierFunction.NULL;
         }
 
         var discount = ModifierFunction.builder()

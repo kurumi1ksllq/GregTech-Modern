@@ -2,6 +2,7 @@ package com.gregtechceu.gtceu.common.machine.multiblock.part.monitor;
 
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
+import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 
@@ -18,11 +19,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 @MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
-public class AdvancedMonitorPartMachine extends MonitorPartMachine {
+public class AdvancedMonitorPartMachine extends MonitorPartMachine implements IInteractedMachine {
 
     @Getter
     @SaveField
@@ -46,7 +44,8 @@ public class AdvancedMonitorPartMachine extends MonitorPartMachine {
     @Override
     public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
                                    BlockHitResult hit) {
-        if (hit.getDirection() != getFrontFacing()) return super.onUse(state, world, pos, player, hand, hit);
+        if (hit.getDirection() != getFrontFacing())
+            return IInteractedMachine.super.onUse(state, world, pos, player, hand, hit);
         clicked = true;
         clickPosX = hit.getLocation()
                 .get(RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), false).getAxis());

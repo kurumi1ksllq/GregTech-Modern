@@ -34,21 +34,21 @@ public class KJSTieredMachineBuilder extends BuilderBase<MachineDefinition[]> {
     private final MachineBuilder<?, ?>[] builders = new MachineBuilder[TIER_COUNT];
 
     @Setter
-    public transient int[] tiers = GTMachineUtils.ELECTRIC_TIERS;
+    public volatile int[] tiers = GTMachineUtils.ELECTRIC_TIERS;
     @Setter
-    public transient TieredCreationFunction machine;
+    public volatile TieredCreationFunction machine;
     @Setter
-    public transient DefinitionFunction definition = (tier, def) -> def.tier(tier);
+    public volatile DefinitionFunction definition = (tier, def) -> def.tier(tier);
     @Setter
-    public transient Int2IntFunction tankScalingFunction = GTMachineUtils.defaultTankSizeFunction;
+    public volatile Int2IntFunction tankScalingFunction = GTMachineUtils.defaultTankSizeFunction;
     @Setter
-    public transient boolean addDefaultTooltips = true;
+    public volatile boolean addDefaultTooltips = true;
     @Setter
-    public transient boolean addDefaultModel = true;
+    public volatile boolean addDefaultModel = true;
     @Setter
-    public transient boolean isGenerator = false;
+    public volatile boolean isGenerator = false;
 
-    public transient BiFunction<ResourceLocation, GTRecipeType, EditableMachineUI> editableUI;
+    public volatile BiFunction<ResourceLocation, GTRecipeType, EditableMachineUI> editableUI;
 
     public KJSTieredMachineBuilder(ResourceLocation id) {
         super(id);

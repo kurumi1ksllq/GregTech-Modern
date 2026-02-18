@@ -141,8 +141,8 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
     @Override
     public void onMachineDestroyed() {
         super.onMachineDestroyed();
-        importItems.dropInventoryInWorld();
-        exportItems.dropInventoryInWorld();
+        clearInventory(importItems.storage);
+        clearInventory(exportItems.storage);
     }
 
     public void setMuffled(boolean muffled) {

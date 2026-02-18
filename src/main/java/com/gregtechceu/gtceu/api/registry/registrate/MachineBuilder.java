@@ -30,7 +30,6 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.model.builder.MachineModelBuilder;
 import com.gregtechceu.gtceu.integration.kjs.GTCEuStartupEvents;
 import com.gregtechceu.gtceu.integration.kjs.events.ModifyMachineEventJS;
-import com.gregtechceu.gtceu.utils.data.RuntimeBlockstateProvider;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.RenderType;
@@ -79,6 +78,7 @@ import java.util.function.*;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.gregtechceu.gtceu.common.data.models.GTMachineModels.*;
+import static com.gregtechceu.gtceu.integration.kjs.GregTechKubeJSPlugin.RUNTIME_BLOCKSTATE_PROVIDER;
 
 @SuppressWarnings("unused")
 @ParametersAreNonnullByDefault
@@ -822,10 +822,9 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
                 // Fake a data provider for the GT model builders
                 var context = new DataGenContext<>(definition::getBlock, definition.getName(), id);
                 if (builder.blockModel() != null) {
-                    builder.blockModel().accept(context, RuntimeBlockstateProvider.INSTANCE);
+                    builder.blockModel().accept(context, RUNTIME_BLOCKSTATE_PROVIDER);
                 } else {
-                    GTMachineModels.createMachineModel(builder.model())
-                            .accept(context, RuntimeBlockstateProvider.INSTANCE);
+                    GTMachineModels.createMachineModel(builder.model()).accept(context, RUNTIME_BLOCKSTATE_PROVIDER);
                 }
             } else {
                 generator.itemModel(id, gen -> gen.parent(id.withPrefix("block/machine/").toString()));

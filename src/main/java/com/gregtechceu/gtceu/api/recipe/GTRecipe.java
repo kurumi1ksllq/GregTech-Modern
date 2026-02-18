@@ -73,6 +73,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
     private final @NotNull EnergyStack inputEUt = calculateEUt(tickInputs);
     @Getter(lazy = true)
     private final @NotNull EnergyStack outputEUt = calculateEUt(tickOutputs);
+    public int groupColor = -1;
 
     public GTRecipe(GTRecipeType recipeType,
                     Map<RecipeCapability<?>, List<Content>> inputs,
@@ -89,11 +90,10 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
                     @NotNull CompoundTag data,
                     int duration,
                     @NotNull GTRecipeCategory recipeCategory,
-                    boolean keepSpoilingProgress) {
+                    int groupColor) {
         this(recipeType, null, inputs, outputs, tickInputs, tickOutputs,
                 inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                (Map) consumedInputs, conditions, ingredientActions, data, duration, recipeCategory,
-                keepSpoilingProgress);
+                conditions, ingredientActions, data, duration, recipeCategory, groupColor, keepSpoilingProgress);
     }
 
     public GTRecipe(GTRecipeType recipeType,
@@ -111,8 +111,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
                     List<?> ingredientActions,
                     @NotNull CompoundTag data,
                     int duration,
-                    @NotNull GTRecipeCategory recipeCategory,
-                    boolean keepSpoilingProgress) {
+                    @NotNull GTRecipeCategory recipeCategory, int groupColor, boolean keepSpoilingProgress) {
         this.recipeType = recipeType;
         this.id = id;
 
@@ -132,6 +131,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
         this.duration = duration;
         this.recipeCategory = (recipeCategory != GTRecipeCategory.DEFAULT) ? recipeCategory : recipeType.getCategory();
         this.transferSpoilingProgress = keepSpoilingProgress;
+        this.groupColor = groupColor;
     }
 
     public GTRecipe copy() {
@@ -150,7 +150,7 @@ public class GTRecipe implements net.minecraft.world.item.crafting.Recipe<Contai
                 new HashMap<>(tickInputChanceLogics), new HashMap<>(tickOutputChanceLogics),
                 new HashMap<>(consumedInputs),
                 new ArrayList<>(conditions),
-                new ArrayList<>(ingredientActions), data, duration, recipeCategory, transferSpoilingProgress);
+                new ArrayList<>(ingredientActions), data, duration, recipeCategory, groupColor, transferSpoilingProgress);
         if (modifyDuration) {
             copied.duration = modifier.apply(this.duration);
         }

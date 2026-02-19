@@ -2,14 +2,12 @@ package com.gregtechceu.gtceu.common.block;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.PipeBlock;
-import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
-import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
-import com.gregtechceu.gtceu.client.model.pipe.ActivablePipeModel;
-import com.gregtechceu.gtceu.client.model.pipe.PipeModel;
+import com.gregtechceu.gtceu.client.model.PipeModel;
+import com.gregtechceu.gtceu.client.renderer.block.PipeBlockRenderer;
 import com.gregtechceu.gtceu.common.blockentity.LaserPipeBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
 import com.gregtechceu.gtceu.common.pipelike.laser.LaserPipeProperties;
@@ -21,11 +19,9 @@ import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -37,20 +33,23 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class LaserPipeBlock extends PipeBlock<LaserPipeType, LaserPipeProperties, LevelLaserPipeNet> {
 
+    public final PipeBlockRenderer renderer;
+    public final PipeModel model;
     private final LaserPipeProperties properties;
 
     public LaserPipeBlock(Properties properties, LaserPipeType type) {
         super(properties, type);
         this.properties = LaserPipeProperties.INSTANCE;
-
-        registerDefaultState(defaultBlockState().setValue(GTBlockStateProperties.ACTIVE, false));
+        this.model = new PipeModel(LaserPipeType.NORMAL.getThickness(), () -> GTCEu.id("block/pipe/pipe_laser_side"),
+                () -> GTCEu.id("block/pipe/pipe_laser_in"), null, null);
+        this.renderer = new PipeBlockRenderer(this.model);
     }
 
     @OnlyIn(Dist.CLIENT)
     public static BlockColor tintedColor() {
-        return (state, level, pos, index) -> {
-            if (pos != null && level != null &&
-                    level.getBlockEntity(pos) instanceof PipeBlockEntity<?, ?> pipe) {
+        return (blockState, level, blockPos, index) -> {
+            if (blockPos != null && level != null &&
+                    level.getBlockEntity(blockPos) instanceof PipeBlockEntity<?, ?> pipe) {
                 if (!pipe.getFrameMaterial().isNull()) {
                     if (index == 3) {
                         return pipe.getFrameMaterial().getMaterialRGB();
@@ -64,12 +63,6 @@ public class LaserPipeBlock extends PipeBlock<LaserPipeType, LaserPipeProperties
             }
             return -1;
         };
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        super.createBlockStateDefinition(builder);
-        builder.add(GTBlockStateProperties.ACTIVE);
     }
 
     @Override
@@ -100,12 +93,12 @@ public class LaserPipeBlock extends PipeBlock<LaserPipeType, LaserPipeProperties
     }
 
     @Override
-    public PipeModel createPipeModel(GTBlockstateProvider provider) {
-        ActivablePipeModel model = new ActivablePipeModel(this, LaserPipeType.NORMAL.getThickness(),
-                GTCEu.id("block/pipe/pipe_laser_side"), GTCEu.id("block/pipe/pipe_laser_in"),
-                provider);
-        model.setSideOverlay(GTCEu.id("block/pipe/pipe_laser_side_overlay"));
-        model.setSideOverlayActive(GTCEu.id("block/pipe/pipe_laser_side_overlay_emissive"));
+    public @Nullable PipeBlockRenderer getRenderer(BlockState state) {
+        return renderer;
+    }
+
+    @Override
+    protected PipeModel getPipeModel() {
         return model;
     }
 

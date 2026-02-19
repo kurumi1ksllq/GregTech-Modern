@@ -4,8 +4,8 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.gui.editor.EditableMachineUI;
+import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardEmitter;
 import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
-import com.gregtechceu.gtceu.api.machine.trait.hazard.EnvironmentalHazardEmitterTrait;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
@@ -13,7 +13,6 @@ import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
 import com.gregtechceu.gtceu.api.recipe.modifier.ParallelLogic;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.api.recipe.ui.GTRecipeTypeUI;
-import com.gregtechceu.gtceu.common.data.GTMedicalConditions;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.utils.Position;
@@ -34,18 +33,17 @@ import java.util.LinkedHashMap;
 import java.util.function.BiFunction;
 
 public class SimpleGeneratorMachine extends WorkableTieredMachine
-                                    implements IFancyUIMachine {
+                                    implements IFancyUIMachine, IEnvironmentalHazardEmitter {
 
     @Getter
-    private final EnvironmentalHazardEmitterTrait hazardEmitter;
+    private final float hazardStrengthPerOperation;
 
     public SimpleGeneratorMachine(BlockEntityCreationInfo info, int tier,
                                   float hazardStrengthPerOperation, Int2IntFunction tankScalingFunction) {
         super(info, tier, tankScalingFunction);
 
         energyContainer.setSideOutputCondition(side -> !hasFrontFacing() || side == getFrontFacing());
-        this.hazardEmitter = new EnvironmentalHazardEmitterTrait(this, GTMedicalConditions.CARBON_MONOXIDE_POISONING,
-                hazardStrengthPerOperation);
+        this.hazardStrengthPerOperation = hazardStrengthPerOperation;
     }
 
     public SimpleGeneratorMachine(BlockEntityCreationInfo info, int tier, Int2IntFunction tankScalingFunction) {
@@ -114,7 +112,7 @@ public class SimpleGeneratorMachine extends WorkableTieredMachine
     @Override
     public void afterWorking() {
         super.afterWorking();
-        hazardEmitter.emitHazard();
+        spreadEnvironmentalHazard();
     }
 
     @Override

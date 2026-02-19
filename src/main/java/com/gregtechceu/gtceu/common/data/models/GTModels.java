@@ -39,8 +39,6 @@ public class GTModels {
 
     public static final ResourceLocation BLANK_TEXTURE = GTCEu.id("block/void");
 
-    public static final String ACTIVE_SUFFIX = "_active";
-
     // region BLOCK MODELS
 
     public static NonNullBiConsumer<DataGenContext<Block, ? extends Block>, GTBlockstateProvider> createModelBlockState(ResourceLocation modelLocation) {
@@ -273,12 +271,6 @@ public class GTModels {
                     .partialState().with(GTBlockStateProperties.ACTIVE, true)
                     .modelForState().modelFile(active).addModel();
         };
-    }
-
-    public static void createPipeBlockModel(DataGenContext<Block, ? extends PipeBlock<?, ?, ?>> ctx,
-                                            GTBlockstateProvider prov) {
-        // the pipe model generator handles adding its models to the provider by itself
-        ctx.getEntry().createPipeModel(prov).initModels();
     }
 
     // endregion

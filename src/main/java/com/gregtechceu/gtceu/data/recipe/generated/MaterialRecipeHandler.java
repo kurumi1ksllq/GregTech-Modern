@@ -254,12 +254,9 @@ public final class MaterialRecipeHandler {
         ItemStack smallDustStack = ChemicalHelper.get(dustSmall, material);
         ItemStack dustStack = ChemicalHelper.get(dust, material);
 
-        VanillaRecipeHelper.addStrictSizeShapedRecipe(provider,
+        VanillaRecipeHelper.addStrictShapedRecipe(provider,
                 String.format("small_dust_disassembling_%s", material.getName()),
                 smallDustStack.copyWithCount(4), " X", "  ", 'X', new MaterialEntry(dust, material));
-        VanillaRecipeHelper.addStrictSizeShapedRecipe(provider,
-                String.format("small_dust_disassembling_3x3_%s", material.getName()),
-                smallDustStack.copyWithCount(4), " X ", "   ", "   ", 'X', new MaterialEntry(dust, material));
         VanillaRecipeHelper.addShapedRecipe(provider, String.format("small_dust_assembling_%s", material.getName()),
                 dustStack, "XX", "XX", 'X', new MaterialEntry(dustSmall, material));
 
@@ -285,12 +282,9 @@ public final class MaterialRecipeHandler {
         ItemStack tinyDustStack = ChemicalHelper.get(dustTiny, material);
         ItemStack dustStack = ChemicalHelper.get(dust, material);
 
-        VanillaRecipeHelper.addStrictSizeShapedRecipe(provider,
+        VanillaRecipeHelper.addStrictShapedRecipe(provider,
                 String.format("tiny_dust_disassembling_%s", material.getName()),
                 tinyDustStack.copyWithCount(9), "X ", "  ", 'X', new MaterialEntry(dust, material));
-        VanillaRecipeHelper.addStrictSizeShapedRecipe(provider,
-                String.format("tiny_dust_disassembling_3x3_%s", material.getName()),
-                tinyDustStack.copyWithCount(9), "X  ", "   ", "   ", 'X', new MaterialEntry(dust, material));
         VanillaRecipeHelper.addShapedRecipe(provider, String.format("tiny_dust_assembling_%s", material.getName()),
                 dustStack, "XXX", "XXX", "XXX", 'X', new MaterialEntry(dustTiny, material));
 

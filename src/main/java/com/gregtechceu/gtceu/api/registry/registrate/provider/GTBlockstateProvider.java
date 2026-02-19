@@ -78,17 +78,14 @@ public class GTBlockstateProvider extends RegistrateBlockstateProvider {
 
     public MultiVariantGenerator multiVariantGenerator(Block block, Variant baseVariant) {
         var multiVariant = MultiVariantGenerator.multiVariant(block, baseVariant);
-        return addVanillaGenerator(block, multiVariant);
+        registeredBlocks.put(block, new BlockStateGeneratorWrapper(multiVariant));
+        return multiVariant;
     }
 
     public MultiPartGenerator multiPartGenerator(Block block) {
         var multiPart = MultiPartGenerator.multiPart(block);
-        return addVanillaGenerator(block, multiPart);
-    }
-
-    public <T extends BlockStateGenerator> T addVanillaGenerator(Block block, T generator) {
-        registeredBlocks.put(block, new BlockStateGeneratorWrapper(generator));
-        return generator;
+        registeredBlocks.put(block, new BlockStateGeneratorWrapper(multiPart));
+        return multiPart;
     }
 
     public static @Nullable PropertyDispatch createFacingDispatch(MachineDefinition definition) {

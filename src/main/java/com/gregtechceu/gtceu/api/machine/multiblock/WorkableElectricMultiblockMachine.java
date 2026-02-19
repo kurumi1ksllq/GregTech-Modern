@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.machine.multiblock;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
+import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeHandler;
@@ -19,7 +20,6 @@ import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifierList;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
-import com.gregtechceu.gtceu.common.machine.multiblock.part.ParallelHatchPartMachine;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
@@ -59,11 +59,6 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
 
     public WorkableElectricMultiblockMachine(BlockEntityCreationInfo info) {
         super(info);
-    }
-
-    @Override
-    public WorkableElectricMultiblockMachine self() {
-        return this;
     }
 
     //////////////////////////////////////
@@ -114,7 +109,7 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
             exact = true;
         } else {
             numParallels = getParallelHatch()
-                    .map(ParallelHatchPartMachine::getCurrentParallel)
+                    .map(IParallelHatch::getCurrentParallel)
                     .orElse(0);
             subtickParallels = 0;
             batchParallels = 0;
@@ -132,7 +127,6 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
                 .addBatchModeLine(isBatchEnabled(), batchParallels)
                 .addWorkingStatusLine()
                 .addProgressLine(recipeLogic)
-                .addRecipeFailReasonLine(recipeLogic)
                 .addOutputLines(recipeLogic.getLastRecipe());
         getDefinition().getAdditionalDisplay().accept(this, textList);
         IDisplayUIMachine.super.addDisplayText(textList);

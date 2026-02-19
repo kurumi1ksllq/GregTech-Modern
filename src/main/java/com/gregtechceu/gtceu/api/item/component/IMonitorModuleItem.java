@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.item.component;
 
-import com.gregtechceu.gtceu.api.placeholder.PlaceholderContext;
 import com.gregtechceu.gtceu.client.renderer.monitor.IMonitorRenderer;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.CentralMonitorMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.monitor.MonitorGroup;
@@ -13,9 +12,7 @@ public interface IMonitorModuleItem extends IItemComponent {
 
     default void tick(ItemStack stack, CentralMonitorMachine machine, MonitorGroup group) {}
 
-    default void tickInPlaceholder(ItemStack stack, PlaceholderContext context) {}
-
-    IMonitorRenderer getRenderer(ItemStack stack);
+    IMonitorRenderer getRenderer(ItemStack stack, CentralMonitorMachine machine, MonitorGroup group);
 
     Widget createUIWidget(ItemStack stack, CentralMonitorMachine machine, MonitorGroup group);
 

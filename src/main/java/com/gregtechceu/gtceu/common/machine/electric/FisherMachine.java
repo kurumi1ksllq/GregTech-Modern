@@ -122,7 +122,6 @@ public class FisherMachine extends TieredEnergyMachine
                         GTCapabilityHelper.getForgeEnergyItem(item) != null));
 
         autoOutput = AutoOutputTrait.ofItems(this, cache);
-        environmentalExplosionTrait.setEnableEnvironmentalExplosions(false);
     }
 
     public void setWorkingEnabled(boolean enabled) {
@@ -162,11 +161,16 @@ public class FisherMachine extends TieredEnergyMachine
     }
 
     @Override
+    public boolean shouldWeatherOrTerrainExplosion() {
+        return false;
+    }
+
+    @Override
     public void onMachineDestroyed() {
         super.onMachineDestroyed();
-        chargerInventory.dropInventoryInWorld(getLevel(), getBlockPos());
-        baitHandler.dropInventoryInWorld();
-        cache.dropInventoryInWorld();
+        clearInventory(chargerInventory);
+        clearInventory(baitHandler.storage);
+        clearInventory(cache.storage);
     }
 
     public static int calcMaxProgress(int tier) {

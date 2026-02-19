@@ -5,9 +5,8 @@ import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IHazardParticleContainer;
 import com.gregtechceu.gtceu.api.capability.forge.GTCapability;
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.api.machine.trait.hazard.EnvironmentalHazardCleanerTrait;
-import com.gregtechceu.gtceu.api.machine.trait.hazard.EnvironmentalHazardEmitterTrait;
+import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardCleaner;
+import com.gregtechceu.gtceu.api.machine.feature.IEnvironmentalHazardEmitter;
 import com.gregtechceu.gtceu.common.pipelike.duct.*;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -36,8 +35,12 @@ public class DuctPipeBlockEntity extends PipeBlockEntity<DuctPipeType, DuctPipeP
     @Getter
     protected DuctNetHandler defaultHandler;
 
-    public DuctPipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
+    protected DuctPipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
+    }
+
+    public static DuctPipeBlockEntity create(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
+        return new DuctPipeBlockEntity(type, pos, blockState);
     }
 
     public static void onBlockEntityRegister(BlockEntityType<DuctPipeBlockEntity> ductBlockEntityBlockEntityType) {}
@@ -111,11 +114,10 @@ public class DuctPipeBlockEntity extends PipeBlockEntity<DuctPipeType, DuctPipeP
                 return false;
             }
             BlockPos relative = getBlockPos().relative(side);
-            MetaMachine adjacent = MetaMachine.getMachine(level, relative);
-            return GTCapabilityHelper.getHazardContainer(level, relative, side.getOpposite()) != null ||
-                    (adjacent != null &&
-                            (adjacent.getTraitHolder().getTrait(EnvironmentalHazardEmitterTrait.TYPE) != null ||
-                                    adjacent.getTraitHolder().getTrait(EnvironmentalHazardCleanerTrait.TYPE) != null));
+            return GTCapabilityHelper.getHazardContainer(level, relative, side.getOpposite()) !=
+                    null ||
+                    (level.getBlockEntity(relative) instanceof IEnvironmentalHazardCleaner ||
+                            level.getBlockEntity(relative) instanceof IEnvironmentalHazardEmitter);
         }
         return false;
     }

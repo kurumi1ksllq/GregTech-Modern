@@ -23,17 +23,6 @@ public class CycleItemEntryHandler implements IItemHandlerModifiable {
         this.entries = new ArrayList<>(entries);
     }
 
-    public static CycleItemEntryHandler fromStacks(List<List<ItemStack>> stacks) {
-        List<ItemEntryList> entries = new ArrayList<>();
-        for (var list : stacks) {
-            entries.add(ItemStackList.of(list));
-        }
-        CycleItemEntryHandler handler = new CycleItemEntryHandler(entries);
-        handler.unwrapped = new ArrayList<>(stacks);
-
-        return handler;
-    }
-
     public List<List<ItemStack>> getUnwrapped() {
         if (unwrapped == null) {
             unwrapped = entries.stream()
@@ -92,6 +81,6 @@ public class CycleItemEntryHandler implements IItemHandlerModifiable {
 
     @Override
     public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-        return false;
+        return true;
     }
 }

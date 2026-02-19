@@ -38,7 +38,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class CrateMachine extends MetaMachine implements IUIMachine, IDropSaveMachine {
+public class CrateMachine extends MetaMachine implements IUIMachine,
+                          IDropSaveMachine, IInteractedMachine {
 
     public static final BooleanProperty TAPED_PROPERTY = GTMachineModelProperties.IS_TAPED;
 
@@ -102,7 +103,7 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IDropSaveMa
                 return InteractionResult.sidedSuccess(world.isClientSide);
             }
         }
-        return super.onUse(state, world, pos, player, hand, hit);
+        return IInteractedMachine.super.onUse(state, world, pos, player, hand, hit);
     }
 
     @Override
@@ -136,6 +137,6 @@ public class CrateMachine extends MetaMachine implements IUIMachine, IDropSaveMa
     @Override
     public void onMachineDestroyed() {
         super.onMachineDestroyed();
-        if (!isTaped) inventory.dropInventoryInWorld();
+        if (!isTaped) clearInventory(inventory.storage);
     }
 }

@@ -391,7 +391,7 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
             text.setType(TextTexture.TextType.LEFT);
             label.setButtonTexture(text);
             label.setOnPressCallback(click -> {
-                group.getMonitorPositions().forEach(pos -> {
+                group.getRelativePositions().forEach(pos -> {
                     BlockPos rel = toRelative(pos);
                     if (imageButtons.size() - 1 < rel.getY()) return;
                     if (imageButtons.get(rel.getY()).size() - 1 < rel.getX()) return;
@@ -476,8 +476,8 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
             while (itg.hasNext()) {
                 MonitorGroup group = itg.next();
                 if (group.isEmpty()) {
-                    group.getItemStackHandler().dropInventoryInWorld(getLevel(), getBlockPos());
-                    group.getPlaceholderSlotsHandler().dropInventoryInWorld(getLevel(), getBlockPos());
+                    clearInventory(group.getItemStackHandler());
+                    clearInventory(group.getPlaceholderSlotsHandler());
                     itg.remove();
                 }
             }
@@ -667,8 +667,8 @@ public class CentralMonitorMachine extends WorkableElectricMultiblockMachine
     public void onMachineDestroyed() {
         super.onMachineDestroyed();
         for (MonitorGroup group : monitorGroups) {
-            group.getItemStackHandler().dropInventoryInWorld(getLevel(), getBlockPos());;
-            group.getPlaceholderSlotsHandler().dropInventoryInWorld(getLevel(), getBlockPos());
+            clearInventory(group.getItemStackHandler());
+            clearInventory(group.getPlaceholderSlotsHandler());
         }
     }
 }

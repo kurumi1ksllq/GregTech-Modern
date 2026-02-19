@@ -70,7 +70,7 @@ public class CycleFluidEntryHandler implements IFluidHandlerModifiable {
 
     @Override
     public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-        return false;
+        return true;
     }
 
     @Override

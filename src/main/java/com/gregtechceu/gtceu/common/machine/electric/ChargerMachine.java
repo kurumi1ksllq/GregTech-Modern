@@ -112,7 +112,7 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
     @Override
     public void onMachineDestroyed() {
         super.onMachineDestroyed();
-        chargerInventory.dropInventoryInWorld(getLevel(), getBlockPos());
+        clearInventory(chargerInventory);
     }
 
     //////////////////////////////////////
@@ -221,7 +221,7 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
 
             if (side == null || inputsEnergy(side)) {
                 if (voltage > getInputVoltage()) {
-                    GTUtil.doExplosion(getLevel(), getBlockPos(), GTUtil.getExplosionPower(voltage));
+                    machine.doExplosion(GTUtil.getExplosionPower(voltage));
                     return usedAmps;
                 }
 

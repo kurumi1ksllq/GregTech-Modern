@@ -1,11 +1,9 @@
 package com.gregtechceu.gtceu.common.machine.trait.miner;
 
+import com.gregtechceu.gtceu.api.machine.feature.IExhaustVentMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
-import com.gregtechceu.gtceu.common.machine.steam.SteamMinerMachine;
 
 public class SteamMinerLogic extends MinerLogic {
-
-    private final SteamMinerMachine steamMiner;
 
     /**
      * Creates the logic for steam miners
@@ -17,17 +15,17 @@ public class SteamMinerLogic extends MinerLogic {
      */
     public SteamMinerLogic(IRecipeLogicMachine metaTileEntity, int fortune, int speed, int maximumRadius) {
         super(metaTileEntity, fortune, speed, maximumRadius);
-        steamMiner = (SteamMinerMachine) metaTileEntity;
     }
 
     @Override
     protected boolean checkCanMine() {
-        return super.checkCanMine() && steamMiner.getExhaustVentTrait().checkVenting();
+        IExhaustVentMachine machine = (IExhaustVentMachine) this.machine;
+        return super.checkCanMine() && machine.checkVenting();
     }
 
     @Override
     protected void onMineOperation() {
         super.onMineOperation();
-        steamMiner.getExhaustVentTrait().setNeedsVenting(true);
+        ((IExhaustVentMachine) machine).setNeedsVenting(true);
     }
 }

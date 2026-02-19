@@ -27,6 +27,7 @@ import com.gregtechceu.gtceu.integration.xei.entry.item.ItemEntryList;
 import com.gregtechceu.gtceu.integration.xei.entry.item.ItemStackList;
 import com.gregtechceu.gtceu.integration.xei.entry.item.ItemTagList;
 import com.gregtechceu.gtceu.integration.xei.handlers.item.CycleItemEntryHandler;
+import com.gregtechceu.gtceu.integration.xei.handlers.item.CycleItemStackHandler;
 import com.gregtechceu.gtceu.integration.xei.widgets.GTRecipeWidget;
 import com.gregtechceu.gtceu.utils.*;
 
@@ -454,7 +455,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
                                         recipeType);
                                 dataItems.add(dataStick);
                             }
-                            CycleItemEntryHandler handler = CycleItemEntryHandler.fromStacks(List.of(dataItems));
+                            CycleItemStackHandler handler = new CycleItemStackHandler(List.of(dataItems));
                             slot.setHandlerSlot(handler, 0);
                             slot.setIngredientIO(IngredientIO.CATALYST);
                             slot.setCanTakeItems(false);

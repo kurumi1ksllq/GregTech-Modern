@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.client.model.machine.multipart;
 
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.client.model.GTModelProperties;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 
 import net.minecraft.Util;
@@ -116,8 +115,8 @@ public class MultiPartBakedModel implements IDynamicBakedModel {
 
     @Override
     public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData modelData) {
-        BlockAndTintGetter level = modelData.get(GTModelProperties.LEVEL);
-        BlockPos pos = modelData.get(GTModelProperties.POS);
+        BlockAndTintGetter level = modelData.get(MODEL_DATA_LEVEL);
+        BlockPos pos = modelData.get(MODEL_DATA_POS);
 
         var machine = (level == null || pos == null) ? null : MetaMachine.getMachine(level, pos);
         if (machine == null) return IDynamicBakedModel.super.getRenderTypes(state, rand, modelData);
@@ -138,8 +137,8 @@ public class MultiPartBakedModel implements IDynamicBakedModel {
     @Override
     public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
         ModelData.Builder builder = modelData.derive()
-                .with(GTModelProperties.LEVEL, level)
-                .with(GTModelProperties.POS, pos);
+                .with(MODEL_DATA_LEVEL, level)
+                .with(MODEL_DATA_POS, pos);
 
         var machine = MetaMachine.getMachine(level, pos);
         if (machine == null) return builder.build();
@@ -184,8 +183,8 @@ public class MultiPartBakedModel implements IDynamicBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleIcon(ModelData modelData) {
-        BlockAndTintGetter level = modelData.get(GTModelProperties.LEVEL);
-        BlockPos pos = modelData.get(GTModelProperties.POS);
+        BlockAndTintGetter level = modelData.get(MODEL_DATA_LEVEL);
+        BlockPos pos = modelData.get(MODEL_DATA_POS);
 
         var machine = (level == null || pos == null) ? null : MetaMachine.getMachine(level, pos);
         if (machine != null) return getParticleIcon(machine.getRenderState(), modelData);

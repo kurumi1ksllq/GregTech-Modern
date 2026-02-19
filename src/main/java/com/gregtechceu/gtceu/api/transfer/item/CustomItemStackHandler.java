@@ -1,11 +1,8 @@
 package com.gregtechceu.gtceu.api.transfer.item;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -54,12 +51,5 @@ public class CustomItemStackHandler extends ItemStackHandler
     public void clear() {
         stacks.clear();
         onContentsChanged.run();
-    }
-
-    public void dropInventoryInWorld(Level world, BlockPos pos) {
-        for (ItemStack stack : stacks) {
-            Block.popResource(world, pos, stack);
-        }
-        clear();
     }
 }

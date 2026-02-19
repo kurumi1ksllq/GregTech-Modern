@@ -5,8 +5,8 @@ import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
 import com.gregtechceu.gtceu.api.gui.fancy.TabsWidget;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.fancyconfigurator.AutoStockingFancyConfigurator;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
-import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
@@ -76,13 +76,13 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     /////////////////////////////////
 
     @Override
-    public void addedToController(MultiblockControllerMachine controller) {
+    public void addedToController(IMultiController controller) {
         super.addedToController(controller);
         IMEStockingPart.super.addedToController(controller);
     }
 
     @Override
-    public void removedFromController(MultiblockControllerMachine controller) {
+    public void removedFromController(IMultiController controller) {
         IMEStockingPart.super.removedFromController(controller);
         super.removedFromController(controller);
     }
@@ -163,7 +163,7 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
 
         // Otherwise, we need to test for if the item is configured
         // in any stocking bus in the multi (besides ourselves).
-        for (MultiblockControllerMachine controller : getControllers()) {
+        for (IMultiController controller : getControllers()) {
             for (IMultiPart part : controller.getParts()) {
                 if (part instanceof MEStockingBusPartMachine bus) {
                     // We don't need to check for ourselves, as this case is handled elsewhere.

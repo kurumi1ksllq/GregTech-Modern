@@ -9,6 +9,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.IDynamicBakedModel;
 
+import org.jetbrains.annotations.NotNull;
+
 public abstract class BaseBakedModel implements IDynamicBakedModel {
 
     public BaseBakedModel() {}
@@ -35,13 +37,13 @@ public abstract class BaseBakedModel implements IDynamicBakedModel {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public ItemOverrides getOverrides() {
+    public @NotNull ItemOverrides getOverrides() {
         return ItemOverrides.EMPTY;
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public TextureAtlasSprite getParticleIcon() {
+    public @NotNull TextureAtlasSprite getParticleIcon() {
         return Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
                 .apply(MissingTextureAtlasSprite.getLocation());
     }

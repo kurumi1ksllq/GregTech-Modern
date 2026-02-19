@@ -1,13 +1,15 @@
 package com.gregtechceu.gtceu.api.recipe;
 
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
+
+import net.minecraft.network.FriendlyByteBuf;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
@@ -17,11 +19,17 @@ import java.util.Map;
 
 @AllArgsConstructor
 public class RecipeSpoilageData {
-    public static final Codec<RecipeSpoilageData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            RecipeCapability.INGREDIENT_CODEC.optionalFieldOf("consumedInputs", new HashMap<>()).forGetter(RecipeSpoilageData::getConsumedInputs),
-            Codec.BOOL.fieldOf("keepSpoilingProgress").forGetter(RecipeSpoilageData::keepSpoilingProgress)
-    ).apply(instance, RecipeSpoilageData::new));
 
+    public static final Codec<RecipeSpoilageData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            RecipeCapability.INGREDIENT_CODEC.optionalFieldOf("consumedInputs", new HashMap<>())
+                    .forGetter(RecipeSpoilageData::getConsumedInputs),
+            Codec.BOOL.fieldOf("keepSpoilingProgress").forGetter(RecipeSpoilageData::keepSpoilingProgress))
+            .apply(instance, RecipeSpoilageData::new));
+
+    /**
+     * Populated after the inputs are already consumed, but the recipe didn't start yet.
+     * For use in {@link GTRecipe#outputModifier}
+     */
     @Getter(AccessLevel.PRIVATE)
     private Map<RecipeCapability<?>, List<?>> consumedInputs;
     @Accessors(fluent = true)
@@ -37,13 +45,13 @@ public class RecipeSpoilageData {
     }
 
     public <T> void addConsumedInput(RecipeCapability<T> recipeCapability, T t) {
-        //noinspection unchecked why can't I just add whatever I want to a List<?>
+        // noinspection unchecked why can't I just add whatever I want to a List<?>
         ((List<T>) consumedInputs.computeIfAbsent(recipeCapability, cap -> new ArrayList<>())).add(t);
     }
 
     @Unmodifiable
     public <T> List<T> getConsumedInputs(RecipeCapability<T> recipeCapability) {
-        //noinspection unchecked
+        // noinspection unchecked
         return (List<T>) consumedInputs.getOrDefault(recipeCapability, List.of());
     }
 

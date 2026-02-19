@@ -31,7 +31,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 

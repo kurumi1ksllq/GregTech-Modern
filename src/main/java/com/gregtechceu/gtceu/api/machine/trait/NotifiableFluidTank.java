@@ -180,8 +180,7 @@ public class NotifiableFluidTank extends NotifiableRecipeHandlerTrait<FluidIngre
                             visited[tank].setAmount(count - drained.getAmount());
                             changed = true;
                             FluidStack copied = drained.copy();
-                            recipe.consumedInputs.computeIfAbsent(GTRecipeCapabilities.FLUID, cap -> new ArrayList<>())
-                                    .add(FluidIngredient.of(copied));
+                            recipe.spoilageData.addConsumedInput(GTRecipeCapabilities.FLUID, FluidIngredient.of(copied));
                         }
                         amount -= drained.getAmount();
                     }

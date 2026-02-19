@@ -167,8 +167,7 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
                             ItemStack copied = extracted.copy();
                             ISpoilableItem spoilable = GTCapabilityHelper.getSpoilable(copied);
                             if (spoilable != null) spoilable.freezeSpoiling();
-                            recipe.consumedInputs.computeIfAbsent(GTRecipeCapabilities.ITEM, cap -> new ArrayList<>())
-                                    .add(Ingredient.of(copied));
+                            recipe.spoilageData.addConsumedInput(GTRecipeCapabilities.ITEM, Ingredient.of(copied));
                         }
                         amount -= extracted.getCount();
                     }

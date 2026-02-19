@@ -137,12 +137,12 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
         GTRecipeType type = (GTRecipeType) BuiltInRegistries.RECIPE_TYPE.get(recipeType);
         GTRecipeCategory category = GTRegistries.RECIPE_CATEGORIES.get(categoryLoc);
 
-        boolean keepSpoilingProgress = buf.readBoolean();
+        RecipeSpoilageData spoilageData = RecipeSpoilageData.readFromNetwork(buf);
 
         GTRecipe recipe = new GTRecipe(type, id,
                 inputs, outputs, tickInputs, tickOutputs,
                 inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                conditions, ingredientActions, data, duration, category, groupColor, keepSpoilingProgress);
+                conditions, ingredientActions, data, duration, category, groupColor, spoilageData);
 
         recipe.recipeCategory.addRecipe(recipe);
 
@@ -206,19 +206,19 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
                                     .optionalFieldOf("tickInputChanceLogics", Map.of()).forGetter(val -> val.tickInputChanceLogics),
                             Codec.unboundedMap(RecipeCapability.DIRECT_CODEC, GTRegistries.CHANCE_LOGICS.codec())
                                     .optionalFieldOf("tickOutputChanceLogics", Map.of()).forGetter(val -> val.tickOutputChanceLogics),
-                            RecipeCapability.INGREDIENT_CODEC.optionalFieldOf("consumedInputs", new HashMap<>()).forGetter(val -> (Map) val.consumedInputs),
                             RecipeCondition.CODEC.listOf().optionalFieldOf("recipeConditions", List.of()).forGetter(val -> val.conditions),
                             CompoundTag.CODEC.optionalFieldOf("data", new CompoundTag()).forGetter(val -> val.data),
                             ExtraCodecs.NON_NEGATIVE_INT.fieldOf("duration").forGetter(val -> val.duration),
                             GTRegistries.RECIPE_CATEGORIES.codec().optionalFieldOf("category", GTRecipeCategory.DEFAULT).forGetter(val -> val.recipeCategory),
-                            Codec.INT.fieldOf("groupColor").forGetter(val -> val.groupColor))
+                            Codec.INT.fieldOf("groupColor").forGetter(val -> val.groupColor),
+                            RecipeSpoilageData.CODEC.fieldOf("spoilageData").forGetter(val -> val.spoilageData))
                     .apply(instance, (type,
                                       inputs, outputs, tickInputs, tickOutputs,
                                       inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                                      conditions, data, duration, recipeCategory, groupColor) ->
+                                      conditions, data, duration, recipeCategory, groupColor, spoilageData) ->
                             new GTRecipe(type, inputs, outputs, tickInputs, tickOutputs,
                                     inputChanceLogics, outputChanceLogics, tickInputChanceLogics, tickOutputChanceLogics,
-                                    conditions, List.of(), data, duration, recipeCategory, groupColor, keepSpoilingProgress)));
+                                    conditions, List.of(), data, duration, recipeCategory, groupColor, spoilageData)));
         } else {
             return RecordCodecBuilder.create(instance -> instance.group(
                             GTRegistries.RECIPE_TYPES.codec().fieldOf("type").forGetter(val -> val.recipeType),
@@ -234,14 +234,13 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
                                     .optionalFieldOf("tickInputChanceLogics", Map.of()).forGetter(val -> val.tickInputChanceLogics),
                             Codec.unboundedMap(RecipeCapability.DIRECT_CODEC, GTRegistries.CHANCE_LOGICS.codec())
                                     .optionalFieldOf("tickOutputChanceLogics", Map.of()).forGetter(val -> val.tickOutputChanceLogics),
-                            RecipeCapability.INGREDIENT_CODEC.optionalFieldOf("consumedInputs", new HashMap<>()).forGetter(val -> (Map) val.consumedInputs),
                             RecipeCondition.CODEC.listOf().optionalFieldOf("recipeConditions", List.of()).forGetter(val -> val.conditions),
                             KJSCallWrapper.INGREDIENT_ACTION_CODEC.optionalFieldOf("kubejs:actions", List.of()).forGetter(val -> (List<IngredientAction>) val.ingredientActions),
                             CompoundTag.CODEC.optionalFieldOf("data", new CompoundTag()).forGetter(val -> val.data),
                             ExtraCodecs.NON_NEGATIVE_INT.fieldOf("duration").forGetter(val -> val.duration),
                             GTRegistries.RECIPE_CATEGORIES.codec().optionalFieldOf("category", GTRecipeCategory.DEFAULT).forGetter(val -> val.recipeCategory),
-                            Codec.INT.optionalFieldOf("groupColor", -1).forGetter(val -> val.groupColor)),
-                            Codec.BOOL.optionalFieldOf("keepSpoilingProgress", true).forGetter(val -> val.transferSpoilingProgress))
+                            Codec.INT.optionalFieldOf("groupColor", -1).forGetter(val -> val.groupColor),
+                            RecipeSpoilageData.CODEC.fieldOf("spoilageData").forGetter(val -> val.spoilageData))
                     .apply(instance, GTRecipe::new));
         }
         // spotless:on

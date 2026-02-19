@@ -63,10 +63,10 @@ public class GTRecipeModifiers {
                 ISpoilableItem outputSpoilable = GTCapabilityHelper.getSpoilable(stack);
                 if (outputSpoilable == null) return;
                 SpoilUtils.update(stack, new SpoilContext(machine));
-                if (!r.transferSpoilingProgress) return;
+                if (!r.spoilageData.keepSpoilingProgress()) return;
                 double spoilProgress = 0;
                 int spoilableCount = 0;
-                for (Object inObject : r.consumedInputs.getOrDefault(GTRecipeCapabilities.ITEM, List.of())) {
+                for (Object inObject : r.spoilageData.getConsumedInputs(GTRecipeCapabilities.ITEM)) {
                     if (!(inObject instanceof Ingredient ingredient)) continue;
                     if (ingredient.getItems().length == 0) continue;
                     ItemStack in = ingredient.getItems()[0];

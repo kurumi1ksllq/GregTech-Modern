@@ -160,7 +160,7 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
                 recipe.outputChanceLogics,
                 recipe.tickInputChanceLogics, recipe.tickOutputChanceLogics, recipe.conditions,
                 recipe.ingredientActions,
-                recipe.data, recipe.duration, recipe.recipeCategory, recipe.groupColor, recipe.transferSpoilingProgress);
+                recipe.data, recipe.duration, recipe.recipeCategory, recipe.groupColor, recipe.spoilageData);
     }
 
     public static class DistillationTowerLogic extends RecipeLogic {

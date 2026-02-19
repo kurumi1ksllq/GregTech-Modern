@@ -158,9 +158,9 @@ public class DistillationTowerMachine extends WorkableElectricMultiblockMachine
         return new GTRecipe(recipe.recipeType, recipe.id, recipe.inputs, cm.applyContents(recipe.outputs),
                 recipe.tickInputs, cm.applyContents(recipe.tickOutputs), recipe.inputChanceLogics,
                 recipe.outputChanceLogics,
-                recipe.tickInputChanceLogics, recipe.tickOutputChanceLogics, new HashMap<>(),
-                recipe.conditions, recipe.ingredientActions,
-                recipe.data, recipe.duration, recipe.recipeCategory, recipe.transferSpoilingProgress);
+                recipe.tickInputChanceLogics, recipe.tickOutputChanceLogics, recipe.conditions,
+                recipe.ingredientActions,
+                recipe.data, recipe.duration, recipe.recipeCategory, recipe.groupColor, recipe.transferSpoilingProgress);
     }
 
     public static class DistillationTowerLogic extends RecipeLogic {

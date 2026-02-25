@@ -3,9 +3,7 @@ package com.gregtechceu.gtceu.client;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.BlockAttributes;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.cosmetics.CapeRegistry;
-import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.client.renderer.BlockHighlightRenderer;
@@ -28,10 +26,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickAction;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -39,14 +33,12 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.event.ItemStackedOnOtherEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -54,7 +46,6 @@ import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = GTCEu.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
@@ -221,51 +212,5 @@ public class ClientEventListener {
     @SubscribeEvent
     public static void serverStopped(ServerStoppedEvent event) {
         ClientCacheManager.clearCaches();
-    }
-
-    @SubscribeEvent
-    public static void onItemStackStacking(ItemStackedOnOtherEvent event) {
-        ItemStack a = event.getStackedOnItem();
-        ItemStack b = event.getCarriedItem();
-        ISpoilableItem spoilable1 = GTCapabilityHelper.getSpoilable(a);
-        ISpoilableItem spoilable2 = GTCapabilityHelper.getSpoilable(b);
-        if (spoilable1 == null && spoilable2 == null) return;
-        Player player = event.getPlayer();
-        AbstractContainerMenu menu = player.containerMenu;
-        ClickAction clickAction = event.getClickAction();
-        Slot slot = event.getSlot();
-
-        // code after this line is copied from AbstractContainerMenu, but with
-        // ItemStack.isSameItemSameTag replaced with ItemHandlerHelper.canItemStacksStack
-        if (a.isEmpty()) {
-            if (!b.isEmpty()) {
-                int i3 = clickAction == ClickAction.PRIMARY ? b.getCount() : 1;
-                menu.setCarried(slot.safeInsert(b, i3));
-            }
-        } else if (slot.mayPickup(player)) {
-            if (b.isEmpty()) {
-                int j3 = clickAction == ClickAction.PRIMARY ? a.getCount() : (a.getCount() + 1) / 2;
-                Optional<ItemStack> optional = slot.tryRemove(j3, Integer.MAX_VALUE, player);
-                optional.ifPresent(stack -> {
-                    menu.setCarried(stack);
-                    slot.onTake(player, stack);
-                });
-            } else if (slot.mayPlace(b)) {
-                if (ItemHandlerHelper.canItemStacksStack(a, b)) {
-                    int k3 = clickAction == ClickAction.PRIMARY ? b.getCount() : 1;
-                    menu.setCarried(slot.safeInsert(b, k3));
-                } else if (b.getCount() <= slot.getMaxStackSize(b)) {
-                    menu.setCarried(a);
-                    slot.setByPlayer(b);
-                }
-            } else if (ItemHandlerHelper.canItemStacksStack(a, b)) {
-                Optional<ItemStack> optional = slot.tryRemove(a.getCount(), b.getMaxStackSize() - b.getCount(), player);
-                optional.ifPresent((p_150428_) -> {
-                    b.grow(p_150428_.getCount());
-                    slot.onTake(player, p_150428_);
-                });
-            }
-        }
-        event.setCanceled(true);
     }
 }

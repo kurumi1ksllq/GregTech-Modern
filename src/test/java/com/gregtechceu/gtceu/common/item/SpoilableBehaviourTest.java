@@ -13,7 +13,7 @@ import com.gregtechceu.gtceu.common.cover.ConveyorCover;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
-import com.gregtechceu.gtceu.common.item.behavior.SpoilableBehaviour;
+import com.gregtechceu.gtceu.common.item.behavior.SpoilableBehavior;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
 import com.gregtechceu.gtceu.common.machine.storage.CrateMachine;
@@ -25,7 +25,6 @@ import net.minecraft.gametest.framework.BeforeBatch;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Pig;
@@ -36,8 +35,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import net.minecraftforge.items.IItemHandler;
@@ -72,40 +69,37 @@ public class SpoilableBehaviourTest {
                 .keepSpoilingProgress(false)
                 .buildRawRecipe());
         LCR_RECIPE_TYPE.getAdditionHandler().completeStaging();
-        MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class,
-                SpoilableBehaviourTest::attachSpoilables);
+        attachSpoilables();
     }
 
-    private static void attachSpoilables(AttachCapabilitiesEvent<ItemStack> event) {
-        ResourceLocation id = GTCEu.id("spoilable");
-        ItemStack stack = event.getObject();
-        if (stack.getItem() == Items.JIGSAW)
-            event.addCapability(id, SpoilableBehaviour.builder()
-                    .ticks(10)
-                    .result(Items.DIRT)
-                    .build().toCapProvider(stack));
-        if (stack.getItem() == Items.APPLE)
-            event.addCapability(id, SpoilableBehaviour.builder()
-                    .ticks(10)
-                    .result(Items.STRUCTURE_BLOCK)
-                    .build().toCapProvider(stack));
-        if (stack.getItem() == Items.STRUCTURE_BLOCK)
-            event.addCapability(id, SpoilableBehaviour.builder()
-                    .ticks(40)
-                    .result(Items.STRUCTURE_VOID)
-                    .build().toCapProvider(stack));
-        if (stack.getItem() == Items.STRUCTURE_VOID)
-            event.addCapability(id, SpoilableBehaviour.builder()
-                    .ticks(10)
-                    .result(Items.JIGSAW)
-                    .build().toCapProvider(stack));
-        if (stack.getItem() == Items.EGG)
-            event.addCapability(id, SpoilableBehaviour.builder()
-                    .ticks(10)
-                    .result(Items.DRAGON_EGG)
-                    .result(EntityType.PIG)
-                    .multiplyResult(3)
-                    .build().toCapProvider(stack));
+    private static void attachSpoilables() {
+        SpoilableBehavior.builder()
+                .ticks(10)
+                .result(Items.DIRT)
+                .build()
+                .attachTo(Items.JIGSAW);
+        SpoilableBehavior.builder()
+                .ticks(10)
+                .result(Items.STRUCTURE_BLOCK)
+                .build()
+                .attachTo(Items.APPLE);
+        SpoilableBehavior.builder()
+                .ticks(40)
+                .result(Items.STRUCTURE_VOID)
+                .build()
+                .attachTo(Items.STRUCTURE_BLOCK);
+        SpoilableBehavior.builder()
+                .ticks(10)
+                .result(Items.JIGSAW)
+                .build()
+                .attachTo(Items.STRUCTURE_VOID);
+        SpoilableBehavior.builder()
+                .ticks(10)
+                .result(Items.DRAGON_EGG)
+                .result(EntityType.PIG)
+                .multiplyResult(3)
+                .build()
+                .attachTo(Items.EGG);
     }
 
     private static BusHolder getBussesAndForm(GameTestHelper helper) {

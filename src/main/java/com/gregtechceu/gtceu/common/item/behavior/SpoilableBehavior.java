@@ -1,51 +1,60 @@
 package com.gregtechceu.gtceu.common.item.behavior;
 
-import com.gregtechceu.gtceu.api.capability.GTCapability;
-import com.gregtechceu.gtceu.api.item.component.IItemComponent;
-import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.item.component.SpoilContext;
 import com.gregtechceu.gtceu.api.item.component.SpoilUtils;
-import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
 import com.gregtechceu.gtceu.common.item.SpoilableItemStack;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SpoilableBehaviour implements IItemComponent, IComponentCapability {
+public class SpoilableBehavior {
 
     private final Function<ItemStack, Long> ticks;
     private final SpoilResultProvider spoilResult;
     private final Function<ItemStack, Component> spoilsIntoTooltip;
+    private final List<Item> attachedTo = new ArrayList<>();
 
     public static Builder builder() {
         return new Builder();
     }
 
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(ItemStack itemStack, @NotNull Capability<T> cap) {
-        MutableObject<LazyOptional<ISpoilableItem>> lazyOptional = new MutableObject<>();
-        lazyOptional.setValue(LazyOptional.of(() -> new SpoilableBehaviourStack(itemStack)));
-        return GTCapability.CAPABILITY_SPOILABLE_ITEM.orEmpty(cap, lazyOptional.getValue());
+    private SpoilableBehavior(Function<ItemStack, Long> ticks, SpoilResultProvider spoilResult,
+                              Function<ItemStack, Component> spoilsIntoTooltip) {
+        this.ticks = ticks;
+        this.spoilResult = spoilResult;
+        this.spoilsIntoTooltip = spoilsIntoTooltip;
     }
 
-    public ICapabilityProvider toCapProvider(ItemStack stack) {
-        return new SpoilableBehaviourStack(stack);
+    public SpoilableBehavior attachTo(ItemLike item) {
+        if (attachedTo.isEmpty()) {
+            MinecraftForge.EVENT_BUS.register(this);
+        }
+        attachedTo.add(item.asItem());
+        return this;
+    }
+
+    @SubscribeEvent
+    public void attachCapability(AttachCapabilitiesEvent<ItemStack> event) {
+        ItemStack stack = event.getObject();
+        if (attachedTo.stream().anyMatch(stack::is)) {
+            event.addCapability(GTCEu.id("spoilable"), new SpoilableBehaviourStack(stack));
+        }
     }
 
     public class SpoilableBehaviourStack extends SpoilableItemStack {
@@ -87,8 +96,8 @@ public class SpoilableBehaviour implements IItemComponent, IComponentCapability 
             result(ItemStack.EMPTY);
         }
 
-        public SpoilableBehaviour build() {
-            return new SpoilableBehaviour(ticks, result, tooltip);
+        public SpoilableBehavior build() {
+            return new SpoilableBehavior(ticks, result, tooltip);
         }
 
         public Builder ticks(Function<ItemStack, Long> ticks) {

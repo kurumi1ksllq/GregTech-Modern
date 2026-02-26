@@ -6,7 +6,7 @@ import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.item.IMergeableNBTSerializable;
 import com.gregtechceu.gtceu.api.item.ISpoilableItemStackExtension;
 import com.gregtechceu.gtceu.api.item.component.*;
-import com.gregtechceu.gtceu.common.item.behavior.SpoilableBehaviour;
+import com.gregtechceu.gtceu.common.item.behavior.SpoilableBehavior;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.ChatFormatting;
@@ -18,6 +18,7 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -41,8 +42,8 @@ import java.util.List;
  *
  * @implNote this class uses a mixin in its {@link ISpoilableItem#updateFreshness} implementation
  *
- * @see SpoilableBehaviour
- * @see SpoilableBehaviour#toCapProvider(ItemStack)
+ * @see SpoilableBehavior
+ * @see SpoilableBehavior#attachTo(ItemLike)
  */
 public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformation, IDurabilityBar,
                                          IMergeableNBTSerializable, ICapabilityProvider {

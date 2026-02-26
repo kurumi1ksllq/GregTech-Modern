@@ -44,7 +44,6 @@ import com.gregtechceu.gtceu.common.fluid.potion.BottleItemFluidHandler;
 import com.gregtechceu.gtceu.common.fluid.potion.PotionItemFluidHandler;
 import com.gregtechceu.gtceu.common.item.armor.IJetpack;
 import com.gregtechceu.gtceu.common.item.armor.QuarkTechSuite;
-import com.gregtechceu.gtceu.common.item.behavior.SpoilableBehaviour;
 import com.gregtechceu.gtceu.common.item.behavior.ToggleEnergyConsumerBehavior;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.common.network.GTNetwork;
@@ -131,12 +130,6 @@ public class CommonEventListener {
             event.addCapability(GTCEu.id("potion_item_handler"), new PotionItemFluidHandler(itemStack));
         } else if (itemStack.is(Items.GLASS_BOTTLE)) {
             event.addCapability(GTCEu.id("bottle_item_handler"), new BottleItemFluidHandler(itemStack));
-        } else if (itemStack.is(Items.BARRIER)) {
-            event.addCapability(GTCEu.id("spoilage_test"), SpoilableBehaviour.builder()
-                    .result(Items.DIRT)
-                    .ticks(300)
-                    .build()
-                    .toCapProvider(itemStack));
         }
     }
 

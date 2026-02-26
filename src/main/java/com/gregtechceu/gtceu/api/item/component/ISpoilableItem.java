@@ -1,17 +1,16 @@
 package com.gregtechceu.gtceu.api.item.component;
 
 import com.gregtechceu.gtceu.api.gui.widget.PhantomSlotWidget;
-import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.item.SpoilableItemStack;
-import com.gregtechceu.gtceu.common.item.behavior.SpoilableBehaviour;
+import com.gregtechceu.gtceu.common.item.behavior.SpoilableBehavior;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -50,18 +49,10 @@ import java.util.Optional;
  * in your own implementation of the {@link ISpoilableItem} interface.
  * </p>
  * <p>
- * To make an item spoilable, you need to attach an instance of {@link SpoilableItemStack} as a capability to the item.
- * A capability provider can be easily obtained with {@link SpoilableBehaviour#toCapProvider}, so that
- * you are not required to subclass {@link SpoilableItemStack} or this interface directly.
+ * To make an item spoilable, you can simply use {@link SpoilableBehavior#attachTo(ItemLike)}.
+ * <br>
  * If you want to implement this interface yourself, please note that {@link SpoilableItemStack}
  * calls a mixin method in its {@link ISpoilableItem#updateFreshness} implementation.
- * To attach a capability to your own item, override {@link Item#initCapabilities} in your
- * {@link Item} subclass.<br>
- * To attach a capability to a {@link ComponentItem}, you can use
- * {@link SpoilableBehaviour}, as
- * it is an {@link IItemComponent}.<br>
- * To attach a capability to an existing item, use {@link AttachCapabilitiesEvent<ItemStack>}
- * (fired on the forge event bus).
  * </p>
  */
 public interface ISpoilableItem {

@@ -23,6 +23,7 @@ public abstract class CapabilityDispatcherMixin {
     @Unique
     private static void gtceu$beforeComparison(@NotNull Object first, @Nullable Object second) {
         Map<String, INBTSerializable<Tag>> map = new HashMap<>();
+        Map<String, INBTSerializable<Tag>> map2 = new HashMap<>();
         CapabilityDispatcherAccessor accessor = (CapabilityDispatcherAccessor) first;
         CapabilityDispatcherAccessor otherAccessor = (CapabilityDispatcherAccessor) second;
         if (otherAccessor != null) {
@@ -31,10 +32,20 @@ public abstract class CapabilityDispatcherMixin {
             }
         }
         for (int i = 0; i < accessor.getWriters().length; i++) {
+            map2.put(accessor.getNames()[i], accessor.getWriters()[i]);
             INBTSerializable<Tag> writer = accessor.getWriters()[i];
             String name = accessor.getNames()[i];
             if (writer instanceof IMergeableNBTSerializable mergeable) {
                 mergeable.prepareForComparisonWith(map.get(name));
+            }
+        }
+        if (otherAccessor != null) {
+            for (int i = 0; i < otherAccessor.getWriters().length; i++) {
+                INBTSerializable<Tag> writer = otherAccessor.getWriters()[i];
+                String name = otherAccessor.getNames()[i];
+                if (writer instanceof IMergeableNBTSerializable mergeable) {
+                    mergeable.prepareForComparisonWith(map2.get(name));
+                }
             }
         }
     }
@@ -45,6 +56,5 @@ public abstract class CapabilityDispatcherMixin {
             method = "areCompatible")
     private void gtceu$areCompatible(CapabilityDispatcher other, CallbackInfoReturnable<Boolean> cir) {
         gtceu$beforeComparison(this, other);
-        if (other != null) gtceu$beforeComparison(other, this);
     }
 }

@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.common.item;
+package com.gregtechceu.gtceu.common.item.behavior;
 
 import com.gregtechceu.gtceu.api.capability.GTCapability;
 import com.gregtechceu.gtceu.api.item.component.IItemComponent;
@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.item.component.ISpoilableItem;
 import com.gregtechceu.gtceu.api.item.component.SpoilContext;
 import com.gregtechceu.gtceu.api.item.component.SpoilUtils;
 import com.gregtechceu.gtceu.api.item.component.forge.IComponentCapability;
+import com.gregtechceu.gtceu.common.item.SpoilableItemStack;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -67,9 +68,6 @@ public class SpoilableBehaviour implements IItemComponent, IComponentCapability 
         protected Component getSpoilResultTooltip() {
             return spoilsIntoTooltip.apply(getStack());
         }
-
-        @Override
-        protected void onItemChanged() {}
     }
 
     @FunctionalInterface

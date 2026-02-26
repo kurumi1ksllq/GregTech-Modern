@@ -3,8 +3,8 @@ package com.gregtechceu.gtceu.api.item.component;
 import com.gregtechceu.gtceu.api.gui.widget.PhantomSlotWidget;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.common.item.SpoilableBehaviour;
 import com.gregtechceu.gtceu.common.item.SpoilableItemStack;
+import com.gregtechceu.gtceu.common.item.behavior.SpoilableBehaviour;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.Item;

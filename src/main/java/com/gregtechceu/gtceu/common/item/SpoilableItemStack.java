@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.item.IMergeableNBTSerializable;
 import com.gregtechceu.gtceu.api.item.ISpoilableItemStackExtension;
 import com.gregtechceu.gtceu.api.item.component.*;
+import com.gregtechceu.gtceu.common.item.behavior.SpoilableBehaviour;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.ChatFormatting;
@@ -296,5 +297,5 @@ public abstract class SpoilableItemStack implements ISpoilableItem, IAddInformat
     /**
      * Called when the stack has spoiled and transformed into a different item.
      */
-    abstract protected void onItemChanged();
+    protected void onItemChanged() {}
 }

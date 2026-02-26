@@ -26,14 +26,12 @@ It may represent:
 - An entity, usually a player (contains `Entity` and the number of the slot in that entity's inventory, that may be `-1`)
 
 This info is used to spawn entities when the item spoils, or do something more complex.
-The `SpoilableBehaviour.builder()` can accept a function as a `result`, so you can do whatever you want there :)
+The `SpoilableBehavior.builder()` can accept a function as a `result`, so you can do whatever you want there :)
 
-### SpoilableBehaviour
-`SpoilableBehaviour` is an `IItemComponent` that can be attached to a `ComponentItem` like any other component,
-or attached to ANY item as a capability, using `SpoilableBehaviour#toCapProvider` in an `AttachCapabilitiesEvent<ItemStack>`
-listener. For more info on how to do that see the example below.
+### SpoilableBehavior
+`SpoilableBehavior` is a helper class used to make items spoilable.
 
-`SpoilableBehaviour.builder()` is a convenient way to create a `SpoilableBehaviour`, currently it has the following methods:
+`SpoilableBehavior.builder()` is a convenient way to create a `SpoilableBehavior`, currently it has the following methods:
 
 - `.ticks(long)`
     used to specify ticks until spoiled
@@ -58,6 +56,9 @@ listener. For more info on how to do that see the example below.
 - `.tooltip(Function<ItemStack, Component>)`
     same as `.tooltip(Component)`, but can depend on the stack
 
+To attach a `SpoilableBehavior` to an item, you can use the `attachTo(ItemLike)` method.
+It can be chained if you want to make multiple items spoil using the same behavior.
+
 ### SpoilUtils
 `SpoilUtils` is a utility class with some static methods for updating items and blocks:
 
@@ -73,22 +74,16 @@ listener. For more info on how to do that see the example below.
     public class Example {
             
         // Make diamonds spoil into dirt and a dragon in 100 seconds, apples into jigsaws in 35 seconds
-        @SubscribeEvent
-        public static void attachSpoilables(AttachCapabilitiesEvent<ItemStack> event) {
-            ResourceLocation id = GTCEu.id("spoilable");
-            ItemStack stack = event.getObject();
-            if (stack.is(Items.DIAMOND)) {
-                event.addCapability(id, SpoilageBehaviour.builder()
-                        .ticks(20*100)
-                        .result(Items.DIRT)
-                        .result(EntityType.ENDER_DRAGON)
-                        .build().toCapProvider(stack));
-            } else if (stack.is(Items.APPLE)) {
-                event.addCapability(id, SpoilableBehaviour.builder()
-                        .ticks(20*35)
-                        .result(Items.JIGSAW)
-                        .build().toCapProvider(stack));
-            }
+        public static void attachSpoilables() {
+            SpoilageBehaviour.builder()
+                    .ticks(20*100)
+                    .result(Items.DIRT)
+                    .result(EntityType.ENDER_DRAGON)
+                    .build().attachTo(Items.DIAMOND);
+            SpoilableBehaviour.builder()
+                    .ticks(20*35)
+                    .result(Items.JIGSAW)
+                    .build().attachTo(Items.APPLE);
         }
         
         public void getAndSetValuesAndStuff(ItemStack stack) {

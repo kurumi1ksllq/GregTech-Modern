@@ -1,9 +1,9 @@
 package com.gregtechceu.gtceu.client.model.pipe;
 
 import com.gregtechceu.gtceu.api.block.PipeBlock;
-import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.api.registry.registrate.GTBlockBuilder;
 import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
+import com.gregtechceu.gtceu.data.block.GTBlockStateProperties;
 import com.gregtechceu.gtceu.data.datagen.model.builder.PipeModelBuilder;
 import com.gregtechceu.gtceu.data.pack.event.RegisterDynamicResourcesEvent;
 import com.gregtechceu.gtceu.utils.GTMath;
@@ -88,8 +88,7 @@ public class PipeModel {
             SIDE_OVERLAY_KEY   = "side_overlay",
             END_OVERLAY_KEY    = "end_overlay";
     // spotless:on
-    protected static final ResourceLocation RENDERTYPE_CUTOUT_MIPPED = ResourceLocation
-            .fromNamespaceAndPath("cutout_mipped", "");
+    protected static final String RENDERTYPE_CUTOUT_MIPPED = "cutout_mipped";
 
     public static final Set<PipeModel> DYNAMIC_MODELS = new HashSet<>();
 

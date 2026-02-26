@@ -88,15 +88,13 @@ import com.gregtechceu.gtceu.data.tools.GTToolBehaviors;
 import com.gregtechceu.gtceu.data.tools.GTToolTiers;
 import com.gregtechceu.gtceu.data.valueprovider.GTValueProviderTypes;
 import com.gregtechceu.gtceu.data.worldgen.GTFeatures;
-import com.gregtechceu.gtceu.integration.ae2.GTAEPlaceholders;
 import com.gregtechceu.gtceu.integration.cctweaked.CCTweakedPlugin;
-import com.gregtechceu.gtceu.integration.create.GTCreateIntegration;
 import com.gregtechceu.gtceu.integration.kjs.GTCEuStartupEvents;
 import com.gregtechceu.gtceu.integration.kjs.GTKubeJSPlugin;
 import com.gregtechceu.gtceu.integration.kjs.events.MaterialModificationKubeEvent;
 import com.gregtechceu.gtceu.integration.map.WaypointManager;
 import com.gregtechceu.gtceu.integration.top.TheOneProbePlugin;
-import com.gregtechceu.gtceu.utils.input.KeyBind;
+import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
 
 import com.lowdragmc.lowdraglib.gui.factory.UIFactory;
 
@@ -199,13 +197,6 @@ public class CommonInit {
         }
         didRunRegistration = true;
 
-        if (ConfigHolder.INSTANCE.compat.createCompat && GTCEu.Mods.isCreateLoaded()) {
-            GTCreateIntegration.init();
-        }
-        if (GTCEu.Mods.isAE2Loaded()) {
-            GTAEPlaceholders.init();
-        }
-
         GTElements.init();
         MaterialIconSet.init();
         MaterialIconType.init();
@@ -255,7 +246,7 @@ public class CommonInit {
         WaypointManager.init();
 
         CustomBlockRotations.init();
-        KeyBind.init();
+        SyncedKeyMappings.init();
         MachineOwner.init();
         ChestGenHooks.init();
         GTDataFixers.init();
@@ -358,6 +349,10 @@ public class CommonInit {
                 FluidIngredient inner = ingredient.ingredient();
                 return MapIngredientTypeManager.getFrom(inner, FluidRecipeCapability.CAP);
             });
+            MapIngredientTypeManager.registerMapIngredient(IntProviderFluidIngredient.class, (ingredient) -> {
+                FluidIngredient inner = ingredient.getInner();
+                return MapIngredientTypeManager.getFrom(inner, FluidRecipeCapability.CAP);
+            });
             MapIngredientTypeManager.registerMapIngredient(CompoundFluidIngredient.class, (ingredient) -> {
                 List<AbstractMapIngredient> list = new ObjectArrayList<>();
                 for (FluidIngredient child : ingredient.children()) {
@@ -369,7 +364,6 @@ public class CommonInit {
             MapIngredientTypeManager.registerMapIngredient(DataComponentFluidIngredient.class, FluidDataComponentMapIngredient::from);
             MapIngredientTypeManager.registerMapIngredient(FluidIngredient.class, FluidTagMapIngredient::from);
             MapIngredientTypeManager.registerMapIngredient(SingleFluidIngredient.class, FluidStackMapIngredient::from);
-            MapIngredientTypeManager.registerMapIngredient(IntProviderFluidIngredient.class, FluidStackMapIngredient::from);
             MapIngredientTypeManager.registerMapIngredient(IntersectionFluidIngredient.class, IntersectionMapIngredient::from);
 
             MapIngredientTypeManager.registerMapIngredient(FluidStack.class, FluidTagMapIngredient::from);

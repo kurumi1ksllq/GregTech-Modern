@@ -12,7 +12,6 @@ import com.gregtechceu.gtceu.api.multiblock.error.SinglePredicateError;
 import com.gregtechceu.gtceu.api.multiblock.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.api.multiblock.util.PatternMatchContext;
 import com.gregtechceu.gtceu.api.multiblock.util.RelativeDirection;
-import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
@@ -647,7 +646,7 @@ public class BlockPattern {
                 if (rt != null) {
                     return rt;
                 }
-            } else if (candidates.stream().anyMatch(candidate -> GTUtil.isSameItemSameTags(candidate, stack)) &&
+            } else if (candidates.stream().anyMatch(candidate -> ItemStack.isSameItemSameComponents(candidate, stack)) &&
                     !stack.isEmpty() && stack.getItem() instanceof BlockItem) {
                 return IntObjectPair.of(i, handler);
             }

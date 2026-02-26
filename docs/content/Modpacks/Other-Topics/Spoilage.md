@@ -70,7 +70,6 @@ It can be chained if you want to make multiple items spoil using the same behavi
 
 !!! example
     ```java
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = ExampleMod.MOD_ID)
     public class Example {
             
         // Make diamonds spoil into dirt and a dragon in 100 seconds, apples into jigsaws in 35 seconds

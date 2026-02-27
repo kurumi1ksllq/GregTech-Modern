@@ -3,10 +3,10 @@ package com.gregtechceu.gtceu.integration.kjs.recipe.components;
 import com.gregtechceu.gtceu.api.addon.AddonFinder;
 import com.gregtechceu.gtceu.api.addon.events.KJSRecipeKeyEvent;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
+import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
-import com.gregtechceu.gtceu.api.recipe.condition.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
-import com.gregtechceu.gtceu.data.recipe.GTRecipeCapabilities;
+import com.gregtechceu.gtceu.common.data.GTRecipeCapabilities;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

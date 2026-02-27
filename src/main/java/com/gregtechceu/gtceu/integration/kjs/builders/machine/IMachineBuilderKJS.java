@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.integration.kjs.builders.machine;
 
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.registry.registrate.MachineBuilder;
-import com.gregtechceu.gtceu.data.model.GTMachineModels;
+import com.gregtechceu.gtceu.common.data.models.GTMachineModels;
 import com.gregtechceu.gtceu.utils.data.RuntimeBlockstateProvider;
 
 import com.tterrag.registrate.providers.DataGenContext;

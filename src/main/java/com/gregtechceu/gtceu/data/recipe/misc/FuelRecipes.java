@@ -1,14 +1,15 @@
 package com.gregtechceu.gtceu.data.recipe.misc;
 
-import com.gregtechceu.gtceu.api.fluid.store.FluidStorageKeys;
+import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
-import static com.gregtechceu.gtceu.data.material.GTMaterials.*;
-import static com.gregtechceu.gtceu.data.recipe.GTRecipeTypes.*;
+import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
+import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
+import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.*;
 
 public class FuelRecipes {
 

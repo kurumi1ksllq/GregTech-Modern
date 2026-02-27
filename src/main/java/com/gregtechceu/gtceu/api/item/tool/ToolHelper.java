@@ -4,30 +4,31 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
+import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.data.chemical.material.Material;
+import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
+import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.IGTTool;
 import com.gregtechceu.gtceu.api.item.datacomponents.AoESymmetrical;
 import com.gregtechceu.gtceu.api.item.datacomponents.ToolBehaviors;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
-import com.gregtechceu.gtceu.api.material.ChemicalHelper;
-import com.gregtechceu.gtceu.api.material.material.Material;
-import com.gregtechceu.gtceu.api.material.material.properties.PropertyKey;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredientExtensions;
-import com.gregtechceu.gtceu.api.recipe.kind.GTRecipe;
-import com.gregtechceu.gtceu.api.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.common.data.GTEnchantmentProviders;
+import com.gregtechceu.gtceu.common.data.GTItems;
+import com.gregtechceu.gtceu.common.data.GTMaterialItems;
+import com.gregtechceu.gtceu.common.data.GTMaterials;
+import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
+import com.gregtechceu.gtceu.common.data.item.GTDataComponents;
+import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
+import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import com.gregtechceu.gtceu.data.enchantment.GTEnchantmentProviders;
-import com.gregtechceu.gtceu.data.item.GTDataComponents;
-import com.gregtechceu.gtceu.data.item.GTItemAbilities;
-import com.gregtechceu.gtceu.data.item.GTItems;
-import com.gregtechceu.gtceu.data.item.GTMaterialItems;
-import com.gregtechceu.gtceu.data.machine.GTMachineUtils;
-import com.gregtechceu.gtceu.data.material.GTMaterials;
-import com.gregtechceu.gtceu.data.recipe.GTRecipeTypes;
-import com.gregtechceu.gtceu.data.tag.CustomTags;
+import com.gregtechceu.gtceu.data.recipe.CustomTags;
+import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 import com.gregtechceu.gtceu.utils.DummyMachineBlockEntity;
 import com.gregtechceu.gtceu.utils.InfiniteEnergyContainer;
 
@@ -105,7 +106,7 @@ public class ToolHelper {
 
     /**
      * Registers the tool against a crafting symbol, this is used in
-     * {@link com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper}
+     * {@link VanillaRecipeHelper}
      */
     public static void registerToolSymbol(char symbol, GTToolType tool) {
         symbols.put(symbol, tool);

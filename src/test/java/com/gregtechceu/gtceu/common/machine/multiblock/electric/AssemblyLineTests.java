@@ -22,7 +22,7 @@ import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.testframework.annotation.TestHolder;
 
-import static com.gregtechceu.gtceu.data.recipe.GTRecipeTypes.ASSEMBLY_LINE_RECIPES;
+import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLY_LINE_RECIPES;
 import static com.gregtechceu.gtceu.gametest.util.TestUtils.getMetaMachine;
 
 @PrefixGameTestTemplate(false)

@@ -11,11 +11,11 @@ import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvid
 import com.gregtechceu.gtceu.client.model.pipe.ActivablePipeModel;
 import com.gregtechceu.gtceu.client.model.pipe.PipeModel;
 import com.gregtechceu.gtceu.common.blockentity.OpticalPipeBlockEntity;
+import com.gregtechceu.gtceu.common.data.GTBlockEntities;
+import com.gregtechceu.gtceu.common.data.GTBlockStateProperties;
 import com.gregtechceu.gtceu.common.pipelike.optical.LevelOpticalPipeNet;
 import com.gregtechceu.gtceu.common.pipelike.optical.OpticalPipeProperties;
 import com.gregtechceu.gtceu.common.pipelike.optical.OpticalPipeType;
-import com.gregtechceu.gtceu.data.block.GTBlockStateProperties;
-import com.gregtechceu.gtceu.data.blockentity.GTBlockEntities;
 
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.BlockPos;

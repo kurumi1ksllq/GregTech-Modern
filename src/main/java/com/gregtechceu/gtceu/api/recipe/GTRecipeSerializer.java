@@ -4,9 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
-import com.gregtechceu.gtceu.api.recipe.condition.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
-import com.gregtechceu.gtceu.api.recipe.kind.GTRecipe;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.recipe.condition.ResearchCondition;
 
@@ -32,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.gregtechceu.gtceu.api.codec.GTCodecUtils.quietExceptionCodec;
+import static com.gregtechceu.gtceu.utils.codec.GTCodecUtils.quietExceptionCodec;
 
 @SuppressWarnings("DataFlowIssue")
 public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {

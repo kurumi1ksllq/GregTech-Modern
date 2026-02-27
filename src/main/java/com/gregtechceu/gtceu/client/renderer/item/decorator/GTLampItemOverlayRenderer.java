@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.client.renderer.item.decorator;
 
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.gregtechceu.gtceu.api.item.LampBlockItem;
-import com.gregtechceu.gtceu.data.item.GTDataComponents;
+import com.gregtechceu.gtceu.common.data.item.GTDataComponents;
+import com.gregtechceu.gtceu.common.item.LampBlockItem;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;

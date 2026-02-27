@@ -3,32 +3,32 @@ package com.gregtechceu.gtceu.core;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.fluid.FluidState;
-import com.gregtechceu.gtceu.api.fluid.GTFluid;
-import com.gregtechceu.gtceu.api.fluid.store.FluidStorage;
-import com.gregtechceu.gtceu.api.fluid.store.FluidStorageKey;
-import com.gregtechceu.gtceu.api.material.ChemicalHelper;
-import com.gregtechceu.gtceu.api.material.material.ItemMaterialData;
-import com.gregtechceu.gtceu.api.material.material.Material;
-import com.gregtechceu.gtceu.api.material.material.properties.FluidProperty;
-import com.gregtechceu.gtceu.api.material.material.properties.OreProperty;
-import com.gregtechceu.gtceu.api.material.material.properties.PropertyKey;
-import com.gregtechceu.gtceu.api.material.material.stack.MaterialStack;
+import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.data.chemical.material.ItemMaterialData;
+import com.gregtechceu.gtceu.api.data.chemical.material.Material;
+import com.gregtechceu.gtceu.api.data.chemical.material.properties.FluidProperty;
+import com.gregtechceu.gtceu.api.data.chemical.material.properties.OreProperty;
+import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
+import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialStack;
+import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
+import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidDefinition;
+import com.gregtechceu.gtceu.api.data.worldgen.bedrockore.BedrockOreDefinition;
+import com.gregtechceu.gtceu.api.fluids.FluidState;
+import com.gregtechceu.gtceu.api.fluids.GTFluid;
+import com.gregtechceu.gtceu.api.fluids.store.FluidStorage;
+import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKey;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
-import com.gregtechceu.gtceu.api.registry.registrate.forge.GTClientFluidTypeExtensions;
-import com.gregtechceu.gtceu.api.tag.TagPrefix;
-import com.gregtechceu.gtceu.api.worldgen.OreVeinDefinition;
-import com.gregtechceu.gtceu.api.worldgen.bedrockfluid.BedrockFluidDefinition;
-import com.gregtechceu.gtceu.api.worldgen.bedrockore.BedrockOreDefinition;
+import com.gregtechceu.gtceu.api.registry.registrate.GTClientFluidTypeExtensions;
+import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
+import com.gregtechceu.gtceu.common.data.GTMaterialItems;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.BlockBehaviourAccessor;
-import com.gregtechceu.gtceu.data.block.GTMaterialBlocks;
-import com.gregtechceu.gtceu.data.item.GTMaterialItems;
-import com.gregtechceu.gtceu.data.tag.CustomTags;
+import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.integration.kjs.GTCEuServerEvents;
-import com.gregtechceu.gtceu.integration.kjs.events.GTBedrockFluidVeinKubeEvent;
-import com.gregtechceu.gtceu.integration.kjs.events.GTBedrockOreVeinKubeEvent;
-import com.gregtechceu.gtceu.integration.kjs.events.GTOreVeinKubeEvent;
+import com.gregtechceu.gtceu.integration.kjs.events.GTBedrockFluidVeinEventJS;
+import com.gregtechceu.gtceu.integration.kjs.events.GTBedrockOreVeinEventJS;
+import com.gregtechceu.gtceu.integration.kjs.events.GTOreVeinEventJS;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.*;
@@ -434,16 +434,16 @@ public class MixinHelpers {
             }
         }
 
-        private static void postOreVeinEvent(WritableRegistry<OreVeinDefinition> registry) {
-            GTCEuServerEvents.ORE_VEIN_MODIFICATION.post(new GTOreVeinKubeEvent(registry));
+        private static void postOreVeinEvent(WritableRegistry<GTOreDefinition> registry) {
+            GTCEuServerEvents.ORE_VEIN_MODIFICATION.post(new GTOreVeinEventJS(registry));
         }
 
         private static void postBedrockFluidEvent(WritableRegistry<BedrockFluidDefinition> registry) {
-            GTCEuServerEvents.FLUID_VEIN_MODIFICATION.post(new GTBedrockFluidVeinKubeEvent(registry));
+            GTCEuServerEvents.FLUID_VEIN_MODIFICATION.post(new GTBedrockFluidVeinEventJS(registry));
         }
 
         private static void postBedrockOreEvent(WritableRegistry<BedrockOreDefinition> registry) {
-            GTCEuServerEvents.BEDROCK_ORE_VEIN_MODIFICATION.post(new GTBedrockOreVeinKubeEvent(registry));
+            GTCEuServerEvents.BEDROCK_ORE_VEIN_MODIFICATION.post(new GTBedrockOreVeinEventJS(registry));
         }
     }
 

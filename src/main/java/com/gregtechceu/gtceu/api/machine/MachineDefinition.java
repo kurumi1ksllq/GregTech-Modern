@@ -18,7 +18,6 @@ import net.minecraft.core.IdMapper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -145,7 +144,7 @@ public class MachineDefinition implements Supplier<MetaMachineBlock> {
         this.defaultRenderState = state;
     }
 
-    public Block getBlock() {
+    public MetaMachineBlock getBlock() {
         return blockSupplier.get();
     }
 

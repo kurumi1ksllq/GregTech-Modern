@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 public class MetaMachineItem extends BlockItem {
 
     public MetaMachineItem(MetaMachineBlock block, Properties properties) {
-        super(block.self(), properties);
+        super(block, properties);
     }
 
     public MachineDefinition getDefinition() {

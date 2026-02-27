@@ -662,7 +662,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
         }
         var blockEntity = blockEntityBuilder.register();
         definition.setRecipeTypes(recipeTypes);
-        definition.setBlockSupplier(block);
+        definition.setBlockSupplier(() -> (MetaMachineBlock) block.get());
         definition.setItemSupplier(item);
         definition.setTier(tier);
         definition.setRecipeOutputLimits(recipeOutputLimits);
@@ -760,7 +760,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
             MachineDefinition.setBuilt(definition);
             var b = builder.blockFactory.apply(properties, definition);
             MachineDefinition.clearBuilt();
-            return b.self();
+            return b;
         }
     }
 

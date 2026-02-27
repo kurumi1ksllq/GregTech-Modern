@@ -191,7 +191,7 @@ public class CommonEventListener {
     public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
         var blockState = event.getLevel().getBlockState(event.getPos());
         if (blockState.hasBlockEntity() && blockState.getBlock() instanceof MetaMachineBlock block &&
-                block.getMachine(event.getLevel(), event.getPos()) instanceof IInteractedMachine machine) {
+                MetaMachine.getMachine(event.getLevel(), event.getPos()) instanceof IInteractedMachine machine) {
             if (machine.onLeftClick(event.getEntity(), event.getLevel(), event.getHand(), event.getPos(),
                     event.getFace())) {
                 event.setCanceled(true);

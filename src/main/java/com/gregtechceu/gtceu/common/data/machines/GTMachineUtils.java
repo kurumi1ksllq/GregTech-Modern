@@ -611,8 +611,8 @@ public class GTMachineUtils {
     // multi register helpers
 
     public static MultiblockMachineDefinition registerMultiblockTank(String name, String displayName, int capacity,
-                                                                     Supplier<? extends Block> casing,
-                                                                     Supplier<? extends Block> valve,
+                                                                     Supplier<Block> casing,
+                                                                     Supplier<MetaMachineBlock> valve,
                                                                      @Nullable PropertyFluidFilter filter,
                                                                      BiConsumer<MultiblockMachineBuilder, ResourceLocation> rendererSetup) {
         return registerMultiblockTank(REGISTRATE, name, displayName, capacity, casing, valve, filter, rendererSetup);
@@ -620,8 +620,8 @@ public class GTMachineUtils {
 
     public static MultiblockMachineDefinition registerMultiblockTank(GTRegistrate registrate, String name,
                                                                      String displayName, int capacity,
-                                                                     Supplier<? extends Block> casing,
-                                                                     Supplier<? extends Block> valve,
+                                                                     Supplier<Block> casing,
+                                                                     Supplier<MetaMachineBlock> valve,
                                                                      @Nullable PropertyFluidFilter filter,
                                                                      BiConsumer<MultiblockMachineBuilder, ResourceLocation> rendererSetup) {
         MultiblockMachineBuilder builder = registrate

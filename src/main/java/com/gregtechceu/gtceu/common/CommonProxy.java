@@ -5,7 +5,7 @@ import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.addon.AddonFinder;
 import com.gregtechceu.gtceu.api.addon.IGTAddon;
-import com.gregtechceu.gtceu.api.block.IMachineBlock;
+import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.capability.GTCapability;
 import com.gregtechceu.gtceu.api.capability.compat.EUToFEProvider;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
@@ -430,7 +430,7 @@ public class CommonProxy {
                 laserPipe.attachCapabilities(event);
             } else if (block instanceof DuctPipeBlock duct) {
                 duct.attachCapabilities(event);
-            } else if (block instanceof IMachineBlock machine) {
+            } else if (block instanceof MetaMachineBlock machine) {
                 machine.attachCapabilities(event);
             } else if (block instanceof OpticalPipeBlock optical) {
                 optical.attachCapabilities(event);

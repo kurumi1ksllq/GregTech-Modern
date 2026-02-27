@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.api.registry.registrate;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.block.IMachineBlock;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.item.MetaMachineItem;
@@ -174,8 +173,8 @@ public class GTRegistrate extends AbstractRegistrate<GTRegistrate> {
     public <DEFINITION extends MachineDefinition> MachineBuilder<DEFINITION, ?> machine(String name,
                                                                                         Function<ResourceLocation, DEFINITION> definitionFactory,
                                                                                         Function<IMachineBlockEntity, MetaMachine> metaMachine,
-                                                                                        BiFunction<BlockBehaviour.Properties, DEFINITION, IMachineBlock> blockFactory,
-                                                                                        BiFunction<IMachineBlock, Item.Properties, MetaMachineItem> itemFactory,
+                                                                                        BiFunction<BlockBehaviour.Properties, DEFINITION, MetaMachineBlock> blockFactory,
+                                                                                        BiFunction<MetaMachineBlock, Item.Properties, MetaMachineItem> itemFactory,
                                                                                         TriFunction<BlockEntityType<?>, BlockPos, BlockState, IMachineBlockEntity> blockEntityFactory) {
         return new MachineBuilder<>(this, name, definitionFactory, metaMachine,
                 blockFactory, itemFactory, blockEntityFactory);
@@ -189,8 +188,8 @@ public class GTRegistrate extends AbstractRegistrate<GTRegistrate> {
 
     public MultiblockMachineBuilder<MultiblockMachineDefinition, ?> multiblock(String name,
                                                                                Function<IMachineBlockEntity, ? extends MultiblockControllerMachine> metaMachine,
-                                                                               BiFunction<BlockBehaviour.Properties, MultiblockMachineDefinition, IMachineBlock> blockFactory,
-                                                                               BiFunction<IMachineBlock, Item.Properties, MetaMachineItem> itemFactory,
+                                                                               BiFunction<BlockBehaviour.Properties, MultiblockMachineDefinition, MetaMachineBlock> blockFactory,
+                                                                               BiFunction<MetaMachineBlock, Item.Properties, MetaMachineItem> itemFactory,
                                                                                TriFunction<BlockEntityType<?>, BlockPos, BlockState, IMachineBlockEntity> blockEntityFactory) {
         return new MultiblockMachineBuilder<>(this, name, metaMachine,
                 blockFactory, itemFactory, blockEntityFactory);

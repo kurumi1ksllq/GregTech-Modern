@@ -3,7 +3,6 @@ package com.gregtechceu.gtceu.common.data.machines;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.block.IMachineBlock;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.capability.compat.FeCompat;
@@ -650,7 +649,7 @@ public class GTMachineUtils {
                         .aisle("CCC", "CCC", "CCC")
                         .where('S', definition.get(), Direction.NORTH)
                         .where('C', casing.get().defaultBlockState())
-                        .where('V', (IMachineBlock) valve.get(), Direction.UP)
+                        .where('V', valve.get(), Direction.UP)
                         .where('#', Blocks.AIR.defaultBlockState())
                         .build())
                 .appearanceBlock(casing);

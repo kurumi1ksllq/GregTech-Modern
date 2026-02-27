@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.pattern;
 
-import com.gregtechceu.gtceu.api.block.IMachineBlock;
 import com.gregtechceu.gtceu.api.data.RotationState;
+import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
 import com.lowdragmc.lowdraglib.utils.Builder;
@@ -42,11 +42,11 @@ public class MultiblockShapeInfo {
             return where(symbol, block.defaultBlockState());
         }
 
-        public ShapeInfoBuilder where(char symbol, Supplier<? extends IMachineBlock> machine, Direction facing) {
+        public ShapeInfoBuilder where(char symbol, Supplier<? extends MetaMachineBlock> machine, Direction facing) {
             return where(symbol, machine.get(), facing);
         }
 
-        public ShapeInfoBuilder where(char symbol, IMachineBlock machine, Direction facing) {
+        public ShapeInfoBuilder where(char symbol, MetaMachineBlock machine, Direction facing) {
             return where(symbol, machine.getRotationState() == RotationState.NONE ?
                     machine.self().defaultBlockState() :
                     machine.self().defaultBlockState().setValue(machine.getRotationState().property, facing));

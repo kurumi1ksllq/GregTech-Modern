@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.api.registry.registrate;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.block.IMachineBlock;
+import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.item.MetaMachineItem;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -52,8 +52,8 @@ public class MultiblockMachineBuilder<DEFINITION extends MultiblockMachineDefini
 
     public MultiblockMachineBuilder(GTRegistrate registrate, String name,
                                     Function<IMachineBlockEntity, ? extends MultiblockControllerMachine> metaMachine,
-                                    BiFunction<BlockBehaviour.Properties, DEFINITION, IMachineBlock> blockFactory,
-                                    BiFunction<IMachineBlock, Item.Properties, MetaMachineItem> itemFactory,
+                                    BiFunction<BlockBehaviour.Properties, DEFINITION, MetaMachineBlock> blockFactory,
+                                    BiFunction<MetaMachineBlock, Item.Properties, MetaMachineItem> itemFactory,
                                     TriFunction<BlockEntityType<?>, BlockPos, BlockState, IMachineBlockEntity> blockEntityFactory) {
         super(registrate, name, (loc -> (DEFINITION) new MultiblockMachineDefinition(loc)), metaMachine::apply,
                 blockFactory,

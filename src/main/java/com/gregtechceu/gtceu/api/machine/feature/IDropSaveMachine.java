@@ -3,6 +3,8 @@ package com.gregtechceu.gtceu.api.machine.feature;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
+
 /**
  * A machine that can save its contents when dropped.
  */

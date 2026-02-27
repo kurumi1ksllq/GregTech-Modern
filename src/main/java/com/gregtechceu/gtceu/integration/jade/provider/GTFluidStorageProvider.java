@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.integration.jade.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.common.machine.storage.CreativeTankMachine;
 import com.gregtechceu.gtceu.common.machine.storage.QuantumTankMachine;
@@ -51,11 +50,7 @@ public enum GTFluidStorageProvider implements IServerExtensionProvider<CompoundT
 
     @Override
     public @Nullable List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor) {
-        if (!(accessor.getTarget() instanceof MetaMachineBlockEntity mmbe)) {
-            return List.of();
-        }
-        MetaMachine machine = mmbe.getMetaMachine();
-        if (machine instanceof QuantumTankMachine qtm) {
+        if (accessor.getTarget() instanceof QuantumTankMachine qtm) {
             FluidStack stored = qtm.getStored();
             if (stored.isEmpty() && qtm instanceof CreativeTankMachine) return Collections.emptyList();
 
@@ -78,6 +73,7 @@ public enum GTFluidStorageProvider implements IServerExtensionProvider<CompoundT
         } else if (GTCEu.Mods.isAE2Loaded() && machine instanceof MEPatternBufferProxyPartMachine proxy) {
             var buffer = proxy.getBuffer();
             if (buffer == null) return Collections.emptyList();
+        }
 
             Accessor<?> accessor1 = WailaClientRegistration.instance().blockAccessor().from((BlockAccessor) accessor)
                     .blockEntity(buffer.holder.self())

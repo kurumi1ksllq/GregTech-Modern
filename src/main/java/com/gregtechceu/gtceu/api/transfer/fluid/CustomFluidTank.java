@@ -14,8 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 
-public class CustomFluidTank extends FluidTank
-                             implements IFluidHandlerModifiable, INBTSerializable<CompoundTag>, IContentChangeAware {
+public class CustomFluidTank extends FluidTank implements IFluidHandlerModifiable, INBTSerializable<CompoundTag> {
 
     @Getter
     @Setter

@@ -67,9 +67,9 @@ public class Predicates {
         return new TraceabilityPredicate(new PredicateBlocks(blocks));
     }
 
-    @HideFromJS
     public static TraceabilityPredicate blocks(MetaMachineBlock... blocks) {
-        return new TraceabilityPredicate(new PredicateBlocks(blocks));
+        return new TraceabilityPredicate(
+                new PredicateBlocks(Arrays.stream(blocks).toArray(Block[]::new)));
     }
 
     public static TraceabilityPredicate machines(MachineDefinition... definitions) {

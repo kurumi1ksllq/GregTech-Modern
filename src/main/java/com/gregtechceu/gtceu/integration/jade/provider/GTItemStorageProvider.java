@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.integration.jade.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.common.machine.storage.CreativeChestMachine;
 import com.gregtechceu.gtceu.common.machine.storage.QuantumChestMachine;
@@ -48,11 +47,7 @@ public enum GTItemStorageProvider implements IServerExtensionProvider<ItemStack>
 
     @Override
     public @Nullable List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor) {
-        if (!(accessor.getTarget() instanceof MetaMachineBlockEntity mmbe)) {
-            return List.of();
-        }
-        MetaMachine machine = mmbe.getMetaMachine();
-        if (machine instanceof QuantumChestMachine qcm) {
+        if (accessor.getTarget() instanceof QuantumChestMachine qcm) {
             ItemStack stored = qcm.getStored();
             long amount = qcm.getStoredAmount();
             if (qcm instanceof CreativeChestMachine ccm) {

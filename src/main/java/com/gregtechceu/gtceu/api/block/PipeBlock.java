@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
+import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.PipeBlockItem;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
@@ -14,6 +15,7 @@ import com.gregtechceu.gtceu.api.pipenet.IPipeType;
 import com.gregtechceu.gtceu.api.pipenet.LevelPipeNet;
 import com.gregtechceu.gtceu.api.pipenet.PipeNet;
 import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
+import com.gregtechceu.gtceu.api.sync_system.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.client.model.pipe.PipeModel;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
@@ -64,7 +66,6 @@ import org.joml.Vector3f;
 
 import java.util.*;
 
-@SuppressWarnings("deprecation")
 public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<NodeDataType>, NodeDataType,
         WorldPipeNetType extends LevelPipeNet<NodeDataType, ? extends PipeNet<NodeDataType>>> extends Block
                                implements EntityBlock, SimpleWaterloggedBlock {
@@ -169,7 +170,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
                     pipeTile.setConnection(facing, true, false);
                 if (open && !canConnect)
                     pipeTile.setConnection(facing, false, false);
-                updateActiveNodeStatus(pipeTile.getPipeLevel(), pos, pipeTile);
+                updateActiveNodeStatus(pipeTile.getLevel(), pos, pipeTile);
             }
             PipeNet<NodeDataType> net = pipeTile.getPipeNet();
             if (net != null) {
@@ -199,7 +200,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
     protected void onActiveModeChange(Level world, BlockPos pos, boolean isActiveNow, boolean isInitialChange) {}
 
     public boolean canConnect(IPipeNode<PipeType, NodeDataType> selfTile, Direction facing) {
-        if (selfTile.getPipeLevel().getBlockState(selfTile.getPipePos().relative(facing)).getBlock() == Blocks.AIR)
+        if (selfTile.getLevel().getBlockState(selfTile.getBlockPos().relative(facing)).getBlock() == Blocks.AIR)
             return false;
         CoverBehavior cover = selfTile.getCoverContainer().getCoverAtSide(facing);
         if (cover != null && !cover.canPipePassThrough()) {
@@ -212,7 +213,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
                 return false;
             return canPipesConnect(selfTile, facing, (IPipeNode<PipeType, NodeDataType>) other);
         }
-        return canPipeConnectToBlock(selfTile, facing, selfTile.getPipeLevel(), selfTile.getPipePos().relative(facing));
+        return canPipeConnectToBlock(selfTile, facing, selfTile.getLevel(), selfTile.getBlockPos().relative(facing));
     }
 
     public abstract boolean canPipesConnect(IPipeNode<PipeType, NodeDataType> selfTile, Direction side,
@@ -265,6 +266,7 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
                     pipeTile.setConnection(facing, false, false);
                 updateActiveNodeStatus(level, pos, pipeTile);
             }
+            pipeTile.getCoverContainer().onNeighborChanged(block, fromPos, isMoving);
         }
     }
 
@@ -454,6 +456,9 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
                 return (pLevel, pPos, pState, pTile) -> {
                     if (pTile instanceof IPipeNode<?, ?> pipeNode) {
                         pipeNode.serverTick();
+                    }
+                    if (pTile instanceof ManagedSyncBlockEntity syncObj) {
+                        syncObj.updateTick();
                     }
                 };
             }

@@ -18,6 +18,7 @@ import net.minecraft.core.IdMapper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -54,13 +55,11 @@ public class MachineDefinition implements Supplier<MetaMachineBlock> {
     @Nullable
     private String langValue;
     @Setter
-    private Supplier<? extends MetaMachineBlock> blockSupplier;
+    private Supplier<? extends Block> blockSupplier;
     @Setter
     private Supplier<? extends MetaMachineItem> itemSupplier;
     @Setter
     private Supplier<BlockEntityType<? extends BlockEntity>> blockEntityTypeSupplier;
-    @Setter
-    private Function<IMachineBlockEntity, MetaMachine> machineSupplier;
     @Getter
     @Setter
     private @NotNull GTRecipeType @NotNull [] recipeTypes;
@@ -144,7 +143,7 @@ public class MachineDefinition implements Supplier<MetaMachineBlock> {
         this.defaultRenderState = state;
     }
 
-    public MetaMachineBlock getBlock() {
+    public Block getBlock() {
         return blockSupplier.get();
     }
 
@@ -154,10 +153,6 @@ public class MachineDefinition implements Supplier<MetaMachineBlock> {
 
     public BlockEntityType<? extends BlockEntity> getBlockEntityType() {
         return blockEntityTypeSupplier.get();
-    }
-
-    public MetaMachine createMetaMachine(IMachineBlockEntity blockEntity) {
-        return machineSupplier.apply(blockEntity);
     }
 
     public ItemStack asStack() {
@@ -175,7 +170,7 @@ public class MachineDefinition implements Supplier<MetaMachineBlock> {
 
     @Override
     public MetaMachineBlock get() {
-        return blockSupplier.get();
+        return (MetaMachineBlock) blockSupplier.get();
     }
 
     public String getName() {

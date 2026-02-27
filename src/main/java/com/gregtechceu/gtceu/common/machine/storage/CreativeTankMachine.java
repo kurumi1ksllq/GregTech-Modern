@@ -1,12 +1,12 @@
 package com.gregtechceu.gtceu.common.machine.storage;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.PhantomFluidWidget;
 import com.gregtechceu.gtceu.api.item.datacomponents.CreativeMachineInfo;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.common.data.item.GTDataComponents;
 
@@ -14,10 +14,8 @@ import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceBorderTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.*;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DropSaved;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
@@ -37,35 +35,31 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class CreativeTankMachine extends QuantumTankMachine {
 
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(CreativeTankMachine.class,
-            QuantumTankMachine.MANAGED_FIELD_HOLDER);
-
     @Getter
-    @Persisted
-    @DropSaved
+    @SaveField
     private int mBPerCycle = 1000;
     @Getter
-    @Persisted
-    @DropSaved
+    @SaveField
     private int ticksPerCycle = 1;
 
-    public CreativeTankMachine(IMachineBlockEntity holder) {
-        super(holder, GTValues.MAX, 1);
+    public CreativeTankMachine(BlockEntityCreationInfo info) {
+        super(info, GTValues.MAX, 1);
     }
 
-    protected FluidCache createCacheFluidHandler(Object... args) {
+    protected FluidCache createCacheFluidHandler() {
         return new InfiniteCache(this);
     }
 
-    protected void checkAutoOutput() {
-        if (getOffsetTimer() % ticksPerCycle == 0) {
-            if (isAutoOutputFluids() && getOutputFacingFluids() != null) {
-                cache.exportToNearby(getOutputFacingFluids());
-            }
-            updateAutoOutputSubscription();
-        }
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (!isRemote()) autoOutput.setTicksPerCycle(ticksPerCycle);
     }
 
     @Override
@@ -89,6 +83,18 @@ public class CreativeTankMachine extends QuantumTankMachine {
         if (value.isEmpty()) return;
         mBPerCycle = Integer.parseInt(value);
         onFluidChanged();
+    }
+
+    @Override
+    public void saveToItem(@NotNull CompoundTag tag) {
+        tag.putInt("mBPerCycle", mBPerCycle);
+        tag.putInt("ticksPerCycle", ticksPerCycle);
+    }
+
+    @Override
+    public void loadFromItem(@NotNull CompoundTag tag) {
+        mBPerCycle = tag.getInt("mBPerCycle");
+        ticksPerCycle = tag.getInt("ticksPerCycle");
     }
 
     @Override
@@ -167,12 +173,7 @@ public class CreativeTankMachine extends QuantumTankMachine {
     }
 
     @Override
-    public @NotNull ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
-
-    @Override
-    public void applyImplicitComponents(MetaMachineBlockEntity.@NotNull ExDataComponentInput componentInput) {
+    public void applyImplicitComponents(@NotNull ExDataComponentInput componentInput) {
         super.applyImplicitComponents(componentInput);
         CreativeMachineInfo info = componentInput.get(GTDataComponents.CREATIVE_MACHINE_INFO);
         if (info != null) {

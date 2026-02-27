@@ -1202,9 +1202,8 @@ public class TagPrefix {
         return itemTable != null;
     }
 
-    @SuppressWarnings("unchecked")
-    public Supplier<ItemLike> getItemFromTable(Material material) {
-        return (Supplier<ItemLike>) itemTable.get().get(this, material);
+    public Supplier<? extends ItemLike> getItemFromTable(Material material) {
+        return itemTable.get().get(this, material);
     }
 
     public boolean doGenerateItem() {
@@ -1316,8 +1315,7 @@ public class TagPrefix {
         ignoredMaterials.remove(material);
     }
 
-    @UnmodifiableView
-    public Map<Material, Collection<Supplier<? extends ItemLike>>> getIgnored() {
+    public @Unmodifiable Map<Material, @Unmodifiable Collection<Supplier<? extends ItemLike>>> getIgnored() {
         return Collections.unmodifiableMap(ignoredMaterials);
     }
 

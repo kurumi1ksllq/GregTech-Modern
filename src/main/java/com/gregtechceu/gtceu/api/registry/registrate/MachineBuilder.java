@@ -3,11 +3,11 @@ package com.gregtechceu.gtceu.api.registry.registrate;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
+import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.gui.editor.EditableMachineUI;
 import com.gregtechceu.gtceu.api.item.MetaMachineItem;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
@@ -30,7 +30,6 @@ import com.gregtechceu.gtceu.data.model.builder.MachineModelBuilder;
 
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -67,7 +66,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -86,11 +84,10 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
     protected final String name;
     protected final BiFunction<BlockBehaviour.Properties, DEFINITION, MetaMachineBlock> blockFactory;
     protected final BiFunction<MetaMachineBlock, Item.Properties, MetaMachineItem> itemFactory;
-    protected final TriFunction<BlockEntityType<?>, BlockPos, BlockState, IMachineBlockEntity> blockEntityFactory;
+    protected final Function<BlockEntityCreationInfo, MetaMachine> blockEntityFactory;
 
-    @Setter
-    protected Function<ResourceLocation, DEFINITION> definition;
-    protected Function<IMachineBlockEntity, MetaMachine> machine;
+    protected final Function<ResourceLocation, DEFINITION> definition;
+    @Nullable
     @Getter
     private MachineBuilder.@Nullable ModelInitializer model = null;
     @Getter
@@ -143,14 +140,12 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
 
     public MachineBuilder(GTRegistrate registrate, String name,
                           Function<ResourceLocation, DEFINITION> definition,
-                          Function<IMachineBlockEntity, MetaMachine> machine,
                           BiFunction<BlockBehaviour.Properties, DEFINITION, MetaMachineBlock> blockFactory,
                           BiFunction<MetaMachineBlock, Item.Properties, MetaMachineItem> itemFactory,
-                          TriFunction<BlockEntityType<?>, BlockPos, BlockState, IMachineBlockEntity> blockEntityFactory) {
+                          Function<BlockEntityCreationInfo, MetaMachine> blockEntityFactory) {
         super(ResourceLocation.fromNamespaceAndPath(registrate.getModid(), name));
         this.registrate = registrate;
         this.name = name;
-        this.machine = machine;
         this.blockFactory = blockFactory;
         this.itemFactory = itemFactory;
         this.blockEntityFactory = blockEntityFactory;
@@ -162,12 +157,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
         return (TYPE) this;
     }
 
-    public TYPE machine(Function<IMachineBlockEntity, MetaMachine> machine) {
-        this.machine = machine;
-        return getThis();
-    }
-
-    public TYPE blockModel(@Nullable NonNullBiConsumer<DataGenContext<Block, ? extends Block>, GTBlockstateProvider> blockModel) {
+    public TYPE blockModel(NonNullBiConsumer<DataGenContext<Block, ? extends Block>, GTBlockstateProvider> blockModel) {
         this.blockModel = blockModel;
         return getThis();
     }
@@ -654,7 +644,8 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
         var item = itemBuilder.register();
 
         var blockEntityBuilder = registrate
-                .blockEntity((type, pos, state) -> blockEntityFactory.apply(type, pos, state).self())
+                .blockEntity(
+                        (type, pos, state) -> blockEntityFactory.apply(new BlockEntityCreationInfo(type, pos, state)))
                 .onRegister(onBlockEntityRegister)
                 .validBlock(block);
         if (hasBER) {
@@ -667,7 +658,6 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
         definition.setTier(tier);
         definition.setRecipeOutputLimits(recipeOutputLimits);
         definition.setBlockEntityTypeSupplier(blockEntity::get);
-        definition.setMachineSupplier(machine);
         definition.setTooltipBuilder((itemStack, components) -> {
             components.addAll(tooltips);
             if (tooltipBuilder != null) tooltipBuilder.accept(itemStack, components);
@@ -734,9 +724,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
 
         default ModelInitializer compose(UnaryOperator<MachineModelBuilder<BlockModelBuilder>> before) {
             Objects.requireNonNull(before);
-            return (ctx, prov, builder) -> {
-                this.configureModel(ctx, prov, before.apply(builder));
-            };
+            return (ctx, prov, builder) -> this.configureModel(ctx, prov, before.apply(builder));
         }
     }
 

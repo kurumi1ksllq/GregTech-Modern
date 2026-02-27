@@ -12,10 +12,7 @@ import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredientExtensions;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
-
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
@@ -38,14 +35,20 @@ import java.util.function.Predicate;
 public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<SizedIngredient>
                                         implements ICapabilityTrait, IItemHandlerModifiable {
 
-    public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            NotifiableItemStackHandler.class, NotifiableRecipeHandlerTrait.MANAGED_FIELD_HOLDER);
+    public static final MachineTraitType<NotifiableItemStackHandler> TYPE = new MachineTraitType<>(
+            NotifiableItemStackHandler.class);
+
+    @Override
+    public MachineTraitType<NotifiableItemStackHandler> getTraitType() {
+        return TYPE;
+    }
+
     @Getter
     public final IO handlerIO;
     @Getter
     public final IO capabilityIO;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     public final CustomItemStackHandler storage;
     @Accessors(fluent = true)
     @Getter
@@ -77,12 +80,8 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Siz
 
     public void onContentsChanged() {
         isEmpty = null;
+        syncDataHolder.markClientSyncFieldDirty("storage");
         notifyListeners();
-    }
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 
     @Override
@@ -253,7 +252,7 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Siz
     public void exportToNearby(@NotNull Direction... facings) {
         if (isEmpty()) return;
         var level = getMachine().getLevel();
-        var pos = getMachine().getPos();
+        var pos = getMachine().getBlockPos();
         for (Direction facing : facings) {
             var filter = getMachine().getItemCapFilter(facing, IO.OUT);
             GTTransferUtils.getAdjacentItemHandler(level, pos, facing)
@@ -263,7 +262,7 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Siz
 
     public void importFromNearby(@NotNull Direction... facings) {
         var level = getMachine().getLevel();
-        var pos = getMachine().getPos();
+        var pos = getMachine().getBlockPos();
         for (Direction facing : facings) {
             var filter = getMachine().getItemCapFilter(facing, IO.IN);
             GTTransferUtils.getAdjacentItemHandler(level, pos, facing)
@@ -319,6 +318,10 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Siz
     @Override
     public boolean isItemValid(int slot, @NotNull ItemStack stack) {
         return storage.isItemValid(slot, stack);
+    }
+
+    public void dropInventoryInWorld() {
+        storage.dropInventoryInWorld(getLevel(), getMachine().getBlockPos());
     }
 
     public static class KJSCallWrapper {

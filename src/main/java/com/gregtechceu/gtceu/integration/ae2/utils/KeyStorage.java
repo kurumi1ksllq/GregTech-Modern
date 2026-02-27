@@ -23,7 +23,7 @@ import java.util.Iterator;
  * Used to store {@link appeng.api.stacks.GenericStack } in a way that associates key and amount.
  * Provides methods for serialization and deserialization.
  */
-public class KeyStorage implements INBTSerializable<ListTag>, IContentChangeAware,
+public class KeyStorage implements INBTSerializable<ListTag>,
                         Iterable<Object2LongMap.Entry<AEKey>> {
 
     public final Object2LongMap<AEKey> storage = new Object2LongOpenHashMap<>(); // TODO trim periodically or not

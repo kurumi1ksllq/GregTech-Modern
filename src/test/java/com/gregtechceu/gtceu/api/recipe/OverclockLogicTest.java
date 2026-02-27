@@ -2,7 +2,10 @@ package com.gregtechceu.gtceu.api.recipe;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
+import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
+import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
 import com.gregtechceu.gtceu.gametest.util.TestUtils;
@@ -22,7 +25,6 @@ import net.neoforged.testframework.annotation.TestHolder;
 import static com.gregtechceu.gtceu.api.recipe.OverclockingLogic.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeModifiers.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.LARGE_CHEMICAL_RECIPES;
-import static com.gregtechceu.gtceu.gametest.util.TestUtils.getMetaMachine;
 
 @PrefixGameTestTemplate(false)
 @GameTestHolder(GTCEu.MOD_ID)
@@ -92,16 +94,13 @@ public class OverclockLogicTest {
      * @return the busses, in the BusHolder record.
      */
     private static BusHolder getBussesAndForm(GameTestHelper helper) {
-        WorkableMultiblockMachine controller = (WorkableMultiblockMachine) getMetaMachine(
-                helper.getBlockEntity(new BlockPos(1, 2, 0)));
-        controller.setRecipeType(LCR_RECIPE_TYPE);
+        WorkableMultiblockMachine controller = (WorkableMultiblockMachine) helper.getBlockEntity(new BlockPos(1, 2, 0));
+        assert controller != null;
         TestUtils.formMultiblock(controller);
-        ItemBusPartMachine inputBus1 = (ItemBusPartMachine) getMetaMachine(
-                helper.getBlockEntity(new BlockPos(2, 1, 0)));
-        ItemBusPartMachine inputBus2 = (ItemBusPartMachine) getMetaMachine(
-                helper.getBlockEntity(new BlockPos(2, 2, 0)));
-        ItemBusPartMachine outputBus1 = (ItemBusPartMachine) getMetaMachine(
-                helper.getBlockEntity(new BlockPos(0, 1, 0)));
+        controller.setRecipeType(LCR_RECIPE_TYPE);
+        ItemBusPartMachine inputBus1 = (ItemBusPartMachine) helper.getBlockEntity(new BlockPos(2, 1, 0));
+        ItemBusPartMachine inputBus2 = (ItemBusPartMachine) helper.getBlockEntity(new BlockPos(2, 2, 0));
+        ItemBusPartMachine outputBus1 = (ItemBusPartMachine) helper.getBlockEntity(new BlockPos(0, 1, 0));
         return new BusHolder(inputBus1, inputBus2, outputBus1, controller);
     }
 
@@ -312,5 +311,70 @@ public class OverclockLogicTest {
         helper.assertTrue(newRecipe == null, "Applied EV overclock to HV recipe when it shouldn't have");
 
         helper.succeed();
+    }
+
+    // Test for charge usage of a singleblock HV chemical reactor running an HV recipe
+    @GameTest(template = "singleblock_charged_cr", batch = "OverclockLogic")
+    public static void overclockLogicHVPowerTest(GameTestHelper helper) {
+        SimpleTieredMachine machine = (SimpleTieredMachine) helper.getBlockEntity(new BlockPos(0, 1, 0));
+
+        assert machine != null;
+        machine.setRecipeType(CR_RECIPE_TYPE);
+        NotifiableEnergyContainer energyContainer = (NotifiableEnergyContainer) machine
+                .getCapabilitiesFlat(IO.IN, EURecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+
+        long originalCharge = GTValues.V[GTValues.HV] * 64L;
+        helper.assertTrue(energyContainer.getEnergyStored() == originalCharge,
+                "Singleblock charged CR NBT changed, machine not fully charged anymore");
+
+        itemIn.setStackInSlot(0, new ItemStack(Items.RED_BED));
+        // 1t to turn on, 16t to run the recipe
+        helper.succeedOnTickWhen(17, () -> {
+            helper.assertTrue(TestUtils.isItemStackEqual(
+                    itemOut.getStackInSlot(0),
+                    new ItemStack(Blocks.STONE, 1)),
+                    "Singleblock CR didn't run recipe in correct time");
+            long chargeUsed = originalCharge - energyContainer.getEnergyStored();
+            long chargeNeeded = GTValues.V[GTValues.HV] * 16L;
+            helper.assertTrue(chargeUsed == chargeNeeded,
+                    "Recipe didn't consume right amount, instead of " + chargeNeeded + " it used " + chargeUsed);
+        });
+    }
+
+    // Test for charge usage of a singleblock HV chemical reactor running an MV recipe
+    @GameTest(template = "singleblock_charged_cr", batch = "OverclockLogic")
+    public static void overclockLogicMVPowerTest(GameTestHelper helper) {
+        SimpleTieredMachine machine = (SimpleTieredMachine) helper.getBlockEntity(new BlockPos(0, 1, 0));
+        assert machine != null;
+        machine.setRecipeType(CR_RECIPE_TYPE);
+        NotifiableEnergyContainer energyContainer = (NotifiableEnergyContainer) machine
+                .getCapabilitiesFlat(IO.IN, EURecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
+        NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
+                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+
+        long originalCharge = GTValues.V[GTValues.HV] * 64L;
+        helper.assertTrue(energyContainer.getEnergyStored() == originalCharge,
+                "Singleblock charged CR NBT changed, machine not fully charged anymore");
+
+        itemIn.setStackInSlot(0, new ItemStack(Items.BROWN_BED));
+        // 1t to turn on, 8t to run the recipe (single overclock)
+        helper.succeedOnTickWhen(9, () -> {
+            helper.assertTrue(TestUtils.isItemStackEqual(
+                    itemOut.getStackInSlot(0),
+                    new ItemStack(Blocks.STONE, 1)),
+                    "Singleblock CR didn't run recipe in correct time");
+            long chargeUsed = originalCharge - energyContainer.getEnergyStored();
+            // One overclock ups EU/t by STD_VOLTAGE_FACTOR, decreases time by STD_DURATION_FACTOR_INV
+            long chargeNeeded = (long) ((GTValues.V[GTValues.MV] * STD_VOLTAGE_FACTOR) *
+                    (16L / STD_DURATION_FACTOR_INV));
+            helper.assertTrue(chargeUsed == chargeNeeded,
+                    "Recipe didn't consume right amount, instead of " + chargeNeeded + " it used " + chargeUsed);
+        });
     }
 }

@@ -3,9 +3,7 @@ package com.gregtechceu.gtceu.client.renderer;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.data.RotationState;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.pattern.MultiblockShapeInfo;
 
@@ -112,7 +110,7 @@ public class MultiblockInWorldPreviewRenderer {
         MultiblockShapeInfo shapeInfo = controller.getDefinition().getMatchingShapes().get(0);
 
         Map<BlockPos, BlockInfo> blockMap = new HashMap<>();
-        IMultiController controllerBase = null;
+        MultiblockControllerMachine controllerBase = null;
         LEVEL = new TrackedDummyWorld();
 
         var blocks = shapeInfo.getBlocks();
@@ -195,9 +193,8 @@ public class MultiblockInWorldPreviewRenderer {
                     BlockPos realPos = pos.offset(offset);
 
                     // spotless:off
-                    if (column[z].getBlockEntity(realPos, controller.getLevel().registryAccess()) instanceof IMachineBlockEntity holder &&
-                            holder.getMetaMachine() instanceof IMultiController cont) {
-                        holder.getSelf().setLevel(LEVEL);
+                    if (column[z].getBlockEntity(realPos, controller.getLevel().registryAccess()) instanceof MultiblockControllerMachine cont) {
+                        cont.setLevel(LEVEL);
                         controllerBase = cont;
                     } else {
                         blockMap.put(realPos, BlockInfo.fromBlockState(blockState));
@@ -209,7 +206,7 @@ public class MultiblockInWorldPreviewRenderer {
 
         LEVEL.addBlocks(blockMap);
         if (controllerBase != null) {
-            LEVEL.setInnerBlockEntity(controllerBase.self().holder.getSelf());
+            LEVEL.setInnerBlockEntity(controllerBase.self());
         }
 
         prepareBuffers(LEVEL, blockMap.keySet(), duration);

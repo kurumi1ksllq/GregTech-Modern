@@ -55,6 +55,7 @@ import com.lowdragmc.lowdraglib.utils.DummyWorld;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.locale.Language;
 import net.minecraft.nbt.CompoundTag;
@@ -144,9 +145,9 @@ public class MetaMachine extends ManagedSyncBlockEntity implements IGregtechBloc
     //////////////////////////////////////
 
     @Override
-    public void load(CompoundTag tag) {
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         TagCompatibilityFixer.fixMachineAutoOutputTag(tag);
-        super.load(tag);
+        super.loadAdditional(tag, registries);
     }
 
     @MustBeInvokedByOverriders

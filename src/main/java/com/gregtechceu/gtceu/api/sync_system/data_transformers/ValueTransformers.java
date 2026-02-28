@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
-import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.sync_system.ISyncManaged;
 import com.gregtechceu.gtceu.api.sync_system.SyncDataHolder;
 import com.gregtechceu.gtceu.api.sync_system.TypeDeclaration;
@@ -20,10 +19,10 @@ import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.monitor.MonitorGroup;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.extensions.IForgeItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.fluids.FluidStack;
 
@@ -160,23 +159,16 @@ public final class ValueTransformers {
         //// Java classes and standard minecraft/forge classes
 
         registerSimpleClassTransformer(String.class, StringTag::valueOf, StringTag::getAsString, StringTag.class);
-        registerSimpleClassTransformer(ItemStack.class, IForgeItemStack::serializeNBT, ItemStack::of,
-                CompoundTag.class);
-        registerSimpleClassTransformer(FluidStack.class, (v) -> v.writeToNBT(new CompoundTag()),
-                FluidStack::loadFluidStackFromNBT, CompoundTag.class);
 
         // The default value supplier will never be called as NbtUtils::loadUUID will throw if the UUID is invalid.
         registerSimpleClassTransformer(UUID.class, NbtUtils::createUUID, NbtUtils::loadUUID, IntArrayTag.class);
 
-        registerSimpleClassTransformer(BlockPos.class, NbtUtils::writeBlockPos, NbtUtils::readBlockPos,
-                CompoundTag.class);
         registerSimpleClassTransformer(CompoundTag.class, (v) -> v, (v) -> v, CompoundTag.class);
 
-        registerSimpleClassTransformer(Component.class, (c) -> StringTag.valueOf(Component.Serializer.toJson(c)),
-                t -> {
-                    var comp = Component.Serializer.fromJson(t.getAsString());
-                    return comp == null ? Component.empty() : comp;
-                }, StringTag.class);
+        registerTransformer(ItemStack.class, new SimpleClassTransformers.ItemStackTransformer());
+        registerTransformer(FluidStack.class, new SimpleClassTransformers.FluidStackTransformer());
+        registerTransformer(BlockPos.class, new SimpleClassTransformers.BlockPosTransformer());
+        registerTransformer(Component.class, new SimpleClassTransformers.ComponentTransformer());
 
         registerTransformer(INBTSerializable.class, new NBTSerializableTransformer());
         registerTransformer(ISyncManaged.class, new SyncDataHolder.SyncManagedTransformer());
@@ -190,7 +182,7 @@ public final class ValueTransformers {
         registerTransformer(GTRecipe.class, new GTRecipeTransformer());
         registerTransformer(MachineRenderState.class, new CodecTransformer<>(MachineRenderState.CODEC));
         registerTransformer(GTRecipeType.class, new ResourceLocationReferenceTransformer<>(
-                GTRecipeType::getRegistryName, GTRegistries.RECIPE_TYPES::get));
+                GTRecipeType::getRegistryName, (r) -> (GTRecipeType)Objects.requireNonNull(BuiltInRegistries.RECIPE_TYPE.get(r))));
         registerTransformer(Material.class, new ResourceLocationReferenceTransformer<>(
                 Material::getResourceLocation, GTCEuAPI.materialManager::getMaterial));
         registerTransformer(MonitorGroup.class, new MonitorGroupTransformer());

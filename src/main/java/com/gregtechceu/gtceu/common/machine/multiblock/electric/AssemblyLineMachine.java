@@ -17,6 +17,7 @@ import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.ActionResult;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -28,7 +29,6 @@ import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -57,7 +57,7 @@ public class AssemblyLineMachine extends WorkableElectricMultiblockMachine {
                 RelativeDirection.RIGHT.getSorter(mc.getFrontFacing(), mc.getUpwardsFacing(), mc.isFlipped()));
     }
 
-    private boolean checkItemInputs(@NotNull GTRecipe recipe, boolean isTick) {
+    private boolean checkItemInputs(GTRecipe recipe, boolean isTick) {
         var itemInputs = (isTick ? recipe.tickInputs : recipe.inputs).getOrDefault(ItemRecipeCapability.CAP,
                 Collections.emptyList());
         if (itemInputs.isEmpty()) return true;
@@ -89,7 +89,7 @@ public class AssemblyLineMachine extends WorkableElectricMultiblockMachine {
         return true;
     }
 
-    private ActionResult consumeItemContents(@NotNull GTRecipe recipe, boolean isTick) {
+    private ActionResult consumeItemContents(GTRecipe recipe, boolean isTick) {
         var itemInputs = (isTick ? recipe.tickInputs : recipe.inputs).getOrDefault(ItemRecipeCapability.CAP,
                 Collections.emptyList());
         if (itemInputs.isEmpty()) return ActionResult.SUCCESS;
@@ -130,7 +130,7 @@ public class AssemblyLineMachine extends WorkableElectricMultiblockMachine {
         return ActionResult.SUCCESS;
     }
 
-    private boolean checkFluidInputs(@NotNull GTRecipe recipe, boolean isTick) {
+    private boolean checkFluidInputs(GTRecipe recipe, boolean isTick) {
         var fluidInputs = (isTick ? recipe.tickInputs : recipe.inputs).getOrDefault(FluidRecipeCapability.CAP,
                 Collections.emptyList());
         if (fluidInputs.isEmpty()) return true;
@@ -161,7 +161,7 @@ public class AssemblyLineMachine extends WorkableElectricMultiblockMachine {
         return true;
     }
 
-    private ActionResult consumeFluidContents(@NotNull GTRecipe recipe, boolean isTick) {
+    private ActionResult consumeFluidContents(GTRecipe recipe, boolean isTick) {
         var fluidInputs = (isTick ? recipe.tickInputs : recipe.inputs).getOrDefault(FluidRecipeCapability.CAP,
                 Collections.emptyList());
         if (fluidInputs.isEmpty()) return ActionResult.SUCCESS;
@@ -202,7 +202,7 @@ public class AssemblyLineMachine extends WorkableElectricMultiblockMachine {
         return ActionResult.SUCCESS;
     }
 
-    private ActionResult consumeAll(@NotNull GTRecipe recipe, boolean isTick,
+    private ActionResult consumeAll(GTRecipe recipe, boolean isTick,
                                     Map<RecipeCapability<?>, Object2IntMap<?>> chanceCaches) {
         GTRecipe copyWithItems = recipe.copy();
         copyWithItems.inputs.clear();

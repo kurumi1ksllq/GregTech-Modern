@@ -20,10 +20,6 @@ import lombok.Getter;
 
 import java.util.function.Function;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public class TieredEnergyMachine extends TieredMachine implements ITieredMachine {
 
     @SaveField
@@ -53,20 +49,6 @@ public class TieredEnergyMachine extends TieredMachine implements ITieredMachine
         }
         environmentalExplosionTrait = new EnvironmentalExplosionTrait(this, tier, tier * 10,
                 () -> energyContainer.getEnergyStored() > 0);
-    }
-
-    //////////////////////////////////////
-    // ***** Initialization ******//
-    //////////////////////////////////////
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-    }
-
-    @Override
-    public void onUnload() {
-        super.onUnload();
     }
 
     //////////////////////////////////////

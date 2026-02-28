@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.api.item;
 
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.block.PipeBlock;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.IDropSaveMachine;
 import com.gregtechceu.gtceu.api.pipenet.IPipeNode;
@@ -63,10 +62,7 @@ public class MetaMachineItem extends BlockItem {
             CustomData customData = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY);
             if (!customData.isEmpty()) {
                 BlockEntity blockentity = level.getBlockEntity(pos);
-                if (blockentity instanceof IMachineBlockEntity holder) {
-                    if (!(holder.getMetaMachine() instanceof IDropSaveMachine)) {
-                        return false;
-                    }
+                if (blockentity instanceof IDropSaveMachine) {
                     if (!blockentity.onlyOpCanSetNbt() || player != null && player.canUseGameMasterBlocks()) {
                         MixinHelpers.CURRENT_BE_SAVE_LOAD_REGISTRIES.set(level.registryAccess());
                         boolean result = customData.loadInto(blockentity, level.registryAccess());

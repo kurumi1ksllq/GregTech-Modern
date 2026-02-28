@@ -9,6 +9,8 @@ import com.gregtechceu.gtceu.api.recipe.DummyCraftingInput;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredientExtensions;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
@@ -56,7 +58,7 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Siz
     private boolean shouldSearchContent = true;
     private Boolean isEmpty;
 
-    public NotifiableItemStackHandler(MetaMachine machine, int slots, @NotNull IO handlerIO, @NotNull IO capabilityIO,
+    public NotifiableItemStackHandler(MetaMachine machine, int slots, IO handlerIO, IO capabilityIO,
                                       IntFunction<CustomItemStackHandler> storageFactory) {
         super(machine);
         this.handlerIO = handlerIO;
@@ -65,11 +67,11 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Siz
         this.storage.setOnContentsChanged(this::onContentsChanged);
     }
 
-    public NotifiableItemStackHandler(MetaMachine machine, int slots, @NotNull IO handlerIO, @NotNull IO capabilityIO) {
+    public NotifiableItemStackHandler(MetaMachine machine, int slots, IO handlerIO, IO capabilityIO) {
         this(machine, slots, handlerIO, capabilityIO, CustomItemStackHandler::new);
     }
 
-    public NotifiableItemStackHandler(MetaMachine machine, int slots, @NotNull IO handlerIO) {
+    public NotifiableItemStackHandler(MetaMachine machine, int slots, IO handlerIO) {
         this(machine, slots, handlerIO, handlerIO);
     }
 

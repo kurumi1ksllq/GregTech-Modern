@@ -173,7 +173,7 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
             }
 
             IFluidHandler fluidHandler = getLevel().getCapability(Capabilities.FluidHandler.BLOCK,
-                    getPipePos().relative(facing), facing.getOpposite());
+                    getBlockPos().relative(facing), facing.getOpposite());
             if (fluidHandler == null) continue;
 
             IFluidHandlerModifiable pipeTank = tank;
@@ -186,7 +186,7 @@ public class FluidPipeBlockEntity extends PipeBlockEntity<FluidPipeType, FluidPi
                 if (pipeTank == null || checkForPumpCover(cover)) continue;
             } else {
                 ICoverable coverable = getLevel().getCapability(GTCapability.CAPABILITY_COVERABLE,
-                        getPipePos().relative(facing), facing.getOpposite());
+                        getBlockPos().relative(facing), facing.getOpposite());
                 if (coverable != null) {
                     cover = coverable.getCoverAtSide(facing.getOpposite());
                     if (checkForPumpCover(cover)) continue;

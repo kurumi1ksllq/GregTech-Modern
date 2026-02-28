@@ -31,8 +31,6 @@ import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
 public class MEPatternBufferProxyPartMachine extends TieredIOPartMachine implements IDataStickInteractable {
 
     @Getter

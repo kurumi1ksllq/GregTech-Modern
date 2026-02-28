@@ -2,13 +2,11 @@ package com.gregtechceu.gtceu.common.machine.multiblock.electric.research;
 
 import com.gregtechceu.gtceu.api.capability.GTCapability;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
-import com.gregtechceu.gtceu.api.capability.GTCapability;
 import com.gregtechceu.gtceu.api.capability.IOpticalComputationProvider;
 import com.gregtechceu.gtceu.api.capability.IOpticalComputationReceiver;
 import com.gregtechceu.gtceu.api.capability.recipe.CWURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDisplayUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
@@ -25,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +34,7 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
     @Getter
     private IOpticalComputationProvider computationProvider;
     @Getter
-    private ObjectHolderMachine objectHolder;
+    private @Nullable ObjectHolderMachine objectHolder;
 
     public ResearchStationMachine(BlockEntityCreationInfo info) {
         super(info, (m) -> new ResearchStationRecipeLogic((ResearchStationMachine) m));

@@ -84,9 +84,11 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
     protected final String name;
     protected final BiFunction<BlockBehaviour.Properties, DEFINITION, MetaMachineBlock> blockFactory;
     protected final BiFunction<MetaMachineBlock, Item.Properties, MetaMachineItem> itemFactory;
-    protected final Function<BlockEntityCreationInfo, MetaMachine> blockEntityFactory;
+    @Setter
+    protected Function<BlockEntityCreationInfo, MetaMachine> blockEntityFactory;
 
-    protected final Function<ResourceLocation, DEFINITION> definition;
+    @Setter
+    protected Function<ResourceLocation, DEFINITION> definition;
     @Nullable
     @Getter
     private MachineBuilder.@Nullable ModelInitializer model = null;

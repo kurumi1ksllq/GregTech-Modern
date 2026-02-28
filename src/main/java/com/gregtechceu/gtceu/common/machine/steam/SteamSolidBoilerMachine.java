@@ -21,6 +21,7 @@ import com.lowdragmc.lowdraglib.gui.widget.ProgressWidget;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 
@@ -37,7 +38,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class SteamSolidBoilerMachine extends SteamBoilerMachine {
 
-    public static final Object2BooleanMap<Item> FUEL_CACHE = new Object2BooleanOpenHashMap<>();
+    public static final Object2BooleanMap<net.minecraft.world.item.Item> FUEL_CACHE = new Object2BooleanOpenHashMap<>();
 
     @SaveField
     public final NotifiableItemStackHandler fuelHandler, ashHandler;

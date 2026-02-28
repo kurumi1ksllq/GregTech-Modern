@@ -121,7 +121,7 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
             if (!player.isCreative()) GTTransferUtils.extractItemsFromPlayerInv(player, items, false);
 
             if (blockEntity instanceof MetaMachine mm)
-                pasteMachineConfig((ServerPlayer) player, mm, tag);
+                pasteMachineConfig((ServerPlayer) player, mm, configTag);
             if (blockEntity instanceof PipeBlockEntity<?, ?> pipeBE)
                 pastePipeConfig((ServerPlayer) player, pipeBE, configTag);
 

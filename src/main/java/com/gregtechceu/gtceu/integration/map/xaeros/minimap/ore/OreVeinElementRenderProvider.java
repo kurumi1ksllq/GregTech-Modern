@@ -9,7 +9,6 @@ import net.minecraft.world.level.Level;
 import xaero.hud.minimap.element.render.MinimapElementRenderLocation;
 import xaero.hud.minimap.element.render.MinimapElementRenderProvider;
 import xaero.map.WorldMap;
-import xaero.map.common.config.option.WorldMapProfiledConfigOptions;
 
 import java.util.Iterator;
 
@@ -21,8 +20,7 @@ public class OreVeinElementRenderProvider extends MinimapElementRenderProvider<O
 
     @Override
     public void begin(MinimapElementRenderLocation location, OreVeinElementContext context) {
-        if (WorldMap.INSTANCE.getConfigs().getClientConfigManager().getEffective(
-                WorldMapProfiledConfigOptions.WAYPOINT_BACKGROUNDS)) {
+        if (WorldMap.settings.waypoints) {
             ResourceKey<Level> currentDim = Minecraft.getInstance().level.dimension();
             this.iterator = XaerosRenderer.oreElements.row(currentDim).values().iterator();
         } else {

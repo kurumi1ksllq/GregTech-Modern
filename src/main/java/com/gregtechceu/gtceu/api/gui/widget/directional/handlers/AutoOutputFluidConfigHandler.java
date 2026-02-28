@@ -125,7 +125,7 @@ public class AutoOutputFluidConfigHandler implements IDirectionalConfigHandler {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void renderOverlay(SceneWidget sceneWidget, BlockPosFace blockPosFace) {
-        if (trait.getFluidOutputDirection() != blockPosFace.facing)
+        if (trait.getFluidOutputDirection() != blockPosFace.facing())
             return;
 
         sceneWidget.drawFacingBorder(new PoseStack(), blockPosFace,

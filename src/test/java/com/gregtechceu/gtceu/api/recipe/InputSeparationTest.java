@@ -59,7 +59,7 @@ public class InputSeparationTest {
         ItemBusPartMachine inputBus2 = (ItemBusPartMachine) helper.getBlockEntity(new BlockPos(2, 2, 0));
         ItemBusPartMachine outputBus1 = (ItemBusPartMachine) helper.getBlockEntity(new BlockPos(0, 1, 0));
         FluidHatchPartMachine outputHatch1 = (FluidHatchPartMachine) helper.getBlockEntity(new BlockPos(0, 2, 0));
-        return new BusHolder(inputBus1, inputBus2, outputBus1, outputHatch1, controller);
+        return new BusHolder(inputBus1, inputBus2, outputBus1, outputHatch1);
     }
 
     // Test for putting both ingredients in the same bus.

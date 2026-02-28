@@ -34,6 +34,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
@@ -669,7 +670,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
                 CompoundTag chanceCache = ValueTransformer.assertTagType(CompoundTag.class, tag, context);
                 if (context.currentValue() != null) {
                     for (String key : chanceCache.getAllKeys()) {
-                        RecipeCapability<?> cap = GTRegistries.RECIPE_CAPABILITIES.get(key);
+                        RecipeCapability<?> cap = GTRegistries.RECIPE_CAPABILITIES.get(ResourceLocation.parse(key));
                         // Necessary since a RecipeCapability was removed when removing Create support, and for future
                         // removals
                         if (cap == null) continue;

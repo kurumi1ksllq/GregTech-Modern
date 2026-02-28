@@ -81,7 +81,7 @@ public abstract class PipeBlockEntity<PipeType extends Enum<PipeType> & IPipeTyp
     @RerenderOnChanged
     @SyncToClient
     @SaveField
-    @NotNull
+    @Getter
     private Material frameMaterial = GTMaterials.NULL;
     private final List<TickableSubscription> serverTicks;
     private final List<TickableSubscription> waitingToAdd;

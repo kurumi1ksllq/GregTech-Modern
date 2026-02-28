@@ -88,7 +88,7 @@ public class ExhaustVentMachineTrait extends MachineTrait {
         for (LivingEntity entity : getLevel().getEntitiesOfClass(LivingEntity.class,
                 new AABB(getBlockPos().relative(getVentingDirection())),
                 entity -> !(entity instanceof Player player) || !player.isSpectator() && !player.isCreative())) {
-            entity.hurt(GTDamageTypes.HEAT.source(getLevel()), ventingDamageAmount);
+            entity.hurt(getLevel().damageSources().source(GTDamageTypes.HEAT), ventingDamageAmount);
         }
     }
 

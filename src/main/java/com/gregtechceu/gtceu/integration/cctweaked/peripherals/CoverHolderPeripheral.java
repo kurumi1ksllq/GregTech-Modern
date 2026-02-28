@@ -41,7 +41,7 @@ public class CoverHolderPeripheral implements GenericPeripheral {
                     coverable.getLevel(),
                     coverable.getBlockPos(),
                     direction,
-                    cover.itemHandler,
+                    cover.itemStackHandler,
                     cover,
                     new MultiLineComponent(cover.getText()),
                     cover.getPlaceholderUUID())).toString());

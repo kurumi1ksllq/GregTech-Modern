@@ -29,6 +29,7 @@ import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.*;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -406,7 +407,7 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
             capacity = summarize(maximums);
         }
 
-        public void deserializeNBT(CompoundTag storageTag) {
+        public void deserializeNBT(HolderLookup.Provider lookup, CompoundTag storageTag) {
             int size = storageTag.getInt(NBT_SIZE);
             storage = new long[size];
             maximums = new long[size];
@@ -420,7 +421,7 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
             capacity = summarize(maximums);
         }
 
-        public CompoundTag serializeNBT() {
+        public CompoundTag serializeNBT(HolderLookup.Provider lookup) {
             var compound = new CompoundTag();
             compound.putInt(NBT_SIZE, storage.length);
             for (int i = 0; i < storage.length; i++) {

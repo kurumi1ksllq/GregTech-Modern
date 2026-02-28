@@ -311,7 +311,7 @@ public class MetaMachine extends ManagedSyncBlockEntity implements IGregtechBloc
                 itemStack.canPerformAction(GTItemAbilities.SCREWDRIVER_CONFIGURE)) {
             if (coverBehavior != null) {
                 result = Pair.of(GTToolType.SCREWDRIVER, coverBehavior.onScrewdriverClick(playerIn, hand, itemStack, hitResult));
-            } else result = Pair.of(GTToolType.SCREWDRIVER, onScrewdriverClick(playerIn, hand, gridSide, hitResult));
+            } else result = Pair.of(GTToolType.SCREWDRIVER, onScrewdriverClick(playerIn, hand, itemStack, gridSide, hitResult));
         } else if (toolType.contains(GTToolType.SOFT_MALLET)) {
             if (coverBehavior != null) {
                 result = Pair.of(GTToolType.SOFT_MALLET, coverBehavior.onSoftMalletClick(playerIn, hand, itemStack, hitResult));
@@ -395,7 +395,7 @@ public class MetaMachine extends ManagedSyncBlockEntity implements IGregtechBloc
         return ItemInteractionResult.sidedSuccess(playerIn.level().isClientSide);
     }
 
-    protected ItemInteractionResult onScrewdriverClick(Player playerIn, InteractionHand hand, Direction gridSide,
+    protected ItemInteractionResult onScrewdriverClick(Player playerIn, InteractionHand hand, ItemStack stack, Direction gridSide,
                                                    BlockHitResult hitResult) {
         if (isRemote()) return ItemInteractionResult.SUCCESS;
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;

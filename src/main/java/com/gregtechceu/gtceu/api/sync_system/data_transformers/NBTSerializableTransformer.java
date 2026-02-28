@@ -13,7 +13,7 @@ public class NBTSerializableTransformer implements ValueTransformer<INBTSerializ
     @Override
     public Tag serializeNBT(INBTSerializable<Tag> value,
                             ValueTransformer.TransformerContext<INBTSerializable<Tag>> context) {
-        return value.serializeNBT();
+        return value.serializeNBT(context.lookup());
     }
 
     @Override
@@ -25,7 +25,7 @@ public class NBTSerializableTransformer implements ValueTransformer<INBTSerializ
                     "Sync: Deserialization of INBTSerializable objects requires an existing object, they cannot be instantiated purely from saved data.");
             return null;
         }
-        currentVal.deserializeNBT(TagCompatibilityFixer.stripLDLibPayloadWrapper(tag));
+        currentVal.deserializeNBT(context.lookup(), TagCompatibilityFixer.stripLDLibPayloadWrapper(tag));
         return currentVal;
     }
 }

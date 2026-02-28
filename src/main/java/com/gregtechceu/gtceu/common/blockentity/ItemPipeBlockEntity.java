@@ -70,10 +70,10 @@ public class ItemPipeBlockEntity extends PipeBlockEntity<ItemPipeType, ItemPipeP
     public void checkNetwork() {
         if (defaultHandler != null) {
             ItemPipeNet current = getItemPipeNet();
-            if (defaultHandler.getNet() != current) {
-                defaultHandler.updateNetwork(current);
+            if (defaultHandler.getNetwork() != current) {
+                defaultHandler.setNetwork(current);
                 for (ItemNetHandler handler : handlers.values()) {
-                    handler.updateNetwork(current);
+                    handler.setNetwork(current);
                 }
             }
         }

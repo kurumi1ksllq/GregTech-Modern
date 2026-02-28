@@ -125,7 +125,7 @@ public class AutoOutputItemConfigHandler implements IDirectionalConfigHandler {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void renderOverlay(SceneWidget sceneWidget, BlockPosFace blockPosFace) {
-        if (trait.getItemOutputDirection() != blockPosFace.facing)
+        if (trait.getItemOutputDirection() != blockPosFace.facing())
             return;
 
         sceneWidget.drawFacingBorder(new PoseStack(), blockPosFace,

@@ -221,15 +221,9 @@ public class RecipeOutputProvider extends MachineTraitProvider<RecipeLogic> {
 
             iTooltip.add(helper.smallItem(item));
             MutableComponent text = CommonComponents.space();
-            if (itemOutput.getContainedCustom() instanceof IntProviderIngredient provider) {
-                text.append(Component.translatable("gtceu.gui.content.range",
-                        String.valueOf(provider.getCountProvider().getMinValue()),
-                        String.valueOf(provider.getCountProvider().getMaxValue())));
-            } else {
-                item = itemOutput.getItems()[0];
-                text.append(String.valueOf(item.getCount()));
-                item.setCount(1);
-            }
+            item = itemOutput.getItems()[0];
+            text.append(String.valueOf(item.getCount()));
+            item.setCount(1);
             text.append(Component.translatable("gtceu.gui.content.times_item",
                     getItemName(item))
                     .withStyle(ChatFormatting.WHITE));

@@ -17,6 +17,8 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
 import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredientExtensions;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.item.GTDataComponents;
 import com.gregtechceu.gtceu.common.data.machines.GTAEMachines;
@@ -33,10 +35,6 @@ import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.IContentChangeAware;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -149,7 +147,7 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
     public MEPatternBufferPartMachine(BlockEntityCreationInfo info) {
         super(info, IO.IN);
         patternInventory.setOnContentsChanged(() -> getSyncDataHolder().markClientSyncFieldDirty("patternInventory"));
-        this.patternInventory.setFilter(stack -> stack.getItem() instanceof ProcessingPatternItem);
+        this.patternInventory.setFilter(stack -> stack.getItem() instanceof EncodedPatternItem<?>);
         for (int i = 0; i < this.internalInventory.length; i++) {
             this.internalInventory[i] = new InternalSlot();
         }
@@ -306,7 +304,7 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                 var slot = new AEPatternViewSlotWidget(patternInventory, index++, 8 + x * 18, 14 + y * 18)
                         .setOccupiedTexture(GuiTextures.SLOT)
                         .setItemHook(stack -> {
-                            if (!stack.isEmpty() && stack.getItem() instanceof EncodedPatternItem iep) {
+                            if (!stack.isEmpty() && stack.getItem() instanceof EncodedPatternItem<?> iep) {
                                 final ItemStack out = iep.getOutput(stack);
                                 if (!out.isEmpty()) {
                                     return out;
@@ -454,8 +452,8 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                 ItemStackHashStrategy.comparingAllButCount());
         private final Object2LongOpenCustomHashMap<FluidStack> fluidInventory = new Object2LongOpenCustomHashMap<>(
                 FluidStackHashStrategy.comparingAllButAmount());
-        private List<ItemStack> itemStacks = null;
-        private List<FluidStack> fluidStacks = null;
+        private @Nullable List<ItemStack> itemStacks = null;
+        private @Nullable List<FluidStack> fluidStacks = null;
 
         public InternalSlot() {}
 

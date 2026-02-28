@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.sync_system.data_transformers.ValueTransformer;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.monitor.MonitorGroup;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.*;
 
@@ -25,8 +26,8 @@ public class MonitorGroupTransformer implements ValueTransformer<MonitorGroup> {
         }
         tag.put("positions", list);
         tag.putInt("dataSlot", value.getDataSlot());
-        tag.put("items", value.getItemStackHandler().serializeNBT());
-        tag.put("placeholderSlots", value.getPlaceholderSlotsHandler().serializeNBT());
+        tag.put("items", value.getItemStackHandler().serializeNBT(context.lookup()));
+        tag.put("placeholderSlots", value.getPlaceholderSlotsHandler().serializeNBT(context.lookup()));
         return tag;
     }
 
@@ -35,15 +36,16 @@ public class MonitorGroupTransformer implements ValueTransformer<MonitorGroup> {
         var compoundTag = ValueTransformer.assertTagType(CompoundTag.class, tag, context);
         CustomItemStackHandler handler = new CustomItemStackHandler(),
                 placeholderSlotsHandler = new CustomItemStackHandler();
-        handler.deserializeNBT(compoundTag.getCompound("items"));
-        placeholderSlotsHandler.deserializeNBT(compoundTag.getCompound("placeholderSlots"));
+        handler.deserializeNBT(context.lookup(), compoundTag.getCompound("items"));
+        placeholderSlotsHandler.deserializeNBT(context.lookup(), compoundTag.getCompound("placeholderSlots"));
         var group = new MonitorGroup(compoundTag.getString("name"), handler, placeholderSlotsHandler);
         ListTag list = compoundTag.getList("positions", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
-            group.add(NbtUtils.readBlockPos(list.getCompound(i)));
+            int[] aint = list.getIntArray(i);
+            group.add(new BlockPos(aint[0], aint[1], aint[2]));
         }
         if (compoundTag.contains("targetPos", Tag.TAG_COMPOUND)) {
-            group.setTarget(NbtUtils.readBlockPos(compoundTag.getCompound("targetPos")));
+            group.setTarget(NbtUtils.readBlockPos(compoundTag, "targetPos").orElse(BlockPos.ZERO));
             if (compoundTag.contains("targetSide", Tag.TAG_STRING)) {
                 group.setTargetCoverSide(Direction.byName(compoundTag.getString("targetSide")));
             }

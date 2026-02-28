@@ -21,6 +21,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import lombok.Getter;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiPredicate;
@@ -117,8 +118,7 @@ public class EnvironmentalHazardCleanerTrait extends MachineTrait {
                     zone.removeStrength(toClean);
                     if (zone.strength() <= 0) {
                         if (serverLevel.hasChunk(chunkPos.x, chunkPos.z)) {
-                            LevelChunk chunk = serverLevel.getChunk(chunkPos.x, chunkPos.z);
-                            GTNetwork.sendToAllPlayersTrackingChunk(chunk, new SPacketRemoveHazardZone(chunkPos));
+                            PacketDistributor.sendToPlayersTrackingChunk(serverLevel, chunkPos, new SPacketRemoveHazardZone(chunkPos));
                         }
                         return null;
                     } else return zone;

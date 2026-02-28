@@ -17,11 +17,11 @@ public class CodecTransformer<T> implements ValueTransformer<T> {
 
     @Override
     public Tag serializeNBT(T value, ValueTransformer.TransformerContext<T> context) {
-        return codec.encodeStart(NbtOps.INSTANCE, value).getOrThrow(false, GTCEu.LOGGER::error);
+        return codec.encodeStart(NbtOps.INSTANCE, value).getOrThrow();
     }
 
     @Override
     public T deserializeNBT(Tag tag, ValueTransformer.TransformerContext<T> context) {
-        return codec.parse(NbtOps.INSTANCE, tag).getOrThrow(false, GTCEu.LOGGER::error);
+        return codec.parse(NbtOps.INSTANCE, tag).getOrThrow();
     }
 }

@@ -26,8 +26,6 @@ import java.util.List;
 /**
  * The Output Bus that can directly send its contents to ME storage network.
  */
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
 public class MEOutputBusPartMachine extends MEBusPartMachine {
 
     @SaveField

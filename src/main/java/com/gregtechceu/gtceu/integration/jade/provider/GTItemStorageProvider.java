@@ -58,11 +58,11 @@ public enum GTItemStorageProvider implements IServerExtensionProvider<ItemStack>
                 list.add(stored.copyWithCount(stack));
             }
             return list.isEmpty() ? Collections.emptyList() : List.of(new ViewGroup<>(list));
-        } else if (machine instanceof MEPatternBufferProxyPartMachine proxy) {
+        } else if (accessor.getTarget() instanceof MEPatternBufferProxyPartMachine proxy) {
             var buffer = proxy.getBuffer();
             if (buffer == null) return Collections.emptyList();
             Accessor<?> accessor1 = new BlockAccessorImpl.Builder().from((BlockAccessor) accessor)
-                    .blockEntity(buffer.holder.self())
+                    .blockEntity(buffer.self())
                     .build();
             return ItemStorageProvider.Extension.INSTANCE.getGroups(accessor1);
         }

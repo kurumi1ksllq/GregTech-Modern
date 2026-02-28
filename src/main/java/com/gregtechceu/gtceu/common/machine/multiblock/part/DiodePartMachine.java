@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.ClientFieldChangeListen
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 
+import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;

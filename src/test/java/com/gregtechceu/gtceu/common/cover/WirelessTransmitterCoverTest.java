@@ -11,8 +11,10 @@ import com.gregtechceu.gtceu.gametest.util.TestUtils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -36,7 +38,7 @@ public class WirelessTransmitterCoverTest {
         Supplier<ItemStack> module = () -> group.getItemStackHandler().getStackInSlot(0);
         ItemStack stack = dataHatch.getDataItems().getStackInSlot(3);
         // noinspection DataFlowIssue
-        cover.onDataStickUse(helper.makeMockPlayer(), stack);
+        cover.onDataStickUse(helper.makeMockPlayer(GameType.CREATIVE), stack);
         dataHatch.importItems.setStackInSlot(3, stack);
         TestUtils.assertEqual(helper, module.get(), GTItems.TEXT_MODULE.asStack());
         helper.runAtTickTime(40, () -> {

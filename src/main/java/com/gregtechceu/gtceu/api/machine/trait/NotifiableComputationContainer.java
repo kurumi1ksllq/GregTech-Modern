@@ -260,7 +260,7 @@ public class NotifiableComputationContainer extends NotifiableRecipeHandlerTrait
         }
         for (Direction direction : GTUtil.DIRECTIONS) {
             IOpticalComputationProvider provider = GTCapabilityHelper.getOpticalComputationProvider(
-                    machine.getLevel(), machine.getPos().relative(direction), direction.getOpposite());
+                    machine.getLevel(), machine.getBlockPos().relative(direction), direction.getOpposite());
             if (provider != null && provider != this) {
                 return provider;
             }

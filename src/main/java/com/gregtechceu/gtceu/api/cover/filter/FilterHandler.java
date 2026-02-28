@@ -26,8 +26,6 @@ import java.util.function.Consumer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public abstract class FilterHandler<T, F extends Filter<T, F>> implements ISyncManaged {
 
     @Getter
@@ -38,15 +36,15 @@ public abstract class FilterHandler<T, F extends Filter<T, F>> implements ISyncM
     @SaveField
     @SyncToClient
     @Getter
-    private @NotNull ItemStack filterItem = ItemStack.EMPTY;
+    private ItemStack filterItem = ItemStack.EMPTY;
 
     private @Nullable F filter;
     private @Nullable CustomItemStackHandler filterSlot;
     private @Nullable WidgetGroup filterGroup;
 
-    private @NotNull Consumer<F> onFilterLoaded = (filter) -> {};
-    private @NotNull Consumer<F> onFilterRemoved = (filter) -> {};
-    private @NotNull Consumer<F> onFilterUpdated = (filter) -> {};
+    private Consumer<F> onFilterLoaded = (filter) -> {};
+    private Consumer<F> onFilterRemoved = (filter) -> {};
+    private Consumer<F> onFilterUpdated = (filter) -> {};
 
     public FilterHandler(ISyncManaged container) {
         this.container = container;

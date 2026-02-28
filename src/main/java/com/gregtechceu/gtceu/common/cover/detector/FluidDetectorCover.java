@@ -47,7 +47,6 @@ public class FluidDetectorCover extends DetectorCover {
     }
 
     protected IFluidHandler getFluidHandler() {
-        return FluidUtil.getFluidHandler(coverHolder.getLevel(), coverHolder.getBlockPos(), attachedSide).resolve()
-                .orElse(null);
+        return FluidUtil.getFluidHandler(coverHolder.getLevel(), coverHolder.getBlockPos(), attachedSide).orElse(null);
     }
 }

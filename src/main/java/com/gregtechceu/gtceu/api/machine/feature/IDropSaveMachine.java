@@ -30,6 +30,6 @@ public interface IDropSaveMachine extends IMachineFeature {
      * @param stack The stack to save to.
      */
     default void saveToItem(ItemStack stack, HolderLookup.Provider registries) {
-        self().holder.self().saveToItem(stack, registries);
+        self().saveToItem(stack, registries);
     }
 }

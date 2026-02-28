@@ -317,8 +317,6 @@ public class MetaMachineBlock extends Block implements EntityBlock {
         if (machine instanceof IUIMachine uiMachine &&
                 MachineOwner.canOpenOwnerMachine(player, machine)) {
              uiMachine.tryToOpenUI(player, InteractionHand.MAIN_HAND, hit).result();
-        } else {
-
         }
         return super.useWithoutItem(state, level, pos, player, hit);
     }

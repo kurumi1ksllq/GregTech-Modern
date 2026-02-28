@@ -11,7 +11,6 @@ import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidVeinSave
 import com.gregtechceu.gtceu.api.gui.misc.ProspectorMode;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IDataInfoProvider;
 import com.gregtechceu.gtceu.api.machine.feature.IMufflableMachine;
@@ -192,8 +191,7 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
             }
         }
 
-        if (tileEntity instanceof IMachineBlockEntity machineBlockEntity) {
-            MetaMachine machine = machineBlockEntity.getMetaMachine();
+        if (tileEntity instanceof MetaMachine machine) {
 
             list.add(Component.translatable(state.getBlock().getDescriptionId()).withStyle(ChatFormatting.BLUE));
 
@@ -209,7 +207,7 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
                     list.add(Component.translatable("behavior.portable_scanner.machine_front_facing",
                             machine.getFrontFacing().getSerializedName()));
                     list.add(Component.translatable("behavior.portable_scanner.machine_upwards_facing",
-                            machineBlockEntity.self().getBlockState().getValue(GTBlockStateProperties.UPWARDS_FACING)
+                            machine.getBlockState().getValue(GTBlockStateProperties.UPWARDS_FACING)
                                     .getSerializedName()));
                 }
 
@@ -223,7 +221,7 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
                     for (int i = 0; i < fluidHandler.getTanks(); i++) {
                         FluidStack fluidStack = fluidHandler.getFluidInTank(i);
 
-                        if (fluidStack.getFluid() == null || fluidStack.isEmpty()) {
+                        if (fluidStack.isEmpty()) {
                             continue;
                         }
 
@@ -340,10 +338,7 @@ public class PortableScannerBehavior implements IInteractionItem, IAddInformatio
 
             // machine-specific info
             IDataInfoProvider provider = null;
-            if (tileEntity instanceof IDataInfoProvider)
-                provider = (IDataInfoProvider) tileEntity;
-            else if (machine instanceof IDataInfoProvider)
-                provider = (IDataInfoProvider) machine;
+            if (tileEntity instanceof IDataInfoProvider) provider = (IDataInfoProvider) tileEntity;
 
             if (provider != null) {
                 list.add(Component.translatable("behavior.portable_scanner.divider"));

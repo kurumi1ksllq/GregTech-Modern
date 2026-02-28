@@ -173,7 +173,7 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine {
                 FluidStack output = fluids[0];
                 int remainingAmount = ingredient.amount() - storage.fill(output, action);
 
-                if (remainingAmount > 0) it.set(ingredient.copyWithAmount(remainingAmount));
+                if (remainingAmount > 0) it.set(new SizedFluidIngredient(ingredient.ingredient(), remainingAmount));
                 else it.remove();
             }
             return left.isEmpty() ? null : left;

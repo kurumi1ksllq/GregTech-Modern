@@ -44,7 +44,7 @@ public class WirelessTransmitterCover extends CoverBehavior
     @Override
     public InteractionResult onDataStickUse(Player player, ItemStack dataStick) {
         dataStick.set(GTDataComponents.MONITOR_TARGET,
-                new GlobalPosWithRot(coverHolder.getPos(), attachedSide, coverHolder.getLevel().dimension()));
+                new GlobalPosWithRot(coverHolder.getBlockPos(), attachedSide, coverHolder.getLevel().dimension()));
         return InteractionResult.SUCCESS;
     }
 

@@ -25,8 +25,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public class ObjectHolderMachine extends MultiblockPartMachine {
 
     // purposefully not exposed to automation or capabilities

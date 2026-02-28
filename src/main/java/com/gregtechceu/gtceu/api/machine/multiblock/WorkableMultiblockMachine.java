@@ -17,8 +17,7 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 
-import com.lowdragmc.lowdraglib.syncdata.ISubscription;
-
+import com.gregtechceu.gtceu.utils.ISubscription;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 

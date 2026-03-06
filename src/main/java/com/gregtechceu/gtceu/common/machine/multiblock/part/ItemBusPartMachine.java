@@ -22,7 +22,7 @@ import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
 import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Grid;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
@@ -36,6 +36,7 @@ import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTGuis;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
@@ -47,13 +48,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -262,14 +260,13 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     }
 
     @Override
-    protected InteractionResult onScrewdriverClick(Player playerIn, InteractionHand hand, Direction gridSide,
-                                                   BlockHitResult hitResult) {
-        InteractionResult superResult = super.onScrewdriverClick(playerIn, hand, gridSide, hitResult);
+    protected InteractionResult onScrewdriverClick(ExtendedUseOnContext context) {
+        InteractionResult superResult = super.onScrewdriverClick(context);
         if (superResult != InteractionResult.PASS) return superResult;
         if (io == IO.BOTH) return InteractionResult.PASS;
-        if (playerIn.isShiftKeyDown()) {
+        if (context.getPlayer().isShiftKeyDown()) {
             if (swapIO()) {
-                return InteractionResult.sidedSuccess(playerIn.level().isClientSide);
+                return InteractionResult.sidedSuccess(isRemote());
             }
         }
         return InteractionResult.PASS;
@@ -342,7 +339,7 @@ public class ItemBusPartMachine extends TieredIOPartMachine
             backgroundTexture = GTGuiTextures.BACKGROUND;
         }
 
-        panel.child(new Column()
+        panel.child(Flow.col()
                 .coverChildren()
                 .rightRel(1.0f)
                 .reverseLayout(true)
@@ -373,43 +370,4 @@ public class ItemBusPartMachine extends TieredIOPartMachine
 
         return panel;
     }
-
-    /*
-     * public void attachConfigurators(ConfiguratorPanel configuratorPanel) {
-     * if (this.io == IO.IN) {
-     * IDistinctPart.super.attachConfigurators(configuratorPanel);
-     * if (hasCircuitSlot && isCircuitSlotEnabled()) {
-     * configuratorPanel.attachConfigurators(new CircuitFancyConfigurator(circuitInventory.storage));
-     * }
-     * } else {
-     * super.attachConfigurators(configuratorPanel);
-     * }
-     * }
-     *
-     * @Override
-     * public Widget createUIWidget() {
-     * int rowSize = (int) Math.sqrt(getInventorySize());
-     * int colSize = rowSize;
-     * if (getInventorySize() == 8) {
-     * rowSize = 4;
-     * colSize = 2;
-     * }
-     * var group = new WidgetGroup(0, 0, 18 * rowSize + 16, 18 * colSize + 16);
-     * var container = new WidgetGroup(4, 4, 18 * rowSize + 8, 18 * colSize + 8);
-     * int index = 0;
-     * for (int y = 0; y < colSize; y++) {
-     * for (int x = 0; x < rowSize; x++) {
-     * container.addWidget(
-     * new SlotWidget(getInventory().storage, index++, 4 + x * 18, 4 + y * 18, true, io.support(IO.IN))
-     * .setBackgroundTexture(GuiTextures.SLOT)
-     * .setIngredientIO(this.io == IO.IN ? IngredientIO.INPUT : IngredientIO.OUTPUT));
-     * }
-     * }
-     *
-     * container.setBackground(GuiTextures.BACKGROUND_INVERSE);
-     * group.addWidget(container);
-     *
-     * return group;
-     * }
-     */
 }

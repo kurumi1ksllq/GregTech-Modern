@@ -1,6 +1,8 @@
 package com.gregtechceu.gtceu.common.item.behavior;
 
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.mui.base.IItemUIHolder;
 import com.gregtechceu.gtceu.api.mui.factory.PlayerInventoryGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
@@ -8,15 +10,19 @@ import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
+import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import com.lowdragmc.lowdraglib.gui.factory.HeldItemUIFactory;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -27,11 +33,7 @@ public class IntCircuitBehaviour implements IAddInformation, IItemUIHolder {
     public static final int CIRCUIT_MAX = 32;
 
     public static ItemStack stack(int configuration) {
-        return stack(configuration, 1);
-    }
-
-    public static ItemStack stack(int configuration, int count) {
-        var stack = GTItems.PROGRAMMED_CIRCUIT.asStack(count);
+        var stack = GTItems.PROGRAMMED_CIRCUIT.asStack();
         setCircuitConfiguration(stack, configuration);
         return stack;
     }
@@ -89,5 +91,22 @@ public class IntCircuitBehaviour implements IAddInformation, IItemUIHolder {
     @Override
     public ModularPanel buildUI(PlayerInventoryGuiData<?> data, PanelSyncManager syncManager, UISettings settings) {
         return GTMuiWidgets.createCircuitSlotPanel(data::setUsedItemStack, data::getUsedItemStack, syncManager);
+    }
+
+    @Override
+    public InteractionResult useOn(UseOnContext context) {
+        var stack = context.getItemInHand();
+        int circuitSetting = getCircuitConfiguration(stack);
+        BlockEntity entity = context.getLevel().getBlockEntity(context.getClickedPos());
+        if (entity instanceof MetaMachine machine && context.isSecondaryUseActive()) {
+            if (machine instanceof IHasCircuitSlot circuitMachine &&
+                    circuitMachine.getCircuitInventory().getSlots() > 0) {
+                setCircuitConfiguration(circuitMachine.getCircuitInventory().getStackInSlot(0), circuitSetting);
+            }
+            if (!ConfigHolder.INSTANCE.machines.ghostCircuit)
+                stack.shrink(1);
+            return InteractionResult.SUCCESS;
+        }
+        return IItemUIHolder.super.useOn(context);
     }
 }

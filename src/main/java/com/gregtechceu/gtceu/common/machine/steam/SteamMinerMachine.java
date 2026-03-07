@@ -12,21 +12,29 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.drawable.Icon;
+import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
+import com.gregtechceu.gtceu.api.mui.theme.ThemeAPI;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
+import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
 import com.gregtechceu.gtceu.api.mui.widgets.ListWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
+import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Grid;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
+import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.item.behavior.PortableScannerBehavior;
 import com.gregtechceu.gtceu.common.machine.trait.miner.SteamMinerLogic;
+import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTGuis;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
@@ -36,6 +44,7 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
@@ -156,69 +165,64 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IControll
 
     @Override
     public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        ModularPanel panel = GTGuis.createPanel(this, 176, 166);
+        var theme = getDefinition().getThemeId();
+        var backgroundTexture = (UITexture) ThemeAPI.INSTANCE.getTheme(theme).getPanelTheme().getTheme()
+                .getBackground();
+        if (backgroundTexture == null) {
+            backgroundTexture = GTGuiTextures.BACKGROUND;
+        }
 
-        panel.child(GTMuiWidgets.createTitleBar(this.getDefinition(), 176));
-        int rowSize = 2;
-
-        SlotGroup group = new SlotGroup("item_inv", rowSize, 0, true);
-        panel.child(new Grid()
-                .coverChildren()
-                .top(10)
-                .alignX(0.75f)
-                .mapTo(rowSize, rowSize * rowSize, index -> new ItemSlot()
-                        .slot(SyncHandlers.itemSlot(exportItems, index)
-                                .slotGroup(group)
-                                .changeListener((newItem, amount, client, init) -> {
-                                    if (amount) {
-                                        exportItems.onContentsChanged();
-                                    }
-                                })
-                                .accessibility(false, true))))
-                .child(new ListWidget<>()
-                        .top(10)
-                        .alignX(0.25f)
-                        .coverChildren()
-                        .childSeparator(Icon.EMPTY_2PX)
-                        .crossAxisAlignment(Alignment.CrossAxis.START)
-                        .alignX(Alignment.CenterLeft).children(getDisplayTextWidgets()))
-                .child(SlotGroupWidget.playerInventory(true)
-                        .left(7)
-                        .bottom(7));
-
-        return panel;
+        return new ModularPanel(getDefinition().getName())
+                .width(200)
+                .child(GTMuiWidgets.createTitleBar(getDefinition(), 200))
+                .bindPlayerInventory()
+                .child(Flow.row()
+                        .coverChildrenHeight()
+                        .margin(5)
+                        .childPadding(5)
+                        .widthRel(1f)
+                        .child(Flow.column()
+                                .crossAxisAlignment(Alignment.CrossAxis.START)
+                                .padding(5)
+                                .background(GTGuiTextures.DISPLAY)
+                                .widthRel(.6f)
+                                .coverChildrenHeight()
+                                .child(new TextWidget<>(IKey.dynamic(() -> {
+                                    List<Component> text = new ArrayList<>();
+                                    addDisplayText(text);
+                                    return text.stream()
+                                            .map(Component::copy)
+                                            .reduce((a, b) -> a.append("\n").append(b))
+                                            .orElse(Component.empty());
+                                })).color(Color.WHITE.main)))
+                        .child(GTMuiMachineUtil.createSquareSlotGroupFromInventory(exportItems, "export_inv",
+                                syncManager).alignX(0.875f).alignY(0.5f)));
     }
 
-    List<IWidget> getDisplayTextWidgets() {
-        List<IWidget> widgets = new ArrayList<>();
+    private void addDisplayText(List<Component> textList) {
         int workingArea = IMiner.getWorkingArea(getRecipeLogic().getCurrentRadius());
-        widgets.add(
-                IKey.lang("gtceu.machine.miner.x", getRecipeLogic().getX(), getRecipeLogic().getMineX()).asWidget());
-        widgets.add(
-                IKey.lang("gtceu.machine.miner.y", getRecipeLogic().getY(), getRecipeLogic().getMineY()).asWidget());
-        widgets.add(
-                IKey.lang("gtceu.machine.miner.z", getRecipeLogic().getZ(), getRecipeLogic().getMineZ()).asWidget());
-        widgets.add(IKey.lang("gtceu.universal.tooltip.working_area", workingArea, workingArea).asWidget());
-        if (this.getRecipeLogic().isDone())
-            widgets.add(IKey
-                    .lang(Component.translatable("gtceu.multiblock.large_miner.done").withStyle(ChatFormatting.GREEN))
-                    .asWidget());
-        else if (this.getRecipeLogic().isWorking())
-            widgets.add(IKey
-                    .lang(Component.translatable("gtceu.multiblock.large_miner.working").withStyle(ChatFormatting.GOLD))
-                    .asWidget());
+        textList.add(recipeLogic.getCustomProgressLine());
+        textList.add(Component.translatable("gtceu.machine.miner.x", getRecipeLogic().getX(), getRecipeLogic().getMineX()));
+        textList.add(Component.translatable("gtceu.machine.miner.y", getRecipeLogic().getY(), getRecipeLogic().getMineY()));
+        textList.add(Component.translatable("gtceu.machine.miner.x", getRecipeLogic().getZ(), getRecipeLogic().getMineZ()));
+        textList.add(Component.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
+        if (getRecipeLogic().isDone())
+            textList.add(Component.translatable("gtceu.multiblock.large_miner.done")
+                    .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
+        else if (getRecipeLogic().isWorking())
+            textList.add(Component.translatable("gtceu.multiblock.large_miner.working")
+                    .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)));
         else if (!this.isWorkingEnabled())
-            widgets.add(IKey.lang("gtceu.multiblock.work_paused").asWidget());
+            textList.add(Component.translatable("gtceu.multiblock.work_paused"));
         if (getRecipeLogic().isInventoryFull())
-            widgets.add(IKey.lang(Component.translatable("gtceu.multiblock.large_miner.invfull")
-                    .withStyle(ChatFormatting.RED)).asWidget());
+            textList.add(Component.translatable("gtceu.multiblock.large_miner.invfull")
+                    .setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
         if (exhaustVentTrait.isVentingBlocked())
-            widgets.add(IKey.lang(Component.translatable("gtceu.multiblock.large_miner.vent")
-                    .withStyle(ChatFormatting.RED)).asWidget());
+            textList.add(Component.translatable("gtceu.multiblock.large_miner.vent")
+                    .withStyle(ChatFormatting.RED));
         else if (!drainInput(true))
-            widgets.add(IKey.lang(Component.translatable("gtceu.multiblock.large_miner.steam")
-                    .withStyle(ChatFormatting.RED)).asWidget());
-        return widgets;
+            textList.add(Component.translatable("gtceu.multiblock.large_miner.steam")
+                    .withStyle(ChatFormatting.RED));
     }
 
     @Override

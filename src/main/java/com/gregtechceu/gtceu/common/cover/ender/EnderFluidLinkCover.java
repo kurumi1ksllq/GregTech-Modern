@@ -33,7 +33,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
 
 @ParametersAreNonnullByDefault
 public class EnderFluidLinkCover extends AbstractEnderLinkCover<VirtualTank> {

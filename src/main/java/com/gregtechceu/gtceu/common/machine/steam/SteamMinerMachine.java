@@ -10,23 +10,14 @@ import com.gregtechceu.gtceu.api.machine.steam.SteamWorkableMachine;
 import com.gregtechceu.gtceu.api.machine.trait.ExhaustVentMachineTrait;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
-import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
-import com.gregtechceu.gtceu.api.mui.drawable.Icon;
 import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.theme.ThemeAPI;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
-import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
-import com.gregtechceu.gtceu.api.mui.widgets.ListWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Grid;
-import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
-import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
@@ -35,7 +26,6 @@ import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.item.behavior.PortableScannerBehavior;
 import com.gregtechceu.gtceu.common.machine.trait.miner.SteamMinerLogic;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.common.mui.GTGuis;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
@@ -202,9 +192,12 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IControll
     private void addDisplayText(List<Component> textList) {
         int workingArea = IMiner.getWorkingArea(getRecipeLogic().getCurrentRadius());
         textList.add(recipeLogic.getCustomProgressLine());
-        textList.add(Component.translatable("gtceu.machine.miner.x", getRecipeLogic().getX(), getRecipeLogic().getMineX()));
-        textList.add(Component.translatable("gtceu.machine.miner.y", getRecipeLogic().getY(), getRecipeLogic().getMineY()));
-        textList.add(Component.translatable("gtceu.machine.miner.x", getRecipeLogic().getZ(), getRecipeLogic().getMineZ()));
+        textList.add(
+                Component.translatable("gtceu.machine.miner.x", getRecipeLogic().getX(), getRecipeLogic().getMineX()));
+        textList.add(
+                Component.translatable("gtceu.machine.miner.y", getRecipeLogic().getY(), getRecipeLogic().getMineY()));
+        textList.add(
+                Component.translatable("gtceu.machine.miner.x", getRecipeLogic().getZ(), getRecipeLogic().getMineZ()));
         textList.add(Component.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
         if (getRecipeLogic().isDone())
             textList.add(Component.translatable("gtceu.multiblock.large_miner.done")

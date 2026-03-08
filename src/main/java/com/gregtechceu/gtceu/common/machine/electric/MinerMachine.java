@@ -145,9 +145,12 @@ public class MinerMachine extends WorkableTieredMachine
     private void addDisplayText(List<Component> textList) {
         int workingArea = IMiner.getWorkingArea(getRecipeLogic().getCurrentRadius());
         textList.add(recipeLogic.getCustomProgressLine());
-        textList.add(Component.translatable("gtceu.machine.miner.x", getRecipeLogic().getX(), getRecipeLogic().getMineX()));
-        textList.add(Component.translatable("gtceu.machine.miner.y", getRecipeLogic().getY(), getRecipeLogic().getMineY()));
-        textList.add(Component.translatable("gtceu.machine.miner.x", getRecipeLogic().getZ(), getRecipeLogic().getMineZ()));
+        textList.add(
+                Component.translatable("gtceu.machine.miner.x", getRecipeLogic().getX(), getRecipeLogic().getMineX()));
+        textList.add(
+                Component.translatable("gtceu.machine.miner.y", getRecipeLogic().getY(), getRecipeLogic().getMineY()));
+        textList.add(
+                Component.translatable("gtceu.machine.miner.x", getRecipeLogic().getZ(), getRecipeLogic().getMineZ()));
         textList.add(Component.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
         if (getRecipeLogic().isDone())
             textList.add(Component.translatable("gtceu.multiblock.large_miner.done")

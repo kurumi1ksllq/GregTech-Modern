@@ -18,22 +18,22 @@ import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUIs;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 
 public class GTSingleblockMachinePanels {
 
     public static PanelFactory GENERAL_MACHINE = (PosGuiData data, PanelSyncManager syncManager, UISettings settings,
                                                   MetaMachine machine) -> {
-        ModularPanel panel = new ModularPanel(machine.getDefinition().getName());
         if (!(machine instanceof WorkableTieredMachine workableMachine)) {
             GTCEu.LOGGER.error("{} is not a WorkableTieredMachine, can not add slots to its content",
                     machine.getDefinition().getName());
-            return panel;
+            return new ModularPanel(machine.getDefinition().getName());
         }
 
         if (!(machine instanceof SimpleTieredMachine simpleTieredMachine)) {
             GTCEu.LOGGER.error("{} is not a WorkableTieredMachine, can not add slots to its content",
                     machine.getDefinition().getName());
-            return panel;
+            return new ModularPanel(machine.getDefinition().getName());
         }
 
         var inputItemGrid = GTMuiWidgets.createGrid(workableMachine.importItems.getSize(), 3, false, 'i');
@@ -46,84 +46,60 @@ public class GTSingleblockMachinePanels {
 
         boolean ghostCircuit = simpleTieredMachine.isCircuitSlotEnabled();
 
-        panel.size(176, 76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine)
+                .height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(workableMachine.getRecipeType());
 
         var theme = machine.getDefinition().getThemeId();
-        var backgroundTexture = (UITexture) ThemeAPI.INSTANCE.getTheme(theme).getPanelTheme().getTheme()
-                .getBackground();
-        if (backgroundTexture == null) {
-            backgroundTexture = GTGuiTextures.BACKGROUND;
-        }
 
         var autoOutput = machine.getTraitHolder().getTrait(AutoOutputTrait.TYPE);
 
-        panel.child(GTMuiWidgets.createTitleBar(machine.getDefinition(), 176))
-                .child(Flow.row()
-                        .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType())
-                                .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
-                                        simpleTieredMachine.exportItems,
-                                        simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,
-                                        simpleTieredMachine.recipeLogic::getProgressPercent,
-                                        -1)
-                                .alignX(Alignment.CENTER))
-                        .coverChildrenHeight()
-                        // .left(7)
-                        .bottom(76 + 7 + 18 + 9))
-                .child(SlotGroupWidget.playerInventory(false).left(7).bottom(7))
-                .child(Flow.col()
-                        .coverChildren()
-                        .leftRel(1.0f)
-                        .reverseLayout(true)
-                        .padding(2, 4, 4, 4)
-                        .bottom(16)
-                        .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                        .childPadding(2)
-                        .background(backgroundTexture.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                        .child(GTMuiWidgets.createPowerButton(workableMachine, syncManager))
-                        .child(GTMuiWidgets.createBatterySlot(simpleTieredMachine, syncManager))
-                        .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
-                                () -> GTMuiWidgets.createAutoOutputItemButton(autoOutput, syncManager))
-                        .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
-                                () -> GTMuiWidgets.createAutoOutputFluidButton(autoOutput, syncManager))
-                        .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
-                                () -> GTMuiWidgets.createInputFromOutputItem(autoOutput, syncManager))
-                        .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
-                                () -> GTMuiWidgets.createInputFromOutputFluid(autoOutput, syncManager)))
-                .child(Flow.col()
-                        .coverChildren()
-                        .rightRel(1.0f)
-                        .reverseLayout(true)
-                        .padding(4, 2, 4, 4)
-                        .bottom(16)
-                        .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                        .background(GTGuiTextures.BACKGROUND.getSubArea(0f, 0f, 0.75f, 1.0f))
-                        .childIf(ghostCircuit,
-                                () -> GTMuiWidgets.createCircuitSlotPanel(simpleTieredMachine, panel, syncManager)))
-                .child(GTMuiWidgets.createGTLogo()
-                        .right(7).bottom(7 + 78));
-        if (hasXEI && false) {
-            panel.child(GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType()))
+        panelBuilder.rightConfigurators((flow, panel) -> flow
+                .child(GTMuiWidgets.createPowerButton(workableMachine, syncManager))
+                .child(GTMuiWidgets.createBatterySlot(simpleTieredMachine, syncManager))
+                .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
+                        () -> GTMuiWidgets.createAutoOutputItemButton(autoOutput, syncManager))
+                .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
+                        () -> GTMuiWidgets.createAutoOutputFluidButton(autoOutput, syncManager))
+                .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
+                        () -> GTMuiWidgets.createInputFromOutputItem(autoOutput, syncManager))
+                .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
+                        () -> GTMuiWidgets.createInputFromOutputFluid(autoOutput, syncManager)));
+
+        panelBuilder.leftConfigurators((flow, panel) -> flow
+                .childIf(ghostCircuit, () -> GTMuiWidgets.createCircuitSlotPanel(simpleTieredMachine, panel, syncManager)));
+
+        panelBuilder.mainContents((parent, panel) -> {
+            Flow.row()
+                    .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType())
+                            .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
+                                    simpleTieredMachine.exportItems,
+                                    simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,
+                                    simpleTieredMachine.recipeLogic::getProgressPercent,
+                                    -1)
+                            .alignX(Alignment.CENTER))
+                    .coverChildrenHeight();
+                        /*
+            parent.childIf(hasXEI, () -> GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType()))
                     .left(190));
-        }
-        panel.excludeAreaInRecipeViewer();
-        return panel;
+            */
+        });
+        return panelBuilder.build().excludeAreaInRecipeViewer();
     };
 
     public static PanelFactory MACERATOR = (PosGuiData data, PanelSyncManager syncManager, UISettings settings,
                                             MetaMachine machine) -> {
-        ModularPanel panel = new ModularPanel(machine.getDefinition().getName());
         if (!(machine instanceof WorkableTieredMachine workableMachine)) {
             GTCEu.LOGGER.error("{} is not a WorkableTieredMachine, can not add slots to its content",
                     machine.getDefinition().getName());
-            return panel;
+            return new ModularPanel(machine.getDefinition().getName());
         }
 
         if (!(machine instanceof SimpleTieredMachine simpleTieredMachine)) {
             GTCEu.LOGGER.error("{} is not a WorkableTieredMachine, can not add slots to its content",
                     machine.getDefinition().getName());
-            return panel;
+            return new ModularPanel(machine.getDefinition().getName());
         }
 
         var inputItemGrid = GTMuiWidgets.createGrid(workableMachine.importItems.getSize(), 3, false, 'i');
@@ -136,21 +112,32 @@ public class GTSingleblockMachinePanels {
 
         boolean ghostCircuit = simpleTieredMachine.isCircuitSlotEnabled();
 
-        panel.size(176, 76 + 21 + 18 + 9 + 18 * slotHeight);
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine)
+                .height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(workableMachine.getRecipeType());
 
         var theme = machine.getDefinition().getThemeId();
-        var backgroundTexture = (UITexture) ThemeAPI.INSTANCE.getTheme(theme).getPanelTheme().getTheme()
-                .getBackground();
-        if (backgroundTexture == null) {
-            backgroundTexture = GTGuiTextures.BACKGROUND;
-        }
 
         var autoOutput = machine.getTraitHolder().getTrait(AutoOutputTrait.TYPE);
 
-        panel.child(GTMuiWidgets.createTitleBar(machine.getDefinition(), 176))
-                .child(Flow.row()
+        panelBuilder.rightConfigurators((flow, panel) -> flow
+                .child(GTMuiWidgets.createPowerButton(workableMachine, syncManager))
+                .child(GTMuiWidgets.createBatterySlot(simpleTieredMachine, syncManager))
+                .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
+                        () -> GTMuiWidgets.createAutoOutputItemButton(autoOutput, syncManager))
+                .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
+                        () -> GTMuiWidgets.createAutoOutputFluidButton(autoOutput, syncManager))
+                .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
+                        () -> GTMuiWidgets.createInputFromOutputItem(autoOutput, syncManager))
+                .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
+                        () -> GTMuiWidgets.createInputFromOutputFluid(autoOutput, syncManager)));
+
+        panelBuilder.leftConfigurators((flow, panel) -> flow
+                .childIf(ghostCircuit, () -> GTMuiWidgets.createCircuitSlotPanel(simpleTieredMachine, panel, syncManager)));
+
+        panelBuilder.mainContents((parent, panel) -> {
+                parent.child(Flow.row()
                         .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType())
                                 .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
                                         simpleTieredMachine.exportItems,
@@ -160,58 +147,28 @@ public class GTSingleblockMachinePanels {
                                 .alignX(Alignment.CENTER))
                         .coverChildrenHeight()
                         // .left(7)
-                        .bottom(76 + 7 + 18 + 9))
-                .child(SlotGroupWidget.playerInventory(false).left(7).bottom(7))
-                .child(Flow.col()
-                        .coverChildren()
-                        .leftRel(1.0f)
-                        .reverseLayout(true)
-                        .bottom(16)
-                        .padding(0, 8, 4, 4)
-                        .childPadding(2)
-                        .background(backgroundTexture.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                        .child(GTMuiWidgets.createPowerButton(workableMachine, syncManager))
-                        .child(GTMuiWidgets.createBatterySlot(simpleTieredMachine, syncManager))
-                        .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
-                                () -> GTMuiWidgets.createAutoOutputItemButton(autoOutput, syncManager))
-                        .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
-                                () -> GTMuiWidgets.createAutoOutputFluidButton(autoOutput, syncManager))
-                        .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
-                                () -> GTMuiWidgets.createInputFromOutputItem(autoOutput, syncManager))
-                        .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
-                                () -> GTMuiWidgets.createInputFromOutputFluid(autoOutput, syncManager)))
-                .child(Flow.col()
-                        .coverChildren()
-                        .rightRel(1.0f)
-                        .reverseLayout(true)
-                        .padding(0, 8, 4, 4)
-                        .bottom(16)
-                        .background(GTGuiTextures.BACKGROUND.getSubArea(0f, 0f, 0.75f, 1.0f))
-                        .childIf(ghostCircuit,
-                                () -> GTMuiWidgets.createCircuitSlotPanel(simpleTieredMachine, panel, syncManager)))
-                .child(GTMuiWidgets.createGTLogo()
-                        .right(7).bottom(7 + 78));
-        if (hasXEI && false) {
-            panel.child(GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType()))
+                        );
+
+                /*
+                parent.childIf(hasXEI, () -> GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType()))
                     .left(190));
-        }
-        panel.excludeAreaInRecipeViewer();
-        return panel;
+                */
+        });
+        return panelBuilder.build().excludeAreaInRecipeViewer();
     };
 
     public static PanelFactory ARC_FURNACE = (PosGuiData data, PanelSyncManager syncManager, UISettings settings,
                                               MetaMachine machine) -> {
-        ModularPanel panel = new ModularPanel(machine.getDefinition().getName());
         if (!(machine instanceof WorkableTieredMachine workableMachine)) {
             GTCEu.LOGGER.error("{} is not a WorkableTieredMachine, can not add slots to its content",
                     machine.getDefinition().getName());
-            return panel;
+            return new ModularPanel(machine.getDefinition().getName());
         }
 
         if (!(machine instanceof SimpleTieredMachine simpleTieredMachine)) {
             GTCEu.LOGGER.error("{} is not a WorkableTieredMachine, can not add slots to its content",
                     machine.getDefinition().getName());
-            return panel;
+            return new ModularPanel(machine.getDefinition().getName());
         }
 
         var inputItemGrid = GTMuiWidgets.createGrid(workableMachine.importItems.getSize(), 3, false, 'i');
@@ -224,67 +181,50 @@ public class GTSingleblockMachinePanels {
 
         boolean ghostCircuit = simpleTieredMachine.isCircuitSlotEnabled();
 
-        panel.size(176, 76 + 21 + 18 + 9 + 18 * slotHeight);
 
+
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine)
+                .height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
+        var autoOutput = machine.getTraitHolder().getTrait(AutoOutputTrait.TYPE);
         var theme = machine.getDefinition().getThemeId();
-        var backgroundTexture = (UITexture) ThemeAPI.INSTANCE.getTheme(theme).getPanelTheme().getTheme()
-                .getBackground();
-        if (backgroundTexture == null) {
-            backgroundTexture = GTGuiTextures.BACKGROUND;
-        }
+
+        panelBuilder.rightConfigurators((flow, panel) -> flow
+                .child(GTMuiWidgets.createPowerButton(workableMachine, syncManager))
+                .child(GTMuiWidgets.createBatterySlot(simpleTieredMachine, syncManager))
+                .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
+                        () -> GTMuiWidgets.createAutoOutputItemButton(autoOutput, syncManager))
+                .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
+                        () -> GTMuiWidgets.createAutoOutputFluidButton(autoOutput, syncManager))
+                .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
+                        () -> GTMuiWidgets.createInputFromOutputItem(autoOutput, syncManager))
+                .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
+                        () -> GTMuiWidgets.createInputFromOutputFluid(autoOutput, syncManager)));
+
+        panelBuilder.leftConfigurators((flow, panel) -> flow
+                .childIf(ghostCircuit, () -> GTMuiWidgets.createCircuitSlotPanel(simpleTieredMachine, panel, syncManager)));
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(workableMachine.getRecipeType());
 
-        var autoOutput = machine.getTraitHolder().getTrait(AutoOutputTrait.TYPE);
+        panelBuilder.mainContents((parent, panel) -> {
+            parent.child(Flow.row()
+                            .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType())
+                                    .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
+                                            simpleTieredMachine.exportItems,
+                                            simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,
+                                            simpleTieredMachine.recipeLogic::getProgressPercent,
+                                            0)
+                                    .alignX(Alignment.CENTER))
+                            .coverChildrenHeight()
+                            // .left(7)
+                            .bottom(76 + 7 + 18 + 9));
 
-        panel.child(GTMuiWidgets.createTitleBar(machine.getDefinition(), 176))
-                .child(Flow.row()
-                        .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType())
-                                .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
-                                        simpleTieredMachine.exportItems,
-                                        simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,
-                                        simpleTieredMachine.recipeLogic::getProgressPercent,
-                                        0)
-                                .alignX(Alignment.CENTER))
-                        .coverChildrenHeight()
-                        // .left(7)
-                        .bottom(76 + 7 + 18 + 9))
-                .child(SlotGroupWidget.playerInventory(false).left(7).bottom(7))
-                .child(Flow.col()
-                        .coverChildren()
-                        .leftRel(1.0f)
-                        .reverseLayout(true)
-                        .bottom(16)
-                        .padding(0, 8, 4, 4)
-                        .childPadding(2)
-                        .background(backgroundTexture.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                        .child(GTMuiWidgets.createPowerButton(workableMachine, syncManager))
-                        .child(GTMuiWidgets.createBatterySlot(simpleTieredMachine, syncManager))
-                        .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
-                                () -> GTMuiWidgets.createAutoOutputItemButton(autoOutput, syncManager))
-                        .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
-                                () -> GTMuiWidgets.createAutoOutputFluidButton(autoOutput, syncManager))
-                        .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
-                                () -> GTMuiWidgets.createInputFromOutputItem(autoOutput, syncManager))
-                        .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
-                                () -> GTMuiWidgets.createInputFromOutputFluid(autoOutput, syncManager)))
-                .child(Flow.col()
-                        .coverChildren()
-                        .rightRel(1.0f)
-                        .reverseLayout(true)
-                        .padding(0, 8, 4, 4)
-                        .bottom(16)
-                        .background(GTGuiTextures.BACKGROUND.getSubArea(0f, 0f, 0.75f, 1.0f))
-                        .childIf(ghostCircuit,
-                                () -> GTMuiWidgets.createCircuitSlotPanel(simpleTieredMachine, panel, syncManager)))
-                .child(GTMuiWidgets.createGTLogo()
-                        .right(7).bottom(7 + 78));
-        if (hasXEI && false) {
-            panel.child(GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType()))
+            /*
+            parent.childIf(hasXEI, () -> GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType()))
                     .left(190));
-        }
-        panel.excludeAreaInRecipeViewer();
-        return panel;
+            */
+
+        });
+        return panelBuilder.build().excludeAreaInRecipeViewer();
     };
 
     public static PanelFactory STEAM_MACHINE = (PosGuiData data, PanelSyncManager syncManager, UISettings settings,

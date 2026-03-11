@@ -12,11 +12,7 @@ import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.hazard.EnvironmentalHazardEmitterTrait;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
-import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
-import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
@@ -24,7 +20,7 @@ import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTMedicalConditions;
 import com.gregtechceu.gtceu.common.data.GTParticleTypes;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -36,7 +32,6 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import lombok.Getter;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.IntStream;
@@ -178,31 +173,17 @@ public class MufflerPartMachine extends TieredPartMachine implements IMuiMachine
     // ********** GUI ***********//
     //////////////////////////////////////
     @Override
-    public @NotNull ModularPanel buildUI(@NotNull PosGuiData data, @NotNull PanelSyncManager syncManager,
-                                         @NotNull UISettings settings) {
+    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager,
+                                         UISettings settings) {
         int size = (int) Math.sqrt(inventory.getSlots());
 
-        return new ModularPanel(this.getDefinition().getName())
-                .size(Math.max(176, 20 + (18 * size)), 100 + (18 * size))
-                .child(GTMuiWidgets.createTitleBar(this.getDefinition(), 176))
-                .child(new ParentWidget<>()
-                        .widthRel(1)
-                        .height(20 + 18 * size)
-                        .child(Flow.row()
-                                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                                .align(Alignment.CENTER)
-                                .coverChildren()
-                                .child(createSquareSlotGroupFromInventory(inventory, "muffler_inventory", syncManager)
-                                        .marginLeft(30)
-                                        .marginRight(30)
-                                        .verticalCenter())))
-                .child(new ParentWidget<>()
-                        .bottom(7)
-                        .widthRel(1)
-                        .height(76)
-                        .child(Flow.row()
-                                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                                .align(Alignment.CENTER).coverChildren().child(
-                                        SlotGroupWidget.playerInventory(false))));
+        var panelBuilder = MachineUIPanelBuilder.defaultMachinePanel(this);
+        panelBuilder
+                .width(Math.max(176, 20 + (18 * size)))
+                .height(100 + (18 * size))
+                .mainContents((parent, panel) ->
+                        parent.child(createSquareSlotGroupFromInventory(inventory, "muffler_inventory", syncManager).center()));
+
+        return panelBuilder.build();
     }
 }

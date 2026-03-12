@@ -43,7 +43,7 @@ public class GTSingleblockMachinePanels {
 
         var theme = machine.getDefinition().getThemeId();
 
-        panelBuilder.mainContents((parent, panel) -> {
+        panelBuilder.mainContents((parent) -> {
             Flow.row()
                     .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
                             .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
@@ -84,7 +84,7 @@ public class GTSingleblockMachinePanels {
 
         var theme = machine.getDefinition().getThemeId();
 
-        panelBuilder.mainContents((parent, panel) -> {
+        panelBuilder.mainContents((parent) -> {
                 parent.child(Flow.row()
                         .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
                                 .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
@@ -127,7 +127,7 @@ public class GTSingleblockMachinePanels {
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
 
-        panelBuilder.mainContents((parent, panel) -> {
+        panelBuilder.mainContents((parent) -> {
             parent.child(Flow.row()
                             .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
                                     .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,

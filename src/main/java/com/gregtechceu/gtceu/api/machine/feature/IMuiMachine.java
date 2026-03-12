@@ -3,8 +3,10 @@ package com.gregtechceu.gtceu.api.machine.feature;
 import com.gregtechceu.gtceu.api.mui.base.IUIHolder;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.common.mui.factory.MachineUIFactory;
 
 import net.minecraft.server.level.ServerPlayer;
@@ -16,7 +18,19 @@ import net.minecraft.world.phys.BlockHitResult;
 public interface IMuiMachine extends IUIHolder<PosGuiData>, IMachineFeature {
 
     @Override
-    ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings);
+    default ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        var panelBuilder = getPanelBuilder(data, syncManager, settings);
+        panelBuilder.mainContents(parent -> buildMainUI(parent, syncManager, settings));
+        return panelBuilder.build();
+    }
+
+    default MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        return MachineUIPanelBuilder.defaultMachinePanel(self(), syncManager);
+    }
+
+    default void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+
+    }
 
     default boolean shouldOpenUI(Player player, InteractionHand hand, BlockHitResult hit) {
         return true;

@@ -16,10 +16,12 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 @Accessors(fluent = true)
 @Setter
 public class MachineUIPanelBuilder {
+
     private int width = 176;
     private int height = 166;
 
@@ -48,7 +50,7 @@ public class MachineUIPanelBuilder {
 
     private BiConsumer<Flow, ModularPanel> leftConfigurators = (f, p) -> {};
     private BiConsumer<Flow, ModularPanel> rightConfigurators = (f, p) -> {};
-    private BiConsumer<ParentWidget<?>, ModularPanel> mainContents = (f, p)-> {};
+    private Consumer<ParentWidget<?>> mainContents = (p)-> {};
 
     protected MachineUIPanelBuilder(MetaMachine machine, PanelSyncManager syncManager) {
         this.machine = machine;
@@ -111,7 +113,7 @@ public class MachineUIPanelBuilder {
 
         leftConfigurators.accept(attachLeft, panel);
         rightConfigurators.accept(attachRight, panel);
-        mainContents.accept(attachMain, panel);
+        mainContents.accept(attachMain);
 
         if (addTraitConfigurators) {
             for (var trait: machine.getTraitHolder().getAllTraits()) {

@@ -13,10 +13,10 @@ import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.hazard.EnvironmentalHazardEmitterTrait;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTMedicalConditions;
 import com.gregtechceu.gtceu.common.data.GTParticleTypes;
@@ -172,18 +172,18 @@ public class MufflerPartMachine extends TieredPartMachine implements IMuiMachine
     //////////////////////////////////////
     // ********** GUI ***********//
     //////////////////////////////////////
+
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager,
-                                         UISettings settings) {
+    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
         int size = (int) Math.sqrt(inventory.getSlots());
 
-        var panelBuilder = MachineUIPanelBuilder.defaultMachinePanel(this, syncManager);
-        panelBuilder
+        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager)
                 .width(Math.max(176, 20 + (18 * size)))
-                .height(100 + (18 * size))
-                .mainContents((parent, panel) ->
-                        parent.child(createSquareSlotGroupFromInventory(inventory, "muffler_inventory", syncManager).center()));
+                .height(100 + (18 * size));
+    }
 
-        return panelBuilder.build();
+    @Override
+    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+        mainWidget.child(createSquareSlotGroupFromInventory(inventory, "muffler_inventory", syncManager).center());
     }
 }

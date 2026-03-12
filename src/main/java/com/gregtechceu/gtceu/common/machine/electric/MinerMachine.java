@@ -14,6 +14,7 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
@@ -217,33 +218,33 @@ public class MinerMachine extends WorkableTieredMachine
         return new ArrayList<>();
     }
 
+    @Override
+    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager).width(220);
+    }
+
     // TODO(Onion): fix the gui stuff for this
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager)
-                .width(220)
-                .mainContents((parent, panel) -> {
-                    parent.child(Flow.row()
-                            .coverChildrenHeight()
-                            .margin(5)
-                            .childPadding(5)
-                            .widthRel(1f)
-                            .child(Flow.column()
-                                    .crossAxisAlignment(Alignment.CrossAxis.START)
-                                    .padding(5)
-                                    .background(GTGuiTextures.DISPLAY)
-                                    .widthRel(.6f)
-                                    .child(new TextWidget<>(IKey.dynamic(() -> {
-                                        List<Component> text = new ArrayList<>();
-                                        addDisplayText(text);
-                                        return text.stream()
-                                                .map(Component::copy)
-                                                .reduce((a, b) -> a.append("\n").append(b))
-                                                .orElse(Component.empty());
-                                    }))))
-                            .child(GTMuiMachineUtil.createSquareSlotGroupFromInventory(exportItems, "export_inv",
-                                    syncManager)));
-                })
-                .build();
+    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+        mainWidget.child(Flow.row()
+                .coverChildrenHeight()
+                .margin(5)
+                .childPadding(5)
+                .widthRel(1f)
+                .child(Flow.column()
+                        .crossAxisAlignment(Alignment.CrossAxis.START)
+                        .padding(5)
+                        .background(GTGuiTextures.DISPLAY)
+                        .widthRel(.6f)
+                        .child(new TextWidget<>(IKey.dynamic(() -> {
+                            List<Component> text = new ArrayList<>();
+                            addDisplayText(text);
+                            return text.stream()
+                                    .map(Component::copy)
+                                    .reduce((a, b) -> a.append("\n").append(b))
+                                    .orElse(Component.empty());
+                        }))))
+                .child(GTMuiMachineUtil.createSquareSlotGroupFromInventory(exportItems, "export_inv",
+                        syncManager)));
     }
 }

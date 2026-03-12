@@ -177,7 +177,7 @@ public class MufflerPartMachine extends TieredPartMachine implements IMuiMachine
                                          UISettings settings) {
         int size = (int) Math.sqrt(inventory.getSlots());
 
-        var panelBuilder = MachineUIPanelBuilder.defaultMachinePanel(this);
+        var panelBuilder = MachineUIPanelBuilder.defaultMachinePanel(this, syncManager);
         panelBuilder
                 .width(Math.max(176, 20 + (18 * size)))
                 .height(100 + (18 * size))

@@ -4,13 +4,18 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
+import com.gregtechceu.gtceu.api.machine.trait.feature.IAttachConfiguratorsTrait;
 import com.gregtechceu.gtceu.api.machine.trait.feature.IFrontFacingTrait;
 import com.gregtechceu.gtceu.api.machine.trait.feature.IInteractionTrait;
 import com.gregtechceu.gtceu.api.machine.trait.feature.IRenderingTrait;
 import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
+import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
+import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
+import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.item.tool.behavior.ToolModeSwitchBehavior;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -44,7 +49,7 @@ import java.util.function.Predicate;
 
 import static com.gregtechceu.gtceu.api.item.tool.ToolHelper.getBehaviorsTag;
 
-public class AutoOutputTrait extends MachineTrait implements IRenderingTrait, IInteractionTrait, IFrontFacingTrait {
+public class AutoOutputTrait extends MachineTrait implements IRenderingTrait, IInteractionTrait, IFrontFacingTrait, IAttachConfiguratorsTrait {
 
     public static final MachineTraitType<AutoOutputTrait> TYPE = new MachineTraitType<>(AutoOutputTrait.class);
 
@@ -296,6 +301,14 @@ public class AutoOutputTrait extends MachineTrait implements IRenderingTrait, II
     public boolean shouldRenderGridOverlay(Player player, BlockPos pos, BlockState state, ItemStack held,
                                            Set<GTToolType> toolTypes) {
         return toolTypes.contains(GTToolType.SCREWDRIVER) || toolTypes.contains(GTToolType.WRENCH);
+    }
+
+    @Override
+    public void attachRightConfigurators(Flow flow, ModularPanel panel, PanelSyncManager syncManager) {
+        flow.childIf(supportsAutoOutputItems(), () -> GTMuiWidgets.createAutoOutputItemButton(this, syncManager))
+                .childIf(supportsAutoOutputFluids(), () -> GTMuiWidgets.createAutoOutputFluidButton(this, syncManager))
+                .childIf(supportsAutoOutputItems(), () -> GTMuiWidgets.createInputFromOutputItem(this, syncManager))
+                .childIf(supportsAutoOutputFluids(), () -> GTMuiWidgets.createInputFromOutputFluid(this, syncManager));
     }
 
     @Override

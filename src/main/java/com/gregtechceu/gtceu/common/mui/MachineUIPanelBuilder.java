@@ -1,7 +1,12 @@
 package com.gregtechceu.gtceu.common.mui;
 
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
+import com.gregtechceu.gtceu.api.machine.trait.feature.IAttachConfiguratorsTrait;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
+import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
@@ -21,26 +26,33 @@ public class MachineUIPanelBuilder {
     @Setter
     private int height = 166;
 
+    /**
+     * Should the GregTech logo be drawn in the bottom right corner of the panel.
+     */
     private boolean drawGTLogo = false;
+    /**
+     * Should the player inventory be attached to the bottom of the panel.
+     */
     private boolean attachInventory = true;
+    /**
+     * Should a fancy title bar be created for this panel.
+     */
     private boolean addTitleBar = true;
-
+    /**
+     * If machine traits should be allowed to attach configurators to the sides of the panel.
+     */
+    private boolean addTraitConfigurators = true;
+    private boolean addDefaultConfigurators = true;
     private final MetaMachine machine;
+    private final PanelSyncManager syncManager;
 
     private BiConsumer<Flow, ModularPanel> leftConfigurators = (f, p) -> {};
     private BiConsumer<Flow, ModularPanel> rightConfigurators = (f, p) -> {};
     private BiConsumer<ParentWidget<?>, ModularPanel> mainContents = (f, p)-> {};
 
-    protected MachineUIPanelBuilder(MetaMachine machine) {
+    protected MachineUIPanelBuilder(MetaMachine machine, PanelSyncManager syncManager) {
         this.machine = machine;
-    }
-
-    public static MachineUIPanelBuilder defaultSimpleSingleblockMachinePanel(MetaMachine machine) {
-        return new MachineUIPanelBuilder(machine).drawGTLogo(true);
-    }
-
-    public static MachineUIPanelBuilder defaultMachinePanel(MetaMachine machine) {
-        return new MachineUIPanelBuilder(machine);
+        this.syncManager = syncManager;
     }
 
     public ModularPanel build() {
@@ -74,9 +86,33 @@ public class MachineUIPanelBuilder {
                 .widthRelOffset(1,-4)
                 .heightRelOffset(1, attachInventory ? -89 : -4);
 
+
+        if (addDefaultConfigurators) {
+            if (machine instanceof IHasCircuitSlot circuitSlot && circuitSlot.isCircuitSlotEnabled()) {
+                attachLeft.child(GTMuiWidgets.createCircuitSlotPanel(circuitSlot, panel, syncManager));
+            }
+
+
+            if (machine instanceof IRecipeLogicMachine recipeLogicMachine) {
+                attachRight.child(GTMuiWidgets.createPowerButton(recipeLogicMachine, syncManager));
+            }
+            if (machine instanceof SimpleTieredMachine simpleTieredMachine) {
+                attachRight.child(GTMuiWidgets.createBatterySlot(simpleTieredMachine, syncManager));
+            }
+        }
+
         leftConfigurators.accept(attachLeft, panel);
         rightConfigurators.accept(attachRight, panel);
         mainContents.accept(main, panel);
+
+        if (addTraitConfigurators) {
+            for (var trait: machine.getTraitHolder().getAllTraits()) {
+                if (trait instanceof IAttachConfiguratorsTrait attachConfiguratorsTrait) {
+                    attachConfiguratorsTrait.attachLeftConfigurators(attachLeft, panel, syncManager);
+                    attachConfiguratorsTrait.attachRightConfigurators(attachRight, panel, syncManager);
+                }
+            }
+        }
 
         panel.child(attachLeft);
         panel.child(attachRight);
@@ -87,5 +123,13 @@ public class MachineUIPanelBuilder {
                 .right(7).bottom(7 + (attachInventory ? 78 : 0)));
 
         return panel;
+    }
+
+    public static MachineUIPanelBuilder defaultSimpleSingleblockMachinePanel(MetaMachine machine, PanelSyncManager syncManager) {
+        return new MachineUIPanelBuilder(machine, syncManager).drawGTLogo(true);
+    }
+
+    public static MachineUIPanelBuilder defaultMachinePanel(MetaMachine machine, PanelSyncManager syncManager) {
+        return new MachineUIPanelBuilder(machine, syncManager);
     }
 }

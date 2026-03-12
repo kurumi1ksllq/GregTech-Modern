@@ -3,9 +3,7 @@ package com.gregtechceu.gtceu.common.data.mui;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
-import com.gregtechceu.gtceu.api.machine.WorkableTieredMachine;
 import com.gregtechceu.gtceu.api.machine.steam.SimpleSteamMachine;
-import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
 import com.gregtechceu.gtceu.api.mui.factory.PanelFactory;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
@@ -24,55 +22,30 @@ public class GTSingleblockMachinePanels {
 
     public static PanelFactory GENERAL_MACHINE = (PosGuiData data, PanelSyncManager syncManager, UISettings settings,
                                                   MetaMachine machine) -> {
-        if (!(machine instanceof WorkableTieredMachine workableMachine)) {
-            GTCEu.LOGGER.error("{} is not a WorkableTieredMachine, can not add slots to its content",
-                    machine.getDefinition().getName());
-            return new ModularPanel(machine.getDefinition().getName());
-        }
-
         if (!(machine instanceof SimpleTieredMachine simpleTieredMachine)) {
             GTCEu.LOGGER.error("{} is not a WorkableTieredMachine, can not add slots to its content",
                     machine.getDefinition().getName());
             return new ModularPanel(machine.getDefinition().getName());
         }
 
-        var inputItemGrid = GTMuiWidgets.createGrid(workableMachine.importItems.getSize(), 3, false, 'i');
-        var inputFluidGrid = GTMuiWidgets.createGrid(workableMachine.importFluids.getSize(), 3, false, 'f');
-        var outputItemGrid = GTMuiWidgets.createGrid(workableMachine.exportItems.getSize(), 3, true, 'i');
-        var outputFluidGrid = GTMuiWidgets.createGrid(workableMachine.exportFluids.getSize(), 3, true, 'f');
+        var inputItemGrid = GTMuiWidgets.createGrid(simpleTieredMachine.importItems.getSize(), 3, false, 'i');
+        var inputFluidGrid = GTMuiWidgets.createGrid(simpleTieredMachine.importFluids.getSize(), 3, false, 'f');
+        var outputItemGrid = GTMuiWidgets.createGrid(simpleTieredMachine.exportItems.getSize(), 3, true, 'i');
+        var outputFluidGrid = GTMuiWidgets.createGrid(simpleTieredMachine.exportFluids.getSize(), 3, true, 'f');
 
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        boolean ghostCircuit = simpleTieredMachine.isCircuitSlotEnabled();
-
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine)
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager)
                 .height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
 
-        boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(workableMachine.getRecipeType());
+        boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
 
         var theme = machine.getDefinition().getThemeId();
 
-        var autoOutput = machine.getTraitHolder().getTrait(AutoOutputTrait.TYPE);
-
-        panelBuilder.rightConfigurators((flow, panel) -> flow
-                .child(GTMuiWidgets.createPowerButton(workableMachine, syncManager))
-                .child(GTMuiWidgets.createBatterySlot(simpleTieredMachine, syncManager))
-                .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
-                        () -> GTMuiWidgets.createAutoOutputItemButton(autoOutput, syncManager))
-                .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
-                        () -> GTMuiWidgets.createAutoOutputFluidButton(autoOutput, syncManager))
-                .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
-                        () -> GTMuiWidgets.createInputFromOutputItem(autoOutput, syncManager))
-                .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
-                        () -> GTMuiWidgets.createInputFromOutputFluid(autoOutput, syncManager)));
-
-        panelBuilder.leftConfigurators((flow, panel) -> flow
-                .childIf(ghostCircuit, () -> GTMuiWidgets.createCircuitSlotPanel(simpleTieredMachine, panel, syncManager)));
-
         panelBuilder.mainContents((parent, panel) -> {
             Flow.row()
-                    .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType())
+                    .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
                             .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
                                     simpleTieredMachine.exportItems,
                                     simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,
@@ -90,55 +63,30 @@ public class GTSingleblockMachinePanels {
 
     public static PanelFactory MACERATOR = (PosGuiData data, PanelSyncManager syncManager, UISettings settings,
                                             MetaMachine machine) -> {
-        if (!(machine instanceof WorkableTieredMachine workableMachine)) {
-            GTCEu.LOGGER.error("{} is not a WorkableTieredMachine, can not add slots to its content",
-                    machine.getDefinition().getName());
-            return new ModularPanel(machine.getDefinition().getName());
-        }
-
         if (!(machine instanceof SimpleTieredMachine simpleTieredMachine)) {
-            GTCEu.LOGGER.error("{} is not a WorkableTieredMachine, can not add slots to its content",
+            GTCEu.LOGGER.error("{} is not a SimpleTieredMachine, can not add slots to its content",
                     machine.getDefinition().getName());
             return new ModularPanel(machine.getDefinition().getName());
         }
 
-        var inputItemGrid = GTMuiWidgets.createGrid(workableMachine.importItems.getSize(), 3, false, 'i');
-        var inputFluidGrid = GTMuiWidgets.createGrid(workableMachine.importFluids.getSize(), 3, false, 'f');
-        var outputItemGrid = GTMuiWidgets.createGrid(workableMachine.exportItems.getSize(), 3, true, 'i');
-        var outputFluidGrid = GTMuiWidgets.createGrid(workableMachine.exportFluids.getSize(), 3, true, 'f');
+        var inputItemGrid = GTMuiWidgets.createGrid(simpleTieredMachine.importItems.getSize(), 3, false, 'i');
+        var inputFluidGrid = GTMuiWidgets.createGrid(simpleTieredMachine.importFluids.getSize(), 3, false, 'f');
+        var outputItemGrid = GTMuiWidgets.createGrid(simpleTieredMachine.exportItems.getSize(), 3, true, 'i');
+        var outputFluidGrid = GTMuiWidgets.createGrid(simpleTieredMachine.exportFluids.getSize(), 3, true, 'f');
 
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        boolean ghostCircuit = simpleTieredMachine.isCircuitSlotEnabled();
-
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine)
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager)
                 .height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
 
-        boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(workableMachine.getRecipeType());
+        boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
 
         var theme = machine.getDefinition().getThemeId();
 
-        var autoOutput = machine.getTraitHolder().getTrait(AutoOutputTrait.TYPE);
-
-        panelBuilder.rightConfigurators((flow, panel) -> flow
-                .child(GTMuiWidgets.createPowerButton(workableMachine, syncManager))
-                .child(GTMuiWidgets.createBatterySlot(simpleTieredMachine, syncManager))
-                .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
-                        () -> GTMuiWidgets.createAutoOutputItemButton(autoOutput, syncManager))
-                .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
-                        () -> GTMuiWidgets.createAutoOutputFluidButton(autoOutput, syncManager))
-                .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
-                        () -> GTMuiWidgets.createInputFromOutputItem(autoOutput, syncManager))
-                .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
-                        () -> GTMuiWidgets.createInputFromOutputFluid(autoOutput, syncManager)));
-
-        panelBuilder.leftConfigurators((flow, panel) -> flow
-                .childIf(ghostCircuit, () -> GTMuiWidgets.createCircuitSlotPanel(simpleTieredMachine, panel, syncManager)));
-
         panelBuilder.mainContents((parent, panel) -> {
                 parent.child(Flow.row()
-                        .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType())
+                        .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
                                 .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
                                         simpleTieredMachine.exportItems,
                                         simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,
@@ -159,55 +107,29 @@ public class GTSingleblockMachinePanels {
 
     public static PanelFactory ARC_FURNACE = (PosGuiData data, PanelSyncManager syncManager, UISettings settings,
                                               MetaMachine machine) -> {
-        if (!(machine instanceof WorkableTieredMachine workableMachine)) {
-            GTCEu.LOGGER.error("{} is not a WorkableTieredMachine, can not add slots to its content",
-                    machine.getDefinition().getName());
-            return new ModularPanel(machine.getDefinition().getName());
-        }
-
         if (!(machine instanceof SimpleTieredMachine simpleTieredMachine)) {
             GTCEu.LOGGER.error("{} is not a WorkableTieredMachine, can not add slots to its content",
                     machine.getDefinition().getName());
             return new ModularPanel(machine.getDefinition().getName());
         }
 
-        var inputItemGrid = GTMuiWidgets.createGrid(workableMachine.importItems.getSize(), 3, false, 'i');
-        var inputFluidGrid = GTMuiWidgets.createGrid(workableMachine.importFluids.getSize(), 3, false, 'f');
-        var outputItemGrid = GTMuiWidgets.createGrid(workableMachine.exportItems.getSize(), 3, true, 'i');
-        var outputFluidGrid = GTMuiWidgets.createGrid(workableMachine.exportFluids.getSize(), 3, true, 'f');
+        var inputItemGrid = GTMuiWidgets.createGrid(simpleTieredMachine.importItems.getSize(), 3, false, 'i');
+        var inputFluidGrid = GTMuiWidgets.createGrid(simpleTieredMachine.importFluids.getSize(), 3, false, 'f');
+        var outputItemGrid = GTMuiWidgets.createGrid(simpleTieredMachine.exportItems.getSize(), 3, true, 'i');
+        var outputFluidGrid = GTMuiWidgets.createGrid(simpleTieredMachine.exportFluids.getSize(), 3, true, 'f');
 
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        boolean ghostCircuit = simpleTieredMachine.isCircuitSlotEnabled();
-
-
-
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine)
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager)
                 .height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
-        var autoOutput = machine.getTraitHolder().getTrait(AutoOutputTrait.TYPE);
         var theme = machine.getDefinition().getThemeId();
 
-        panelBuilder.rightConfigurators((flow, panel) -> flow
-                .child(GTMuiWidgets.createPowerButton(workableMachine, syncManager))
-                .child(GTMuiWidgets.createBatterySlot(simpleTieredMachine, syncManager))
-                .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
-                        () -> GTMuiWidgets.createAutoOutputItemButton(autoOutput, syncManager))
-                .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
-                        () -> GTMuiWidgets.createAutoOutputFluidButton(autoOutput, syncManager))
-                .childIf(autoOutput != null && autoOutput.supportsAutoOutputItems(),
-                        () -> GTMuiWidgets.createInputFromOutputItem(autoOutput, syncManager))
-                .childIf(autoOutput != null && autoOutput.supportsAutoOutputFluids(),
-                        () -> GTMuiWidgets.createInputFromOutputFluid(autoOutput, syncManager)));
-
-        panelBuilder.leftConfigurators((flow, panel) -> flow
-                .childIf(ghostCircuit, () -> GTMuiWidgets.createCircuitSlotPanel(simpleTieredMachine, panel, syncManager)));
-
-        boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(workableMachine.getRecipeType());
+        boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
 
         panelBuilder.mainContents((parent, panel) -> {
             parent.child(Flow.row()
-                            .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType())
+                            .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
                                     .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
                                             simpleTieredMachine.exportItems,
                                             simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,

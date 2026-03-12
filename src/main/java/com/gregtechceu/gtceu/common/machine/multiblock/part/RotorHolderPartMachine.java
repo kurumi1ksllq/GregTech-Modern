@@ -30,7 +30,7 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.item.behavior.TurbineRotorBehaviour;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.common.mui.MachineUIPanel;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -269,7 +269,7 @@ public class RotorHolderPartMachine extends TieredPartMachine {
         });
         syncManager.syncValue("rotor_speed", rotorSync);
 
-        return MachineUIPanel.Builder.defaultMachinePanel(this, syncManager)
+        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager)
                 .width(100 + (18*4))
                 .mainContents((parent, panel) -> {
                     parent.child(Flow.row()

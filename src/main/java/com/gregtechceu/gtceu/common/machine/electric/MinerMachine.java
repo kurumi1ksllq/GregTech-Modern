@@ -25,7 +25,7 @@ import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
 import com.gregtechceu.gtceu.common.item.behavior.PortableScannerBehavior;
 import com.gregtechceu.gtceu.common.machine.trait.miner.MinerLogic;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.common.mui.MachineUIPanel;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
@@ -220,7 +220,7 @@ public class MinerMachine extends WorkableTieredMachine
     // TODO(Onion): fix the gui stuff for this
     @Override
     public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanel.Builder.defaultMachinePanel(this, syncManager)
+        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager)
                 .width(220)
                 .mainContents((parent, panel) -> {
                     parent.child(Flow.row()

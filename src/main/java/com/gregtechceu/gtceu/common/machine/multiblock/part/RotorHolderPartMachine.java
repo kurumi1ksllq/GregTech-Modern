@@ -30,6 +30,7 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.item.behavior.TurbineRotorBehaviour;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -44,6 +45,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 import lombok.Getter;
+import net.minecraftforge.client.model.CompositeModel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -248,8 +250,8 @@ public class RotorHolderPartMachine extends TieredPartMachine {
 
     // TODO MUI: Might need EIO widget? Not sure
     @Override
-    public @NotNull ModularPanel buildUI(@NotNull PosGuiData data, @NotNull PanelSyncManager syncManager,
-                                         @NotNull UISettings settings) {
+    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager,
+                                         UISettings settings) {
         SlotGroup rotorSlotGroup = new SlotGroup("rotor", 1);
 
         var slot = new ItemSlot()
@@ -265,21 +267,17 @@ public class RotorHolderPartMachine extends TieredPartMachine {
             boolean canEdit = rotorSync.getIntValue() == 0;
             slot.getSlot().accessibility(canEdit, canEdit);
         });
-
         syncManager.syncValue("rotor_speed", rotorSync);
 
-        return new ModularPanel(this.getDefinition().getName())
-                .size(176, 100 + (18 * 4))
-                .child(GTMuiWidgets.createTitleBar(this.getDefinition(), 176))
-                .child(new ParentWidget<>()
-                        .widthRel(1)
-                        .height(20 + 18 * 4)
-                        .child(Flow.row()
-                                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                                .align(Alignment.CENTER)
-                                .coverChildren()
-                                .child(slot)))
-                .child(SlotGroupWidget.playerInventory(false).left(7).bottom(7));
+        return MachineUIPanel.Builder.defaultMachinePanel(this, syncManager)
+                .width(100 + (18*4))
+                .mainContents((parent, panel) -> {
+                    parent.child(Flow.row()
+                            .crossAxisAlignment(Alignment.CrossAxis.CENTER)
+                            .align(Alignment.CENTER)
+                            .coverChildren()
+                            .child(slot));
+                }).build();
     }
 
     //////////////////////////////////////

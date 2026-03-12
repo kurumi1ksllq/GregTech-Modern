@@ -16,7 +16,7 @@ import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUIs;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanel;
 
 public class GTSingleblockMachinePanels {
 
@@ -36,7 +36,7 @@ public class GTSingleblockMachinePanels {
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager)
+        var panelBuilder = MachineUIPanel.Builder.defaultSimpleSingleblockMachinePanel(machine, syncManager)
                 .height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
@@ -77,7 +77,7 @@ public class GTSingleblockMachinePanels {
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager)
+        var panelBuilder = MachineUIPanel.Builder.defaultSimpleSingleblockMachinePanel(machine, syncManager)
                 .height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
@@ -121,7 +121,7 @@ public class GTSingleblockMachinePanels {
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager)
+        var panelBuilder = MachineUIPanel.Builder.defaultSimpleSingleblockMachinePanel(machine, syncManager)
                 .height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
         var theme = machine.getDefinition().getThemeId();
 

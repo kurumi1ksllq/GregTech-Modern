@@ -20,7 +20,7 @@ import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTMedicalConditions;
 import com.gregtechceu.gtceu.common.data.GTParticleTypes;
-import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -177,7 +177,7 @@ public class MufflerPartMachine extends TieredPartMachine implements IMuiMachine
                                          UISettings settings) {
         int size = (int) Math.sqrt(inventory.getSlots());
 
-        var panelBuilder = MachineUIPanelBuilder.defaultMachinePanel(this, syncManager);
+        var panelBuilder = MachineUIPanel.Builder.defaultMachinePanel(this, syncManager);
         panelBuilder
                 .width(Math.max(176, 20 + (18 * size)))
                 .height(100 + (18 * size))

@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.common.data.mui;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.filter.Filter;
 import com.gregtechceu.gtceu.api.cover.filter.FilterHandler;
@@ -9,6 +10,7 @@ import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IVoidable;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
 import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.api.mui.base.IPanelHandler;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
@@ -41,7 +43,9 @@ import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTMath;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
@@ -128,6 +132,10 @@ public class GTMuiWidgets {
                 syncManager);
     }
 
+    public static ToggleButton createPowerButton(IWorkable workable, PanelSyncManager syncManager) {
+        return createPowerButton(workable::isWorkingEnabled, workable::setWorkingEnabled, syncManager);
+    }
+
     public static ProgressWidget createProgressBar(IRecipeLogicMachine workableMachine, PanelSyncManager syncManager,
                                                    UITexture texture, int size) {
         DoubleSyncValue progressPercent = syncManager.getOrCreateSyncHandler("progressPercent", DoubleSyncValue.class,
@@ -161,6 +169,20 @@ public class GTMuiWidgets {
         // TODO pull in voiding mode pr
         return new ToggleButton();
         // EnumSyncValue voidMode = new EnumSyncValue(IVoidable.VoidingMode.class, machine.)
+    }
+
+    public static ToggleButton createDistinctnessButton(IDistinctPart distinct, PanelSyncManager syncManager) {
+        return new ToggleButton()
+                .value(new BoolValue.Dynamic(distinct::isDistinct, distinct::setDistinct))
+                .stateOverlay(GTGuiTextures.BUTTON_DISTINCT)
+                .tooltipAutoUpdate(true)
+                .tooltipBuilder((
+                        richTooltip) -> richTooltip
+                        .add(Component.translatable("gtceu.multiblock.universal.distinct")
+                                .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
+                                .append(Component
+                                        .translatable("gtceu.multiblock.universal.distinct" +
+                                                (distinct.isDistinct() ? ".yes" : ".no")))));
     }
 
     public static ToggleButton createAutoOutputItemButton(AutoOutputTrait autoOutput, PanelSyncManager syncManager) {

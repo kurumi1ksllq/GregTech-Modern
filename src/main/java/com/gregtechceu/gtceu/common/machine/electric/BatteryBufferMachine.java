@@ -17,14 +17,11 @@ import com.gregtechceu.gtceu.api.mui.value.sync.DoubleSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ProgressWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTStringUtils;
@@ -101,7 +98,7 @@ public class BatteryBufferMachine extends TieredEnergyMachine
 
     // TODO add EIO widget
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         String[] matrix;
         if (inventorySize == 8) matrix = new String[] { "BBBB", "BBBB" };
         else matrix = GTMuiMachineUtil.createSquareMatrix(inventorySize, 'B');

@@ -20,13 +20,11 @@ import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
 import com.gregtechceu.gtceu.common.item.behavior.PortableScannerBehavior;
 import com.gregtechceu.gtceu.common.machine.trait.miner.MinerLogic;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
@@ -220,7 +218,7 @@ public class MinerMachine extends WorkableTieredMachine
 
     // TODO(Onion): fix the gui stuff for this
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         mainWidget.width(220);
 
         mainWidget.child(Flow.row()

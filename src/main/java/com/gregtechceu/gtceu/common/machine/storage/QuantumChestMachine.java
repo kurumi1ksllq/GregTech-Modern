@@ -19,7 +19,6 @@ import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.BoolValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.*;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
@@ -30,16 +29,12 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
-
-import com.lowdragmc.lowdraglib.gui.widget.*;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -255,20 +250,14 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
     //////////////////////////////////////
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         LongSyncValue itemSyncer = new LongSyncValue(this::getStoredAmount, (ignored) -> {});
         syncManager.syncValue("item_amount", itemSyncer);
         // SlotGroup group = new SlotGroup("item_inv", 1, 0, true);
 
-        return new ModularPanel(this.getDefinition().getName())
-                .child(
-                        // Top half of the screen
-                        new ParentWidget<>()
-                                .widthRel(1)
-                                .height(20 + 60)
-                                // Box that has the display texture BG +
-                                // the buttons / text / etc
-                                .child(new ParentWidget<>()
+        mainWidget
+                .height(80)
+                .child(new ParentWidget<>()
                                         .background(GTGuiTextures.DISPLAY)
                                         .size(90, 63)
                                         .align(Alignment.CENTER)
@@ -276,8 +265,8 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
                                                 .color(0xffffff)
                                                 .margin(8, 0, 8, 0))
                                         .child(IKey.dynamic(
-                                                () -> Component.literal(
-                                                        FormattingUtil.formatNumbers(itemSyncer.getLongValue())))
+                                                        () -> Component.literal(
+                                                                FormattingUtil.formatNumbers(itemSyncer.getLongValue())))
                                                 .asWidget()
                                                 .color(0xffffff)
                                                 .margin(8, 0, 18, 0))
@@ -291,11 +280,9 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
                                                 .margin(68, 0, 15, 0)
                                                 .coverChildren()
                                                 .child(createItemSlot(syncManager))
-                                                .child(createPhantomLockeditemSlot(syncManager))))
+                                                .child(createPhantomLockeditemSlot(syncManager)))
 
-                )
-                .child(GTMuiWidgets.createTitleBar(getDefinition(), 176, GTGuiTextures.BACKGROUND))
-                .child(SlotGroupWidget.playerInventory(false).left(7).bottom(7));
+                );
     }
 
     private ToggleButton createAutoOutputItemButton(PanelSyncManager syncManager) {

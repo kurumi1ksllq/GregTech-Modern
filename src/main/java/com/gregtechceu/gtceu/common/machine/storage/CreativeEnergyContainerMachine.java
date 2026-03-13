@@ -19,13 +19,12 @@ import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.IntSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.LongSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ButtonWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.Dialog;
 import com.gregtechceu.gtceu.api.mui.widgets.ListWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Row;
 import com.gregtechceu.gtceu.api.mui.widgets.textfield.TextFieldWidget;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
@@ -193,10 +192,10 @@ public class CreativeEnergyContainerMachine extends TieredMachine implements ILa
     //////////////////////////////////////
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         // syncing
         LongSyncValue voltage = new LongSyncValue(() -> this.voltage, (v) -> this.voltage = v);
-        IntSyncValue amps = new IntSyncValue(() -> this.amps, (a) -> this.amps = a < 1 ? 1 : a);
+        IntSyncValue amps = new IntSyncValue(() -> this.amps, (a) -> this.amps = Math.max(a, 1));
         IntSyncValue tier = new IntSyncValue(() -> this.tier, (t) -> this.setTier = t);
         BooleanSyncValue sourceSync = new BooleanSyncValue(() -> this.source, (b) -> this.source = b);
         BooleanSyncValue isActive = new BooleanSyncValue(() -> this.active, (b) -> this.active = b);
@@ -205,11 +204,8 @@ public class CreativeEnergyContainerMachine extends TieredMachine implements ILa
         IPanelHandler panelSyncHandler = syncManager.syncedPanel("voltage popup", false,
                 (manager, handler) -> createAmpSelector(voltage, tier));
 
-        return new ModularPanel("main panel")
-                .coverChildrenHeight()
-                .width(166)
-                .background(GTGuiTextures.BACKGROUND)
-                .child(new Column()
+        mainWidget
+                .child(Flow.col()
                         .widthRel(1)
                         .name("main")
                         .padding(7)
@@ -223,7 +219,7 @@ public class CreativeEnergyContainerMachine extends TieredMachine implements ILa
                         .child(createSourceSelector(sourceSync))
                         .child(new Rectangle().color(0xFF555555).asWidget()
                                 .height(1).widthRel(0.95f).marginBottom(4).marginTop(4))
-                        .child(new Row()
+                        .child(Flow.row()
                                 .coverChildrenHeight()
                                 .name("Power")
                                 .coverChildrenHeight()

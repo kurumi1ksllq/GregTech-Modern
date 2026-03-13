@@ -5,11 +5,10 @@ import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -132,11 +131,10 @@ public class CreativeTankMachine extends QuantumTankMachine {
         return super.onUse(state, world, pos, player, hand, hit);
     }
 
+    // TODO
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        // TODO
-        return super.buildUI(data, syncManager, settings)
-                .child(GTMuiWidgets.createPowerButton(this::isWorkingEnabled, this::setWorkingEnabled, syncManager));
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+        super.buildMainUI(mainWidget, guiData, syncManager, settings);
     }
 
     /*

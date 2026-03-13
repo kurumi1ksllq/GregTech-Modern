@@ -10,18 +10,15 @@ import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.DynamicLinkedSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widget.scroll.VerticalScrollData;
 import com.gregtechceu.gtceu.api.mui.widgets.DynamicSyncedWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
-import com.gregtechceu.gtceu.common.mui.GTGuis;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.AEKeyStorageSyncHandler;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.AEStackDisplayWidget;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.ScrollPreservingGrid;
@@ -101,21 +98,18 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine {
     ///////////////////////////////
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        var panel = GTGuis.createPanel(this, 176, 229);
-        panel.child(GTMuiWidgets.createTitleBar(getDefinition(), 176));
-
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         BooleanSyncValue isOnlineValue = SyncHandlers.bool(this::isOnline, this::setOnline);
         syncManager.syncValue("is_online", isOnlineValue);
 
-        panel.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
-                Component.translatable("gtceu.gui.me_network.online") :
-                Component.translatable("gtceu.gui.me_network.offline"))
+        mainWidget.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
+                        Component.translatable("gtceu.gui.me_network.online") :
+                        Component.translatable("gtceu.gui.me_network.offline"))
                 .asWidget()
                 .top(14)
                 .left(7));
 
-        panel.child(new TextWidget<>(IKey.lang("gtceu.gui.waiting_list"))
+        mainWidget.child(new TextWidget<>(IKey.lang("gtceu.gui.waiting_list"))
                 .top(24)
                 .left(7));
 
@@ -133,15 +127,11 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine {
                             .mapTo(9, list, (index, stack) -> new AEStackDisplayWidget(list, index));
                 });
 
-        panel.child(new DynamicSyncedWidget<>()
+        mainWidget.child(new DynamicSyncedWidget<>()
                 .syncHandler(dynamicHandler)
                 .size(167, 108)
                 .top(34)
                 .alignX(0.5f));
-
-        panel.child(SlotGroupWidget.playerInventory(true).bottom(7));
-
-        return panel;
     }
 
     private class InaccessibleInfiniteTank extends NotifiableFluidTank {

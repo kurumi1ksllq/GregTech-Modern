@@ -20,7 +20,6 @@ import com.gregtechceu.gtceu.api.mui.value.sync.LongSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.FluidSlot;
@@ -28,7 +27,6 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
@@ -214,46 +212,37 @@ public class QuantumTankMachine extends TieredMachine implements IDropSaveMachin
     // *********** GUI ***********//
     //////////////////////////////////////
     // TODO: Needs AOI widget
+
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         LongSyncValue bucketSyncer = new LongSyncValue(this::getStoredAmount, (ignored) -> {});
         syncManager.syncValue("bucket_amount", bucketSyncer);
 
-        return new ModularPanel(this.getDefinition().getName())
-                .child(
-                        // Top half of the screen
-                        new ParentWidget<>()
-                                .widthRel(1)
-                                .height(20 + 60)
-                                // Box that has the display texture BG +
-                                // the buttons / text / etc
-                                .child(new ParentWidget<>()
-                                        .background(GTGuiTextures.DISPLAY)
-                                        .size(90, 63)
-                                        .align(Alignment.CENTER)
-                                        .child(IKey.lang("gtceu.gui.fluid_amount").asWidget()
-                                                .color(0xffffff)
-                                                .margin(8, 0, 8, 0))
-                                        .child(IKey.dynamic(
-                                                () -> Component.literal(
-                                                        FormattingUtil.formatBuckets(bucketSyncer.getLongValue())))
-                                                .asWidget()
-                                                .color(0xffffff)
-                                                .margin(8, 0, 18, 0))
-                                        .child(Flow.row()
-                                                .margin(4, 0, 41, 0)
-                                                .coverChildren()
-                                                .child(GTMuiWidgets.createAutoOutputFluidButton(autoOutput,
-                                                        syncManager))
-                                                .child(createFluidLockButton(syncManager))
-                                                .child(createVoidButton(syncManager)))
-                                        .child(Flow.column()
-                                                .margin(68, 0, 23, 0)
-                                                .coverChildren()
-                                                .child(createFluidSlot(syncManager))
-                                                .child(createPhantomLockedFluidSlot(syncManager)))))
-                .child(GTMuiWidgets.createTitleBar(getDefinition(), 176, GTGuiTextures.BACKGROUND))
-                .child(SlotGroupWidget.playerInventory(false).left(7).bottom(7));
+        mainWidget.child(new ParentWidget<>()
+                .background(GTGuiTextures.DISPLAY)
+                .height(63)
+                .align(Alignment.CENTER)
+                .child(IKey.lang("gtceu.gui.fluid_amount").asWidget()
+                        .color(0xffffff)
+                        .margin(8, 0, 8, 0))
+                .child(IKey.dynamic(
+                                () -> Component.literal(
+                                        FormattingUtil.formatBuckets(bucketSyncer.getLongValue())))
+                        .asWidget()
+                        .color(0xffffff)
+                        .margin(8, 0, 18, 0))
+                .child(Flow.row()
+                        .margin(4, 0, 41, 0)
+                        .coverChildren()
+                        .child(GTMuiWidgets.createAutoOutputFluidButton(autoOutput,
+                                syncManager))
+                        .child(createFluidLockButton(syncManager))
+                        .child(createVoidButton(syncManager)))
+                .child(Flow.column()
+                        .margin(68, 0, 23, 0)
+                        .coverChildren()
+                        .child(createFluidSlot(syncManager))
+                        .child(createPhantomLockedFluidSlot(syncManager))));
     }
 
     private ToggleButton createFluidLockButton(PanelSyncManager syncManager) {

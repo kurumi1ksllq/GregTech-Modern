@@ -19,6 +19,7 @@ import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.FloatSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.InteractionSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ButtonWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
@@ -28,15 +29,11 @@ import com.gregtechceu.gtceu.api.mui.widgets.textfield.TextFieldWidget;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTItems;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
-
-import com.lowdragmc.lowdraglib.gui.widget.*;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -399,7 +396,7 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
      */
 
     @Override
-    public ModularPanel buildUI(PosGuiData guiData, PanelSyncManager syncManager, UISettings uiSettings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         InteractionSyncHandler syncHandler = new InteractionSyncHandler();
         // syncManager.syncValue("button_idk", syncHandler);
         Flow maintenanceStatusWidget = Flow.column()
@@ -410,8 +407,8 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
         Runnable updateWidget = () -> {
             while (!maintenanceStatusWidget.getChildren().isEmpty()) maintenanceStatusWidget.remove(0);
             maintenanceStatusWidget.child(new TextWidget<>(IKey.lang(() -> hasMaintenanceProblems() ?
-                    "gtceu.top.maintenance_broken" :
-                    "gtceu.top.maintenance_fixed")))
+                            "gtceu.top.maintenance_broken" :
+                            "gtceu.top.maintenance_fixed")))
                     .child(Flow.row()
                             .coverChildren()
                             .children(Stream.iterate(Byte.valueOf("0"), i -> i < 6, i -> ++i)
@@ -426,11 +423,7 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
             updateWidget.run();
         });
         updateWidget.run();
-        return new ModularPanel(this.getDefinition().getName())
-                .size(176, 200)
-                .bindPlayerInventory()
-                .child(GTMuiWidgets.createTitleBar(this.getDefinition(), 176))
-                .child(Flow.column()
+        mainWidget.child(Flow.column()
                         .crossAxisAlignment(Alignment.CrossAxis.START)
                         .childIf(this.isConfigurable, () -> Flow.column()
                                 .coverChildren()

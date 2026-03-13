@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.item.component.IItemComponent;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
+import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
@@ -92,7 +93,7 @@ public class ObjectHolderMachine extends MultiblockPartMachine {
     }
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         SlotGroup objectGroup = new SlotGroup("object_slot", 1);
         SlotGroup orbGroup = new SlotGroup("orb_slot", 1);
 

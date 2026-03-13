@@ -4,36 +4,26 @@ import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
-import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
-import com.gregtechceu.gtceu.api.mui.value.BoolValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.FluidSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.ItemSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.FluidSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ModularSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
-import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.FluidType;
 
@@ -171,7 +161,7 @@ public class DualHatchPartMachine extends ItemBusPartMachine {
     ///////////////////////////////
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         int rowSize = (int) Math.sqrt(getInventorySize());
         int width = Math.max(MachineUIPanelBuilder.DEFAULT_WIDTH, 18 * rowSize + 18 + 14);
         int height = 74 + Math.max(30, 9 + rowSize * 18) + 14;

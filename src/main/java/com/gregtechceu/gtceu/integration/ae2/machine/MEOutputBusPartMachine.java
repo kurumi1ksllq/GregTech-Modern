@@ -13,14 +13,10 @@ import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widget.scroll.VerticalScrollData;
 import com.gregtechceu.gtceu.api.mui.widgets.DynamicSyncedWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
-import com.gregtechceu.gtceu.common.mui.GTGuis;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.AEKeyStorageSyncHandler;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.AEStackDisplayWidget;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.ScrollPreservingGrid;
@@ -101,7 +97,7 @@ public class MEOutputBusPartMachine extends MEBusPartMachine {
     ///////////////////////////////
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         BooleanSyncValue isOnlineValue = SyncHandlers.bool(this::isOnline, this::setOnline);
         syncManager.syncValue("is_online", isOnlineValue);
 

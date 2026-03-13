@@ -27,7 +27,6 @@ import com.gregtechceu.gtceu.common.data.GTDamageTypes;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.item.behavior.TurbineRotorBehaviour;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -246,7 +245,7 @@ public class RotorHolderPartMachine extends TieredPartMachine {
 
     // TODO MUI: Might need EIO widget? Not sure
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         mainWidget.width(100 + (18*4));
 
         SlotGroup rotorSlotGroup = new SlotGroup("rotor", 1);

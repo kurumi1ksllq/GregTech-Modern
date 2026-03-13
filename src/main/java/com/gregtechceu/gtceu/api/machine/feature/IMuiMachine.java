@@ -20,7 +20,7 @@ public interface IMuiMachine extends IUIHolder<PosGuiData>, IMachineFeature {
     @Override
     default ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
         var panelBuilder = getPanelBuilder(data, syncManager, settings);
-        panelBuilder.mainContents(parent -> buildMainUI(parent, syncManager, settings));
+        panelBuilder.mainContents(parent -> buildMainUI(parent, data, syncManager, settings));
         return panelBuilder.build();
     }
 
@@ -28,7 +28,7 @@ public interface IMuiMachine extends IUIHolder<PosGuiData>, IMachineFeature {
         return MachineUIPanelBuilder.defaultMachinePanel(self(), syncManager);
     }
 
-    default void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+    default void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
 
     }
 

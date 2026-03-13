@@ -12,15 +12,10 @@ import com.gregtechceu.gtceu.api.mui.theme.ThemeAPI;
 import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.common.mui.GTGuis;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.AEConfigWidget;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidList;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidSlot;
@@ -133,23 +128,21 @@ public class MEInputHatchPartMachine extends MEHatchPartMachine
     ///////////////////////////////
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        var panel = GTGuis.createPanel(this, 176, 192);
-        panel.child(GTMuiWidgets.createTitleBar(getDefinition(), 176));
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
 
         BooleanSyncValue isOnlineValue = SyncHandlers.bool(this::isOnline, this::setOnline);
         syncManager.syncValue("is_online", isOnlineValue);
 
-        panel.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
-                Component.translatable("gtceu.gui.me_network.online") :
-                Component.translatable("gtceu.gui.me_network.offline"))
+        mainWidget.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
+                        Component.translatable("gtceu.gui.me_network.online") :
+                        Component.translatable("gtceu.gui.me_network.offline"))
                 .asWidget()
                 .top(14)
                 .left(7));
 
         registerConfigActions(syncManager);
 
-        panel.child(new AEConfigWidget(aeFluidHandler, CONFIG_SIZE, true)
+        mainWidget.child(new AEConfigWidget(aeFluidHandler, CONFIG_SIZE, true)
                 .syncManager(syncManager)
                 .size(8 * 18, 2 * (18 * 2 + 2))
                 .top(26)
@@ -161,25 +154,6 @@ public class MEInputHatchPartMachine extends MEHatchPartMachine
         if (backgroundTexture == null) {
             backgroundTexture = GTGuiTextures.BACKGROUND;
         }
-
-        panel.child(createButtonColumn(panel, syncManager, backgroundTexture));
-
-        panel.child(SlotGroupWidget.playerInventory(true).bottom(7));
-
-        return panel;
-    }
-
-    protected Flow createButtonColumn(ModularPanel panel, PanelSyncManager syncManager,
-                                      UITexture backgroundTexture) {
-        return new Column()
-                .coverChildren()
-                .rightRel(1.0f)
-                .reverseLayout(true)
-                .bottom(16)
-                .padding(5, 2, 4, 4)
-                .childPadding(2)
-                .background(backgroundTexture.getSubArea(0.0f, 0f, 0.75f, 1.0f))
-                .child(GTMuiWidgets.createCircuitSlotPanel(this, panel, syncManager));
     }
 
     protected void registerConfigActions(PanelSyncManager syncManager) {

@@ -24,8 +24,6 @@ public class MachineUIPanelBuilder {
     public static final int DEFAULT_WIDTH = 172;
     public static final int DEFAULT_HEIGHT = 77;
 
-    private int width = 176;
-
     /**
      * Should the GregTech logo be drawn in the bottom right corner of the panel.
      */
@@ -61,7 +59,6 @@ public class MachineUIPanelBuilder {
     public ModularPanel build() {
 
         var panel = new ModularPanel(machine.getDefinition().getId().getPath());
-        panel.width(width);
 
         Flow attachLeft = Flow.col()
                 .coverChildren()

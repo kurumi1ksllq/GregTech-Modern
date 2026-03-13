@@ -16,12 +16,10 @@ import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTItems;
-import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.common.mui.GTGuis;
 
+import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -71,7 +69,12 @@ public class CrateMachine extends MetaMachine implements IMuiMachine,
     }
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager).addTitleBar(false);
+    }
+
+    @Override
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         syncManager.registerSlotGroup("item_inv", inventorySize);
 
         int rows = inventorySize / rowLength;
@@ -86,11 +89,9 @@ public class CrateMachine extends MetaMachine implements IMuiMachine,
             }
         }
 
-        return GTGuis.createPanel(this, rowLength * 18 + 14, 18 + 4 * 18 + 5 + 14 + 18 * rows)
-                .background(GTGuiTextures.BACKGROUND)
+        mainWidget.size(rowLength * 18 + 14, 18 + 4 * 18 + 5 + 14 + 18 * rows)
                 .child(IKey.lang(getBlockState().getBlock().getName()).asWidget().pos(5, 5))
-                .child(slots.top(18).left(7).right(7).height(rows * 18))
-                .bindPlayerInventory();
+                .child(slots.top(18).left(7).right(7).height(rows * 18));
     }
 
     @Override

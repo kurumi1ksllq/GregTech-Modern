@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
+import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.*;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
@@ -533,7 +534,7 @@ public class PumpMachine extends TieredEnergyMachine implements IMuiMachine {
     //////////////////////////////////////
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         IntSyncValue bucketSyncer = new IntSyncValue(() -> cache.getFluidInTank(0).getAmount(), (ignored) -> {});
         syncManager.syncValue("bucket_amount", bucketSyncer);
 

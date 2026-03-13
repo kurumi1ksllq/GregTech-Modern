@@ -11,10 +11,8 @@ import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
-import com.gregtechceu.gtceu.common.mui.GTGuis;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.AEConfigWidget;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemList;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemSlot;
@@ -124,7 +122,7 @@ public class MEInputBusPartMachine extends MEBusPartMachine
     ///////////////////////////////
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         BooleanSyncValue isOnlineValue = SyncHandlers.bool(this::isOnline, this::setOnline);
         syncManager.syncValue("is_online", isOnlineValue);
 

@@ -11,30 +11,25 @@ import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
-import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
-import com.gregtechceu.gtceu.api.mui.theme.ThemeAPI;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.FluidSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Row;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.FluidSlot;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.common.mui.GTGuis;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -293,49 +288,20 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IHasCi
     }
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        int width = 176;
-        int height = Math.max(168, (int) (18 * Math.sqrt(slots)) + 78 + 19);
-        var panel = GTGuis.createPanel(this, width, height);
-
-        // magic numbers are me favorite :3
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         int topOffset = slots == 1 ? 10 : slots == 9 ? 16 : 20;
+        int height = Math.max(MachineUIPanelBuilder.DEFAULT_HEIGHT, (int) (18 * Math.sqrt(slots)) + 78 + 19);
 
-        var theme = this.getDefinition().getThemeId();
-        var backgroundTexture = (UITexture) ThemeAPI.INSTANCE.getTheme(theme).getPanelTheme().getTheme()
-                .getBackground();
-        if (backgroundTexture == null) {
-            backgroundTexture = GTGuiTextures.BACKGROUND;
-        }
-
-        panel.child(GTMuiWidgets.createTitleBar(getDefinition(), 174))
-                .child(SlotGroupWidget.playerInventory(true)
-                        .left(7)
-                        .bottom(7))
-                .child((slots == 1 ? createSingleSlotUI(syncManager) : createMultiSlotUI(syncManager))
-                        .top(topOffset)
-                        .horizontalCenter())
-                .child(new Column()
-                        .coverChildren()
-                        .rightRel(1.0f)
-                        .reverseLayout(true)
-                        .bottom(16)
-                        .padding(8, 0, 4, 4)
-                        .childPadding(2)
-                        .background(backgroundTexture.getSubArea(0.0f, 0f, 0.75f, 1.0f))
-                        .excludeAreaInRecipeViewer()
-                        .child(GTMuiWidgets.createPowerButton(this::isWorkingEnabled, this::setWorkingEnabled,
-                                syncManager))
-                        .childIf(this.isCircuitSlotEnabled(),
-                                () -> GTMuiWidgets.createCircuitSlotPanel(this, panel, syncManager)));
-
-        return panel;
+        mainWidget.height(height);
+        mainWidget.child((slots == 1 ? createSingleSlotUI(syncManager) : createMultiSlotUI(syncManager))
+                .top(topOffset)
+                .horizontalCenter());
     }
 
     protected Flow createSingleSlotUI(PanelSyncManager syncManager) {
         BooleanSyncValue locked = new BooleanSyncValue(this.tank::isLocked, this.tank::setLocked);
         syncManager.syncValue("locked", locked);
-        return new Column()
+        return Flow.col()
                 .widthRel(.6f)
                 .height(60)
                 .mainAxisAlignment(Alignment.MainAxis.CENTER)
@@ -344,7 +310,7 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IHasCi
                         .horizontalCenter())
                 .child(new TextWidget<>(IKey.dynamic(this::getFluidAmountText))
                         .horizontalCenter())
-                .child(new Row()
+                .child(Flow.row()
                         .childPadding(2)
                         .coverChildren()
                         .childIf(io.support(IO.OUT), () -> new FluidSlot()

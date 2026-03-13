@@ -356,7 +356,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
 
     // TODO: Needs EIO type side selection widget when that's done
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         var slotHeight = (int) Math.sqrt(inventorySize);
         mainWidget
                 .size(MachineUIPanelBuilder.DEFAULT_WIDTH, 20 + 18 * slotHeight)

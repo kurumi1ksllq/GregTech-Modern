@@ -315,11 +315,6 @@ public class ItemBusPartMachine extends TieredIOPartMachine
                                                 inventory.onContentsChanged();
                                             }
                                         })
-                                        .accessibility(inventory.handlerIO.support(IO.IN), true))))
-
-                .child(SlotGroupWidget.playerInventory(true)
-                        // .alignX(Alignment.CENTER)
-                        .left(7)
-                        .bottom(7));
+                                        .accessibility(inventory.handlerIO.support(IO.IN), true))));
     }
 }

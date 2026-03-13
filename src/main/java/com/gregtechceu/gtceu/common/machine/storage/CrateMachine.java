@@ -89,7 +89,7 @@ public class CrateMachine extends MetaMachine implements IMuiMachine,
             }
         }
 
-        mainWidget.size(rowLength * 18 + 14, 18 + 4 * 18 + 5 + 14 + 18 * rows)
+        mainWidget.size(rowLength * 18 + 14, 24 + 18 * rows)
                 .child(IKey.lang(getBlockState().getBlock().getName()).asWidget().pos(5, 5))
                 .child(slots.top(18).left(7).right(7).height(rows * 18));
     }

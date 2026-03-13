@@ -91,7 +91,7 @@ public class MachineUIPanelBuilder {
 
         ParentWidget<?> attachMain = new ParentWidget<>()
                 .size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
-                .margin(4);
+                .top(4).left(4);
 
         panel.child(attachMain);
         panel.child(attachLeft);
@@ -121,8 +121,7 @@ public class MachineUIPanelBuilder {
         mainContents.accept(attachMain);
 
         var uiTheme = ThemeAPI.INSTANCE.getTheme(machine.getDefinition().getThemeId());
-        panel.childIf(addTitleBar, () -> GTMuiWidgets.createTitleBar(machine.getDefinition(), attachMain.getArea().width, (UITexture) uiTheme.getPanelTheme().getTheme()
-                .getBackground()));
+        panel.childIf(addTitleBar, () -> GTMuiWidgets.createTitleBar(machine.getDefinition(), 172));
         panel.childIf(attachInventory, () -> SlotGroupWidget.playerInventory(false).left(7).bottom(7));
         panel.childIf(drawGTLogo, () -> GTMuiWidgets.createGTLogo()
                 .right(7).bottom(7 + (attachInventory ? 78 : 0)));

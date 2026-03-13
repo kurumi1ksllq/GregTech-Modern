@@ -164,4 +164,8 @@ public class MachineUIPanelBuilder {
     public static MachineUIPanelBuilder defaultMachinePanel(MetaMachine machine, PanelSyncManager syncManager) {
         return new MachineUIPanelBuilder(machine, syncManager);
     }
+
+    public static MachineUIPanelBuilder defaultSteamMachine(MetaMachine machine, PanelSyncManager syncManager) {
+        return new MachineUIPanelBuilder(machine, syncManager).drawGTLogo(true).addDefaultConfigurators(false);
+    }
 }

@@ -244,15 +244,11 @@ public class RotorHolderPartMachine extends TieredPartMachine {
     // ********** GUI ***********//
     //////////////////////////////////////
 
-    @Override
-    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager)
-                .width(100 + (18*4));
-    }
-
     // TODO MUI: Might need EIO widget? Not sure
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+        mainWidget.width(100 + (18*4));
+
         SlotGroup rotorSlotGroup = new SlotGroup("rotor", 1);
 
         var slot = new ItemSlot()

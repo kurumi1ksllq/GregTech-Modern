@@ -36,14 +36,15 @@ public class GTSingleblockMachinePanels {
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager)
-                .height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager);
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
 
         var theme = machine.getDefinition().getThemeId();
 
         panelBuilder.mainContents((parent) -> {
+            parent.height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
+
             Flow.row()
                     .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
                             .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
@@ -77,14 +78,15 @@ public class GTSingleblockMachinePanels {
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager)
-                .height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager);
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
 
         var theme = machine.getDefinition().getThemeId();
 
         panelBuilder.mainContents((parent) -> {
+                parent.height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
+
                 parent.child(Flow.row()
                         .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
                                 .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
@@ -121,13 +123,13 @@ public class GTSingleblockMachinePanels {
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager)
-                .height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager);
         var theme = machine.getDefinition().getThemeId();
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
 
         panelBuilder.mainContents((parent) -> {
+            parent.height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
             parent.child(Flow.row()
                             .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
                                     .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,

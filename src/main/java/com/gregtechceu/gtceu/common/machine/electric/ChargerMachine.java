@@ -12,6 +12,7 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.DoubleSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ProgressWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
@@ -127,51 +128,37 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
     //////////////////////////////////////
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
         String[] matrix = GTMuiMachineUtil.createSquareMatrix(inventorySize, 'B');
 
         DoubleSyncValue energyPercentage = syncManager.getOrCreateSyncHandler("energyPercentage", DoubleSyncValue.class,
                 () -> new DoubleSyncValue(this::getEnergyPercentage));
 
-        return new ModularPanel(getDefinition().getName())
-                .child(GTMuiWidgets.createTitleBar(getDefinition(), 172))
-                .child(Flow.row()
-                        .height(90)
-                        .margin(6)
-                        .marginLeft(7)
-                        .marginTop(2)
-                        .height(80)
-                        .child(new ProgressWidget()
-                                .texture(GTGuiTextures.PROGRESS_BAR_BOILER_EMPTY_STEEL,
-                                        GTGuiTextures.PROGRESS_BAR_BOILER_HEAT, 60)
-                                .direction(ProgressWidget.Direction.UP)
-                                .value(energyPercentage)
-                                .marginRight(50)
-                                .size(18, 60)
-                                .verticalCenter()
-                                .addTooltipLine(IKey.dynamic(() -> Component.literal(
-                                        "%s/%s EU".formatted(
-                                                GTStringUtils.formatInt(energyContainer.getEnergyStored()),
-                                                GTStringUtils.formatInt(energyContainer.getEnergyCapacity()))))))
-                        .child(GTMuiMachineUtil.createSlotGroupFromInventory(
+        mainWidget.child(Flow.row()
+                .height(90)
+                .margin(6)
+                .marginLeft(7)
+                .marginTop(2)
+                .height(80)
+                .child(new ProgressWidget()
+                        .texture(GTGuiTextures.PROGRESS_BAR_BOILER_EMPTY_STEEL,
+                                GTGuiTextures.PROGRESS_BAR_BOILER_HEAT, 60)
+                        .direction(ProgressWidget.Direction.UP)
+                        .value(energyPercentage)
+                        .marginRight(50)
+                        .size(18, 60)
+                        .verticalCenter()
+                        .addTooltipLine(IKey.dynamic(() -> Component.literal(
+                                "%s/%s EU".formatted(
+                                        GTStringUtils.formatInt(energyContainer.getEnergyStored()),
+                                        GTStringUtils.formatInt(energyContainer.getEnergyCapacity()))))))
+                .child(GTMuiMachineUtil.createSlotGroupFromInventory(
                                 chargerInventory, "charger_inv",
                                 inventorySize, 'B',
                                 slot -> slot.background(GTGuiTextures.SLOT, GTGuiTextures.CHARGER_OVERLAY),
                                 syncManager,
                                 matrix)
-                                .center()))
-                .child(new Column()
-                        .coverChildren()
-                        .leftRel(1.0f)
-                        .reverseLayout(true)
-                        .bottom(16)
-                        .padding(0, 8, 4, 4)
-                        .childPadding(2)
-                        .excludeAreaInRecipeViewer()
-                        .background(GTGuiTextures.BACKGROUND.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                        .child(GTMuiWidgets.createPowerButton(this::isWorkingEnabled, this::setWorkingEnabled,
-                                syncManager)))
-                .bindPlayerInventory();
+                        .center()));
     }
 
     private double getEnergyPercentage() {

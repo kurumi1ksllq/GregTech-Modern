@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.common.data.mui;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.filter.Filter;
@@ -132,7 +133,7 @@ public class GTMuiWidgets {
                 syncManager);
     }
 
-    public static ToggleButton createPowerButton(IWorkable workable, PanelSyncManager syncManager) {
+    public static ToggleButton createPowerButton(IControllable workable, PanelSyncManager syncManager) {
         return createPowerButton(workable::isWorkingEnabled, workable::setWorkingEnabled, syncManager);
     }
 
@@ -172,8 +173,9 @@ public class GTMuiWidgets {
     }
 
     public static ToggleButton createDistinctnessButton(IDistinctPart distinct, PanelSyncManager syncManager) {
+        BooleanSyncValue distinctSync = new BooleanSyncValue(distinct::isDistinct, distinct::setDistinct);
         return new ToggleButton()
-                .value(new BoolValue.Dynamic(distinct::isDistinct, distinct::setDistinct))
+                .value(distinctSync)
                 .stateOverlay(GTGuiTextures.BUTTON_DISTINCT)
                 .tooltipAutoUpdate(true)
                 .tooltipBuilder((
@@ -182,7 +184,7 @@ public class GTMuiWidgets {
                                 .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
                                 .append(Component
                                         .translatable("gtceu.multiblock.universal.distinct" +
-                                                (distinct.isDistinct() ? ".yes" : ".no")))));
+                                                (distinctSync.getValue() ? ".yes" : ".no")))));
     }
 
     public static ToggleButton createAutoOutputItemButton(AutoOutputTrait autoOutput, PanelSyncManager syncManager) {

@@ -218,14 +218,11 @@ public class MinerMachine extends WorkableTieredMachine
         return new ArrayList<>();
     }
 
-    @Override
-    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager).width(220);
-    }
-
     // TODO(Onion): fix the gui stuff for this
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+        mainWidget.width(220);
+
         mainWidget.child(Flow.row()
                 .coverChildrenHeight()
                 .margin(5)

@@ -19,6 +19,7 @@ import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.DoubleSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.ItemSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ProgressWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
@@ -34,6 +35,7 @@ import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 import com.gregtechceu.gtceu.utils.ISubscription;
@@ -292,9 +294,43 @@ public class FisherMachine extends TieredEnergyMachine
     //////////////////////////////////////
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        ModularPanel panel = new ModularPanel(getDefinition().getName());
+    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        BooleanSyncValue power = new BooleanSyncValue(() -> active,
+                (b) -> active = b);
+        syncManager.syncValue("working_enabled", power);
 
+        ItemSlotSyncHandler battery = new ItemSlotSyncHandler(new ModularSlot(getChargerInventory(), 0));
+        syncManager.syncValue("battery", battery);
+
+        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager)
+                .rightConfigurators(configuratorFlow -> {
+                    configuratorFlow
+                            .child(new ToggleButton()
+                                    .value(new BoolValue.Dynamic(power::getBoolValue, power::setBoolValue))
+                                    .selectedBackground(GTGuiTextures.BUTTON_POWER[1])
+                                    .background(GTGuiTextures.BUTTON_POWER[0])
+                                    .tooltipAutoUpdate(true)
+                                    .tooltipBuilder((r) -> r.addLine(IKey.lang(Component.translatable(
+                                            active ? "behaviour.soft_hammer.enabled" :
+                                                    "behaviour.soft_hammer.disabled")))))
+                            .child(new ItemSlot().syncHandler("battery").background(GTGuiTextures.SLOT,
+                                    GTGuiTextures.CHARGER_OVERLAY))
+                            .child(new ToggleButton()
+                                    .value(new BoolValue.Dynamic(this::isJunkEnabled, this::setJunkEnabled))
+                                    .overlay(new ItemDrawable(Items.NAME_TAG))
+                                    .tooltipAutoUpdate(true)
+                                    .tooltipBuilder((r) -> {
+                                        var lines = LangHandler.getMultiLang("gtceu.gui.fisher_mode.tooltip",
+                                                GTValues.VNF[getTier()], GTValues.VNF[getTier()]);
+                                        for (var line : lines) {
+                                            r.addLine(line);
+                                        }
+                                    }));
+                });
+    }
+
+    @Override
+    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
         var outputItemGrid = GTMuiWidgets.createGrid(cache.getSize(), (int) Math.sqrt(cache.getSize()), true, 'i');
 
         int inputWidth = 18;
@@ -344,89 +380,35 @@ public class FisherMachine extends TieredEnergyMachine
             default -> 2;
         };
 
-        BooleanSyncValue power = new BooleanSyncValue(() -> active,
-                (b) -> active = b);
-        syncManager.syncValue("working_enabled", power);
-
-        ItemSlotSyncHandler battery = new ItemSlotSyncHandler(new ModularSlot(getChargerInventory(), 0));
-        syncManager.syncValue("battery", battery);
-
-        panel.size(176, 124 + Math.max(36, 18 * slotHeight));
+        mainWidget.size(MachineUIPanelBuilder.DEFAULT_WIDTH, MachineUIPanelBuilder.DEFAULT_HEIGHT + Math.max(36, 18 * slotHeight));
 
         DoubleSyncValue progressPercent = syncManager.getOrCreateSyncHandler("progressPercent", DoubleSyncValue.class,
                 () -> new DoubleSyncValue(() -> progress / (double) maxProgress));
 
-        panel.child(GTMuiWidgets.createTitleBar(getDefinition(), 176, GTGuiTextures.BACKGROUND))
-                .child(new Row()
-                        .coverChildrenHeight()
-                        .width(fullWidth + 16 - inputShift)
-                        .left(7 + inputShift)
-                        .childPadding(padding)
-                        .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                        .child(new Column()
-                                .coverChildrenWidth()
-                                .mainAxisAlignment(Alignment.MainAxis.CENTER)
-                                .child(new ItemSlot().slot(new ModularSlot(baitHandler, 0))
-                                        .background(GTGuiTextures.SLOT, GTGuiTextures.STRING_SLOT_OVERLAY)))
-                        .child(new ProgressWidget()
-                                .alignY(Alignment.Center)
-                                .texture(GTGuiTextures.PROGRESS_BAR_ARROW, 16)
-                                .value(progressPercent))
-                        .child(new Column()
-                                .coverChildrenWidth()
-                                .mainAxisAlignment(Alignment.MainAxis.CENTER)
-                                .childIf(!(outputItemGrid.length == 0),
-                                        () -> GTMuiMachineUtil.createSlotGroupFromInventory(cache,
+        mainWidget.child(new Row()
+                .coverChildrenHeight()
+                .width(fullWidth + 16 - inputShift)
+                .left(7 + inputShift)
+                .childPadding(padding)
+                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
+                .child(new Column()
+                        .coverChildrenWidth()
+                        .mainAxisAlignment(Alignment.MainAxis.CENTER)
+                        .child(new ItemSlot().slot(new ModularSlot(baitHandler, 0))
+                                .background(GTGuiTextures.SLOT, GTGuiTextures.STRING_SLOT_OVERLAY)))
+                .child(new ProgressWidget()
+                        .alignY(Alignment.Center)
+                        .texture(GTGuiTextures.PROGRESS_BAR_ARROW, 16)
+                        .value(progressPercent))
+                .child(new Column()
+                        .coverChildrenWidth()
+                        .mainAxisAlignment(Alignment.MainAxis.CENTER)
+                        .childIf(!(outputItemGrid.length == 0),
+                                () -> GTMuiMachineUtil.createSlotGroupFromInventory(cache,
                                                 "output_item_inv", cache.getSize(), 'i',
                                                 syncManager, outputItemGrid)
-                                                .alignX(Alignment.CenterRight))
-                                .align(Alignment.CenterRight))
-                        .top(30 - topMargin))
-
-                .child(SlotGroupWidget.playerInventory(false).left(7).bottom(7))
-                .child(new Column()
-                        .coverChildren()
-                        .leftRel(1.0f)
-                        .reverseLayout(true)
-                        .bottom(16)
-                        .padding(0, 8, 4, 4)
-                        .childPadding(2)
-                        .background(GTGuiTextures.BACKGROUND.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                        .child(new ToggleButton()
-                                .value(new BoolValue.Dynamic(power::getBoolValue, power::setBoolValue))
-                                .selectedBackground(GTGuiTextures.BUTTON_POWER[1])
-                                .background(GTGuiTextures.BUTTON_POWER[0])
-                                .tooltipAutoUpdate(true)
-                                .tooltipBuilder((r) -> r.addLine(IKey.lang(Component.translatable(
-                                        active ? "behaviour.soft_hammer.enabled" :
-                                                "behaviour.soft_hammer.disabled")))))
-                        .child(new ItemSlot().syncHandler("battery").background(GTGuiTextures.SLOT,
-                                GTGuiTextures.CHARGER_OVERLAY))
-                        .child(new ToggleButton()
-                                .value(new BoolValue.Dynamic(this::isJunkEnabled, this::setJunkEnabled))
-                                .overlay(new ItemDrawable(Items.NAME_TAG))
-                                .tooltipAutoUpdate(true)
-                                .tooltipBuilder((r) -> {
-                                    var lines = LangHandler.getMultiLang("gtceu.gui.fisher_mode.tooltip",
-                                            GTValues.VNF[getTier()], GTValues.VNF[getTier()]);
-                                    for (var line : lines) {
-                                        r.addLine(line);
-                                    }
-                                })))
-                /*
-                 * .child(new Column()
-                 * .coverChildren()
-                 * .rightRel(1.0f)
-                 * .reverseLayout(true)
-                 * .padding(0, 8, 4, 4)
-                 * .bottom(16)
-                 * .background(GTGuiTextures.BACKGROUND.getSubArea(0f, 0f, 0.75f, 1.0f))
-                 * .childIf(ghostCircuit,
-                 * GTMuiWidgets.createCircuitSlotPanel(simpleTieredMachine, panel, syncManager)))
-                 */
-                .child(GTMuiWidgets.createGTLogo()
-                        .right(7).bottom(7 + 78));
-
-        return panel;
+                                        .alignX(Alignment.CenterRight))
+                        .align(Alignment.CenterRight))
+                .top(30 - topMargin));
     }
 }

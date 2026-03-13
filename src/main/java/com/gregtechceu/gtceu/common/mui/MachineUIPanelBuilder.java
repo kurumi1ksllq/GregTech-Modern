@@ -1,6 +1,6 @@
 package com.gregtechceu.gtceu.common.mui;
 
-import com.gregtechceu.gtceu.api.capability.IWorkable;
+import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
@@ -15,15 +15,16 @@ import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true)
 @Setter
 public class MachineUIPanelBuilder {
 
+    public static final int DEFAULT_WIDTH = 172;
+    public static final int DEFAULT_HEIGHT = 77;
+
     private int width = 176;
-    private int height = 166;
 
     /**
      * Should the GregTech logo be drawn in the bottom right corner of the panel.
@@ -48,8 +49,8 @@ public class MachineUIPanelBuilder {
     private final MetaMachine machine;
     private final PanelSyncManager syncManager;
 
-    private BiConsumer<Flow, ModularPanel> leftConfigurators = (f, p) -> {};
-    private BiConsumer<Flow, ModularPanel> rightConfigurators = (f, p) -> {};
+    private Consumer<Flow> leftConfigurators = (f) -> {};
+    private Consumer<Flow> rightConfigurators = (f) -> {};
     private Consumer<ParentWidget<?>> mainContents = (p)-> {};
 
     protected MachineUIPanelBuilder(MetaMachine machine, PanelSyncManager syncManager) {
@@ -60,7 +61,7 @@ public class MachineUIPanelBuilder {
     public ModularPanel build() {
 
         var panel = new ModularPanel(machine.getDefinition().getId().getPath());
-        panel.size(width, height);
+        panel.width(width);
 
         Flow attachLeft = Flow.col()
                 .coverChildren()
@@ -86,34 +87,37 @@ public class MachineUIPanelBuilder {
                 .setEnabledIf(f -> !f.getChildren().isEmpty());
 
         ParentWidget<?> attachMain = new ParentWidget<>()
-                .margin(4)
-                .widthRelOffset(1,-4)
-                .heightRelOffset(1, attachInventory ? -89 : -4);
+                .margin(4);
+
+        panel.relative(attachMain)
+                .widthRelOffset(1, 4)
+                .heightRelOffset(1, attachInventory ? 89 : 4);
 
         panel.child(attachMain);
         panel.child(attachLeft);
         panel.child(attachRight);
-        panel.childIf(addTitleBar, () -> GTMuiWidgets.createTitleBar(machine.getDefinition(), width));
-        panel.childIf(attachInventory, () -> SlotGroupWidget.playerInventory(false).left(7).bottom(7));
-        panel.childIf(drawGTLogo, () -> GTMuiWidgets.createGTLogo()
-                .right(7).bottom(7 + (attachInventory ? 78 : 0)));
 
         if (addDefaultConfigurators) {
             if (machine instanceof IHasCircuitSlot circuitSlot && circuitSlot.isCircuitSlotEnabled()) {
                 attachLeft.child(GTMuiWidgets.createCircuitSlotPanel(circuitSlot, panel, syncManager));
             }
 
-            if (machine instanceof IWorkable workable) {
-                attachRight.child(GTMuiWidgets.createPowerButton(workable, syncManager));
+            if (machine instanceof IControllable controllable) {
+                attachRight.child(GTMuiWidgets.createPowerButton(controllable, syncManager));
             }
             if (machine instanceof SimpleTieredMachine simpleTieredMachine) {
                 attachRight.child(GTMuiWidgets.createBatterySlot(simpleTieredMachine, syncManager));
             }
         }
 
-        leftConfigurators.accept(attachLeft, panel);
-        rightConfigurators.accept(attachRight, panel);
+        leftConfigurators.accept(attachLeft);
+        rightConfigurators.accept(attachRight);
         mainContents.accept(attachMain);
+
+        panel.childIf(addTitleBar, () -> GTMuiWidgets.createTitleBar(machine.getDefinition(), attachMain.getArea().width));
+        panel.childIf(attachInventory, () -> SlotGroupWidget.playerInventory(false).left(7).bottom(7));
+        panel.childIf(drawGTLogo, () -> GTMuiWidgets.createGTLogo()
+                .right(7).bottom(7 + (attachInventory ? 78 : 0)));
 
         if (addTraitConfigurators) {
             for (var trait: machine.getTraitHolder().getAllTraits()) {

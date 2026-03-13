@@ -15,6 +15,7 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.DoubleSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ProgressWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
@@ -100,7 +101,7 @@ public class BatteryBufferMachine extends TieredEnergyMachine
 
     // TODO add EIO widget
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
         String[] matrix;
         if (inventorySize == 8) matrix = new String[] { "BBBB", "BBBB" };
         else matrix = GTMuiMachineUtil.createSquareMatrix(inventorySize, 'B');
@@ -108,8 +109,7 @@ public class BatteryBufferMachine extends TieredEnergyMachine
         DoubleSyncValue energyPercentage = syncManager.getOrCreateSyncHandler("energyPercentage", DoubleSyncValue.class,
                 () -> new DoubleSyncValue(this::getEnergyPercentage));
 
-        return new ModularPanel("battery_buffer")
-                .child(GTMuiWidgets.createTitleBar(getDefinition(), 172))
+        mainWidget
                 .child(Flow.row()
                         .height(90)
                         .margin(6)
@@ -129,24 +129,12 @@ public class BatteryBufferMachine extends TieredEnergyMachine
                                                 GTStringUtils.formatInt(energyContainer.getEnergyStored()),
                                                 GTStringUtils.formatInt(energyContainer.getEnergyCapacity()))))))
                         .child(GTMuiMachineUtil.createSlotGroupFromInventory(
-                                batteryInventory, "batteries",
-                                inventorySize, 'B',
-                                slot -> slot.background(GTGuiTextures.SLOT, GTGuiTextures.CHARGER_OVERLAY),
-                                syncManager,
-                                matrix)
-                                .center()))
-                .child(new Column()
-                        .coverChildren()
-                        .leftRel(1.0f)
-                        .reverseLayout(true)
-                        .bottom(16)
-                        .padding(0, 8, 4, 4)
-                        .childPadding(2)
-                        .excludeAreaInRecipeViewer()
-                        .background(GTGuiTextures.BACKGROUND.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                        .child(GTMuiWidgets.createPowerButton(this::isWorkingEnabled, this::setWorkingEnabled,
-                                syncManager)))
-                .bindPlayerInventory();
+                                        batteryInventory, "batteries",
+                                        inventorySize, 'B',
+                                        slot -> slot.background(GTGuiTextures.SLOT, GTGuiTextures.CHARGER_OVERLAY),
+                                        syncManager,
+                                        matrix)
+                                .center()));
     }
 
     private double getEnergyPercentage() {

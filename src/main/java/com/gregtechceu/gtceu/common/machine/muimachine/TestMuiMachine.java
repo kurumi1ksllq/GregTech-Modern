@@ -114,7 +114,7 @@ public class TestMuiMachine extends MetaMachine implements IMuiMachine {
     }
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         // settings.customContainer(() -> new CraftingModularContainer(3, 3, this.craftingInventory));
         // settings.customGui(() -> TestGuiContainer::new);
 
@@ -134,7 +134,7 @@ public class TestMuiMachine extends MetaMachine implements IMuiMachine {
                 .immutableCopy()
                 .build();
         syncManager.syncValue("number_list", numberListSyncHandler);
-        syncManager.bindPlayerInventory(data.getPlayer());
+        syncManager.bindPlayerInventory(guiData.getPlayer());
 
         DynamicSyncHandler dynamicSyncHandler = new DynamicSyncHandler()
                 .widgetProvider((syncManager1, packet) -> {
@@ -168,26 +168,24 @@ public class TestMuiMachine extends MetaMachine implements IMuiMachine {
         // disable spotless on the menu layout code so it won't insert random line breaks
         // spotless:off
         Rectangle colorPickerBackground = new Rectangle().color(Color.RED.main);
-        ModularPanel panel = new ModularPanel("test_tile");
         IPanelHandler panelSyncHandler = syncManager.syncedPanel("other_panel", true, this::openSecondWindow);
-        IPanelHandler colorPicker = IPanelHandler.simple(panel,
+        IPanelHandler colorPicker = IPanelHandler.simple(mainWidget.getPanel(),
                 (mainPanel, player) -> new ColorPickerDialog(colorPickerBackground::color, colorPickerBackground.getColor(), true)
                          .setDraggable(true)
-                         .relative(panel)
+                         .relative(mainWidget.getPanel())
                          .top(0)
                          .rightRel(1f),
                 true);
         PagedWidget.Controller tabController = new PagedWidget.Controller();
-        panel.resizer()                        // returns object which is responsible for sizing
-                .size(176, 220)       // set a static size for the main panel
-                .align(Alignment.Center);    // center the panel in the screen
+        mainWidget.resizer()                        // returns object which is responsible for sizing
+                .size(176, 220);       // set a static size for the main panel
 
         DoubleSyncValue progressPercent = syncManager.getOrCreateSyncHandler("progressPercent", DoubleSyncValue.class, () ->
                 new DoubleSyncValue(() -> (this.progress / (double) this.duration)));
 
-        var babyFop = new Fox(EntityType.FOX, data.getLevel());
+        var babyFop = new Fox(EntityType.FOX, guiData.getLevel());
         babyFop.setAge(-1);
-        panel.child(new Row()
+        mainWidget.child(new Row()
                 .name("Tab row")
                 .coverChildren()
                 .topRel(0f, 4, 1f)
@@ -537,7 +535,7 @@ public class TestMuiMachine extends MetaMachine implements IMuiMachine {
                                                         .widthRel(1f)
                                                         .coverChildrenHeight()
                                                         .syncHandler(dynamicLinkedSyncHandler))*/))
-                                        .addPage(createSchemaPage(data))))
+                                        .addPage(createSchemaPage(guiData))))
                         .child(SlotGroupWidget.playerInventory(false)));
         /*
          * panel.child(new ButtonWidget<>()
@@ -552,7 +550,6 @@ public class TestMuiMachine extends MetaMachine implements IMuiMachine {
          * .setSynced("fluid_slot"));
          */
         // spotless:on
-        return panel;
     }
 
     private IWidget createSchemaPage(GuiData data) {

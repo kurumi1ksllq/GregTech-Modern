@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
+import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
@@ -139,15 +140,15 @@ public class MinerMachine extends WorkableTieredMachine
         }
     }
 
-    private void addDisplayText(@NotNull List<Component> textList) {
+    private void addDisplayText(List<Component> textList) {
         int workingArea = IMiner.getWorkingArea(getRecipeLogic().getCurrentRadius());
         textList.add(recipeLogic.getCustomProgressLine());
-        textList.add(Component.translatable("gtceu.machine.miner.startx", getRecipeLogic().getX()).append(" ")
-                .append(Component.translatable("gtceu.machine.miner.minex", getRecipeLogic().getMineX())));
-        textList.add(Component.translatable("gtceu.machine.miner.starty", getRecipeLogic().getY()).append(" ")
-                .append(Component.translatable("gtceu.machine.miner.miney", getRecipeLogic().getMineY())));
-        textList.add(Component.translatable("gtceu.machine.miner.startz", getRecipeLogic().getZ()).append(" ")
-                .append(Component.translatable("gtceu.machine.miner.minez", getRecipeLogic().getMineZ())));
+        textList.add(
+                Component.translatable("gtceu.machine.miner.x", getRecipeLogic().getX(), getRecipeLogic().getMineX()));
+        textList.add(
+                Component.translatable("gtceu.machine.miner.y", getRecipeLogic().getY(), getRecipeLogic().getMineY()));
+        textList.add(
+                Component.translatable("gtceu.machine.miner.x", getRecipeLogic().getZ(), getRecipeLogic().getMineZ()));
         textList.add(Component.translatable("gtceu.universal.tooltip.working_area", workingArea, workingArea));
         if (getRecipeLogic().isDone())
             textList.add(Component.translatable("gtceu.multiblock.large_miner.done")
@@ -217,29 +218,30 @@ public class MinerMachine extends WorkableTieredMachine
     }
 
     // TODO(Onion): fix the gui stuff for this
+
+
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
-        mainWidget.width(220);
-
-        mainWidget.child(Flow.row()
-                .coverChildrenHeight()
-                .margin(5)
-                .childPadding(5)
-                .widthRel(1f)
-                .child(Flow.column()
-                        .crossAxisAlignment(Alignment.CrossAxis.START)
-                        .padding(5)
-                        .background(GTGuiTextures.DISPLAY)
-                        .widthRel(.6f)
-                        .child(new TextWidget<>(IKey.dynamic(() -> {
-                            List<Component> text = new ArrayList<>();
-                            addDisplayText(text);
-                            return text.stream()
-                                    .map(Component::copy)
-                                    .reduce((a, b) -> a.append("\n").append(b))
-                                    .orElse(Component.empty());
-                        }))))
-                .child(GTMuiMachineUtil.createSquareSlotGroupFromInventory(exportItems, "export_inv",
-                        syncManager)));
+        mainWidget.width(220)
+                .child(Flow.row()
+                        .coverChildrenHeight()
+                        .margin(5)
+                        .childPadding(5)
+                        .widthRel(1f)
+                        .child(Flow.column()
+                                .crossAxisAlignment(Alignment.CrossAxis.START)
+                                .padding(5)
+                                .background(GTGuiTextures.DISPLAY)
+                                .widthRel(.6f)
+                                .child(new TextWidget<>(IKey.dynamic(() -> {
+                                    List<Component> text = new ArrayList<>();
+                                    addDisplayText(text);
+                                    return text.stream()
+                                            .map(Component::copy)
+                                            .reduce((a, b) -> a.append("\n").append(b))
+                                            .orElse(Component.empty());
+                                })).color(Color.WHITE.main)))
+                        .child(GTMuiMachineUtil.createSquareSlotGroupFromInventory(exportItems, "export_inv",
+                                syncManager)));
     }
 }

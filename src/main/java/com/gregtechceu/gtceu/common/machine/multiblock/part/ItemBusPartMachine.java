@@ -296,12 +296,6 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     //////////////////////////////////////
 
     @Override
-    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager)
-                .rightConfigurators(f -> f.childIf(io.support(IO.IN), () -> GTMuiWidgets.createDistinctnessButton(this, syncManager)));
-    }
-
-    @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         int rowSize = (int) Math.sqrt(getInventorySize());
         mainWidget.width(Math.max(MachineUIPanelBuilder.DEFAULT_WIDTH, 18 * rowSize + 14));

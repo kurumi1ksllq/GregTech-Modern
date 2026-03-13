@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
+import com.gregtechceu.gtceu.api.machine.feature.IHasBatterySlot;
 import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
@@ -25,7 +26,7 @@ import java.util.function.*;
  * All simple single machines are implemented here.
  */
 public class SimpleTieredMachine extends WorkableTieredMachine
-                                 implements IHasCircuitSlot {
+                                 implements IHasCircuitSlot, IHasBatterySlot {
 
     @Getter
     @SaveField

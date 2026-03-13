@@ -10,12 +10,10 @@ import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
 import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
-import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.drawable.ItemDrawable;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.BoolValue;
-import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.DoubleSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.ItemSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
@@ -41,7 +39,6 @@ import com.gregtechceu.gtceu.utils.ISubscription;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.FishingHook;
@@ -293,38 +290,20 @@ public class FisherMachine extends TieredEnergyMachine
 
     @Override
     public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        BooleanSyncValue power = new BooleanSyncValue(() -> active,
-                (b) -> active = b);
-        syncManager.syncValue("working_enabled", power);
-
-        ItemSlotSyncHandler battery = new ItemSlotSyncHandler(new ModularSlot(getChargerInventory(), 0));
-        syncManager.syncValue("battery", battery);
 
         return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager)
-                .rightConfigurators(configuratorFlow -> {
-                    configuratorFlow
-                            .child(new ToggleButton()
-                                    .value(new BoolValue.Dynamic(power::getBoolValue, power::setBoolValue))
-                                    .selectedBackground(GTGuiTextures.BUTTON_POWER[1])
-                                    .background(GTGuiTextures.BUTTON_POWER[0])
-                                    .tooltipAutoUpdate(true)
-                                    .tooltipBuilder((r) -> r.addLine(IKey.lang(Component.translatable(
-                                            active ? "behaviour.soft_hammer.enabled" :
-                                                    "behaviour.soft_hammer.disabled")))))
-                            .child(new ItemSlot().syncHandler("battery").background(GTGuiTextures.SLOT,
-                                    GTGuiTextures.CHARGER_OVERLAY))
-                            .child(new ToggleButton()
-                                    .value(new BoolValue.Dynamic(this::isJunkEnabled, this::setJunkEnabled))
-                                    .overlay(new ItemDrawable(Items.NAME_TAG))
-                                    .tooltipAutoUpdate(true)
-                                    .tooltipBuilder((r) -> {
-                                        var lines = LangHandler.getMultiLang("gtceu.gui.fisher_mode.tooltip",
-                                                GTValues.VNF[getTier()], GTValues.VNF[getTier()]);
-                                        for (var line : lines) {
-                                            r.addLine(line);
-                                        }
-                                    }));
-                });
+                .rightConfigurators(configuratorFlow -> configuratorFlow
+                        .child(new ToggleButton()
+                                .value(new BoolValue.Dynamic(this::isJunkEnabled, this::setJunkEnabled))
+                                .overlay(new ItemDrawable(Items.NAME_TAG))
+                                .tooltipAutoUpdate(true)
+                                .tooltipBuilder((r) -> {
+                                    var lines = LangHandler.getMultiLang("gtceu.gui.fisher_mode.tooltip",
+                                            GTValues.VNF[getTier()], GTValues.VNF[getTier()]);
+                                    for (var line : lines) {
+                                        r.addLine(line);
+                                    }
+                                })));
     }
 
     @Override

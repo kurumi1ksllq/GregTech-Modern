@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IVoidable;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
@@ -58,7 +59,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class LargeBoilerMachine extends WorkableMultiblockMachine implements IMuiMachine {
+public class LargeBoilerMachine extends WorkableMultiblockMachine implements IMuiMachine, IVoidable {
 
     public static final int TICKS_PER_STEAM_GENERATION = 5;
 
@@ -213,11 +214,6 @@ public class LargeBoilerMachine extends WorkableMultiblockMachine implements IMu
      */
     public static ModifierFunction recipeModifier(@NotNull MetaMachine machine, @NotNull GTRecipe recipe) {
         return ModifierFunction.IDENTITY;
-    }
-
-    @Override
-    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager).rightConfigurators(f -> f.child(GTMuiWidgets.createVoidingButton(this, syncManager)));
     }
 
     @Override

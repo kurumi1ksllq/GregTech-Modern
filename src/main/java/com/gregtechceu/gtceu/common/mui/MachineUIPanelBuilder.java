@@ -3,7 +3,10 @@ package com.gregtechceu.gtceu.common.mui;
 import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IHasBatterySlot;
 import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
+import com.gregtechceu.gtceu.api.machine.feature.IVoidable;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
 import com.gregtechceu.gtceu.api.machine.trait.feature.IAttachConfiguratorsTrait;
 import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
 import com.gregtechceu.gtceu.api.mui.theme.ThemeAPI;
@@ -104,8 +107,14 @@ public class MachineUIPanelBuilder {
             if (machine instanceof IControllable controllable) {
                 attachRight.child(GTMuiWidgets.createPowerButton(controllable, syncManager));
             }
-            if (machine instanceof SimpleTieredMachine simpleTieredMachine) {
-                attachRight.child(GTMuiWidgets.createBatterySlot(simpleTieredMachine, syncManager));
+            if (machine instanceof IHasBatterySlot batterySlot) {
+                attachRight.child(GTMuiWidgets.createBatterySlot(batterySlot, syncManager));
+            }
+            if (machine instanceof IVoidable voidable) {
+                attachRight.child(GTMuiWidgets.createVoidingButton(voidable, syncManager));
+            }
+            if (machine instanceof IDistinctPart distinctPart) {
+                attachRight.child(GTMuiWidgets.createDistinctnessButton(distinctPart, syncManager));
             }
         }
 

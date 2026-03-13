@@ -7,23 +7,20 @@ import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IHasBatterySlot;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
 import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
-import com.gregtechceu.gtceu.api.mui.value.sync.ItemSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
-import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
-import com.gregtechceu.gtceu.api.mui.widgets.slot.ModularSlot;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
-import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.ISubscription;
@@ -47,7 +44,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class BlockBreakerMachine extends TieredEnergyMachine
-                                 implements IMuiMachine, IControllable {
+                                 implements IMuiMachine, IControllable, IHasBatterySlot {
 
     @SaveField
     protected final NotifiableItemStackHandler cache;
@@ -348,12 +345,6 @@ public class BlockBreakerMachine extends TieredEnergyMachine
      * }
      */
 
-
-    @Override
-    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager).rightConfigurators(f -> f.child(createBatterySlot(syncManager)));
-    }
-
     // TODO: Needs EIO type side selection widget when that's done
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
@@ -367,9 +358,4 @@ public class BlockBreakerMachine extends TieredEnergyMachine
                         .align(Alignment.CENTER));
     }
 
-    public ItemSlot createBatterySlot(PanelSyncManager syncManager) {
-        ItemSlotSyncHandler battery = new ItemSlotSyncHandler(new ModularSlot(this.chargerInventory, 0));
-        syncManager.syncValue("battery", battery);
-        return new ItemSlot().syncHandler("battery").background(GTGuiTextures.SLOT, GTGuiTextures.CHARGER_OVERLAY);
-    }
 }

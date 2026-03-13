@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.api.mui.utils.Color;
 import com.gregtechceu.gtceu.api.mui.utils.DAM;
 import com.gregtechceu.gtceu.api.mui.value.sync.IntSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ButtonWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Row;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
@@ -38,7 +39,7 @@ public class TestMuiMachine2 extends MetaMachine implements IMuiMachine {
     private int val = 0;
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         IntSyncValue valSync = new IntSyncValue(() -> this.val, (v) -> {});
         syncManager.syncValue("valSync", valSync);
 
@@ -48,7 +49,7 @@ public class TestMuiMachine2 extends MetaMachine implements IMuiMachine {
 
         // return buildAspectRatioUI();
 
-        return GTGuis.createPanel(this, 176, 168)
+        mainWidget
                 .child(new ButtonWidget<>()
                         .size(60, 18)
                         .overlay(IKey.dynamic(() -> Component

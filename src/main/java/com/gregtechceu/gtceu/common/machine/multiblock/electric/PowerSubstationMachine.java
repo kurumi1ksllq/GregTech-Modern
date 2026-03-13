@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IVoidable;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.IBatteryData;
@@ -27,15 +28,10 @@ import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widget.Widget;
 import com.gregtechceu.gtceu.api.mui.widgets.ListWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.common.mui.GTGuis;
-import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
@@ -63,7 +59,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PowerSubstationMachine extends WorkableMultiblockMachine
-                                    implements IEnergyInfoProvider, IMuiMachine {
+                                    implements IEnergyInfoProvider, IMuiMachine, IVoidable {
 
     // Structure Constants
     public static final int MAX_BATTERY_LAYERS = 18;
@@ -264,11 +260,6 @@ public class PowerSubstationMachine extends WorkableMultiblockMachine
     @Override
     public boolean supportsBigIntEnergyValues() {
         return true;
-    }
-
-    @Override
-    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager).rightConfigurators(f -> f.child(GTMuiWidgets.createVoidingButton(this, syncManager)));
     }
 
     @Override

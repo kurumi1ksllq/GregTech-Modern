@@ -2,12 +2,11 @@ package com.gregtechceu.gtceu.common.data.mui;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.IControllable;
-import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.filter.Filter;
 import com.gregtechceu.gtceu.api.cover.filter.FilterHandler;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
-import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IHasBatterySlot;
 import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IVoidable;
@@ -51,7 +50,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.items.IItemHandler;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
@@ -154,14 +152,8 @@ public class GTMuiWidgets {
         return new FluidSlot().size(20, 58).alwaysShowFull(false);
     }
 
-    public static ItemSlot createBatterySlot(SimpleTieredMachine tieredMachine, PanelSyncManager syncManager) {
-        ItemSlotSyncHandler battery = new ItemSlotSyncHandler(new ModularSlot(tieredMachine.getChargerInventory(), 0));
-        syncManager.syncValue("battery", battery);
-        return new ItemSlot().syncHandler("battery").background(GTGuiTextures.SLOT, GTGuiTextures.CHARGER_OVERLAY);
-    }
-
-    public static ItemSlot createBatterySlot(IItemHandler itemHandler, int slot, PanelSyncManager syncManager) {
-        ItemSlotSyncHandler battery = new ItemSlotSyncHandler(new ModularSlot(itemHandler, slot));
+    public static ItemSlot createBatterySlot(IHasBatterySlot batterySlot, PanelSyncManager syncManager) {
+        ItemSlotSyncHandler battery = new ItemSlotSyncHandler(new ModularSlot(batterySlot.getChargerInventory(), 0));
         syncManager.syncValue("battery", battery);
         return new ItemSlot().syncHandler("battery").background(GTGuiTextures.SLOT, GTGuiTextures.CHARGER_OVERLAY);
     }

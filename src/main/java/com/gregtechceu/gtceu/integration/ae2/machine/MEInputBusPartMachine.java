@@ -6,22 +6,14 @@ import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
 import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
-import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
-import com.gregtechceu.gtceu.api.mui.theme.ThemeAPI;
-import com.gregtechceu.gtceu.api.mui.value.BoolValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
-import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTGuis;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.AEConfigWidget;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemList;
@@ -29,11 +21,9 @@ import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemSlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAESlot;
 import com.gregtechceu.gtceu.utils.GTMath;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -134,63 +124,24 @@ public class MEInputBusPartMachine extends MEBusPartMachine
     ///////////////////////////////
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        var panel = GTGuis.createPanel(this, 176, 192);
-        panel.child(GTMuiWidgets.createTitleBar(getDefinition(), 176));
-
+    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
         BooleanSyncValue isOnlineValue = SyncHandlers.bool(this::isOnline, this::setOnline);
         syncManager.syncValue("is_online", isOnlineValue);
 
-        panel.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
-                Component.translatable("gtceu.gui.me_network.online") :
-                Component.translatable("gtceu.gui.me_network.offline"))
+        mainWidget.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
+                        Component.translatable("gtceu.gui.me_network.online") :
+                        Component.translatable("gtceu.gui.me_network.offline"))
                 .asWidget()
                 .top(14)
                 .left(7));
 
         registerConfigActions(syncManager);
 
-        panel.child(new AEConfigWidget(aeItemHandler, CONFIG_SIZE, false)
+        mainWidget.child(new AEConfigWidget(aeItemHandler, CONFIG_SIZE, false)
                 .syncManager(syncManager)
                 .size(8 * 18, 2 * (18 * 2 + 2))
                 .top(26)
                 .alignX(0.5f));
-
-        var theme = this.getDefinition().getThemeId();
-        var backgroundTexture = (UITexture) ThemeAPI.INSTANCE.getTheme(theme).getPanelTheme().getTheme()
-                .getBackground();
-        if (backgroundTexture == null) {
-            backgroundTexture = GTGuiTextures.BACKGROUND;
-        }
-
-        panel.child(createButtonColumn(panel, syncManager, backgroundTexture));
-
-        panel.child(SlotGroupWidget.playerInventory(true).bottom(7));
-
-        return panel;
-    }
-
-    protected Flow createButtonColumn(ModularPanel panel, PanelSyncManager syncManager,
-                                      UITexture backgroundTexture) {
-        return new Column()
-                .coverChildren()
-                .rightRel(1.0f)
-                .reverseLayout(true)
-                .bottom(16)
-                .padding(5, 2, 4, 4)
-                .childPadding(2)
-                .background(backgroundTexture.getSubArea(0.0f, 0f, 0.75f, 1.0f))
-                .child(GTMuiWidgets.createCircuitSlotPanel(this, panel, syncManager))
-                .child(new ToggleButton()
-                        .value(new BoolValue.Dynamic(this::isDistinct, this::setDistinct))
-                        .stateOverlay(GTGuiTextures.BUTTON_DISTINCT)
-                        .tooltipAutoUpdate(true)
-                        .tooltipBuilder(r -> r
-                                .add(Component.translatable("gtceu.multiblock.universal.distinct")
-                                        .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
-                                        .append(Component.translatable(
-                                                "gtceu.multiblock.universal.distinct" +
-                                                        (isDistinct() ? ".yes" : ".no"))))));
     }
 
     protected void registerConfigActions(PanelSyncManager syncManager) {

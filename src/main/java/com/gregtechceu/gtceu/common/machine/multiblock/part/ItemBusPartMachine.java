@@ -13,38 +13,28 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
-import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
-import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
-import com.gregtechceu.gtceu.api.mui.theme.ThemeAPI;
-import com.gregtechceu.gtceu.api.mui.value.BoolValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Grid;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
-import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.common.mui.GTGuis;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -304,73 +294,39 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     //////////////////////////////////////
     // ********** GUI ***********//
     //////////////////////////////////////
-    @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        int rowSize = (int) Math.sqrt(getInventorySize());
 
-        int width = Math.max(176, 18 * rowSize + 14);
-        int height = Math.max(168, (18 * rowSize) + 78 + 19);
-        var panel = GTGuis.createPanel(this, width, height);
-        panel.child(GTMuiWidgets.createTitleBar(this.getDefinition(), width));
+    @Override
+    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager)
+                .rightConfigurators(f -> f.childIf(io.support(IO.IN), () -> GTMuiWidgets.createDistinctnessButton(this, syncManager)));
+    }
+
+    @Override
+    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+        int rowSize = (int) Math.sqrt(getInventorySize());
+        mainWidget.width(Math.max(MachineUIPanelBuilder.DEFAULT_WIDTH, 18 * rowSize + 14));
+        mainWidget.height(Math.max(MachineUIPanelBuilder.DEFAULT_HEIGHT, (18 * rowSize) + 78 + 19));
 
         int smallHatchOffset = tier < 2 ? 9 * (3 - rowSize) : 0;
 
         SlotGroup group = new SlotGroup("item_inv", rowSize, 0, true);
-        panel.child(new Grid()
-                .coverChildren()
-                .top(10 + smallHatchOffset)
-                .alignX(0.5f)
-                .mapTo(rowSize, rowSize * rowSize, index -> new ItemSlot()
-                        .slot(SyncHandlers.itemSlot(inventory, index)
-                                .slotGroup(group)
-                                .changeListener((newItem, amount, client, init) -> {
-                                    if (amount) {
-                                        inventory.onContentsChanged();
-                                    }
-                                })
-                                .accessibility(inventory.handlerIO.support(IO.IN), true))))
+        mainWidget.child(new Grid()
+                        .coverChildren()
+                        .top(10 + smallHatchOffset)
+                        .alignX(0.5f)
+                        .mapTo(rowSize, rowSize * rowSize, index -> new ItemSlot()
+                                .slot(SyncHandlers.itemSlot(inventory, index)
+                                        .slotGroup(group)
+                                        .changeListener((newItem, amount, client, init) -> {
+                                            if (amount) {
+                                                inventory.onContentsChanged();
+                                            }
+                                        })
+                                        .accessibility(inventory.handlerIO.support(IO.IN), true))))
 
                 .child(SlotGroupWidget.playerInventory(true)
                         // .alignX(Alignment.CENTER)
                         .left(7)
                         .bottom(7));
-
-        var theme = this.getDefinition().getThemeId();
-        var backgroundTexture = (UITexture) ThemeAPI.INSTANCE.getTheme(theme).getPanelTheme().getTheme()
-                .getBackground();
-        if (backgroundTexture == null) {
-            backgroundTexture = GTGuiTextures.BACKGROUND;
-        }
-
-        panel.child(new Column()
-                .coverChildren()
-                .rightRel(1.0f)
-                .reverseLayout(true)
-                .bottom(16)
-                .padding(8, 0, 4, 4)
-                .childPadding(2)
-                .background(backgroundTexture.getSubArea(0.0f, 0f, 0.75f, 1.0f))
-                .child(new ToggleButton()
-                        .value(new BoolValue.Dynamic(this::isWorkingEnabled, this::setWorkingEnabled))
-                        .selectedBackground(GTGuiTextures.BUTTON_POWER[1])
-                        .background(GTGuiTextures.BUTTON_POWER[0])
-                        .tooltipAutoUpdate(true)
-                        .tooltipBuilder((r) -> r.addLine(IKey.lang(Component.translatable(
-                                isWorkingEnabled() ? "behaviour.soft_hammer.enabled" :
-                                        "behaviour.soft_hammer.disabled")))))
-                .childIf(isCircuitSlotEnabled(), () -> GTMuiWidgets.createCircuitSlotPanel(this, panel, syncManager))
-                .childIf(io.support(IO.IN), () -> new ToggleButton()
-                        .value(new BoolValue.Dynamic(this::isDistinct, this::setDistinct))
-                        .stateOverlay(GTGuiTextures.BUTTON_DISTINCT)
-                        .tooltipAutoUpdate(true)
-                        .tooltipBuilder((
-                                         richTooltip) -> richTooltip
-                                                 .add(Component.translatable("gtceu.multiblock.universal.distinct")
-                                                         .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
-                                                         .append(Component
-                                                                 .translatable("gtceu.multiblock.universal.distinct" +
-                                                                         (isDistinct() ? ".yes" : ".no")))))));
-
-        return panel;
     }
 }

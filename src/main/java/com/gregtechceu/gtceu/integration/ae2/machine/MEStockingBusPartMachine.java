@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.integration.ae2.machine;
 
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
+import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
@@ -9,6 +10,7 @@ import com.gregtechceu.gtceu.api.mui.base.IPanelHandler;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.drawable.ItemDrawable;
 import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
+import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.BoolValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
@@ -21,10 +23,13 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.RichTooltip;
+import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTItems;
+import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTGuis;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.ae2.machine.feature.multiblock.IMEStockingPart;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemList;
@@ -276,11 +281,10 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
     ///////////////////////////////
 
     @Override
-    protected Flow createButtonColumn(ModularPanel panel, PanelSyncManager syncManager,
-                                      UITexture backgroundTexture) {
+    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
         IPanelHandler settingsPanelHandler = syncManager.syncedPanel("stocking_settings", true,
                 (sm, sh) -> GTGuis.createPopupPanel("stocking_settings_panel", 140, 70)
-                        .child(new Column()
+                        .child(Flow.col()
                                 .coverChildren()
                                 .child(IKey.lang("gtceu.gui.me_network.min_stack_size").asWidget())
                                 .child(new TextFieldWidget()
@@ -294,22 +298,25 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
                                         .setNumbers(1, 200))
                                 .margin(5)));
 
-        return super.createButtonColumn(panel, syncManager, backgroundTexture)
-                .child(new ToggleButton()
-                        .value(new BoolValue.Dynamic(this::isAutoPull, this::setAutoPull))
-                        .stateOverlay(GTGuiTextures.BUTTON_AUTO_PULL)
-                        .tooltipAutoUpdate(true)
-                        .tooltipBuilder(r -> r
-                                .addLine(IKey.lang("gtceu.gui.me_network.auto_pull_toggle"))))
-                .child(new ButtonWidget<>()
-                        .size(18)
-                        .onMousePressed((x, y, b) -> {
-                            settingsPanelHandler.openPanel();
-                            return true;
-                        })
-                        .overlay(new ItemDrawable(GTItems.TOOL_DATA_STICK.asItem()).asIcon().size(16))
-                        .tooltip(new RichTooltip()
-                                .addLine(IKey.lang("gtceu.gui.me_network.stocking_settings"))));
+        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager)
+                .rightConfigurators(f -> {
+                    f.child(new ToggleButton()
+                                    .value(new BoolValue.Dynamic(this::isAutoPull, this::setAutoPull))
+                                    .stateOverlay(GTGuiTextures.BUTTON_AUTO_PULL)
+                                    .tooltipAutoUpdate(true)
+                                    .tooltipBuilder(r -> r
+                                            .addLine(IKey.lang("gtceu.gui.me_network.auto_pull_toggle"))))
+                            .child(new ButtonWidget<>()
+                                    .size(18)
+                                    .onMousePressed((x, y, b) -> {
+                                        settingsPanelHandler.openPanel();
+                                        return true;
+                                    })
+                                    .overlay(new ItemDrawable(GTItems.TOOL_DATA_STICK.asItem()).asIcon().size(16))
+                                    .tooltip(new RichTooltip()
+                                            .addLine(IKey.lang("gtceu.gui.me_network.stocking_settings"))));
+
+                });
     }
 
     @Override

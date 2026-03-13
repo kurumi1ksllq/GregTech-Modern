@@ -19,9 +19,10 @@ import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ButtonWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Grid;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
@@ -40,6 +41,7 @@ import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTGuis;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.InternalSlotRecipeHandler;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
@@ -277,41 +279,11 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
     //////////////////////////////////////
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        var panel = GTGuis.createPanel(this, 176, 168);
-
-        panel.child(GTMuiWidgets.createTitleBar(getDefinition(), 176));
-
-        SlotGroup patternSlotGroup = new SlotGroup("pattern_slots", 9, 0, true);
-
-        panel.child(new Grid()
-                .top(25)
-                .height(18 * (MAX_PATTERN_COUNT / 9))
-                .minElementMargin(0, 0)
-                .minColWidth(18).minRowHeight(18)
-                .alignX(0.5f)
-                .mapTo(9, MAX_PATTERN_COUNT, index -> new ItemSlot()
-                        .slot(SyncHandlers.itemSlot(patternInventory, index)
-                                .slotGroup(patternSlotGroup)
-                                .accessibility(true, true)
-                                .filter(stack -> stack.getItem() instanceof EncodedPatternItem)
-                                .changeListener((i, o, c, init) -> onPatternChange(index)))
-                        .background(GTGuiTextures.SLOT, GTGuiTextures.PATTERN_OVERLAY)));
-
-        BooleanSyncValue isOnlineValue = SyncHandlers.bool(this::isOnline, this::setOnline);
-        syncManager.syncValue("is_online", isOnlineValue);
-
-        panel.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
-                Component.translatable("gtceu.gui.me_network.online") :
-                Component.translatable("gtceu.gui.me_network.offline"))
-                .asWidget()
-                .top(10)
-                .margin(2)
-                .left(9));
+    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
 
         IPanelHandler renamingPanelHandler = syncManager.syncedPanel("renaming", true,
                 ((syncManager1, syncHandler) -> GTGuis.createPopupPanel("renaming_panel", 110, 40)
-                        .child(new Column()
+                        .child(Flow.col()
                                 .coverChildren()
                                 .child(IKey.lang("gtceu.gui.pattern_buffer.set_custom_name").asWidget())
                                 .child(new TextFieldWidget()
@@ -342,8 +314,8 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                 (syncManager1, panelHandler) -> GTGuis.createPopupPanel("shared_fluids_panel", 85, 86)
                         .child(IKey.lang("gui.gtceu.share_tank.title").asWidget().margin(4))
                         .child(GTMuiMachineUtil.createSlotGroupFromInventory(syncManager1, shareTank,
-                                "shared_fluid_slots", 9, 'F',
-                                GTMuiMachineUtil.createSquareMatrix(9, 'F'))
+                                        "shared_fluid_slots", 9, 'F',
+                                        GTMuiMachineUtil.createSquareMatrix(9, 'F'))
                                 .top(26)
                                 .alignX(0.5f)));
 
@@ -352,79 +324,99 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
 
         syncManager.registerServerSyncedAction("refundButtonPressed", packet -> refundAll());
 
-        panel.child(new Column()
-                .coverChildren()
-                .leftRel(1.0f)
-                .reverseLayout(true)
-                .bottom(14)
-                .padding(8, 0, 4, 4)
-                .childPadding(2)
-                .background(GTGuiTextures.BACKGROUND.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                .child(GTMuiWidgets.createCircuitSlotPanel(this, panel, syncManager))
-                .child(new ButtonWidget<>() // Shared items subpanel
-                        .size(18)
-                        .onMousePressed((x, y, b) -> {
-                            if (b == InputConstants.MOUSE_BUTTON_LEFT) {
-                                sharedItemsPanelHandler.openPanel();
-                                return true;
-                            }
-                            return false;
-                        })
-                        .overlay(GTGuiTextures.BUTTON_ITEM_OUTPUT)
-                        .tooltip(new RichTooltip()
-                                .addLine(IKey.lang("gui.gtceu.share_inventory.desc.0"))
-                                .addLine(IKey.lang("gui.gtceu.share_inventory.desc.1"))))
-                .child(new ButtonWidget<>() // Shared fluids subpanel
-                        .size(18)
-                        .onMousePressed((x, y, b) -> {
-                            if (b == InputConstants.MOUSE_BUTTON_LEFT) {
-                                sharedFluidsPanelHandler.openPanel();
-                                return true;
-                            }
-                            return false;
-                        })
-                        .overlay(GTGuiTextures.BUTTON_FLUID_OUTPUT)
-                        .tooltip(new RichTooltip()
-                                .addLine(IKey.lang("gui.gtceu.share_tank.desc.0"))
-                                .addLine(IKey.lang("gui.gtceu.share_inventory.desc.1"))))
-                .child(new ButtonWidget<>() // Refund button
-                        .size(18)
-                        .onMousePressed((x, y, b) -> {
-                            if (canRefundValue.getBoolValue() && b == InputConstants.MOUSE_BUTTON_LEFT) {
-                                syncManager.callSyncedAction("refundButtonPressed");
-                                return true;
-                            }
-                            return false;
-                        })
-                        .overlay(new DynamicDrawable(() -> {
-                            if (canRefundValue.getBoolValue()) {
-                                return GTGuiTextures.REFUND_OVERLAY
-                                        .asIcon().size(16);
-                            } else {
-                                return new DrawableStack(GTGuiTextures.REFUND_OVERLAY, new ItemDrawable(Items.BARRIER))
-                                        .asIcon().size(16);
-                            }
-                        }))
-                        .tooltip(new RichTooltip()
-                                .addLine(IKey.lang("gui.gtceu.refund_all.desc"))))
-                .child(new ButtonWidget<>() // Renaming button
-                        .size(18)
-                        .onMousePressed((x, y, b) -> {
-                            if (b == InputConstants.MOUSE_BUTTON_LEFT) {
-                                renamingPanelHandler.openPanel();
-                                return true;
-                            }
-                            return false;
-                        })
-                        .overlay(IKey.str("✎")
-                                .asIcon()
-                                .size(16))
-                        .tooltip(new RichTooltip()
-                                .addLine(IKey.lang("gui.gtceu.rename.desc")))));
+        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager).leftConfigurators(f -> {
+            f.child(new ButtonWidget<>() // Shared items subpanel
+                    .size(18)
+                    .onMousePressed((x, y, b) -> {
+                        if (b == InputConstants.MOUSE_BUTTON_LEFT) {
+                            sharedItemsPanelHandler.openPanel();
+                            return true;
+                        }
+                        return false;
+                    })
+                    .overlay(GTGuiTextures.BUTTON_ITEM_OUTPUT)
+                    .tooltip(new RichTooltip()
+                            .addLine(IKey.lang("gui.gtceu.share_inventory.desc.0"))
+                            .addLine(IKey.lang("gui.gtceu.share_inventory.desc.1"))))
+                    .child(new ButtonWidget<>() // Shared fluids subpanel
+                            .size(18)
+                            .onMousePressed((x, y, b) -> {
+                                if (b == InputConstants.MOUSE_BUTTON_LEFT) {
+                                    sharedFluidsPanelHandler.openPanel();
+                                    return true;
+                                }
+                                return false;
+                            })
+                            .overlay(GTGuiTextures.BUTTON_FLUID_OUTPUT)
+                            .tooltip(new RichTooltip()
+                                    .addLine(IKey.lang("gui.gtceu.share_tank.desc.0"))
+                                    .addLine(IKey.lang("gui.gtceu.share_inventory.desc.1"))))
+                    .child(new ButtonWidget<>() // Refund button
+                            .size(18)
+                            .onMousePressed((x, y, b) -> {
+                                if (canRefundValue.getBoolValue() && b == InputConstants.MOUSE_BUTTON_LEFT) {
+                                    syncManager.callSyncedAction("refundButtonPressed");
+                                    return true;
+                                }
+                                return false;
+                            })
+                            .overlay(new DynamicDrawable(() -> {
+                                if (canRefundValue.getBoolValue()) {
+                                    return GTGuiTextures.REFUND_OVERLAY
+                                            .asIcon().size(16);
+                                } else {
+                                    return new DrawableStack(GTGuiTextures.REFUND_OVERLAY, new ItemDrawable(Items.BARRIER))
+                                            .asIcon().size(16);
+                                }
+                            }))
+                            .tooltip(new RichTooltip()
+                                    .addLine(IKey.lang("gui.gtceu.refund_all.desc"))))
+                    .child(new ButtonWidget<>() // Renaming button
+                            .size(18)
+                            .onMousePressed((x, y, b) -> {
+                                if (b == InputConstants.MOUSE_BUTTON_LEFT) {
+                                    renamingPanelHandler.openPanel();
+                                    return true;
+                                }
+                                return false;
+                            })
+                            .overlay(IKey.str("✎")
+                                    .asIcon()
+                                    .size(16))
+                            .tooltip(new RichTooltip()
+                                    .addLine(IKey.lang("gui.gtceu.rename.desc"))));
+        });
+    }
 
-        panel.child(SlotGroupWidget.playerInventory(true).bottom(7));
+    @Override
+    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
+        SlotGroup patternSlotGroup = new SlotGroup("pattern_slots", 9, 0, true);
 
-        return panel;
+        mainWidget.child(new Grid()
+                .top(25)
+                .height(18 * (MAX_PATTERN_COUNT / 9))
+                .minElementMargin(0, 0)
+                .minColWidth(18).minRowHeight(18)
+                .alignX(0.5f)
+                .mapTo(9, MAX_PATTERN_COUNT, index -> new ItemSlot()
+                        .slot(SyncHandlers.itemSlot(patternInventory, index)
+                                .slotGroup(patternSlotGroup)
+                                .accessibility(true, true)
+                                .filter(stack -> stack.getItem() instanceof EncodedPatternItem)
+                                .changeListener((i, o, c, init) -> onPatternChange(index)))
+                        .background(GTGuiTextures.SLOT, GTGuiTextures.PATTERN_OVERLAY)));
+
+        BooleanSyncValue isOnlineValue = SyncHandlers.bool(this::isOnline, this::setOnline);
+        syncManager.syncValue("is_online", isOnlineValue);
+
+        mainWidget.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
+                        Component.translatable("gtceu.gui.me_network.online") :
+                        Component.translatable("gtceu.gui.me_network.offline"))
+                .asWidget()
+                .top(10)
+                .margin(2)
+                .left(9));
+
     }
 
     public boolean canRefund() {

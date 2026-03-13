@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.mui.value.BoolValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.FluidSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.ItemSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
@@ -24,6 +25,7 @@ import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
@@ -169,64 +171,32 @@ public class DualHatchPartMachine extends ItemBusPartMachine {
     ///////////////////////////////
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PanelSyncManager syncManager, UISettings settings) {
         int rowSize = (int) Math.sqrt(getInventorySize());
-        int panelWidth = Math.max(176 + 18 + 3, 18 * rowSize + 18 + 14);
-        int panelHeight = 74 + Math.max(30, 9 + rowSize * 18) + 14;
+        int width = Math.max(MachineUIPanelBuilder.DEFAULT_WIDTH, 18 * rowSize + 18 + 14);
+        int height = 74 + Math.max(30, 9 + rowSize * 18) + 14;
         String slotGroupName = "inv_slot_group";
         SlotGroup slotGroup = new SlotGroup(slotGroupName, getInventorySize());
-        return new ModularPanel(this.getDefinition().getName())
-                .size(panelWidth, panelHeight)
-                .child(GTMuiWidgets.createTitleBar(this.getDefinition(), panelWidth))
-                .bindPlayerInventory()
-                .child(SlotGroupWidget.builder()
-                        .matrix(Arrays.stream(GTMuiMachineUtil.createSquareMatrix(getInventorySize(), 'I'))
-                                .map(s -> s + 'F')
-                                .toArray(String[]::new))
-                        .key('I', i -> {
-                            ModularSlot slot = new ModularSlot(getInventory(), i)
-                                    .accessibility(io.support(IO.IN), true);
-                            ItemSlotSyncHandler syncHandler = new ItemSlotSyncHandler(slot.slotGroup(slotGroup));
-                            syncManager.syncValue(slotGroupName, i, syncHandler);
-                            return new ItemSlot().syncHandler(slotGroupName, i);
-                        })
-                        .key('F', i -> {
-                            FluidSlotSyncHandler syncHandler = new FluidSlotSyncHandler(tank.getStorages()[i])
-                                    .canFillSlot(io.support(IO.IN))
-                                    .canDrainSlot(true);
-                            syncManager.syncValue(slotGroupName + "_fluid", i, syncHandler);
-                            return new FluidSlot().syncHandler(slotGroupName + "_fluid", i);
-                        }).build()
-                        .center()
-                        .marginBottom(89))
-                .child(new Column()
-                        .coverChildren()
-                        .leftRel(1.0f)
-                        .reverseLayout(true)
-                        .bottom(16)
-                        .padding(0, 8, 4, 4)
-                        .childPadding(2)
-                        .excludeAreaInRecipeViewer()
-                        .background(GTGuiTextures.BACKGROUND.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                        .child(new ToggleButton()
-                                .value(new BoolValue.Dynamic(this::isWorkingEnabled, this::setWorkingEnabled))
-                                .selectedBackground(GTGuiTextures.BUTTON_POWER[1])
-                                .background(GTGuiTextures.BUTTON_POWER[0])
-                                .tooltipAutoUpdate(true)
-                                .tooltipBuilder((r) -> r.addLine(IKey.lang(Component.translatable(
-                                        isWorkingEnabled() ? "behaviour.soft_hammer.enabled" :
-                                                "behaviour.soft_hammer.disabled")))))
-                        .childIf(io.support(IO.IN), () -> new ToggleButton()
-                                .value(new BoolValue.Dynamic(this::isDistinct, this::setDistinct))
-                                .stateOverlay(GTGuiTextures.BUTTON_DISTINCT)
-                                .tooltipAutoUpdate(true)
-                                .tooltipBuilder((
-                                                 richTooltip) -> richTooltip
-                                                         .add(Component
-                                                                 .translatable("gtceu.multiblock.universal.distinct")
-                                                                 .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
-                                                                 .append(Component.translatable(isDistinct() ?
-                                                                         "gtceu.multiblock.universal.distinct.yes" :
-                                                                         "gtceu.multiblock.universal.distinct.no"))))));
+        mainWidget.size(width, height);
+        mainWidget.child(SlotGroupWidget.builder()
+                .matrix(Arrays.stream(GTMuiMachineUtil.createSquareMatrix(getInventorySize(), 'I'))
+                        .map(s -> s + 'F')
+                        .toArray(String[]::new))
+                .key('I', i -> {
+                    ModularSlot slot = new ModularSlot(getInventory(), i)
+                            .accessibility(io.support(IO.IN), true);
+                    ItemSlotSyncHandler syncHandler = new ItemSlotSyncHandler(slot.slotGroup(slotGroup));
+                    syncManager.syncValue(slotGroupName, i, syncHandler);
+                    return new ItemSlot().syncHandler(slotGroupName, i);
+                })
+                .key('F', i -> {
+                    FluidSlotSyncHandler syncHandler = new FluidSlotSyncHandler(tank.getStorages()[i])
+                            .canFillSlot(io.support(IO.IN))
+                            .canDrainSlot(true);
+                    syncManager.syncValue(slotGroupName + "_fluid", i, syncHandler);
+                    return new FluidSlot().syncHandler(slotGroupName + "_fluid", i);
+                }).build()
+                .center()
+        );
     }
 }

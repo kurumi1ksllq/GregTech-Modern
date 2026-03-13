@@ -14,22 +14,19 @@ import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.DoubleSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.FluidSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ProgressWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Row;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.FluidSlot;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.modifier.ModifierFunction;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.item.behavior.PortableScannerBehavior;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.common.mui.GTGuis;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -321,9 +318,7 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
     //////////////////////////////////////
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        ModularPanel panel = GTGuis.createPanel(this, 176, 166);
-        panel.child(GTMuiWidgets.createTitleBar(this.getDefinition(), 176));
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
 
         UITexture progressTexture = isHighPressure() ? GTGuiTextures.PROGRESS_BAR_BOILER_EMPTY_STEEL :
                 GTGuiTextures.PROGRESS_BAR_BOILER_EMPTY_BRONZE;
@@ -331,61 +326,32 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
         DoubleSyncValue tempPercentage = syncManager.getOrCreateSyncHandler("tempPercentage", DoubleSyncValue.class,
                 () -> new DoubleSyncValue(this::getTemperaturePercent));
 
-        panel.child(new Row()
-                .top(12)
-                .left(50)
-                .coverChildren()
-                .childPadding(10)
-                .child(new FluidSlot()
-                        .syncHandler(new FluidSlotSyncHandler(waterTank.getStorages()[0]))
-                        .size(14, 54)
-                        .alwaysShowFull(true)
-                        .displayAmount(false))
-                .child(new FluidSlot()
-                        .syncHandler(new FluidSlotSyncHandler(steamTank.getStorages()[0])
-                                .canFillSlot(false).canDrainSlot(true))
-                        .alwaysShowFull(true)
-                        .size(14, 54)
-                        .displayAmount(false))
-                .child(new ProgressWidget()
-                        .texture(progressTexture,
-                                GTGuiTextures.PROGRESS_BAR_BOILER_HEAT, 54)
-                        .size(14, 54)
-                        .value(tempPercentage)
-                        .direction(ProgressWidget.Direction.UP)
-                        .tooltipAutoUpdate(true)
-                        .tooltipBuilder((r) -> r.addLine(IKey
-                                .lang(Component.translatable("gtceu.fluid.temperature", getCurrentTemperature()))))))
-                .child(SlotGroupWidget.playerInventory(false).bottom(7).left(7));
-
-        return panel;
+        mainWidget.child(Flow.row()
+                        .top(12)
+                        .left(50)
+                        .coverChildren()
+                        .childPadding(10)
+                        .child(new FluidSlot()
+                                .syncHandler(new FluidSlotSyncHandler(waterTank.getStorages()[0]))
+                                .size(14, 54)
+                                .alwaysShowFull(true)
+                                .displayAmount(false))
+                        .child(new FluidSlot()
+                                .syncHandler(new FluidSlotSyncHandler(steamTank.getStorages()[0])
+                                        .canFillSlot(false).canDrainSlot(true))
+                                .alwaysShowFull(true)
+                                .size(14, 54)
+                                .displayAmount(false))
+                        .child(new ProgressWidget()
+                                .texture(progressTexture,
+                                        GTGuiTextures.PROGRESS_BAR_BOILER_HEAT, 54)
+                                .size(14, 54)
+                                .value(tempPercentage)
+                                .direction(ProgressWidget.Direction.UP)
+                                .tooltipAutoUpdate(true)
+                                .tooltipBuilder((r) -> r.addLine(IKey
+                                        .lang(Component.translatable("gtceu.fluid.temperature", getCurrentTemperature()))))));
     }
-
-    /*
-     * @Override
-     * public ModularUI createUI(Player entityPlayer) {
-     * return new ModularUI(176, 166, this, entityPlayer)
-     * .background(GuiTextures.BACKGROUND_STEAM.get(isHighPressure))
-     * .widget(new LabelWidget(6, 6, getBlockState().getBlock().getDescriptionId()))
-     * .widget(new ProgressWidget(this::getTemperaturePercent, 96, 26, 10, 54)
-     * .setProgressTexture(GuiTextures.PROGRESS_BAR_BOILER_EMPTY.get(isHighPressure),
-     * GuiTextures.PROGRESS_BAR_BOILER_HEAT)
-     * .setFillDirection(ProgressTexture.FillDirection.DOWN_TO_UP)
-     * .setDynamicHoverTips(pct -> I18n.get("gtceu.multiblock.large_boiler.temperature",
-     * currentTemperature + 274, getMaxTemperature() + 274)))
-     * .widget(new TankWidget(waterTank.getStorages()[0], 83, 26, 10, 54, false, true)
-     * .setShowAmount(false)
-     * .setFillDirection(ProgressTexture.FillDirection.DOWN_TO_UP)
-     * .setBackground(GuiTextures.PROGRESS_BAR_BOILER_EMPTY.get(isHighPressure)))
-     * .widget(new TankWidget(steamTank.getStorages()[0], 70, 26, 10, 54, true, false)
-     * .setShowAmount(false)
-     * .setFillDirection(ProgressTexture.FillDirection.DOWN_TO_UP)
-     * .setBackground(GuiTextures.PROGRESS_BAR_BOILER_EMPTY.get(isHighPressure)))
-     * .widget(new ImageWidget(43, 44, 18, 18, GuiTextures.CANISTER_OVERLAY_STEAM.get(isHighPressure)))
-     * .widget(UITemplate.bindPlayerInventory(entityPlayer.getInventory(),
-     * GuiTextures.SLOT_STEAM.get(isHighPressure), 7, 84, true));
-     * }
-     */
 
     //////////////////////////////////////
     // ********* Client *********//

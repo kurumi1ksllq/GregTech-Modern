@@ -11,11 +11,11 @@ import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.DoubleSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.FluidSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ProgressWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Row;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.FluidSlot;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.config.ConfigHolder;
@@ -82,7 +82,9 @@ public class SteamLiquidBoilerMachine extends SteamBoilerMachine {
     }
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+        super.buildMainUI(mainWidget, guiData, syncManager, settings);
+
         UITexture progressTexture = isHighPressure() ? GTGuiTextures.PROGRESS_BAR_BOILER_FUEL_STEEL :
                 GTGuiTextures.PROGRESS_BAR_BOILER_FUEL_BRONZE;
 
@@ -92,8 +94,7 @@ public class SteamLiquidBoilerMachine extends SteamBoilerMachine {
                     return recipeLogic.getProgressPercent();
                 }));
 
-        return super.buildUI(data, syncManager, settings)
-                .child(new Row()
+        mainWidget.child(Flow.row()
                         .coverChildren()
                         .right(12).top(12)
                         .childPadding(4)
@@ -110,17 +111,6 @@ public class SteamLiquidBoilerMachine extends SteamBoilerMachine {
                                 .size(14, 54)
                                 .displayAmount(false)));
     }
-
-    /*
-     * @Override
-     * public ModularUI createUI(Player entityPlayer) {
-     * return super.createUI(entityPlayer)
-     * .widget(new TankWidget(fuelTank.getStorages()[0], 119, 26, 10, 54, true, true)
-     * .setShowAmount(false)
-     * .setFillDirection(ProgressTexture.FillDirection.DOWN_TO_UP)
-     * .setBackground(GuiTextures.PROGRESS_BAR_BOILER_EMPTY.get(isHighPressure)));
-     * }
-     */
 
     @Override
     protected void randomDisplayTick(RandomSource random, float x, float y, float z) {

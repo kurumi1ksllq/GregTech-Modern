@@ -195,35 +195,6 @@ public class DataBankMachine extends WorkableElectricMultiblockMachine
         updateTickSubscription();
     }
 
-    @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        var panel = GTGuis.createPanel(this, 176, 164);
-
-        var panelUtil = new GTMultiblockPanelUtil(this);
-
-        panel.child(GTMuiWidgets.createTitleBar(this.getDefinition(), 176))
-                .child(new ParentWidget<>()
-                        .widthRel(0.95f)
-                        .heightRel(.45f)
-                        .margin(4, 0)
-                        .left(3).top(5)
-                        .child(new Row()
-                                .child(getMainTextPanel(syncManager, 170, 70))))
-                .child(new Column()
-                        .coverChildren()
-                        .leftRel(1.0f)
-                        .reverseLayout(true)
-                        .bottom(16)
-                        .padding(0, 8, 4, 4)
-                        .childPadding(2)
-                        .background(GTGuiTextures.BACKGROUND.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                        .child(GTMuiWidgets.createPowerButton(this, syncManager))
-                        .child(GTMuiWidgets.createVoidingButton(this, syncManager)))
-                .child(SlotGroupWidget.playerInventory(false).left(7).bottom(7));
-
-        return panel;
-    }
-
     public Widget<?> getMainTextPanel(PanelSyncManager syncManager, int width, int height) {
         var parentWidget = new ParentWidget<>();
         var listWidget = new ListWidget<>()

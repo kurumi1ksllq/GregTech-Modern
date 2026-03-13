@@ -5,6 +5,8 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.trait.feature.IAttachConfiguratorsTrait;
+import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
+import com.gregtechceu.gtceu.api.mui.theme.ThemeAPI;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
@@ -111,7 +113,9 @@ public class MachineUIPanelBuilder {
         rightConfigurators.accept(attachRight);
         mainContents.accept(attachMain);
 
-        panel.childIf(addTitleBar, () -> GTMuiWidgets.createTitleBar(machine.getDefinition(), attachMain.getArea().width));
+        var uiTheme = ThemeAPI.INSTANCE.getTheme(machine.getDefinition().getThemeId());
+        panel.childIf(addTitleBar, () -> GTMuiWidgets.createTitleBar(machine.getDefinition(), attachMain.getArea().width, (UITexture) uiTheme.getPanelTheme().getTheme()
+                .getBackground()));
         panel.childIf(attachInventory, () -> SlotGroupWidget.playerInventory(false).left(7).bottom(7));
         panel.childIf(drawGTLogo, () -> GTMuiWidgets.createGTLogo()
                 .right(7).bottom(7 + (attachInventory ? 78 : 0)));

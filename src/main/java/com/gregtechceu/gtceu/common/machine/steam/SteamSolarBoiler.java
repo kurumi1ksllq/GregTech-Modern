@@ -7,8 +7,8 @@ import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.DoubleSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ProgressWidget;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.config.ConfigHolder;
@@ -17,8 +17,6 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -33,7 +31,7 @@ public class SteamSolarBoiler extends SteamBoilerMachine {
     }
 
     @Override
-    public @NotNull Direction getFrontFacing() {
+    public Direction getFrontFacing() {
         return Direction.UP;
     }
 
@@ -71,7 +69,9 @@ public class SteamSolarBoiler extends SteamBoilerMachine {
     }
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+        super.buildMainUI(mainWidget, guiData, syncManager, settings);
+
         UITexture progressTexture = isHighPressure() ? GTGuiTextures.PROGRESS_BAR_SOLAR_STEEL :
                 GTGuiTextures.PROGRESS_BAR_SOLAR_BRONZE;
 
@@ -81,12 +81,12 @@ public class SteamSolarBoiler extends SteamBoilerMachine {
                     return 0.0f;
                 }));
 
-        return super.buildUI(data, syncManager, settings)
-                .child(new ProgressWidget()
+        mainWidget.child(new ProgressWidget()
                         .top(30).right(18)
                         .size(18)
                         .texture(progressTexture, 20)
                         .value(canSeeSun));
+
     }
 
     @Override

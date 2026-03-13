@@ -15,16 +15,14 @@ import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
+import com.gregtechceu.gtceu.api.mui.widget.Widget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.data.mui.GTMultiblockPanelUtil;
 import com.gregtechceu.gtceu.common.data.mui.GTMultiblockTextUtil;
-import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.common.mui.GTGuis;
+import com.gregtechceu.gtceu.common.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -96,34 +94,27 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
     //////////////////////////////////////
     // ********** GUI ***********//
     //////////////////////////////////////
-    @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        var panel = GTGuis.createPanel(this, 196, 237);
 
+    public Widget<?> getMainTextPanel(PanelSyncManager syncManager, int width, int height) {
         var panelUtil = new GTMultiblockPanelUtil(this);
+        return panelUtil.getMainTextPanel(syncManager, 186, 146);
+    }
 
-        panel.child(GTMuiWidgets.createTitleBar(this.getDefinition(), 196))
-                .child(new ParentWidget<>()
-                        .widthRel(0.95f)
-                        .heightRel(.65f)
-                        .margin(4, 0)
-                        .left(3).top(2)
-                        .horizontalCenter()
-                        .child(Flow.row()
-                                .child(panelUtil.getMainTextPanel(syncManager, 186, 146))))
-                .child(Flow.col()
-                        .coverChildren()
-                        .leftRel(1.0f)
-                        .reverseLayout(true)
-                        .bottom(16)
-                        .padding(0, 8, 4, 4)
-                        .childPadding(2)
-                        .background(GTGuiTextures.BACKGROUND.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                        .child(GTMuiWidgets.createPowerButton(this, syncManager))
-                        .child(GTMuiWidgets.createVoidingButton(this, syncManager)))
-                .child(SlotGroupWidget.playerInventory(false).left(7).bottom(7).horizontalCenter());
+    @Override
+    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager).rightConfigurators(f -> f.child(GTMuiWidgets.createVoidingButton(this, syncManager)));
+    }
 
-        return panel;
+    @Override
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+        mainWidget.child(new ParentWidget<>()
+                .widthRel(0.95f)
+                .heightRel(.65f)
+                .margin(4, 0)
+                .left(3).top(2)
+                .horizontalCenter()
+                .child(Flow.row()
+                        .child(getMainTextPanel(syncManager, 186, 146))));
     }
 
     @Override
@@ -134,92 +125,6 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
         widgets.addAll(super.getWidgetsForDisplay(syncManager));
         return widgets;
     }
-
-    // @Override
-    // public void addDisplayText(List<Component> textList) {
-    // int numParallels;
-    // int subtickParallels;
-    // int batchParallels;
-    // int totalRuns;
-    // boolean exact = false;
-    // if (recipeLogic.isActive() && recipeLogic.getLastRecipe() != null) {
-    // numParallels = recipeLogic.getLastRecipe().parallels;
-    // subtickParallels = recipeLogic.getLastRecipe().subtickParallels;
-    // batchParallels = recipeLogic.getLastRecipe().batchParallels;
-    // totalRuns = recipeLogic.getLastRecipe().getTotalRuns();
-    // exact = true;
-    // } else {
-    // numParallels = getParallelHatch()
-    // .map(IParallelHatch::getCurrentParallel)
-    // .orElse(0);
-    // subtickParallels = 0;
-    // batchParallels = 0;
-    // totalRuns = 0;
-    // }
-    //
-    // MultiblockDisplayText.builder(textList, isFormed())
-    // .setWorkingStatus(recipeLogic.isWorkingEnabled(), recipeLogic.isActive())
-    // .addEnergyUsageLine(energyContainer)
-    // .addEnergyTierLine(tier)
-    // .addMachineModeLine(getRecipeType(), getRecipeTypes().length > 1)
-    // .addTotalRunsLine(totalRuns)
-    // .addParallelsLine(numParallels, exact)
-    // .addSubtickParallelsLine(subtickParallels)
-    // .addBatchModeLine(isBatchEnabled(), batchParallels)
-    // .addWorkingStatusLine()
-    // .addProgressLine(recipeLogic.getProgress(), recipeLogic.getMaxProgress(),
-    // recipeLogic.getProgressPercent())
-    // .addOutputLines(recipeLogic.getLastRecipe());
-    // getDefinition().getAdditionalDisplay().accept(this, textList);
-    // IDisplayUIMachine.super.addDisplayText(textList);
-    // }
-
-    // @Override
-    // public Widget createUIWidget() {
-    // var group = new WidgetGroup(0, 0, 182 + 8, 117 + 8);
-    // group.addWidget(new DraggableScrollableWidgetGroup(4, 4, 182, 117).setBackground(getScreenTexture())
-    // .addWidget(new LabelWidget(4, 5, self().getBlockState().getBlock().getDescriptionId()))
-    // .addWidget(new ComponentPanelWidget(4, 17, this::addDisplayText)
-    // .textSupplier(this.getLevel().isClientSide ? null : this::addDisplayText)
-    // .setMaxWidthLimit(200)
-    // .clickHandler(this::handleDisplayClick)));
-    // group.setBackground(GuiTextures.BACKGROUND_INVERSE);
-    // return group;
-    // }
-    //
-    // @Override
-    // public ModularUI createUI(Player entityPlayer) {
-    // return new ModularUI(198, 208, this, entityPlayer).widget(new FancyMachineUIWidget(this, 198, 208));
-    // }
-    //
-    // @Override
-    // public List<IFancyUIProvider> getSubTabs() {
-    // return getParts().stream().filter(Objects::nonNull).map(IFancyUIProvider.class::cast).toList();
-    // }
-    //
-    // @Override
-    // public void attachConfigurators(ConfiguratorPanel configuratorPanel) {
-    // if (getDefinition().getRecipeModifier() instanceof RecipeModifierList list && Arrays.stream(list.getModifiers())
-    // .anyMatch(modifier -> modifier == GTRecipeModifiers.BATCH_MODE)) {
-    // configuratorPanel.attachConfigurators(new IFancyConfiguratorButton.Toggle(
-    // GuiTextures.BUTTON_BATCH.getSubTexture(0, 0, 1, 0.5),
-    // GuiTextures.BUTTON_BATCH.getSubTexture(0, 0.5, 1, 0.5),
-    // this::isBatchEnabled,
-    // (cd, p) -> setBatchEnabled(p))
-    // .setTooltipsSupplier(
-    // p -> List.of(
-    // Component.translatable("gtceu.machine.batch_" + (p ? "enabled" : "disabled")))));
-    // }
-    //
-    // IFancyUIMachine.super.attachConfigurators(configuratorPanel);
-    // }
-    //
-    // @Override
-    // public void attachTooltips(TooltipsPanel tooltipsPanel) {
-    // for (IMultiPart part : getParts()) {
-    // part.attachFancyTooltipsToController(this, tooltipsPanel);
-    // }
-    // }
 
     //////////////////////////////////////
     // ******** OVERCLOCK *********//

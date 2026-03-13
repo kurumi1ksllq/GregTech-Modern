@@ -11,14 +11,13 @@ import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.IntSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.textfield.TextFieldWidget;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -76,7 +75,7 @@ public class CreativeComputationProviderMachine extends MetaMachine
 
     @Override
     public int requestCWUt(
-                           int cwut, boolean simulate, @NotNull Collection<IOpticalComputationProvider> seen) {
+                           int cwut, boolean simulate, Collection<IOpticalComputationProvider> seen) {
         seen.add(this);
         int requestedCWUt = active ? Math.min(cwut, maxCWUt) : 0;
         if (!simulate) {
@@ -86,13 +85,13 @@ public class CreativeComputationProviderMachine extends MetaMachine
     }
 
     @Override
-    public int getMaxCWUt(@NotNull Collection<IOpticalComputationProvider> seen) {
+    public int getMaxCWUt(Collection<IOpticalComputationProvider> seen) {
         seen.add(this);
         return active ? maxCWUt : 0;
     }
 
     @Override
-    public boolean canBridge(@NotNull Collection<IOpticalComputationProvider> seen) {
+    public boolean canBridge(Collection<IOpticalComputationProvider> seen) {
         seen.add(this);
         return true;
     }
@@ -108,10 +107,8 @@ public class CreativeComputationProviderMachine extends MetaMachine
     }
 
     @Override
-    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return new ModularPanel(this.getDefinition().getName())
-                .height(100)
-                .child(GTMuiWidgets.createTitleBar(this.getDefinition(), 176))
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+        mainWidget.height(100)
                 .child(Flow.column()
                         .padding(10)
                         .childPadding(5)
@@ -148,4 +145,5 @@ public class CreativeComputationProviderMachine extends MetaMachine
                                 .child(new TextWidget<>(IKey
                                         .lang(() -> "gtceu.creative.activity." + (this.isActive() ? "on" : "off"))))));
     }
+
 }

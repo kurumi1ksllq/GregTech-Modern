@@ -12,7 +12,6 @@ import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.block.CoilBlock;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
-import com.gregtechceu.gtceu.common.data.mui.GTMultiblockPanelUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 
@@ -51,8 +50,6 @@ public class CoilWorkableElectricMultiblockMachine extends WorkableElectricMulti
 
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
-        var panelUtil = new GTMultiblockPanelUtil(this);
-
         IntSyncValue coilTier = syncManager.getOrCreateSyncHandler("coilTier", IntSyncValue.class,
                 () -> new IntSyncValue(this::getCoilTier));
 
@@ -71,7 +68,7 @@ public class CoilWorkableElectricMultiblockMachine extends WorkableElectricMulti
                         .left(3).top(3)
                         .child(Flow.row()
                                 .child(widget1)
-                                .child(panelUtil.getMainTextPanel(syncManager, 208, 90))
+                                .child(getMainTextPanel(syncManager, 208, 90))
                                 .child(widget2))
 
                 );

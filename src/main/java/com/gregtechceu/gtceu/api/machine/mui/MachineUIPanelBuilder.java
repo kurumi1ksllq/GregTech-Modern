@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.common.mui;
+package com.gregtechceu.gtceu.api.machine.mui;
 
 import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -16,6 +16,7 @@ import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
+import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -25,7 +26,7 @@ import java.util.function.Consumer;
 @Setter
 public class MachineUIPanelBuilder {
 
-    public static final int DEFAULT_WIDTH = 172;
+    public static final int DEFAULT_WIDTH = 169;
     public static final int DEFAULT_HEIGHT = 77;
 
     /**
@@ -88,12 +89,12 @@ public class MachineUIPanelBuilder {
                 .setEnabledIf(f -> !f.getChildren().isEmpty());
 
         ParentWidget<?> attachMain = new ParentWidget<>()
+                .size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
                 .margin(4);
 
-        panel.relative(attachMain)
-                .widthRelOffset(1, 4)
-                .heightRelOffset(1, attachInventory ? 89 : 4);
-
+        //panel.relative(attachMain)
+        //        .widthRelOffset(1, 4)
+        //        .heightRelOffset(1, attachInventory ? 89 : 4);
         panel.child(attachMain);
         panel.child(attachLeft);
         panel.child(attachRight);

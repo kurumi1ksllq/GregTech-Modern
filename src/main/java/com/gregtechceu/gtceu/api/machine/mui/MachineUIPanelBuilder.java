@@ -20,6 +20,7 @@ import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true)
@@ -92,9 +93,6 @@ public class MachineUIPanelBuilder {
                 .size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
                 .margin(4);
 
-        //panel.relative(attachMain)
-        //        .widthRelOffset(1, 4)
-        //        .heightRelOffset(1, attachInventory ? 89 : 4);
         panel.child(attachMain);
         panel.child(attachLeft);
         panel.child(attachRight);
@@ -137,6 +135,25 @@ public class MachineUIPanelBuilder {
                 }
             }
         }
+
+        AtomicInteger prevWidth = new AtomicInteger();
+        AtomicInteger prevHeight = new AtomicInteger();
+
+        panel.width(attachMain.getArea().w() + 8);
+        panel.height(attachMain.getArea().h() + (attachInventory ? 89 : 4));
+
+        panel.onUpdateListener(p -> {
+            var width = attachMain.getArea().w();
+            var height = attachMain.getArea().h();
+            if (width != prevWidth.get()) {
+                p.width(width + 8);
+                prevWidth.set(width);
+            }
+            if (height != prevHeight.get()) {
+                p.height(height + (attachInventory ? 89 : 4));
+                prevHeight.set(height);
+            }
+        });
 
         return panel;
     }

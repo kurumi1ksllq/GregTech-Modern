@@ -39,6 +39,10 @@ public class MachineUIPanelBuilder {
      */
     private boolean attachInventory = true;
     /**
+     * Should the player inventory (if attached) be horizontally centered.
+     */
+    private boolean centerAttachedInventory = true;
+    /**
      * Should a fancy title bar be created for this panel.
      */
     private boolean addTitleBar = true;
@@ -122,7 +126,7 @@ public class MachineUIPanelBuilder {
 
         var uiTheme = ThemeAPI.INSTANCE.getTheme(machine.getDefinition().getThemeId());
         panel.childIf(addTitleBar, () -> GTMuiWidgets.createTitleBar(machine.getDefinition(), 172));
-        panel.childIf(attachInventory, () -> SlotGroupWidget.playerInventory(false).left(7).bottom(7));
+        panel.childIf(attachInventory, () -> centerAttachedInventory ? SlotGroupWidget.playerInventory(true) : SlotGroupWidget.playerInventory(false).left(7).bottom(7));
         panel.childIf(drawGTLogo, () -> GTMuiWidgets.createGTLogo()
                 .right(7).bottom(7 + (attachInventory ? 78 : 0)));
 

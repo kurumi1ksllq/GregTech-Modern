@@ -298,7 +298,7 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
         int rowSize = (int) Math.sqrt(getInventorySize());
         mainWidget.width(Math.max(MachineUIPanelBuilder.DEFAULT_WIDTH, 18 * rowSize + 14));
-        mainWidget.height(Math.max(MachineUIPanelBuilder.DEFAULT_HEIGHT, (18 * rowSize) + 78 + 19));
+        mainWidget.height(Math.max(MachineUIPanelBuilder.DEFAULT_HEIGHT, (18 * rowSize) + 19));
 
         int smallHatchOffset = tier < 2 ? 9 * (3 - rowSize) : 0;
 

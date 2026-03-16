@@ -68,38 +68,11 @@ public class MachineUIPanelBuilder {
 
     public ModularPanel build() {
 
-        var panel = new ModularPanel(machine.getDefinition().getId().getPath());
+        var panel = new MachineUIPanel(machine, attachInventory, centerAttachedInventory, addTitleBar, drawGTLogo);
 
-        Flow attachLeft = Flow.col()
-                .coverChildren()
-                .rightRel(1.0f)
-                .reverseLayout(true)
-                .padding(4, 2, 4, 4)
-                .bottom(16)
-                .excludeAreaInRecipeViewer()
-                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                .background(GTGuiTextures.BACKGROUND.getSubArea(0f, 0f, 0.75f, 1.0f))
-                .setEnabledIf(f -> !f.getChildren().isEmpty());
-
-        Flow attachRight = Flow.col()
-                .coverChildren()
-                .leftRel(1.0f)
-                .reverseLayout(true)
-                .padding(2, 4, 4, 4)
-                .bottom(16)
-                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                .childPadding(2)
-                .excludeAreaInRecipeViewer()
-                .background(GTGuiTextures.BACKGROUND.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                .setEnabledIf(f -> !f.getChildren().isEmpty());
-
-        ParentWidget<?> attachMain = new ParentWidget<>()
-                .size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
-                .top(4).left(4);
-
-        panel.child(attachMain);
-        panel.child(attachLeft);
-        panel.child(attachRight);
+        var attachLeft = panel.getLeftConfiguratorPanel();
+        var attachRight = panel.getRightConfiguratorPanel();
+        var attachMain = panel.getMainContents();
 
         if (addDefaultConfigurators) {
             if (machine instanceof IHasCircuitSlot circuitSlot && circuitSlot.isCircuitSlotEnabled()) {
@@ -124,12 +97,6 @@ public class MachineUIPanelBuilder {
         rightConfigurators.accept(attachRight);
         mainContents.accept(attachMain);
 
-        var uiTheme = ThemeAPI.INSTANCE.getTheme(machine.getDefinition().getThemeId());
-        panel.childIf(addTitleBar, () -> GTMuiWidgets.createTitleBar(machine.getDefinition(), 172));
-        panel.childIf(attachInventory, () -> centerAttachedInventory ? SlotGroupWidget.playerInventory(true) : SlotGroupWidget.playerInventory(false).left(7).bottom(7));
-        panel.childIf(drawGTLogo, () -> GTMuiWidgets.createGTLogo()
-                .right(7).bottom(7 + (attachInventory ? 78 : 0)));
-
         if (addTraitConfigurators) {
             for (var trait: machine.getTraitHolder().getAllTraits()) {
                 if (trait instanceof IAttachConfiguratorsTrait attachConfiguratorsTrait) {
@@ -138,25 +105,6 @@ public class MachineUIPanelBuilder {
                 }
             }
         }
-
-        AtomicInteger prevWidth = new AtomicInteger();
-        AtomicInteger prevHeight = new AtomicInteger();
-
-        panel.width(attachMain.getArea().w() + 8);
-        panel.height(attachMain.getArea().h() + (attachInventory ? 89 : 4));
-
-        panel.onUpdateListener(p -> {
-            var width = attachMain.getArea().w();
-            var height = attachMain.getArea().h();
-            if (width != prevWidth.get()) {
-                p.width(width + 8);
-                prevWidth.set(width);
-            }
-            if (height != prevHeight.get()) {
-                p.height(height + (attachInventory ? 89 : 4));
-                prevHeight.set(height);
-            }
-        });
 
         return panel;
     }

@@ -33,10 +33,10 @@ public class Box implements IAnimatable<Box> {
     protected int top;
     @Getter
     @Setter
-    protected int right;
+    public int right;
     @Getter
     @Setter
-    protected int bottom;
+    public int bottom;
 
     public Box all(int all) {
         return this.all(all, all);

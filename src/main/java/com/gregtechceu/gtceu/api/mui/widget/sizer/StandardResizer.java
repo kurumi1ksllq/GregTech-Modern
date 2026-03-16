@@ -22,14 +22,14 @@ import java.util.function.DoubleSupplier;
  */
 public class StandardResizer extends WidgetResizeNode implements IPositioned<StandardResizer> {
 
-    private final DimensionSizer x;
-    private final DimensionSizer y;
+    protected final DimensionSizer x;
+    protected final DimensionSizer y;
     @Getter
-    private boolean expanded = false;
+    protected boolean expanded = false;
 
-    private boolean childrenResized = false;
-    private boolean layoutResized = false;
-    private boolean relativeToScreen = false;
+    protected boolean childrenResized = false;
+    protected boolean layoutResized = false;
+    protected boolean relativeToScreen = false;
 
     public StandardResizer(IWidget widget) {
         super(widget);
@@ -321,7 +321,7 @@ public class StandardResizer extends WidgetResizeNode implements IPositioned<Sta
         if (coverHeight) this.y.postApply(getArea(), relativeTo, 0, y1);
     }
 
-    private void coverChildrenForEmpty() {
+    protected void coverChildrenForEmpty() {
         if (this.x.dependsOnChildren()) {
             this.x.coverChildrenForEmpty(getWidget().getArea(), getParent().getArea());
         }

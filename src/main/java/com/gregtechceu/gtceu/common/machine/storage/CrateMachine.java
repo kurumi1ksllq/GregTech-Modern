@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
+import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
@@ -42,8 +43,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class CrateMachine extends MetaMachine implements IMuiMachine,
                           IDropSaveMachine {
-
-    public static final BooleanProperty TAPED_PROPERTY = GTMachineModelProperties.IS_TAPED;
 
     @Getter
     private final Material material;
@@ -79,6 +78,7 @@ public class CrateMachine extends MetaMachine implements IMuiMachine,
 
         int rows = inventorySize / rowLength;
         ParentWidget<?> slots = new ParentWidget<>();
+        slots.coverChildren();
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < this.rowLength; j++) {
                 int index = i * rowLength + j;
@@ -89,9 +89,9 @@ public class CrateMachine extends MetaMachine implements IMuiMachine,
             }
         }
 
-        mainWidget.size(rowLength * 18 + 14, 24 + 18 * rows)
+        mainWidget.size(Math.max(MachineUIPanelBuilder.DEFAULT_WIDTH, rowLength * 18 + 10), 20 + 18 * rows)
                 .child(IKey.lang(getBlockState().getBlock().getName()).asWidget().pos(5, 5))
-                .child(slots.top(18).left(7).right(7).height(rows * 18));
+                .child(slots.top(18).horizontalCenter().height(rows * 18));
     }
 
     @Override

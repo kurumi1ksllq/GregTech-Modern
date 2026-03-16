@@ -119,7 +119,7 @@ public class BatteryBufferMachine extends TieredEnergyMachine
         if (state != newState) {
             state = newState;
             syncDataHolder.markClientSyncFieldDirty("state");
-            setRenderState(getRenderState().setValue(GTMachineModelProperties.BATTERY_BUFFER_STATE, newState));
+            if (getRenderState().hasProperty(GTMachineModelProperties.BATTERY_BUFFER_STATE)) setRenderState(getRenderState().setValue(GTMachineModelProperties.BATTERY_BUFFER_STATE, newState));
         }
     }
 

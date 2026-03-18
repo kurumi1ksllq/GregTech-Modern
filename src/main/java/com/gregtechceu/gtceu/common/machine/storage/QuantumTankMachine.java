@@ -214,7 +214,8 @@ public class QuantumTankMachine extends TieredMachine implements IDropSaveMachin
     // TODO: Needs AOI widget
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         LongSyncValue bucketSyncer = new LongSyncValue(this::getStoredAmount, (ignored) -> {});
         syncManager.syncValue("bucket_amount", bucketSyncer);
 
@@ -226,8 +227,8 @@ public class QuantumTankMachine extends TieredMachine implements IDropSaveMachin
                         .color(0xffffff)
                         .margin(8, 0, 8, 0))
                 .child(IKey.dynamic(
-                                () -> Component.literal(
-                                        FormattingUtil.formatBuckets(bucketSyncer.getLongValue())))
+                        () -> Component.literal(
+                                FormattingUtil.formatBuckets(bucketSyncer.getLongValue())))
                         .asWidget()
                         .color(0xffffff)
                         .margin(8, 0, 18, 0))

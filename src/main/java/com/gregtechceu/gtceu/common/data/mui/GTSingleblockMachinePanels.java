@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.data.mui;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.SimpleTieredMachine;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.machine.steam.SimpleSteamMachine;
 import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
 import com.gregtechceu.gtceu.api.mui.factory.PanelFactory;
@@ -16,7 +17,6 @@ import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUIs;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 
 public class GTSingleblockMachinePanels {
 
@@ -54,10 +54,11 @@ public class GTSingleblockMachinePanels {
                                     -1)
                             .alignX(Alignment.CENTER))
                     .coverChildrenHeight();
-                        /*
-            parent.childIf(hasXEI, () -> GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType()))
-                    .left(190));
-            */
+            /*
+             * parent.childIf(hasXEI, () ->
+             * GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType()))
+             * .left(190));
+             */
         });
         return panelBuilder.build().excludeAreaInRecipeViewer();
     };
@@ -85,24 +86,25 @@ public class GTSingleblockMachinePanels {
         var theme = machine.getDefinition().getThemeId();
 
         panelBuilder.mainContents((parent) -> {
-                parent.height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
+            parent.height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
 
-                parent.child(Flow.row()
-                        .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
-                                .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
-                                        simpleTieredMachine.exportItems,
-                                        simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,
-                                        simpleTieredMachine.recipeLogic::getProgressPercent,
-                                        simpleTieredMachine.getTier())
-                                .alignX(Alignment.CENTER))
-                        .coverChildrenHeight()
-                        // .left(7)
-                        );
+            parent.child(Flow.row()
+                    .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
+                            .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
+                                    simpleTieredMachine.exportItems,
+                                    simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,
+                                    simpleTieredMachine.recipeLogic::getProgressPercent,
+                                    simpleTieredMachine.getTier())
+                            .alignX(Alignment.CENTER))
+                    .coverChildrenHeight()
+            // .left(7)
+            );
 
-                /*
-                parent.childIf(hasXEI, () -> GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType()))
-                    .left(190));
-                */
+            /*
+             * parent.childIf(hasXEI, () ->
+             * GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType()))
+             * .left(190));
+             */
         });
         return panelBuilder.build().excludeAreaInRecipeViewer();
     };
@@ -131,21 +133,22 @@ public class GTSingleblockMachinePanels {
         panelBuilder.mainContents((parent) -> {
             parent.height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
             parent.child(Flow.row()
-                            .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
-                                    .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
-                                            simpleTieredMachine.exportItems,
-                                            simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,
-                                            simpleTieredMachine.recipeLogic::getProgressPercent,
-                                            0)
-                                    .alignX(Alignment.CENTER))
-                            .coverChildrenHeight()
-                            // .left(7)
-                            .bottom(76 + 7 + 18 + 9));
+                    .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
+                            .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
+                                    simpleTieredMachine.exportItems,
+                                    simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,
+                                    simpleTieredMachine.recipeLogic::getProgressPercent,
+                                    0)
+                            .alignX(Alignment.CENTER))
+                    .coverChildrenHeight()
+                    // .left(7)
+                    .bottom(76 + 7 + 18 + 9));
 
             /*
-            parent.childIf(hasXEI, () -> GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType()))
-                    .left(190));
-            */
+             * parent.childIf(hasXEI, () ->
+             * GTMuiWidgets.createXEIWidget(GTRecipeTypeUIs.recipeTypeUIs.get(workableMachine.getRecipeType()))
+             * .left(190));
+             */
 
         });
         return panelBuilder.build().excludeAreaInRecipeViewer();

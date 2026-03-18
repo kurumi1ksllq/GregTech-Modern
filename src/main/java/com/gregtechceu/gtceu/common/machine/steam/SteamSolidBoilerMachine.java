@@ -124,7 +124,8 @@ public class SteamSolidBoilerMachine extends SteamBoilerMachine {
     }
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         super.buildMainUI(mainWidget, guiData, syncManager, settings);
 
         UITexture progressTexture = isHighPressure() ? GTGuiTextures.PROGRESS_BAR_BOILER_FUEL_STEEL :
@@ -137,19 +138,19 @@ public class SteamSolidBoilerMachine extends SteamBoilerMachine {
                 }));
 
         mainWidget.child(Flow.col()
-                        .coverChildren()
-                        .right(18).top(7)
-                        .childPadding(4)
-                        .reverseLayout(true)
-                        .child(new ItemSlot()
-                                .slot(new ModularSlot(this.fuelHandler, 0)))
-                        .child(new ProgressWidget()
-                                .size(18)
-                                .texture(progressTexture, 18)
-                                .value(progressPercent)
-                                .direction(ProgressWidget.Direction.UP))
-                        .child(new ItemSlot()
-                                .slot(new ModularSlot(this.ashHandler, 0))));
+                .coverChildren()
+                .right(18).top(7)
+                .childPadding(4)
+                .reverseLayout(true)
+                .child(new ItemSlot()
+                        .slot(new ModularSlot(this.fuelHandler, 0)))
+                .child(new ProgressWidget()
+                        .size(18)
+                        .texture(progressTexture, 18)
+                        .value(progressPercent)
+                        .direction(ProgressWidget.Direction.UP))
+                .child(new ItemSlot()
+                        .slot(new ModularSlot(this.ashHandler, 0))));
     }
 
     @Override

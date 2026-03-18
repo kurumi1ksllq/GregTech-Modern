@@ -93,7 +93,8 @@ public class ObjectHolderMachine extends MultiblockPartMachine {
     }
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         SlotGroup objectGroup = new SlotGroup("object_slot", 1);
         SlotGroup orbGroup = new SlotGroup("orb_slot", 1);
 

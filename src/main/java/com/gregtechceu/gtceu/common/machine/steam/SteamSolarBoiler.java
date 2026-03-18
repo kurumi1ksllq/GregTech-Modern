@@ -69,7 +69,8 @@ public class SteamSolarBoiler extends SteamBoilerMachine {
     }
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         super.buildMainUI(mainWidget, guiData, syncManager, settings);
 
         UITexture progressTexture = isHighPressure() ? GTGuiTextures.PROGRESS_BAR_SOLAR_STEEL :
@@ -82,11 +83,10 @@ public class SteamSolarBoiler extends SteamBoilerMachine {
                 }));
 
         mainWidget.child(new ProgressWidget()
-                        .top(30).right(18)
-                        .size(18)
-                        .texture(progressTexture, 20)
-                        .value(canSeeSun));
-
+                .top(30).right(18)
+                .size(18)
+                .texture(progressTexture, 20)
+                .value(canSeeSun));
     }
 
     @Override

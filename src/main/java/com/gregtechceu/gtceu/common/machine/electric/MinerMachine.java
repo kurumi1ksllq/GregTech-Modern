@@ -219,9 +219,9 @@ public class MinerMachine extends WorkableTieredMachine
 
     // TODO(Onion): fix the gui stuff for this
 
-
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         mainWidget.width(220)
                 .child(Flow.row()
                         .coverChildrenHeight()

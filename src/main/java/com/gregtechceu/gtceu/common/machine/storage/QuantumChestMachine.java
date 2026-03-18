@@ -250,7 +250,8 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
     //////////////////////////////////////
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         LongSyncValue itemSyncer = new LongSyncValue(this::getStoredAmount, (ignored) -> {});
         syncManager.syncValue("item_amount", itemSyncer);
         // SlotGroup group = new SlotGroup("item_inv", 1, 0, true);
@@ -258,29 +259,29 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
         mainWidget
                 .height(80)
                 .child(new ParentWidget<>()
-                                        .background(GTGuiTextures.DISPLAY)
-                                        .size(90, 63)
-                                        .align(Alignment.CENTER)
-                                        .child(IKey.lang("gtceu.machine.quantum_chest.items_stored").asWidget()
-                                                .color(0xffffff)
-                                                .margin(8, 0, 8, 0))
-                                        .child(IKey.dynamic(
-                                                        () -> Component.literal(
-                                                                FormattingUtil.formatNumbers(itemSyncer.getLongValue())))
-                                                .asWidget()
-                                                .color(0xffffff)
-                                                .margin(8, 0, 18, 0))
-                                        .child(Flow.row()
-                                                .margin(4, 0, 41, 0)
-                                                .coverChildren()
-                                                .child(createAutoOutputItemButton(syncManager))
-                                                .child(createItemLockButton(syncManager))
-                                                .child(createVoidButton(syncManager)))
-                                        .child(Flow.column()
-                                                .margin(68, 0, 15, 0)
-                                                .coverChildren()
-                                                .child(createItemSlot(syncManager))
-                                                .child(createPhantomLockeditemSlot(syncManager)))
+                        .background(GTGuiTextures.DISPLAY)
+                        .size(90, 63)
+                        .align(Alignment.CENTER)
+                        .child(IKey.lang("gtceu.machine.quantum_chest.items_stored").asWidget()
+                                .color(0xffffff)
+                                .margin(8, 0, 8, 0))
+                        .child(IKey.dynamic(
+                                () -> Component.literal(
+                                        FormattingUtil.formatNumbers(itemSyncer.getLongValue())))
+                                .asWidget()
+                                .color(0xffffff)
+                                .margin(8, 0, 18, 0))
+                        .child(Flow.row()
+                                .margin(4, 0, 41, 0)
+                                .coverChildren()
+                                .child(createAutoOutputItemButton(syncManager))
+                                .child(createItemLockButton(syncManager))
+                                .child(createVoidButton(syncManager)))
+                        .child(Flow.column()
+                                .margin(68, 0, 15, 0)
+                                .coverChildren()
+                                .child(createItemSlot(syncManager))
+                                .child(createPhantomLockeditemSlot(syncManager)))
 
                 );
     }

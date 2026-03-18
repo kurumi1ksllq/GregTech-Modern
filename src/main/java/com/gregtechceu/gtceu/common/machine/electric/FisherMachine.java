@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.drawable.ItemDrawable;
@@ -30,7 +31,6 @@ import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 import com.gregtechceu.gtceu.utils.ISubscription;
@@ -289,7 +289,6 @@ public class FisherMachine extends TieredEnergyMachine
 
     @Override
     public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-
         return MachineUIPanelBuilder.defaultPanelBuilder(this, syncManager)
                 .rightConfigurators(configuratorFlow -> configuratorFlow
                         .child(new ToggleButton()
@@ -306,7 +305,8 @@ public class FisherMachine extends TieredEnergyMachine
     }
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         var outputItemGrid = GTMuiWidgets.createGrid(cache.getSize(), (int) Math.sqrt(cache.getSize()), true, 'i');
 
         int inputWidth = 18;
@@ -356,7 +356,8 @@ public class FisherMachine extends TieredEnergyMachine
             default -> 2;
         };
 
-        mainWidget.size(MachineUIPanelBuilder.DEFAULT_WIDTH, MachineUIPanelBuilder.DEFAULT_HEIGHT + Math.max(36, 18 * slotHeight));
+        mainWidget.size(MachineUIPanelBuilder.DEFAULT_WIDTH,
+                MachineUIPanelBuilder.DEFAULT_HEIGHT + Math.max(36, 18 * slotHeight));
 
         DoubleSyncValue progressPercent = syncManager.getOrCreateSyncHandler("progressPercent", DoubleSyncValue.class,
                 () -> new DoubleSyncValue(() -> progress / (double) maxProgress));
@@ -381,8 +382,8 @@ public class FisherMachine extends TieredEnergyMachine
                         .mainAxisAlignment(Alignment.MainAxis.CENTER)
                         .childIf(!(outputItemGrid.length == 0),
                                 () -> GTMuiMachineUtil.createSlotGroupFromInventory(cache,
-                                                "output_item_inv", cache.getSize(), 'i',
-                                                syncManager, outputItemGrid)
+                                        "output_item_inv", cache.getSize(), 'i',
+                                        syncManager, outputItemGrid)
                                         .alignX(Alignment.CenterRight))
                         .align(Alignment.CenterRight))
                 .top(30 - topMargin));

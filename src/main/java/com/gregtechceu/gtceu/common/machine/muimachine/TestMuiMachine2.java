@@ -19,7 +19,6 @@ import com.gregtechceu.gtceu.api.mui.widgets.layout.Row;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.mui.GTGuis;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -39,7 +38,8 @@ public class TestMuiMachine2 extends MetaMachine implements IMuiMachine {
     private int val = 0;
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         IntSyncValue valSync = new IntSyncValue(() -> this.val, (v) -> {});
         syncManager.syncValue("valSync", valSync);
 

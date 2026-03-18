@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.machine.multiblock.part;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.FluidSlotSyncHandler;
@@ -18,7 +19,6 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
-import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
@@ -161,7 +161,8 @@ public class DualHatchPartMachine extends ItemBusPartMachine {
     ///////////////////////////////
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         int rowSize = (int) Math.sqrt(getInventorySize());
         int width = Math.max(MachineUIPanelBuilder.DEFAULT_WIDTH, 18 * rowSize + 18 + 14);
         int height = 74 + Math.max(30, 9 + rowSize * 18) + 14;
@@ -186,7 +187,6 @@ public class DualHatchPartMachine extends ItemBusPartMachine {
                     syncManager.syncValue(slotGroupName + "_fluid", i, syncHandler);
                     return new FluidSlot().syncHandler(slotGroupName + "_fluid", i);
                 }).build()
-                .center()
-        );
+                .center());
     }
 }

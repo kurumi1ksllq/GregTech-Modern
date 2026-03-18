@@ -88,7 +88,8 @@ public class DataAccessHatchMachine extends TieredPartMachine
 
     // TODO MUI: Might need EIO widget? Not sure
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         int size = (int) Math.sqrt(getInventorySize());
 
         var grid = GTMuiMachineUtil.createSlotGroupFromInventory(importItems, "data_inventory", getInventorySize(), 'I',
@@ -99,13 +100,13 @@ public class DataAccessHatchMachine extends TieredPartMachine
                 .height(20 + (18 * size))
                 .child(GTMuiWidgets.createTitleBar(this.getDefinition(), 176))
                 .child(Flow.row()
-                                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                                .align(Alignment.CENTER)
-                                .coverChildren()
-                                .child(grid
-                                        .marginLeft(30)
-                                        .marginRight(30)
-                                        .verticalCenter()));
+                        .crossAxisAlignment(Alignment.CrossAxis.CENTER)
+                        .align(Alignment.CENTER)
+                        .coverChildren()
+                        .child(grid
+                                .marginLeft(30)
+                                .marginRight(30)
+                                .verticalCenter()));
     }
 
     @Override

@@ -82,7 +82,8 @@ public class SteamLiquidBoilerMachine extends SteamBoilerMachine {
     }
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         super.buildMainUI(mainWidget, guiData, syncManager, settings);
 
         UITexture progressTexture = isHighPressure() ? GTGuiTextures.PROGRESS_BAR_BOILER_FUEL_STEEL :
@@ -95,21 +96,21 @@ public class SteamLiquidBoilerMachine extends SteamBoilerMachine {
                 }));
 
         mainWidget.child(Flow.row()
-                        .coverChildren()
-                        .right(12).top(12)
-                        .childPadding(4)
-                        .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                        .child(new ProgressWidget()
-                                .size(18)
-                                .texture(progressTexture, 18)
-                                .value(progressPercent)
-                                .direction(ProgressWidget.Direction.UP)
-                                .setEnabledIf((w) -> progressPercent.getFloatValue() > -1f))
-                        .child(new FluidSlot()
-                                .syncHandler(new FluidSlotSyncHandler(fuelTank.getStorages()[0])
-                                        .canFillSlot(true).canDrainSlot(true))
-                                .size(14, 54)
-                                .displayAmount(false)));
+                .coverChildren()
+                .right(12).top(12)
+                .childPadding(4)
+                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
+                .child(new ProgressWidget()
+                        .size(18)
+                        .texture(progressTexture, 18)
+                        .value(progressPercent)
+                        .direction(ProgressWidget.Direction.UP)
+                        .setEnabledIf((w) -> progressPercent.getFloatValue() > -1f))
+                .child(new FluidSlot()
+                        .syncHandler(new FluidSlotSyncHandler(fuelTank.getStorages()[0])
+                                .canFillSlot(true).canDrainSlot(true))
+                        .size(14, 54)
+                        .displayAmount(false)));
     }
 
     @Override

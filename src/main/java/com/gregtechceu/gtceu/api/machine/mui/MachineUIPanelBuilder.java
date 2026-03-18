@@ -12,6 +12,7 @@ import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
+
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -45,7 +46,8 @@ public class MachineUIPanelBuilder {
      */
     private boolean addTraitConfigurators = true;
     /**
-     * If the default configurators (circuit slot, battery slot, power button) should be added to this machine, provided the machine supports them.
+     * If the default configurators (circuit slot, battery slot, power button) should be added to this machine, provided
+     * the machine supports them.
      */
     private boolean addDefaultConfigurators = true;
     private final MetaMachine machine;
@@ -53,7 +55,7 @@ public class MachineUIPanelBuilder {
 
     private Consumer<Flow> leftConfigurators = (f) -> {};
     private Consumer<Flow> rightConfigurators = (f) -> {};
-    private Consumer<ParentWidget<?>> mainContents = (p)-> {};
+    private Consumer<ParentWidget<?>> mainContents = (p) -> {};
 
     protected MachineUIPanelBuilder(MetaMachine machine, PanelSyncManager syncManager) {
         this.machine = machine;
@@ -61,7 +63,6 @@ public class MachineUIPanelBuilder {
     }
 
     public ModularPanel build() {
-
         var panel = new MachineUIPanel(machine, attachInventory, centerAttachedInventory, addTitleBar, drawGTLogo);
 
         var attachLeft = panel.getLeftConfiguratorPanel();
@@ -92,7 +93,7 @@ public class MachineUIPanelBuilder {
         mainContents.accept(attachMain);
 
         if (addTraitConfigurators) {
-            for (var trait: machine.getTraitHolder().getAllTraits()) {
+            for (var trait : machine.getTraitHolder().getAllTraits()) {
                 if (trait instanceof IAttachConfiguratorsTrait attachConfiguratorsTrait) {
                     attachConfiguratorsTrait.attachLeftConfigurators(attachLeft, panel, syncManager);
                     attachConfiguratorsTrait.attachRightConfigurators(attachRight, panel, syncManager);
@@ -103,7 +104,8 @@ public class MachineUIPanelBuilder {
         return panel;
     }
 
-    public static MachineUIPanelBuilder defaultSimpleSingleblockPanelBuilder(MetaMachine machine, PanelSyncManager syncManager) {
+    public static MachineUIPanelBuilder defaultSimpleSingleblockPanelBuilder(MetaMachine machine,
+                                                                             PanelSyncManager syncManager) {
         return new MachineUIPanelBuilder(machine, syncManager).drawGTLogo(true);
     }
 

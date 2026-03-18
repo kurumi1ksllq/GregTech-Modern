@@ -45,7 +45,8 @@ public class CokeOvenMachine extends PrimitiveWorkableMachine implements IMuiMac
     }
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         ITheme uiTheme = ThemeAPI.INSTANCE.getTheme(getDefinition().getThemeId());
 
         DoubleSyncValue progressPercent = syncManager.getOrCreateSyncHandler("progressPercent", DoubleSyncValue.class,
@@ -55,16 +56,16 @@ public class CokeOvenMachine extends PrimitiveWorkableMachine implements IMuiMac
                 }));
 
         mainWidget.child(new ItemSlot().syncHandler(new ItemSlotSyncHandler(
-                                new ModularSlot(importItems.storage, 0)
-                                        .slotGroup(new SlotGroup("import_items", 1))))
-                        .background(uiTheme.getItemSlotTheme().getTheme().getBackground(),
-                                GTGuiTextures.PRIMITIVE_FURNACE_OVERLAY)
-                        .margin(52, 0, 30, 0))
+                new ModularSlot(importItems.storage, 0)
+                        .slotGroup(new SlotGroup("import_items", 1))))
+                .background(uiTheme.getItemSlotTheme().getTheme().getBackground(),
+                        GTGuiTextures.PRIMITIVE_FURNACE_OVERLAY)
+                .margin(52, 0, 30, 0))
 
                 .child(new ItemSlot().syncHandler(new ItemSlotSyncHandler(
-                                new ModularSlot(exportItems.storage, 0)
-                                        .slotGroup(new SlotGroup("export_items", 1))
-                                        .accessibility(false, true)))
+                        new ModularSlot(exportItems.storage, 0)
+                                .slotGroup(new SlotGroup("export_items", 1))
+                                .accessibility(false, true)))
                         .background(uiTheme.getItemSlotTheme().getTheme().getBackground(),
                                 GTGuiTextures.PRIMITIVE_FURNACE_OVERLAY)
                         .margin(103, 0, 30, 0))

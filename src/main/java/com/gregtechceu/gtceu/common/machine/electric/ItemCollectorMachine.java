@@ -310,8 +310,8 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     //////////////////////////////////////
     // TODO(Onion): fix the gui stuff for this
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
-
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         mainWidget.height(150);
 
         mainWidget.child(Flow.column()

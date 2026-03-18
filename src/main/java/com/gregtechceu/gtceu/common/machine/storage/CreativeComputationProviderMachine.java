@@ -23,7 +23,6 @@ import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import net.minecraft.MethodsReturnNonnullByDefault;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -107,7 +106,8 @@ public class CreativeComputationProviderMachine extends MetaMachine
     }
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         mainWidget.height(100)
                 .child(Flow.column()
                         .padding(10)
@@ -145,5 +145,4 @@ public class CreativeComputationProviderMachine extends MetaMachine
                                 .child(new TextWidget<>(IKey
                                         .lang(() -> "gtceu.creative.activity." + (this.isActive() ? "on" : "off"))))));
     }
-
 }

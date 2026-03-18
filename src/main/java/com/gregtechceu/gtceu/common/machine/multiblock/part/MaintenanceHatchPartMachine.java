@@ -396,7 +396,8 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
      */
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         InteractionSyncHandler syncHandler = new InteractionSyncHandler();
         // syncManager.syncValue("button_idk", syncHandler);
         Flow maintenanceStatusWidget = Flow.column()
@@ -407,8 +408,8 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
         Runnable updateWidget = () -> {
             while (!maintenanceStatusWidget.getChildren().isEmpty()) maintenanceStatusWidget.remove(0);
             maintenanceStatusWidget.child(new TextWidget<>(IKey.lang(() -> hasMaintenanceProblems() ?
-                            "gtceu.top.maintenance_broken" :
-                            "gtceu.top.maintenance_fixed")))
+                    "gtceu.top.maintenance_broken" :
+                    "gtceu.top.maintenance_fixed")))
                     .child(Flow.row()
                             .coverChildren()
                             .children(Stream.iterate(Byte.valueOf("0"), i -> i < 6, i -> ++i)
@@ -424,45 +425,45 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
         });
         updateWidget.run();
         mainWidget.child(Flow.column()
-                        .crossAxisAlignment(Alignment.CrossAxis.START)
-                        .childIf(this.isConfigurable, () -> Flow.column()
-                                .coverChildren()
-                                .padding(5)
-                                .paddingLeft(0)
-                                .marginLeft(5)
-                                .child(Flow.row()
-                                        .coverChildren()
-                                        .childPadding(5)
-                                        .alignX(0)
-                                        .child(new TextWidget<>(
-                                                IKey.lang("gtceu.maintenance.configurable_duration.modify")))
-                                        .child(new TextFieldWidget()
-                                                .setNumbersDouble(() -> MIN_DURATION_MULTIPLIER,
-                                                        () -> MAX_DURATION_MULTIPLIER)
-                                                .setDefaultNumber(1)
-                                                .value(new FloatSyncValue(this::getDurationMultiplier,
-                                                        this::setDurationMultiplier))
-                                                .addTooltipElement(IKey.lang(() -> getDurationMultiplier() == 1.0 ?
-                                                        "gtceu.maintenance.configurable_duration.unchanged_description" :
-                                                        "gtceu.maintenance.configurable_duration.changed_description"))))
-                                .child(new TextWidget<>(IKey.lang("gtceu.maintenance.configurable_time",
-                                        () -> new Object[] { this.getTimeMultiplier() }))
-                                        .alignX(0)))
+                .crossAxisAlignment(Alignment.CrossAxis.START)
+                .childIf(this.isConfigurable, () -> Flow.column()
+                        .coverChildren()
+                        .padding(5)
+                        .paddingLeft(0)
+                        .marginLeft(5)
                         .child(Flow.row()
-                                .alignX(.5f)
                                 .coverChildren()
-                                .padding(5)
-                                .child(new ItemSlot()
-                                        .slot(new ModularSlot(itemStackHandler, 0).changeListener(
-                                                (newItem, onlyAmountChanged, client, init) -> updateWidget.run()))
-                                        .background(GTGuiTextures.SLOT, GTGuiTextures.DUCT_TAPE_OVERLAY))
-                                .child(new ButtonWidget<>()
-                                        .background(GTGuiTextures.BUTTON_MAINTENANCE)
-                                        .disableHoverBackground()
-                                        .addTooltipElement(
-                                                IKey.lang("gtceu.machine.maintenance_hatch_tool_slot.tooltip"))
-                                        .syncHandler(syncHandler)))
-                        .child(maintenanceStatusWidget));
+                                .childPadding(5)
+                                .alignX(0)
+                                .child(new TextWidget<>(
+                                        IKey.lang("gtceu.maintenance.configurable_duration.modify")))
+                                .child(new TextFieldWidget()
+                                        .setNumbersDouble(() -> MIN_DURATION_MULTIPLIER,
+                                                () -> MAX_DURATION_MULTIPLIER)
+                                        .setDefaultNumber(1)
+                                        .value(new FloatSyncValue(this::getDurationMultiplier,
+                                                this::setDurationMultiplier))
+                                        .addTooltipElement(IKey.lang(() -> getDurationMultiplier() == 1.0 ?
+                                                "gtceu.maintenance.configurable_duration.unchanged_description" :
+                                                "gtceu.maintenance.configurable_duration.changed_description"))))
+                        .child(new TextWidget<>(IKey.lang("gtceu.maintenance.configurable_time",
+                                () -> new Object[] { this.getTimeMultiplier() }))
+                                .alignX(0)))
+                .child(Flow.row()
+                        .alignX(.5f)
+                        .coverChildren()
+                        .padding(5)
+                        .child(new ItemSlot()
+                                .slot(new ModularSlot(itemStackHandler, 0).changeListener(
+                                        (newItem, onlyAmountChanged, client, init) -> updateWidget.run()))
+                                .background(GTGuiTextures.SLOT, GTGuiTextures.DUCT_TAPE_OVERLAY))
+                        .child(new ButtonWidget<>()
+                                .background(GTGuiTextures.BUTTON_MAINTENANCE)
+                                .disableHoverBackground()
+                                .addTooltipElement(
+                                        IKey.lang("gtceu.machine.maintenance_hatch_tool_slot.tooltip"))
+                                .syncHandler(syncHandler)))
+                .child(maintenanceStatusWidget));
     }
 
     private static Component getTextWidgetText(String type, DoubleSupplier multiplier) {

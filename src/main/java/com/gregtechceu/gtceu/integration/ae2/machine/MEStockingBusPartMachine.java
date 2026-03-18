@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.integration.ae2.machine;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.base.IPanelHandler;
@@ -24,7 +25,6 @@ import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTGuis;
-import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.integration.ae2.machine.feature.multiblock.IMEStockingPart;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemList;
@@ -296,11 +296,11 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
         return MachineUIPanelBuilder.defaultPanelBuilder(this, syncManager)
                 .rightConfigurators(f -> {
                     f.child(new ToggleButton()
-                                    .value(new BoolValue.Dynamic(this::isAutoPull, this::setAutoPull))
-                                    .stateOverlay(GTGuiTextures.BUTTON_AUTO_PULL)
-                                    .tooltipAutoUpdate(true)
-                                    .tooltipBuilder(r -> r
-                                            .addLine(IKey.lang("gtceu.gui.me_network.auto_pull_toggle"))))
+                            .value(new BoolValue.Dynamic(this::isAutoPull, this::setAutoPull))
+                            .stateOverlay(GTGuiTextures.BUTTON_AUTO_PULL)
+                            .tooltipAutoUpdate(true)
+                            .tooltipBuilder(r -> r
+                                    .addLine(IKey.lang("gtceu.gui.me_network.auto_pull_toggle"))))
                             .child(new ButtonWidget<>()
                                     .size(18)
                                     .onMousePressed((x, y, b) -> {

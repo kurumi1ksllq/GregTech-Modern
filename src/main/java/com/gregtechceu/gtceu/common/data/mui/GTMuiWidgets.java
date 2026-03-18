@@ -171,12 +171,12 @@ public class GTMuiWidgets {
                 .stateOverlay(GTGuiTextures.BUTTON_DISTINCT)
                 .tooltipAutoUpdate(true)
                 .tooltipBuilder((
-                        richTooltip) -> richTooltip
-                        .add(Component.translatable("gtceu.multiblock.universal.distinct")
-                                .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
-                                .append(Component
-                                        .translatable("gtceu.multiblock.universal.distinct" +
-                                                (distinctSync.getValue() ? ".yes" : ".no")))));
+                                 richTooltip) -> richTooltip
+                                         .add(Component.translatable("gtceu.multiblock.universal.distinct")
+                                                 .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
+                                                 .append(Component
+                                                         .translatable("gtceu.multiblock.universal.distinct" +
+                                                                 (distinctSync.getValue() ? ".yes" : ".no")))));
     }
 
     public static ToggleButton createAutoOutputItemButton(AutoOutputTrait autoOutput, PanelSyncManager syncManager) {

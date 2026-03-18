@@ -80,9 +80,11 @@ public class BatteryBufferMachine extends TieredEnergyMachine
     @RerenderOnChanged
     private State state;
 
-    public BatteryBufferMachine(BlockEntityCreationInfo info, int tier, int inventorySize, long ampsPerBattery, long outputAmps) {
+    public BatteryBufferMachine(BlockEntityCreationInfo info, int tier, int inventorySize, long ampsPerBattery,
+                                long outputAmps) {
         super(info, tier,
-                (TieredEnergyMachine machine) -> new EnergyBatteryTrait((BatteryBufferMachine) machine, inventorySize, ampsPerBattery, outputAmps));
+                (TieredEnergyMachine machine) -> new EnergyBatteryTrait((BatteryBufferMachine) machine, inventorySize,
+                        ampsPerBattery, outputAmps));
         this.isWorkingEnabled = true;
         this.inventorySize = inventorySize;
         this.batteryInventory = createBatteryInventory();
@@ -119,7 +121,8 @@ public class BatteryBufferMachine extends TieredEnergyMachine
         if (state != newState) {
             state = newState;
             syncDataHolder.markClientSyncFieldDirty("state");
-            if (getRenderState().hasProperty(GTMachineModelProperties.BATTERY_BUFFER_STATE)) setRenderState(getRenderState().setValue(GTMachineModelProperties.BATTERY_BUFFER_STATE, newState));
+            if (getRenderState().hasProperty(GTMachineModelProperties.BATTERY_BUFFER_STATE))
+                setRenderState(getRenderState().setValue(GTMachineModelProperties.BATTERY_BUFFER_STATE, newState));
         }
     }
 
@@ -129,7 +132,8 @@ public class BatteryBufferMachine extends TieredEnergyMachine
 
     // TODO add EIO widget
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         String[] matrix;
         if (inventorySize == 8) matrix = new String[] { "BBBB", "BBBB" };
         else matrix = GTMuiMachineUtil.createSquareMatrix(inventorySize, 'B');
@@ -157,11 +161,11 @@ public class BatteryBufferMachine extends TieredEnergyMachine
                                                 GTStringUtils.formatInt(energyContainer.getEnergyStored()),
                                                 GTStringUtils.formatInt(energyContainer.getEnergyCapacity()))))))
                         .child(GTMuiMachineUtil.createSlotGroupFromInventory(
-                                        batteryInventory, "batteries",
-                                        inventorySize, 'B',
-                                        slot -> slot.background(GTGuiTextures.SLOT, GTGuiTextures.CHARGER_OVERLAY),
-                                        syncManager,
-                                        matrix)
+                                batteryInventory, "batteries",
+                                inventorySize, 'B',
+                                slot -> slot.background(GTGuiTextures.SLOT, GTGuiTextures.CHARGER_OVERLAY),
+                                syncManager,
+                                matrix)
                                 .center()));
     }
 
@@ -249,7 +253,8 @@ public class BatteryBufferMachine extends TieredEnergyMachine
 
         private final long ampsPerBattery;
 
-        protected EnergyBatteryTrait(BatteryBufferMachine machine, int inventorySize, long ampsPerBattery, long outputAmps) {
+        protected EnergyBatteryTrait(BatteryBufferMachine machine, int inventorySize, long ampsPerBattery,
+                                     long outputAmps) {
             super(machine, GTValues.V[machine.getTier()] * inventorySize * 32L, GTValues.V[machine.getTier()],
                     inventorySize * ampsPerBattery, outputAmps == 0 ? 0 : GTValues.V[machine.getTier()], outputAmps);
             tier = machine.getTier();

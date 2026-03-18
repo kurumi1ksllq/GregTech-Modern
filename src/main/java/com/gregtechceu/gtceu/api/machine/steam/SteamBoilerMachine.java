@@ -324,8 +324,8 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
     }
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
-
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         UITexture progressTexture = isHighPressure() ? GTGuiTextures.PROGRESS_BAR_BOILER_EMPTY_STEEL :
                 GTGuiTextures.PROGRESS_BAR_BOILER_EMPTY_BRONZE;
 
@@ -333,30 +333,30 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
                 () -> new DoubleSyncValue(this::getTemperaturePercent));
 
         mainWidget.child(Flow.row()
-                        .top(12)
-                        .left(50)
-                        .coverChildren()
-                        .childPadding(10)
-                        .child(new FluidSlot()
-                                .syncHandler(new FluidSlotSyncHandler(waterTank.getStorages()[0]))
-                                .size(14, 54)
-                                .alwaysShowFull(true)
-                                .displayAmount(false))
-                        .child(new FluidSlot()
-                                .syncHandler(new FluidSlotSyncHandler(steamTank.getStorages()[0])
-                                        .canFillSlot(false).canDrainSlot(true))
-                                .alwaysShowFull(true)
-                                .size(14, 54)
-                                .displayAmount(false))
-                        .child(new ProgressWidget()
-                                .texture(progressTexture,
-                                        GTGuiTextures.PROGRESS_BAR_BOILER_HEAT, 54)
-                                .size(14, 54)
-                                .value(tempPercentage)
-                                .direction(ProgressWidget.Direction.UP)
-                                .tooltipAutoUpdate(true)
-                                .tooltipBuilder((r) -> r.addLine(IKey
-                                        .lang(Component.translatable("gtceu.fluid.temperature", getCurrentTemperature()))))));
+                .top(12)
+                .left(50)
+                .coverChildren()
+                .childPadding(10)
+                .child(new FluidSlot()
+                        .syncHandler(new FluidSlotSyncHandler(waterTank.getStorages()[0]))
+                        .size(14, 54)
+                        .alwaysShowFull(true)
+                        .displayAmount(false))
+                .child(new FluidSlot()
+                        .syncHandler(new FluidSlotSyncHandler(steamTank.getStorages()[0])
+                                .canFillSlot(false).canDrainSlot(true))
+                        .alwaysShowFull(true)
+                        .size(14, 54)
+                        .displayAmount(false))
+                .child(new ProgressWidget()
+                        .texture(progressTexture,
+                                GTGuiTextures.PROGRESS_BAR_BOILER_HEAT, 54)
+                        .size(14, 54)
+                        .value(tempPercentage)
+                        .direction(ProgressWidget.Direction.UP)
+                        .tooltipAutoUpdate(true)
+                        .tooltipBuilder((r) -> r.addLine(IKey
+                                .lang(Component.translatable("gtceu.fluid.temperature", getCurrentTemperature()))))));
     }
 
     //////////////////////////////////////

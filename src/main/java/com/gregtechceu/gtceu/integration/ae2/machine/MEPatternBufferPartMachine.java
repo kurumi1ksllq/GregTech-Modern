@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
@@ -38,7 +39,6 @@ import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTGuis;
-import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.InternalSlotRecipeHandler;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
@@ -277,7 +277,6 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
 
     @Override
     public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-
         IPanelHandler renamingPanelHandler = syncManager.syncedPanel("renaming", true,
                 ((syncManager1, syncHandler) -> GTGuis.createPopupPanel("renaming_panel", 110, 40)
                         .child(Flow.col()
@@ -311,8 +310,8 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                 (syncManager1, panelHandler) -> GTGuis.createPopupPanel("shared_fluids_panel", 85, 86)
                         .child(IKey.lang("gui.gtceu.share_tank.title").asWidget().margin(4))
                         .child(GTMuiMachineUtil.createSlotGroupFromInventory(syncManager1, shareTank,
-                                        "shared_fluid_slots", 9, 'F',
-                                        GTMuiMachineUtil.createSquareMatrix(9, 'F'))
+                                "shared_fluid_slots", 9, 'F',
+                                GTMuiMachineUtil.createSquareMatrix(9, 'F'))
                                 .top(26)
                                 .alignX(0.5f)));
 
@@ -362,7 +361,8 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                                     return GTGuiTextures.REFUND_OVERLAY
                                             .asIcon().size(16);
                                 } else {
-                                    return new DrawableStack(GTGuiTextures.REFUND_OVERLAY, new ItemDrawable(Items.BARRIER))
+                                    return new DrawableStack(GTGuiTextures.REFUND_OVERLAY,
+                                            new ItemDrawable(Items.BARRIER))
                                             .asIcon().size(16);
                                 }
                             }))
@@ -386,7 +386,8 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
     }
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         SlotGroup patternSlotGroup = new SlotGroup("pattern_slots", 9, 0, true);
 
         mainWidget.child(new Grid()
@@ -407,13 +408,12 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
         syncManager.syncValue("is_online", isOnlineValue);
 
         mainWidget.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
-                        Component.translatable("gtceu.gui.me_network.online") :
-                        Component.translatable("gtceu.gui.me_network.offline"))
+                Component.translatable("gtceu.gui.me_network.online") :
+                Component.translatable("gtceu.gui.me_network.offline"))
                 .asWidget()
                 .top(10)
                 .margin(2)
                 .left(9));
-
     }
 
     public boolean canRefund() {

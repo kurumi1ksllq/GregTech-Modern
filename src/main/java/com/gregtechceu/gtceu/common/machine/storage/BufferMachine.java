@@ -81,7 +81,8 @@ public class BufferMachine extends TieredMachine implements IMuiMachine {
 
     // TODO MUI: Needs EIO widget
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         for (int i = 0; i < tank.getTanks(); i++) {
             syncManager.syncValue("fluids", i, SyncHandlers.fluidSlot(tank.getStorages()[i]));
         }

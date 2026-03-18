@@ -133,7 +133,8 @@ public class CreativeTankMachine extends QuantumTankMachine {
 
     // TODO
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         super.buildMainUI(mainWidget, guiData, syncManager, settings);
     }
 

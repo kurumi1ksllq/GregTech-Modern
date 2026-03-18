@@ -128,14 +128,14 @@ public class MEInputHatchPartMachine extends MEHatchPartMachine
     ///////////////////////////////
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
-
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         BooleanSyncValue isOnlineValue = SyncHandlers.bool(this::isOnline, this::setOnline);
         syncManager.syncValue("is_online", isOnlineValue);
 
         mainWidget.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
-                        Component.translatable("gtceu.gui.me_network.online") :
-                        Component.translatable("gtceu.gui.me_network.offline"))
+                Component.translatable("gtceu.gui.me_network.online") :
+                Component.translatable("gtceu.gui.me_network.offline"))
                 .asWidget()
                 .top(14)
                 .left(7));

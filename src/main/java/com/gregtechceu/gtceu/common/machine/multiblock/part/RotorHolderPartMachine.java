@@ -245,8 +245,9 @@ public class RotorHolderPartMachine extends TieredPartMachine {
 
     // TODO MUI: Might need EIO widget? Not sure
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
-        mainWidget.width(100 + (18*4));
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
+        mainWidget.width(100 + (18 * 4));
 
         SlotGroup rotorSlotGroup = new SlotGroup("rotor", 1);
 

@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
+
 import lombok.Getter;
 
 public class MachineUIPanel extends ModularPanel {
@@ -20,7 +21,8 @@ public class MachineUIPanel extends ModularPanel {
     @Getter
     protected final ParentWidget<?> mainContents;
 
-    public MachineUIPanel(MetaMachine machine, boolean attachPlayerInventory, boolean centerAttachedInventory, boolean addTitleBar, boolean drawGTLogo) {
+    public MachineUIPanel(MetaMachine machine, boolean attachPlayerInventory, boolean centerAttachedInventory,
+                          boolean addTitleBar, boolean drawGTLogo) {
         super(machine.getDefinition().getId().getPath());
 
         leftConfiguratorPanel = Flow.col()
@@ -52,7 +54,6 @@ public class MachineUIPanel extends ModularPanel {
                 .size(DEFAULT_CONTENT_WIDTH, DEFAULT_CONTENT_HEIGHT);
 
         panelContents.child(mainContents);
-
 
         if (attachPlayerInventory) {
             var inventory = SlotGroupWidget.playerInventory((index, slot) -> slot)

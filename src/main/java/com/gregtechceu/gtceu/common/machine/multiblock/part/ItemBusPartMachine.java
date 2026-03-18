@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
@@ -17,7 +18,6 @@ import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Grid;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
@@ -26,7 +26,6 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
-import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
@@ -295,7 +294,8 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     //////////////////////////////////////
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         int rowSize = (int) Math.sqrt(getInventorySize());
         mainWidget.width(Math.max(MachineUIPanelBuilder.DEFAULT_WIDTH, 18 * rowSize + 14));
         mainWidget.height(Math.max(MachineUIPanelBuilder.DEFAULT_HEIGHT, (18 * rowSize) + 19));
@@ -304,17 +304,17 @@ public class ItemBusPartMachine extends TieredIOPartMachine
 
         SlotGroup group = new SlotGroup("item_inv", rowSize, 0, true);
         mainWidget.child(new Grid()
-                        .coverChildren()
-                        .top(10 + smallHatchOffset)
-                        .alignX(0.5f)
-                        .mapTo(rowSize, rowSize * rowSize, index -> new ItemSlot()
-                                .slot(SyncHandlers.itemSlot(inventory, index)
-                                        .slotGroup(group)
-                                        .changeListener((newItem, amount, client, init) -> {
-                                            if (amount) {
-                                                inventory.onContentsChanged();
-                                            }
-                                        })
-                                        .accessibility(inventory.handlerIO.support(IO.IN), true))));
+                .coverChildren()
+                .top(10 + smallHatchOffset)
+                .alignX(0.5f)
+                .mapTo(rowSize, rowSize * rowSize, index -> new ItemSlot()
+                        .slot(SyncHandlers.itemSlot(inventory, index)
+                                .slotGroup(group)
+                                .changeListener((newItem, amount, client, init) -> {
+                                    if (amount) {
+                                        inventory.onContentsChanged();
+                                    }
+                                })
+                                .accessibility(inventory.handlerIO.support(IO.IN), true))));
     }
 }

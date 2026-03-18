@@ -81,9 +81,9 @@ public class MultiblockTankMachine extends MultiblockControllerMachine implement
     /// //////////////////////////////////
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
-        IntSyncValue bucketSyncer = new IntSyncValue(() -> tank.getFluidInTank(0).getAmount(), (ignored) -> {
-        });
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
+        IntSyncValue bucketSyncer = new IntSyncValue(() -> tank.getFluidInTank(0).getAmount(), (ignored) -> {});
         syncManager.syncValue("bucket_amount", bucketSyncer);
 
         mainWidget
@@ -94,8 +94,8 @@ public class MultiblockTankMachine extends MultiblockControllerMachine implement
                         .color(0xffffff)
                         .margin(8, 0, 8, 0))
                 .child(IKey.dynamic(
-                                () -> Component.literal(
-                                        FormattingUtil.formatBuckets(bucketSyncer.getIntValue())))
+                        () -> Component.literal(
+                                FormattingUtil.formatBuckets(bucketSyncer.getIntValue())))
                         .asWidget()
                         .color(0xffffff)
                         .margin(8, 0, 20, 0))

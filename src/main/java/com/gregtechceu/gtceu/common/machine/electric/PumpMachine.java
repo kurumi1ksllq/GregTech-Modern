@@ -539,7 +539,7 @@ public class PumpMachine extends TieredEnergyMachine implements IMuiMachine {
         IntSyncValue bucketSyncer = new IntSyncValue(() -> cache.getFluidInTank(0).getAmount(), (ignored) -> {});
         syncManager.syncValue("bucket_amount", bucketSyncer);
 
-        mainWidget.height(20 + 60)
+        mainWidget.height(80)
                 // Box that has the display texture BG +
                 // the buttons / text / etc
                 .child(new ParentWidget<>()

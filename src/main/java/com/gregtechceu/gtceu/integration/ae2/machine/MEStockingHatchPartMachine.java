@@ -254,46 +254,6 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine implemen
         aeFluidHandler.clearInventory(index);
     }
 
-    ///////////////////////////////
-    // ********** GUI ***********//
-    ///////////////////////////////
-
-    @Override
-    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        IPanelHandler settingsPanelHandler = syncManager.syncedPanel("stocking_settings", true,
-                (sm, sh) -> GTGuis.createPopupPanel("stocking_settings_panel", 140, 70)
-                        .child(Flow.col()
-                                .coverChildren()
-                                .child(IKey.lang("gtceu.gui.me_network.min_stack_size").asWidget())
-                                .child(new TextFieldWidget()
-                                        .size(120, 18)
-                                        .value(SyncHandlers.intNumber(this::getMinStackSize, this::setMinStackSize))
-                                        .setNumbers(1, Integer.MAX_VALUE))
-                                .child(IKey.lang("gtceu.gui.me_network.ticks_per_cycle").asWidget())
-                                .child(new TextFieldWidget()
-                                        .size(120, 18)
-                                        .value(SyncHandlers.intNumber(this::getTicksPerCycle, this::setTicksPerCycle))
-                                        .setNumbers(1, 200))
-                                .margin(5)));
-
-        return super.getPanelBuilder(data, syncManager, settings).rightConfigurators(flow -> flow
-                .child(new ToggleButton()
-                        .value(new BoolValue.Dynamic(this::isAutoPull, this::setAutoPull))
-                        .stateOverlay(GTGuiTextures.BUTTON_AUTO_PULL)
-                        .tooltipAutoUpdate(true)
-                        .tooltipBuilder(r -> r
-                                .addLine(IKey.lang("gtceu.gui.me_network.auto_pull_toggle"))))
-                .child(new ButtonWidget<>()
-                        .size(18)
-                        .onMousePressed((x, y, b) -> {
-                            settingsPanelHandler.openPanel();
-                            return true;
-                        })
-                        .overlay(new ItemDrawable(GTItems.TOOL_DATA_STICK.asItem()).asIcon().size(16))
-                        .tooltip(new RichTooltip()
-                                .addLine(IKey.lang("gtceu.gui.me_network.stocking_settings")))));
-    }
-
     ////////////////////////////////
     // ******* Interaction *******//
     ////////////////////////////////

@@ -31,8 +31,9 @@ public class MachineUIPanel extends ModularPanel {
                 .reverseLayout(true)
                 .padding(4, 2, 4, 4)
                 .bottom(16)
-                .excludeAreaInRecipeViewer()
                 .crossAxisAlignment(Alignment.CrossAxis.CENTER)
+                .childPadding(2)
+                .excludeAreaInRecipeViewer()
                 .background(GTGuiTextures.BACKGROUND.getSubArea(0f, 0f, 0.75f, 1.0f))
                 .setEnabledIf(f -> !f.getChildren().isEmpty())
                 .decoration();

@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
@@ -130,30 +131,24 @@ public class MEInputHatchPartMachine extends MEHatchPartMachine
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        BooleanSyncValue isOnlineValue = SyncHandlers.bool(this::isOnline, this::setOnline);
-        syncManager.syncValue("is_online", isOnlineValue);
 
-        mainWidget.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
-                Component.translatable("gtceu.gui.me_network.online") :
-                Component.translatable("gtceu.gui.me_network.offline"))
-                .asWidget()
-                .top(14)
-                .left(7));
+        BooleanSyncValue isOnlineValue = new BooleanSyncValue(this::isOnline, this::setOnline);
+        syncManager.syncValue("is_online", isOnlineValue);
 
         registerConfigActions(syncManager);
 
-        mainWidget.child(new AEConfigWidget(aeFluidHandler, CONFIG_SIZE, true)
+        var flow = Flow.col().alignX(0.5f).coverChildren();
+
+        flow.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
+                        Component.translatable("gtceu.gui.me_network.online") :
+                        Component.translatable("gtceu.gui.me_network.offline"))
+                .asWidget().marginTop(2).marginBottom(4));
+        flow.child(new AEConfigWidget(aeFluidHandler, CONFIG_SIZE, false)
                 .syncManager(syncManager)
                 .size(8 * 18, 2 * (18 * 2 + 2))
-                .top(26)
-                .alignX(0.5f));
+        );
 
-        var theme = this.getDefinition().getThemeId();
-        var backgroundTexture = (UITexture) ThemeAPI.INSTANCE.getTheme(theme).getPanelTheme().getTheme()
-                .getBackground();
-        if (backgroundTexture == null) {
-            backgroundTexture = GTGuiTextures.BACKGROUND;
-        }
+        mainWidget.coverChildrenHeight().child(flow);
     }
 
     protected void registerConfigActions(PanelSyncManager syncManager) {

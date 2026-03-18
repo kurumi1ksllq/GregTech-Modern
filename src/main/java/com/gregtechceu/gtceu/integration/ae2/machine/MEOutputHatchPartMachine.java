@@ -14,11 +14,13 @@ import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widget.scroll.VerticalScrollData;
 import com.gregtechceu.gtceu.api.mui.widgets.DynamicSyncedWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
+import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.AEConfigWidget;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.AEKeyStorageSyncHandler;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.AEStackDisplayWidget;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.ScrollPreservingGrid;
@@ -100,19 +102,16 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine {
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        BooleanSyncValue isOnlineValue = SyncHandlers.bool(this::isOnline, this::setOnline);
+
+        BooleanSyncValue isOnlineValue = new BooleanSyncValue(this::isOnline, this::setOnline);
         syncManager.syncValue("is_online", isOnlineValue);
 
-        mainWidget.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
-                Component.translatable("gtceu.gui.me_network.online") :
-                Component.translatable("gtceu.gui.me_network.offline"))
-                .asWidget()
-                .top(14)
-                .left(7));
+        var flow = Flow.col().alignX(0.5f).coverChildren();
 
-        mainWidget.child(new TextWidget<>(IKey.lang("gtceu.gui.waiting_list"))
-                .top(24)
-                .left(7));
+        flow.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
+                        Component.translatable("gtceu.gui.me_network.online") :
+                        Component.translatable("gtceu.gui.me_network.offline"))
+                .asWidget().marginTop(2).marginBottom(4));
 
         var storageSyncHandler = new AEKeyStorageSyncHandler(internalBuffer);
         syncManager.syncValue("ae_output_display", storageSyncHandler);
@@ -120,19 +119,23 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine {
         int[] savedScroll = { 0 };
         var dynamicHandler = new DynamicLinkedSyncHandler<>(storageSyncHandler)
                 .widgetProvider((sm, value) -> {
+                    var f = Flow.col().alignX(0.5f).coverChildrenHeight();
                     var list = value.getValue();
-                    if (list.isEmpty()) return new TextWidget<>(IKey.lang("gtceu.gui.me_network.empty"));
-                    return new ScrollPreservingGrid(savedScroll)
-                            .size(167, 108)
+                    if (list.isEmpty()) return f.child(new TextWidget<>(IKey.lang("gtceu.gui.waiting_list_empty")));
+                    f.child(new TextWidget<>(IKey.lang("gtceu.gui.waiting_list")).margin(0, 2));
+                    f.child(new ScrollPreservingGrid(savedScroll)
+                            .size(167, 80)
                             .scrollable(new VerticalScrollData())
-                            .mapTo(9, list, (index, stack) -> new AEStackDisplayWidget(list, index));
+                            .mapTo(9, list, (index, stack) -> new AEStackDisplayWidget(list, index)));
+                    return f;
                 });
 
-        mainWidget.child(new DynamicSyncedWidget<>()
+        flow.child(new DynamicSyncedWidget<>()
                 .syncHandler(dynamicHandler)
-                .size(167, 108)
-                .top(34)
-                .alignX(0.5f));
+                .size(167, 80));
+
+        mainWidget.coverChildrenHeight().child(flow);
+
     }
 
     private class InaccessibleInfiniteTank extends NotifiableFluidTank {

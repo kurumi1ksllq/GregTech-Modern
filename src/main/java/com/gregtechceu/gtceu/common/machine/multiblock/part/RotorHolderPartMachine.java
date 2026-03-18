@@ -130,7 +130,7 @@ public class RotorHolderPartMachine extends TieredPartMachine {
     // ****** Rotor Holder ******//
     //////////////////////////////////////
 
-    public @NotNull Material getRotorMaterial() {
+    public Material getRotorMaterial() {
         // handles clients trying to get the material before server data sync
         // noinspection ConstantValue
         if (rotorMaterial == null) {
@@ -247,30 +247,20 @@ public class RotorHolderPartMachine extends TieredPartMachine {
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        mainWidget.width(100 + (18 * 4));
-
-        SlotGroup rotorSlotGroup = new SlotGroup("rotor", 1);
 
         var slot = new ItemSlot()
-                .slot(new ModularSlot(inventory, 0)
-                        .slotGroup(rotorSlotGroup))
+                .slot(new ModularSlot(inventory, 0).slotGroup(new SlotGroup("rotor", 1)))
                 .background(GTGuiTextures.SLOT, GTGuiTextures.TURBINE_OVERLAY)
-                .marginLeft(30)
-                .marginRight(30)
-                .verticalCenter();
+                .center();
 
-        var rotorSync = new IntSyncValue(this::getRotorSpeed, (speed) -> {});
+        var rotorSync = new IntSyncValue(this::getRotorSpeed);
         rotorSync.setChangeListener(() -> {
             boolean canEdit = rotorSync.getIntValue() == 0;
             slot.getSlot().accessibility(canEdit, canEdit);
         });
         syncManager.syncValue("rotor_speed", rotorSync);
 
-        mainWidget.child(Flow.row()
-                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                .align(Alignment.CENTER)
-                .coverChildren()
-                .child(slot));
+        mainWidget.child(slot);
     }
 
     //////////////////////////////////////

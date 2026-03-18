@@ -32,7 +32,6 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.client.mui.screen.RichTooltip;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -210,7 +209,6 @@ public class CreativeEnergyContainerMachine extends TieredMachine implements ILa
         IntSyncValue amps = new IntSyncValue(() -> this.amps, (a) -> this.amps = Math.max(a, 1));
         IntSyncValue tier = new IntSyncValue(() -> this.tier, (t) -> this.setTier = t);
         BooleanSyncValue sourceSync = new BooleanSyncValue(() -> this.source, (b) -> this.source = b);
-        BooleanSyncValue isActive = new BooleanSyncValue(this::isWorkingEnabled, this::setWorkingEnabled);
         syncManager.syncValue("tier", tier);
 
         IPanelHandler panelSyncHandler = syncManager.syncedPanel("voltage popup", false,

@@ -16,10 +16,8 @@ import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
-import com.gregtechceu.gtceu.api.mui.value.BoolValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.*;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ModularSlot;
@@ -30,12 +28,14 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
+import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
+import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -75,6 +75,8 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
     public static final Object2LongOpenHashMap<UUID> INTERACTION_LOGGER = new Object2LongOpenHashMap<>();
 
     @SaveField
+    @Getter
+    @Setter
     private boolean isVoiding;
 
     private final long maxAmount;
@@ -274,9 +276,9 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
                         .child(Flow.row()
                                 .margin(4, 0, 41, 0)
                                 .coverChildren()
-                                .child(createAutoOutputItemButton(syncManager))
-                                .child(createItemLockButton(syncManager))
-                                .child(createVoidButton(syncManager)))
+                                .child(GTMuiWidgets.createAutoOutputItemButton(autoOutput, syncManager))
+                                .child(GTMuiWidgets.createToggleButton(this::isLocked, this::setLocked, GTGuiTextures.BUTTON_LOCK, "gtceu.gui.item_lock.tooltip"))
+                                .child(GTMuiWidgets.createToggleButton(this::isVoiding, this::setVoiding, GTGuiTextures.BUTTON_VOID, "gtceu.gui.item_voiding_partial.tooltip")))
                         .child(Flow.column()
                                 .margin(68, 0, 15, 0)
                                 .coverChildren()
@@ -284,46 +286,6 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
                                 .child(createPhantomLockeditemSlot(syncManager)))
 
                 );
-    }
-
-    private ToggleButton createAutoOutputItemButton(PanelSyncManager syncManager) {
-        BooleanSyncValue itemOutputs = new BooleanSyncValue(this.autoOutput::isAutoOutputItems,
-                this.autoOutput::setAllowAutoOutputItems);
-        syncManager.syncValue("auto_output_items", itemOutputs);
-        return new ToggleButton()
-                .value(new BoolValue.Dynamic(itemOutputs::getBoolValue, itemOutputs::setBoolValue))
-                .overlay(GTGuiTextures.BUTTON_ITEM_OUTPUT)
-                .tooltipAutoUpdate(true)
-                .tooltipBuilder(
-                        (r) -> r.addLine(IKey.lang(Component.translatable("gtceu.machine.quantum_chest.items_stored",
-                                Component.translatable(itemOutputs.getBoolValue() ? "cover.voiding.label.enabled" :
-                                        "cover.voiding.label.disabled")))));
-    }
-
-    private ToggleButton createItemLockButton(PanelSyncManager syncManager) {
-        BooleanSyncValue itemLocked = new BooleanSyncValue(this::isLocked,
-                this::setLocked);
-        syncManager.syncValue("item_locked", itemLocked);
-        return new ToggleButton()
-                .value(new BoolValue.Dynamic(itemLocked::getBoolValue, itemLocked::setBoolValue))
-                .overlay(GTGuiTextures.BUTTON_LOCK)
-                .tooltipAutoUpdate(true)
-                .tooltipBuilder((r) -> r.addLine(IKey.lang(itemLocked.getBoolValue() ?
-                        "gtceu.gui.item_lock.tooltip.enabled" :
-                        "gtceu.gui.item_lock.tooltip.disabled")));
-    }
-
-    private ToggleButton createVoidButton(PanelSyncManager syncManager) {
-        BooleanSyncValue voiding = new BooleanSyncValue(() -> this.isVoiding,
-                (voidingBool) -> { this.isVoiding = voidingBool; });
-        syncManager.syncValue("is_voiding", voiding);
-        return new ToggleButton()
-                .value(new BoolValue.Dynamic(voiding::getBoolValue, voiding::setBoolValue))
-                .overlay(GTGuiTextures.BUTTON_VOID)
-                .tooltipAutoUpdate(true)
-                .tooltipBuilder((r) -> r.addLine(IKey.lang(voiding.getBoolValue() ?
-                        "gtceu.gui.item_voiding_partial.tooltip.enabled" :
-                        "gtceu.gui.item_voiding_partial.tooltip.disabled")));
     }
 
     private IWidget createItemSlot(PanelSyncManager syncManager) {
@@ -342,20 +304,6 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
 
         syncManager.syncValue("lock", lockSlot);
         return new PhantomItemSlot().syncHandler("lock");
-    }
-
-    private @NotNull CustomItemStackHandler createImportItems() {
-        var importItems = new CustomItemStackHandler();
-        importItems.setFilter(cache::canInsert);
-        importItems.setOnContentsChanged(() -> {
-            var item = importItems.getStackInSlot(0).copy();
-            if (!item.isEmpty()) {
-                importItems.setStackInSlot(0, ItemStack.EMPTY);
-                importItems.onContentsChanged(0);
-                cache.insertItem(0, item.copy(), false);
-            }
-        });
-        return importItems;
     }
 
     //////////////////////////////////////

@@ -3,13 +3,24 @@ package com.gregtechceu.gtceu.common.machine.storage;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
+import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
+import com.gregtechceu.gtceu.api.mui.drawable.Rectangle;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
+import com.gregtechceu.gtceu.api.mui.utils.Alignment;
+import com.gregtechceu.gtceu.api.mui.value.sync.FluidSlotSyncHandler;
+import com.gregtechceu.gtceu.api.mui.value.sync.IntSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
+import com.gregtechceu.gtceu.api.mui.widgets.slot.FluidSlot;
+import com.gregtechceu.gtceu.api.mui.widgets.textfield.TextFieldWidget;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 
+import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
+import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -25,7 +36,6 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -65,26 +75,25 @@ public class CreativeTankMachine extends QuantumTankMachine {
         return InteractionResult.SUCCESS;
     }
 
-    private void setTicksPerCycle(String value) {
-        if (value.isEmpty()) return;
-        ticksPerCycle = Integer.parseInt(value);
+    private void setTicksPerCycle(int value) {
+        ticksPerCycle = value;
+        autoOutput.setTicksPerCycle(value);
         onFluidChanged();
     }
 
-    private void setmBPerCycle(String value) {
-        if (value.isEmpty()) return;
-        mBPerCycle = Integer.parseInt(value);
+    private void setmBPerCycle(int value) {
+        mBPerCycle = value;
         onFluidChanged();
     }
 
     @Override
-    public void saveToItem(@NotNull CompoundTag tag) {
+    public void saveToItem(CompoundTag tag) {
         tag.putInt("mBPerCycle", mBPerCycle);
         tag.putInt("ticksPerCycle", ticksPerCycle);
     }
 
     @Override
-    public void loadFromItem(@NotNull CompoundTag tag) {
+    public void loadFromItem(CompoundTag tag) {
         mBPerCycle = tag.getInt("mBPerCycle");
         ticksPerCycle = tag.getInt("ticksPerCycle");
     }
@@ -131,11 +140,64 @@ public class CreativeTankMachine extends QuantumTankMachine {
         return super.onUse(state, world, pos, player, hand, hit);
     }
 
+    @Override
+    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        return MachineUIPanelBuilder.defaultPanelBuilder(this, syncManager).addDefaultConfigurators(false).addTraitConfigurators(false).rightConfigurators(f -> f.child(GTMuiWidgets.createPowerButton(this)));
+    }
+
     // TODO
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        super.buildMainUI(mainWidget, guiData, syncManager, settings);
+
+        syncManager.syncValue("fluid", new FluidSlotSyncHandler(new FluidCacheTankWrapper(cache)).controlsAmount(false).phantom(true));
+
+        IntSyncValue mbPerCycle = new IntSyncValue(this::getMBPerCycle, this::setmBPerCycle);
+        syncManager.syncValue("mbPerCycle", mbPerCycle);
+        IntSyncValue ticksPerCycle = new IntSyncValue(this::getTicksPerCycle, this::setTicksPerCycle);
+        syncManager.syncValue("ticksPerCycle", ticksPerCycle);
+
+        mainWidget.height(86);
+        mainWidget
+                .child(Flow.col()
+                        .widthRel(1)
+                        .name("main")
+                        .padding(7)
+                        .mainAxisAlignment(Alignment.MainAxis.START)
+                        .coverChildrenHeight()
+                        .child(Flow.row()
+                                .child(IKey.lang("gtceu.creative.tank.fluid").asWidget()
+                                        .marginRight(4)
+                                        .verticalCenter())
+                                .child(new FluidSlot().syncHandler("locked_fluid_slot", 0).background(GTGuiTextures.FLUID_SLOT)))
+                        .child(new Rectangle().color(0xFF555555).asWidget()
+                                .height(1).widthRel(0.95f).marginBottom(4).marginTop(4))
+                        .child(Flow.row()
+                                .height(18)
+                                .child(IKey.lang("gtceu.creative.tank.mbpc").asWidget()
+                                        .marginRight(4)
+                                        .width(80)
+                                        .verticalCenter())
+                                .child(new TextFieldWidget()
+                                        .setTextAlignment(Alignment.CENTER)
+                                        .setNumbers(1, Integer.MAX_VALUE)
+                                        .value(mbPerCycle))
+                        )
+                        .child(new Rectangle().color(0xFF555555).asWidget()
+                                .height(1).widthRel(0.95f).marginBottom(4).marginTop(4))
+                        .child(Flow.row()
+                                .height(18)
+                                .child(IKey.lang("gtceu.creative.tank.tpc").asWidget()
+                                        .marginRight(4)
+                                        .width(80)
+                                        .verticalCenter())
+                                .child(new TextFieldWidget()
+                                        .setTextAlignment(Alignment.CENTER)
+                                        .setNumbers(1, Integer.MAX_VALUE)
+                                        .value(ticksPerCycle))
+                        ));
+
+
     }
 
     private class InfiniteCache extends FluidCache {
@@ -145,7 +207,7 @@ public class CreativeTankMachine extends QuantumTankMachine {
         }
 
         @Override
-        public @NotNull FluidStack getFluidInTank(int tank) {
+        public FluidStack getFluidInTank(int tank) {
             return stored;
         }
 
@@ -156,19 +218,19 @@ public class CreativeTankMachine extends QuantumTankMachine {
         }
 
         @Override
-        public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+        public FluidStack drain(int maxDrain, FluidAction action) {
             if (!stored.isEmpty()) return new FluidStack(stored, mBPerCycle);
             return FluidStack.EMPTY;
         }
 
         @Override
-        public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+        public FluidStack drain(FluidStack resource, FluidAction action) {
             if (!stored.isEmpty() && stored.isFluidEqual(resource)) return new FluidStack(resource, mBPerCycle);
             return FluidStack.EMPTY;
         }
 
         @Override
-        public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+        public boolean isFluidValid(int tank, FluidStack stack) {
             return true;
         }
 

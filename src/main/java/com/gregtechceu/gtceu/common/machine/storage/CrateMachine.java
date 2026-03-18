@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.*;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
@@ -88,7 +89,7 @@ public class CrateMachine extends MetaMachine implements IMuiMachine,
             }
         }
 
-        mainWidget.size(Math.max(MachineUIPanelBuilder.DEFAULT_WIDTH, rowLength * 18 + 10), 20 + 18 * rows)
+        mainWidget.size(Math.max(MachineUIPanel.DEFAULT_CONTENT_WIDTH, rowLength * 18 + 10), 20 + 18 * rows)
                 .child(IKey.lang(getBlockState().getBlock().getName()).asWidget().pos(5, 5))
                 .child(slots.top(18).horizontalCenter().height(rows * 18));
     }

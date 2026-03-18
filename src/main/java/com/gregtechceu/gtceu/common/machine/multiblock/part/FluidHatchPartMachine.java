@@ -6,7 +6,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
-import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
@@ -291,7 +291,7 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IHasCi
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
         int topOffset = slots == 1 ? 10 : slots == 9 ? 16 : 20;
-        int height = Math.max(MachineUIPanelBuilder.DEFAULT_HEIGHT, (int) (18 * Math.sqrt(slots)) + 78 + 19);
+        int height = Math.max(MachineUIPanel.DEFAULT_CONTENT_HEIGHT, (int) (18 * Math.sqrt(slots)) + 78 + 19);
 
         mainWidget.height(height);
         mainWidget.child((slots == 1 ? createSingleSlotUI(syncManager) : createMultiSlotUI(syncManager))

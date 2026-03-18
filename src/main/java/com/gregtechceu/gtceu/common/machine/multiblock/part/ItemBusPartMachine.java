@@ -10,7 +10,7 @@ import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
-import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
@@ -297,8 +297,8 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
         int rowSize = (int) Math.sqrt(getInventorySize());
-        mainWidget.width(Math.max(MachineUIPanelBuilder.DEFAULT_WIDTH, 18 * rowSize + 14));
-        mainWidget.height(Math.max(MachineUIPanelBuilder.DEFAULT_HEIGHT, (18 * rowSize) + 19));
+        mainWidget.width(Math.max(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 18 * rowSize + 14));
+        mainWidget.height(Math.max(MachineUIPanel.DEFAULT_CONTENT_HEIGHT, (18 * rowSize) + 20));
 
         int smallHatchOffset = tier < 2 ? 9 * (3 - rowSize) : 0;
 

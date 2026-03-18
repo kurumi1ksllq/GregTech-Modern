@@ -10,7 +10,6 @@ import com.gregtechceu.gtceu.api.machine.trait.feature.IAttachConfiguratorsTrait
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
-import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 
 import lombok.Setter;
@@ -21,9 +20,6 @@ import java.util.function.Consumer;
 @Accessors(fluent = true)
 @Setter
 public class MachineUIPanelBuilder {
-
-    public static final int DEFAULT_WIDTH = 169;
-    public static final int DEFAULT_HEIGHT = 77;
 
     /**
      * Should the GregTech logo be drawn in the bottom right corner of the panel.
@@ -62,7 +58,7 @@ public class MachineUIPanelBuilder {
         this.syncManager = syncManager;
     }
 
-    public ModularPanel build() {
+    public MachineUIPanel build() {
         var panel = new MachineUIPanel(machine, attachInventory, centerAttachedInventory, addTitleBar, drawGTLogo);
 
         var attachLeft = panel.getLeftConfiguratorPanel();

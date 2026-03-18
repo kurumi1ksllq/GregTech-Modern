@@ -9,7 +9,7 @@ import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IHasBatterySlot;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
-import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
@@ -351,7 +351,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
                             UISettings settings) {
         var slotHeight = (int) Math.sqrt(inventorySize);
         mainWidget
-                .size(MachineUIPanelBuilder.DEFAULT_WIDTH, 20 + 18 * slotHeight)
+                .size(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 20 + 18 * slotHeight)
                 .child(Flow.col()
                         .coverChildren()
                         .child(GTMuiMachineUtil.createSquareSlotGroupFromInventory(this.cache, "output_cache",

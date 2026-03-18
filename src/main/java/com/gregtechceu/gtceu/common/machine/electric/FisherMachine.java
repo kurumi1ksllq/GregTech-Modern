@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
@@ -356,8 +357,8 @@ public class FisherMachine extends TieredEnergyMachine
             default -> 2;
         };
 
-        mainWidget.size(MachineUIPanelBuilder.DEFAULT_WIDTH,
-                MachineUIPanelBuilder.DEFAULT_HEIGHT + Math.max(36, 18 * slotHeight));
+        mainWidget.size(MachineUIPanel.DEFAULT_CONTENT_WIDTH,
+                MachineUIPanel.DEFAULT_CONTENT_HEIGHT + Math.max(36, 18 * slotHeight));
 
         DoubleSyncValue progressPercent = syncManager.getOrCreateSyncHandler("progressPercent", DoubleSyncValue.class,
                 () -> new DoubleSyncValue(() -> progress / (double) maxProgress));

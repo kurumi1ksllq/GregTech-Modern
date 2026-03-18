@@ -34,7 +34,8 @@ public class MachineUIPanel extends ModularPanel {
                 .excludeAreaInRecipeViewer()
                 .crossAxisAlignment(Alignment.CrossAxis.CENTER)
                 .background(GTGuiTextures.BACKGROUND.getSubArea(0f, 0f, 0.75f, 1.0f))
-                .setEnabledIf(f -> !f.getChildren().isEmpty());
+                .setEnabledIf(f -> !f.getChildren().isEmpty())
+                .decoration();
 
         rightConfiguratorPanel = Flow.col()
                 .coverChildren()
@@ -46,7 +47,8 @@ public class MachineUIPanel extends ModularPanel {
                 .childPadding(2)
                 .excludeAreaInRecipeViewer()
                 .background(GTGuiTextures.BACKGROUND.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                .setEnabledIf(f -> !f.getChildren().isEmpty());
+                .setEnabledIf(f -> !f.getChildren().isEmpty())
+                .decoration();
 
         Flow panelContents = Flow.col().coverChildren();
         panelContents.margin(4);
@@ -63,17 +65,16 @@ public class MachineUIPanel extends ModularPanel {
         }
 
         if (addTitleBar) {
-            child(GTMuiWidgets.createTitleBar(machine.getDefinition(), 172));
-            child(GTMuiWidgets.createGTLogo().right(7).bottom(7 + (attachPlayerInventory ? 78 : 0)));
-
+            child(GTMuiWidgets.createTitleBar(machine.getDefinition(), 172).decoration());
         }
 
         if (drawGTLogo) {
-            child(GTMuiWidgets.createGTLogo().right(7).bottom(7 + (attachPlayerInventory ? 78 : 0)));
+            child(GTMuiWidgets.createGTLogo().right(7).bottom(7 + (attachPlayerInventory ? 78 : 0)).decoration());
         }
 
         child(leftConfiguratorPanel);
         child(rightConfiguratorPanel);
         child(panelContents);
+        coverChildren();
     }
 }

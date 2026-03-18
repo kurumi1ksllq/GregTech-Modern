@@ -1159,8 +1159,10 @@ public class LangHandler {
                 "Muffler Hatch must have a block of airspace in front of it.");
         provider.add("gtceu.multiblock.universal.rotor_obstructed", "Rotor is Obstructed!");
         provider.add("gtceu.multiblock.universal.distinct", "Distinct Buses:");
-        provider.add("gtceu.multiblock.universal.distinct.no", "No");
-        provider.add("gtceu.multiblock.universal.distinct.yes", "Yes");
+
+        provider.add("gtceu.multiblock.universal.distinct.enabled", "Distinct Buses: §eEnabled");
+        provider.add("gtceu.multiblock.universal.distinct.disabled", "Distinct Buses: §eDisabled");
+
         provider.add("gtceu.multiblock.universal.distinct.info",
                 "If enabled, each Item Input Bus will be treated as fully distinct from each other for recipe lookup. Useful for things like Programmed Circuits, Extruder Shapes, etc.");
         provider.add("gtceu.multiblock.parallel", "Performing up to %d Recipes in Parallel");
@@ -1279,12 +1281,19 @@ public class LangHandler {
         provider.add("gtceu.gui.circuit.title", "Circuit Settings");
         multiLang(provider, "gtceu.gui.output_setting.tooltips", "left-click to tune the item auto output",
                 "right-click to tune the fluid auto output.");
-        provider.add("gtceu.gui.item_auto_output.allow_input.enabled",
-                "allow items input from the output side");
-        provider.add("gtceu.gui.item_auto_output.allow_input.disabled",
-                "disable items input from the output side");
+
         provider.add("gtceu.gui.item_auto_output.enabled", "Item Auto Output: §aEnabled");
         provider.add("gtceu.gui.item_auto_output.disabled", "Item Auto Output: §cDisabled");
+
+        provider.add("gtceu.gui.item_input_from_output.enabled", "Allow Item Input from Output Side: §aEnabled");
+        provider.add("gtceu.gui.item_input_from_output.disabled", "Allow Item Input from Output Side: §cDisabled");
+
+        provider.add("gtceu.gui.fluid_auto_output.enabled", "Fluid Auto Output: §aEnabled");
+        provider.add("gtceu.gui.fluid_auto_output.disabled", "Fluid Auto Output: §cDisabled");
+
+        provider.add("gtceu.gui.fluid_input_from_output.enabled", "Allow Fluid Input from Output Side: §aEnabled");
+        provider.add("gtceu.gui.fluid_input_from_output.disabled", "Allow Fluid Input from Output Side: §cDisabled");
+
         multilineLang(provider, "gtceu.gui.item_auto_output.unselected",
                 """
                         Item Auto Output
@@ -1296,12 +1305,6 @@ public class LangHandler {
                         §7The machine's item output is set to another direction.
                         §7Click to move the output to the currently selected side.
                         """);
-        provider.add("gtceu.gui.fluid_auto_output.allow_input.enabled",
-                "allow fluids input from the output side");
-        provider.add("gtceu.gui.fluid_auto_output.allow_input.disabled",
-                "disable fluids input from the output side");
-        provider.add("gtceu.gui.fluid_auto_output.enabled", "Fluid Auto Output: §aEnabled");
-        provider.add("gtceu.gui.fluid_auto_output.disabled", "Fluid Auto Output: §cDisabled");
         multilineLang(provider, "gtceu.gui.fluid_auto_output.unselected",
                 """
                         Fluid Auto Output
@@ -1372,11 +1375,6 @@ public class LangHandler {
         provider.add("gtceu.gui.me_network.stocking_settings", "Stocking Settings");
         provider.add("gtceu.gui.me_network.min_stack_size", "Min Stack Size:");
         provider.add("gtceu.gui.me_network.ticks_per_cycle", "Ticks Per Cycle:");
-
-        provider.add("gtceu.gui.item_auto_output", "Item Output: %s");
-        provider.add("gtceu.gui.item_input_from_output", "Item Input from Output: %s");
-        provider.add("gtceu.gui.fluid_auto_output", "Fluid Output: %s");
-        provider.add("gtceu.gui.fluid_input_from_output", "Fluid Input from Output: %s");
 
         // Decor Stuff
         replace(provider, "block.gtceu.yellow_stripes_block.a", "Yellow Stripes Block");

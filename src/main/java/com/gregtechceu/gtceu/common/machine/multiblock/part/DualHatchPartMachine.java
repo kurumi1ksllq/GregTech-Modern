@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.common.machine.multiblock.part;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
-import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.FluidSlotSyncHandler;
@@ -164,11 +164,12 @@ public class DualHatchPartMachine extends ItemBusPartMachine {
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
         int rowSize = (int) Math.sqrt(getInventorySize());
-        int width = Math.max(MachineUIPanelBuilder.DEFAULT_WIDTH, 18 * rowSize + 18 + 14);
-        int height = 74 + Math.max(30, 9 + rowSize * 18) + 14;
+
+        mainWidget.width(Math.max(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 18 * rowSize + 14));
+        mainWidget.height(Math.max(MachineUIPanel.DEFAULT_CONTENT_HEIGHT, (18 * rowSize) + 20));
+
         String slotGroupName = "inv_slot_group";
         SlotGroup slotGroup = new SlotGroup(slotGroupName, getInventorySize());
-        mainWidget.size(width, height);
         mainWidget.child(SlotGroupWidget.builder()
                 .matrix(Arrays.stream(GTMuiMachineUtil.createSquareMatrix(getInventorySize(), 'I'))
                         .map(s -> s + 'F')

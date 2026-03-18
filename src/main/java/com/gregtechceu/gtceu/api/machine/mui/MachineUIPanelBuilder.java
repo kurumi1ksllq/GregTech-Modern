@@ -71,7 +71,7 @@ public class MachineUIPanelBuilder {
             }
 
             if (machine instanceof IControllable controllable) {
-                attachRight.child(GTMuiWidgets.createPowerButton(controllable, syncManager));
+                attachRight.child(GTMuiWidgets.createPowerButton(controllable));
             }
             if (machine instanceof IHasBatterySlot batterySlot) {
                 attachRight.child(GTMuiWidgets.createBatterySlot(batterySlot, syncManager));

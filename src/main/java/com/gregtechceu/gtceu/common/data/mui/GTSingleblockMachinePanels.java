@@ -201,7 +201,7 @@ public class GTSingleblockMachinePanels {
                         .padding(0, 8, 4, 4)
                         .childPadding(2)
                         .background(backgroundTexture.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                        .child(GTMuiWidgets.createPowerButton(steamMachine, syncManager)))
+                        .child(GTMuiWidgets.createPowerButton(steamMachine)))
                 .child(GTMuiWidgets.createGTLogo()
                         .right(7).bottom(7 + 78));
 

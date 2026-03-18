@@ -88,7 +88,7 @@ public class FluidVoidingCover extends PumpCover {
     public void createCoverUIRows(Flow column, SidedPosGuiData data, PanelSyncManager syncManager,
                                   UISettings settings) {
         var row = coverUIRow()
-                .child(GTMuiWidgets.createPowerButton(this::isWorkingEnabled, this::setWorkingEnabled, syncManager));
+                .child(GTMuiWidgets.createPowerButton(this));
         GTMuiWidgets.createFilterRow(row, filterHandler, data, syncManager, settings);
 
         column.child(row);

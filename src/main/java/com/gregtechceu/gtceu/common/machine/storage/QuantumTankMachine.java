@@ -13,14 +13,11 @@ import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
-import com.gregtechceu.gtceu.api.mui.value.BoolValue;
-import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.FluidSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.LongSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.FluidSlot;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
@@ -34,6 +31,7 @@ import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
+import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -61,11 +59,13 @@ import java.util.function.Predicate;
 
 @NotNullByDefault
 public class QuantumTankMachine extends TieredMachine implements IDropSaveMachine, IControllable,
-                                IMuiMachine {
+        IMuiMachine {
 
     public static Object2LongMap<MachineDefinition> TANK_CAPACITY = new Object2LongArrayMap<>();
 
     @SaveField
+    @Getter
+    @Setter
     private boolean isVoiding;
 
     @Getter
@@ -98,7 +98,7 @@ public class QuantumTankMachine extends TieredMachine implements IDropSaveMachin
 
     //////////////////////////////////////
     // ***** Initialization ******//
-    //////////////////////////////////////
+    /// ///////////////////////////////////
 
     protected FluidCache createCacheFluidHandler() {
         return new FluidCache(this);
@@ -128,7 +128,7 @@ public class QuantumTankMachine extends TieredMachine implements IDropSaveMachin
 
     //////////////////////////////////////
     // ****** Capability ********//
-    //////////////////////////////////////
+    /// ///////////////////////////////////
 
     @Override
     public @Nullable IItemHandlerModifiable getItemHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
@@ -158,7 +158,7 @@ public class QuantumTankMachine extends TieredMachine implements IDropSaveMachin
 
     //////////////////////////////////////
     // ******* Interaction *******//
-    //////////////////////////////////////
+    /// ///////////////////////////////////
 
     @Override
     public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
@@ -212,64 +212,39 @@ public class QuantumTankMachine extends TieredMachine implements IDropSaveMachin
     // *********** GUI ***********//
     //////////////////////////////////////
     // TODO: Needs AOI widget
-
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        LongSyncValue bucketSyncer = new LongSyncValue(this::getStoredAmount, (ignored) -> {});
+        LongSyncValue bucketSyncer = new LongSyncValue(this::getStoredAmount, (ignored) -> {
+        });
         syncManager.syncValue("bucket_amount", bucketSyncer);
 
-        mainWidget.child(new ParentWidget<>()
-                .background(GTGuiTextures.DISPLAY)
-                .height(63)
-                .align(Alignment.CENTER)
-                .child(IKey.lang("gtceu.gui.fluid_amount").asWidget()
-                        .color(0xffffff)
-                        .margin(8, 0, 8, 0))
-                .child(IKey.dynamic(
-                        () -> Component.literal(
-                                FormattingUtil.formatBuckets(bucketSyncer.getLongValue())))
-                        .asWidget()
-                        .color(0xffffff)
-                        .margin(8, 0, 18, 0))
-                .child(Flow.row()
-                        .margin(4, 0, 41, 0)
-                        .coverChildren()
-                        .child(GTMuiWidgets.createAutoOutputFluidButton(autoOutput,
-                                syncManager))
-                        .child(createFluidLockButton(syncManager))
-                        .child(createVoidButton(syncManager)))
-                .child(Flow.column()
-                        .margin(68, 0, 23, 0)
-                        .coverChildren()
-                        .child(createFluidSlot(syncManager))
-                        .child(createPhantomLockedFluidSlot(syncManager))));
-    }
-
-    private ToggleButton createFluidLockButton(PanelSyncManager syncManager) {
-        BooleanSyncValue fluidLocked = new BooleanSyncValue(this::isLocked,
-                this::setLocked);
-        syncManager.syncValue("fluid_locked", fluidLocked);
-        return new ToggleButton()
-                .value(new BoolValue.Dynamic(fluidLocked::getBoolValue, fluidLocked::setBoolValue))
-                .overlay(GTGuiTextures.BUTTON_LOCK)
-                .tooltipAutoUpdate(true)
-                .tooltipBuilder((r) -> r.addLine(IKey.lang(fluidLocked.getBoolValue() ?
-                        "gtceu.gui.fluid_lock.tooltip.enabled" :
-                        "gtceu.gui.fluid_lock.tooltip.disabled")));
-    }
-
-    private ToggleButton createVoidButton(PanelSyncManager syncManager) {
-        BooleanSyncValue voiding = new BooleanSyncValue(() -> this.isVoiding,
-                (voidingBool) -> { this.isVoiding = voidingBool; });
-        syncManager.syncValue("is_voiding", voiding);
-        return new ToggleButton()
-                .value(new BoolValue.Dynamic(voiding::getBoolValue, voiding::setBoolValue))
-                .overlay(GTGuiTextures.BUTTON_VOID)
-                .tooltipAutoUpdate(true)
-                .tooltipBuilder((r) -> r.addLine(IKey.lang(voiding.getBoolValue() ?
-                        "gtceu.gui.fluid_voiding_partial.tooltip.enabled" :
-                        "gtceu.gui.fluid_voiding_partial.tooltip.disabled")));
+        mainWidget
+                .height(80)
+                .child(new ParentWidget<>()
+                        .background(GTGuiTextures.DISPLAY)
+                        .size(90, 63)
+                        .align(Alignment.CENTER)
+                        .child(IKey.lang("gtceu.gui.fluid_amount").asWidget()
+                                .color(0xffffff)
+                                .margin(8, 0, 8, 0))
+                        .child(IKey.dynamic(
+                                        () -> Component.literal(
+                                                FormattingUtil.formatBuckets(bucketSyncer.getLongValue())))
+                                .asWidget()
+                                .color(0xffffff)
+                                .margin(8, 0, 18, 0))
+                        .child(Flow.row()
+                                .margin(4, 0, 41, 0)
+                                .coverChildren()
+                                .child(GTMuiWidgets.createAutoOutputFluidButton(autoOutput, syncManager))
+                                .child(GTMuiWidgets.createToggleButton(this::isLocked, this::setLocked, GTGuiTextures.BUTTON_LOCK, "gtceu.gui.fluid_lock.tooltip"))
+                                .child(GTMuiWidgets.createToggleButton(this::isVoiding, this::setVoiding, GTGuiTextures.BUTTON_VOID, "gtceu.gui.fluid_voiding_partial.tooltip")))
+                        .child(Flow.column()
+                                .margin(68, 0, 23, 0)
+                                .coverChildren()
+                                .child(createFluidSlot(syncManager))
+                                .child(createPhantomLockedFluidSlot(syncManager))));
     }
 
     private IWidget createFluidSlot(PanelSyncManager syncManager) {

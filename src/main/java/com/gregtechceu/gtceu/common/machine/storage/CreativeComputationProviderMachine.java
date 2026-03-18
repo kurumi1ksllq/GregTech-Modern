@@ -1,24 +1,23 @@
 package com.gregtechceu.gtceu.common.machine.storage;
 
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
+import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.IOpticalComputationProvider;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.drawable.Rectangle;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
-import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.IntSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.textfield.TextFieldWidget;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 
@@ -32,7 +31,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class CreativeComputationProviderMachine extends MetaMachine
-                                                implements IMuiMachine, IOpticalComputationProvider {
+                                                implements IMuiMachine, IOpticalComputationProvider, IControllable {
 
     @SaveField
     private int maxCWUt;
@@ -40,7 +39,7 @@ public class CreativeComputationProviderMachine extends MetaMachine
     private int requestedCWUPerSec;
     @SaveField
     @Getter
-    private boolean active;
+    private boolean workingEnabled;
     @Nullable
     private TickableSubscription computationSubs;
 
@@ -55,7 +54,7 @@ public class CreativeComputationProviderMachine extends MetaMachine
     }
 
     protected void updateComputationSubscription() {
-        if (active) {
+        if (workingEnabled) {
             this.computationSubs = subscribeServerTick(this::updateComputationTick);
         } else if (computationSubs != null) {
             computationSubs.unsubscribe();
@@ -76,7 +75,7 @@ public class CreativeComputationProviderMachine extends MetaMachine
     public int requestCWUt(
                            int cwut, boolean simulate, Collection<IOpticalComputationProvider> seen) {
         seen.add(this);
-        int requestedCWUt = active ? Math.min(cwut, maxCWUt) : 0;
+        int requestedCWUt = workingEnabled ? Math.min(cwut, maxCWUt) : 0;
         if (!simulate) {
             this.requestedCWUPerSec += requestedCWUt;
         }
@@ -86,7 +85,7 @@ public class CreativeComputationProviderMachine extends MetaMachine
     @Override
     public int getMaxCWUt(Collection<IOpticalComputationProvider> seen) {
         seen.add(this);
-        return active ? maxCWUt : 0;
+        return workingEnabled ? maxCWUt : 0;
     }
 
     @Override
@@ -95,20 +94,20 @@ public class CreativeComputationProviderMachine extends MetaMachine
         return true;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setWorkingEnabled(boolean workingEnabled) {
+        this.workingEnabled = workingEnabled;
         updateComputationSubscription();
     }
 
-    public void setMaxCWUt(int maxCWUt) {
-        this.maxCWUt = maxCWUt;
-        syncDataHolder.markClientSyncFieldDirty("maxCWUt");
+    @Override
+    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        return MachineUIPanelBuilder.defaultPanelBuilder(this, syncManager).attachInventory(false);
     }
 
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        mainWidget.height(100)
+        mainWidget.height(70)
                 .child(Flow.column()
                         .padding(10)
                         .childPadding(5)
@@ -119,7 +118,7 @@ public class CreativeComputationProviderMachine extends MetaMachine
                                 .child(new TextWidget<>(IKey.lang("gtceu.creative.computation.max_usage")))
                                 .child(new TextFieldWidget()
                                         .setNumbers(0, Integer.MAX_VALUE)
-                                        .value(new IntSyncValue(this::getMaxCWUt, this::setMaxCWUt))))
+                                        .value(new IntSyncValue(() -> maxCWUt, (v) -> maxCWUt = v))))
                         .child(new Rectangle().color(0xFF555555).asWidget()
                                 .height(1).widthRel(0.95f).marginBottom(4).marginTop(4))
                         .child(Flow.row()
@@ -128,21 +127,6 @@ public class CreativeComputationProviderMachine extends MetaMachine
                                 .coverChildren()
                                 .child(new TextWidget<>(IKey.lang("gtceu.creative.computation.average",
                                         () -> new Object[] { lastRequestedCWUt }))))
-                        .child(new Rectangle().color(0xFF555555).asWidget()
-                                .height(1).widthRel(0.95f).marginBottom(4).marginTop(4))
-                        .child(Flow.row()
-                                .alignX(0)
-                                .childPadding(5)
-                                .coverChildren()
-                                .child(new ToggleButton()
-                                        .value(new BooleanSyncValue(this::isActive, this::setActive))
-                                        .selectedBackground(GTGuiTextures.BUTTON_POWER[1])
-                                        .background(GTGuiTextures.BUTTON_POWER[0])
-                                        .tooltipAutoUpdate(true)
-                                        .tooltipBuilder((r) -> r.addLine(IKey.lang(() -> this.isActive() ?
-                                                "behaviour.soft_hammer.enabled" :
-                                                "behaviour.soft_hammer.disabled"))))
-                                .child(new TextWidget<>(IKey
-                                        .lang(() -> "gtceu.creative.activity." + (this.isActive() ? "on" : "off"))))));
+                        );
     }
 }

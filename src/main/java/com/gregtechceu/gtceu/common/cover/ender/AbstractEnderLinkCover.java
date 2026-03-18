@@ -279,7 +279,7 @@ public abstract class AbstractEnderLinkCover<T extends VirtualEntry> extends Cov
                 .value(new StringSyncValue(this::getDescription, this::setDescription))));
 
         Flow bottomRow = coverUIRow();
-        bottomRow.child(GTMuiWidgets.createPowerButton(this::isWorkingEnabled, this::setWorkingEnabled, syncManager));
+        bottomRow.child(GTMuiWidgets.createPowerButton(this));
         bottomRow.child(GTMuiWidgets.createIOCycleButton(ioSync, false));
         if (getFilterHandler() != null)
             GTMuiWidgets.createFilterRow(bottomRow, getFilterHandler(), data, syncManager, settings);

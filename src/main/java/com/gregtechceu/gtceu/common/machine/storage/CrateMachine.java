@@ -92,6 +92,7 @@ public class CrateMachine extends MetaMachine implements IMuiMachine,
         mainWidget.size(Math.max(MachineUIPanel.DEFAULT_CONTENT_WIDTH, rowLength * 18 + 10), 20 + 18 * rows)
                 .child(IKey.lang(getBlockState().getBlock().getName()).asWidget().pos(5, 5))
                 .child(slots.top(18).horizontalCenter().height(rows * 18));
+
     }
 
     @Override

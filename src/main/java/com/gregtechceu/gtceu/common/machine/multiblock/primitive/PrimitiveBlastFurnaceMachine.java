@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IFluidRenderMulti;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.mui.base.ITheme;
@@ -18,6 +19,7 @@ import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ProgressWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ModularSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
@@ -152,6 +154,11 @@ public class PrimitiveBlastFurnaceMachine extends PrimitiveWorkableMachine imple
     }
 
     @Override
+    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        return MachineUIPanelBuilder.defaultPanelBuilder(this, syncManager).addTraitConfigurators(false).addDefaultConfigurators(false);
+    }
+
+    @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
         ITheme theme = ThemeAPI.INSTANCE.getTheme(getDefinition().getThemeId());
@@ -162,13 +169,17 @@ public class PrimitiveBlastFurnaceMachine extends PrimitiveWorkableMachine imple
                     return recipeLogic.getProgressPercent();
                 }));
 
-        mainWidget
-                .child(createImportItemSlot(syncManager, theme).margin(52, 16))
+        var row = Flow.row().coverChildren().center();
+
+        row.child(createImportItemSlot(syncManager, theme))
                 .child(new ProgressWidget()
                         .value(progressPercent)
                         .size(20, 15)
-                        .texture(GTGuiTextures.PRIMITIVE_BLAST_FURNACE_PROGRESS_BAR, 0).margin(77, 35))
-                .child(createExportItemSlot(syncManager, theme).margin(104, 0, 34, 0));
+                        .texture(GTGuiTextures.PRIMITIVE_BLAST_FURNACE_PROGRESS_BAR, 0)
+                        .margin(5, 5, 0, 0))
+                .child(createExportItemSlot(syncManager, theme));
+
+        mainWidget.child(row);
     }
 
     private SlotGroupWidget createImportItemSlot(PanelSyncManager syncManager, ITheme theme) {

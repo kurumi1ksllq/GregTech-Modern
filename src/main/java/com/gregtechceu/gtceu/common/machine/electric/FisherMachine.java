@@ -22,6 +22,7 @@ import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ProgressWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Column;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Row;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ModularSlot;
@@ -310,83 +311,23 @@ public class FisherMachine extends TieredEnergyMachine
                             UISettings settings) {
         var outputItemGrid = GTMuiWidgets.createGrid(cache.getSize(), (int) Math.sqrt(cache.getSize()), true, 'i');
 
-        int inputWidth = 18;
-        int outputWidth = 18 * outputItemGrid.length;
-
         int slotHeight = outputItemGrid.length;
 
-        int topMargin = 0;
-        if (slotHeight == 2) {
-            topMargin = 9;
-        } else if (slotHeight > 2) {
-            topMargin = 18;
-        }
-
-        // input slots + centering gap + output slots
-
-        /**
-         * 1 -> 1.5
-         * 2 -> 1
-         * 3 -> .5
-         * 36 - (inputWidth / 2)
-         *
-         * 1:1 -> 18 + 18 + 36
-         * 1:2 -> 18 + 36 + 27
-         * 1:3 -> 18 + 54 + 3
-         * 2 - input + 2 - output
-         */
-        int fullWidth = (inputWidth + outputWidth) + (77 - ((inputWidth + outputWidth) / 2));
-
-        int inputShift = switch (tier) {
-            case 1 -> 27;
-            case 2 -> 27;
-            case 3 -> 18;
-            case 4 -> 0;
-            case 5 -> 0;
-            case 6 -> -2;
-            default -> 0;
-        };
-
-        int padding = switch (tier) {
-            case 1 -> 10;
-            case 2 -> 7;
-            case 3 -> 7;
-            case 4 -> 10;
-            case 5 -> 5;
-            case 6 -> 2;
-            default -> 2;
-        };
-
-        mainWidget.size(MachineUIPanel.DEFAULT_CONTENT_WIDTH,
-                MachineUIPanel.DEFAULT_CONTENT_HEIGHT + Math.max(36, 18 * slotHeight));
+        mainWidget.height(30 + (18 * slotHeight));
 
         DoubleSyncValue progressPercent = syncManager.getOrCreateSyncHandler("progressPercent", DoubleSyncValue.class,
                 () -> new DoubleSyncValue(() -> progress / (double) maxProgress));
 
-        mainWidget.child(new Row()
-                .coverChildrenHeight()
-                .width(fullWidth + 16 - inputShift)
-                .left(7 + inputShift)
-                .childPadding(padding)
+        mainWidget.child(Flow.row()
+                .coverChildren().center()
                 .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                .child(new Column()
-                        .coverChildrenWidth()
-                        .mainAxisAlignment(Alignment.MainAxis.CENTER)
-                        .child(new ItemSlot().slot(new ModularSlot(baitHandler, 0))
-                                .background(GTGuiTextures.SLOT, GTGuiTextures.STRING_SLOT_OVERLAY)))
+                .child(new ItemSlot().slot(new ModularSlot(baitHandler, 0)).background(GTGuiTextures.SLOT, GTGuiTextures.STRING_SLOT_OVERLAY).marginRight(2))
                 .child(new ProgressWidget()
-                        .alignY(Alignment.Center)
                         .texture(GTGuiTextures.PROGRESS_BAR_ARROW, 16)
                         .value(progressPercent))
-                .child(new Column()
-                        .coverChildrenWidth()
-                        .mainAxisAlignment(Alignment.MainAxis.CENTER)
-                        .childIf(!(outputItemGrid.length == 0),
-                                () -> GTMuiMachineUtil.createSlotGroupFromInventory(cache,
+                .child(GTMuiMachineUtil.createSlotGroupFromInventory(cache,
                                         "output_item_inv", cache.getSize(), 'i',
-                                        syncManager, outputItemGrid)
-                                        .alignX(Alignment.CenterRight))
-                        .align(Alignment.CenterRight))
-                .top(30 - topMargin));
+                                        syncManager, outputItemGrid).marginLeft(2))
+                );
     }
 }

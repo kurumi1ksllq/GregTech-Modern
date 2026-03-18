@@ -390,8 +390,17 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                             UISettings settings) {
         SlotGroup patternSlotGroup = new SlotGroup("pattern_slots", 9, 0, true);
 
-        mainWidget.child(new Grid()
-                .top(25)
+        BooleanSyncValue isOnlineValue = new BooleanSyncValue(this::isOnline, this::setOnline);
+        syncManager.syncValue("is_online", isOnlineValue);
+
+        var flow = Flow.col().alignX(0.5f).coverChildren();
+
+        flow.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
+                        Component.translatable("gtceu.gui.me_network.online") :
+                        Component.translatable("gtceu.gui.me_network.offline"))
+                .asWidget().marginTop(2).marginBottom(4));
+
+        flow.child(new Grid()
                 .height(18 * (MAX_PATTERN_COUNT / 9))
                 .minElementMargin(0, 0)
                 .minColWidth(18).minRowHeight(18)
@@ -404,16 +413,8 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                                 .changeListener((i, o, c, init) -> onPatternChange(index)))
                         .background(GTGuiTextures.SLOT, GTGuiTextures.PATTERN_OVERLAY)));
 
-        BooleanSyncValue isOnlineValue = SyncHandlers.bool(this::isOnline, this::setOnline);
-        syncManager.syncValue("is_online", isOnlineValue);
+        mainWidget.coverChildrenHeight().child(flow);
 
-        mainWidget.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
-                Component.translatable("gtceu.gui.me_network.online") :
-                Component.translatable("gtceu.gui.me_network.offline"))
-                .asWidget()
-                .top(10)
-                .margin(2)
-                .left(9));
     }
 
     public boolean canRefund() {

@@ -36,7 +36,7 @@ public class GTSingleblockMachinePanels {
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager);
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine, syncManager);
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
 
@@ -78,7 +78,7 @@ public class GTSingleblockMachinePanels {
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager);
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine, syncManager);
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
 
@@ -123,7 +123,7 @@ public class GTSingleblockMachinePanels {
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockMachinePanel(machine, syncManager);
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine, syncManager);
         var theme = machine.getDefinition().getThemeId();
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());

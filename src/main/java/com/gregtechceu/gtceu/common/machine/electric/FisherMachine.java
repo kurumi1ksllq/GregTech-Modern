@@ -290,7 +290,7 @@ public class FisherMachine extends TieredEnergyMachine
     @Override
     public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
 
-        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager)
+        return MachineUIPanelBuilder.defaultPanelBuilder(this, syncManager)
                 .rightConfigurators(configuratorFlow -> configuratorFlow
                         .child(new ToggleButton()
                                 .value(new BoolValue.Dynamic(this::isJunkEnabled, this::setJunkEnabled))

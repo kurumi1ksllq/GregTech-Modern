@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 public class MachineUIPanel extends ModularPanel {
 
@@ -56,8 +55,9 @@ public class MachineUIPanel extends ModularPanel {
 
 
         if (attachPlayerInventory) {
-            panelContents.marginBottom(8);
-            var inventory = SlotGroupWidget.playerInventory((index, slot) -> slot);
+            var inventory = SlotGroupWidget.playerInventory((index, slot) -> slot)
+                    .marginTop(4)
+                    .marginBottom(3);
             panelContents.child(inventory);
         }
 
@@ -74,7 +74,5 @@ public class MachineUIPanel extends ModularPanel {
         child(leftConfiguratorPanel);
         child(rightConfiguratorPanel);
         child(panelContents);
-        resizer(new CoverSingleChildResizer(this, panelContents));
-        center();
     }
 }

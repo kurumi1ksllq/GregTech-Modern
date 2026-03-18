@@ -25,7 +25,7 @@ public interface IMuiMachine extends IUIHolder<PosGuiData>, IMachineFeature {
     }
 
     default MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultMachinePanel(self(), syncManager);
+        return MachineUIPanelBuilder.defaultPanelBuilder(self(), syncManager);
     }
 
     default void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {

@@ -293,7 +293,7 @@ public class MEStockingBusPartMachine extends MEInputBusPartMachine implements I
                                         .setNumbers(1, 200))
                                 .margin(5)));
 
-        return MachineUIPanelBuilder.defaultMachinePanel(this, syncManager)
+        return MachineUIPanelBuilder.defaultPanelBuilder(this, syncManager)
                 .rightConfigurators(f -> {
                     f.child(new ToggleButton()
                                     .value(new BoolValue.Dynamic(this::isAutoPull, this::setAutoPull))

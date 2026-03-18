@@ -7,20 +7,14 @@ import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.feature.IVoidable;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
 import com.gregtechceu.gtceu.api.machine.trait.feature.IAttachConfiguratorsTrait;
-import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
-import com.gregtechceu.gtceu.api.mui.theme.ThemeAPI;
-import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
-import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 @Accessors(fluent = true)
@@ -109,15 +103,15 @@ public class MachineUIPanelBuilder {
         return panel;
     }
 
-    public static MachineUIPanelBuilder defaultSimpleSingleblockMachinePanel(MetaMachine machine, PanelSyncManager syncManager) {
+    public static MachineUIPanelBuilder defaultSimpleSingleblockPanelBuilder(MetaMachine machine, PanelSyncManager syncManager) {
         return new MachineUIPanelBuilder(machine, syncManager).drawGTLogo(true);
     }
 
-    public static MachineUIPanelBuilder defaultMachinePanel(MetaMachine machine, PanelSyncManager syncManager) {
+    public static MachineUIPanelBuilder defaultPanelBuilder(MetaMachine machine, PanelSyncManager syncManager) {
         return new MachineUIPanelBuilder(machine, syncManager);
     }
 
-    public static MachineUIPanelBuilder defaultSteamMachine(MetaMachine machine, PanelSyncManager syncManager) {
+    public static MachineUIPanelBuilder defaultSteamMachineBuilder(MetaMachine machine, PanelSyncManager syncManager) {
         return new MachineUIPanelBuilder(machine, syncManager).drawGTLogo(true).addDefaultConfigurators(false);
     }
 }

@@ -31,7 +31,6 @@ import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 
-import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -51,6 +50,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import it.unimi.dsi.fastutil.objects.Object2LongArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +59,7 @@ import java.util.function.Predicate;
 
 @NotNullByDefault
 public class QuantumTankMachine extends TieredMachine implements IDropSaveMachine, IControllable,
-        IMuiMachine {
+                                IMuiMachine {
 
     public static Object2LongMap<MachineDefinition> TANK_CAPACITY = new Object2LongArrayMap<>();
 
@@ -215,8 +215,7 @@ public class QuantumTankMachine extends TieredMachine implements IDropSaveMachin
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        LongSyncValue bucketSyncer = new LongSyncValue(this::getStoredAmount, (ignored) -> {
-        });
+        LongSyncValue bucketSyncer = new LongSyncValue(this::getStoredAmount, (ignored) -> {});
         syncManager.syncValue("bucket_amount", bucketSyncer);
 
         mainWidget
@@ -229,17 +228,19 @@ public class QuantumTankMachine extends TieredMachine implements IDropSaveMachin
                                 .color(0xffffff)
                                 .margin(8, 0, 8, 0))
                         .child(IKey.dynamic(
-                                        () -> Component.literal(
-                                                FormattingUtil.formatBuckets(bucketSyncer.getLongValue())))
+                                () -> Component.literal(
+                                        FormattingUtil.formatBuckets(bucketSyncer.getLongValue())))
                                 .asWidget()
                                 .color(0xffffff)
                                 .margin(8, 0, 18, 0))
                         .child(Flow.row()
                                 .margin(4, 0, 41, 0)
                                 .coverChildren()
-                                .child(GTMuiWidgets.createAutoOutputFluidButton(autoOutput, syncManager))
-                                .child(GTMuiWidgets.createToggleButton(this::isLocked, this::setLocked, GTGuiTextures.BUTTON_LOCK, "gtceu.gui.fluid_lock.tooltip"))
-                                .child(GTMuiWidgets.createToggleButton(this::isVoiding, this::setVoiding, GTGuiTextures.BUTTON_VOID, "gtceu.gui.fluid_voiding_partial.tooltip")))
+                                .child(GTMuiWidgets.createAutoOutputFluidButton(autoOutput))
+                                .child(GTMuiWidgets.createToggleButton(this::isLocked, this::setLocked,
+                                        GTGuiTextures.BUTTON_LOCK, "gtceu.gui.fluid_lock.tooltip"))
+                                .child(GTMuiWidgets.createToggleButton(this::isVoiding, this::setVoiding,
+                                        GTGuiTextures.BUTTON_VOID, "gtceu.gui.fluid_voiding_partial.tooltip")))
                         .child(Flow.column()
                                 .margin(68, 0, 23, 0)
                                 .coverChildren()

@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.capability.IMiner;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.*;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.machine.steam.SteamWorkableMachine;
 import com.gregtechceu.gtceu.api.machine.trait.ExhaustVentMachineTrait;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
@@ -152,10 +153,14 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IControll
     //////////////////////////////////////
 
     @Override
+    public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        return MachineUIPanelBuilder.defaultSteamMachineBuilder(this, syncManager);
+    }
+
+    @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
         mainWidget.width(200)
-                .child(GTMuiWidgets.createTitleBar(getDefinition(), 200))
                 .child(Flow.row()
                         .coverChildrenHeight()
                         .margin(5)

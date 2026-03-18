@@ -5,5 +5,4 @@ public interface IDistinctPart extends IMultiPart {
     boolean isDistinct();
 
     void setDistinct(boolean isDistinct);
-
 }

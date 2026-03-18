@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
+import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.drawable.Icon;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
@@ -31,7 +32,9 @@ import net.minecraft.world.item.ItemStack;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -106,28 +109,16 @@ public class ResearchStationMachine extends WorkableElectricMultiblockMachine
         return false;
     }
 
-    public Widget<?> getMainTextPanel(PanelSyncManager syncManager, int width, int height) {
-        var parentWidget = new ParentWidget<>();
-        var listWidget = new ListWidget<>()
-                .width(width - 6)
-                .height(height - 6)
-                .childSeparator(Icon.EMPTY_2PX)
-                .crossAxisAlignment(Alignment.CrossAxis.START)
-                .alignX(Alignment.CenterLeft);
-        parentWidget.size(width, height)
-                .background(GTGuiTextures.MUI_DISPLAY);
-
-        listWidget.child(GTMultiblockTextUtil.addWorkingStatusLine(this, syncManager,
-                () -> Component.translatable("gtceu.multiblock.work_paused").withStyle(ChatFormatting.GOLD),
-                () -> Component.translatable("gtceu.multiblock.research_station.researching")
-                        .withStyle(ChatFormatting.GREEN),
-                () -> Component.translatable("gtceu.multiblock.idling").withStyle(ChatFormatting.GRAY)));
-        listWidget.child(GTMultiblockTextUtil.addEnergyTierLine(this, syncManager));
-        listWidget.child(GTMultiblockTextUtil.addEnergyUsageLine(this, syncManager));
-        listWidget.child(GTMultiblockTextUtil.addOutputLines(this, syncManager));
-        listWidget.child(GTMultiblockTextUtil.addProgressLinePercentOnly(this, syncManager));
-        parentWidget.child(listWidget.left(3).top(3));
-        return parentWidget;
+    @Override
+    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
+        List<IWidget> widgets = new ArrayList<>();
+        widgets.add(GTMultiblockTextUtil.addWorkingStatusLine(this, syncManager,
+                () -> Component.translatable("gtceu.multiblock.research_station.researching").withStyle(ChatFormatting.GREEN)));
+        widgets.add(GTMultiblockTextUtil.addEnergyTierLine(this, syncManager));
+        widgets.add(GTMultiblockTextUtil.addEnergyUsageLine(this, syncManager));
+        widgets.add(GTMultiblockTextUtil.addOutputLines(this, syncManager));
+        widgets.add(GTMultiblockTextUtil.addProgressLinePercentOnly(this, syncManager));
+        return widgets;
     }
 
     public static class ResearchStationRecipeLogic extends RecipeLogic {

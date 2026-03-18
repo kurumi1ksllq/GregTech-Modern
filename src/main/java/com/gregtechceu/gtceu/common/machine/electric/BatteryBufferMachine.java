@@ -18,7 +18,6 @@ import com.gregtechceu.gtceu.api.mui.value.sync.DoubleSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ProgressWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
@@ -144,24 +143,24 @@ public class BatteryBufferMachine extends TieredEnergyMachine
         mainWidget.height(90);
 
         mainWidget.child(new ProgressWidget()
-                                .texture(GTGuiTextures.PROGRESS_BAR_BOILER_EMPTY_STEEL,
-                                        GTGuiTextures.PROGRESS_BAR_BOILER_HEAT, 60)
-                                .direction(ProgressWidget.Direction.UP)
-                                .value(energyPercentage)
-                                .marginLeft(5)
-                                .size(18, 60)
-                                .verticalCenter()
-                                .addTooltipLine(IKey.dynamic(() -> Component.literal(
-                                        "%s/%s EU".formatted(
-                                                GTStringUtils.formatInt(energyContainer.getEnergyStored()),
-                                                GTStringUtils.formatInt(energyContainer.getEnergyCapacity()))))))
-                        .child(GTMuiMachineUtil.createSlotGroupFromInventory(
-                                batteryInventory, "batteries",
-                                inventorySize, 'B',
-                                slot -> slot.background(GTGuiTextures.SLOT, GTGuiTextures.CHARGER_OVERLAY),
-                                syncManager,
-                                matrix)
-                                .center());
+                .texture(GTGuiTextures.PROGRESS_BAR_BOILER_EMPTY_STEEL,
+                        GTGuiTextures.PROGRESS_BAR_BOILER_HEAT, 60)
+                .direction(ProgressWidget.Direction.UP)
+                .value(energyPercentage)
+                .marginLeft(5)
+                .size(18, 60)
+                .verticalCenter()
+                .addTooltipLine(IKey.dynamic(() -> Component.literal(
+                        "%s/%s EU".formatted(
+                                GTStringUtils.formatInt(energyContainer.getEnergyStored()),
+                                GTStringUtils.formatInt(energyContainer.getEnergyCapacity()))))))
+                .child(GTMuiMachineUtil.createSlotGroupFromInventory(
+                        batteryInventory, "batteries",
+                        inventorySize, 'B',
+                        slot -> slot.background(GTGuiTextures.SLOT, GTGuiTextures.CHARGER_OVERLAY),
+                        syncManager,
+                        matrix)
+                        .center());
     }
 
     private double getEnergyPercentage() {

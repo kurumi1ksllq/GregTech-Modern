@@ -10,11 +10,9 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.*;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
-import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.IntSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ModularSlot;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.SlotGroup;
@@ -247,7 +245,6 @@ public class RotorHolderPartMachine extends TieredPartMachine {
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-
         var slot = new ItemSlot()
                 .slot(new ModularSlot(inventory, 0).slotGroup(new SlotGroup("rotor", 1)))
                 .background(GTGuiTextures.SLOT, GTGuiTextures.TURBINE_OVERLAY)

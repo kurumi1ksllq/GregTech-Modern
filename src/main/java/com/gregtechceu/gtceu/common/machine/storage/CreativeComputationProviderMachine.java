@@ -126,7 +126,6 @@ public class CreativeComputationProviderMachine extends MetaMachine
                                 .childPadding(5)
                                 .coverChildren()
                                 .child(new TextWidget<>(IKey.lang("gtceu.creative.computation.average",
-                                        () -> new Object[] { lastRequestedCWUt }))))
-                        );
+                                        () -> new Object[] { lastRequestedCWUt })))));
     }
 }

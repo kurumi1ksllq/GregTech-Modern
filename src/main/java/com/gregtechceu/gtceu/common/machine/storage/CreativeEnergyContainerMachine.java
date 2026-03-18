@@ -35,18 +35,20 @@ import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class CreativeEnergyContainerMachine extends TieredMachine implements ILaserContainer, IMuiMachine, IControllable {
+public class CreativeEnergyContainerMachine extends TieredMachine
+                                            implements ILaserContainer, IMuiMachine, IControllable {
 
     @SaveField
     private long voltage = 0;

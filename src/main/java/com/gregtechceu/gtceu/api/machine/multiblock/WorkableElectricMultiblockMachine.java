@@ -21,6 +21,7 @@ import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widget.Widget;
 import com.gregtechceu.gtceu.api.mui.widgets.ListWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
+import com.gregtechceu.gtceu.api.sync_system.ClassSyncData;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.mui.GTMultiblockTextUtil;
@@ -30,9 +31,11 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 import net.minecraft.MethodsReturnNonnullByDefault;
 
 import lombok.Getter;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -97,16 +100,18 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
     // ********** GUI ***********//
     //////////////////////////////////////
 
-    public Widget<?> getMainTextPanel(PanelSyncManager syncManager, int width, int height) {
+    public static final int MULTI_UI_TEXT_PANEL_WIDTH = 172;
+    public static final int MULTI_UI_TEXT_PANEL_HEIGHT = 136;
+
+    public Widget<?> getMainTextPanel(PanelSyncManager syncManager) {
         var parentWidget = new ParentWidget<>();
         var listWidget = new ListWidget<>()
-                .width(width - 6)
-                .height(height - 6)
+                .width(MULTI_UI_TEXT_PANEL_WIDTH - 6)
+                .height(MULTI_UI_TEXT_PANEL_HEIGHT - 6)
                 .childSeparator(Icon.EMPTY_2PX)
                 .crossAxisAlignment(Alignment.CrossAxis.START)
                 .alignX(Alignment.CenterLeft);
-        parentWidget.size(width, height)
-                .background(GTGuiTextures.MUI_DISPLAY);
+        parentWidget.size(MULTI_UI_TEXT_PANEL_WIDTH, MULTI_UI_TEXT_PANEL_HEIGHT).background(GTGuiTextures.MUI_DISPLAY);
 
         listWidget.children(getWidgetsForDisplay(syncManager));
         parentWidget.child(listWidget.left(3).top(3));
@@ -116,14 +121,7 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        mainWidget.child(new ParentWidget<>()
-                .widthRel(0.95f)
-                .heightRel(.65f)
-                .margin(4, 0)
-                .left(3).top(2)
-                .horizontalCenter()
-                .child(Flow.row()
-                        .child(getMainTextPanel(syncManager, 186, 146))));
+        mainWidget.size(180, 140).child(getMainTextPanel(syncManager).center());
     }
 
     @Override

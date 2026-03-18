@@ -50,18 +50,6 @@ public class ParallelHatchPartMachine extends TieredPartMachine implements IMuiM
         }
     }
 
-    /*
-     * @Override
-     * public Widget createUIWidget() {
-     * WidgetGroup parallelAmountGroup = new WidgetGroup(0, 0, 100, 20);
-     * parallelAmountGroup.addWidget(new IntInputWidget(this::getCurrentParallel, this::setCurrentParallel)
-     * .setMin(MIN_PARALLEL)
-     * .setMax(maxParallel));
-     *
-     * return parallelAmountGroup;
-     * }
-     */
-
     @Override
     public boolean canShared() {
         return false;
@@ -71,11 +59,7 @@ public class ParallelHatchPartMachine extends TieredPartMachine implements IMuiM
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
         IntSyncValue parallels = new IntSyncValue(this::getCurrentParallel, this::setCurrentParallel);
-        mainWidget.size(180, 60).child(createParallelRow(parallels));
-    }
-
-    private Flow createParallelRow(IntSyncValue parallels) {
-        return Flow.row()
+        mainWidget.size(180, 60).child(Flow.row()
                 .crossAxisAlignment(Alignment.CrossAxis.CENTER)
                 .align(Alignment.CENTER)
                 .coverChildren()
@@ -152,6 +136,7 @@ public class ParallelHatchPartMachine extends TieredPartMachine implements IMuiM
                         .asWidget()
                         .marginLeft(4)
                         .marginRight(4)
-                        .verticalCenter());
+                        .verticalCenter()));
     }
+
 }

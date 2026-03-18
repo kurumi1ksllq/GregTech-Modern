@@ -278,6 +278,14 @@ public class GTMultiblockTextUtil {
                 () -> Component.translatable("gtceu.multiblock.idling").withStyle(ChatFormatting.GRAY));
     }
 
+    public static TextWidget<?> addWorkingStatusLine(WorkableMultiblockMachine rlMachine,
+                                                     PanelSyncManager syncManager, Supplier<Component> runningPerfectly) {
+        return addWorkingStatusLine(rlMachine, syncManager,
+                () -> Component.translatable("gtceu.multiblock.work_paused").withStyle(ChatFormatting.GOLD),
+                runningPerfectly,
+                () -> Component.translatable("gtceu.multiblock.idling").withStyle(ChatFormatting.GRAY));
+    }
+
     public static TextWidget<?> addWorkingStatusLine(WorkableMultiblockMachine rlMachine, PanelSyncManager syncManager,
                                                      Supplier<Component> workPaused,
                                                      Supplier<Component> runningPerfectly,

@@ -112,12 +112,13 @@ public class CreativeChestMachine extends QuantumChestMachine {
 
     @Override
     public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultPanelBuilder(this, syncManager).addDefaultConfigurators(false).addTraitConfigurators(false).rightConfigurators(f -> f.child(GTMuiWidgets.createPowerButton(this)));
+        return MachineUIPanelBuilder.defaultPanelBuilder(this, syncManager).addDefaultConfigurators(false)
+                .addTraitConfigurators(false).rightConfigurators(f -> f.child(GTMuiWidgets.createPowerButton(this)));
     }
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
-
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
         PhantomItemSlotSyncHandler storedSlot = new PhantomItemSlotSyncHandler(new ModularSlot(cache, 0).filter(
                 stack -> stored.isEmpty() || ItemStack.isSameItemSameTags(stack, stored)));
 
@@ -152,8 +153,7 @@ public class CreativeChestMachine extends QuantumChestMachine {
                                 .child(new TextFieldWidget()
                                         .setTextAlignment(Alignment.CENTER)
                                         .setNumbers(1, Integer.MAX_VALUE)
-                                        .value(itemsPerCycle))
-                        )
+                                        .value(itemsPerCycle)))
                         .child(new Rectangle().color(0xFF555555).asWidget()
                                 .height(1).widthRel(0.95f).marginBottom(4).marginTop(4))
                         .child(Flow.row()
@@ -165,9 +165,7 @@ public class CreativeChestMachine extends QuantumChestMachine {
                                 .child(new TextFieldWidget()
                                         .setTextAlignment(Alignment.CENTER)
                                         .setNumbers(1, Integer.MAX_VALUE)
-                                        .value(ticksPerCycle))
-                        ));
-
+                                        .value(ticksPerCycle))));
     }
 
     private class InfiniteCache extends ItemCache {

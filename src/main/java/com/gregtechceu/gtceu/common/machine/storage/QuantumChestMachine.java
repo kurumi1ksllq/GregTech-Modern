@@ -35,7 +35,6 @@ import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -54,6 +53,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.jetbrains.annotations.Nullable;
@@ -276,9 +276,11 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
                         .child(Flow.row()
                                 .margin(4, 0, 41, 0)
                                 .coverChildren()
-                                .child(GTMuiWidgets.createAutoOutputItemButton(autoOutput, syncManager))
-                                .child(GTMuiWidgets.createToggleButton(this::isLocked, this::setLocked, GTGuiTextures.BUTTON_LOCK, "gtceu.gui.item_lock.tooltip"))
-                                .child(GTMuiWidgets.createToggleButton(this::isVoiding, this::setVoiding, GTGuiTextures.BUTTON_VOID, "gtceu.gui.item_voiding_partial.tooltip")))
+                                .child(GTMuiWidgets.createAutoOutputItemButton(autoOutput))
+                                .child(GTMuiWidgets.createToggleButton(this::isLocked, this::setLocked,
+                                        GTGuiTextures.BUTTON_LOCK, "gtceu.gui.item_lock.tooltip"))
+                                .child(GTMuiWidgets.createToggleButton(this::isVoiding, this::setVoiding,
+                                        GTGuiTextures.BUTTON_VOID, "gtceu.gui.item_voiding_partial.tooltip")))
                         .child(Flow.column()
                                 .margin(68, 0, 15, 0)
                                 .coverChildren()

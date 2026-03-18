@@ -11,21 +11,12 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
-import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
-import com.gregtechceu.gtceu.api.mui.drawable.Icon;
-import com.gregtechceu.gtceu.api.mui.utils.Alignment;
-import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
+import com.gregtechceu.gtceu.api.mui.base.widget.IWidget;
 import com.gregtechceu.gtceu.api.mui.value.sync.LongSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
-import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
-import com.gregtechceu.gtceu.api.mui.widget.Widget;
-import com.gregtechceu.gtceu.api.mui.widgets.ListWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.TextWidget;
 import com.gregtechceu.gtceu.common.data.mui.GTMultiblockTextUtil;
-import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.ChatFormatting;
@@ -186,55 +177,20 @@ public class DataBankMachine extends WorkableElectricMultiblockMachine
         updateTickSubscription();
     }
 
-    public Widget<?> getMainTextPanel(PanelSyncManager syncManager, int width, int height) {
-        var parentWidget = new ParentWidget<>();
-        var listWidget = new ListWidget<>()
-                .width(width - 6)
-                .height(height - 6)
-                .childSeparator(Icon.EMPTY_2PX)
-                .crossAxisAlignment(Alignment.CrossAxis.START)
-                .alignX(Alignment.CenterLeft);
-        parentWidget.size(width, height)
-                .background(GTGuiTextures.MUI_DISPLAY);
+    @Override
+    public List<IWidget> getWidgetsForDisplay(PanelSyncManager syncManager) {
 
         LongSyncValue energyStoredSyncValue = new LongSyncValue(this::getEnergyUsage);
         syncManager.syncValue("dataBankEnergyStored", energyStoredSyncValue);
-        listWidget.child(GTMultiblockTextUtil.addEnergyUsageExactLine(this, syncManager, energyStoredSyncValue));
-        listWidget.child(addWorkingStatusLine(this, syncManager));
-        parentWidget.child(listWidget.left(3).top(3));
-        return parentWidget;
-    }
 
-    public static TextWidget<?> addWorkingStatusLine(WorkableMultiblockMachine rlMachine,
-                                                     PanelSyncManager syncManager) {
-        BooleanSyncValue isFormed = syncManager.getOrCreateSyncHandler("isFormed", BooleanSyncValue.class,
-                () -> new BooleanSyncValue(rlMachine::isFormed));
-        BooleanSyncValue isActive = syncManager.getOrCreateSyncHandler("isActive", BooleanSyncValue.class,
-                () -> new BooleanSyncValue(() -> rlMachine.getRecipeLogic().isActive()));
-        BooleanSyncValue isWorkingEnabled = syncManager.getOrCreateSyncHandler("isWorkingEnabled",
-                BooleanSyncValue.class,
-                () -> new BooleanSyncValue(() -> rlMachine.getRecipeLogic().isWorkingEnabled()));
+        List<IWidget> widgets = new ArrayList<>();
 
-        return IKey
-                .dynamic(() -> {
-                    if (!isFormed.getBoolValue()) return Component.empty();
-                    if (!isWorkingEnabled.getBoolValue() || !isActive.getBoolValue()) {
-                        return Component.translatable("gtceu.multiblock.idling").withStyle(ChatFormatting.GRAY);
-                    }
-                    return Component.translatable("gtceu.multiblock.data_bank.providing")
-                            .withStyle(ChatFormatting.GREEN);
-                })
-                .asWidget()
-                .setEnabledIf((w) -> isFormed.getBoolValue());
+        widgets.add(GTMultiblockTextUtil.addEnergyUsageExactLine(this, syncManager, energyStoredSyncValue));
+        widgets.add(GTMultiblockTextUtil.addWorkingStatusLine(this, syncManager,
+                () -> Component.translatable("gtceu.multiblock.data_bank.providing").withStyle(ChatFormatting.GREEN)));
+
+        return widgets;
     }
-    /*
-     * @Override
-     * protected void addWarningText(List<Component> textList) {
-     * MultiblockDisplayText.builder(textList, isFormed(), false)
-     * .addLowPowerLine(hasNotEnoughEnergy)
-     * .addMaintenanceProblemLines(maintenance.getMaintenanceProblems());
-     * }
-     */
 
     @Override
     public int getProgress() {

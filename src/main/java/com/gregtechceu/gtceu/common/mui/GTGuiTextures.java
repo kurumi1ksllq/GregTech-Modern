@@ -203,6 +203,10 @@ public class GTGuiTextures {
     public static final UITexture[] TRANSFER_MODE_OVERLAY = slice("textures/gui/overlay/transfer_mode_overlay.png",
             40, 40 * 3, 40, 40, ColorType.DEFAULT);
 
+    public static final UITexture[] BUTTON_DISTINCT = slice(
+            "textures/gui/widget/button_distinct_buses.png",
+            16, 32, 16, 16, ColorType.DEFAULT);
+
     public static final UITexture[] FLUID_TRANSFER_MODE_OVERLAY = slice(
             "textures/gui/overlay/fluid_transfer_mode_overlay.png",
             18, 18 * 3, 18, 18, ColorType.DEFAULT);
@@ -452,11 +456,6 @@ public class GTGuiTextures {
     public static final UITexture BUTTON_EU = fullImage("textures/gui/overlay/mode_eu.png");
     public static final UITexture BUTTON_PERCENT = fullImage("textures/gui/overlay/mode_percent.png");
     public static final UITexture BUTTON_MAINTENANCE = fullImage("textures/gui/widget/button_maintenance.png");
-
-    public static final UITexture BUTTON_DISTINCT = UITexture.builder()
-            .location(GTCEu.MOD_ID, "textures/gui/widget/button_distinct_buses.png")
-            .subAreaXYWH(0, 0, 16, 16)
-            .build();
 
     public static final UITexture BUTTON_AUTO_PULL = fullImage("textures/gui/widget/button_me_auto_pull.png");
 

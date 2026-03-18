@@ -77,10 +77,10 @@ public class MachineUIPanelBuilder {
                 attachRight.child(GTMuiWidgets.createBatterySlot(batterySlot, syncManager));
             }
             if (machine instanceof IVoidable voidable) {
-                attachRight.child(GTMuiWidgets.createVoidingButton(voidable, syncManager));
+                attachRight.child(GTMuiWidgets.createVoidingButton(voidable));
             }
             if (machine instanceof IDistinctPart distinctPart) {
-                attachRight.child(GTMuiWidgets.createDistinctnessButton(distinctPart, syncManager));
+                attachRight.child(GTMuiWidgets.createDistinctnessButton(distinctPart));
             }
         }
 
@@ -110,6 +110,6 @@ public class MachineUIPanelBuilder {
     }
 
     public static MachineUIPanelBuilder defaultSteamMachineBuilder(MetaMachine machine, PanelSyncManager syncManager) {
-        return new MachineUIPanelBuilder(machine, syncManager).drawGTLogo(true).addDefaultConfigurators(false);
+        return new MachineUIPanelBuilder(machine, syncManager).drawGTLogo(true).addDefaultConfigurators(false).addTraitConfigurators(false);
     }
 }

@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.mui.value.sync.IntSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.block.CoilBlock;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
@@ -27,6 +28,9 @@ public class CoilWorkableElectricMultiblockMachine extends WorkableElectricMulti
 
     @Getter
     private ICoilType coilType = CoilBlock.CoilType.CUPRONICKEL;
+    @SyncToClient
+    @Getter
+    private int coilTier = 1;
 
     public CoilWorkableElectricMultiblockMachine(BlockEntityCreationInfo info) {
         super(info);
@@ -41,37 +45,26 @@ public class CoilWorkableElectricMultiblockMachine extends WorkableElectricMulti
         var type = getMultiblockState().getMatchContext().get("CoilType");
         if (type instanceof ICoilType coil) {
             this.coilType = coil;
+            this.coilTier = coil.getTier();
+            getSyncDataHolder().markClientSyncFieldDirty("coilTier");
         }
-    }
-
-    public int getCoilTier() {
-        return coilType.getTier();
     }
 
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        IntSyncValue coilTier = syncManager.getOrCreateSyncHandler("coilTier", IntSyncValue.class,
-                () -> new IntSyncValue(this::getCoilTier));
 
-        Supplier<IDrawable> coilTexture = () -> new UITexture.Builder()
-                .location(CoilBlock.CoilType.values()[coilTier.getIntValue()].getTexture())
-                .imageSize(16, 16).colorType(ColorType.DEFAULT).tiled().build();
+        IDrawable coilTexture = new UITexture.Builder()
+                .location(CoilBlock.CoilType.values()[coilTier].getTexture())
+                .imageSize(16, 16)
+                .colorType(ColorType.DEFAULT)
+                .tiled().build();
 
-        var widget1 = new DynamicDrawable(coilTexture).asWidget().size(4, 16).heightRel(1.0f);
-        var widget2 = new DynamicDrawable(coilTexture).asWidget().size(4, 16).heightRel(1.0f);
-
-        mainWidget.child(GTMuiWidgets.createTitleBar(this.getDefinition(), 176 + 36))
-                .child(new ParentWidget<>()
-                        .widthRel(0.95f)
-                        .heightRel(.45f)
-                        .margin(4, 0)
-                        .left(3).top(3)
-                        .child(Flow.row()
-                                .child(widget1)
-                                .child(getMainTextPanel(syncManager, 208, 90))
-                                .child(widget2))
-
+        mainWidget.size(180, 140)
+                .child(Flow.row()
+                        .child(new IDrawable.DrawableWidget(coilTexture).size(4, MULTI_UI_TEXT_PANEL_HEIGHT))
+                        .child(getMainTextPanel(syncManager))
+                        .child(new IDrawable.DrawableWidget(coilTexture).size(4, MULTI_UI_TEXT_PANEL_HEIGHT))
                 );
     }
 }

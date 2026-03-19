@@ -43,7 +43,7 @@ public class GTSingleblockMachinePanels {
         var theme = machine.getDefinition().getThemeId();
 
         panelBuilder.mainContents((parent) -> {
-            parent.height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
+            parent.height(18 + 9 + 18 * Math.max(2, slotHeight));
 
             Flow.row()
                     .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
@@ -86,7 +86,7 @@ public class GTSingleblockMachinePanels {
         var theme = machine.getDefinition().getThemeId();
 
         panelBuilder.mainContents((parent) -> {
-            parent.height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
+            parent.height(18 + 9 + 18 * Math.max(2, slotHeight));
 
             parent.child(Flow.row()
                     .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
@@ -131,7 +131,7 @@ public class GTSingleblockMachinePanels {
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
 
         panelBuilder.mainContents((parent) -> {
-            parent.height(76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
+            parent.height(18 + 9 + 18 * Math.max(2, slotHeight));
             parent.child(Flow.row()
                     .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
                             .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
@@ -140,9 +140,7 @@ public class GTSingleblockMachinePanels {
                                     simpleTieredMachine.recipeLogic::getProgressPercent,
                                     0)
                             .alignX(Alignment.CENTER))
-                    .coverChildrenHeight()
-                    // .left(7)
-                    .bottom(76 + 7 + 18 + 9));
+                    .coverChildrenHeight());
 
             /*
              * parent.childIf(hasXEI, () ->
@@ -156,20 +154,19 @@ public class GTSingleblockMachinePanels {
 
     public static PanelFactory STEAM_MACHINE = (PosGuiData data, PanelSyncManager syncManager, UISettings settings,
                                                 MetaMachine machine) -> {
-        ModularPanel panel = new ModularPanel(machine.getDefinition().getName());
         if (!(machine instanceof SimpleSteamMachine steamMachine)) {
             GTCEu.LOGGER.error("{} is not a SimpleSteamMachine, can not add slots to its content",
                     machine.getDefinition().getName());
-            return panel;
+            return new ModularPanel(machine.getDefinition().getName());
         }
-        // panel.widgetTheme(GTGuiTheme.BRONZE.getId());
+
+        var panelBuilder = MachineUIPanelBuilder.defaultSteamMachineBuilder(machine, syncManager);
 
         var inputItemGrid = GTMuiWidgets.createGrid(steamMachine.importItems.getSize(), 3, false, 'i');
         var outputItemGrid = GTMuiWidgets.createGrid(steamMachine.exportItems.getSize(), 3, true, 'i');
 
-        int slotHeight = Math.max(inputItemGrid.length, outputItemGrid.length);
-
-        panel.size(176, 76 + 21 + 18 + 9 + 18 * Math.max(2, slotHeight));
+        int slotHeight = Math.max(inputItemGrid.length,
+                outputItemGrid.length);
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(steamMachine.getRecipeType());
 
@@ -180,31 +177,18 @@ public class GTSingleblockMachinePanels {
             backgroundTexture = GTGuiTextures.BACKGROUND;
         }
 
-        panel.child(GTMuiWidgets.createTitleBar(machine.getDefinition(), 176))
-                .child(Flow.row()
-                        .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(steamMachine.getRecipeType())
-                                .getBackedSlotsRow(syncManager, theme, steamMachine.importItems,
-                                        steamMachine.exportItems,
-                                        null, null,
-                                        steamMachine.recipeLogic::getProgressPercent,
-                                        steamMachine.getTier())
-                                .alignX(Alignment.CENTER))
-                        .coverChildrenHeight()
-                        // .left(7)
-                        .bottom(76 + 7 + 18 + 9))
-                .child(SlotGroupWidget.playerInventory(false).left(7).bottom(7))
-                .child(Flow.col()
-                        .coverChildren()
-                        .leftRel(1.0f)
-                        .reverseLayout(true)
-                        .bottom(16)
-                        .padding(0, 8, 4, 4)
-                        .childPadding(2)
-                        .background(backgroundTexture.getSubArea(0.25f, 0f, 1.0f, 1.0f))
-                        .child(GTMuiWidgets.createPowerButton(steamMachine)))
-                .child(GTMuiWidgets.createGTLogo()
-                        .right(7).bottom(7 + 78));
+        panelBuilder.mainContents(parent -> {
+            parent.height(18 + 9 + 18 * Math.max(2, slotHeight));
+            parent.child(Flow.row()
+                    .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(steamMachine.getRecipeType())
+                            .getBackedSlotsRow(syncManager, theme, steamMachine.importItems,
+                                    steamMachine.exportItems,
+                                    null, null,
+                                    steamMachine.recipeLogic::getProgressPercent,
+                                    steamMachine.getTier())
+                            .alignX(Alignment.CENTER)));
+        });
 
-        return panel;
+        return panelBuilder.build().excludeAreaInRecipeViewer();
     };
 }

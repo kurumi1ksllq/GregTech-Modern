@@ -68,7 +68,7 @@ public class CrateMachine extends MetaMachine implements IMuiMachine,
 
     @Override
     public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultPanelBuilder(this, syncManager).addTitleBar(false);
+        return MachineUIPanelBuilder.defaultPanelBuilder(this).addTitleBar(false);
     }
 
     @Override

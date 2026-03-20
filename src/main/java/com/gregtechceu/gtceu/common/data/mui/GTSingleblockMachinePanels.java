@@ -11,7 +11,6 @@ import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.theme.ThemeAPI;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
-import com.gregtechceu.gtceu.api.mui.widgets.SlotGroupWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUIs;
 import com.gregtechceu.gtceu.client.mui.screen.ModularPanel;
@@ -36,7 +35,7 @@ public class GTSingleblockMachinePanels {
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine, syncManager);
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine);
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
 
@@ -60,7 +59,7 @@ public class GTSingleblockMachinePanels {
              * .left(190));
              */
         });
-        return panelBuilder.build().excludeAreaInRecipeViewer();
+        return panelBuilder.build(syncManager, settings).excludeAreaInRecipeViewer();
     };
 
     public static PanelFactory MACERATOR = (PosGuiData data, PanelSyncManager syncManager, UISettings settings,
@@ -79,7 +78,7 @@ public class GTSingleblockMachinePanels {
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine, syncManager);
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine);
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
 
@@ -106,7 +105,7 @@ public class GTSingleblockMachinePanels {
              * .left(190));
              */
         });
-        return panelBuilder.build().excludeAreaInRecipeViewer();
+        return panelBuilder.build(syncManager, settings).excludeAreaInRecipeViewer();
     };
 
     public static PanelFactory ARC_FURNACE = (PosGuiData data, PanelSyncManager syncManager, UISettings settings,
@@ -125,7 +124,7 @@ public class GTSingleblockMachinePanels {
         int slotHeight = Math.max(inputItemGrid.length + inputFluidGrid.length,
                 outputItemGrid.length + outputFluidGrid.length);
 
-        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine, syncManager);
+        var panelBuilder = MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine);
         var theme = machine.getDefinition().getThemeId();
 
         boolean hasXEI = GTRecipeTypeUIs.recipeTypeUIs.containsKey(simpleTieredMachine.getRecipeType());
@@ -149,7 +148,7 @@ public class GTSingleblockMachinePanels {
              */
 
         });
-        return panelBuilder.build().excludeAreaInRecipeViewer();
+        return panelBuilder.build(syncManager, settings).excludeAreaInRecipeViewer();
     };
 
     public static PanelFactory STEAM_MACHINE = (PosGuiData data, PanelSyncManager syncManager, UISettings settings,
@@ -160,7 +159,7 @@ public class GTSingleblockMachinePanels {
             return new ModularPanel(machine.getDefinition().getName());
         }
 
-        var panelBuilder = MachineUIPanelBuilder.defaultSteamMachineBuilder(machine, syncManager);
+        var panelBuilder = MachineUIPanelBuilder.defaultSteamMachineBuilder(machine);
 
         var inputItemGrid = GTMuiWidgets.createGrid(steamMachine.importItems.getSize(), 3, false, 'i');
         var outputItemGrid = GTMuiWidgets.createGrid(steamMachine.exportItems.getSize(), 3, true, 'i');
@@ -189,6 +188,6 @@ public class GTSingleblockMachinePanels {
                             .alignX(Alignment.CENTER)));
         });
 
-        return panelBuilder.build().excludeAreaInRecipeViewer();
+        return panelBuilder.build(syncManager, settings).excludeAreaInRecipeViewer();
     };
 }

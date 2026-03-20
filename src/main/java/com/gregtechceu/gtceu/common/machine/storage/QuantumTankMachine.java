@@ -98,7 +98,7 @@ public class QuantumTankMachine extends TieredMachine implements IDropSaveMachin
 
     //////////////////////////////////////
     // ***** Initialization ******//
-    /// ///////////////////////////////////
+    //////////////////////////////////////
 
     protected FluidCache createCacheFluidHandler() {
         return new FluidCache(this);
@@ -128,7 +128,7 @@ public class QuantumTankMachine extends TieredMachine implements IDropSaveMachin
 
     //////////////////////////////////////
     // ****** Capability ********//
-    /// ///////////////////////////////////
+    //////////////////////////////////////
 
     @Override
     public @Nullable IItemHandlerModifiable getItemHandlerCap(@Nullable Direction side, boolean useCoverCapability) {
@@ -158,7 +158,7 @@ public class QuantumTankMachine extends TieredMachine implements IDropSaveMachin
 
     //////////////////////////////////////
     // ******* Interaction *******//
-    /// ///////////////////////////////////
+    //////////////////////////////////////
 
     @Override
     public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,

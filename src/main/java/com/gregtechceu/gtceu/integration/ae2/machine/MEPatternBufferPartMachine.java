@@ -320,7 +320,7 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
 
         syncManager.registerServerSyncedAction("refundButtonPressed", packet -> refundAll());
 
-        return MachineUIPanelBuilder.defaultPanelBuilder(this, syncManager).leftConfigurators(f -> {
+        return MachineUIPanelBuilder.defaultPanelBuilder(this).leftConfigurators(f -> {
             f.child(new ButtonWidget<>() // Shared items subpanel
                     .size(18)
                     .onMousePressed((x, y, b) -> {

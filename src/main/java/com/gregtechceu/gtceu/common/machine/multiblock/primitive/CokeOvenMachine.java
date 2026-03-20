@@ -13,7 +13,6 @@ import com.gregtechceu.gtceu.api.mui.value.sync.ItemSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ProgressWidget;
-import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.*;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
@@ -48,7 +47,7 @@ public class CokeOvenMachine extends PrimitiveWorkableMachine implements IMuiMac
 
     @Override
     public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultPanelBuilder(this, syncManager).addTraitConfigurators(false).addDefaultConfigurators(false);
+        return MachineUIPanelBuilder.defaultPanelBuilder(this).addTraitConfigurators(false).addDefaultConfigurators(false);
     }
 
     @Override

@@ -111,9 +111,9 @@ public class SimpleTieredMachine extends WorkableTieredMachine
         }
     }
 
-    /// //////////////////////////////////
+    /////////////////////////////////////
     // ****** RECIPE LOGIC *******//
-    /// //////////////////////////////////
+    /////////////////////////////////////
 
     @Override
     public long getDisplayRecipeVoltage() {

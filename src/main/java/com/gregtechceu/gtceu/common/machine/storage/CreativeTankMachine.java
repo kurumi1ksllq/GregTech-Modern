@@ -142,7 +142,7 @@ public class CreativeTankMachine extends QuantumTankMachine {
 
     @Override
     public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultPanelBuilder(this, syncManager).addDefaultConfigurators(false)
+        return MachineUIPanelBuilder.defaultPanelBuilder(this).addDefaultConfigurators(false)
                 .addTraitConfigurators(false).rightConfigurators(f -> f.child(GTMuiWidgets.createPowerButton(this)));
     }
 

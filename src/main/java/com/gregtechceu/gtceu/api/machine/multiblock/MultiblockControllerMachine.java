@@ -177,7 +177,7 @@ public class MultiblockControllerMachine extends MetaMachine {
 
     //////////////////////////////////////
     // ***** Getters ******//
-    /// ///////////////////////////////////
+    //////////////////////////////////////
 
     @Override
     public MultiblockMachineDefinition getDefinition() {

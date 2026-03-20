@@ -7,11 +7,14 @@ import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.feature.IVoidable;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
 import com.gregtechceu.gtceu.api.machine.trait.feature.IAttachConfiguratorsTrait;
+import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
+import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiWidgets;
 
+import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -25,14 +28,11 @@ public class MachineUIPanelBuilder {
      * Should the GregTech logo be drawn in the bottom right corner of the panel.
      */
     private boolean drawGTLogo = false;
+    private UITexture gtLogoTexture = GTGuiTextures.GREGTECH_LOGO;
     /**
      * Should the player inventory be attached to the bottom of the panel.
      */
     private boolean attachInventory = true;
-    /**
-     * Should the player inventory (if attached) be horizontally centered.
-     */
-    private boolean centerAttachedInventory = true;
     /**
      * Should a fancy title bar be created for this panel.
      */
@@ -47,19 +47,17 @@ public class MachineUIPanelBuilder {
      */
     private boolean addDefaultConfigurators = true;
     private final MetaMachine machine;
-    private final PanelSyncManager syncManager;
 
     private Consumer<Flow> leftConfigurators = (f) -> {};
     private Consumer<Flow> rightConfigurators = (f) -> {};
     private Consumer<ParentWidget<?>> mainContents = (p) -> {};
 
-    protected MachineUIPanelBuilder(MetaMachine machine, PanelSyncManager syncManager) {
+    protected MachineUIPanelBuilder(MetaMachine machine) {
         this.machine = machine;
-        this.syncManager = syncManager;
     }
 
-    public MachineUIPanel build() {
-        var panel = new MachineUIPanel(machine, attachInventory, centerAttachedInventory, addTitleBar, drawGTLogo);
+    public MachineUIPanel build(PanelSyncManager syncManager, UISettings settings) {
+        var panel = new MachineUIPanel(machine, settings, attachInventory, addTitleBar, drawGTLogo, gtLogoTexture);
 
         var attachLeft = panel.getLeftConfiguratorPanel();
         var attachRight = panel.getRightConfiguratorPanel();
@@ -100,16 +98,15 @@ public class MachineUIPanelBuilder {
         return panel;
     }
 
-    public static MachineUIPanelBuilder defaultSimpleSingleblockPanelBuilder(MetaMachine machine,
-                                                                             PanelSyncManager syncManager) {
-        return new MachineUIPanelBuilder(machine, syncManager).drawGTLogo(true);
+    public static MachineUIPanelBuilder defaultSimpleSingleblockPanelBuilder(MetaMachine machine) {
+        return new MachineUIPanelBuilder(machine).drawGTLogo(true);
     }
 
-    public static MachineUIPanelBuilder defaultPanelBuilder(MetaMachine machine, PanelSyncManager syncManager) {
-        return new MachineUIPanelBuilder(machine, syncManager);
+    public static MachineUIPanelBuilder defaultPanelBuilder(MetaMachine machine) {
+        return new MachineUIPanelBuilder(machine);
     }
 
-    public static MachineUIPanelBuilder defaultSteamMachineBuilder(MetaMachine machine, PanelSyncManager syncManager) {
-        return new MachineUIPanelBuilder(machine, syncManager).drawGTLogo(true).addDefaultConfigurators(false).addTraitConfigurators(false);
+    public static MachineUIPanelBuilder defaultSteamMachineBuilder(MetaMachine machine) {
+        return new MachineUIPanelBuilder(machine).drawGTLogo(true).addDefaultConfigurators(false).addTraitConfigurators(false);
     }
 }

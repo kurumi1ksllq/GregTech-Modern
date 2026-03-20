@@ -78,7 +78,7 @@ public class MultiblockTankMachine extends MultiblockControllerMachine implement
     /////////////////////////////////////
     // *********** GUI ***********//
 
-    /// //////////////////////////////////
+    /////////////////////////////////////
 
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,

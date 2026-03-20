@@ -41,6 +41,7 @@ import com.gregtechceu.gtceu.common.data.mui.GTSingleblockMachinePanels;
 import com.gregtechceu.gtceu.common.item.DrumMachineItem;
 import com.gregtechceu.gtceu.common.item.QuantumTankMachineItem;
 import com.gregtechceu.gtceu.common.machine.electric.BatteryBufferMachine;
+import com.gregtechceu.gtceu.common.machine.electric.ChargerMachine;
 import com.gregtechceu.gtceu.common.machine.electric.ConverterMachine;
 import com.gregtechceu.gtceu.common.machine.electric.TransformerMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.MultiblockTankMachine;
@@ -384,8 +385,7 @@ public class GTMachineUtils {
 
     public static MachineDefinition[] registerBatteryBuffer(GTRegistrate registrate, int batterySlotSize) {
         return registerTieredMachines(registrate, "battery_buffer_" + batterySlotSize + "x",
-                (holder, tier) -> new BatteryBufferMachine(holder, tier, batterySlotSize,
-                        BatteryBufferMachine.AMPS_PER_BATTERY_NORMAL, batterySlotSize),
+                (holder, tier) -> new BatteryBufferMachine(holder, tier, batterySlotSize),
                 (tier, builder) -> builder
                         .rotationState(RotationState.ALL)
                         .model(GTMachineModels.createBatteryBufferModel(batterySlotSize))
@@ -399,7 +399,7 @@ public class GTMachineUtils {
                                         FormattingUtil.formatNumbers(GTValues.V[tier]),
                                         GTValues.VNF[tier]),
                                 Component.translatable("gtceu.universal.tooltip.amperage_in_till",
-                                        batterySlotSize * BatteryBufferMachine.AMPS_PER_BATTERY_NORMAL),
+                                        batterySlotSize * BatteryBufferMachine.AMPS_PER_BATTERY),
                                 Component.translatable("gtceu.universal.tooltip.amperage_out_till", batterySlotSize))
                         .register(),
                 ALL_TIERS);
@@ -411,11 +411,10 @@ public class GTMachineUtils {
 
     public static MachineDefinition[] registerCharger(GTRegistrate registrate, int itemSlotSize) {
         return registerTieredMachines(registrate, "charger_" + itemSlotSize + "x",
-                (holder, tier) -> new BatteryBufferMachine(holder, tier, itemSlotSize,
-                        BatteryBufferMachine.AMPS_PER_BATTERY_CHARGER, 0),
+                (holder, tier) -> new ChargerMachine(holder, tier, itemSlotSize),
                 (tier, builder) -> builder
                         .rotationState(RotationState.ALL)
-                        .modelProperty(GTMachineModelProperties.BATTERY_BUFFER_STATE, BatteryBufferMachine.State.IDLE)
+                        .modelProperty(GTMachineModelProperties.CHARGER_STATE, ChargerMachine.State.IDLE)
                         .model(GTMachineModels.createChargerModel())
                         .langValue("%s %sx Turbo Charger".formatted(
                                 VCF[tier] + VOLTAGE_NAMES[tier] + ChatFormatting.RESET,
@@ -425,7 +424,7 @@ public class GTMachineUtils {
                                         FormattingUtil.formatNumbers(GTValues.V[tier]),
                                         GTValues.VNF[tier]),
                                 Component.translatable("gtceu.universal.tooltip.amperage_in_till",
-                                        itemSlotSize * BatteryBufferMachine.AMPS_PER_BATTERY_CHARGER))
+                                        itemSlotSize * ChargerMachine.AMPS_PER_ITEM))
                         .register(),
                 ALL_TIERS);
     }

@@ -125,24 +125,23 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
     //////////////////////////////////////
 
     @Override
-    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager, UISettings settings) {
-        String[] matrix = GTMuiMachineUtil.createSquareMatrix(inventorySize, 'B');
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
+        String[] matrix;
+        if (inventorySize == 8) matrix = new String[] { "BBBB", "BBBB" };
+        else matrix = GTMuiMachineUtil.createSquareMatrix(inventorySize, 'B');
 
         DoubleSyncValue energyPercentage = syncManager.getOrCreateSyncHandler("energyPercentage", DoubleSyncValue.class,
                 () -> new DoubleSyncValue(this::getEnergyPercentage));
 
-        mainWidget.child(Flow.row()
-                .height(90)
-                .margin(6)
-                .marginLeft(7)
-                .marginTop(2)
-                .height(80)
-                .child(new ProgressWidget()
+        mainWidget.height(90);
+
+        mainWidget.child(new ProgressWidget()
                         .texture(GTGuiTextures.PROGRESS_BAR_BOILER_EMPTY_STEEL,
                                 GTGuiTextures.PROGRESS_BAR_BOILER_HEAT, 60)
                         .direction(ProgressWidget.Direction.UP)
                         .value(energyPercentage)
-                        .marginRight(50)
+                        .marginLeft(5)
                         .size(18, 60)
                         .verticalCenter()
                         .addTooltipLine(IKey.dynamic(() -> Component.literal(
@@ -150,12 +149,12 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
                                         GTStringUtils.formatInt(energyContainer.getEnergyStored()),
                                         GTStringUtils.formatInt(energyContainer.getEnergyCapacity()))))))
                 .child(GTMuiMachineUtil.createSlotGroupFromInventory(
-                                chargerInventory, "charger_inv",
+                                chargerInventory, "batteries",
                                 inventorySize, 'B',
                                 slot -> slot.background(GTGuiTextures.SLOT, GTGuiTextures.CHARGER_OVERLAY),
                                 syncManager,
                                 matrix)
-                        .center()));
+                        .center());
     }
 
     private double getEnergyPercentage() {

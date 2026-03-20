@@ -290,20 +290,14 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IHasCi
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        int topOffset = slots == 1 ? 10 : slots == 9 ? 16 : 20;
-        int height = Math.max(MachineUIPanel.DEFAULT_CONTENT_HEIGHT, (int) (18 * Math.sqrt(slots)) + 78 + 19);
-
-        mainWidget.height(height);
-        mainWidget.child((slots == 1 ? createSingleSlotUI(syncManager) : createMultiSlotUI(syncManager))
-                .top(topOffset)
-                .horizontalCenter());
+        mainWidget.child(slots == 1 ? createSingleSlotUI(syncManager) : createMultiSlotUI(syncManager));
     }
 
     protected Flow createSingleSlotUI(PanelSyncManager syncManager) {
         BooleanSyncValue locked = new BooleanSyncValue(this.tank::isLocked, this.tank::setLocked);
         syncManager.syncValue("locked", locked);
         return Flow.col()
-                .widthRel(.6f)
+                .width(MachineUIPanel.DEFAULT_CONTENT_WIDTH)
                 .height(60)
                 .mainAxisAlignment(Alignment.MainAxis.CENTER)
                 .childPadding(4)

@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.api.mui.value.sync.ItemSlotSyncHandler;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.ProgressWidget;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.*;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
@@ -61,12 +62,20 @@ public class CokeOvenMachine extends PrimitiveWorkableMachine implements IMuiMac
                     return recipeLogic.getProgressPercent();
                 }));
 
-        mainWidget.child(new ItemSlot().syncHandler(new ItemSlotSyncHandler(
+        Flow row = Flow.row().coverChildren();
+
+        row.child(new ItemSlot().syncHandler(new ItemSlotSyncHandler(
                 new ModularSlot(importItems.storage, 0)
                         .slotGroup(new SlotGroup("import_items", 1))))
                 .background(uiTheme.getItemSlotTheme().getTheme().getBackground(),
                         GTGuiTextures.PRIMITIVE_FURNACE_OVERLAY)
-                .margin(52, 0, 30, 0))
+                )
+                .child(new ProgressWidget()
+                        .value(progressPercent)
+                        .size(20, 15)
+                        .texture(GTGuiTextures.PRIMITIVE_BLAST_FURNACE_PROGRESS_BAR, 18)
+                        .margin(4, 0)
+                )
 
                 .child(new ItemSlot().syncHandler(new ItemSlotSyncHandler(
                         new ModularSlot(exportItems.storage, 0)
@@ -74,12 +83,7 @@ public class CokeOvenMachine extends PrimitiveWorkableMachine implements IMuiMac
                                 .accessibility(false, true)))
                         .background(uiTheme.getItemSlotTheme().getTheme().getBackground(),
                                 GTGuiTextures.PRIMITIVE_FURNACE_OVERLAY)
-                        .margin(103, 0, 30, 0))
-                .child(new ProgressWidget()
-                        .value(progressPercent)
-                        .size(20, 15)
-                        .texture(GTGuiTextures.PRIMITIVE_BLAST_FURNACE_PROGRESS_BAR, 18)
-                        .margin(76, 32))
+                        )
 
                 .child(createTankWidget()
                         .overlay(GTGuiTextures.PRIMITIVE_LARGE_FLUID_TANK_OVERLAY)
@@ -87,7 +91,10 @@ public class CokeOvenMachine extends PrimitiveWorkableMachine implements IMuiMac
                         .syncHandler(new FluidSlotSyncHandler(
                                 exportFluids.getStorages()[0])
                                 .canFillSlot(false))
-                        .margin(134, 0, 13, 0));
+                                .marginLeft(20)
+                        );
+
+        mainWidget.child(row);
     }
 
     @Override

@@ -310,13 +310,13 @@ public class FisherMachine extends TieredEnergyMachine
 
         int slotHeight = outputItemGrid.length;
 
-        mainWidget.height(30 + (18 * slotHeight));
 
         DoubleSyncValue progressPercent = syncManager.getOrCreateSyncHandler("progressPercent", DoubleSyncValue.class,
                 () -> new DoubleSyncValue(() -> progress / (double) maxProgress));
 
         mainWidget.child(Flow.row()
-                .coverChildren().center()
+                .coverChildren()
+                        .margin(0, 15)
                 .crossAxisAlignment(Alignment.CrossAxis.CENTER)
                 .child(new ItemSlot().slot(new ModularSlot(baitHandler, 0)).background(GTGuiTextures.SLOT, GTGuiTextures.STRING_SLOT_OVERLAY).marginRight(2))
                 .child(new ProgressWidget()

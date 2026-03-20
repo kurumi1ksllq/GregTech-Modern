@@ -539,13 +539,13 @@ public class PumpMachine extends TieredEnergyMachine implements IMuiMachine {
         IntSyncValue bucketSyncer = new IntSyncValue(() -> cache.getFluidInTank(0).getAmount(), (ignored) -> {});
         syncManager.syncValue("bucket_amount", bucketSyncer);
 
-        mainWidget.height(80)
+        mainWidget
                 // Box that has the display texture BG +
                 // the buttons / text / etc
                 .child(new ParentWidget<>()
                         .background(GTGuiTextures.DISPLAY)
                         .size(90, 63)
-                        .align(Alignment.CENTER)
+                        .margin(0, 5)
                         .child(IKey.lang("gtceu.gui.fluid_amount").asWidget()
                                 .color(0xffffff)
                                 .margin(8, 0, 8, 0))

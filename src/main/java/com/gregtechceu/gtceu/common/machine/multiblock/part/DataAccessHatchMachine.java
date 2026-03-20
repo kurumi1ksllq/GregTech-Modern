@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.capability.IMonitorComponent;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.feature.IDataInfoProvider;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
@@ -90,23 +91,12 @@ public class DataAccessHatchMachine extends TieredPartMachine
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        int size = (int) Math.sqrt(getInventorySize());
 
         var grid = GTMuiMachineUtil.createSlotGroupFromInventory(importItems, "data_inventory", getInventorySize(), 'I',
                 i -> i.background(GTGuiTextures.SLOT, GTGuiTextures.DATA_ORB_OVERLAY), syncManager,
                 GTMuiMachineUtil.createSquareMatrix(importItems.getSlots(), 'I'));
 
-        mainWidget
-                .height(20 + (18 * size))
-                .child(GTMuiWidgets.createTitleBar(this.getDefinition(), 176))
-                .child(Flow.row()
-                        .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                        .align(Alignment.CENTER)
-                        .coverChildren()
-                        .child(grid
-                                .marginLeft(30)
-                                .marginRight(30)
-                                .verticalCenter()));
+        mainWidget.child(Flow.row().coverChildren().child(grid.margin(30, 10)));
     }
 
     @Override

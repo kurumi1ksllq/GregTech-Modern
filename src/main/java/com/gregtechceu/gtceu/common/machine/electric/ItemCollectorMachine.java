@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.cover.filter.ItemFilter;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
@@ -312,11 +313,9 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        mainWidget.height(150);
 
         mainWidget.child(Flow.column()
-                .coverChildrenHeight()
-                .widthRel(1)
+                        .size(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 150)
                 .crossAxisAlignment(Alignment.CrossAxis.START)
                 .child(Flow.row()
                         .coverChildren()

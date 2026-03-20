@@ -130,7 +130,7 @@ public class MEInputBusPartMachine extends MEBusPartMachine
 
         registerConfigActions(syncManager);
 
-        var flow = Flow.col().alignX(0.5f).coverChildren();
+        var flow = Flow.col().coverChildren();
 
         flow.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
                                 Component.translatable("gtceu.gui.me_network.online") :
@@ -141,7 +141,7 @@ public class MEInputBusPartMachine extends MEBusPartMachine
                         .size(8 * 18, 2 * (18 * 2 + 2))
         );
 
-        mainWidget.coverChildrenHeight().child(flow);
+        mainWidget.child(flow);
     }
 
     protected void registerConfigActions(PanelSyncManager syncManager) {

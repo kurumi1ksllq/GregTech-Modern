@@ -103,7 +103,7 @@ public class MEOutputBusPartMachine extends MEBusPartMachine {
         BooleanSyncValue isOnlineValue = new BooleanSyncValue(this::isOnline, this::setOnline);
         syncManager.syncValue("is_online", isOnlineValue);
 
-        var flow = Flow.col().alignX(0.5f).coverChildren();
+        var flow = Flow.col().coverChildren();
 
         flow.child(IKey.dynamic(() -> isOnlineValue.getBoolValue() ?
                         Component.translatable("gtceu.gui.me_network.online") :
@@ -131,7 +131,7 @@ public class MEOutputBusPartMachine extends MEBusPartMachine {
                 .syncHandler(dynamicHandler)
                 .size(167, 80));
 
-        mainWidget.coverChildrenHeight().child(flow);
+        mainWidget.child(flow);
     }
 
     private class InaccessibleInfiniteHandler extends NotifiableItemStackHandler {

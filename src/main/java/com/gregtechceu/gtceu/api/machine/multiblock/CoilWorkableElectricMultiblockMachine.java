@@ -60,8 +60,8 @@ public class CoilWorkableElectricMultiblockMachine extends WorkableElectricMulti
                 .colorType(ColorType.DEFAULT)
                 .tiled().build();
 
-        mainWidget.size(180, 140)
-                .child(Flow.row()
+        mainWidget
+                .child(Flow.row().height(MULTI_UI_TEXT_PANEL_HEIGHT).coverChildrenWidth()
                         .child(new IDrawable.DrawableWidget(coilTexture).size(4, MULTI_UI_TEXT_PANEL_HEIGHT))
                         .child(getMainTextPanel(syncManager))
                         .child(new IDrawable.DrawableWidget(coilTexture).size(4, MULTI_UI_TEXT_PANEL_HEIGHT))

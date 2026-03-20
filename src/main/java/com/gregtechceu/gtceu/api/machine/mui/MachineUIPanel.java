@@ -60,13 +60,14 @@ public class MachineUIPanel extends ModularPanel {
         Flow panelContents = Flow.col().coverChildren();
         panelContents.margin(4);
         mainContents = new ParentWidget<>()
+                .coverChildren()
                 .size(DEFAULT_CONTENT_WIDTH, DEFAULT_CONTENT_HEIGHT);
 
         panelContents.child(mainContents);
 
         if (attachPlayerInventory) {
             var inventory = SlotGroupWidget.playerInventory((index, slot) -> slot)
-                    .marginTop(4)
+                    .marginTop(1)
                     .marginBottom(3);
             panelContents.child(inventory);
         }

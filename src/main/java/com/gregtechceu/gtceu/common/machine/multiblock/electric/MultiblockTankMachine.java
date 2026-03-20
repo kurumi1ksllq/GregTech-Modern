@@ -88,8 +88,6 @@ public class MultiblockTankMachine extends MultiblockControllerMachine implement
 
         mainWidget
                 .background(GTGuiTextures.DISPLAY)
-                .size(90, 63)
-                .align(Alignment.CENTER)
                 .child(IKey.lang("gtceu.gui.fluid_amount").asWidget()
                         .color(0xffffff)
                         .margin(8, 0, 8, 0))

@@ -297,16 +297,11 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
         int rowSize = (int) Math.sqrt(getInventorySize());
-        mainWidget.width(Math.max(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 18 * rowSize + 14));
-        mainWidget.height(Math.max(MachineUIPanel.DEFAULT_CONTENT_HEIGHT, (18 * rowSize) + 20));
-
-        int smallHatchOffset = tier < 2 ? 9 * (3 - rowSize) : 0;
 
         SlotGroup group = new SlotGroup("item_inv", rowSize, 0, true);
         mainWidget.child(new Grid()
                 .coverChildren()
-                .top(10 + smallHatchOffset)
-                .alignX(0.5f)
+                        .margin(7, 5)
                 .mapTo(rowSize, rowSize * rowSize, index -> new ItemSlot()
                         .slot(SyncHandlers.itemSlot(inventory, index)
                                 .slotGroup(group)

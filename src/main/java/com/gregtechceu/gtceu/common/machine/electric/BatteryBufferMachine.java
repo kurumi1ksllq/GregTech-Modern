@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.capability.IMonitorComponent;
 import com.gregtechceu.gtceu.api.capability.compat.FeCompat;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
@@ -107,16 +108,15 @@ public class BatteryBufferMachine extends TieredEnergyMachine
         DoubleSyncValue energyPercentage = syncManager.getOrCreateSyncHandler("energyPercentage", DoubleSyncValue.class,
                 () -> new DoubleSyncValue(this::getEnergyPercentage));
 
-        mainWidget.height(90);
+        var flow = Flow.row().width(MachineUIPanel.DEFAULT_CONTENT_WIDTH).height(90);
 
-        mainWidget.child(new ProgressWidget()
+        flow.child(new ProgressWidget()
                 .texture(GTGuiTextures.PROGRESS_BAR_BOILER_EMPTY_STEEL,
                         GTGuiTextures.PROGRESS_BAR_BOILER_HEAT, 60)
                 .direction(ProgressWidget.Direction.UP)
                 .value(energyPercentage)
                 .marginLeft(5)
                 .size(18, 60)
-                .verticalCenter()
                 .addTooltipLine(IKey.dynamic(() -> Component.literal(
                         "%s/%s EU".formatted(
                                 GTStringUtils.formatInt(energyContainer.getEnergyStored()),
@@ -128,6 +128,8 @@ public class BatteryBufferMachine extends TieredEnergyMachine
                         syncManager,
                         matrix)
                         .center());
+
+        mainWidget.child(flow);
     }
 
     private double getEnergyPercentage() {

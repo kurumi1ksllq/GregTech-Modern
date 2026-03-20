@@ -176,10 +176,6 @@ public class MufflerPartMachine extends TieredPartMachine implements IMuiMachine
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        int size = (int) Math.sqrt(inventory.getSlots());
-        mainWidget.width(Math.max(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 20 + (18 * size)))
-                .height(20 + (18 * size));
-
-        mainWidget.child(createSquareSlotGroupFromInventory(inventory, "muffler_inventory", syncManager).center());
+        mainWidget.child(createSquareSlotGroupFromInventory(inventory, "muffler_inventory", syncManager).margin(10, 10));
     }
 }

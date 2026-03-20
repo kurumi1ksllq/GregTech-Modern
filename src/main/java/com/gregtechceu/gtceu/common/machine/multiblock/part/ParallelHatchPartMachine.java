@@ -59,10 +59,8 @@ public class ParallelHatchPartMachine extends TieredPartMachine implements IMuiM
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
         IntSyncValue parallels = new IntSyncValue(this::getCurrentParallel, this::setCurrentParallel);
-        mainWidget.size(180, 60).child(Flow.row()
-                .crossAxisAlignment(Alignment.CrossAxis.CENTER)
-                .align(Alignment.CENTER)
-                .coverChildren()
+        mainWidget.child(Flow.row()
+                .size(180, 60)
                 .child(new ButtonWidget<>()
                         .overlay(new DynamicDrawable(() -> {
                             MouseData mouseData = MouseData.create(-1);

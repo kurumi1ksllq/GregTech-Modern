@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.common.machine.storage;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.drawable.Rectangle;
@@ -129,15 +130,13 @@ public class CreativeChestMachine extends QuantumChestMachine {
         IntSyncValue ticksPerCycle = new IntSyncValue(this::getTicksPerCycle, this::setTicksPerCycle);
         syncManager.syncValue("ticksPerCycle", ticksPerCycle);
 
-        mainWidget.height(86);
         mainWidget
                 .child(Flow.col()
-                        .widthRel(1)
+                        .size(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 86)
                         .name("main")
                         .padding(7)
                         .mainAxisAlignment(Alignment.MainAxis.START)
-                        .coverChildrenHeight()
-                        .child(Flow.row()
+                        .child(Flow.row().coverChildrenHeight()
                                 .child(IKey.lang("gtceu.creative.chest.item").asWidget()
                                         .marginRight(4)
                                         .verticalCenter())

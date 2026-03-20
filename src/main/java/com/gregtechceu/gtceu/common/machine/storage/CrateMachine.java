@@ -14,6 +14,7 @@ import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
+import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.ItemSlot;
 import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
@@ -89,9 +90,12 @@ public class CrateMachine extends MetaMachine implements IMuiMachine,
             }
         }
 
-        mainWidget.size(Math.max(MachineUIPanel.DEFAULT_CONTENT_WIDTH, rowLength * 18 + 10), 20 + 18 * rows)
-                .child(IKey.lang(getBlockState().getBlock().getName()).asWidget().pos(5, 5))
-                .child(slots.top(18).horizontalCenter().height(rows * 18));
+        var col = Flow.col()
+                .margin(5, 0)
+                .coverChildren();
+            col.child(IKey.lang(getBlockState().getBlock().getName()).asWidget().alignX(0f).margin(0, 0, 3, 3))
+                    .child(slots.height(rows * 18));
+        mainWidget.child(col);
     }
 
     @Override

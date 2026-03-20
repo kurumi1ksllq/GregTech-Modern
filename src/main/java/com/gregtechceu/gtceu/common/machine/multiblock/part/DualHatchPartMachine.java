@@ -163,10 +163,6 @@ public class DualHatchPartMachine extends ItemBusPartMachine {
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        int rowSize = (int) Math.sqrt(getInventorySize());
-
-        mainWidget.width(Math.max(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 18 * rowSize + 14));
-        mainWidget.height(Math.max(MachineUIPanel.DEFAULT_CONTENT_HEIGHT, (18 * rowSize) + 20));
 
         String slotGroupName = "inv_slot_group";
         SlotGroup slotGroup = new SlotGroup(slotGroupName, getInventorySize());
@@ -187,7 +183,7 @@ public class DualHatchPartMachine extends ItemBusPartMachine {
                             .canDrainSlot(true);
                     syncManager.syncValue(slotGroupName + "_fluid", i, syncHandler);
                     return new FluidSlot().syncHandler(slotGroupName + "_fluid", i);
-                }).build()
-                .center());
+                }).build().margin(7, 10)
+                );
     }
 }

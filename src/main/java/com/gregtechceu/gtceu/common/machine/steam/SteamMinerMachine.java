@@ -164,7 +164,7 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IControll
                         .coverChildrenHeight()
                         .margin(5)
                         .childPadding(5)
-                        .widthRel(1f)
+                        .width(200)
                         .child(Flow.column()
                                 .crossAxisAlignment(Alignment.CrossAxis.START)
                                 .padding(5)

@@ -83,7 +83,6 @@ public class SteamSolarBoiler extends SteamBoilerMachine {
                 }));
 
         mainWidget.child(new ProgressWidget()
-                .top(30).right(18)
                 .size(18)
                 .texture(progressTexture, 20)
                 .value(canSeeSun));

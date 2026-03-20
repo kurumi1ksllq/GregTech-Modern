@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.capability.IOpticalComputationProvider;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.drawable.Rectangle;
@@ -107,8 +108,9 @@ public class CreativeComputationProviderMachine extends MetaMachine
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        mainWidget.height(70)
+        mainWidget
                 .child(Flow.column()
+                        .size(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 70)
                         .padding(10)
                         .childPadding(5)
                         .child(Flow.row()

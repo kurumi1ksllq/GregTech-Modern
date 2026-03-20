@@ -121,7 +121,7 @@ public class WorkableElectricMultiblockMachine extends WorkableMultiblockMachine
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        mainWidget.size(180, 140).child(getMainTextPanel(syncManager).center());
+        mainWidget.child(getMainTextPanel(syncManager).margin(4, 2));
     }
 
     @Override

@@ -222,12 +222,12 @@ public class MinerMachine extends WorkableTieredMachine
     @Override
     public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
                             UISettings settings) {
-        mainWidget.width(220)
+        mainWidget
                 .child(Flow.row()
+                        .width(220)
                         .coverChildrenHeight()
                         .margin(5)
                         .childPadding(5)
-                        .widthRel(1f)
                         .child(Flow.column()
                                 .crossAxisAlignment(Alignment.CrossAxis.START)
                                 .padding(5)

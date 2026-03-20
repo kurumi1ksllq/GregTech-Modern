@@ -259,11 +259,10 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
         // SlotGroup group = new SlotGroup("item_inv", 1, 0, true);
 
         mainWidget
-                .height(80)
                 .child(new ParentWidget<>()
                         .background(GTGuiTextures.DISPLAY)
                         .size(90, 63)
-                        .align(Alignment.CENTER)
+                        .margin(0, 5)
                         .child(IKey.lang("gtceu.machine.quantum_chest.items_stored").asWidget()
                                 .color(0xffffff)
                                 .margin(8, 0, 8, 0))

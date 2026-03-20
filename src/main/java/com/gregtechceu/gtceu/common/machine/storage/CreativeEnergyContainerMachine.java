@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.ILaserContainer;
 import com.gregtechceu.gtceu.api.machine.TieredMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.mui.base.IPanelHandler;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IDrawable;
@@ -216,14 +217,12 @@ public class CreativeEnergyContainerMachine extends TieredMachine
         IPanelHandler panelSyncHandler = syncManager.syncedPanel("voltage popup", false,
                 (manager, handler) -> createAmpSelector(voltage, tier));
 
-        mainWidget.height(101);
         mainWidget
                 .child(Flow.col()
-                        .widthRel(1)
+                        .size(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 101)
                         .name("main")
                         .padding(7)
                         .mainAxisAlignment(Alignment.MainAxis.START)
-                        .coverChildrenHeight()
                         .child(createVoltageRow(panelSyncHandler, voltage))
                         .child(createAmpRow(amps))
                         .child(new Rectangle().color(0xFF555555).asWidget()

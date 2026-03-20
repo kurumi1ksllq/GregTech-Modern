@@ -219,11 +219,10 @@ public class QuantumTankMachine extends TieredMachine implements IDropSaveMachin
         syncManager.syncValue("bucket_amount", bucketSyncer);
 
         mainWidget
-                .height(80)
                 .child(new ParentWidget<>()
                         .background(GTGuiTextures.DISPLAY)
                         .size(90, 63)
-                        .align(Alignment.CENTER)
+                        .margin(0, 5)
                         .child(IKey.lang("gtceu.gui.fluid_amount").asWidget()
                                 .color(0xffffff)
                                 .margin(8, 0, 8, 0))

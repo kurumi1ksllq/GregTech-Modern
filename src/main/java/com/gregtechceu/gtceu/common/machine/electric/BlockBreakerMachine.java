@@ -276,11 +276,11 @@ public class BlockBreakerMachine extends TieredEnergyMachine
                             UISettings settings) {
         var slotHeight = (int) Math.sqrt(inventorySize);
         mainWidget
-                .size(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 20 + 18 * slotHeight)
                 .child(Flow.col()
-                        .coverChildren()
+                        .size(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 18 * slotHeight)
+                        .margin(0, 10)
                         .child(GTMuiMachineUtil.createSquareSlotGroupFromInventory(this.cache, "output_cache",
                                 syncManager))
-                        .align(Alignment.CENTER));
+                        );
     }
 }

@@ -91,7 +91,7 @@ public class CrateMachine extends MetaMachine implements IMuiMachine,
         }
 
         var col = Flow.col()
-                .margin(5, 0)
+                .margin(5, 5, 0, 5)
                 .coverChildren();
             col.child(IKey.lang(getBlockState().getBlock().getName()).asWidget().alignX(0f).margin(0, 0, 3, 3))
                     .child(slots.height(rows * 18));

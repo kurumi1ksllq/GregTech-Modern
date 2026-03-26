@@ -126,16 +126,4 @@ public interface IMultiPart extends IMachineFeature, IMuiMachine {
     default GTRecipe modifyRecipe(GTRecipe recipe) {
         return recipe;
     }
-
-    /**
-     * Add text to the multiblock's screen.
-     * 
-     * @param textList the text list to add to.
-     */
-    default void addMultiText(List<Component> textList) {}
-
-    /**
-     * Attach part's tooltips to the controller.
-     */
-    default void attachFancyTooltipsToController(MultiblockControllerMachine controller, TooltipsPanel tooltipsPanel) {}
 }

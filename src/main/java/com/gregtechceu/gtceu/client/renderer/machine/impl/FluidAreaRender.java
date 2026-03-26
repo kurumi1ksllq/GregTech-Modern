@@ -94,7 +94,7 @@ public class FluidAreaRender extends DynamicRender<WorkableMultiblockMachine, Fl
             if (lastRecipe == null) {
                 cachedRecipe = null;
                 cachedFluid = null;
-            } else if (machine.self().getOffsetTimer() % 20 == 0 || lastRecipe.id != cachedRecipe) {
+            } else if (machine.getOffsetTimer() % 20 == 0 || lastRecipe.id != cachedRecipe) {
                 cachedRecipe = lastRecipe.id;
                 if (machine.isActive()) {
                     cachedFluid = RenderUtil.getRecipeFluidToRender(lastRecipe);
@@ -114,12 +114,12 @@ public class FluidAreaRender extends DynamicRender<WorkableMultiblockMachine, Fl
             poseStack.pushPose();
             var pose = poseStack.last().pose();
 
-            var dir = face.getRelative(machine.self().getFrontFacing(), machine.self().getUpwardsFacing(),
-                    machine.self().isFlipped());
+            var dir = face.getRelative(machine.getFrontFacing(), machine.getUpwardsFacing(),
+                    machine.isFlipped());
             if (dir.getAxis() != Direction.Axis.Y) dir = dir.getOpposite();
 
             fluidBlockRenderer.drawPlane(dir, trait.getFluidOffsets(), pose, consumer, cachedFluid,
-                    RenderUtil.FluidTextureType.STILL, packedOverlay, machine.self().getBlockPos());
+                    RenderUtil.FluidTextureType.STILL, packedOverlay, machine.getBlockPos());
             poseStack.popPose();
         }
     }

@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.machine.feature.multiblock;
 
-import com.gregtechceu.gtceu.api.gui.fancy.TooltipsPanel;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineFeature;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
@@ -11,7 +10,6 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.state.BlockState;
 
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +18,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.List;
 import java.util.SortedSet;
 
-public interface IMultiPart extends IMachineFeature, IMuiMachine {
+public interface IMultiPart extends IMachineFeature {
 
     /**
      * Can it be shared among multi multiblock.
@@ -84,35 +82,35 @@ public interface IMultiPart extends IMachineFeature, IMuiMachine {
     /**
      * Called per tick in {@link RecipeLogic#handleRecipeWorking()}
      */
-    default boolean onWorking(IWorkableMultiController controller) {
+    default boolean onWorking(WorkableMultiblockMachine controller) {
         return true;
     }
 
     /**
      * Called per tick in {@link RecipeLogic#handleRecipeWorking()}
      */
-    default boolean onWaiting(IWorkableMultiController controller) {
+    default boolean onWaiting(WorkableMultiblockMachine controller) {
         return true;
     }
 
     /**
      * Called in {@link WorkableMultiblockMachine#setWorkingEnabled(boolean)}
      */
-    default boolean onPaused(IWorkableMultiController controller) {
+    default boolean onPaused(WorkableMultiblockMachine controller) {
         return true;
     }
 
     /**
      * Called in {@link RecipeLogic#onRecipeFinish()} before outputs are produced
      */
-    default boolean afterWorking(IWorkableMultiController controller) {
+    default boolean afterWorking(WorkableMultiblockMachine controller) {
         return true;
     }
 
     /**
      * Called in {@link RecipeLogic#setupRecipe(GTRecipe)}
      */
-    default boolean beforeWorking(IWorkableMultiController controller) {
+    default boolean beforeWorking(WorkableMultiblockMachine controller) {
         return true;
     }
 

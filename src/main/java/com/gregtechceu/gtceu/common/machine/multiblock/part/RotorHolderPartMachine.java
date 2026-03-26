@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.*;
+import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
@@ -171,7 +172,7 @@ public class RotorHolderPartMachine extends TieredPartMachine {
     }
 
     private void updateRotorSpeed() {
-        if (isFormed() && getControllers().first() instanceof IWorkableMultiController workable) {
+        if (isFormed() && getControllers().first() instanceof WorkableMultiblockMachine workable) {
             if (workable.getRecipeLogic().isWorking()) return;
         }
         if (!hasRotor()) {
@@ -191,7 +192,7 @@ public class RotorHolderPartMachine extends TieredPartMachine {
     }
 
     @Override
-    public boolean onWorking(IWorkableMultiController controller) {
+    public boolean onWorking(WorkableMultiblockMachine controller) {
         if (getRotorSpeed() < getMaxRotorHolderSpeed()) {
             setRotorSpeed(getRotorSpeed() + SPEED_INCREMENT);
             updateRotorSubscription();

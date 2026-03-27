@@ -87,7 +87,7 @@ public class MachineUIPanelBuilder {
         mainContents.accept(attachMain);
 
         if (addTraitConfigurators) {
-            for (var trait : machine.getTraitHolder().getAllTraits()) {
+            for (var trait : machine.getAllTraits()) {
                 if (trait instanceof IAttachConfiguratorsTrait attachConfiguratorsTrait) {
                     attachConfiguratorsTrait.attachLeftConfigurators(attachLeft, panel, syncManager);
                     attachConfiguratorsTrait.attachRightConfigurators(attachRight, panel, syncManager);

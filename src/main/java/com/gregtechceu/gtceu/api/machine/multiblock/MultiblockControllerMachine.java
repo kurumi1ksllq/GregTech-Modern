@@ -125,7 +125,7 @@ public class MultiblockControllerMachine extends MetaMachine {
         }
         updatePartPositions();
 
-        for (var trait : getTraitHolder().getAllTraits()) {
+        for (var trait : getAllTraits()) {
             if (trait instanceof MultiblockMachineTrait multiblockMachineTrait)
                 multiblockMachineTrait.onStructureFormed();
         }
@@ -154,7 +154,7 @@ public class MultiblockControllerMachine extends MetaMachine {
         parts.clear();
         updatePartPositions();
 
-        for (var trait : getTraitHolder().getAllTraits()) {
+        for (var trait : getAllTraits()) {
             if (trait instanceof MultiblockMachineTrait multiblockMachineTrait)
                 multiblockMachineTrait.onStructureInvalid();
         }

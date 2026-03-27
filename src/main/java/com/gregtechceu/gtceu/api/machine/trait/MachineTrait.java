@@ -41,7 +41,7 @@ public abstract class MachineTrait implements ISyncManaged {
         this.capabilityValidator = side -> true;
         // Machine should never be null, unless this trait is a recipe handler instantiated outside a machine for
         // recipe search.
-        if (machine != null) machine.getTraitHolder().attachTrait(this);
+        if (machine != null) machine.attachTrait(this);
     }
 
     public abstract MachineTraitType<?> getTraitType();

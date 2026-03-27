@@ -76,13 +76,13 @@ public class CombinedDirectionalFancyConfigurator implements IFancyUIProvider {
         // Left side:
         CONFIG_HANDLERS.add(
                 machine -> {
-                    var trait = machine.getTraitHolder().getTrait(AutoOutputTrait.TYPE);
+                    var trait = machine.getTrait(AutoOutputTrait.TYPE);
                     return trait != null && trait.supportsAutoOutputItems() ?
                             () -> new AutoOutputItemConfigHandler(trait) : null;
                 });
         CONFIG_HANDLERS.add(
                 machine -> {
-                    var trait = machine.getTraitHolder().getTrait(AutoOutputTrait.TYPE);
+                    var trait = machine.getTrait(AutoOutputTrait.TYPE);
                     return trait != null && trait.supportsAutoOutputFluids() ?
                             () -> new AutoOutputFluidConfigHandler(trait) : null;
                 });

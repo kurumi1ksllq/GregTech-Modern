@@ -2,27 +2,23 @@ package com.gregtechceu.gtceu.common.machine.electric;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
-import com.gregtechceu.gtceu.api.machine.feature.IHasBatterySlot;
 import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
 import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
+import com.gregtechceu.gtceu.api.machine.trait.ItemChargerSlotTrait;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
-import com.gregtechceu.gtceu.api.mui.utils.Alignment;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
-import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
-import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -44,15 +40,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class BlockBreakerMachine extends TieredEnergyMachine
-                                 implements IMuiMachine, IControllable, IHasBatterySlot {
+                                 implements IMuiMachine, IControllable {
 
     @SaveField
     protected final NotifiableItemStackHandler cache;
     @Getter
     @SaveField
-    protected final CustomItemStackHandler chargerInventory;
+    protected final ItemChargerSlotTrait chargerInventory;
     @Nullable
-    protected TickableSubscription batterySubs, breakerSubs;
+    protected TickableSubscription breakerSubs;
     @Nullable
     protected ISubscription energySubs;
     private final int inventorySize;
@@ -74,7 +70,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
         super(info, tier);
         this.inventorySize = (tier + 1) * (tier + 1);
         this.cache = createCacheItemHandler();
-        this.chargerInventory = createChargerItemHandler();
+        this.chargerInventory = new ItemChargerSlotTrait(this, energyContainer);
         this.energyPerTick = GTValues.V[tier - 1];
         this.efficiencyMultiplier = 1.0f - getEfficiencyMultiplier(tier);
         this.autoOutput = AutoOutputTrait.ofItems(this, cache);
@@ -96,14 +92,6 @@ public class BlockBreakerMachine extends TieredEnergyMachine
     // ***** Initialization *****//
     //////////////////////////////////////
 
-    protected CustomItemStackHandler createChargerItemHandler() {
-        var handler = new CustomItemStackHandler();
-        handler.setFilter(item -> GTCapabilityHelper.getElectricItem(item) != null ||
-                (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE &&
-                        GTCapabilityHelper.getForgeEnergyItem(item) != null));
-        return handler;
-    }
-
     protected NotifiableItemStackHandler createCacheItemHandler() {
         return new NotifiableItemStackHandler(this, inventorySize, IO.BOTH, IO.OUT);
     }
@@ -115,11 +103,7 @@ public class BlockBreakerMachine extends TieredEnergyMachine
             if (getLevel() instanceof ServerLevel serverLevel) {
                 serverLevel.getServer().tell(new TickTask(0, this::updateBreakerSubscription));
             }
-            energySubs = energyContainer.addChangedListener(() -> {
-                this.updateBatterySubscription();
-                this.updateBreakerSubscription();
-            });
-            chargerInventory.setOnContentsChanged(this::updateBatterySubscription);
+            energySubs = energyContainer.addChangedListener(this::updateBreakerSubscription);
         }
     }
 
@@ -135,7 +119,6 @@ public class BlockBreakerMachine extends TieredEnergyMachine
     @Override
     public void onMachineDestroyed() {
         super.onMachineDestroyed();
-        chargerInventory.dropInventoryInWorld(getLevel(), getBlockPos());
         cache.dropInventoryInWorld();
     }
 
@@ -240,24 +223,6 @@ public class BlockBreakerMachine extends TieredEnergyMachine
             return true;
         }
         return false;
-    }
-
-    //////////////////////////////////////
-    // ******* Auto Output *******//
-    //////////////////////////////////////
-
-    protected void updateBatterySubscription() {
-        if (energyContainer.dischargeOrRechargeEnergyContainers(chargerInventory, 0, true))
-            batterySubs = subscribeServerTick(batterySubs, this::chargeBattery);
-        else if (batterySubs != null) {
-            batterySubs.unsubscribe();
-            batterySubs = null;
-        }
-    }
-
-    protected void chargeBattery() {
-        if (!energyContainer.dischargeOrRechargeEnergyContainers(chargerInventory, 0, false))
-            updateBatterySubscription();
     }
 
     public void setWorkingEnabled(boolean workingEnabled) {

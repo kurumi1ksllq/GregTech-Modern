@@ -204,6 +204,7 @@ public class MetaMachine extends ManagedSyncBlockEntity implements IGregtechBloc
         for (Direction direction : GTUtil.DIRECTIONS) {
             getCoverContainer().removeCover(direction, null);
         }
+        getAllTraits().forEach(MachineTrait::onMachineDestroyed);
     }
 
     public void modifyDrops(List<ItemStack> drops) {}

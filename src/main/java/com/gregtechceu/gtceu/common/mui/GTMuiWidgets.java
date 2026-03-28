@@ -6,12 +6,12 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.filter.Filter;
 import com.gregtechceu.gtceu.api.cover.filter.FilterHandler;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
-import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IVoidable;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
 import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.api.machine.trait.ItemChargerSlotTrait;
+import com.gregtechceu.gtceu.api.machine.trait.multiblock.IntCircuitSlotTrait;
 import com.gregtechceu.gtceu.common.cover.data.BucketMode;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
@@ -254,11 +254,11 @@ public class GTMuiWidgets {
         return createCircuitSlotPanel(circuitSyncValue, syncManager);
     }
 
-    public static ButtonWidget<?> createCircuitSlotPanel(IHasCircuitSlot machine, ModularPanel<?> parentPanel,
+    public static ButtonWidget<?> createCircuitSlotPanel(IntCircuitSlotTrait circuitSlotTrait, ModularPanel parentPanel,
                                                          PanelSyncManager syncManager) {
         IntSyncValue circuitSyncValue = createCircuitSlotSyncValue(
-                i -> machine.getCircuitInventory().setStackInSlot(0, i),
-                () -> machine.getCircuitInventory().getStackInSlot(0));
+                i -> circuitSlotTrait.getStorage().setStackInSlot(0, i),
+                () -> circuitSlotTrait.getStorage().getStackInSlot(0));
         IPanelHandler circuitPanelHandler = syncManager.syncedPanel("circuit_panel", true,
                 (sm, sh) -> createCircuitSlotPanel(circuitSyncValue, sm)
                         .relative(parentPanel)
@@ -275,24 +275,24 @@ public class GTMuiWidgets {
                     return true;
                 })
                 .onMouseScrolled((x, y, delta) -> {
-                    int newValue = nextCircuitValue(machine.getCircuitInventory().getStackInSlot(0),
+                    int newValue = nextCircuitValue(circuitSlotTrait.getStorage().getStackInSlot(0),
                             circuitSyncValue.getIntValue(), delta);
                     circuitSyncValue.setValue(newValue);
                     return true;
                 })
                 .overlay(new DynamicDrawable(() -> {
-                    if (machine.getCircuitInventory().getStackInSlot(0).isEmpty()) {
+                    if (circuitSlotTrait.getStorage().getStackInSlot(0).isEmpty()) {
                         return new DrawableStack(new ItemDrawable(IntCircuitBehaviour.stack(0)),
                                 new ItemDrawable(Items.BARRIER)).asIcon().size(16);
                     }
-                    return new ItemDrawable(machine.getCircuitInventory().getStackInSlot(0))
+                    return new ItemDrawable(circuitSlotTrait.getStorage().getStackInSlot(0))
                             .asIcon().size(16);
                 }))
                 .tooltipAutoUpdate(true)
                 .tooltipBuilder((r) -> r.addLine(IKey.lang(Component.translatable("metaitem.int_circuit.configuration",
-                        (machine.getCircuitInventory().getStackInSlot(0).isEmpty() ? 0 :
+                        (circuitSlotTrait.getStorage().getStackInSlot(0).isEmpty() ? 0 :
                                 IntCircuitBehaviour
-                                        .getCircuitConfiguration(machine.getCircuitInventory().getStackInSlot(0)))))));
+                                        .getCircuitConfiguration(circuitSlotTrait.getStorage().getStackInSlot(0)))))));
     }
 
     private static int nextCircuitValue(ItemStack stack, int current, double delta) {

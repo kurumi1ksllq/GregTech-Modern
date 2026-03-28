@@ -479,7 +479,7 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                         Component.literal(customName),
                         Collections.emptyList());
             } else {
-                ItemStack circuitStack = isHasCircuitSlot() ? circuitInventory.storage.getStackInSlot(0) :
+                ItemStack circuitStack = isHasCircuitSlot() ? circuitInventory.getStorage().getStackInSlot(0) :
                         ItemStack.EMPTY;
                 int circuitConfiguration = circuitStack.isEmpty() ? -1 :
                         IntCircuitBehaviour.getCircuitConfiguration(circuitStack);

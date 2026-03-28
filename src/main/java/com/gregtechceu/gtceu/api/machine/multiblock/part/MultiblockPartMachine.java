@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.IRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
+import com.gregtechceu.gtceu.api.machine.trait.feature.IMultiPartTrait;
 import com.gregtechceu.gtceu.api.sync_system.annotations.ClientFieldChangeListener;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
@@ -137,6 +138,9 @@ public class MultiblockPartMachine extends MetaMachine implements IMultiPart, IM
                 setRenderState(renderState.setValue(GTMachineModelProperties.IS_FORMED, false));
             }
         }
+        getAllTraits().forEach(t -> {
+            if (t instanceof IMultiPartTrait partTrait) partTrait.removedFromController(controller);
+        });
         syncDataHolder.markClientSyncFieldDirty("controllerPositions");
     }
 
@@ -151,6 +155,10 @@ public class MultiblockPartMachine extends MetaMachine implements IMultiPart, IM
         if (renderState.hasProperty(GTMachineModelProperties.IS_FORMED)) {
             setRenderState(renderState.setValue(GTMachineModelProperties.IS_FORMED, true));
         }
+
+        getAllTraits().forEach(t -> {
+            if (t instanceof IMultiPartTrait partTrait) partTrait.addedToController(controller);
+        });
     }
 
     @Override

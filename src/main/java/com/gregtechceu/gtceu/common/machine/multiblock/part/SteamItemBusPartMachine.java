@@ -15,6 +15,7 @@ public class SteamItemBusPartMachine extends ItemBusPartMachine {
     public SteamItemBusPartMachine(BlockEntityCreationInfo info, IO io) {
         super(info, 1, io);
         autoTooltipKey = io == IO.IN ? "gtceu.gui.item_auto_input.tooltip" : "gtceu.gui.item_auto_output.tooltip";
+        circuitInventory.setCircuitSlotEnabled(false);
     }
 
     @Override
@@ -43,8 +44,4 @@ public class SteamItemBusPartMachine extends ItemBusPartMachine {
         return true;
     }
 
-    @Override
-    public boolean isCircuitSlotEnabled() {
-        return false;
-    }
 }

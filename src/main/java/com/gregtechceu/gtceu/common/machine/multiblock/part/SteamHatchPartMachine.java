@@ -20,6 +20,7 @@ public class SteamHatchPartMachine extends FluidHatchPartMachine {
 
     public SteamHatchPartMachine(BlockEntityCreationInfo info) {
         super(info, 0, IO.IN, SteamHatchPartMachine.INITIAL_TANK_CAPACITY, 1);
+        circuitInventory.setCircuitSlotEnabled(false);
     }
 
     @Override
@@ -51,11 +52,6 @@ public class SteamHatchPartMachine extends FluidHatchPartMachine {
     // a steam version of an input/output hatch
     @Override
     public boolean swapIO() {
-        return false;
-    }
-
-    @Override
-    public boolean isCircuitSlotEnabled() {
         return false;
     }
 }

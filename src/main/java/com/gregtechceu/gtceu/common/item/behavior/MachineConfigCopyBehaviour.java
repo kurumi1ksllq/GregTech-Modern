@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.*;
 import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
+import com.gregtechceu.gtceu.api.machine.trait.multiblock.IntCircuitSlotTrait;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
@@ -182,7 +183,7 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
     }
 
     private static CompoundTag gatherMachineConfig(MetaMachine machine) {
-        var tag = new CompoundTag();
+        CompoundTag tag = new CompoundTag();
 
         tag.putString(FACING_DIR, directionToString(machine.getFrontFacing()));
 
@@ -205,12 +206,10 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
             tag.putBoolean(MUFFLED, mufflableMachine.isMuffled());
         }
 
-        if (machine instanceof IHasCircuitSlot circuitMachine) {
-            var circuit = IntCircuitBehaviour
-                    .getCircuitConfiguration(circuitMachine.getCircuitInventory().getStackInSlot(0));
-            if (circuitMachine.isCircuitSlotEnabled() && circuit != 0) {
-                tag.putInt(CIRCUIT, circuit);
-            }
+        var circuitTrait = machine.getTraitOptional(IntCircuitSlotTrait.TYPE);
+        if (circuitTrait.isPresent()) {
+            var trait = circuitTrait.get();
+            if (trait.isCircuitSlotEnabled() && trait.getCurrentCircuit() != 0) tag.putInt(CIRCUIT, trait.getCurrentCircuit());
         }
 
         tag.put(COVER, machine.getCoverContainer().copyConfig(new CompoundTag()));
@@ -243,9 +242,9 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
             if (tag.contains(MUFFLED)) mufflableMachine.setMuffled(tag.getBoolean(MUFFLED));
         }
 
-        if (machine instanceof IHasCircuitSlot circuitMachine) {
-            if (tag.contains(CIRCUIT))
-                circuitMachine.getCircuitInventory().setStackInSlot(0, IntCircuitBehaviour.stack(tag.getInt(CIRCUIT)));
+        var circuitTrait = machine.getTraitOptional(IntCircuitSlotTrait.TYPE);
+        if (circuitTrait.isPresent() && tag.contains(CIRCUIT)) {
+            circuitTrait.get().setCurrentCircuit(tag.getInt(CIRCUIT));
         }
 
         machine.getCoverContainer().pasteConfig(player, tag.getCompound(COVER));

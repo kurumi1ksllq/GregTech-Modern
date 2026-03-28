@@ -289,7 +289,7 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine implemen
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("AutoPull", true);
         tag.putByte("GhostCircuit",
-                (byte) IntCircuitBehaviour.getCircuitConfiguration(circuitInventory.getStackInSlot(0)));
+                (byte) circuitInventory.getCurrentCircuit());
         return tag;
     }
 
@@ -298,7 +298,7 @@ public class MEStockingHatchPartMachine extends MEInputHatchPartMachine implemen
         if (tag.getBoolean("AutoPull")) {
             // if being set to auto-pull, no need to read the configured slots
             this.setAutoPull(true);
-            circuitInventory.setStackInSlot(0, IntCircuitBehaviour.stack(tag.getByte("GhostCircuit")));
+            circuitInventory.setCurrentCircuit(tag.getByte("GhostCircuit"));
             return;
         }
         // set auto pull first to avoid issues with clearing the config after reading from the data stick

@@ -3,20 +3,14 @@ package com.gregtechceu.gtceu.integration.ae2.machine;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
-import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
-import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
-import com.gregtechceu.gtceu.api.mui.theme.ThemeAPI;
 import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
-import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
-import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.AEConfigWidget;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidList;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidSlot;
@@ -43,7 +37,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class MEInputHatchPartMachine extends MEHatchPartMachine
-                                     implements IDataStickInteractable, IHasCircuitSlot {
+                                     implements IDataStickInteractable {
 
     protected ExportOnlyAEFluidList aeFluidHandler;
 
@@ -240,8 +234,7 @@ public class MEInputHatchPartMachine extends MEHatchPartMachine
             CompoundTag stackTag = GenericStack.writeTag(config);
             configStacks.put(Integer.toString(i), stackTag);
         }
-        tag.putByte("GhostCircuit",
-                (byte) IntCircuitBehaviour.getCircuitConfiguration(circuitInventory.getStackInSlot(0)));
+        tag.putByte("GhostCircuit", (byte)circuitInventory.getCurrentCircuit());
         return tag;
     }
 
@@ -259,7 +252,7 @@ public class MEInputHatchPartMachine extends MEHatchPartMachine
             }
         }
         if (tag.contains("GhostCircuit")) {
-            circuitInventory.setStackInSlot(0, IntCircuitBehaviour.stack(tag.getByte("GhostCircuit")));
+            circuitInventory.setCurrentCircuit(tag.getByte("GhostCircuit"));
         }
     }
 }

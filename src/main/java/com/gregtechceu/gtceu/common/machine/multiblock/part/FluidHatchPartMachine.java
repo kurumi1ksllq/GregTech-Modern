@@ -5,12 +5,10 @@ import com.gregtechceu.gtceu.api.blockentity.IPaintable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
-import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
-import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
+import com.gregtechceu.gtceu.api.machine.trait.multiblock.IntCircuitSlotTrait;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.utils.Alignment;
@@ -24,13 +22,10 @@ import com.gregtechceu.gtceu.api.mui.widgets.ToggleButton;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.mui.widgets.slot.FluidSlot;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
-import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.mui.GTMuiMachineUtil;
-import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
-import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
@@ -44,7 +39,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -58,7 +52,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class FluidHatchPartMachine extends TieredIOPartMachine implements IHasCircuitSlot, IPaintable {
+public class FluidHatchPartMachine extends TieredIOPartMachine implements IPaintable {
 
     public static final int INITIAL_TANK_CAPACITY_1X = 8 * FluidType.BUCKET_VOLUME;
     public static final int INITIAL_TANK_CAPACITY_4X = 2 * FluidType.BUCKET_VOLUME;
@@ -73,25 +67,15 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IHasCi
     protected ISubscription tankSubs;
     @Getter
     @SaveField
-    @SyncToClient
-    protected boolean circuitSlotEnabled;
-    @Getter
-    @SaveField
-    protected final NotifiableItemStackHandler circuitInventory;
+    protected final IntCircuitSlotTrait circuitInventory;
 
     public FluidHatchPartMachine(BlockEntityCreationInfo info, int tier, IO io, int initialCapacity, int slots) {
         super(info, tier, io);
         this.slots = slots;
         this.tank = createTank(initialCapacity, slots);
 
-        if (io == IO.IN) {
-            this.circuitSlotEnabled = true;
-            this.circuitInventory = new NotifiableItemStackHandler(this, 1, IO.IN, IO.NONE)
-                    .setFilter(IntCircuitBehaviour::isIntegratedCircuit).shouldSearchContent(false);
-        } else {
-            this.circuitSlotEnabled = false;
-            this.circuitInventory = new NotifiableItemStackHandler(this, 0, IO.NONE).shouldSearchContent(false);
-        }
+        circuitInventory = new IntCircuitSlotTrait(this);
+        circuitInventory.setCircuitSlotEnabled(io == IO.IN);
     }
 
     //////////////////////////////////////
@@ -104,14 +88,6 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IHasCi
 
     public static int getTankCapacity(int initialCapacity, int tier) {
         return initialCapacity * (1 << Math.min(9, tier));
-    }
-
-    @Override
-    public void onMachineDestroyed() {
-        super.onMachineDestroyed();
-        if (!ConfigHolder.INSTANCE.machines.ghostCircuit) {
-            circuitInventory.dropInventoryInWorld();
-        }
     }
 
     @Override
@@ -139,38 +115,9 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IHasCi
     }
 
     @Override
-    public void addedToController(MultiblockControllerMachine controller) {
-        if (!controller.allowCircuitSlots()) {
-            if (!ConfigHolder.INSTANCE.machines.ghostCircuit) {
-                circuitInventory.dropInventoryInWorld();
-            } else {
-                circuitInventory.setStackInSlot(0, ItemStack.EMPTY);
-            }
-            setCircuitSlotEnabled(false);
-        }
-        super.addedToController(controller);
-    }
-
-    @Override
-    public void removedFromController(MultiblockControllerMachine controller) {
-        super.removedFromController(controller);
-        for (var c : controllers) {
-            if (!c.allowCircuitSlots()) {
-                return;
-            }
-        }
-        setCircuitSlotEnabled(true);
-    }
-
-    @Override
     public int tintColor(int index) {
         if (index == 9) return getRealColor();
         return -1;
-    }
-
-    public void setCircuitSlotEnabled(boolean enabled) {
-        circuitSlotEnabled = enabled;
-        syncDataHolder.markClientSyncFieldDirty("circuitSlotEnabled");
     }
 
     //////////////////////////////////////

@@ -3,17 +3,14 @@ package com.gregtechceu.gtceu.integration.ae2.machine;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
-import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.mui.base.drawable.IKey;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.BooleanSyncValue;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
-import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
 import com.gregtechceu.gtceu.api.mui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
-import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.integration.ae2.gui.widget.mui.AEConfigWidget;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemList;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemSlot;
@@ -37,7 +34,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class MEInputBusPartMachine extends MEBusPartMachine
-                                   implements IDataStickInteractable, IHasCircuitSlot {
+                                   implements IDataStickInteractable {
 
     protected final static int CONFIG_SIZE = 16;
 
@@ -251,8 +248,7 @@ public class MEInputBusPartMachine extends MEBusPartMachine
             CompoundTag stackTag = GenericStack.writeTag(config);
             configStacks.put(Integer.toString(i), stackTag);
         }
-        tag.putByte("GhostCircuit",
-                (byte) IntCircuitBehaviour.getCircuitConfiguration(circuitInventory.getStackInSlot(0)));
+        tag.putByte("GhostCircuit", (byte)circuitInventory.getCurrentCircuit());
         tag.putBoolean("DistinctBuses", isDistinct());
         return tag;
     }
@@ -271,7 +267,7 @@ public class MEInputBusPartMachine extends MEBusPartMachine
             }
         }
         if (tag.contains("GhostCircuit")) {
-            circuitInventory.setStackInSlot(0, IntCircuitBehaviour.stack(tag.getByte("GhostCircuit")));
+            circuitInventory.setCurrentCircuit(tag.getByte("GhostCircuit"));
         }
         if (tag.contains("DistinctBuses")) {
             setDistinct(tag.getBoolean("DistinctBuses"));

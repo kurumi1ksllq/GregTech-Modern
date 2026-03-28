@@ -2,11 +2,11 @@ package com.gregtechceu.gtceu.api.machine.mui;
 
 import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.feature.IVoidable;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
 import com.gregtechceu.gtceu.api.machine.trait.ItemChargerSlotTrait;
 import com.gregtechceu.gtceu.api.machine.trait.feature.IAttachConfiguratorsTrait;
+import com.gregtechceu.gtceu.api.machine.trait.multiblock.IntCircuitSlotTrait;
 import com.gregtechceu.gtceu.api.mui.drawable.UITexture;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.widget.ParentWidget;
@@ -64,16 +64,13 @@ public class MachineUIPanelBuilder {
         var attachMain = panel.getMainContents();
 
         if (addDefaultConfigurators) {
-            if (machine instanceof IHasCircuitSlot circuitSlot && circuitSlot.isCircuitSlotEnabled()) {
-                attachLeft.child(GTMuiWidgets.createCircuitSlotPanel(circuitSlot, panel, syncManager));
-            }
+
+            machine.getTraitOptional(IntCircuitSlotTrait.TYPE).ifPresent(t -> attachLeft.child(GTMuiWidgets.createCircuitSlotPanel(t, panel, syncManager)));
 
             if (machine instanceof IControllable controllable) {
                 attachRight.child(GTMuiWidgets.createPowerButton(controllable));
             }
-            var batterySlot = machine.getTraitOptional(ItemChargerSlotTrait.TYPE);
-            batterySlot.ifPresent(itemChargerSlotTrait ->
-                    attachRight.child(GTMuiWidgets.createBatterySlot(itemChargerSlotTrait, syncManager)));
+            machine.getTraitOptional(ItemChargerSlotTrait.TYPE).ifPresent(itemChargerSlotTrait -> attachRight.child(GTMuiWidgets.createBatterySlot(itemChargerSlotTrait, syncManager)));
             if (machine instanceof IVoidable voidable) {
                 attachRight.child(GTMuiWidgets.createVoidingButton(voidable));
             }

@@ -8,12 +8,10 @@ import com.gregtechceu.gtceu.api.cover.filter.FilterHandlers;
 import com.gregtechceu.gtceu.api.cover.filter.ItemFilter;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
-import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
-import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
-import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
+import com.gregtechceu.gtceu.api.machine.trait.multiblock.IntCircuitSlotTrait;
 import com.gregtechceu.gtceu.api.mui.factory.PosGuiData;
 import com.gregtechceu.gtceu.api.mui.value.sync.PanelSyncManager;
 import com.gregtechceu.gtceu.api.mui.value.sync.SyncHandlers;
@@ -25,8 +23,6 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.client.mui.screen.UISettings;
 import com.gregtechceu.gtceu.common.data.GTMachines;
-import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
-import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
@@ -52,7 +48,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class ItemBusPartMachine extends TieredIOPartMachine
-                                implements IDistinctPart, IHasCircuitSlot, IPaintable {
+                                implements IDistinctPart, IPaintable {
 
     @Getter
     @SaveField
@@ -65,11 +61,7 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     private boolean hasCircuitSlot = true;
     @Getter
     @SaveField
-    @SyncToClient
-    protected boolean circuitSlotEnabled;
-    @Getter
-    @SaveField
-    protected final NotifiableItemStackHandler circuitInventory;
+    protected final IntCircuitSlotTrait circuitInventory;
     @Getter
     @SaveField
     @SyncToClient
@@ -82,8 +74,10 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     public ItemBusPartMachine(BlockEntityCreationInfo info, int tier, IO io) {
         super(info, tier, io);
         this.inventory = createInventory();
-        this.circuitSlotEnabled = true;
-        this.circuitInventory = createCircuitItemHandler(io).shouldSearchContent(false);
+
+        this.circuitInventory = new IntCircuitSlotTrait(this);
+        circuitInventory.setCircuitSlotEnabled(io == IO.IN);
+
         filterHandler = FilterHandlers.item(this);
 
         inventory.setFilter(this::matchesFilter);
@@ -108,25 +102,10 @@ public class ItemBusPartMachine extends TieredIOPartMachine
         return true;
     }
 
-    protected NotifiableItemStackHandler createCircuitItemHandler(IO io) {
-        if (io == IO.IN) {
-            return new NotifiableItemStackHandler(this, 1, IO.IN, IO.NONE)
-                    .setFilter(IntCircuitBehaviour::isIntegratedCircuit);
-        } else {
-            hasCircuitSlot = false;
-            setCircuitSlotEnabled(false);
-            return new NotifiableItemStackHandler(this, 0, IO.NONE);
-        }
-    }
-
     @Override
     public void onMachineDestroyed() {
         super.onMachineDestroyed();
         getInventory().dropInventoryInWorld();
-
-        if (!ConfigHolder.INSTANCE.machines.ghostCircuit) {
-            circuitInventory.dropInventoryInWorld();
-        }
     }
 
     @Override
@@ -162,39 +141,9 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     }
 
     @Override
-    public void addedToController(MultiblockControllerMachine controller) {
-        if (hasCircuitSlot && !controller.allowCircuitSlots()) {
-            if (!ConfigHolder.INSTANCE.machines.ghostCircuit) {
-                circuitInventory.dropInventoryInWorld();
-            } else {
-                circuitInventory.setStackInSlot(0, ItemStack.EMPTY);
-            }
-            setCircuitSlotEnabled(false);
-        }
-        super.addedToController(controller);
-    }
-
-    @Override
-    public void removedFromController(MultiblockControllerMachine controller) {
-        super.removedFromController(controller);
-        if (!hasCircuitSlot) return;
-        for (var c : controllers) {
-            if (!c.allowCircuitSlots()) {
-                return;
-            }
-        }
-        setCircuitSlotEnabled(true);
-    }
-
-    @Override
     public int tintColor(int index) {
         if (index == 9) return getRealColor();
         return -1;
-    }
-
-    public void setCircuitSlotEnabled(boolean enabled) {
-        circuitSlotEnabled = enabled;
-        syncDataHolder.markClientSyncFieldDirty("circuitSlotEnabled");
     }
 
     //////////////////////////////////////

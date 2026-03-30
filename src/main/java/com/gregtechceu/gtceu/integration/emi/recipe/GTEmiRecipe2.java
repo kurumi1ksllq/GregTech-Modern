@@ -117,6 +117,9 @@ public abstract class GTEmiRecipe2<T extends Recipe<?>, W extends IWidget> imple
 
     @Override
     public void addWidgets(WidgetHolder widgets) {
+        // Invalidate the cached screen so a fresh one is created each time EMI calls addWidgets()
+        // (EMI may call this on page changes, resize, etc.)
+        this.screen.invalidate();
         widgets.add(new UIWrapperWidget());
 
         WidgetTree.foreachChildBFS(this.screen.get().getMainPanel(), widget -> {

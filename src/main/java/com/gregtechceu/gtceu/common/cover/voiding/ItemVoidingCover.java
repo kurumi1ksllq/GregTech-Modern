@@ -25,7 +25,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandler;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
@@ -91,11 +90,6 @@ public class ItemVoidingCover extends ConveyorCover implements IControllable {
                         GTMuiWidgets.createPowerButton(this::isWorkingEnabled, this::setWorkingEnabled, syncManager)),
                 filterHandler, data, syncManager,
                 settings));
-    }
-
-    @NotNull
-    protected String getUITitle() {
-        return "cover.item.voiding.title";
     }
 
     @Override

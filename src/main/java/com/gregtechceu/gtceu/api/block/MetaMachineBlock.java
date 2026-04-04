@@ -283,10 +283,6 @@ public class MetaMachineBlock extends Block implements EntityBlock {
 
         if (machineInteractResult != InteractionResult.PASS) return machineInteractResult;
 
-        if (itemStack.is(GTItems.PORTABLE_SCANNER.get())) {
-            return itemStack.getItem().use(world, player, hand).getResult();
-        }
-
         if (itemStack.getItem() instanceof IGTTool gtToolItem) {
             shouldOpenUi = gtToolItem.definition$shouldOpenUIAfterUse(new UseOnContext(player, hand, hit));
         }

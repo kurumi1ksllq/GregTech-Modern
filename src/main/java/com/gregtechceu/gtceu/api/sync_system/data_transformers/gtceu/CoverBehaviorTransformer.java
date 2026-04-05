@@ -8,7 +8,6 @@ import com.gregtechceu.gtceu.api.sync_system.data_transformers.ValueTransformer;
 
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -32,7 +31,8 @@ public class CoverBehaviorTransformer implements ValueTransformer<CoverBehavior>
                                                   CoverBehaviorTransformer.TransformerContext<CoverBehavior> context) {
         var compoundTag = ValueTransformer.assertTagType(CompoundTag.class, tag, context);
         if (context.holder() instanceof ICoverable coverable) {
-            return deserialize(compoundTag, coverable, context.currentValue(), context.isClientSync(), context.lookup());
+            return deserialize(compoundTag, coverable, context.currentValue(), context.isClientSync(),
+                    context.lookup());
         }
         GTCEu.LOGGER.error("Sync: Object attempting to sync cover does not implement ICoverable {}", context);
         return null;

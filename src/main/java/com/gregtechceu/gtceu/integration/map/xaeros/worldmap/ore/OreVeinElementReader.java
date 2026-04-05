@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class OreVeinElementReader extends
-        MapElementReader<OreVeinElement, OreVeinElementContext, OreVeinElementRenderer> {
+                                  MapElementReader<OreVeinElement, OreVeinElementContext, OreVeinElementRenderer> {
 
     @Override
     public boolean isHidden(OreVeinElement element, OreVeinElementContext context) {
@@ -153,4 +153,3 @@ public class OreVeinElementReader extends
         return new CursorBox(joined);
     }
 }
-

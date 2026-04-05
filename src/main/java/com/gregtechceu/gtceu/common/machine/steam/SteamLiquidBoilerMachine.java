@@ -9,26 +9,21 @@ import com.gregtechceu.gtceu.api.machine.steam.SteamBoilerMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
 
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -90,13 +85,12 @@ public class SteamLiquidBoilerMachine extends SteamBoilerMachine {
     }
 
     @Override
-    public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
-                                   BlockHitResult hit) {
+    public InteractionResult onUseWithItem(ExtendedUseOnContext context) {
         if (!isRemote()) {
-            if (FluidUtil.interactWithFluidHandler(player, hand, fuelTank)) {
+            if (FluidUtil.interactWithFluidHandler(context.getPlayer(), context.getHand(), fuelTank)) {
                 return InteractionResult.SUCCESS;
             }
         }
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.onUseWithItem(context);
     }
 }

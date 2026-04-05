@@ -3,14 +3,13 @@ package com.gregtechceu.gtceu.api.machine;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
+import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.blockentity.ICopyable;
 import com.gregtechceu.gtceu.api.blockentity.IGregtechBlockEntity;
 import com.gregtechceu.gtceu.api.blockentity.IPaintable;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IControllable;
-import com.gregtechceu.gtceu.api.capability.ICoverable;
-import com.gregtechceu.gtceu.api.capability.IToolable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.data.RotationState;
@@ -41,10 +40,10 @@ import com.gregtechceu.gtceu.client.util.ModelUtils;
 import com.gregtechceu.gtceu.common.cover.FluidFilterCover;
 import com.gregtechceu.gtceu.common.cover.ItemFilterCover;
 import com.gregtechceu.gtceu.common.cover.data.ManualIOMode;
-import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.common.machine.owner.PlayerOwner;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.data.TagCompatibilityFixer;
 
@@ -64,17 +63,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
@@ -93,9 +89,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class MetaMachine extends ManagedSyncBlockEntity implements IGregtechBlockEntity, IToolable, IToolGridHighlight,
+public class MetaMachine extends ManagedSyncBlockEntity implements IGregtechBlockEntity, IToolGridHighlight,
                          IFancyTooltip, IPaintable, IMachineFeature, ICopyable {
-
 
     @Getter
     protected final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
@@ -201,12 +196,14 @@ public class MetaMachine extends ManagedSyncBlockEntity implements IGregtechBloc
 
     /**
      * Applies item stack component data when this machine is placed.
+     * 
      * @param componentInput Component Input
      */
     protected void applyImplicitComponents(DataComponentInput componentInput) {}
 
     /**
      * Saves this machine's data to item stack components.
+     * 
      * @param components Component Builder
      */
     public void collectImplicitComponents(DataComponentMap.Builder components) {}
@@ -284,151 +281,140 @@ public class MetaMachine extends ManagedSyncBlockEntity implements IGregtechBloc
      * @return SUCCESS / CONSUME (will damage tool) / FAIL if something happened, so tools will get damaged and
      *         animations will be played
      */
-    @Override
-    public final Pair<@Nullable GTToolType, ItemInteractionResult> onToolClick(Set<GTToolType> toolType,
-                                                                               ItemStack itemStack,
-                                                                               UseOnContext context) {
+    public final Pair<@Nullable GTToolType, InteractionResult> onToolClick(ExtendedUseOnContext context) {
         // the side hit from the machine grid
-        var playerIn = context.getPlayer();
-        if (playerIn == null) return Pair.of(null, ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+        var player = context.getPlayer();
+        if (player == null) return Pair.of(null, InteractionResult.PASS);
 
-        var hand = context.getHand();
-        var hitResult = new BlockHitResult(context.getClickLocation(), context.getClickedFace(),
-                context.getClickedPos(), false);
-        Direction gridSide = ICoverable.determineGridSideHit(hitResult);
-        CoverBehavior coverBehavior = gridSide == null ? null : coverContainer.getCoverAtSide(gridSide);
-        if (gridSide == null) gridSide = hitResult.getDirection();
+        var toolType = context.getToolType();
 
-        Pair<@Nullable GTToolType, ItemInteractionResult> result = null;
+        Pair<@Nullable GTToolType, InteractionResult> result = null;
 
-        // Prioritize covers where they apply (Screwdriver, Soft Mallet)
-        if (toolType.isEmpty() && playerIn.isShiftKeyDown()) {
-            if (coverBehavior != null) {
-                result = Pair.of(null, coverBehavior.onScrewdriverClick(playerIn, hand, itemStack, hitResult));
+        // Prioritize covers
+        var cover = getCoverContainer().getCoverAtSide(context.getClickedFace());
+        if (cover != null) {
+            result = cover.onToolClick(context);
+            if (result.getSecond() != InteractionResult.PASS) return result;
+
+            if (toolType.contains(GTToolType.CROWBAR) && !isRemote()) {
+                getCoverContainer().removeCover(context.getGridSide(), player);
+                return Pair.of(GTToolType.CROWBAR, InteractionResult.SUCCESS);
             }
         }
-        if (toolType.contains(GTToolType.SCREWDRIVER) &&
-                itemStack.canPerformAction(GTItemAbilities.SCREWDRIVER_CONFIGURE)) {
-            if (coverBehavior != null) {
-                result = Pair.of(GTToolType.SCREWDRIVER, coverBehavior.onScrewdriverClick(playerIn, hand, itemStack, hitResult));
-            } else result = Pair.of(GTToolType.SCREWDRIVER, onScrewdriverClick(playerIn, hand, itemStack, gridSide, hitResult));
+
+        if (toolType.contains(GTToolType.SCREWDRIVER)) {
+            result = Pair.of(GTToolType.SCREWDRIVER, onScrewdriverClick(context));
         } else if (toolType.contains(GTToolType.SOFT_MALLET)) {
-            if (coverBehavior != null) {
-                result = Pair.of(GTToolType.SOFT_MALLET, coverBehavior.onSoftMalletClick(playerIn, hand, itemStack, hitResult));
-            } else result = Pair.of(GTToolType.SOFT_MALLET, onSoftMalletClick(playerIn, hand, itemStack, gridSide, hitResult));
+            result = Pair.of(GTToolType.SOFT_MALLET, onSoftMalletClick(context));
         } else if (toolType.contains(GTToolType.WRENCH)) {
-            result = Pair.of(GTToolType.WRENCH, onWrenchClick(playerIn, hand, itemStack, gridSide, hitResult));
+            result = Pair.of(GTToolType.WRENCH, onWrenchClick(context));
         } else if (toolType.contains(GTToolType.CROWBAR)) {
-            if (coverBehavior != null && itemStack.canPerformAction(GTItemAbilities.CROWBAR_REMOVE_COVER)) {
-                if (!isRemote()) {
-                    getCoverContainer().removeCover(gridSide, playerIn);
-                }
-            } else {
-                result = Pair.of(GTToolType.CROWBAR, onCrowbarClick(playerIn, hand, itemStack, gridSide, hitResult));
-            }
+            result = Pair.of(GTToolType.CROWBAR, onCrowbarClick(context));
         } else if (toolType.contains(GTToolType.HARD_HAMMER)) {
-            result = Pair.of(GTToolType.HARD_HAMMER, onHardHammerClick(playerIn, hand, itemStack, gridSide, hitResult));
+            result = Pair.of(GTToolType.HARD_HAMMER, onHardHammerClick(context));
         }
 
-        if (result != null && result.getSecond() != ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION) return result;
+        if (result != null && result.getSecond() != InteractionResult.PASS) return result;
 
         for (var trait : getTraitHolder().getAllTraits()) {
             if (trait instanceof IInteractionTrait interactionTrait) {
-                var r = interactionTrait.onToolClick(toolType, playerIn, hand, gridSide, hitResult);
-                if (r.getSecond() != ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION) return r;
+                var r = interactionTrait.onToolClick(context);
+                if (r.getSecond() != InteractionResult.PASS) return r;
             }
         }
 
-        return result != null ? result : Pair.of(null, ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+        return result != null ? result : Pair.of(null, InteractionResult.PASS);
     }
 
-    protected ItemInteractionResult onHardHammerClick(Player playerIn, InteractionHand hand, ItemStack held,
-                                                      Direction gridSide, BlockHitResult hitResult) {
-        if (!held.canPerformAction(GTItemAbilities.HAMMER_MUTE)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    protected InteractionResult onHardHammerClick(ExtendedUseOnContext context) {
+        if (!context.getItemInHand().canPerformAction(GTItemAbilities.HAMMER_MUTE)) {
+            return InteractionResult.PASS;
         }
         if (this instanceof IMufflableMachine mufflableMachine) {
             if (!isRemote()) {
                 mufflableMachine.setMuffled(!mufflableMachine.isMuffled());
-                playerIn.sendSystemMessage(Component.translatable(mufflableMachine.isMuffled() ?
+                context.getPlayer().sendSystemMessage(Component.translatable(mufflableMachine.isMuffled() ?
                         "gtceu.machine.muffle.on" : "gtceu.machine.muffle.off"));
             }
-            return ItemInteractionResult.sidedSuccess(playerIn.level().isClientSide);
+            return InteractionResult.sidedSuccess(isRemote());
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.PASS;
     }
 
-    protected ItemInteractionResult onCrowbarClick(Player playerIn, InteractionHand hand, ItemStack held,
-                                                   Direction gridSide, BlockHitResult hitResult) {
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    protected InteractionResult onCrowbarClick(ExtendedUseOnContext context) {
+        return InteractionResult.PASS;
     }
 
-    protected ItemInteractionResult onWrenchClick(Player player, InteractionHand hand, ItemStack held, Direction gridSide,
-                                                  BlockHitResult hitResult) {
+    protected InteractionResult onWrenchClick(ExtendedUseOnContext context) {
+        var player = context.getPlayer();
+        var gridSide = context.getGridSide();
         if (gridSide == getFrontFacing() && allowExtendedFacing()) {
             setUpwardsFacing(player.isShiftKeyDown() ? getUpwardsFacing().getCounterClockWise() :
                     getUpwardsFacing().getClockWise());
-            return ItemInteractionResult.sidedSuccess(isRemote());
+            return InteractionResult.sidedSuccess(isRemote());
         }
         if (player.isShiftKeyDown()) {
             if (gridSide == getFrontFacing() || !isFacingValid(gridSide)) {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
             setFrontFacing(gridSide);
-            return ItemInteractionResult.sidedSuccess(isRemote());
+            return InteractionResult.sidedSuccess(isRemote());
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.PASS;
     }
 
-    protected ItemInteractionResult onSoftMalletClick(Player playerIn, InteractionHand hand, ItemStack held, Direction gridSide,
-                                                  BlockHitResult hitResult) {
-        var controllable = GTCapabilityHelper.getControllable(getLevel(), getBlockPos(), gridSide);
-        if (controllable == null) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        if (!held.canPerformAction(GTItemAbilities.MALLET_PAUSE)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    protected InteractionResult onSoftMalletClick(ExtendedUseOnContext context) {
+        var controllable = GTCapabilityHelper.getControllable(getLevel(), getBlockPos(), context.getGridSide());
+        if (controllable == null) return InteractionResult.PASS;
+        if (!context.getItemInHand().canPerformAction(GTItemAbilities.MALLET_PAUSE)) {
+            return InteractionResult.PASS;
         }
         if (!isRemote()) {
             controllable.setWorkingEnabled(!controllable.isWorkingEnabled());
-            playerIn.sendSystemMessage(Component.translatable(controllable.isWorkingEnabled() ?
+            context.getPlayer().sendSystemMessage(Component.translatable(controllable.isWorkingEnabled() ?
                     "behaviour.soft_hammer.enabled" : "behaviour.soft_hammer.disabled_cycle"));
         }
-        return ItemInteractionResult.sidedSuccess(playerIn.level().isClientSide);
+        return InteractionResult.sidedSuccess(getLevel().isClientSide);
     }
 
-    protected ItemInteractionResult onScrewdriverClick(Player playerIn, InteractionHand hand, ItemStack stack, Direction gridSide,
-                                                   BlockHitResult hitResult) {
-        if (isRemote()) return ItemInteractionResult.SUCCESS;
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    protected InteractionResult onScrewdriverClick(ExtendedUseOnContext context) {
+        if (isRemote()) return InteractionResult.SUCCESS;
+        return InteractionResult.PASS;
     }
 
-
-    public ItemInteractionResult onUseWithItem(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        ItemStack itemStack = player.getItemInHand(hand);
-
-        Set<GTToolType> types = ToolHelper.getToolTypes(itemStack);
+    /**
+     * Called when a machine is right clicked with an item.
+     */
+    public InteractionResult onUseWithItem(ExtendedUseOnContext context) {
+        var types = context.getToolType();
+        var itemStack = context.getItemInHand();
+        var player = context.getPlayer();
         if (!types.isEmpty() && ToolHelper.canUse(itemStack) || types.isEmpty() && player.isShiftKeyDown()) {
-            var result = onToolClick(types, itemStack, new UseOnContext(player, hand, hit));
-            if (result.getSecond() == ItemInteractionResult.CONSUME && player instanceof ServerPlayer serverPlayer) {
+            var result = onToolClick(context);
+            if (result.getSecond() == InteractionResult.CONSUME && player instanceof ServerPlayer serverPlayer) {
                 ToolHelper.playToolSound(result.getFirst(), serverPlayer);
 
                 if (!serverPlayer.isCreative()) {
                     ToolHelper.damageItem(itemStack, serverPlayer, 1);
                 }
             }
-            if (result.getSecond() != ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION) return result.getSecond();
+            if (result.getSecond() != InteractionResult.PASS) return result.getSecond();
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.PASS;
     }
 
     /**
-     * Called when a machine is right clicked.
+     * Called when a machine is right clicked without an item.
      */
-    public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
-                                   BlockHitResult hit) {
+    public InteractionResult onUse(ExtendedUseOnContext context) {
+        if (context.getPlayer().isShiftKeyDown()) {
+            var cover = coverContainer.getCoverAtSide(context.getClickedFace());
+            if (cover != null) cover.onScrewdriverClick(context);
+        }
 
         for (var trait : getTraitHolder().getAllTraits()) {
             if (trait instanceof IInteractionTrait interactionTrait) {
-                InteractionResult result = interactionTrait.onUse(state, world, pos, player, hand, hit);
+                InteractionResult result = interactionTrait.onUse(context);
                 if (result != InteractionResult.PASS) return result;
             }
         }
@@ -440,8 +426,7 @@ public class MetaMachine extends ManagedSyncBlockEntity implements IGregtechBloc
      *
      * @return true to cancel the click event, false to continue processing
      */
-    public boolean onLeftClick(Player player, Level world, InteractionHand hand, BlockPos pos,
-                               @Nullable Direction face) {
+    public boolean onLeftClick(Player player, InteractionHand hand, @Nullable Direction face) {
         return false;
     }
 
@@ -753,8 +738,7 @@ public class MetaMachine extends ManagedSyncBlockEntity implements IGregtechBloc
         return 0;
     }
 
-    public boolean canConnectRedstone(@Nullable Direction side) {
-        if (side == null) return false;
+    public boolean canConnectRedstone(Direction side) {
         // For some reason, Minecraft requests the output signal from the opposite side...
         CoverBehavior cover = getCoverContainer().getCoverAtSide(side);
         if (cover == null) return false;

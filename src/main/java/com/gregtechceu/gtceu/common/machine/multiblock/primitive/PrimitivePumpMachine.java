@@ -10,7 +10,6 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.level.biome.Biome.Precipitation;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;

@@ -11,9 +11,9 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.neoforged.neoforge.fluids.FluidType;
 
 import lombok.Getter;
-import net.neoforged.neoforge.fluids.FluidType;
 
 import java.util.function.Function;
 

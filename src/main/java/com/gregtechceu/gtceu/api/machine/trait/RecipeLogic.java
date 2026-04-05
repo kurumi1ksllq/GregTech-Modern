@@ -145,7 +145,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
     @Getter
     @SaveField(nbtKey = "chance_cache")
     protected final ChanceCacheMap chanceCaches = makeChanceCaches();
-    protected @Nullable  TickableSubscription subscription;
+    protected @Nullable TickableSubscription subscription;
     protected @Nullable Object workingSound;
 
     public RecipeLogic(IRecipeLogicMachine machine) {
@@ -645,7 +645,7 @@ public class RecipeLogic extends MachineTrait implements IWorkable, IFancyToolti
 
             @Override
             public Tag serializeNBT(ChanceCacheMap value,
-                                             TransformerContext<ChanceCacheMap> context) {
+                                    TransformerContext<ChanceCacheMap> context) {
                 CompoundTag chanceCache = new CompoundTag();
                 if (context.currentValue() == null) return chanceCache;
 

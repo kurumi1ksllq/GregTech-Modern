@@ -1,7 +1,5 @@
 package com.gregtechceu.gtceu.integration.ae2.utils;
 
-import com.lowdragmc.lowdraglib.syncdata.IContentChangeAware;
-
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

@@ -55,11 +55,6 @@ public class GTCapabilityHelper {
     }
 
     @Nullable
-    public static IToolable getToolable(Level level, BlockPos pos, @Nullable Direction side) {
-        return level.getCapability(GTCapability.CAPABILITY_TOOLABLE, pos, side);
-    }
-
-    @Nullable
     public static IWorkable getWorkable(Level level, BlockPos pos, @Nullable Direction side) {
         return level.getCapability(GTCapability.CAPABILITY_WORKABLE, pos, side);
     }

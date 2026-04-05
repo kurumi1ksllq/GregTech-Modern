@@ -1,6 +1,7 @@
 package com.gregtechceu.gtceu.api.block;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.api.capability.*;
 import com.gregtechceu.gtceu.api.capability.compat.EnergyStorageList;
 import com.gregtechceu.gtceu.api.data.RotationState;
@@ -16,10 +17,10 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.misc.EnergyInfoProviderList;
 import com.gregtechceu.gtceu.api.misc.LaserContainerList;
-import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.api.sync_system.ManagedSyncBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -292,7 +293,13 @@ public class MetaMachineBlock extends Block implements EntityBlock {
             machine.setOwnerUUID(sPlayer.getUUID());
         }
 
-        InteractionResult machineInteractResult = machine.onUse(state, level, pos, player, hand, hit);
+        InteractionResult machineInteractResult;
+        if (itemStack.isEmpty()) {
+            machineInteractResult = machine.onUse(new ExtendedUseOnContext(player, hand, hit));
+        } else {
+            machineInteractResult = machine.onUseWithItem(new ExtendedUseOnContext(player, hand, hit));
+        }
+
         if (machineInteractResult != InteractionResult.PASS) return getFromInteractionResult(machineInteractResult);
 
         if (stack.is(GTItems.PORTABLE_SCANNER.get())) {
@@ -314,13 +321,14 @@ public class MetaMachineBlock extends Block implements EntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hit) {
         var machine = MetaMachine.getMachine(level, pos);
+        if (machine == null) return InteractionResult.PASS;
         if (machine instanceof IUIMachine uiMachine &&
                 MachineOwner.canOpenOwnerMachine(player, machine)) {
-             uiMachine.tryToOpenUI(player, InteractionHand.MAIN_HAND, hit).result();
+            uiMachine.tryToOpenUI(player, InteractionHand.MAIN_HAND, hit).result();
         }
-        return super.useWithoutItem(state, level, pos, player, hit);
+        return machine.onUse(new ExtendedUseOnContext(player, InteractionHand.MAIN_HAND, hit));
     }
-    
+
     //////////////////////////////////////
     // ***** Redstone Signals ****//
     //////////////////////////////////////
@@ -403,12 +411,6 @@ public class MetaMachineBlock extends Block implements EntityBlock {
         event.registerBlock(GTCapability.CAPABILITY_COVERABLE, (level, pos, state, blockEntity, side) -> {
             if (blockEntity instanceof MetaMachine machine) {
                 return machine.getCoverContainer();
-            }
-            return null;
-        }, this);
-        event.registerBlock(GTCapability.CAPABILITY_TOOLABLE, (level, pos, state, blockEntity, side) -> {
-            if (blockEntity instanceof MetaMachine machine) {
-                return machine;
             }
             return null;
         }, this);
@@ -497,7 +499,8 @@ public class MetaMachineBlock extends Block implements EntityBlock {
                 if (machine instanceof IEnergyStorage energyStorage) {
                     return energyStorage;
                 }
-                var list = getCapabilitiesFromTraits(machine.getTraitHolder().getAllTraits(), side, IEnergyStorage.class);
+                var list = getCapabilitiesFromTraits(machine.getTraitHolder().getAllTraits(), side,
+                        IEnergyStorage.class);
                 if (!list.isEmpty()) {
                     return list.size() == 1 ? list.getFirst() : new EnergyStorageList(list);
                 }
@@ -509,7 +512,8 @@ public class MetaMachineBlock extends Block implements EntityBlock {
                 if (machine instanceof ILaserContainer laserContainer) {
                     return laserContainer;
                 }
-                var list = getCapabilitiesFromTraits(machine.getTraitHolder().getAllTraits(), side, ILaserContainer.class);
+                var list = getCapabilitiesFromTraits(machine.getTraitHolder().getAllTraits(), side,
+                        ILaserContainer.class);
                 if (!list.isEmpty()) {
                     return list.size() == 1 ? list.getFirst() : new LaserContainerList(list);
                 }

@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.integration.jade.provider;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.common.machine.storage.CreativeChestMachine;
 import com.gregtechceu.gtceu.common.machine.storage.QuantumChestMachine;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEPatternBufferProxyPartMachine;

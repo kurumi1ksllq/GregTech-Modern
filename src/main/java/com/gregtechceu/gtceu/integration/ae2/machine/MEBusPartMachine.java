@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.machine.feature.IGridConnectedMachine;
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.GridNodeHolder;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 
 import appeng.api.networking.*;

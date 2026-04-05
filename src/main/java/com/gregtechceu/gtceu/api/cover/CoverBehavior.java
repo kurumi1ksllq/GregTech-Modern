@@ -16,21 +16,21 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.client.renderer.cover.ICoverRenderer;
 import com.gregtechceu.gtceu.client.renderer.cover.IDynamicCoverRenderer;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
+import com.mojang.datafixers.util.Pair;
 import lombok.Getter;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
@@ -145,20 +145,29 @@ public abstract class CoverBehavior implements ISyncManaged, IToolGridHighlight,
     //////////////////////////////////////
     // ******* Interaction *******//
     //////////////////////////////////////
-    public ItemInteractionResult onScrewdriverClick(Player playerIn, InteractionHand hand, ItemStack held,
-                                                    BlockHitResult hitResult) {
-        if (this instanceof IUICover) {
-            if (playerIn instanceof ServerPlayer serverPlayer) {
-                CoverUIFactory.INSTANCE.openUI(this, serverPlayer);
-            }
-            return ItemInteractionResult.sidedSuccess(playerIn.level().isClientSide);
+
+    public final Pair<@Nullable GTToolType, InteractionResult> onToolClick(ExtendedUseOnContext context) {
+        var toolType = context.getToolType();
+        if (toolType.contains(GTToolType.SCREWDRIVER)) {
+            return Pair.of(GTToolType.SCREWDRIVER, onScrewdriverClick(context));
+        } else if (toolType.contains(GTToolType.SOFT_MALLET)) {
+            return Pair.of(GTToolType.SOFT_MALLET, onSoftMalletClick(context));
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return Pair.of(null, InteractionResult.PASS);
     }
 
-    public ItemInteractionResult onSoftMalletClick(Player playerIn, InteractionHand hand, ItemStack held,
-                                                   BlockHitResult hitResult) {
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    public InteractionResult onScrewdriverClick(ExtendedUseOnContext context) {
+        if (this instanceof IUICover) {
+            if (context.getPlayer() instanceof ServerPlayer serverPlayer) {
+                CoverUIFactory.INSTANCE.openUI(this, serverPlayer);
+            }
+            return InteractionResult.sidedSuccess(coverHolder.isRemote());
+        }
+        return InteractionResult.PASS;
+    }
+
+    public InteractionResult onSoftMalletClick(ExtendedUseOnContext context) {
+        return InteractionResult.PASS;
     }
 
     //////////////////////////////////////

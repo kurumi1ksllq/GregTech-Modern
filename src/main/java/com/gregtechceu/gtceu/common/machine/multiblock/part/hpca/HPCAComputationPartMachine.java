@@ -8,8 +8,9 @@ import com.gregtechceu.gtceu.api.machine.trait.hpca.HPCAComputationProviderTrait
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 
-import lombok.Getter;
 import net.minecraft.MethodsReturnNonnullByDefault;
+
+import lombok.Getter;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

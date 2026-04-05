@@ -7,19 +7,9 @@ import com.gregtechceu.gtceu.api.machine.trait.hazard.EnvironmentalHazardCleaner
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils;
-import com.gregtechceu.gtceu.common.network.packets.hazard.SPacketRemoveHazardZone;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
-import net.minecraft.world.level.ChunkPos;
-import net.neoforged.neoforge.network.PacketDistributor;
-
-import it.unimi.dsi.fastutil.objects.Object2FloatMap;
-import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 

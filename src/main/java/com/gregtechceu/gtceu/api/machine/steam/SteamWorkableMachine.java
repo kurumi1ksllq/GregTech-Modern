@@ -13,24 +13,23 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
-import com.gregtechceu.gtceu.utils.ISubscription;
 import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
+import com.gregtechceu.gtceu.utils.ISubscription;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.fluids.FluidType;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
-import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -153,17 +152,18 @@ public abstract class SteamWorkableMachine extends SteamMachine
     }
 
     @Override
-    protected @NotNull ItemInteractionResult onWrenchClick(Player playerIn, InteractionHand hand, ItemStack held,
-                                                           Direction gridSide, BlockHitResult hitResult) {
-        if (!held.canPerformAction(GTItemAbilities.WRENCH_CONFIGURE)) {
-            return super.onWrenchClick(playerIn, hand, held, gridSide, hitResult);
+    protected InteractionResult onWrenchClick(ExtendedUseOnContext context) {
+        var gridSide = context.getGridSide();
+        var player = context.getPlayer();
+        if (!context.getItemInHand().canPerformAction(GTItemAbilities.WRENCH_CONFIGURE)) {
+            return super.onWrenchClick(context);
         }
-        if (!playerIn.isShiftKeyDown()) {
-            if (hasFrontFacing() && gridSide == getFrontFacing()) return ItemInteractionResult.FAIL;
+        if (!player.isShiftKeyDown()) {
+            if (hasFrontFacing() && gridSide == getFrontFacing()) return InteractionResult.PASS;
             setOutputFacing(gridSide);
-            return ItemInteractionResult.sidedSuccess(playerIn.level().isClientSide);
+            return InteractionResult.sidedSuccess(player.level().isClientSide);
         }
-        return super.onWrenchClick(playerIn, hand, held, gridSide, hitResult);
+        return super.onWrenchClick(context);
     }
 
     @Override

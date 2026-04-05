@@ -23,8 +23,6 @@ import net.minecraft.world.item.ItemStack;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 public class ObjectHolderMachine extends MultiblockPartMachine {
 
     // purposefully not exposed to automation or capabilities

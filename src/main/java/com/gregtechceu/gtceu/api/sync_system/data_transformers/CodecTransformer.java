@@ -1,7 +1,5 @@
 package com.gregtechceu.gtceu.api.sync_system.data_transformers;
 
-import com.gregtechceu.gtceu.GTCEu;
-
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 

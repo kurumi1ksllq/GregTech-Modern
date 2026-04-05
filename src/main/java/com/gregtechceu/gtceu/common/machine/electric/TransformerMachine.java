@@ -9,15 +9,11 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.api.sync_system.annotations.ClientFieldChangeListener;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.phys.BlockHitResult;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -111,17 +107,15 @@ public class TransformerMachine extends TieredEnergyMachine implements IControll
     }
 
     @Override
-    protected ItemInteractionResult onScrewdriverClick(Player playerIn, InteractionHand hand, ItemStack held,
-                                                       Direction gridSide,
-                                                       BlockHitResult hitResult) {
+    protected InteractionResult onScrewdriverClick(ExtendedUseOnContext context) {
         if (!isRemote()) {
             setTransformUp(!isTransformUp());
-            playerIn.sendSystemMessage(Component.translatable(
+            context.getPlayer().sendSystemMessage(Component.translatable(
                     isTransformUp() ? "gtceu.machine.transformer.message_transform_up" :
                             "gtceu.machine.transformer.message_transform_down",
                     energyContainer.getInputVoltage(), energyContainer.getInputAmperage(),
                     energyContainer.getOutputVoltage(), energyContainer.getOutputAmperage()));
         }
-        return ItemInteractionResult.CONSUME;
+        return InteractionResult.CONSUME;
     }
 }

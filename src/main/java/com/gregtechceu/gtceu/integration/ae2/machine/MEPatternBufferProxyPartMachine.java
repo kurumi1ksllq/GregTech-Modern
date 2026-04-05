@@ -7,17 +7,14 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredIOPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
-import com.gregtechceu.gtceu.common.data.item.GTDataComponents;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
+import com.gregtechceu.gtceu.common.data.item.GTDataComponents;
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.ProxySlotRecipeHandler;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.TickTask;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -28,8 +25,6 @@ import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 public class MEPatternBufferProxyPartMachine extends TieredIOPartMachine implements IDataStickInteractable {
 

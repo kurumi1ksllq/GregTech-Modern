@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.EnumMap;
+import java.util.Objects;
 
 public class ItemPipeBlockEntity extends PipeBlockEntity<ItemPipeType, ItemPipeProperties> {
 
@@ -48,7 +49,7 @@ public class ItemPipeBlockEntity extends PipeBlockEntity<ItemPipeType, ItemPipeP
     }
 
     public long getLevelTime() {
-        return hasLevel() ? getLevel().getGameTime() : 0L;
+        return hasLevel() ? Objects.requireNonNull(getLevel()).getGameTime() : 0L;
     }
 
     public void ensureHandlersInitialized() {

@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.blockentity.PipeBlockEntity;
 import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
-import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.PipeBlockItem;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
@@ -22,6 +21,7 @@ import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
 import com.gregtechceu.gtceu.common.item.behavior.CoverPlaceBehavior;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -32,6 +32,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -345,16 +346,16 @@ public abstract class PipeBlock<PipeType extends Enum<PipeType> & IPipeType<Node
         }
 
         Set<GTToolType> types = ToolHelper.getToolTypes(stack);
-        if ((!types.isEmpty() && ToolHelper.canUse(stack)) || (types.isEmpty() && player.isShiftKeyDown())) {
-            var result = pipeBlockEntity.onToolClick(types, stack, new UseOnContext(player, hand, hit));
-            if (result.getSecond() == ItemInteractionResult.CONSUME && player instanceof ServerPlayer serverPlayer) {
+        if ((!types.isEmpty() && ToolHelper.canUse(stack))) {
+            var result = pipeBlockEntity.onToolClick(new ExtendedUseOnContext(player, hand, hit));
+            if (result.getSecond() == InteractionResult.CONSUME && player instanceof ServerPlayer serverPlayer) {
                 ToolHelper.playToolSound(result.getFirst(), serverPlayer);
 
                 if (!serverPlayer.isCreative()) {
                     ToolHelper.damageItem(stack, serverPlayer, 1);
                 }
             }
-            return result.getSecond();
+            return MetaMachineBlock.getFromInteractionResult((result.getSecond()));
         }
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }

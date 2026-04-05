@@ -9,17 +9,13 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.api.sync_system.annotations.ClientFieldChangeListener;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
-import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.phys.BlockHitResult;
 
 import lombok.Getter;
 
@@ -126,19 +122,14 @@ public class DiodePartMachine extends TieredIOPartMachine {
     }
 
     @Override
-    protected ItemInteractionResult onSoftMalletClick(Player playerIn, InteractionHand hand, ItemStack held,
-                                                      Direction gridSide,
-                                                      BlockHitResult hitResult) {
-        if (!held.canPerformAction(GTItemAbilities.MALLET_CONFIGURE)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        }
+    protected InteractionResult onSoftMalletClick(ExtendedUseOnContext context) {
         cycleAmpMode();
         if (!isRemote()) {
             this.scheduleRenderUpdate();
-            playerIn.sendSystemMessage(Component.translatable("gtceu.machine.diode.message", amps));
-            return ItemInteractionResult.SUCCESS;
+            context.getPlayer().sendSystemMessage(Component.translatable("gtceu.machine.diode.message", amps));
+            return InteractionResult.SUCCESS;
         }
-        return ItemInteractionResult.CONSUME;
+        return InteractionResult.CONSUME;
     }
 
     @ClientFieldChangeListener(fieldName = "amps")

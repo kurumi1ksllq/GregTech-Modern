@@ -1,7 +1,7 @@
 package com.gregtechceu.gtceu.common.machine.multiblock.electric.research;
 
-import com.gregtechceu.gtceu.api.capability.GTCapability;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
+import com.gregtechceu.gtceu.api.capability.GTCapability;
 import com.gregtechceu.gtceu.api.capability.IOpticalComputationProvider;
 import com.gregtechceu.gtceu.api.capability.IOpticalComputationReceiver;
 import com.gregtechceu.gtceu.api.capability.recipe.CWURecipeCapability;

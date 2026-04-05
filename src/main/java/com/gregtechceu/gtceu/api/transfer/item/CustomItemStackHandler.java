@@ -5,10 +5,10 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
-import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import lombok.Getter;
 import lombok.Setter;

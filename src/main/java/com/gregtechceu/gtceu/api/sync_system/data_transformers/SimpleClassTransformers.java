@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.api.sync_system.data_transformers;
 
-import dev.latvian.mods.kubejs.util.NBTUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.NbtUtils;
@@ -9,12 +8,13 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+
 import org.jspecify.annotations.Nullable;
 
-import java.util.Optional;
-
 public class SimpleClassTransformers {
+
     public static class ItemStackTransformer implements ValueTransformer<ItemStack> {
+
         @Override
         public Tag serializeNBT(ItemStack value, TransformerContext<ItemStack> context) {
             return value.save(context.lookup());
@@ -27,6 +27,7 @@ public class SimpleClassTransformers {
     }
 
     public static class FluidStackTransformer implements ValueTransformer<FluidStack> {
+
         @Override
         public Tag serializeNBT(FluidStack value, TransformerContext<FluidStack> context) {
             return value.save(context.lookup());
@@ -39,6 +40,7 @@ public class SimpleClassTransformers {
     }
 
     public static class BlockPosTransformer implements ValueTransformer<BlockPos> {
+
         @Override
         public Tag serializeNBT(BlockPos value, TransformerContext<BlockPos> context) {
             return NbtUtils.writeBlockPos(value);
@@ -55,6 +57,7 @@ public class SimpleClassTransformers {
     }
 
     public static class ComponentTransformer implements ValueTransformer<Component> {
+
         @Override
         public Tag serializeNBT(Component value, TransformerContext<Component> context) {
             return StringTag.valueOf(Component.Serializer.toJson(value, context.lookup()));
@@ -62,7 +65,8 @@ public class SimpleClassTransformers {
 
         @Override
         public @Nullable Component deserializeNBT(Tag tag, TransformerContext<Component> context) {
-            if (tag instanceof StringTag strTag) return Component.Serializer.fromJson(strTag.getAsString(), context.lookup());
+            if (tag instanceof StringTag strTag)
+                return Component.Serializer.fromJson(strTag.getAsString(), context.lookup());
             return Component.empty();
         }
     }

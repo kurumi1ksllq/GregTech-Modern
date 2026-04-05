@@ -21,6 +21,7 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
@@ -35,12 +36,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 
@@ -216,15 +214,16 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IHasCi
     }
 
     @Override
-    protected ItemInteractionResult onScrewdriverClick(Player playerIn, InteractionHand hand, ItemStack held,
-                                                       Direction gridSide, BlockHitResult hitResult) {
-        ItemInteractionResult superResult = super.onScrewdriverClick(playerIn, hand, held, gridSide, hitResult);
-        if (superResult != ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION) return superResult;
-        if (io == IO.BOTH) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        if (playerIn.isShiftKeyDown() && swapIO()) {
-            return ItemInteractionResult.sidedSuccess(playerIn.level().isClientSide);
+    protected InteractionResult onScrewdriverClick(ExtendedUseOnContext context) {
+        InteractionResult superResult = super.onScrewdriverClick(context);
+        if (superResult != InteractionResult.PASS) return superResult;
+        if (io == IO.BOTH) return InteractionResult.PASS;
+        if (context.getPlayer().isShiftKeyDown()) {
+            if (swapIO()) {
+                return InteractionResult.sidedSuccess(getLevel().isClientSide);
+            }
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.PASS;
     }
 
     public boolean swapIO() {

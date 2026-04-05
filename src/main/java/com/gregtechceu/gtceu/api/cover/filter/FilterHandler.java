@@ -19,12 +19,9 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.item.ItemStack;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 public abstract class FilterHandler<T, F extends Filter<T, F>> implements ISyncManaged {
 

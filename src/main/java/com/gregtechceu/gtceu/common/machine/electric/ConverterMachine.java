@@ -7,22 +7,20 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
 import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
 import com.gregtechceu.gtceu.common.machine.trait.ConverterTrait;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.Set;
 
@@ -54,16 +52,14 @@ public class ConverterMachine extends TieredEnergyMachine {
     // ****** Interaction ******//
     //////////////////////////////////////
     @Override
-    public ItemInteractionResult onSoftMalletClick(Player playerIn, InteractionHand hand, ItemStack held,
-                                                   Direction facing,
-                                                   BlockHitResult hitResult) {
+    public InteractionResult onSoftMalletClick(ExtendedUseOnContext context) {
         if (!isRemote()) {
-            if (!held.canPerformAction(GTItemAbilities.MALLET_CONFIGURE)) {
-                return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            if (!context.getItemInHand().canPerformAction(GTItemAbilities.MALLET_CONFIGURE)) {
+                return InteractionResult.PASS;
             }
             if (getConverterTrait().isFeToEu()) {
                 setFeToEu(false);
-                playerIn.sendSystemMessage(
+                context.getPlayer().sendSystemMessage(
                         Component.translatable("gtceu.machine.energy_converter.message_conversion_eu",
                                 getConverterTrait().getAmps(), getConverterTrait().getVoltage(),
                                 FeCompat.toFeLong(
@@ -71,7 +67,7 @@ public class ConverterMachine extends TieredEnergyMachine {
                                         FeCompat.ratio(false))));
             } else {
                 setFeToEu(true);
-                playerIn.sendSystemMessage(
+                context.getPlayer().sendSystemMessage(
                         Component.translatable("gtceu.machine.energy_converter.message_conversion_native",
                                 FeCompat.toFeLong(
                                         getConverterTrait().getVoltage() * getConverterTrait().getAmps(),
@@ -79,7 +75,7 @@ public class ConverterMachine extends TieredEnergyMachine {
                                 getConverterTrait().getAmps(), getConverterTrait().getVoltage()));
             }
         }
-        return ItemInteractionResult.CONSUME;
+        return InteractionResult.CONSUME;
     }
 
     public void setFeToEu(boolean feToEu) {

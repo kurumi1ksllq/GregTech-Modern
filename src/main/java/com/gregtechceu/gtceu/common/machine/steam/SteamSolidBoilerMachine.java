@@ -27,7 +27,6 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collections;

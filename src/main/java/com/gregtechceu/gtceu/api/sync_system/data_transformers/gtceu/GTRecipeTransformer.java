@@ -18,7 +18,8 @@ public class GTRecipeTransformer implements ValueTransformer<GTRecipe> {
         CompoundTag tag = new CompoundTag();
         tag.putString("id", value.id.toString());
         tag.put("recipe",
-                GTRecipeSerializer.CODEC.encode(value, NbtOps.INSTANCE, NbtOps.INSTANCE.mapBuilder()).build(new CompoundTag()).getOrThrow());
+                GTRecipeSerializer.CODEC.encode(value, NbtOps.INSTANCE, NbtOps.INSTANCE.mapBuilder())
+                        .build(new CompoundTag()).getOrThrow());
         tag.putInt("parallels", value.parallels);
         tag.putInt("ocLevel", value.ocLevel);
         return tag;
@@ -30,7 +31,9 @@ public class GTRecipeTransformer implements ValueTransformer<GTRecipe> {
         GTRecipe result = null;
         if (tag instanceof CompoundTag compoundTag) {
             var recipeTag = compoundTag.get("recipe");
-            result = GTRecipeSerializer.CODEC.decode(NbtOps.INSTANCE, NbtOps.INSTANCE.getMap(Objects.requireNonNull(recipeTag)).getOrThrow()).result().orElse(null);
+            result = GTRecipeSerializer.CODEC
+                    .decode(NbtOps.INSTANCE, NbtOps.INSTANCE.getMap(Objects.requireNonNull(recipeTag)).getOrThrow())
+                    .result().orElse(null);
             if (result != null) {
                 result.id = ResourceLocation.parse(compoundTag.getString("id"));
                 result.parallels = compoundTag.contains("parallels") ? compoundTag.getInt("parallels") : 1;

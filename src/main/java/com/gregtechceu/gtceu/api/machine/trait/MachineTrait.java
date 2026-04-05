@@ -11,8 +11,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.client.model.data.ModelData;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -41,9 +39,7 @@ public abstract class MachineTrait implements ISyncManaged {
     public MachineTrait(MetaMachine machine) {
         this.machine = machine;
         this.capabilityValidator = side -> true;
-        // Machine should never be null, unless this trait is a recipe handler instantiated outside a machine for
-        // recipe search.
-        if (machine != null) machine.getTraitHolder().attachTrait(this);
+        machine.getTraitHolder().attachTrait(this);
     }
 
     public abstract MachineTraitType<?> getTraitType();

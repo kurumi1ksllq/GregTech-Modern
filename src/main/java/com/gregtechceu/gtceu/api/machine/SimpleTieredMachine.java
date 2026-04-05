@@ -38,11 +38,6 @@ import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.TickTask;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
 
 import com.google.common.collect.Tables;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;

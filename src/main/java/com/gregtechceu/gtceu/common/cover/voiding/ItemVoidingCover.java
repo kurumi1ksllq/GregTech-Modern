@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.common.cover.ConveyorCover;
 import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
@@ -19,12 +20,10 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import org.jetbrains.annotations.NotNull;
@@ -104,17 +103,16 @@ public class ItemVoidingCover extends ConveyorCover implements IUICover, IContro
     }
 
     @Override
-    public ItemInteractionResult onSoftMalletClick(Player playerIn, InteractionHand hand, ItemStack held,
-                                                   BlockHitResult hitResult) {
-        if (!held.canPerformAction(GTItemAbilities.MALLET_PAUSE)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    public InteractionResult onSoftMalletClick(ExtendedUseOnContext context) {
+        if (!context.getItemInHand().canPerformAction(GTItemAbilities.MALLET_PAUSE)) {
+            return InteractionResult.PASS;
         }
         if (!isRemote()) {
             setWorkingEnabled(!isWorkingEnabled);
-            playerIn.sendSystemMessage(Component.translatable(isWorkingEnabled() ?
+            context.getPlayer().sendSystemMessage(Component.translatable(isWorkingEnabled() ?
                     "cover.voiding.message.enabled" : "cover.voiding.message.disabled"));
         }
-        return ItemInteractionResult.sidedSuccess(playerIn.level().isClientSide);
+        return InteractionResult.sidedSuccess(isRemote());
     }
 
     // TODO: Decide grid behavior

@@ -15,7 +15,6 @@ import com.gregtechceu.gtceu.common.blockentity.ItemPipeBlockEntity;
 
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 

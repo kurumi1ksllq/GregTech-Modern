@@ -389,7 +389,8 @@ public class PatternPreviewWidget extends WidgetGroup {
                 for (int z = 0; z < column.length; z++) {
                     BlockState blockState = column[z].getBlockState();
                     BlockPos pos = multiPos.offset(x, y, z);
-                    if (column[z].getBlockEntity(pos, LEVEL.getLevel().registryAccess()) instanceof MultiblockControllerMachine controller) {
+                    if (column[z].getBlockEntity(pos,
+                            LEVEL.getLevel().registryAccess()) instanceof MultiblockControllerMachine controller) {
                         controller.setLevel(LEVEL);
                         blockEntitiesToAdd.add(controller);
                         controllerBase = controller;

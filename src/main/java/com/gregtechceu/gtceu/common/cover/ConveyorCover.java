@@ -38,7 +38,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -465,7 +464,8 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IUICover, 
     private boolean shouldDisplayDistributionMode() {
         return coverHolder.getLevel().getBlockEntity(coverHolder.getBlockPos()) instanceof ItemPipeBlockEntity ||
                 coverHolder.getLevel()
-                        .getBlockEntity(coverHolder.getBlockPos().relative(attachedSide)) instanceof ItemPipeBlockEntity;
+                        .getBlockEntity(
+                                coverHolder.getBlockPos().relative(attachedSide)) instanceof ItemPipeBlockEntity;
     }
 
     @NotNull

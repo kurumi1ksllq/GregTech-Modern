@@ -26,8 +26,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 public class LargeTurbineMachine extends WorkableElectricMultiblockMachine implements ITieredMachine {
 
     public static final int MIN_DURABILITY_TO_WARN = 10;

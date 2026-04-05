@@ -1,13 +1,14 @@
 package com.gregtechceu.gtceu.common.machine.storage;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
+import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.PhantomSlotWidget;
 import com.gregtechceu.gtceu.api.item.datacomponents.CreativeMachineInfo;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.common.data.item.GTDataComponents;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
+import com.gregtechceu.gtceu.common.data.item.GTDataComponents;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceBorderTexture;
@@ -84,17 +85,19 @@ public class CreativeChestMachine extends QuantumChestMachine {
     }
 
     @Override
-    public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
-                                   BlockHitResult hit) {
-        if (hit.getDirection() != getFrontFacing() || isRemote()) {
+    public InteractionResult onUseWithItem(ExtendedUseOnContext context) {
+        var heldItem = context.getItemInHand();
+        var player = context.getPlayer();
+
+        if (context.getClickedFace() != getFrontFacing() || isRemote()) {
             return InteractionResult.PASS;
         }
         // Clear item if empty hand + shift-rclick
-        if (player.getItemInHand(hand).isEmpty() && player.isShiftKeyDown() && !stored.isEmpty()) {
+        if (player.getItemInHand(context.getHand()).isEmpty() && player.isShiftKeyDown() && !stored.isEmpty()) {
             updateStored(ItemStack.EMPTY);
             return InteractionResult.SUCCESS;
         }
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.onUseWithItem(context);
     }
 
     @Override

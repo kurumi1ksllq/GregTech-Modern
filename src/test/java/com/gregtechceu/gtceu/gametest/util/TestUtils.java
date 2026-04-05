@@ -23,7 +23,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestAssertPosException;
-import net.minecraft.gametest.framework.GameTestAssertPosException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +30,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedstoneLampBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.Nullable;

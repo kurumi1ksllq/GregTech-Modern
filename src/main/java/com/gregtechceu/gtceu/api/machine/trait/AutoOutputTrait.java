@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
 import com.gregtechceu.gtceu.common.item.tool.behavior.ToolModeSwitchBehavior;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
@@ -23,13 +24,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 
@@ -323,23 +322,23 @@ public class AutoOutputTrait extends MachineTrait implements IRenderingTrait, II
     }
 
     @Override
-    public Pair<GTToolType, ItemInteractionResult> onToolClick(Set<GTToolType> toolType,
-                                                               Player player, InteractionHand hand, Direction gridSide,
-                                                               BlockHitResult hitResult) {
+    public Pair<GTToolType, InteractionResult> onToolClick(ExtendedUseOnContext context) {
+        var toolType = context.getToolType();
         if (useDefaultToolHandlers) {
             if (toolType.contains(GTToolType.WRENCH)) {
-                return Pair.of(GTToolType.WRENCH, onWrenchClick(player, hand, gridSide, hitResult));
+                return Pair.of(GTToolType.WRENCH, onWrenchClick(context));
             }
             if (toolType.contains(GTToolType.SCREWDRIVER)) {
-                return Pair.of(GTToolType.SCREWDRIVER, onScrewdriverClick(player, hand, gridSide, hitResult));
+                return Pair.of(GTToolType.SCREWDRIVER, onScrewdriverClick(context));
             }
         }
-        return IInteractionTrait.super.onToolClick(toolType, player, hand, gridSide, hitResult);
+        return IInteractionTrait.super.onToolClick(context);
     }
 
-    private ItemInteractionResult onWrenchClick(Player player, InteractionHand hand, Direction gridSide,
-                                            BlockHitResult hitResult) {
-        var itemStack = player.getItemInHand(hand);
+    private InteractionResult onWrenchClick(ExtendedUseOnContext context) {
+        var player = context.getPlayer();
+        var itemStack = context.getItemInHand();
+        var gridSide = context.getGridSide();
 
         boolean hasChanged = false;
         if (ToolModeSwitchBehavior.INSTANCE.canPerformAction(itemStack, GTItemAbilities.WRENCH_CONFIGURE_ITEMS)) {
@@ -356,11 +355,13 @@ public class AutoOutputTrait extends MachineTrait implements IRenderingTrait, II
                 hasChanged = true;
             }
         }
-        return hasChanged ? ItemInteractionResult.sidedSuccess(machine.isRemote()) : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return hasChanged ? InteractionResult.sidedSuccess(machine.isRemote()) : InteractionResult.PASS;
     }
 
-    private ItemInteractionResult onScrewdriverClick(Player player, InteractionHand hand, Direction gridSide,
-                                                 BlockHitResult hitResult) {
+    private InteractionResult onScrewdriverClick(ExtendedUseOnContext context) {
+        var player = context.getPlayer();
+        var gridSide = context.getGridSide();
+
         boolean hasChanged = false;
         if (player.isShiftKeyDown()) {
             if (getItemOutputDirection() == gridSide) {
@@ -391,6 +392,6 @@ public class AutoOutputTrait extends MachineTrait implements IRenderingTrait, II
                 hasChanged = true;
             }
         }
-        return hasChanged ? ItemInteractionResult.sidedSuccess(player.level().isClientSide) : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return hasChanged ? InteractionResult.sidedSuccess(player.level().isClientSide) : InteractionResult.PASS;
     }
 }

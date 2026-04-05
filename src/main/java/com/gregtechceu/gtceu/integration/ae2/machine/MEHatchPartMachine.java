@@ -10,7 +10,6 @@ import com.gregtechceu.gtceu.integration.ae2.machine.feature.IGridConnectedMachi
 import com.gregtechceu.gtceu.integration.ae2.machine.trait.GridNodeHolder;
 
 import net.minecraft.core.Direction;
-import net.minecraft.MethodsReturnNonnullByDefault;
 
 import appeng.api.networking.*;
 import appeng.api.networking.security.IActionSource;

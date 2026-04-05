@@ -13,8 +13,6 @@ import com.gregtechceu.gtceu.api.pattern.BlockPattern;
 import com.gregtechceu.gtceu.api.pattern.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.utils.memoization.GTMemoizer;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -28,7 +26,6 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Tolerate;
 import org.apache.commons.lang3.function.TriFunction;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.*;

@@ -1,7 +1,5 @@
 package com.gregtechceu.gtceu.integration.kjs.builders.machine;
 
-import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
-import com.gregtechceu.gtceu.api.item.MetaMachineItem;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.integration.kjs.helpers.GTResourceLocation;
 

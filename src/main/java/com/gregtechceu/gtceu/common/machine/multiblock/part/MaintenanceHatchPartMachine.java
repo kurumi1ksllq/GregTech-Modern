@@ -16,24 +16,21 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.common.data.GTItems;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.widget.*;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
@@ -193,7 +190,8 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
         return false;
     }
 
-    private boolean consumeDuctTape(Player player, ItemStack held) {
+    private boolean consumeDuctTape(Player player, InteractionHand hand) {
+        var held = player.getItemInHand(hand);
         if (!held.isEmpty() && held.is(GTItems.DUCT_TAPE.get())) {
             if (!player.isCreative()) {
                 held.shrink(1);
@@ -313,17 +311,17 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
     //////////////////////////////////////
     // ******* INTERACTION *******//
     //////////////////////////////////////
+
     @Override
-    public ItemInteractionResult onUseWithItem(ItemStack stack, BlockState state, Level world, BlockPos pos,
-                                               Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult onUseWithItem(ExtendedUseOnContext context) {
         if (hasMaintenanceProblems()) {
-            if (consumeDuctTape(player, stack)) {
+            if (consumeDuctTape(context.getPlayer(), context.getHand())) {
                 fixAllMaintenanceProblems();
                 setTaped(true);
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return super.onUseWithItem(context);
     }
 
     //////////////////////////////////////

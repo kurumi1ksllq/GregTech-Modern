@@ -21,6 +21,7 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.item.GTDataComponents;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
@@ -36,18 +37,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNullByDefault;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
@@ -175,40 +172,21 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
     //////////////////////////////////////
 
     @Override
-    public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
-                                   BlockHitResult hit) {
-        if (hit.getDirection() == getFrontFacing() && !isRemote()) {
-            // Check to see if the hit is within the glass frame of the chest
+    public InteractionResult onUseWithItem(ExtendedUseOnContext context) {
+        if (context.getClickedFace() == getFrontFacing() && !isRemote()) {
+            var hit = context.getHitResult();
+
             var aabb = new AABB(hit.getBlockPos()).deflate(0.12);
             var hitVector = hit.getLocation().relative(getFrontFacing(), -0.5);
             if (!aabb.contains(hitVector)) return InteractionResult.PASS;
 
-            if (isDoubleHit(player.getUUID())) {
-                for (var stack : player.getInventory().items) {
-                    if (!stack.isEmpty() && cache.canInsert(stack)) {
-                        stack.setCount(cache.insertItem(0, stack, false).getCount());
-                    }
-                }
-            }
-            INTERACTION_LOGGER.put(player.getUUID(), System.currentTimeMillis());
-            return InteractionResult.SUCCESS;
-        }
-        return InteractionResult.PASS;
-    }
-
-    @Override
-    public ItemInteractionResult onUseWithItem(ItemStack held, BlockState state, Level world, BlockPos pos,
-                                               Player player, InteractionHand hand, BlockHitResult hit) {
-        if (hit.getDirection() == getFrontFacing() && !isRemote()) {
-            // Check to see if the hit is within the glass frame of the chest
-            var aabb = new AABB(hit.getBlockPos()).deflate(0.12);
-            var hitVector = hit.getLocation().relative(getFrontFacing(), -0.5);
-            if (!aabb.contains(hitVector)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            var held = context.getItemInHand();
+            var player = context.getPlayer();
 
             if (cache.canInsert(held)) { // push
                 var remaining = cache.insertItem(0, held, false);
                 player.setItemInHand(InteractionHand.MAIN_HAND, remaining);
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             } else if (isDoubleHit(player.getUUID())) {
                 for (var stack : player.getInventory().items) {
                     if (!stack.isEmpty() && cache.canInsert(stack)) {
@@ -217,9 +195,11 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
                 }
             }
             INTERACTION_LOGGER.put(player.getUUID(), System.currentTimeMillis());
-            return ItemInteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
+
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+
+        return super.onUseWithItem(context);
     }
 
     private static boolean isDoubleHit(UUID uuid) {
@@ -227,7 +207,7 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
     }
 
     @Override
-    public boolean onLeftClick(Player player, Level world, InteractionHand hand, BlockPos pos,
+    public boolean onLeftClick(Player player, InteractionHand hand,
                                @Nullable Direction direction) {
         if (direction == getFrontFacing() && !isRemote()) {
             if (GTToolType.WRENCH.matchTags.stream().anyMatch(player.getItemInHand(hand)::is)) return false;
@@ -235,13 +215,13 @@ public class QuantumChestMachine extends TieredMachine implements IControllable,
                 var drained = cache.extractItem(0, player.isShiftKeyDown() ? stored.getMaxStackSize() : 1, false);
                 if (!drained.isEmpty()) {
                     if (!player.addItem(drained)) {
-                        net.minecraft.world.level.block.Block.popResourceFromFace(world, getBlockPos(), getFrontFacing(),
-                                drained);
+                        net.minecraft.world.level.block.Block.popResourceFromFace(getLevel(), getBlockPos(),
+                                getFrontFacing(), drained);
                     }
                 }
             }
         }
-        return super.onLeftClick(player, world, hand, pos, direction);
+        return super.onLeftClick(player, hand, direction);
     }
 
     public boolean isLocked() {

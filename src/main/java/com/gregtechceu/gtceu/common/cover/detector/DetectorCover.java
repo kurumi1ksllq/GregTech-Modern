@@ -5,20 +5,16 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
-import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
-
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
+import com.gregtechceu.gtceu.common.data.item.GTItemAbilities;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.InteractionResult;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -70,14 +66,13 @@ public abstract class DetectorCover extends CoverBehavior implements IControllab
     }
 
     @Override
-    public ItemInteractionResult onScrewdriverClick(Player playerIn, InteractionHand hand, ItemStack held,
-                                                    BlockHitResult hitResult) {
-        ItemInteractionResult superResult = super.onScrewdriverClick(playerIn, hand, held, hitResult);
-        if (superResult.consumesAction()) {
+    public InteractionResult onScrewdriverClick(ExtendedUseOnContext context) {
+        InteractionResult superResult = super.onScrewdriverClick(context);
+        if (superResult != InteractionResult.PASS) {
             return superResult;
         }
-        if (!held.canPerformAction(GTItemAbilities.SCREWDRIVER_CONFIGURE)) {
-            return ItemInteractionResult.FAIL;
+        if (!context.getItemInHand().canPerformAction(GTItemAbilities.SCREWDRIVER_CONFIGURE)) {
+            return InteractionResult.FAIL;
         }
 
         if (!this.coverHolder.isRemote()) {
@@ -85,10 +80,10 @@ public abstract class DetectorCover extends CoverBehavior implements IControllab
 
             String translationKey = isInverted() ? "cover.detector_base.message_inverted_state" :
                     "cover.detector_base.message_normal_state";
-            playerIn.sendSystemMessage(Component.translatable(translationKey));
+            context.getPlayer().sendSystemMessage(Component.translatable(translationKey));
         }
 
-        return ItemInteractionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override

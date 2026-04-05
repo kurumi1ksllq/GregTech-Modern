@@ -7,7 +7,6 @@ import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
 import com.gregtechceu.gtceu.api.machine.trait.MachineTraitType;
 import com.gregtechceu.gtceu.common.blockentity.DuctPipeBlockEntity;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
-import com.gregtechceu.gtceu.common.network.GTNetwork;
 import com.gregtechceu.gtceu.common.network.packets.hazard.SPacketRemoveHazardZone;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -16,12 +15,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.chunk.LevelChunk;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import lombok.Getter;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiPredicate;
@@ -118,7 +116,8 @@ public class EnvironmentalHazardCleanerTrait extends MachineTrait {
                     zone.removeStrength(toClean);
                     if (zone.strength() <= 0) {
                         if (serverLevel.hasChunk(chunkPos.x, chunkPos.z)) {
-                            PacketDistributor.sendToPlayersTrackingChunk(serverLevel, chunkPos, new SPacketRemoveHazardZone(chunkPos));
+                            PacketDistributor.sendToPlayersTrackingChunk(serverLevel, chunkPos,
+                                    new SPacketRemoveHazardZone(chunkPos));
                         }
                         return null;
                     } else return zone;

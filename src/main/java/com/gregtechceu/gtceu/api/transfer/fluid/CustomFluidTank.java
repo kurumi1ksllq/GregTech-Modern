@@ -1,7 +1,5 @@
 package com.gregtechceu.gtceu.api.transfer.fluid;
 
-import com.lowdragmc.lowdraglib.syncdata.IContentChangeAware;
-
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.common.util.INBTSerializable;

@@ -15,6 +15,7 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.item.behavior.LighterBehavior;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
+import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
@@ -27,16 +28,12 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.ItemAbilities;
@@ -44,7 +41,6 @@ import net.neoforged.neoforge.common.ItemAbilities;
 import it.unimi.dsi.fastutil.longs.Long2BooleanMap;
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -92,7 +88,7 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     }
 
     @Override
-    public @NotNull CharcoalRecipeLogic getRecipeLogic() {
+    public CharcoalRecipeLogic getRecipeLogic() {
         return (CharcoalRecipeLogic) super.getRecipeLogic();
     }
 
@@ -314,17 +310,20 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
     }
 
     @Override
-    public ItemInteractionResult onUseWithItem(ItemStack stack, BlockState state, Level level, BlockPos pos,
-                                               Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult onUse(ExtendedUseOnContext context) {
+        var stack = context.getItemInHand();
+        var player = context.getPlayer();
+        var hand = context.getHand();
+
         if (!isFormed() || hasAir) {
-            return super.onUseWithItem(stack, state, level, pos, player, hand, hit);
+            return super.onUseWithItem(context);
         }
         if (!stack.canPerformAction(ItemAbilities.FIRESTARTER_LIGHT)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.PASS;
         }
 
-        if (level.isClientSide && !isActive()) {
-            return ItemInteractionResult.SUCCESS;
+        if (getLevel().isClientSide && !isActive()) {
+            return InteractionResult.SUCCESS;
         } else if (!isActive()) {
             boolean shouldActivate = false;
             if (stack.getItem() instanceof ComponentItem compItem) {
@@ -345,13 +344,13 @@ public class CharcoalPileIgniterMachine extends WorkableMultiblockMachine implem
             if (shouldActivate) {
                 getRecipeLogic().setStatus(RecipeLogic.Status.WORKING);
 
-                level.playSound(null, pos,
+                getLevel().playSound(null, getBlockPos(),
                         stack.is(Items.FIRE_CHARGE) ? SoundEvents.FIRECHARGE_USE : SoundEvents.FLINTANDSTEEL_USE,
                         SoundSource.BLOCKS, 1.0f, 1.0f);
-                return ItemInteractionResult.CONSUME;
+                return InteractionResult.CONSUME;
             }
         }
-        return super.onUseWithItem(stack, state, level, pos, player, hand, hit);
+        return super.onUse(context);
     }
 
     public static class CharcoalRecipeLogic extends RecipeLogic {

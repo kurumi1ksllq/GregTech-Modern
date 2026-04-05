@@ -11,11 +11,10 @@ import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import lombok.Getter;
-import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -99,7 +98,8 @@ public class DummyRecipeUtils {
         }
 
         @Override
-        public List<SizedIngredient> handleRecipeInner(IO io, GTRecipe recipe, List<SizedIngredient> left, boolean simulate) {
+        public List<SizedIngredient> handleRecipeInner(IO io, GTRecipe recipe, List<SizedIngredient> left,
+                                                       boolean simulate) {
             return NotifiableItemStackHandler.handleRecipe(io, recipe, left, simulate, handlerIO, storage);
         }
 

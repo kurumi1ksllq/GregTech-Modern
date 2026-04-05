@@ -25,9 +25,9 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.component.ItemContainerContents;
 
 import lombok.Getter;
-import net.minecraft.world.item.component.ItemContainerContents;
 
 public class CrateMachine extends MetaMachine implements IUIMachine, IDropSaveMachine {
 

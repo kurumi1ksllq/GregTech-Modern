@@ -113,7 +113,8 @@ public class EnderItemLinkCover extends AbstractEnderLinkCover<VirtualItemStorag
 
     @Override
     public void pasteConfig(ServerPlayer player, CompoundTag tag) {
-        filterHandler.setFilterItem(ItemStack.parseOptional(coverHolder.getLevel().registryAccess(), tag.getCompound("filter")));
+        filterHandler.setFilterItem(
+                ItemStack.parseOptional(coverHolder.getLevel().registryAccess(), tag.getCompound("filter")));
         super.pasteConfig(player, tag);
     }
 

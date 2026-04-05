@@ -107,13 +107,13 @@ public class EnderItemLinkCover extends AbstractEnderLinkCover<VirtualItemStorag
 
     @Override
     public CompoundTag copyConfig(CompoundTag tag) {
-        tag.put("filter", filterHandler.getFilterItem().serializeNBT());
+        tag.put("filter", filterHandler.getFilterItem().save(coverHolder.getLevel().registryAccess()));
         return super.copyConfig(tag);
     }
 
     @Override
     public void pasteConfig(ServerPlayer player, CompoundTag tag) {
-        filterHandler.setFilterItem(ItemStack.of(tag.getCompound("filter")));
+        filterHandler.setFilterItem(ItemStack.parseOptional(coverHolder.getLevel().registryAccess(), tag.getCompound("filter")));
         super.pasteConfig(player, tag);
     }
 

@@ -15,6 +15,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import lombok.Getter;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -80,7 +81,7 @@ public class DummyRecipeUtils {
         }
     }
 
-    public static class DummyItemHandler implements IRecipeHandler<Ingredient> {
+    public static class DummyItemHandler implements IRecipeHandler<SizedIngredient> {
 
         @Getter
         public CustomItemStackHandler storage;
@@ -98,7 +99,7 @@ public class DummyRecipeUtils {
         }
 
         @Override
-        public List<Ingredient> handleRecipeInner(IO io, GTRecipe recipe, List<Ingredient> left, boolean simulate) {
+        public List<SizedIngredient> handleRecipeInner(IO io, GTRecipe recipe, List<SizedIngredient> left, boolean simulate) {
             return NotifiableItemStackHandler.handleRecipe(io, recipe, left, simulate, handlerIO, storage);
         }
 
@@ -127,7 +128,7 @@ public class DummyRecipeUtils {
         }
 
         @Override
-        public RecipeCapability<Ingredient> getCapability() {
+        public RecipeCapability<SizedIngredient> getCapability() {
             return ItemRecipeCapability.CAP;
         }
     }
@@ -148,7 +149,7 @@ public class DummyRecipeUtils {
                 addHandlerList(handler);
             }
 
-            for (RecipeCapability<?> cap : GTRegistries.RECIPE_CAPABILITIES.values()) {
+            for (RecipeCapability<?> cap : GTRegistries.RECIPE_CAPABILITIES) {
                 cacheChances.put(cap, cap.makeChanceCache());
             }
         }

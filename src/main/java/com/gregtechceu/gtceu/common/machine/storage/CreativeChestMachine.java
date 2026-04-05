@@ -68,23 +68,6 @@ public class CreativeChestMachine extends QuantumChestMachine {
     }
 
     @Override
-    public ItemInteractionResult onUseWithItem(ItemStack stack, BlockState state, Level world, BlockPos pos,
-                                               Player player, InteractionHand hand, BlockHitResult hit) {
-        if (hit.getDirection() != getFrontFacing() || isRemote()) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        }
-        // If held item can stack with stored item, delete held item
-        if (ItemStack.isSameItemSameComponents(stored, stack)) {
-            player.setItemInHand(hand, ItemStack.EMPTY);
-            return ItemInteractionResult.SUCCESS;
-        } else if (!stack.isEmpty()) { // If held item is different than stored item, update stored item
-            updateStored(stack);
-            return ItemInteractionResult.SUCCESS;
-        }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-    }
-
-    @Override
     public InteractionResult onUseWithItem(ExtendedUseOnContext context) {
         var heldItem = context.getItemInHand();
         var player = context.getPlayer();

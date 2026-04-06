@@ -320,15 +320,13 @@ public class OverclockLogicTest {
     @GameTest(template = "singleblock_charged_cr", batch = "OverclockLogic")
     public static void overclockLogicHVPowerTest(GameTestHelper helper) {
         SimpleTieredMachine machine = (SimpleTieredMachine) helper.getBlockEntity(new BlockPos(0, 1, 0));
-
-        assert machine != null;
         machine.setRecipeType(CR_RECIPE_TYPE);
         NotifiableEnergyContainer energyContainer = (NotifiableEnergyContainer) machine
-                .getCapabilitiesFlat(IO.IN, EURecipeCapability.CAP).get(0);
+                .getCapabilitiesFlat(IO.IN, EURecipeCapability.CAP).getFirst();
         NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
-                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
+                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).getFirst();
         NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
-                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).getFirst();
 
         long originalCharge = GTValues.V[GTValues.HV] * 64L;
         helper.assertTrue(energyContainer.getEnergyStored() == originalCharge,
@@ -352,14 +350,13 @@ public class OverclockLogicTest {
     @GameTest(template = "singleblock_charged_cr", batch = "OverclockLogic")
     public static void overclockLogicMVPowerTest(GameTestHelper helper) {
         SimpleTieredMachine machine = (SimpleTieredMachine) helper.getBlockEntity(new BlockPos(0, 1, 0));
-        assert machine != null;
         machine.setRecipeType(CR_RECIPE_TYPE);
         NotifiableEnergyContainer energyContainer = (NotifiableEnergyContainer) machine
-                .getCapabilitiesFlat(IO.IN, EURecipeCapability.CAP).get(0);
+                .getCapabilitiesFlat(IO.IN, EURecipeCapability.CAP).getFirst();
         NotifiableItemStackHandler itemIn = (NotifiableItemStackHandler) machine
-                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).get(0);
+                .getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP).getFirst();
         NotifiableItemStackHandler itemOut = (NotifiableItemStackHandler) machine
-                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).get(0);
+                .getCapabilitiesFlat(IO.OUT, ItemRecipeCapability.CAP).getFirst();
 
         long originalCharge = GTValues.V[GTValues.HV] * 64L;
         helper.assertTrue(energyContainer.getEnergyStored() == originalCharge,

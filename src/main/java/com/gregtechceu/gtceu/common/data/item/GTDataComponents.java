@@ -141,6 +141,9 @@ public class GTDataComponents {
                     .networkSynchronized(ByteBufCodecs.VAR_INT));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<TextLineList>> TEXT_LINE_LIST = DATA_COMPONENTS
             .registerComponentType("text_line_list", builder -> builder.persistent(TextLineList.CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> TEXT_FORMAT = DATA_COMPONENTS
+            .registerComponentType("text_format", builder -> builder.persistent(Codec.STRING)
+                    .networkSynchronized(ByteBufCodecs.STRING_UTF8));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> IMAGE_MODULE_URL = DATA_COMPONENTS
             .registerComponentType("image_module_url", builder -> builder.persistent(Codec.STRING)
                     .networkSynchronized(ByteBufCodecs.STRING_UTF8));

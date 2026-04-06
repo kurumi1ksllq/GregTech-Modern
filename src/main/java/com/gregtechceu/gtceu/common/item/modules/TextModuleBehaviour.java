@@ -31,10 +31,10 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class TextModuleBehaviour implements IMonitorModuleItem, IAddInformation {
 
@@ -42,8 +42,10 @@ public class TextModuleBehaviour implements IMonitorModuleItem, IAddInformation 
         if (!stack.has(GTDataComponents.PLACEHOLDER_UUID)) {
             stack.set(GTDataComponents.PLACEHOLDER_UUID, UUID.randomUUID());
         }
+        // Read the format string (template) — never the processed output
+        String formatString = getPlaceholderText(stack);
         MultiLineComponent text = PlaceholderHandler.processPlaceholders(
-                getPlaceholderText(stack),
+                formatString,
                 new PlaceholderContext(
                         group.getTargetLevel(machine.getLevel()),
                         group.getTarget(machine.getLevel()),
@@ -52,6 +54,7 @@ public class TextModuleBehaviour implements IMonitorModuleItem, IAddInformation 
                         group.getTargetCover(machine.getLevel()),
                         null,
                         stack.get(GTDataComponents.PLACEHOLDER_UUID)));
+        // Only update the rendered lines, never TEXT_FORMAT (the user's template)
         stack.update(GTDataComponents.TEXT_LINE_LIST, TextLineList.EMPTY, lines -> lines.withLines(text.toImmutable()));
     }
 
@@ -78,14 +81,15 @@ public class TextModuleBehaviour implements IMonitorModuleItem, IAddInformation 
                 null);
         ButtonWidget saveButton = new ButtonWidget(-40, 22, 20, 20, click -> {
             if (!click.isRemote) return;
-            List<Component> lines = editor.getLines().stream()
-                    .map(Component::literal)
-                    .collect(Collectors.toList());
+            // Store the user's format string (template) in TEXT_FORMAT, not TEXT_LINE_LIST
+            String text = String.join("\n", editor.getLines());
             float scale = 1.0f;
             try {
                 scale = Float.parseFloat(scaleInput.getCurrentString());
             } catch (NumberFormatException ignored) {}
-            stack.set(GTDataComponents.TEXT_LINE_LIST, new TextLineList(lines, scale));
+            stack.set(GTDataComponents.TEXT_FORMAT, text);
+            // Only update the scale; the rendered lines will be refreshed on the next server tick
+            stack.update(GTDataComponents.TEXT_LINE_LIST, TextLineList.EMPTY, lines -> lines.withScale(scale));
             PacketDistributor.sendToServer(new SCPacketMonitorGroupNBTChange(stack, group, machine));
         });
         saveButton.setButtonTexture(GuiTextures.BUTTON_CHECK);
@@ -106,11 +110,8 @@ public class TextModuleBehaviour implements IMonitorModuleItem, IAddInformation 
         };
         scaleInput.setTextSupplier(scaleInputSupplier);
         scaleInput.setHoverTooltips(Component.translatable("gtceu.gui.central_monitor.text_scale"));
-        List<String> formatStringLines = stack.getOrDefault(GTDataComponents.TEXT_LINE_LIST, TextLineList.EMPTY)
-                .lines().stream()
-                .map(Component::getString)
-                .collect(Collectors.toList());
-        editor.setLines(formatStringLines);
+        String formatText = stack.getOrDefault(GTDataComponents.TEXT_FORMAT, "");
+        editor.setLines(new ArrayList<>(Arrays.asList(formatText.split("\n", -1))));
         builder.addWidget(editor);
         builder.addWidget(saveButton);
         Widget placeholderReference = PlaceholderHandler.getPlaceholderHandlerUI("");
@@ -138,21 +139,21 @@ public class TextModuleBehaviour implements IMonitorModuleItem, IAddInformation 
     }
 
     public void setPlaceholderText(ItemStack stack, String text) {
-        List<Component> lines = new ArrayList<>();
-        for (String line : text.split("\n")) {
-            lines.add(Component.literal(line));
-        }
-        stack.update(GTDataComponents.TEXT_LINE_LIST, TextLineList.EMPTY,
-                textLineList -> textLineList.withLines(lines));
+        stack.set(GTDataComponents.TEXT_FORMAT, text);
     }
 
     public String getPlaceholderText(ItemStack stack) {
-        StringBuilder formatStringLines = new StringBuilder();
-        List<Component> lines = stack.getOrDefault(GTDataComponents.TEXT_LINE_LIST, TextLineList.EMPTY).lines();
-        for (Component line : lines) {
-            formatStringLines.append(line.getString()).append('\n');
+        if (stack.has(GTDataComponents.TEXT_FORMAT)) {
+            return stack.get(GTDataComponents.TEXT_FORMAT);
         }
-        return formatStringLines.toString();
+        // Migration fallback for pre-existing items that only have TEXT_LINE_LIST
+        StringBuilder sb = new StringBuilder();
+        List<Component> lines = stack.getOrDefault(GTDataComponents.TEXT_LINE_LIST, TextLineList.EMPTY).lines();
+        for (int i = 0; i < lines.size(); i++) {
+            if (i > 0) sb.append('\n');
+            sb.append(lines.get(i).getString());
+        }
+        return sb.toString();
     }
 
     @Override
@@ -161,7 +162,7 @@ public class TextModuleBehaviour implements IMonitorModuleItem, IAddInformation 
                                 TooltipFlag isAdvanced) {
         if (isAdvanced.isAdvanced()) {
             tooltipComponents.add(Component.literal("Placeholder text:").withStyle(ChatFormatting.GOLD));
-            tooltipComponents.addAll(stack.getOrDefault(GTDataComponents.TEXT_LINE_LIST, TextLineList.EMPTY).lines());
+            tooltipComponents.add(Component.literal(stack.getOrDefault(GTDataComponents.TEXT_FORMAT, "")));
             tooltipComponents.add(Component.literal("Processed text:").withStyle(ChatFormatting.GOLD));
             tooltipComponents.addAll(getText(stack));
         }

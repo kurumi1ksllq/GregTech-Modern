@@ -36,6 +36,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
 @GameTestHolder(GTCEu.MOD_ID)
 public class AdvancedDetectorCoverTest {
 
+    @TestHolder()
     @GameTest(template = "electrolyzer", batch = "coverTests")
     public static void testAdvancedActivityDetectorCoverWithActivity(GameTestHelper helper) {
         helper.pullLever(new BlockPos(2, 2, 2));
@@ -56,6 +57,7 @@ public class AdvancedDetectorCoverTest {
         });
     }
 
+    @TestHolder()
     @GameTest(template = "electrolyzer", batch = "coverTests")
     public static void testAdvancedActivityDetectorCoverWithoutActivity(GameTestHelper helper) {
         helper.pullLever(new BlockPos(2, 2, 2));

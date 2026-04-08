@@ -7,8 +7,6 @@ import com.gregtechceu.gtceu.api.item.capability.ElectricItem;
 import com.gregtechceu.gtceu.api.item.component.*;
 import com.gregtechceu.gtceu.api.mui.IItemUIHolder;
 
-import com.lowdragmc.lowdraglib.client.renderer.IItemRendererProvider;
-import com.lowdragmc.lowdraglib.client.renderer.IRenderer;
 import com.lowdragmc.lowdraglib.gui.factory.HeldItemUIFactory;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 
@@ -55,7 +53,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class ComponentItem extends Item
-                           implements HeldItemUIFactory.IHeldItemUIHolder, IItemRendererProvider, IComponentItem,
+                           implements HeldItemUIFactory.IHeldItemUIHolder, IComponentItem,
                            IItemUIHolder {
 
     protected int burnTime = -1;
@@ -307,17 +305,6 @@ public class ComponentItem extends Item
         for (IItemComponent component : components) {
             if (component instanceof IItemUIFactory uiFactory) {
                 return uiFactory.createUI(holder, entityPlayer);
-            }
-        }
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public IRenderer getRenderer(ItemStack stack) {
-        for (IItemComponent component : components) {
-            if (component instanceof ICustomRenderer customRenderer) {
-                return customRenderer.getRenderer();
             }
         }
         return null;

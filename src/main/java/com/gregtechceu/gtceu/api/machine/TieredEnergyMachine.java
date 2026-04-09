@@ -35,7 +35,6 @@ public class TieredEnergyMachine extends TieredMachine implements ITieredMachine
                 () -> energyContainer.getEnergyStored() > 0);
     }
 
-
     public TieredEnergyMachine(BlockEntityCreationInfo info, int tier) {
         super(info, tier);
 

@@ -16,7 +16,6 @@ import com.gregtechceu.gtceu.common.machine.electric.ConverterMachine;
 import net.minecraftforge.energy.IEnergyStorage;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 public class ConverterTrait extends NotifiableEnergyContainer {
 

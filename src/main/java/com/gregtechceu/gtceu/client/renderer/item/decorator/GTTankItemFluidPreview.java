@@ -5,7 +5,7 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
 import com.lowdragmc.lowdraglib.side.fluid.forge.FluidHelperImpl;
-
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
@@ -110,6 +110,7 @@ public class GTTankItemFluidPreview implements IItemDecorator {
                 renderedCount++;
             }
         }
+
 
         return true;
     }

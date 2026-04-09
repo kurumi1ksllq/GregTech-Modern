@@ -8,7 +8,6 @@ import com.gregtechceu.gtceu.api.cover.*;
 import com.gregtechceu.gtceu.api.cover.filter.FilterHandler;
 import com.gregtechceu.gtceu.api.cover.filter.FilterHandlers;
 import com.gregtechceu.gtceu.api.cover.filter.FluidFilter;
-import com.gregtechceu.gtceu.api.gui.widget.NumberInputWidget;
 import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
 import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
@@ -87,7 +86,6 @@ public class PumpCover extends CoverBehavior implements IIOCover, IMuiCover, ICo
     @SyncToClient
     protected final FilterHandler<FluidStack, FluidFilter> filterHandler;
     protected final ConditionalSubscriptionHandler subscriptionHandler;
-    private NumberInputWidget<Integer> transferRateWidget;
 
     public PumpCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier,
                      int maxTransferRate) {
@@ -102,7 +100,7 @@ public class PumpCover extends CoverBehavior implements IIOCover, IMuiCover, ICo
         filterHandler = FilterHandlers.fluid(this)
                 .onFilterLoaded(f -> configureFilter())
                 .onFilterUpdated(f -> configureFilter())
-                .onFilterRemoved(f -> configureFilter());
+                .onFilterRemoved(this::configureFilter);
     }
 
     public PumpCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier) {
@@ -302,7 +300,7 @@ public class PumpCover extends CoverBehavior implements IIOCover, IMuiCover, ICo
     // *** CAPABILITY OVERRIDE ***//
     /////////////////////////////////////
 
-    private CoverableFluidHandlerWrapper fluidHandlerWrapper;
+    private @Nullable CoverableFluidHandlerWrapper fluidHandlerWrapper;
 
     @Nullable
     @Override

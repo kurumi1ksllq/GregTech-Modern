@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.filter.ItemFilter;
 import com.gregtechceu.gtceu.api.cover.filter.SimpleItemFilter;
-import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.common.cover.data.TransferMode;
@@ -50,8 +49,6 @@ public class RobotArmCover extends ConveyorCover {
     @Setter
     protected int globalTransferLimit;
     protected int itemsTransferBuffered;
-
-    private IntInputWidget stackSizeInput;
 
     public RobotArmCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier,
                          int maxTransferRate) {
@@ -188,8 +185,6 @@ public class RobotArmCover extends ConveyorCover {
     public void setTransferMode(TransferMode transferMode) {
         this.transferMode = transferMode;
 
-        configureStackSizeInput();
-
         if (!this.isRemote()) {
             syncDataHolder.markClientSyncFieldDirty("transferMode");
             configureFilter();
@@ -201,17 +196,6 @@ public class RobotArmCover extends ConveyorCover {
         if (filterHandler.getFilter() instanceof SimpleItemFilter filter) {
             filter.setMaxStackSize(filter.isBlackList() ? 1 : transferMode.maxStackSize);
         }
-
-        configureStackSizeInput();
-    }
-
-    private void configureStackSizeInput() {
-        if (this.stackSizeInput == null)
-            return;
-
-        this.stackSizeInput.setVisible(shouldShowStackSize());
-        this.stackSizeInput.setMin(1);
-        this.stackSizeInput.setMax(this.transferMode.maxStackSize);
     }
 
     private boolean shouldShowStackSize() {

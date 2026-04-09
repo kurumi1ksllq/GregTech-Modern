@@ -103,7 +103,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
         filterHandler = FilterHandlers.item(this)
                 .onFilterLoaded(f -> configureFilter())
                 .onFilterUpdated(f -> configureFilter())
-                .onFilterRemoved(f -> configureFilter());
+                .onFilterRemoved(this::configureFilter);
     }
 
     public ConveyorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier) {

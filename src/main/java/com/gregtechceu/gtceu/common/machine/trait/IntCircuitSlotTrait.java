@@ -1,4 +1,4 @@
-package com.gregtechceu.gtceu.api.machine.trait.multiblock;
+package com.gregtechceu.gtceu.common.machine.trait;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
@@ -13,15 +13,17 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import lombok.Getter;
-import lombok.Setter;
+
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 public class IntCircuitSlotTrait extends NotifiableRecipeHandlerTrait<Ingredient>
-                                        implements ICapabilityTrait {
+                                 implements ICapabilityTrait {
 
     public static final MachineTraitType<IntCircuitSlotTrait> TYPE = new MachineTraitType<>(IntCircuitSlotTrait.class);
 
@@ -65,7 +67,7 @@ public class IntCircuitSlotTrait extends NotifiableRecipeHandlerTrait<Ingredient
     }
 
     public void removedFromController(MultiblockControllerMachine controller) {
-        var controllers = ((MultiblockPartMachine)machine).getControllers();
+        var controllers = ((MultiblockPartMachine) machine).getControllers();
         for (var c : controllers) {
             if (!c.allowCircuitSlots()) {
                 return;
@@ -80,7 +82,6 @@ public class IntCircuitSlotTrait extends NotifiableRecipeHandlerTrait<Ingredient
             storage.dropInventoryInWorld(getLevel(), getBlockPos());
         }
     }
-
 
     @Override
     public IO getHandlerIO() {

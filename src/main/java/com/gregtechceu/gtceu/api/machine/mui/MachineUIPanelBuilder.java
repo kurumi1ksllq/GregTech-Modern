@@ -4,8 +4,9 @@ import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IVoidable;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
-import com.gregtechceu.gtceu.api.machine.trait.ItemChargerSlotTrait;
 import com.gregtechceu.gtceu.api.machine.trait.feature.IAttachConfiguratorsTrait;
+import com.gregtechceu.gtceu.common.machine.trait.IntCircuitSlotTrait;
+import com.gregtechceu.gtceu.common.machine.trait.ItemChargerSlotTrait;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTMuiWidgets;
 
@@ -64,12 +65,14 @@ public class MachineUIPanelBuilder {
 
         if (addDefaultConfigurators) {
 
-            machine.getTraitOptional(IntCircuitSlotTrait.TYPE).ifPresent(t -> attachLeft.child(GTMuiWidgets.createCircuitSlotPanel(t, panel, syncManager)));
+            machine.getTraitOptional(IntCircuitSlotTrait.TYPE)
+                    .ifPresent(t -> attachLeft.child(GTMuiWidgets.createCircuitSlotPanel(t, panel, syncManager)));
 
             if (machine instanceof IControllable controllable) {
                 attachRight.child(GTMuiWidgets.createPowerButton(controllable));
             }
-            machine.getTraitOptional(ItemChargerSlotTrait.TYPE).ifPresent(itemChargerSlotTrait -> attachRight.child(GTMuiWidgets.createBatterySlot(itemChargerSlotTrait, syncManager)));
+            machine.getTraitOptional(ItemChargerSlotTrait.TYPE).ifPresent(itemChargerSlotTrait -> attachRight
+                    .child(GTMuiWidgets.createBatterySlot(itemChargerSlotTrait, syncManager)));
             if (machine instanceof IVoidable voidable) {
                 attachRight.child(GTMuiWidgets.createVoidingButton(voidable));
             }

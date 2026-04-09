@@ -5,9 +5,9 @@ import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.*;
-import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
-import com.gregtechceu.gtceu.api.machine.trait.multiblock.IntCircuitSlotTrait;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
+import com.gregtechceu.gtceu.common.machine.trait.AutoOutputTrait;
+import com.gregtechceu.gtceu.common.machine.trait.IntCircuitSlotTrait;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
@@ -208,7 +208,8 @@ public class MachineConfigCopyBehaviour implements IInteractionItem, IAddInforma
         var circuitTrait = machine.getTraitOptional(IntCircuitSlotTrait.TYPE);
         if (circuitTrait.isPresent()) {
             var trait = circuitTrait.get();
-            if (trait.isCircuitSlotEnabled() && trait.getCurrentCircuit() != 0) tag.putInt(CIRCUIT, trait.getCurrentCircuit());
+            if (trait.isCircuitSlotEnabled() && trait.getCurrentCircuit() != 0)
+                tag.putInt(CIRCUIT, trait.getCurrentCircuit());
         }
 
         tag.put(COVER, machine.getCoverContainer().copyConfig(new CompoundTag()));

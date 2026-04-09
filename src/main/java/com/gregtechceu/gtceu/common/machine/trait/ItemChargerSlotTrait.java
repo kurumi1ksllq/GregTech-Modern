@@ -1,17 +1,22 @@
-package com.gregtechceu.gtceu.api.machine.trait;
+package com.gregtechceu.gtceu.common.machine.trait;
 
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
+import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
+import com.gregtechceu.gtceu.api.machine.trait.MachineTraitType;
+import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.ISubscription;
+
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemChargerSlotTrait extends MachineTrait {
 
-    public static final MachineTraitType<ItemChargerSlotTrait> TYPE = new MachineTraitType<>(ItemChargerSlotTrait.class);
+    public static final MachineTraitType<ItemChargerSlotTrait> TYPE = new MachineTraitType<>(
+            ItemChargerSlotTrait.class);
 
     @Getter
     private final CustomItemStackHandler inventory;
@@ -59,8 +64,6 @@ public class ItemChargerSlotTrait extends MachineTrait {
         if (!energyContainer.dischargeOrRechargeEnergyContainers(inventory, 0, false))
             updateBatterySubscription();
     }
-
-
 
     @Override
     public void onMachineDestroyed() {

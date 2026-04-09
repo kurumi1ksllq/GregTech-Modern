@@ -15,6 +15,8 @@ import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.PanelSyncManager;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 @FunctionalInterface
 public interface PanelFactory extends IUIHolder<PosGuiData> {
@@ -26,6 +28,7 @@ public interface PanelFactory extends IUIHolder<PosGuiData> {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     default ModularScreen createScreen(PosGuiData data, ModularPanel<?> mainPanel) {
         return new GTGuiScreen(mainPanel);
     }

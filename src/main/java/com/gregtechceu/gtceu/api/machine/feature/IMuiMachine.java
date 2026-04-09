@@ -17,6 +17,8 @@ import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.widget.ParentWidget;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public interface IMuiMachine extends IUIHolder<PosGuiData>, IMachineFeature {
 
@@ -39,6 +41,7 @@ public interface IMuiMachine extends IUIHolder<PosGuiData>, IMachineFeature {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     default ModularScreen createScreen(PosGuiData data, ModularPanel<?> mainPanel) {
         return new GTGuiScreen(mainPanel);
     }

@@ -16,6 +16,8 @@ import brachy.modularui.factory.PlayerInventoryGuiData;
 import brachy.modularui.factory.PlayerInventoryUIFactory;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public interface IItemUIHolder extends IUIHolder<PlayerInventoryGuiData<?>>, IInteractionItem {
 
@@ -42,6 +44,7 @@ public interface IItemUIHolder extends IUIHolder<PlayerInventoryGuiData<?>>, IIn
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     default ModularScreen createScreen(PlayerInventoryGuiData<?> data, ModularPanel<?> mainPanel) {
         return new GTGuiScreen(mainPanel);
     }

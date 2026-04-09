@@ -101,12 +101,6 @@ public class ItemBusPartMachine extends TieredIOPartMachine
     }
 
     @Override
-    public void onMachineDestroyed() {
-        super.onMachineDestroyed();
-        getInventory().dropInventoryInWorld();
-    }
-
-    @Override
     public void onLoad() {
         super.onLoad();
         if (getLevel() instanceof ServerLevel serverLevel) {

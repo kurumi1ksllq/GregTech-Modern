@@ -93,13 +93,6 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IControll
     }
 
     @Override
-    public void onMachineDestroyed() {
-        super.onMachineDestroyed();
-        getRecipeLogic().onRemove();
-        exportItems.dropInventoryInWorld();
-    }
-
-    @Override
     public void onNeighborChanged(Block block, BlockPos fromPos, boolean isMoving) {
         super.onNeighborChanged(block, fromPos, isMoving);
         updateAutoOutputSubscription();

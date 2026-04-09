@@ -112,26 +112,17 @@ public class CrateMachine extends MetaMachine implements IMuiMachine,
     }
 
     @Override
-    public void onMachinePlaced(@Nullable LivingEntity player, ItemStack stack) {
-        super.onMachinePlaced(player, stack);
-        CompoundTag tag = stack.getTag();
-        if (tag != null) {
-            if (tag.contains("taped") && tag.getBoolean("taped")) {
-                this.inventory.storage.deserializeNBT(tag.getCompound("inventory"));
-            }
-            setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_TAPED, isTaped));
-            syncDataHolder.markClientSyncFieldDirty("isTaped");
-        }
-    }
-
-    @Override
     public void saveToItem(CompoundTag tag) {
         if (isTaped) tag.put("inventory", inventory.storage.serializeNBT());
     }
 
     @Override
     public void loadFromItem(CompoundTag tag) {
-        inventory.storage.deserializeNBT(tag.getCompound("inventory"));
+        if (tag.contains("taped") && tag.getBoolean("taped")) {
+            this.inventory.storage.deserializeNBT(tag.getCompound("inventory"));
+        }
+        setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_TAPED, isTaped));
+        syncDataHolder.markClientSyncFieldDirty("isTaped");
     }
 
     @Override

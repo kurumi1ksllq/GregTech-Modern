@@ -43,7 +43,6 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -139,7 +138,7 @@ public class MinerLogic extends RecipeLogic implements IRecipeCapabilityHolder {
      * @param speed         the speed in ticks per block mined
      * @param maximumRadius the maximum radius (square shaped) the miner can mine in
      */
-    public MinerLogic(@NotNull IRecipeLogicMachine machine, int fortune, int speed, int maximumRadius) {
+    public MinerLogic(IRecipeLogicMachine machine, int fortune, int speed, int maximumRadius) {
         super(machine);
         this.miner = (IMiner) machine;
         this.fortune = fortune;
@@ -438,26 +437,24 @@ public class MinerLogic extends RecipeLogic implements IRecipeCapabilityHolder {
         // replace the ore block with cobblestone instead of breaking it to prevent mob spawning
         // remove the ore block's position from the mining queue
         var handler = getCachedItemHandler();
-        if (handler != null) {
-            if (GTTransferUtils.addItemsToItemHandler(handler, true, blockDrops)) {
-                GTTransferUtils.addItemsToItemHandler(handler, false, blockDrops);
-                var pos = blocksToMine.getFirst();
-                world.setBlock(pos, findMiningReplacementBlock(world, pos), 3);
-                mineX = pos.getX();
-                mineZ = pos.getZ();
-                mineY = pos.getY();
-                syncDataHolder.markClientSyncFieldDirty("mineX");
-                syncDataHolder.markClientSyncFieldDirty("mineY");
-                syncDataHolder.markClientSyncFieldDirty("mineZ");
-                blocksToMine.removeFirst();
-                onMineOperation();
+        if (GTTransferUtils.addItemsToItemHandler(handler, true, blockDrops)) {
+            GTTransferUtils.addItemsToItemHandler(handler, false, blockDrops);
+            var pos = blocksToMine.getFirst();
+            world.setBlock(pos, findMiningReplacementBlock(world, pos), 3);
+            mineX = pos.getX();
+            mineZ = pos.getZ();
+            mineY = pos.getY();
+            syncDataHolder.markClientSyncFieldDirty("mineX");
+            syncDataHolder.markClientSyncFieldDirty("mineY");
+            syncDataHolder.markClientSyncFieldDirty("mineZ");
+            blocksToMine.removeFirst();
+            onMineOperation();
 
-                // if the inventory was previously considered full, mark it as not since an item was able to fit
-                isInventoryFull = false;
-            } else {
-                // the ore block was not able to fit, so the inventory is considered full
-                isInventoryFull = true;
-            }
+            // if the inventory was previously considered full, mark it as not since an item was able to fit
+            isInventoryFull = false;
+        } else {
+            // the ore block was not able to fit, so the inventory is considered full
+            isInventoryFull = true;
         }
     }
 
@@ -467,7 +464,7 @@ public class MinerLogic extends RecipeLogic implements IRecipeCapabilityHolder {
      * @param pos           the {@link BlockPos} of the miner itself
      * @param currentRadius the currently set mining radius
      */
-    public void initPos(@NotNull BlockPos pos, int currentRadius) {
+    public void initPos(BlockPos pos, int currentRadius) {
         x = pos.getX() - currentRadius;
         z = pos.getZ() - currentRadius;
         syncDataHolder.markClientSyncFieldDirty("x");
@@ -497,7 +494,6 @@ public class MinerLogic extends RecipeLogic implements IRecipeCapabilityHolder {
             mineY = pos.getY() - 1;
         }
         syncDataHolder.markClientSyncFieldDirty("mineY");
-        onRemove();
     }
 
     /**
@@ -600,7 +596,7 @@ public class MinerLogic extends RecipeLogic implements IRecipeCapabilityHolder {
      * @param values to find the mean of
      * @return the mean value
      */
-    private static long mean(@NotNull long[] values) {
+    private static long mean(long[] values) {
         if (values.length == 0L)
             return 0L;
 
@@ -614,7 +610,7 @@ public class MinerLogic extends RecipeLogic implements IRecipeCapabilityHolder {
      * @param world the {@link Level} to get the average tick time of
      * @return the mean tick time
      */
-    private static double getMeanTickTime(@NotNull Level world) {
+    private static double getMeanTickTime(Level world) {
         return mean(Objects.requireNonNull(world.getServer()).tickTimes) * 1.0E-6D;
     }
 
@@ -646,7 +642,8 @@ public class MinerLogic extends RecipeLogic implements IRecipeCapabilityHolder {
         return getMachine().getBlockPos();
     }
 
-    public void onRemove() {
+    @Override
+    public void onMachineDestroyed() {
         pipeLength = 0;
         if (getMachine().getLevel() instanceof ServerLevel serverLevel) {
             var pos = getMiningPos().relative(dir);

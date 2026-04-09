@@ -105,14 +105,4 @@ public class BufferMachine extends TieredMachine implements IMuiMachine {
 
         mainWidget.child(slotWidget.center().margin(0, 10));
     }
-
-    ////////////////////////////////
-    // ********** Misc ***********//
-    ////////////////////////////////
-
-    @Override
-    public void onMachineDestroyed() {
-        super.onMachineDestroyed();
-        inventory.dropInventoryInWorld();
-    }
 }

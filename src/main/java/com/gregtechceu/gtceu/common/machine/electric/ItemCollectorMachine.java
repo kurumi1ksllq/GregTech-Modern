@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.common.machine.electric;
 
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.filter.ItemFilter;
@@ -17,9 +16,9 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.machine.trait.AutoOutputTrait;
+import com.gregtechceu.gtceu.common.machine.trait.ItemChargerSlotTrait;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTMuiMachineUtil;
-import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -66,12 +65,12 @@ public class ItemCollectorMachine extends TieredEnergyMachine
 
     @Getter
     @SaveField
-    protected final CustomItemStackHandler chargerInventory;
+    protected final ItemChargerSlotTrait chargerInventory;
     @SaveField
     protected final CustomItemStackHandler filterInventory;
 
     @Nullable
-    protected TickableSubscription batterySubs, collectionSubs;
+    protected TickableSubscription collectionSubs;
     @Nullable
     protected ISubscription energySubs;
     private final long energyPerTick;
@@ -109,7 +108,7 @@ public class ItemCollectorMachine extends TieredEnergyMachine
         this.inventorySize = INVENTORY_SIZES[Mth.clamp(getTier(), 0, INVENTORY_SIZES.length - 1)];
         this.energyPerTick = (long) BASE_EU_CONSUMPTION * (1L << (tier - 1));
         this.output = createOutputItemHandler();
-        this.chargerInventory = createChargerItemHandler();
+        this.chargerInventory = new ItemChargerSlotTrait(this, energyContainer);
         this.filterInventory = createFilterItemHandler();
         environmentalExplosionTrait.setEnableEnvironmentalExplosions(false);
         this.autoOutput = AutoOutputTrait.ofItems(this, output);
@@ -120,14 +119,6 @@ public class ItemCollectorMachine extends TieredEnergyMachine
     //////////////////////////////////////
     // ***** Initialization *****//
     //////////////////////////////////////
-
-    protected CustomItemStackHandler createChargerItemHandler() {
-        var handler = new CustomItemStackHandler();
-        handler.setFilter(item -> GTCapabilityHelper.getElectricItem(item) != null ||
-                (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE &&
-                        GTCapabilityHelper.getForgeEnergyItem(item) != null));
-        return handler;
-    }
 
     protected CustomItemStackHandler createFilterItemHandler() {
         var handler = new CustomItemStackHandler();
@@ -150,11 +141,7 @@ public class ItemCollectorMachine extends TieredEnergyMachine
             serverLevel.getServer().tell(new TickTask(0, this::updateCollectionSubscription));
         }
 
-        energySubs = energyContainer.addChangedListener(() -> {
-            this.updateBatterySubscription();
-            this.updateCollectionSubscription();
-        });
-        chargerInventory.setOnContentsChanged(this::updateBatterySubscription);
+        energySubs = energyContainer.addChangedListener(this::updateCollectionSubscription);
     }
 
     @Override
@@ -164,13 +151,6 @@ public class ItemCollectorMachine extends TieredEnergyMachine
             energySubs.unsubscribe();
             energySubs = null;
         }
-    }
-
-    @Override
-    public void onMachineDestroyed() {
-        super.onMachineDestroyed();
-        chargerInventory.dropInventoryInWorld(getLevel(), getBlockPos());
-        output.dropInventoryInWorld();
     }
 
     //////////////////////////////////////
@@ -266,21 +246,6 @@ public class ItemCollectorMachine extends TieredEnergyMachine
             return true;
         }
         return false;
-    }
-
-    protected void updateBatterySubscription() {
-        if (energyContainer.dischargeOrRechargeEnergyContainers(chargerInventory, 0, true))
-            batterySubs = subscribeServerTick(batterySubs, this::chargeBattery);
-        else if (batterySubs != null) {
-            batterySubs.unsubscribe();
-            batterySubs = null;
-        }
-    }
-
-    protected void chargeBattery() {
-        if (!energyContainer.dischargeOrRechargeEnergyContainers(chargerInventory, 0, false)) {
-            updateBatterySubscription();
-        }
     }
 
     @Override

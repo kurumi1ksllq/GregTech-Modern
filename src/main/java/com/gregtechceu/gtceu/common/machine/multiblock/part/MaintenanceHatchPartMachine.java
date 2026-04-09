@@ -91,22 +91,13 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
     public MaintenanceHatchPartMachine(BlockEntityCreationInfo info, boolean isConfigurable) {
         super(info, isConfigurable ? GTValues.HV : GTValues.LV);
         this.isConfigurable = isConfigurable;
-        this.itemStackHandler = createInventory();
+        this.itemStackHandler = new NotifiableItemStackHandler(this, 1, IO.BOTH, IO.BOTH);
         this.itemStackHandler.setFilter(itemStack -> itemStack.is(GTItems.DUCT_TAPE.get()));
     }
 
     //////////////////////////////////////
     // ****** Initialization ******//
     //////////////////////////////////////
-    protected NotifiableItemStackHandler createInventory() {
-        return new NotifiableItemStackHandler(this, 1, IO.BOTH, IO.BOTH);
-    }
-
-    @Override
-    public void onMachineDestroyed() {
-        super.onMachineDestroyed();
-        itemStackHandler.dropInventoryInWorld();
-    }
 
     @Override
     public byte startProblems() {

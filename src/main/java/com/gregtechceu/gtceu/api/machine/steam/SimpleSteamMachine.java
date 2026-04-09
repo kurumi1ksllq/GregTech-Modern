@@ -73,13 +73,6 @@ public class SimpleSteamMachine extends SteamWorkableMachine {
         this.addHandlerList(RecipeHandlerList.of(IO.IN, new SteamEnergyRecipeHandler(steamTank, getConversionRate())));
     }
 
-    @Override
-    public void onMachineDestroyed() {
-        super.onMachineDestroyed();
-        importItems.dropInventoryInWorld();
-        exportItems.dropInventoryInWorld();
-    }
-
     //////////////////////////////////////
     // ****** Venting Logic ******//
     //////////////////////////////////////

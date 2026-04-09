@@ -26,7 +26,6 @@ import brachy.modularui.widgets.slot.ItemSlot;
 import brachy.modularui.widgets.slot.ModularSlot;
 import brachy.modularui.widgets.slot.SlotGroup;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -55,39 +54,32 @@ public class ObjectHolderMachine extends MultiblockPartMachine {
         syncDataHolder.markClientSyncFieldDirty("isLocked");
     }
 
-    public @NotNull ItemStack getHeldItem(boolean remove) {
+    public ItemStack getHeldItem(boolean remove) {
         return getHeldItem(0, remove);
     }
 
-    public void setHeldItem(@NotNull ItemStack heldItem) {
+    public void setHeldItem(ItemStack heldItem) {
         heldItems.setStackInSlot(0, heldItem);
     }
 
-    public @NotNull ItemStack getDataItem(boolean remove) {
+    public ItemStack getDataItem(boolean remove) {
         return getHeldItem(1, remove);
     }
 
-    public void setDataItem(@NotNull ItemStack dataItem) {
+    public void setDataItem(ItemStack dataItem) {
         heldItems.setStackInSlot(1, dataItem);
     }
 
-    public @NotNull NotifiableItemStackHandler getAsHandler() {
+    public NotifiableItemStackHandler getAsHandler() {
         return heldItems;
     }
 
-    @NotNull
     private ItemStack getHeldItem(int slot, boolean remove) {
         ItemStack stackInSlot = heldItems.getStackInSlot(slot);
         if (remove && stackInSlot != ItemStack.EMPTY) {
             heldItems.setStackInSlot(slot, ItemStack.EMPTY);
         }
         return stackInSlot;
-    }
-
-    @Override
-    public void onMachineDestroyed() {
-        super.onMachineDestroyed();
-        heldItems.storage.dropInventoryInWorld(getLevel(), getBlockPos());
     }
 
     @Override
@@ -148,7 +140,6 @@ public class ObjectHolderMachine extends MultiblockPartMachine {
         }
 
         // prevent extracting the item while running
-        @NotNull
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             if (!isLocked()) {
@@ -159,7 +150,7 @@ public class ObjectHolderMachine extends MultiblockPartMachine {
 
         // only allow data items in the second slot
         @Override
-        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+        public boolean isItemValid(int slot, ItemStack stack) {
             if (stack.isEmpty()) {
                 return true;
             }
@@ -177,6 +168,11 @@ public class ObjectHolderMachine extends MultiblockPartMachine {
             if (slot == 0 && !isDataItem) {
                 return true;
             } else return slot == 1 && isDataItem;
+        }
+
+        @Override
+        public void onMachineDestroyed() {
+            storage.dropInventoryInWorld(getLevel(), getBlockPos());
         }
     }
 }

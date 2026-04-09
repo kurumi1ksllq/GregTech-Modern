@@ -59,7 +59,10 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
     @Getter
     @Setter
     private boolean shouldSearchContent = true;
-    private Boolean isEmpty;
+    @Getter
+    @Setter
+    private boolean shouldDropContentsInWorld = true;
+    private @Nullable Boolean isEmpty;
 
     public NotifiableItemStackHandler(MetaMachine machine, int slots, @NotNull IO handlerIO, @NotNull IO capabilityIO,
                                       IntFunction<CustomItemStackHandler> storageFactory) {
@@ -330,6 +333,11 @@ public class NotifiableItemStackHandler extends NotifiableRecipeHandlerTrait<Ing
 
     public void dropInventoryInWorld() {
         storage.dropInventoryInWorld(getLevel(), getMachine().getBlockPos());
+    }
+
+    @Override
+    public void onMachineDestroyed() {
+        if (shouldDropContentsInWorld) dropInventoryInWorld();
     }
 
     public static class KJSCallWrapper {

@@ -117,12 +117,6 @@ public class BlockBreakerMachine extends TieredEnergyMachine
     }
 
     @Override
-    public void onMachineDestroyed() {
-        super.onMachineDestroyed();
-        cache.dropInventoryInWorld();
-    }
-
-    @Override
     public void onNeighborChanged(Block block, BlockPos fromPos, boolean isMoving) {
         super.onNeighborChanged(block, fromPos, isMoving);
         updateBreakerSubscription();

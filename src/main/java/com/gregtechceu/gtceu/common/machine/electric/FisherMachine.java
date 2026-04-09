@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.common.machine.electric;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IWorkable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
@@ -12,12 +11,11 @@ import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanelBuilder;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
-import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.machine.trait.AutoOutputTrait;
+import com.gregtechceu.gtceu.common.machine.trait.ItemChargerSlotTrait;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTMuiMachineUtil;
 import com.gregtechceu.gtceu.common.mui.GTMuiWidgets;
-import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.lang.LangHandler;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
@@ -72,9 +70,9 @@ public class FisherMachine extends TieredEnergyMachine
 
     @Getter
     @SaveField
-    protected final CustomItemStackHandler chargerInventory;
+    protected final ItemChargerSlotTrait chargerInventory;
     @Nullable
-    protected TickableSubscription batterySubs, fishingSubs;
+    protected TickableSubscription fishingSubs;
     @Nullable
     protected ISubscription energySubs, baitSubs;
     private final long energyPerTick;
@@ -118,10 +116,7 @@ public class FisherMachine extends TieredEnergyMachine
         this.baitHandler = new NotifiableItemStackHandler(this, 1, IO.BOTH, IO.IN);
         baitHandler.setFilter(item -> item.is(Items.STRING));
 
-        this.chargerInventory = new CustomItemStackHandler();
-        chargerInventory.setFilter(item -> GTCapabilityHelper.getElectricItem(item) != null ||
-                (ConfigHolder.INSTANCE.compat.energy.nativeEUToFE &&
-                        GTCapabilityHelper.getForgeEnergyItem(item) != null));
+        this.chargerInventory = new ItemChargerSlotTrait(this, energyContainer);
 
         autoOutput = AutoOutputTrait.ofItems(this, cache);
         environmentalExplosionTrait.setEnableEnvironmentalExplosions(false);
@@ -141,12 +136,8 @@ public class FisherMachine extends TieredEnergyMachine
     public void onLoad() {
         super.onLoad();
         if (isRemote()) return;
-        energySubs = energyContainer.addChangedListener(() -> {
-            this.updateBatterySubscription();
-            this.updateFishingUpdateSubscription();
-        });
+        energySubs = energyContainer.addChangedListener(this::updateFishingUpdateSubscription);
         baitSubs = baitHandler.addChangedListener(this::updateFishingUpdateSubscription);
-        chargerInventory.setOnContentsChanged(this::updateBatterySubscription);
         this.updateFishingUpdateSubscription();
     }
 
@@ -161,14 +152,6 @@ public class FisherMachine extends TieredEnergyMachine
             baitSubs.unsubscribe();
             baitSubs = null;
         }
-    }
-
-    @Override
-    public void onMachineDestroyed() {
-        super.onMachineDestroyed();
-        chargerInventory.dropInventoryInWorld(getLevel(), getBlockPos());
-        baitHandler.dropInventoryInWorld();
-        cache.dropInventoryInWorld();
     }
 
     public static int calcMaxProgress(int tier) {
@@ -266,20 +249,6 @@ public class FisherMachine extends TieredEnergyMachine
             return true;
         }
         return false;
-    }
-
-    protected void updateBatterySubscription() {
-        if (energyContainer.dischargeOrRechargeEnergyContainers(chargerInventory, 0, true))
-            batterySubs = subscribeServerTick(batterySubs, this::chargeBattery);
-        else if (batterySubs != null) {
-            batterySubs.unsubscribe();
-            batterySubs = null;
-        }
-    }
-
-    protected void chargeBattery() {
-        if (!energyContainer.dischargeOrRechargeEnergyContainers(chargerInventory, 0, false))
-            updateBatterySubscription();
     }
 
     //////////////////////////////////////

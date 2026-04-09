@@ -152,11 +152,4 @@ public class SteamSolidBoilerMachine extends SteamBoilerMachine {
                 .child(new ItemSlot()
                         .slot(new ModularSlot(this.ashHandler, 0))));
     }
-
-    @Override
-    public void onMachineDestroyed() {
-        super.onMachineDestroyed();
-        fuelHandler.dropInventoryInWorld();
-        ashHandler.dropInventoryInWorld();
-    }
 }

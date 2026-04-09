@@ -6,10 +6,13 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 import static com.gregtechceu.gtceu.GTCEu.MOD_ID;
 
+@OnlyIn(Dist.CLIENT)
 public class GTGuiScreen extends ModularScreen {
 
     public GTGuiScreen(@NotNull ModularPanel<?> mainPanel) {

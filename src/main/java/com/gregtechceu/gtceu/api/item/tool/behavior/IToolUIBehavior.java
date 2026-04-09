@@ -13,6 +13,8 @@ import brachy.modularui.factory.PlayerInventoryGuiData;
 import brachy.modularui.factory.PlayerInventoryUIFactory;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 public interface IToolUIBehavior extends IToolBehavior, IUIHolder<PlayerInventoryGuiData<?>> {
@@ -28,6 +30,7 @@ public interface IToolUIBehavior extends IToolBehavior, IUIHolder<PlayerInventor
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     default ModularScreen createScreen(PlayerInventoryGuiData<?> data, ModularPanel<?> mainPanel) {
         return new GTGuiScreen(mainPanel);
     }

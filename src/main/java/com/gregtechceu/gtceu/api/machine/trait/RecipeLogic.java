@@ -587,9 +587,6 @@ public class RecipeLogic extends MachineTrait implements IWorkable {
         }
     }
 
-    // Remains for legacy + for subclasses
-    public void inValid() {}
-
     //////////////////////////////////////
     // ******** MISC *********//
     //////////////////////////////////////

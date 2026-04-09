@@ -131,7 +131,6 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
         traitSubscriptions.clear();
         capabilitiesProxy.clear();
         capabilitiesFlat.clear();
-        recipeLogic.inValid();
     }
 
     //////////////////////////////////////
@@ -190,7 +189,6 @@ public abstract class WorkableTieredMachine extends TieredEnergyMachine implemen
         return false;
     }
 
-    @NotNull
     public GTRecipeType getRecipeType() {
         return recipeTypes[activeRecipeType];
     }

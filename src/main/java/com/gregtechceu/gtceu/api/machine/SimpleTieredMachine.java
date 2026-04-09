@@ -11,7 +11,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import java.util.*;
 
 /**
- * All simple single machines are implemented here.
+ * All simple singleblock machines are implemented here.
  */
 public class SimpleTieredMachine extends WorkableTieredMachine {
 
@@ -22,10 +22,6 @@ public class SimpleTieredMachine extends WorkableTieredMachine {
         registerPersistentTrait("chargerInventory", new ItemChargerSlotTrait(this, energyContainer));
         registerPersistentTrait("circuitInventory", new IntCircuitSlotTrait(this));
     }
-
-    /////////////////////////////////////
-    // ****** RECIPE LOGIC *******//
-    /////////////////////////////////////
 
     @Override
     public long getDisplayRecipeVoltage() {

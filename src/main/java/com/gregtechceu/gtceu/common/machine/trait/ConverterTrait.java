@@ -36,7 +36,7 @@ public class ConverterTrait extends NotifiableEnergyContainer {
     @Getter
     private final FEContainer feContainer;
 
-    public ConverterTrait(@NotNull ConverterMachine machine, int amps) {
+    public ConverterTrait(ConverterMachine machine, int amps) {
         super(machine, GTValues.V[machine.getTier()] * 16 * amps, GTValues.V[machine.getTier()], amps,
                 GTValues.V[machine.getTier()], amps);
         this.amps = amps;

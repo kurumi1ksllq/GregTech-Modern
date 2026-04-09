@@ -23,8 +23,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public abstract class SteamMachine extends MetaMachine implements ITieredMachine {
 
-    public static final BooleanProperty STEEL_PROPERTY = GTMachineModelProperties.IS_STEEL_MACHINE;
-
     @Getter
     public final boolean isHighPressure;
     @SaveField

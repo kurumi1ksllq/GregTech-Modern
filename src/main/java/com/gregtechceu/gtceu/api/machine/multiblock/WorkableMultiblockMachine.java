@@ -110,7 +110,6 @@ public abstract class WorkableMultiblockMachine extends MultiblockControllerMach
         super.onUnload();
         traitSubscriptions.forEach(ISubscription::unsubscribe);
         traitSubscriptions.clear();
-        recipeLogic.inValid();
     }
 
     //////////////////////////////////////

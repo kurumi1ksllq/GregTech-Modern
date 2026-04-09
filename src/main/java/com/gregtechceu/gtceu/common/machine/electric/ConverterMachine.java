@@ -30,8 +30,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class ConverterMachine extends TieredEnergyMachine {
 
-    public static final BooleanProperty FE_TO_EU_PROPERTY = GTMachineModelProperties.IS_FE_TO_EU;
-
     public ConverterMachine(BlockEntityCreationInfo info, int tier, int amps) {
         super(info, tier, (TieredEnergyMachine machine) -> new ConverterTrait((ConverterMachine) machine, amps));
     }
@@ -105,10 +103,5 @@ public class ConverterMachine extends TieredEnergyMachine {
     @Override
     protected long getMaxInputOutputAmperage() {
         return getConverterTrait().getAmps();
-    }
-
-    @Override
-    protected boolean isEnergyEmitter() {
-        return getConverterTrait().isFeToEu();
     }
 }

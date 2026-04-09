@@ -122,7 +122,6 @@ public abstract class SteamWorkableMachine extends SteamMachine
         traitSubscriptions.clear();
         capabilitiesProxy.clear();
         capabilitiesFlat.clear();
-        recipeLogic.inValid();
     }
 
     public boolean hasOutputFacing() {
@@ -132,7 +131,7 @@ public abstract class SteamWorkableMachine extends SteamMachine
     /**
      * @param outputFacing the facing to set
      */
-    public void setOutputFacing(@NotNull Direction outputFacing) {
+    public void setOutputFacing(Direction outputFacing) {
         if (hasOutputFacing() && (!hasFrontFacing() || this.outputFacing != getFrontFacing())) {
             this.outputFacing = outputFacing;
         }
@@ -170,7 +169,6 @@ public abstract class SteamWorkableMachine extends SteamMachine
         return false;
     }
 
-    @NotNull
     @Override
     public GTRecipeType getRecipeType() {
         return recipeTypes[activeRecipeType];

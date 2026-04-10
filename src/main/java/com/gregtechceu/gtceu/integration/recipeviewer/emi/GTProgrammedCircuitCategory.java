@@ -1,19 +1,18 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.emi;
 
+import brachy.modularui.integration.emi.recipe.ModularUIEmiRecipe;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTProgrammedCircuitWidget;
 
-import com.lowdragmc.lowdraglib.emi.ModularEmiRecipe;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTProgrammedCircuitWidgetMui;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiStack;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -35,10 +34,10 @@ public class GTProgrammedCircuitCategory extends EmiRecipeCategory {
         return Component.translatable("gtceu.jei.programmed_circuit");
     }
 
-    public static class GTProgrammedCircuitWrapper extends ModularEmiRecipe<GTProgrammedCircuitWidget> {
+    public static class GTProgrammedCircuitWrapper extends ModularUIEmiRecipe {
 
         public GTProgrammedCircuitWrapper() {
-            super(GTProgrammedCircuitWidget::new);
+            super(GTCEu.id("programmed_circuit"), GTProgrammedCircuitWidgetMui::new);
         }
 
         @Override
@@ -47,17 +46,7 @@ public class GTProgrammedCircuitCategory extends EmiRecipeCategory {
         }
 
         @Override
-        public int getDisplayWidth() {
-            return super.getDisplayWidth();
-        }
-
-        @Override
-        public @Nullable ResourceLocation getId() {
-            return GTCEu.id("programmed_circuit");
-        }
-
-        @Override
-        public List<EmiStack> getOutputs() {
+        public @NotNull List<EmiStack> getOutputs() {
             return IntStream.range(0, 33)
                     .mapToObj(IntCircuitBehaviour::stack)
                     .map(EmiStack::of)

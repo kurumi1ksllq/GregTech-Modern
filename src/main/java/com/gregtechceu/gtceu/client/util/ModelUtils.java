@@ -6,12 +6,14 @@ import com.gregtechceu.gtceu.client.renderer.cover.ICoverableRenderer;
 import com.gregtechceu.gtceu.integration.modernfix.GTModernFixIntegration;
 
 import com.lowdragmc.lowdraglib.client.model.custommodel.CustomBakedModel;
+import com.lowdragmc.lowdraglib.client.model.custommodel.LDLMetadataSection;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -33,9 +35,8 @@ import net.minecraftforge.fml.common.Mod;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Mod.EventBusSubscriber(modid = GTCEu.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModelUtils {
@@ -43,6 +44,7 @@ public class ModelUtils {
     private ModelUtils() {}
 
     private static final List<EventListenerHolder> EVENT_LISTENERS = new ArrayList<>();
+    public static final Map<TextureAtlasSprite, TextureAtlasSprite> CTM_SPRITE_CACHE = new ConcurrentHashMap<>();
 
     public static List<BakedQuad> getBakedModelQuads(BakedModel model, BlockAndTintGetter level, BlockPos pos,
                                                      BlockState state, Direction side, RandomSource rand) {
@@ -105,6 +107,19 @@ public class ModelUtils {
     @SuppressWarnings({ "unchecked", "deprecation" })
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onAtlasStitched(TextureStitchEvent.Post event) {
+        if (event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
+            CTM_SPRITE_CACHE.clear();
+            for (ResourceLocation location : event.getAtlas().getTextureLocations()) {
+                ResourceLocation absLoc = LDLMetadataSection.spriteToAbsolute(location);
+                LDLMetadataSection section = LDLMetadataSection.getMetadata(absLoc);
+                if (section.connection != null) {
+                    TextureAtlasSprite baseSprite = event.getAtlas().getSprite(location);
+                    TextureAtlasSprite ctmSprite = event.getAtlas().getSprite(section.connection);
+                    CTM_SPRITE_CACHE.put(baseSprite, ctmSprite);
+                }
+            }
+        }
+
         TextureAtlas atlas = event.getAtlas();
         if (atlas.location() == TextureAtlas.LOCATION_BLOCKS) {
             MachineModel.initSprites(atlas);

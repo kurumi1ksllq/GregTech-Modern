@@ -1,5 +1,9 @@
 package com.gregtechceu.gtceu.api.capability.recipe;
 
+import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
+import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroup;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroupDistinctness;
@@ -23,10 +27,6 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.IngredientAccessor;
 import com.gregtechceu.gtceu.core.mixins.TagValueAccessor;
 import com.gregtechceu.gtceu.core.mixins.forge.IntersectionIngredientAccessor;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.item.ItemEntryList;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.item.ItemStackList;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.item.ItemTagList;
-import com.gregtechceu.gtceu.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTRecipeWidget;
 import com.gregtechceu.gtceu.utils.*;
 
@@ -454,7 +454,8 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
                                         recipeType);
                                 dataItems.add(dataStick);
                             }
-                            CycleItemEntryHandler handler = CycleItemEntryHandler.fromStacks(List.of(dataItems));
+
+                            var handler = new CycleItemEntryHandler(List.of(new ItemStackList(dataItems)));
                             slot.setHandlerSlot(handler, 0);
                             slot.setIngredientIO(IngredientIO.CATALYST);
                             slot.setCanTakeItems(false);

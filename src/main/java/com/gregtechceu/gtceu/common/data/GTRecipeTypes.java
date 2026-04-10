@@ -1,5 +1,11 @@
 package com.gregtechceu.gtceu.common.data;
 
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidHolderSetList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
+import brachy.modularui.integration.recipeviewer.handlers.fluid.CycleFluidEntryHandler;
+import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
@@ -21,10 +27,6 @@ import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.recipe.condition.AdjacentFluidCondition;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.integration.kjs.GTRegistryInfo;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.fluid.FluidEntryList;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.fluid.FluidHolderSetList;
-import com.gregtechceu.gtceu.integration.recipeviewer.handlers.fluid.CycleFluidEntryHandler;
-import com.gregtechceu.gtceu.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTMath;
 import com.gregtechceu.gtceu.utils.ResearchManager;
@@ -644,7 +646,10 @@ public class GTRecipeTypes {
                 items.add(GTCEuAPI.HEATING_COILS.entrySet().stream()
                         .filter(coil -> coil.getKey().getCoilTemperature() >= temp)
                         .map(coil -> new ItemStack(coil.getValue().get())).toList());
-                widgetGroup.addWidget(new SlotWidget(CycleItemEntryHandler.fromStacks(items), 0,
+
+                var entryHandler = new CycleItemEntryHandler(items.stream().map(l -> (ItemEntryList)new ItemStackList(l)).toList());
+
+                widgetGroup.addWidget(new SlotWidget(entryHandler, 0,
                         widgetGroup.getSize().width - 25, widgetGroup.getSize().height - 32, false, false));
             })
             .setSound(GTSoundEntries.FURNACE);

@@ -1,5 +1,11 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.widgets;
 
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidTagList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -11,12 +17,6 @@ import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.fluid.FluidEntryList;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.fluid.FluidStackList;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.fluid.FluidTagList;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.item.ItemEntryList;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.item.ItemStackList;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.item.ItemTagList;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.core.NonNullList;

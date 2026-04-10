@@ -1,5 +1,9 @@
 package com.gregtechceu.gtceu.api.capability.recipe;
 
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidTagList;
+import brachy.modularui.integration.recipeviewer.handlers.fluid.CycleFluidEntryHandler;
 import com.gregtechceu.gtceu.api.gui.widget.TankWidget;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroup;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroupDistinctness;
@@ -17,10 +21,6 @@ import com.gregtechceu.gtceu.api.recipe.modifier.ParallelLogic;
 import com.gregtechceu.gtceu.api.recipe.ui.GTRecipeTypeUI;
 import com.gregtechceu.gtceu.client.TooltipsHandler;
 import com.gregtechceu.gtceu.common.valueprovider.*;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.fluid.FluidEntryList;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.fluid.FluidStackList;
-import com.gregtechceu.gtceu.integration.recipeviewer.entry.fluid.FluidTagList;
-import com.gregtechceu.gtceu.integration.recipeviewer.handlers.fluid.CycleFluidEntryHandler;
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTRecipeWidget;
 import com.gregtechceu.gtceu.utils.GTMath;
 

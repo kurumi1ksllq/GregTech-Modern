@@ -1,15 +1,18 @@
 package com.gregtechceu.gtceu.common.data;
 
+import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.block.ICoilType;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
-import com.gregtechceu.gtceu.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
+
+import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.item.ItemStack;
@@ -56,7 +59,10 @@ public class GCYMRecipeTypes {
                 items.add(GTCEuAPI.HEATING_COILS.entrySet().stream()
                         .filter(coil -> coil.getKey().getCoilTemperature() >= temp)
                         .map(coil -> new ItemStack(coil.getValue().get())).toList());
-                widgetGroup.addWidget(new SlotWidget(CycleItemEntryHandler.fromStacks(items), 0,
+
+                var entryHandler = new CycleItemEntryHandler(items.stream().map(l -> (ItemEntryList)new ItemStackList(l)).toList());
+
+                widgetGroup.addWidget(new SlotWidget(entryHandler, 0,
                         widgetGroup.getSize().width - 25, widgetGroup.getSize().height - 40, false, false));
             })
             .setSound(GTSoundEntries.ARC);

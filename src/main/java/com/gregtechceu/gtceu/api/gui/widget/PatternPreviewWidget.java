@@ -1,5 +1,8 @@
 package com.gregtechceu.gtceu.api.gui.widget;
 
+import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
+import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
@@ -10,7 +13,6 @@ import com.gregtechceu.gtceu.api.pattern.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import com.gregtechceu.gtceu.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 
 import com.lowdragmc.lowdraglib.client.scene.WorldSceneRenderer;
 import com.lowdragmc.lowdraglib.client.utils.RenderUtils;
@@ -245,7 +247,8 @@ public class PatternPreviewWidget extends WidgetGroup {
             }
         }
         slotWidgets = new SlotWidget[Math.min(pattern.parts.size(), 18)];
-        CycleItemEntryHandler itemHandler = CycleItemEntryHandler.fromStacks(pattern.parts);
+
+        var itemHandler = new CycleItemEntryHandler(pattern.parts.stream().map(l -> (ItemEntryList)new ItemStackList(l)).toList());
         int xOffset = 0;
         for (int i = 0; i < slotWidgets.length; i++) {
             int padding = 1;
@@ -300,7 +303,7 @@ public class PatternPreviewWidget extends WidgetGroup {
                 }
             }
             candidates = new SlotWidget[candidateStacks.size()];
-            CycleItemEntryHandler itemHandler = CycleItemEntryHandler.fromStacks(candidateStacks);
+            var itemHandler = new CycleItemEntryHandler(candidateStacks.stream().map(l -> (ItemEntryList)new ItemStackList(l)).toList());
             int maxCol = (160 - (((slotWidgets.length - 1) / 9 + 1) * 18) - 35) % 18;
             for (int i = 0; i < candidateStacks.size(); i++) {
                 int finalI = i;

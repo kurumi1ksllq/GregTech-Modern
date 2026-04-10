@@ -34,7 +34,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.SidedPosGuiData;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.*;
@@ -444,7 +444,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
             column.child(new GTMuiWidgets.EnumRowBuilder<>(DistributionMode.class)
                     .value(distMode)
                     .overlay(16, GTGuiTextures.DISTRIBUTION_MODE_OVERLAY)
-                    .lang(IKey.dynamic(() -> Component.translatable(distributionMode.localeName)))
+                    .lang(Text.dynamic(() -> Component.translatable(distributionMode.localeName)))
                     .build());
         }
 
@@ -452,7 +452,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
             column.child(new GTMuiWidgets.EnumRowBuilder<>(ManualIOMode.class)
                     .value(manualMode)
                     .overlay(16, GTGuiTextures.MANUAL_IO_OVERLAY_IN)
-                    .lang(IKey.dynamic(() -> Component.translatable(manualIOMode.localeName)))
+                    .lang(Text.dynamic(() -> Component.translatable(manualIOMode.localeName)))
                     .build());
 
         }

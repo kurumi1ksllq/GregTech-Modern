@@ -21,7 +21,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.SidedPosGuiData;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.EnumSyncValue;
@@ -134,7 +134,7 @@ public class AdvancedFluidVoidingCover extends FluidVoidingCover {
         column.child(new GTMuiWidgets.EnumRowBuilder<>(VoidingMode.class)
                 .value(voidingMode)
                 .overlay(16, GTGuiTextures.VOIDING_MODES)
-                .lang(IKey.dynamic(() -> Component.translatable(getVoidingMode().tooltip)))
+                .lang(Text.dynamic(() -> Component.translatable(getVoidingMode().tooltip)))
                 .build()
                 .marginTop(2));
 

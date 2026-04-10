@@ -22,7 +22,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.SidedPosGuiData;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.DynamicSyncHandler;
@@ -103,7 +103,7 @@ public class FluidFilterCover extends CoverBehavior implements IMuiCover {
 
         DynamicSyncHandler filterButton = new DynamicSyncHandler()
                 .widgetProvider((sm, buf) -> new ButtonWidget<>()
-                        .onMousePressed((x, y, b) -> {
+                        .onMousePressed((context, b) -> {
                             panelHandler.openPanel();
                             return true;
                         }));
@@ -113,13 +113,13 @@ public class FluidFilterCover extends CoverBehavior implements IMuiCover {
         column.child(new GTMuiWidgets.EnumRowBuilder<>(FilterMode.class)
                 .value(filterMode)
                 .overlay(16, GTGuiTextures.FILTER_MODE_OVERLAY)
-                .lang(IKey.dynamic(() -> Component.translatable(getFilterMode().getTooltip())))
+                .lang(Text.dynamic(() -> Component.translatable(getFilterMode().getTooltip())))
                 .build());
 
         column.child(new GTMuiWidgets.EnumRowBuilder<>(ManualIOMode.class)
                 .value(ioMode)
                 .overlay(16, GTGuiTextures.MANUAL_IO_OVERLAY_IN)
-                .lang(IKey.dynamic(() -> Component.translatable(getAllowFlow().getTooltip())))
+                .lang(Text.dynamic(() -> Component.translatable(getAllowFlow().getTooltip())))
                 .build());
     }
 

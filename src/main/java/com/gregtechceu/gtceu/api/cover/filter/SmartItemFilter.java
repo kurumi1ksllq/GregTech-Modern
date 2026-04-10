@@ -15,7 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.ColorType;
 import brachy.modularui.drawable.UITexture;
 import brachy.modularui.factory.GuiData;
@@ -96,7 +96,7 @@ public class SmartItemFilter implements ItemFilter {
                 .child(new GTMuiWidgets.EnumRowBuilder<>(SmartFilteringMode.class)
                         .value(mode)
                         .overlay(16, SmartFilteringMode.getTextures())
-                        .lang(IKey.dynamic(() -> Component.translatable(filterMode.localeName)))
+                        .lang(Text.dynamic(() -> Component.translatable(filterMode.localeName)))
                         .build().margin(7))
                 .child(SlotGroupWidget.playerInventory(false).left(7).bottom(7));
     }

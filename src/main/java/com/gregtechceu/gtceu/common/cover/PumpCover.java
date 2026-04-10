@@ -32,7 +32,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.SidedPosGuiData;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.EnumSyncValue;
@@ -288,7 +288,7 @@ public class PumpCover extends CoverBehavior implements IIOCover, IMuiCover, ICo
         column.child(new GTMuiWidgets.EnumRowBuilder<>(ManualIOMode.class)
                 .value(manualIOModeSync)
                 .overlay(16, GTGuiTextures.MANUAL_IO_OVERLAY_IN)
-                .lang(IKey.dynamic(() -> Component.translatable(manualIOMode.localeName)))
+                .lang(Text.dynamic(() -> Component.translatable(manualIOMode.localeName)))
                 .build());
     }
 

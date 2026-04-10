@@ -1,9 +1,5 @@
 package com.gregtechceu.gtceu.api.capability.recipe;
 
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidTagList;
-import brachy.modularui.integration.recipeviewer.handlers.fluid.CycleFluidEntryHandler;
 import com.gregtechceu.gtceu.api.gui.widget.TankWidget;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroup;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroupDistinctness;
@@ -36,6 +32,10 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidTagList;
+import brachy.modularui.integration.recipeviewer.handlers.fluid.CycleFluidEntryHandler;
 import it.unimi.dsi.fastutil.objects.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

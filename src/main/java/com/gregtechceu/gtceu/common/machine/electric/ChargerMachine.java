@@ -26,7 +26,7 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraftforge.energy.IEnergyStorage;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.DoubleSyncValue;
@@ -144,7 +144,7 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
                 .value(energyPercentage)
                 .marginLeft(5)
                 .size(18, 60)
-                .addTooltipLine(IKey.dynamic(() -> Component.literal(
+                .addTooltipLine(Text.dynamic(() -> Component.literal(
                         "%s/%s EU".formatted(
                                 GTStringUtils.formatInt(energyContainer.getEnergyStored()),
                                 GTStringUtils.formatInt(energyContainer.getEnergyCapacity()))))))

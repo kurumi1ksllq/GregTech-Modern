@@ -1,11 +1,5 @@
 package com.gregtechceu.gtceu.common.data;
 
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidHolderSetList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
-import brachy.modularui.integration.recipeviewer.handlers.fluid.CycleFluidEntryHandler;
-import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
@@ -44,6 +38,12 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fml.ModLoader;
 
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidHolderSetList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
+import brachy.modularui.integration.recipeviewer.handlers.fluid.CycleFluidEntryHandler;
+import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import brachy.modularui.widgets.ProgressWidget;
 
 import java.util.ArrayList;
@@ -647,7 +647,8 @@ public class GTRecipeTypes {
                         .filter(coil -> coil.getKey().getCoilTemperature() >= temp)
                         .map(coil -> new ItemStack(coil.getValue().get())).toList());
 
-                var entryHandler = new CycleItemEntryHandler(items.stream().map(l -> (ItemEntryList)new ItemStackList(l)).toList());
+                var entryHandler = new CycleItemEntryHandler(
+                        items.stream().map(l -> (ItemEntryList) new ItemStackList(l)).toList());
 
                 widgetGroup.addWidget(new SlotWidget(entryHandler, 0,
                         widgetGroup.getSize().width - 25, widgetGroup.getSize().height - 32, false, false));

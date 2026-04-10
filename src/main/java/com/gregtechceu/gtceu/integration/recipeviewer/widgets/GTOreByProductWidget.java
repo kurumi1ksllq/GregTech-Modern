@@ -1,9 +1,5 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.widgets;
 
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
-import brachy.modularui.integration.recipeviewer.handlers.fluid.CycleFluidEntryHandler;
-import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
@@ -20,6 +16,10 @@ import com.lowdragmc.lowdraglib.jei.IngredientIO;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
+import brachy.modularui.integration.recipeviewer.handlers.fluid.CycleFluidEntryHandler;
+import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;

@@ -24,12 +24,12 @@ import java.util.List;
 import java.util.function.Function;
 
 public abstract class GTRecipeJEICategory<T extends Recipe<?>, W extends IWidget>
-                                         extends ModularUIRecipeCategory<T, W> {
+                                         extends ModularUIRecipeCategory<T> {
 
     public static final Function<GTRecipeCategory, RecipeType<GTRecipe>> TYPES = Util
             .memoize(c -> new RecipeType<>(c.registryKey, GTRecipe.class));
 
-    protected GTRecipeJEICategory(Function<T, W> wrapperFunction, Function<T, ResourceLocation> recipeIdGetter) {
+    protected GTRecipeJEICategory(Function<T, IWidget> wrapperFunction, Function<T, ResourceLocation> recipeIdGetter) {
         super(wrapperFunction, recipeIdGetter);
     }
 

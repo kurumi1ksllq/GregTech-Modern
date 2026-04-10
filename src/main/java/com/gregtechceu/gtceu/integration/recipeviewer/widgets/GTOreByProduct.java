@@ -1,11 +1,5 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.widgets;
 
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidTagList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -25,6 +19,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidTagList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;

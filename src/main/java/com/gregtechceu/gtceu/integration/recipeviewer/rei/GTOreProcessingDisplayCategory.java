@@ -5,8 +5,8 @@ import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
-
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreByProductWidget;
+
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.rei.IGui2Renderer;
@@ -31,7 +31,8 @@ import java.util.Optional;
 import static com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.ORE;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 
-public class GTOreProcessingDisplayCategory extends ModularUIDisplayCategory<GTOreProcessingDisplayCategory.GTOreProcessingDisplay> {
+public class GTOreProcessingDisplayCategory extends
+                                            ModularUIDisplayCategory<GTOreProcessingDisplayCategory.GTOreProcessingDisplay> {
 
     public static final CategoryIdentifier<GTOreProcessingDisplay> CATEGORY = CategoryIdentifier
             .of(GTCEu.id("ore_processing_diagram"));

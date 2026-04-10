@@ -29,7 +29,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.utils.Alignment;
@@ -171,7 +171,7 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IControll
                                 .background(GTGuiTextures.DISPLAY)
                                 .widthRel(.6f)
                                 .coverChildrenHeight()
-                                .child(new TextWidget<>(IKey.dynamic(() -> {
+                                .child(new TextWidget<>(Text.dynamic(() -> {
                                     List<Component> text = new ArrayList<>();
                                     addDisplayText(text);
                                     return text.stream()

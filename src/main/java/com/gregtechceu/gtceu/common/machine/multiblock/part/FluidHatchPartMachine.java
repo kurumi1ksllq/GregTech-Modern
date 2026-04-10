@@ -36,7 +36,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.GuiTextures;
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.UISettings;
@@ -299,9 +299,9 @@ public class FluidHatchPartMachine extends TieredIOPartMachine implements IHasCi
                 .height(60)
                 .mainAxisAlignment(Alignment.MainAxis.CENTER)
                 .childPadding(4)
-                .child(new TextWidget<>(IKey.dynamic(this::getFluidNameText))
+                .child(new TextWidget<>(Text.dynamic(this::getFluidNameText))
                         .horizontalCenter())
-                .child(new TextWidget<>(IKey.dynamic(this::getFluidAmountText))
+                .child(new TextWidget<>(Text.dynamic(this::getFluidAmountText))
                         .horizontalCenter())
                 .child(Flow.row()
                         .childPadding(2)

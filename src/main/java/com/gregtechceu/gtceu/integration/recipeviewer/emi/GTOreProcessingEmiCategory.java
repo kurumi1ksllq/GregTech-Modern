@@ -7,9 +7,10 @@ import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
-
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreByProductWidget;
+
 import com.lowdragmc.lowdraglib.emi.ModularEmiRecipe;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;

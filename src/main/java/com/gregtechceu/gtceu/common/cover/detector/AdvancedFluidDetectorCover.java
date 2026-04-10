@@ -20,7 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.SidedPosGuiData;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.BooleanSyncValue;
@@ -143,9 +143,9 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IM
 
         GTMuiWidgets.createFilterRow(buttonRow, filterHandler, data, syncManager, settings);
 
-        column.child(coverUIRow().child(IKey.lang("cover.advanced_fluid_detector.min").asWidget().width(50))
+        column.child(coverUIRow().child(Text.lang("cover.advanced_fluid_detector.min").asWidget().width(50))
                 .child(GTMuiWidgets.createIntInputWithButtons(minValueSync, () -> 0, this::getMaxValue).width(110)))
-                .child(coverUIRow().child(IKey.lang("cover.advanced_fluid_detector.max").asWidget().width(50))
+                .child(coverUIRow().child(Text.lang("cover.advanced_fluid_detector.max").asWidget().width(50))
                         .child(GTMuiWidgets.createIntInputWithButtons(maxValueSync, () -> 0, () -> Integer.MAX_VALUE)
                                 .width(110)))
                 .child(buttonRow);

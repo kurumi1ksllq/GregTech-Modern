@@ -1,9 +1,5 @@
 package com.gregtechceu.gtceu.api.capability.recipe;
 
-import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
-import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroup;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroupDistinctness;
@@ -41,6 +37,10 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.IntersectionIngredient;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
+import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
+import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import it.unimi.dsi.fastutil.objects.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

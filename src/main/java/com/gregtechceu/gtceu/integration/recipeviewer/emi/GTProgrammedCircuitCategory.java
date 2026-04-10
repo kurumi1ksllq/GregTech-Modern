@@ -1,14 +1,13 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.emi;
 
-import brachy.modularui.integration.emi.recipe.ModularUIEmiRecipe;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
-
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTProgrammedCircuitWidgetMui;
 
 import net.minecraft.network.chat.Component;
 
+import brachy.modularui.integration.emi.recipe.ModularUIEmiRecipe;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiStack;

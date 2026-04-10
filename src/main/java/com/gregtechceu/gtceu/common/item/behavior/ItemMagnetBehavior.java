@@ -37,7 +37,7 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.ItemDrawable;
 import brachy.modularui.factory.PlayerInventoryGuiData;
 import brachy.modularui.factory.UIFactories;
@@ -120,7 +120,7 @@ public class ItemMagnetBehavior implements IInteractionItem, IItemLifeCycle, IAd
         return new ModularPanel<>("item_magnet")
                 .size(176, 157)
                 .background(GTGuiTextures.BACKGROUND)
-                .child(IKey.dynamic(() -> Component.translatable(filterSync.getValue().getTooltip()))
+                .child(Text.dynamic(() -> Component.translatable(filterSync.getValue().getTooltip()))
                         .asWidget()
                         .left(5)
                         .top(5))
@@ -132,7 +132,7 @@ public class ItemMagnetBehavior implements IInteractionItem, IItemLifeCycle, IAd
                         .stateCount(Filter.values().length)
                         .stateOverlay(Filter.SIMPLE, new ItemDrawable(GTItems.ITEM_FILTER.asItem()))
                         .stateOverlay(Filter.TAG, new ItemDrawable(GTItems.TAG_FILTER.asItem()))
-                        .tooltipBuilder(r -> r.addLine(IKey.dynamic(
+                        .tooltipBuilder(r -> r.addLine(Text.dynamic(
                                 () -> Component.translatable(filterSync.getValue().getTooltip())))))
                 .child(pages)
                 .child(SlotGroupWidget.playerInventory(false).left(7).top(75).disableSortButtons());

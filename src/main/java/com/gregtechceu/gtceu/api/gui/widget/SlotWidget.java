@@ -1,9 +1,5 @@
 package com.gregtechceu.gtceu.api.gui.widget;
 
-import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
-import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import com.gregtechceu.gtceu.GTCEu;
 
 import com.lowdragmc.lowdraglib.gui.editor.annotation.LDLRegister;
@@ -27,6 +23,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
+import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
+import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import lombok.Getter;

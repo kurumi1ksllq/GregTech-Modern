@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.utils.input;
 import net.minecraft.server.level.ServerPlayer;
 
 @FunctionalInterface
-public interface IKeyPressedListener {
+public interface TextPressedListener {
 
     /**
      * Called <strong>server-side only</strong> when a player presses a specified keybinding.

@@ -1,8 +1,5 @@
 package com.gregtechceu.gtceu.api.gui.widget;
 
-import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
-import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
-import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
@@ -45,6 +42,9 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
+import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
+import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.emi.emi.screen.RecipeScreen;
@@ -248,7 +248,8 @@ public class PatternPreviewWidget extends WidgetGroup {
         }
         slotWidgets = new SlotWidget[Math.min(pattern.parts.size(), 18)];
 
-        var itemHandler = new CycleItemEntryHandler(pattern.parts.stream().map(l -> (ItemEntryList)new ItemStackList(l)).toList());
+        var itemHandler = new CycleItemEntryHandler(
+                pattern.parts.stream().map(l -> (ItemEntryList) new ItemStackList(l)).toList());
         int xOffset = 0;
         for (int i = 0; i < slotWidgets.length; i++) {
             int padding = 1;
@@ -303,7 +304,8 @@ public class PatternPreviewWidget extends WidgetGroup {
                 }
             }
             candidates = new SlotWidget[candidateStacks.size()];
-            var itemHandler = new CycleItemEntryHandler(candidateStacks.stream().map(l -> (ItemEntryList)new ItemStackList(l)).toList());
+            var itemHandler = new CycleItemEntryHandler(
+                    candidateStacks.stream().map(l -> (ItemEntryList) new ItemStackList(l)).toList());
             int maxCol = (160 - (((slotWidgets.length - 1) / 9 + 1) * 18) - 35) % 18;
             for (int i = 0; i < candidateStacks.size(); i++) {
                 int finalI = i;

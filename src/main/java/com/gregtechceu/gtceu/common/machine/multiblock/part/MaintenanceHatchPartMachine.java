@@ -20,6 +20,7 @@ import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -29,7 +30,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.ItemDrawable;
 import brachy.modularui.factory.PosGuiData;
@@ -400,9 +401,9 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
                 .childPadding(2);
         Runnable updateWidget = () -> {
             while (!maintenanceStatusWidget.getChildren().isEmpty()) maintenanceStatusWidget.remove(0);
-            maintenanceStatusWidget.child(new TextWidget<>(IKey.lang(() -> hasMaintenanceProblems() ?
-                    "gtceu.top.maintenance_broken" :
-                    "gtceu.top.maintenance_fixed")))
+            maintenanceStatusWidget.child(new TextWidget<>(Text.dynamic(() -> hasMaintenanceProblems() ?
+                    Component.translatable("gtceu.top.maintenance_broken") :
+                    Component.translatable("gtceu.top.maintenance_fixed"))))
                     .child(Flow.row()
                             .coverChildren()
                             .children(Stream.iterate(Byte.valueOf("0"), i -> i < 6, i -> ++i)
@@ -430,18 +431,20 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
                                 .childPadding(5)
                                 .leftRel(0)
                                 .child(new TextWidget<>(
-                                        IKey.lang("gtceu.maintenance.configurable_duration.modify")))
+                                        Text.lang("gtceu.maintenance.configurable_duration.modify")))
                                 .child(new TextFieldWidget()
                                         .setNumbersDouble(() -> MIN_DURATION_MULTIPLIER,
                                                 () -> MAX_DURATION_MULTIPLIER)
                                         .setDefaultNumber(1)
                                         .value(new FloatSyncValue(this::getDurationMultiplier,
                                                 this::setDurationMultiplier))
-                                        .addTooltipElement(IKey.lang(() -> getDurationMultiplier() == 1.0 ?
-                                                "gtceu.maintenance.configurable_duration.unchanged_description" :
-                                                "gtceu.maintenance.configurable_duration.changed_description"))))
-                        .child(new TextWidget<>(IKey.lang("gtceu.maintenance.configurable_time",
-                                () -> new Object[] { this.getTimeMultiplier() }))
+                                        .addTooltipElement(Text.dynamic(() -> getDurationMultiplier() == 1.0 ?
+                                                Component.translatable(
+                                                        "gtceu.maintenance.configurable_duration.unchanged_description") :
+                                                Component.translatable(
+                                                        "gtceu.maintenance.configurable_duration.changed_description")))))
+                        .child(new TextWidget<>(Text.lang("gtceu.maintenance.configurable_time",
+                                this.getTimeMultiplier()))
                                 .leftRel(0)))
                 .child(Flow.row()
                         .leftRel(0.5f)
@@ -455,7 +458,7 @@ public class MaintenanceHatchPartMachine extends TieredPartMachine
                                 .background(GTGuiTextures.BUTTON_MAINTENANCE)
                                 .disableHoverBackground()
                                 .addTooltipElement(
-                                        IKey.lang("gtceu.machine.maintenance_hatch_tool_slot.tooltip"))
+                                        Text.lang("gtceu.machine.maintenance_hatch_tool_slot.tooltip"))
                                 .syncHandler(syncHandler)))
                 .child(maintenanceStatusWidget));
     }

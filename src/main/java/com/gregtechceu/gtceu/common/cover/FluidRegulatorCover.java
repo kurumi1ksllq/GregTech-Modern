@@ -21,7 +21,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.SidedPosGuiData;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.EnumSyncValue;
@@ -204,7 +204,7 @@ public class FluidRegulatorCover extends PumpCover {
         column.child(new GTMuiWidgets.EnumRowBuilder<>(TransferMode.class)
                 .value(transferMode)
                 .overlay(16, GTGuiTextures.TRANSFER_MODE_OVERLAY)
-                .lang(IKey.dynamic(() -> Component.translatable(getTransferMode().tooltip)))
+                .lang(Text.dynamic(() -> Component.translatable(getTransferMode().tooltip)))
                 .build());
 
         column.child(GTMuiWidgets.createIntInputWithBucketMode(transferSize, transferBucketMode,

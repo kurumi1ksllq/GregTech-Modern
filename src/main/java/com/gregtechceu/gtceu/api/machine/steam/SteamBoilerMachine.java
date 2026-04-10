@@ -36,7 +36,7 @@ import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.drawable.UITexture;
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.UISettings;
@@ -343,8 +343,8 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
                         .value(tempPercentage)
                         .direction(ProgressWidget.Direction.UP)
                         .tooltipAutoUpdate(true)
-                        .tooltipBuilder((r) -> r.addLine(IKey
-                                .lang(Component.translatable("gtceu.fluid.temperature", getCurrentTemperature()))))));
+                        .tooltipBuilder((r) -> r.addLine(Text
+                                .lang("gtceu.fluid.temperature", getCurrentTemperature())))));
     }
 
     //////////////////////////////////////

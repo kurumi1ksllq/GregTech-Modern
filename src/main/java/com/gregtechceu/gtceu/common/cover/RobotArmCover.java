@@ -20,7 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 
-import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.api.drawable.Text;
 import brachy.modularui.factory.SidedPosGuiData;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.EnumSyncValue;
@@ -175,7 +175,7 @@ public class RobotArmCover extends ConveyorCover {
         column.child(new GTMuiWidgets.EnumRowBuilder<>(TransferMode.class)
                 .value(transferMode)
                 .overlay(16, GTGuiTextures.TRANSFER_MODE_OVERLAY)
-                .lang(IKey.dynamic(() -> Component.translatable(getTransferMode().tooltip)))
+                .lang(Text.dynamic(() -> Component.translatable(getTransferMode().tooltip)))
                 .build());
 
         column.child(GTMuiWidgets.createIntInputWithButtons(transferSize, () -> 1, () -> getTransferMode().maxStackSize)

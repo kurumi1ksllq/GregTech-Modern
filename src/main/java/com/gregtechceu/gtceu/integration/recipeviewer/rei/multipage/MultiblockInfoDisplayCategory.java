@@ -58,5 +58,4 @@ public class MultiblockInfoDisplayCategory extends ModularUIDisplayCategory<Mult
     public Renderer getIcon() {
         return icon;
     }
-
 }

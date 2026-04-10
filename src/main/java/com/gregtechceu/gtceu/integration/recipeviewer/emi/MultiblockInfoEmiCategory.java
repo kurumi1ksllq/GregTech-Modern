@@ -8,14 +8,15 @@ import com.gregtechceu.gtceu.common.data.machines.GTMultiMachines;
 
 import com.lowdragmc.lowdraglib.emi.ModularEmiRecipe;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import dev.emi.emi.api.widget.SlotWidget;
-import dev.emi.emi.api.widget.WidgetHolder;
+
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiStack;
-import net.minecraft.resources.ResourceLocation;
+import dev.emi.emi.api.widget.SlotWidget;
+import dev.emi.emi.api.widget.WidgetHolder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

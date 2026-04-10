@@ -22,8 +22,6 @@ import com.gregtechceu.gtceu.client.util.TooltipHelper;
 import com.gregtechceu.gtceu.common.data.machines.*;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
 import com.gregtechceu.gtceu.common.machine.electric.*;
-import com.gregtechceu.gtceu.common.machine.muimachine.TestMuiMachine;
-import com.gregtechceu.gtceu.common.machine.muimachine.TestMuiMachine2;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.*;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.monitor.AdvancedMonitorPartMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.monitor.MonitorPartMachine;
@@ -1139,21 +1137,6 @@ public class GTMachines {
                     GTCEu.id("block/machine/part/computer_monitor")))
             .tier(HV)
             .allowExtendedFacing(true)
-            .register();
-
-    public static final MachineDefinition MUI_TEST = REGISTRATE
-            .machine("test_mui", TestMuiMachine::new)
-            .rotationState(RotationState.ALL)
-            .model(createOverlayCasingMachineModel(GTCEu.id("block/casings/solid/machine_casing_clean_stainless_steel"),
-                    GTCEu.id("block/machine/part/computer_monitor")))
-            .register();
-
-    public static final MachineDefinition MUI_TEST_2 = REGISTRATE
-            .machine("test_mui_new", TestMuiMachine2::new)
-            .rotationState(RotationState.ALL)
-            .recipeType(GTRecipeTypes.ALLOY_SMELTER_RECIPES)
-            .model(createOverlayCasingMachineModel(GTCEu.id("block/casings/solid/machine_casing_clean_stainless_steel"),
-                    GTCEu.id("block/machine/part/computer_monitor")))
             .register();
 
     public static void init() {

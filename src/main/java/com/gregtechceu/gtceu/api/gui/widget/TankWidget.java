@@ -1,9 +1,5 @@
 package com.gregtechceu.gtceu.api.gui.widget;
 
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
-import brachy.modularui.integration.recipeviewer.entry.fluid.FluidTagList;
-import brachy.modularui.integration.recipeviewer.handlers.fluid.CycleFluidEntryHandler;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.transfer.fluid.IFluidHandlerModifiable;
@@ -51,6 +47,10 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidStackList;
+import brachy.modularui.integration.recipeviewer.entry.fluid.FluidTagList;
+import brachy.modularui.integration.recipeviewer.handlers.fluid.CycleFluidEntryHandler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.emi.emi.api.forge.ForgeEmiStack;
 import dev.emi.emi.api.stack.EmiIngredient;

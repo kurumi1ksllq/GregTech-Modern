@@ -196,7 +196,7 @@ public class GTUtil {
      * @return Index of the nearest value lesser or equal than {@code value},
      *         or {@code -1} if there's no entry matching the condition
      */
-    public static int nearestLesserOrEqual(@NotNull long[] array, long value) {
+    public static int nearestLesserOrEqual(long @NotNull [] array, long value) {
         int low = 0, high = array.length - 1;
         while (true) {
             int median = (low + high) / 2;
@@ -216,7 +216,7 @@ public class GTUtil {
      * @return Index of the nearest value lesser than {@code value},
      *         or {@code -1} if there's no entry matching the condition
      */
-    public static int nearestLesser(@NotNull long[] array, long value) {
+    public static int nearestLesser(long @NotNull [] array, long value) {
         int low = 0, high = array.length - 1;
         while (true) {
             int median = (low + high) / 2;
@@ -739,5 +739,25 @@ public class GTUtil {
     public static VoxelShape rotateVoxelShape(VoxelShape shape, Direction dir) {
         return shape.toAabbs().stream().map(AABB -> Shapes.create(rotateAABB(AABB, dir))).reduce(Shapes.empty(),
                 Shapes::or);
+    }
+
+    public static boolean resourceExists(@NotNull ResourceLocation rs) {
+        if (GTCEu.isClientSide()) {
+            return Minecraft.getInstance().getResourceManager().getResource(rs).isPresent();
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean textureResourceExists(@NotNull ResourceLocation location) {
+        var textureLocation = new ResourceLocation(location.getNamespace(),
+                "textures/%s.png".formatted(location.getPath()));
+        return resourceExists(textureLocation);
+    }
+
+    public static boolean modelResourceExists(@NotNull ResourceLocation location) {
+        var modelLocation = new ResourceLocation(location.getNamespace(),
+                "models/%s.json".formatted(location.getPath()));
+        return resourceExists(modelLocation);
     }
 }

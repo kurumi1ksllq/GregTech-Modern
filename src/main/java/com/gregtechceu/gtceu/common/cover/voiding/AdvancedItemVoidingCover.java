@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.api.capability.ICoverable;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.filter.ItemFilter;
 import com.gregtechceu.gtceu.api.cover.filter.SimpleItemFilter;
-import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.common.cover.data.VoidingMode;
@@ -47,8 +46,6 @@ public class AdvancedItemVoidingCover extends ItemVoidingCover {
     @Getter
     @Setter
     protected int globalVoidingLimit = 1;
-
-    private IntInputWidget stackSizeInput;
 
     public AdvancedItemVoidingCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
@@ -108,8 +105,6 @@ public class AdvancedItemVoidingCover extends ItemVoidingCover {
     public void setVoidingMode(VoidingMode voidingMode) {
         this.voidingMode = voidingMode;
 
-        configureStackSizeInput();
-
         if (!this.isRemote()) {
             syncDataHolder.markClientSyncFieldDirty("voidingMode");
             configureFilter();
@@ -148,17 +143,6 @@ public class AdvancedItemVoidingCover extends ItemVoidingCover {
         if (filterHandler.getFilter() instanceof SimpleItemFilter filter) {
             filter.setMaxStackSize(this.voidingMode.maxStackSize);
         }
-
-        configureStackSizeInput();
-    }
-
-    private void configureStackSizeInput() {
-        if (this.stackSizeInput == null)
-            return;
-
-        this.stackSizeInput.setVisible(shouldShowStackSize());
-        this.stackSizeInput.setMin(1);
-        this.stackSizeInput.setMax(this.voidingMode.maxStackSize);
     }
 
     private boolean shouldShowStackSize() {

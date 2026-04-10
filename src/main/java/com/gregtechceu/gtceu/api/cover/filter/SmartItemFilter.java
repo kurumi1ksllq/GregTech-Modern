@@ -2,7 +2,6 @@ package com.gregtechceu.gtceu.api.cover.filter;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
-import com.gregtechceu.gtceu.api.gui.widget.EnumSelectorWidget;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.common.data.GTItems;
@@ -10,9 +9,6 @@ import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
-
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.CompoundTag;
@@ -141,7 +137,7 @@ public class SmartItemFilter implements ItemFilter {
     }
 
     @MethodsReturnNonnullByDefault
-    private enum SmartFilteringMode implements EnumSelectorWidget.SelectableEnum {
+    private enum SmartFilteringMode {
 
         ELECTROLYZER("electrolyzer", GTRecipeTypes.ELECTROLYZER_RECIPES),
         CENTRIFUGE("centrifuge", GTRecipeTypes.CENTRIFUGE_RECIPES),
@@ -158,7 +154,6 @@ public class SmartItemFilter implements ItemFilter {
             this.recipeType = type;
         }
 
-        @Override
         public String getTooltip() {
             return "cover.item_smart_filter.filtering_mode." + localeName;
         }
@@ -168,11 +163,6 @@ public class SmartItemFilter implements ItemFilter {
                     .map(v -> UITexture.fullImage(GTCEu.MOD_ID,
                             "textures/block/machines/" + v.localeName + "/overlay_front.png", ColorType.DEFAULT))
                     .toArray(UITexture[]::new);
-        }
-
-        @Override
-        public IGuiTexture getIcon() {
-            return new ResourceTexture("gtceu:textures/block/machines/" + localeName + "/overlay_front.png");
         }
     }
 }

@@ -3,7 +3,6 @@ package com.gregtechceu.gtceu.client.renderer.cover;
 import com.gregtechceu.gtceu.api.cover.CoverBehavior;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.client.model.BaseBakedModel;
-import com.gregtechceu.gtceu.client.model.ItemBakedModel;
 import com.gregtechceu.gtceu.client.model.TextureOverrideModel;
 import com.gregtechceu.gtceu.client.util.FacadeBlockAndTintGetter;
 import com.gregtechceu.gtceu.client.util.GTQuadTransformers;
@@ -12,6 +11,8 @@ import com.gregtechceu.gtceu.common.cover.FacadeCover;
 import com.gregtechceu.gtceu.common.item.behavior.FacadeItemBehaviour;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
+import com.lowdragmc.lowdraglib.client.model.ModelFactory;
+
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
@@ -19,6 +20,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.BlockModelRotation;
@@ -67,7 +69,7 @@ public class FacadeCoverRenderer extends BaseBakedModel implements ICoverRendere
     });
 
     public static final FacadeCoverRenderer INSTANCE = new FacadeCoverRenderer();
-    private static final Int2ObjectMap<ItemBakedModel> CACHE = new Int2ObjectArrayMap<>();
+    private static final Int2ObjectMap<BakedModel> CACHE = new Int2ObjectArrayMap<>();
 
     @OnlyIn(Dist.CLIENT)
     private @Nullable BakedModel defaultItemModel;
@@ -110,7 +112,7 @@ public class FacadeCoverRenderer extends BaseBakedModel implements ICoverRendere
         }
 
         int hash = facadeState.hashCode();
-        ItemBakedModel model = CACHE.computeIfAbsent(hash, $ -> new ItemBakedModel() {
+        BakedModel model = CACHE.computeIfAbsent(hash, $ -> new BakedModel() {
 
             private final FacadeBlockAndTintGetter level = new FacadeBlockAndTintGetter(mc.level,
                     BlockPos.ZERO, facadeState, null);
@@ -126,6 +128,41 @@ public class FacadeCoverRenderer extends BaseBakedModel implements ICoverRendere
                                                      @NotNull RandomSource rand, @NotNull ModelData extraData,
                                                      @Nullable RenderType renderType) {
                 return getFacadeQuads(facadeState, level, rand, extraData, renderType);
+            }
+
+            @Override
+            public boolean useAmbientOcclusion() {
+                return true;
+            }
+
+            @Override
+            public boolean isGui3d() {
+                return true;
+            }
+
+            @Override
+            public boolean usesBlockLight() {
+                return true;
+            }
+
+            @Override
+            public boolean isCustomRenderer() {
+                return false;
+            }
+
+            @Override
+            public TextureAtlasSprite getParticleIcon() {
+                return ModelFactory.getBlockSprite(MissingTextureAtlasSprite.getLocation());
+            }
+
+            @Override
+            public ItemTransforms getTransforms() {
+                return ModelFactory.MODEL_TRANSFORM_BLOCK;
+            }
+
+            @Override
+            public ItemOverrides getOverrides() {
+                return ItemOverrides.EMPTY;
             }
         });
         return Collections.singletonList(model);

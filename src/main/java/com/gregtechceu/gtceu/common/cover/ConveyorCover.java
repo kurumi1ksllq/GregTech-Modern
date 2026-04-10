@@ -22,8 +22,6 @@ import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
 
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -47,7 +45,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -85,7 +82,6 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
     @Getter
     protected boolean isWorkingEnabled = true;
     protected int itemsLeftToTransferLastSecond;
-    private Widget ioModeSwitch;
 
     @SaveField
     @SyncToClient
@@ -107,7 +103,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
         filterHandler = FilterHandlers.item(this)
                 .onFilterLoaded(f -> configureFilter())
                 .onFilterUpdated(f -> configureFilter())
-                .onFilterRemoved(f -> configureFilter());
+                .onFilterRemoved(this::configureFilter);
     }
 
     public ConveyorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide, int tier) {
@@ -354,8 +350,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
         return maxTransferAmount - itemsLeftToTransfer;
     }
 
-    @NotNull
-    protected Map<ItemStack, TypeItemInfo> countInventoryItemsByType(@NotNull IItemHandler inventory) {
+    protected Map<ItemStack, TypeItemInfo> countInventoryItemsByType(IItemHandler inventory) {
         ItemFilter filter = filterHandler.getFilter();
         Map<ItemStack, TypeItemInfo> result = new Object2ObjectOpenCustomHashMap<>(
                 ItemStackHashStrategy.comparingAllButCount());
@@ -375,8 +370,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
         return result;
     }
 
-    @NotNull
-    protected Map<ItemStack, GroupItemInfo> countInventoryItemsByMatchSlot(@NotNull IItemHandler inventory) {
+    protected Map<ItemStack, GroupItemInfo> countInventoryItemsByMatchSlot(IItemHandler inventory) {
         ItemFilter filter = filterHandler.getFilter();
         Map<ItemStack, GroupItemInfo> result = new Object2ObjectOpenCustomHashMap<>(
                 ItemStackHashStrategy.comparingAllButCount());
@@ -446,8 +440,6 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
                     .child(0, GTMuiWidgets.createIOCycleButton(ioSync, false)));
         }
 
-        if (createConveyorIORow()) {}
-
         if (createDistributionModeRow()) {
             column.child(new GTMuiWidgets.EnumRowBuilder<>(DistributionMode.class)
                     .value(distMode)
@@ -494,7 +486,7 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
     // *** CAPABILITY OVERRIDE ***//
     /////////////////////////////////////
 
-    private CoverableItemHandlerWrapper itemHandlerWrapper;
+    private @Nullable CoverableItemHandlerWrapper itemHandlerWrapper;
 
     @Nullable
     @Override
@@ -514,9 +506,8 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
             super(delegate);
         }
 
-        @NotNull
         @Override
-        public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
             if (io == IO.OUT) {
                 if (manualIOMode == ManualIOMode.DISABLED) {
                     return stack;
@@ -531,7 +522,6 @@ public class ConveyorCover extends CoverBehavior implements IIOCover, IMuiCover,
             return super.insertItem(slot, stack, simulate);
         }
 
-        @NotNull
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             if (io == IO.IN) {

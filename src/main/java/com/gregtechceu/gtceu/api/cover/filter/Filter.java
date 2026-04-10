@@ -1,7 +1,5 @@
 package com.gregtechceu.gtceu.api.cover.filter;
 
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-
 import net.minecraft.nbt.CompoundTag;
 
 import brachy.modularui.factory.GuiData;
@@ -13,10 +11,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public interface Filter<T, S extends Filter<T, S>> extends Predicate<T> {
-
-    default WidgetGroup openConfigurator(int x, int y) {
-        return null;
-    }
 
     /**
      * @return Filter panel when opened by itself (including the player inventory)

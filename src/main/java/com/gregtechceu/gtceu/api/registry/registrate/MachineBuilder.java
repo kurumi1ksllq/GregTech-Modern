@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.data.RotationState;
-import com.gregtechceu.gtceu.api.gui.editor.EditableMachineUI;
 import com.gregtechceu.gtceu.api.item.MetaMachineItem;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -152,9 +151,6 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
     @Getter
     private String themeId = ThemeAPI.DEFAULT_ID;
     private Supplier<BlockState> appearance;
-    @Getter // getter for KJS
-    @Nullable
-    private EditableMachineUI editableUI;
     @Getter // getter for KJS
     @Nullable
     private String langValue = null;
@@ -305,11 +301,6 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
 
     public TYPE ui(PanelFactory ui) {
         this.ui = ui;
-        return getThis();
-    }
-
-    public TYPE editableUI(EditableMachineUI editableUI) {
-        this.editableUI = editableUI;
         return getThis();
     }
 
@@ -728,9 +719,6 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
         }
         if (appearance == null) {
             appearance = block::getDefaultState;
-        }
-        if (editableUI != null) {
-            definition.setEditableUI(editableUI);
         }
         definition.setAppearance(appearance);
         definition.setAllowExtendedFacing(allowExtendedFacing);

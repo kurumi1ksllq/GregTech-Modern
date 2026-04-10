@@ -12,6 +12,7 @@ import com.gregtechceu.gtceu.common.item.behavior.FacadeItemBehaviour;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.client.model.ModelFactory;
+
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
@@ -121,6 +122,7 @@ public class FacadeCoverRenderer extends BaseBakedModel implements ICoverRendere
                                                      @NotNull RandomSource rand) {
                 return getQuads(state, side, rand, ModelData.EMPTY, null);
             }
+
             @Override
             public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side,
                                                      @NotNull RandomSource rand, @NotNull ModelData extraData,

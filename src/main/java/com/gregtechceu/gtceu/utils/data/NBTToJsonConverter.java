@@ -1,7 +1,8 @@
 package com.gregtechceu.gtceu.utils.data;
 
-import com.google.gson.*;
 import net.minecraft.nbt.*;
+
+import com.google.gson.*;
 
 import java.util.Set;
 
@@ -14,7 +15,7 @@ public class NBTToJsonConverter {
             jsonRoot = new JsonObject();
             for (String key : keys) {
                 Tag nbt = compoundTag.get(key);
-                ((JsonObject)jsonRoot).add(key, getObject(nbt));
+                ((JsonObject) jsonRoot).add(key, getObject(nbt));
             }
         } else if (tag instanceof NumericTag numericTag) {
             jsonRoot = new JsonPrimitive(numericTag.getAsNumber());
@@ -47,7 +48,8 @@ public class NBTToJsonConverter {
                 }
                 jsonRoot = array;
             } else {
-                throw new JsonParseException("NBT to JSON converter doesn't support the nbt tag: " + tag.getType() + ", tag: " + tag);
+                throw new JsonParseException(
+                        "NBT to JSON converter doesn't support the nbt tag: " + tag.getType() + ", tag: " + tag);
             }
         }
 

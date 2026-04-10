@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.data.recipe.builder;
 
 import com.gregtechceu.gtceu.GTCEu;
-
 import com.gregtechceu.gtceu.utils.data.NBTToJsonConverter;
 
 import net.minecraft.core.registries.BuiltInRegistries;

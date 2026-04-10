@@ -750,13 +750,14 @@ public class GTUtil {
     }
 
     public static boolean textureResourceExists(@NotNull ResourceLocation location) {
-        var textureLocation = new ResourceLocation(location.getNamespace(), "textures/%s.png".formatted(location.getPath()));
+        var textureLocation = new ResourceLocation(location.getNamespace(),
+                "textures/%s.png".formatted(location.getPath()));
         return resourceExists(textureLocation);
     }
 
     public static boolean modelResourceExists(@NotNull ResourceLocation location) {
-        var modelLocation = new ResourceLocation(location.getNamespace(), "models/%s.json".formatted(location.getPath()));
+        var modelLocation = new ResourceLocation(location.getNamespace(),
+                "models/%s.json".formatted(location.getPath()));
         return resourceExists(modelLocation);
     }
-
 }

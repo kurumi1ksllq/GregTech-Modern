@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.emi.orevein;
 
+import brachy.modularui.integration.emi.recipe.ModularUIEmiRecipe;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
@@ -7,18 +8,16 @@ import com.gregtechceu.gtceu.api.data.worldgen.bedrockore.BedrockOreDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
 
-import com.lowdragmc.lowdraglib.emi.ModularEmiRecipe;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidgetMui;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiStack;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class GTBedrockOreEmiCategory extends EmiRecipeCategory {
 
@@ -45,12 +44,12 @@ public class GTBedrockOreEmiCategory extends EmiRecipeCategory {
         return Component.translatable("gtceu.jei.bedrock_ore_diagram");
     }
 
-    public static class GTBedrockOre extends ModularEmiRecipe<WidgetGroup> {
+    public static class GTBedrockOre extends ModularUIEmiRecipe {
 
         private final BedrockOreDefinition bedrockOre;
 
         public GTBedrockOre(BedrockOreDefinition bedrockOre) {
-            super(() -> new GTOreVeinWidget(bedrockOre));
+            super(ClientProxy.CLIENT_BEDROCK_ORE_VEINS.inverse().get(bedrockOre).withPrefix("/bedrock_ore_diagram/"), () -> new GTOreVeinWidgetMui(bedrockOre));
             this.bedrockOre = bedrockOre;
         }
 
@@ -60,8 +59,8 @@ public class GTBedrockOreEmiCategory extends EmiRecipeCategory {
         }
 
         @Override
-        public @Nullable ResourceLocation getId() {
-            return ClientProxy.CLIENT_BEDROCK_ORE_VEINS.inverse().get(bedrockOre).withPrefix("/bedrock_ore_diagram/");
+        public List<EmiStack> getOutputs() {
+            return GTOreVeinWidgetMui.getRawMaterialList(bedrockOre).stream().map(EmiStack::of).toList();
         }
     }
 }

@@ -1,22 +1,22 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.emi.orevein;
 
+import brachy.modularui.integration.emi.recipe.ModularUIEmiRecipe;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
 
-import com.lowdragmc.lowdraglib.emi.ModularEmiRecipe;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidgetMui;
 
+import dev.emi.emi.api.stack.FluidEmiStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiStack;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class GTBedrockFluidEmiCategory extends EmiRecipeCategory {
 
@@ -42,12 +42,12 @@ public class GTBedrockFluidEmiCategory extends EmiRecipeCategory {
         return Component.translatable("gtceu.jei.bedrock_fluid_diagram");
     }
 
-    public static class GTBedrockFluid extends ModularEmiRecipe<WidgetGroup> {
+    public static class GTBedrockFluid extends ModularUIEmiRecipe {
 
         private final BedrockFluidDefinition fluid;
 
         public GTBedrockFluid(BedrockFluidDefinition fluid) {
-            super(() -> new GTOreVeinWidget(fluid));
+            super(ClientProxy.CLIENT_FLUID_VEINS.inverse().get(fluid).withPrefix("/bedrock_fluid_diagram/"), () -> new GTOreVeinWidgetMui(fluid));
             this.fluid = fluid;
         }
 
@@ -57,8 +57,8 @@ public class GTBedrockFluidEmiCategory extends EmiRecipeCategory {
         }
 
         @Override
-        public @Nullable ResourceLocation getId() {
-            return ClientProxy.CLIENT_FLUID_VEINS.inverse().get(fluid).withPrefix("/bedrock_fluid_diagram/");
+        public List<EmiStack> getOutputs() {
+            return List.of(FluidEmiStack.of(fluid.getStoredFluid().get()));
         }
     }
 }

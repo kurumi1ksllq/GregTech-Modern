@@ -1,22 +1,20 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.emi.orevein;
 
+import brachy.modularui.integration.emi.recipe.ModularUIEmiRecipe;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
 
-import com.lowdragmc.lowdraglib.emi.ModularEmiRecipe;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidgetMui;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -45,12 +43,12 @@ public class GTOreVeinEmiCategory extends EmiRecipeCategory {
         return Component.translatable("gtceu.jei.ore_vein_diagram");
     }
 
-    public static class GTEmiOreVein extends ModularEmiRecipe<WidgetGroup> {
+    public static class GTEmiOreVein extends ModularUIEmiRecipe {
 
         private final GTOreDefinition oreDefinition;
 
         public GTEmiOreVein(GTOreDefinition oreDefinition) {
-            super(() -> new GTOreVeinWidget(oreDefinition));
+            super(ClientProxy.CLIENT_ORE_VEINS.inverse().get(oreDefinition).withPrefix("/ore_vein_diagram/"), () -> new GTOreVeinWidgetMui(oreDefinition));
             this.oreDefinition = oreDefinition;
         }
 
@@ -60,13 +58,8 @@ public class GTOreVeinEmiCategory extends EmiRecipeCategory {
         }
 
         @Override
-        public @Nullable ResourceLocation getId() {
-            return ClientProxy.CLIENT_ORE_VEINS.inverse().get(oreDefinition).withPrefix("/ore_vein_diagram/");
-        }
-
-        @Override
         public List<EmiStack> getOutputs() {
-            return GTOreVeinWidget.getContainedOresAndBlocks(oreDefinition)
+            return GTOreVeinWidgetMui.getContainedOresAndBlocks(oreDefinition)
                     .stream()
                     .map(EmiStack::of)
                     .toList();

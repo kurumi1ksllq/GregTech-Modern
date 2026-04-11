@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class GTBedrockFluidEmiCategory extends EmiRecipeCategory {
         }
 
         @Override
-        public List<EmiStack> getOutputs() {
+        public @NotNull List<EmiStack> getOutputs() {
             return List.of(FluidEmiStack.of(fluid.getStoredFluid().get()));
         }
     }

@@ -1,8 +1,10 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.widgets;
 
+import brachy.modularui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
+import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import net.minecraftforge.items.ItemStackHandler;
 
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
@@ -25,11 +27,9 @@ public class GTProgrammedCircuitWidgetMui extends ParentWidget<GTProgrammedCircu
 
         Grid circuits = new Grid()
                 .coverChildren()
-                .mapTo(8, 32, i -> {
-                    return new ItemSlot().recipeRole(RecipeSlotRole.INPUT)
-                            .slot(new ModularSlot(handler, i).accessibility(false, false));
-                });
+                .mapTo(8, 32, i -> new ItemSlot().recipeRole(RecipeSlotRole.INPUT)
+                        .slot(new ModularSlot(handler, i).accessibility(false, false)));
 
-        child(circuits.center());
+        child(circuits.horizontalCenter());
     }
 }

@@ -14,7 +14,6 @@ import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,10 +30,6 @@ import brachy.modularui.widgets.slot.ItemSlot;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public class CrateMachine extends MetaMachine implements IMuiMachine,
                           IDropSaveMachine {
 
@@ -58,7 +53,7 @@ public class CrateMachine extends MetaMachine implements IMuiMachine,
         this.material = material;
         this.inventorySize = inventorySize;
         this.rowLength = rowLength;
-        this.inventory = new NotifiableItemStackHandler(this, inventorySize, IO.BOTH);
+        this.inventory = attachTrait(new NotifiableItemStackHandler(inventorySize, IO.BOTH));
     }
 
     @Override

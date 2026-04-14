@@ -11,10 +11,10 @@ import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IVoidable;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
-import com.gregtechceu.gtceu.api.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUILayout;
 import com.gregtechceu.gtceu.common.cover.data.BucketMode;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
+import com.gregtechceu.gtceu.common.machine.trait.AutoOutputTrait;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTMath;
 
@@ -49,6 +49,7 @@ import brachy.modularui.widgets.slot.ModularSlot;
 import brachy.modularui.widgets.textfield.TextFieldWidget;
 import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.*;
 
@@ -622,12 +623,12 @@ public class GTMuiWidgets {
 
     public static class EnumRowBuilder<T extends Enum<T>> {
 
-        private EnumSyncValue<T> syncValue;
+        private @Nullable EnumSyncValue<T> syncValue;
         private final Class<T> enumValue;
-        private IKey lang;
-        private IDrawable[] background;
-        private IDrawable selectedBackground;
-        private IDrawable[] overlay;
+        private @Nullable IKey lang;
+        private IDrawable @Nullable [] background;
+        private @Nullable IDrawable selectedBackground;
+        private IDrawable @Nullable [] overlay;
 
         public EnumRowBuilder(Class<T> enumValue) {
             this.enumValue = enumValue;

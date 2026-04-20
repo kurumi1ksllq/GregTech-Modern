@@ -24,6 +24,9 @@ import lombok.Getter;
 
 import java.util.*;
 
+/**
+ * A singleblock steam machine with recipe logic and item IO.
+ */
 public class SimpleSteamMachine extends SteamWorkableMachine {
 
     @SaveField

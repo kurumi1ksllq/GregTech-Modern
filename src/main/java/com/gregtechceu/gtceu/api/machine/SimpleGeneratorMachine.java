@@ -14,6 +14,9 @@ import com.gregtechceu.gtceu.common.machine.trait.hazard.EnvironmentalHazardEmit
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import lombok.Getter;
 
+/**
+ * All singleblock generators are implemented here.
+ */
 public class SimpleGeneratorMachine extends WorkableTieredMachine {
 
     @Getter

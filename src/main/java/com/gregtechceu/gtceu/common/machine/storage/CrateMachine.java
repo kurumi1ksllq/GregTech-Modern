@@ -16,8 +16,6 @@ import com.gregtechceu.gtceu.utils.ExtendedUseOnContext;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 
 import brachy.modularui.api.drawable.IKey;
 import brachy.modularui.factory.PosGuiData;
@@ -28,7 +26,6 @@ import brachy.modularui.widget.ParentWidget;
 import brachy.modularui.widgets.layout.Flow;
 import brachy.modularui.widgets.slot.ItemSlot;
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
 
 public class CrateMachine extends MetaMachine implements IMuiMachine,
                           IDropSaveMachine {
@@ -108,26 +105,15 @@ public class CrateMachine extends MetaMachine implements IMuiMachine,
     }
 
     @Override
-    public void onMachinePlaced(@Nullable LivingEntity player, ItemStack stack) {
-        super.onMachinePlaced(player, stack);
-        CompoundTag tag = stack.getTag();
-        if (tag != null) {
-            if (tag.contains("taped") && tag.getBoolean("taped")) {
-                this.inventory.storage.deserializeNBT(tag.getCompound("inventory"));
-            }
-            setRenderState(getRenderState().setValue(GTMachineModelProperties.IS_TAPED, isTaped));
-            syncDataHolder.markClientSyncFieldDirty("isTaped");
-        }
-    }
-
-    @Override
     public void saveToItem(CompoundTag tag) {
         if (isTaped) tag.put("inventory", inventory.storage.serializeNBT());
     }
 
     @Override
     public void loadFromItem(CompoundTag tag) {
-        inventory.storage.deserializeNBT(tag.getCompound("inventory"));
+        if (tag.contains("inventory")) {
+            this.inventory.storage.deserializeNBT(tag.getCompound("inventory"));
+        }
     }
 
     @Override

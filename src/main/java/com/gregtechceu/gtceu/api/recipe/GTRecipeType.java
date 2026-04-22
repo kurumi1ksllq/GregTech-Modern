@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.recipe.chance.boost.ChanceBoostFunction;
 import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUILayout;
 import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUIs;
+import com.gregtechceu.gtceu.api.recipe.gui.RecipeUIModifier;
 import com.gregtechceu.gtceu.api.recipe.lookup.RecipeAdditionHandler;
 import com.gregtechceu.gtceu.api.recipe.lookup.RecipeDB;
 import com.gregtechceu.gtceu.api.recipe.ui.GTRecipeTypeUI;
@@ -100,6 +101,9 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
     @Getter
     private int minRecipeConditions = 0;
 
+    @Getter
+    private final List<RecipeUIModifier> uiModifiers = new ArrayList<>();
+
     public GTRecipeType(ResourceLocation registryName, String group, RecipeType<?>... proxyRecipes) {
         this.registryName = registryName;
         this.group = group;
@@ -185,6 +189,11 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
 
     public GTRecipeType addDataInfo(Function<CompoundTag, String> dataInfo) {
         this.dataInfos.add(dataInfo);
+        return this;
+    }
+
+    public GTRecipeType addUIModifier(RecipeUIModifier modifier) {
+        this.uiModifiers.add(modifier);
         return this;
     }
 

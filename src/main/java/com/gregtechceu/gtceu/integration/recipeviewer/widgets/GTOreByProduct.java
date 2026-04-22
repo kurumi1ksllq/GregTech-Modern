@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.widgets;
 
+import brachy.modularui.screen.RichTooltip;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -14,7 +15,6 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -32,6 +32,8 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class GTOreByProduct {
 
@@ -96,9 +98,9 @@ public class GTOreByProduct {
         ItemTagList oreStacks = new ItemTagList();
         for (TagPrefix prefix : ORES) {
             // get all ores with the relevant oredicts instead of just the first unified ore
-            oreStacks.add(ChemicalHelper.getTag(prefix, material), 1, null);
+            oreStacks.add(Objects.requireNonNull(ChemicalHelper.getTag(prefix, material)), 1, null);
         }
-        oreStacks.add(ChemicalHelper.getTag(TagPrefix.rawOre, material), 1, null);
+        oreStacks.add(Objects.requireNonNull(ChemicalHelper.getTag(TagPrefix.rawOre, material)), 1, null);
         itemInputs.add(oreStacks);
 
         // set up machines as inputs
@@ -142,7 +144,7 @@ public class GTOreByProduct {
 
         // add prefixes that should count as inputs to input lists (they will not be displayed in actual page)
         for (TagPrefix prefix : IN_PROCESSING_STEPS) {
-            itemInputs.add(ItemTagList.of(ChemicalHelper.getTag(prefix, material), 1, null));
+            itemInputs.add(ItemTagList.of(Objects.requireNonNull(ChemicalHelper.getTag(prefix, material)), 1, null));
         }
 
         // total number of inputs added
@@ -288,18 +290,20 @@ public class GTOreByProduct {
         }
     }
 
-    public void getTooltip(int slotIndex, List<Component> tooltips) {
-        if (chances.containsKey(slotIndex)) {
-            Content entry = chances.get(slotIndex);
-            float chance = 100 * (float) entry.chance / entry.maxChance;
-            if (entry.tierChanceBoost != 0) {
-                float boost = entry.tierChanceBoost / 100.0f;
-                tooltips.add(FormattingUtil.formatPercentage2Places("gtceu.gui.content.chance_base", chance));
-                tooltips.add(FormattingUtil.formatPercentage2Places("gtceu.gui.content.chance_tier_boost_plus", boost));
-            } else {
-                tooltips.add(FormattingUtil.formatPercentage2Places("gtceu.gui.content.chance_no_boost", chance));
+    public Consumer<RichTooltip> getTooltip(int slotIndex) {
+        return tooltip -> {
+            if (chances.containsKey(slotIndex)) {
+                Content entry = chances.get(slotIndex);
+                float chance = 100 * (float) entry.chance / entry.maxChance;
+                if (entry.tierChanceBoost != 0) {
+                    float boost = entry.tierChanceBoost / 100.0f;
+                    tooltip.addLine(FormattingUtil.formatPercentage2Places("gtceu.gui.content.chance_base", chance));
+                    tooltip.addLine(FormattingUtil.formatPercentage2Places("gtceu.gui.content.chance_tier_boost_plus", boost));
+                } else {
+                    tooltip.addLine(FormattingUtil.formatPercentage2Places("gtceu.gui.content.chance_no_boost", chance));
+                }
             }
-        }
+        };
     }
 
     public Content getChance(int slot) {

@@ -6,7 +6,7 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreVeinRecipeWidget;
 
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
@@ -66,14 +66,14 @@ public class GTOreVeinDisplayCategory extends ModularUIREIDisplayCategory<GTOreV
         private final GTOreDefinition oreDefinition;
 
         public GTOreVeinDisplay(ResourceLocation id, GTOreDefinition oreDefinition) {
-            super(id, () -> new GTOreVeinWidget(oreDefinition), CATEGORY);
+            super(id, () -> new OreVeinRecipeWidget(oreDefinition), CATEGORY);
             this.oreDefinition = oreDefinition;
         }
 
         @Override
         public @NotNull List<EntryIngredient> getOutputEntries() {
             List<EntryIngredient> ingredients = new ArrayList<>();
-            for (ItemStack output : GTOreVeinWidget.getContainedOresAndBlocks(oreDefinition)) {
+            for (ItemStack output : OreVeinRecipeWidget.getContainedOresAndBlocks(oreDefinition)) {
                 ingredients.add(EntryIngredients.of(output));
             }
             return ingredients;

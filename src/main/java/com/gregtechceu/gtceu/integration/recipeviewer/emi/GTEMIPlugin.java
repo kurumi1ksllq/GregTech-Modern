@@ -59,7 +59,7 @@ public class GTEMIPlugin implements EmiPlugin {
         if (GTCEu.isModLoaded(GTValues.MODID_AE2WTLIB)) {
             registry.addRecipeHandler(WETMenu.TYPE, new Ae2PatternTerminalHandler<>());
         }
-        registry.addCategory(GTProgrammedCircuitCategory.CATEGORY);
+        registry.addCategory(ProgrammedCircuitEmiCategory.CATEGORY);
 
         // Recipes
         MultiblockInfoEmiCategory.registerDisplays(registry);
@@ -70,7 +70,7 @@ public class GTEMIPlugin implements EmiPlugin {
         GTBedrockFluidEmiCategory.registerDisplays(registry);
         if (ConfigHolder.INSTANCE.machines.doBedrockOres)
             GTBedrockOreEmiCategory.registerDisplays(registry);
-        GTProgrammedCircuitCategory.registerDisplays(registry);
+        ProgrammedCircuitEmiCategory.registerDisplays(registry);
 
         // workstations
         GTRecipeEMICategory.registerWorkStations(registry);
@@ -89,7 +89,7 @@ public class GTEMIPlugin implements EmiPlugin {
         registry.setDefaultComparison(GTItems.PROGRAMMED_CIRCUIT.asItem(), Comparison.compareNbt());
         registry.removeEmiStacks(EmiStack.of(GTItems.PROGRAMMED_CIRCUIT.asStack()));
         registry.addEmiStack(EmiStack.of(IntCircuitBehaviour.stack(0)));
-        registry.addWorkstation(GTProgrammedCircuitCategory.CATEGORY, EmiStack.of(IntCircuitBehaviour.stack(0)));
+        registry.addWorkstation(ProgrammedCircuitEmiCategory.CATEGORY, EmiStack.of(IntCircuitBehaviour.stack(0)));
 
         Comparison potionComparison = Comparison.compareData(stack -> PotionUtils.getPotion(stack.getNbt()));
         PotionFluid potionFluid = GTFluids.POTION.get();

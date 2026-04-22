@@ -9,7 +9,7 @@ import brachy.modularui.api.GuiAxis;
 import brachy.modularui.drawable.ColorType;
 import brachy.modularui.drawable.TabTexture;
 import brachy.modularui.drawable.UITexture;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 public class GTGuiTextures {
@@ -681,6 +681,15 @@ public class GTGuiTextures {
     public static final UITexture TOOL_SWITCH_CONVERTER_EU = fullImage(
             "textures/gui/overlay/tool_wire_connect.png");
 
+    // Ore processing
+
+    // ORE PROCESSING
+    public static final UITexture OREBY_BASE = fullImage("textures/gui/arrows/oreby-base.png");
+    public static final UITexture OREBY_CHEM = fullImage("textures/gui/arrows/oreby-chem.png");
+    public static final UITexture OREBY_SEP = fullImage("textures/gui/arrows/oreby-sep.png");
+    public static final UITexture OREBY_SIFT = fullImage("textures/gui/arrows/oreby-sift.png");
+    public static final UITexture OREBY_SMELT = fullImage("textures/gui/arrows/oreby-smelt.png");
+
     // MISC
 
     public static void init() {/**/}
@@ -689,7 +698,7 @@ public class GTGuiTextures {
         return fullImage(path, null);
     }
 
-    private static UITexture fullImage(String path, ColorType colorType) {
+    private static UITexture fullImage(String path, @Nullable ColorType colorType) {
         return UITexture.fullImage(GTCEu.MOD_ID, path, colorType);
     }
 
@@ -720,7 +729,7 @@ public class GTGuiTextures {
         return progressBar(path, null);
     }
 
-    private static UITexture progressBar(String path, ColorType colorType) {
+    private static UITexture progressBar(String path, @Nullable ColorType colorType) {
         return progressBar(path, 20, 40, colorType);
     }
 
@@ -728,7 +737,7 @@ public class GTGuiTextures {
         return progressBar(path, width, height, null);
     }
 
-    private static UITexture progressBar(String path, int width, int height, ColorType colorType) {
+    private static UITexture progressBar(String path, int width, int height, @Nullable ColorType colorType) {
         UITexture.Builder builder = new UITexture.Builder()
                 .location(GTCEu.MOD_ID, path)
                 .imageSize(width, height)
@@ -737,7 +746,7 @@ public class GTGuiTextures {
     }
 
     // todo steam logos? multi indicator blinking logos?
-    public static @NotNull UITexture getLogo(GTGuiTheme theme) {
+    public static UITexture getLogo(@Nullable GTGuiTheme theme) {
         if (theme != null) {
             UITexture logo = theme.getLogo();
             if (logo != null) return logo;

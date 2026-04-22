@@ -1,12 +1,15 @@
-package com.gregtechceu.gtceu.integration.recipeviewer.rei.multipage;
+package com.gregtechceu.gtceu.integration.recipeviewer.rei;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.gui.widget.PatternPreviewWidget;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.data.machines.GTMultiMachines;
 
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.rei.IGui2Renderer;
+import com.lowdragmc.lowdraglib.rei.ModularDisplay;
 import com.lowdragmc.lowdraglib.rei.ModularUIDisplayCategory;
 
 import net.minecraft.network.chat.Component;
@@ -14,14 +17,17 @@ import net.minecraft.network.chat.Component;
 import me.shedaniel.rei.api.client.gui.Renderer;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
+import net.minecraft.resources.ResourceLocation;
 
-public class MultiblockInfoDisplayCategory extends ModularUIDisplayCategory<MultiblockInfoDisplay> {
+import java.util.Optional;
+
+public class MultiblockInfoReiCategory extends ModularUIDisplayCategory<MultiblockInfoReiCategory.MultiblockInfoDisplay> {
 
     public static final CategoryIdentifier<MultiblockInfoDisplay> CATEGORY = CategoryIdentifier
             .of(GTCEu.id("multiblock_info"));
     private final Renderer icon;
 
-    public MultiblockInfoDisplayCategory() {
+    public MultiblockInfoReiCategory() {
         this.icon = IGui2Renderer.toDrawable(new ItemStackTexture(GTMultiMachines.ELECTRIC_BLAST_FURNACE.getItem()));
     }
 
@@ -57,5 +63,20 @@ public class MultiblockInfoDisplayCategory extends ModularUIDisplayCategory<Mult
     @Override
     public Renderer getIcon() {
         return icon;
+    }
+
+    public static class MultiblockInfoDisplay extends ModularDisplay<WidgetGroup> {
+
+        public final MultiblockMachineDefinition definition;
+
+        public MultiblockInfoDisplay(MultiblockMachineDefinition definition) {
+            super(() -> PatternPreviewWidget.getPatternWidget(definition), CATEGORY);
+            this.definition = definition;
+        }
+
+        @Override
+        public Optional<ResourceLocation> getDisplayLocation() {
+            return Optional.of(definition.getId());
+        }
     }
 }

@@ -1,18 +1,18 @@
-package com.gregtechceu.gtceu.integration.recipeviewer.jei.oreprocessing;
+package com.gregtechceu.gtceu.integration.recipeviewer.jei;
 
+import brachy.modularui.integration.jei.recipe.ModularUIRecipeCategory;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 
-import com.lowdragmc.lowdraglib.jei.ModularUIRecipeCategory;
-
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreProcessingRecipeWidget;
 import net.minecraft.network.chat.Component;
 
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -23,16 +23,14 @@ import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.rawOre;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.Iron;
 
-public class GTOreProcessingInfoCategory extends ModularUIRecipeCategory<GTOreProcessingInfoWrapper> {
+public class GTOreProcessingJeiCategory extends ModularUIRecipeCategory<GTOreProcessingJeiCategory.GTOreProcessingInfoWrapper> {
 
     public final static RecipeType<GTOreProcessingInfoWrapper> RECIPE_TYPE = new RecipeType<>(
             GTCEu.id("ore_processing_diagram"), GTOreProcessingInfoWrapper.class);
-    private final IDrawable background;
     private final IDrawable icon;
 
-    public GTOreProcessingInfoCategory(IJeiHelpers helpers) {
-        IGuiHelper guiHelper = helpers.getGuiHelper();
-        this.background = guiHelper.createBlankDrawable(186, 174);
+    public GTOreProcessingJeiCategory(IJeiHelpers helpers) {
+        super(v -> new OreProcessingRecipeWidget(v.material), v -> v.material.getResourceLocation());
         this.icon = helpers.getGuiHelper().createDrawableItemStack(ChemicalHelper.get(rawOre, Iron));
     }
 
@@ -68,13 +66,9 @@ public class GTOreProcessingInfoCategory extends ModularUIRecipeCategory<GTOrePr
 
     @NotNull
     @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @NotNull
-    @Override
     public IDrawable getIcon() {
         return icon;
     }
+
+    public record GTOreProcessingInfoWrapper(Material material) { }
 }

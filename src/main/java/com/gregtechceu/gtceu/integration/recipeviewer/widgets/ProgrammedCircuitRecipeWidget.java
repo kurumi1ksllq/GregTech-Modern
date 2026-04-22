@@ -10,9 +10,9 @@ import brachy.modularui.widgets.layout.Grid;
 import brachy.modularui.widgets.slot.ItemSlot;
 import brachy.modularui.widgets.slot.ModularSlot;
 
-public class GTProgrammedCircuitWidget extends ParentWidget<GTProgrammedCircuitWidget> {
+public class ProgrammedCircuitRecipeWidget extends ParentWidget<ProgrammedCircuitRecipeWidget> {
 
-    public GTProgrammedCircuitWidget() {
+    public ProgrammedCircuitRecipeWidget() {
         super();
         size(150, 80);
 

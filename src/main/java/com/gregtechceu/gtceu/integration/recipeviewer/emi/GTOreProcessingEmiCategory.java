@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.emi;
 
+import brachy.modularui.integration.emi.recipe.ModularUIEmiRecipe;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -7,9 +8,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreByProductWidget;
-
-import com.lowdragmc.lowdraglib.emi.ModularEmiRecipe;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreProcessingRecipeWidget;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -69,12 +68,12 @@ public class GTOreProcessingEmiCategory extends EmiRecipeCategory {
         return Component.translatable("gtceu.jei.ore_processing_diagram");
     }
 
-    public static class GTEmiOreProcessingWrapper extends ModularEmiRecipe<GTOreByProductWidget> {
+    public static class GTEmiOreProcessingWrapper extends ModularUIEmiRecipe {
 
         final Material material;
 
         public GTEmiOreProcessingWrapper(Material material) {
-            super(() -> new GTOreByProductWidget(material));
+            super(material.getResourceLocation(), () -> new OreProcessingRecipeWidget(material));
             this.material = material;
         }
 

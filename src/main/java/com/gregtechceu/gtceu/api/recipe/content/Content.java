@@ -1,5 +1,8 @@
 package com.gregtechceu.gtceu.api.recipe.content;
 
+import brachy.modularui.api.drawable.IDrawable;
+import brachy.modularui.screen.viewport.GuiContext;
+import brachy.modularui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.chance.boost.ChanceBoostFunction;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
@@ -104,12 +107,27 @@ public class Content {
         return chanceBoost < 0 ? -fixed : fixed;
     }
 
-    public IGuiTexture createOverlay(boolean perTick, int recipeTier, int chanceTier,
-                                     @Nullable ChanceBoostFunction function) {
-        return new IGuiTexture() {
+    public IDrawable createOverlay(boolean perTick, int recipeTier, int chanceTier,
+                                   @Nullable ChanceBoostFunction function) {
+        return new IDrawable() {
 
             @Override
             @OnlyIn(Dist.CLIENT)
+            public void draw(GuiContext graphics, int x, int y, int width, int height, WidgetTheme widgetTheme) {
+                drawChance(graphics.getGraphics(), x, y, width, height, recipeTier, chanceTier, function);
+                drawRangeAmount(graphics.getGraphics(), x, y, width, height);
+                drawFluidAmount(graphics.getGraphics(), x, y, width, height);
+                if (perTick) {
+                    drawTick(graphics.getGraphics(), x, y, width, height);
+                }
+            }
+        };
+    }
+
+    public IGuiTexture createOverlayLDLib(boolean perTick, int recipeTier, int chanceTier,
+                                   @Nullable ChanceBoostFunction function) {
+        return new IGuiTexture() {
+            @Override
             public void draw(GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
                 drawChance(graphics, x, y, width, height, recipeTier, chanceTier, function);
                 drawRangeAmount(graphics, x, y, width, height);
@@ -120,6 +138,7 @@ public class Content {
             }
         };
     }
+
 
     @OnlyIn(Dist.CLIENT)
     public void drawRangeAmount(GuiGraphics graphics, float x, float y, int width, int height) {

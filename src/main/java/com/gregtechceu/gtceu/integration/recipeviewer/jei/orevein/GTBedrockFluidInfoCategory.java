@@ -7,7 +7,7 @@ import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreVeinRecipeWidget;
 import net.minecraft.network.chat.Component;
 
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -24,7 +24,7 @@ public class GTBedrockFluidInfoCategory extends ModularUIRecipeCategory<GTBedroc
     private final IDrawable icon;
 
     public GTBedrockFluidInfoCategory(IJeiHelpers helpers) {
-        super(v -> new GTOreVeinWidget(v.fluid), v -> ClientProxy.CLIENT_FLUID_VEINS.inverse().get(v.fluid));
+        super(v -> new OreVeinRecipeWidget(v.fluid), v -> ClientProxy.CLIENT_FLUID_VEINS.inverse().get(v.fluid));
         this.icon = helpers.getGuiHelper()
                 .createDrawableItemStack(GTMaterials.Oil.getFluid().getBucket().asItem().getDefaultInstance());
     }

@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class GTOreVeinWidget extends ParentWidget<GTOreVeinWidget> {
+public class OreVeinRecipeWidget extends ParentWidget<OreVeinRecipeWidget> {
 
     private final String nameLang;
     private final int weight;
@@ -42,8 +42,8 @@ public class GTOreVeinWidget extends ParentWidget<GTOreVeinWidget> {
     private final @Nullable Set<ResourceKey<Level>> dimensionFilter;
     public final static int WIDTH = 120;
 
-    private GTOreVeinWidget(int width, int height, String nameLang, int weight, @Nullable String range,
-                            @Nullable Set<ResourceKey<Level>> dimensionFilter) {
+    private OreVeinRecipeWidget(int width, int height, String nameLang, int weight, @Nullable String range,
+                                @Nullable Set<ResourceKey<Level>> dimensionFilter) {
         size(width, height);
         this.nameLang = nameLang;
         this.weight = weight;
@@ -51,12 +51,12 @@ public class GTOreVeinWidget extends ParentWidget<GTOreVeinWidget> {
         this.dimensionFilter = dimensionFilter;
     }
 
-    public GTOreVeinWidget(BedrockFluidDefinition fluid) {
+    public OreVeinRecipeWidget(BedrockFluidDefinition fluid) {
         this(WIDTH, 140, getFluidName(fluid), fluid.getWeight(), null, fluid.dimensionFilter);
         drawUI(Flow.row().child(new FluidDisplayWidget().value(new FluidStack(fluid.getStoredFluid().get(), 1000)).recipeSlotRole(RecipeSlotRole.OUTPUT)));
     }
 
-    public GTOreVeinWidget(GTOreDefinition oreDefinition) {
+    public OreVeinRecipeWidget(GTOreDefinition oreDefinition) {
         this(WIDTH, 160, getOreName(oreDefinition), oreDefinition.weight(), range(oreDefinition),
                 oreDefinition.dimensionFilter());
 
@@ -75,7 +75,7 @@ public class GTOreVeinWidget extends ParentWidget<GTOreVeinWidget> {
         drawUI(slots);
     }
 
-    public GTOreVeinWidget(BedrockOreDefinition bedrockOre) {
+    public OreVeinRecipeWidget(BedrockOreDefinition bedrockOre) {
         this(WIDTH, 140, getBedrockOreName(bedrockOre), bedrockOre.weight(), null, bedrockOre.dimensionFilter());
 
         NonNullList<ItemStack> containedOresAsItemStacks = NonNullList.create();

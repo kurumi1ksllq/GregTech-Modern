@@ -11,7 +11,7 @@ import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreVeinRecipeWidget;
 
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
@@ -70,7 +70,7 @@ public class GTBedrockOreDisplayCategory extends ModularUIREIDisplayCategory<GTB
         private final BedrockOreDefinition bedrockOre;
 
         public GTBedrockOreDisplay(ResourceLocation id, BedrockOreDefinition bedrockOre) {
-            super(id, () -> new GTOreVeinWidget(bedrockOre), CATEGORY);
+            super(id, () -> new OreVeinRecipeWidget(bedrockOre), CATEGORY);
             this.bedrockOre = bedrockOre;
         }
 

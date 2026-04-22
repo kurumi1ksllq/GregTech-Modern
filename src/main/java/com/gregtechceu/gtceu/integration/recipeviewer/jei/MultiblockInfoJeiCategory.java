@@ -1,6 +1,7 @@
-package com.gregtechceu.gtceu.integration.recipeviewer.jei.multipage;
+package com.gregtechceu.gtceu.integration.recipeviewer.jei;
 
 import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.api.gui.widget.PatternPreviewWidget;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.data.machines.GTMultiMachines;
@@ -8,6 +9,7 @@ import com.gregtechceu.gtceu.common.data.machines.GTMultiMachines;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.jei.ModularUIRecipeCategory;
 
+import com.lowdragmc.lowdraglib.jei.ModularWrapper;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.network.chat.Component;
@@ -34,14 +36,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class MultiblockInfoCategory extends ModularUIRecipeCategory<MultiblockInfoWrapper> {
+public class MultiblockInfoJeiCategory extends ModularUIRecipeCategory<MultiblockInfoJeiCategory.MultiblockInfoWrapper> {
 
     public final static RecipeType<MultiblockInfoWrapper> RECIPE_TYPE = new RecipeType<>(GTCEu.id("multiblock_info"),
             MultiblockInfoWrapper.class);
     private final IDrawable background;
     private final IDrawable icon;
 
-    public MultiblockInfoCategory(IJeiHelpers helpers) {
+    public MultiblockInfoJeiCategory(IJeiHelpers helpers) {
         IGuiHelper guiHelper = helpers.getGuiHelper();
         this.background = guiHelper.createBlankDrawable(160, 160);
         this.icon = helpers.getGuiHelper().createDrawableItemStack(GTMultiMachines.ELECTRIC_BLAST_FURNACE.asStack());
@@ -123,5 +125,15 @@ public class MultiblockInfoCategory extends ModularUIRecipeCategory<MultiblockIn
     @Override
     public IDrawable getIcon() {
         return icon;
+    }
+
+    public static class MultiblockInfoWrapper extends ModularWrapper<PatternPreviewWidget> {
+
+        public final MultiblockMachineDefinition definition;
+
+        public MultiblockInfoWrapper(MultiblockMachineDefinition definition) {
+            super(PatternPreviewWidget.getPatternWidget(definition));
+            this.definition = definition;
+        }
     }
 }

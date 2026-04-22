@@ -6,7 +6,7 @@ import com.gregtechceu.gtceu.api.data.worldgen.bedrockore.BedrockOreDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreVeinRecipeWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
 
@@ -26,7 +26,7 @@ public class GTBedrockOreInfoCategory extends ModularUIRecipeCategory<GTBedrockO
     private final IDrawable icon;
 
     public GTBedrockOreInfoCategory(IJeiHelpers helpers) {
-        super(v -> new GTOreVeinWidget(v.bedrockOre), v -> ClientProxy.CLIENT_BEDROCK_ORE_VEINS.inverse().get(v.bedrockOre));
+        super(v -> new OreVeinRecipeWidget(v.bedrockOre), v -> ClientProxy.CLIENT_BEDROCK_ORE_VEINS.inverse().get(v.bedrockOre));
         this.icon = helpers.getGuiHelper()
                 .createDrawableItemStack(Items.RAW_IRON.getDefaultInstance());
     }

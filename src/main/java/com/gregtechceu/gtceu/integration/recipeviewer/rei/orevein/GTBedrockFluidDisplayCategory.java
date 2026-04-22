@@ -8,7 +8,7 @@ import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreVeinRecipeWidget;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import net.minecraft.network.chat.Component;
@@ -66,7 +66,7 @@ public class GTBedrockFluidDisplayCategory extends ModularUIREIDisplayCategory<G
         private final BedrockFluidDefinition fluid;
 
         public GTBedrockFluidDisplay(ResourceLocation id, BedrockFluidDefinition fluid) {
-            super(id, () -> new GTOreVeinWidget(fluid), GTBedrockFluidDisplayCategory.CATEGORY);
+            super(id, () -> new OreVeinRecipeWidget(fluid), GTBedrockFluidDisplayCategory.CATEGORY);
             this.fluid = fluid;
         }
 

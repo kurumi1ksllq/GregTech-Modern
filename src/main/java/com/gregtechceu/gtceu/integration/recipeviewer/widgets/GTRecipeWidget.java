@@ -443,7 +443,7 @@ public class GTRecipeWidget extends WidgetGroup {
                                     cap.applyWidgetInfo(widget, index, true, io, null, recipe.getType(), recipe,
                                             content,
                                             null, minTier, tier);
-                                    widget.setOverlay(content.createOverlay(index >= nonTickCount, minTier, tier,
+                                    widget.setOverlay(content.createOverlayLDLib(index >= nonTickCount, minTier, tier,
                                             recipe.getType().getChanceFunction()));
                                 }
                             });

@@ -1,17 +1,16 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.widgets;
 
+import brachy.modularui.api.drawable.IDrawable;
+import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
+import brachy.modularui.widget.ParentWidget;
+import brachy.modularui.widgets.FluidDisplayWidget;
+import brachy.modularui.widgets.slot.ItemSlot;
+import brachy.modularui.widgets.slot.ModularSlot;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
-import com.gregtechceu.gtceu.api.gui.widget.TankWidget;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
-import com.gregtechceu.gtceu.api.transfer.fluid.CustomFluidTank;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.jei.IngredientIO;
+import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.util.List;
 
-public class GTOreByProductWidget extends WidgetGroup {
+public class OreProcessingRecipeWidget extends ParentWidget<OreProcessingRecipeWidget> {
 
     // XY positions of every item and fluid, in three enormous lists
     protected final static IntImmutableList ITEM_INPUT_LOCATIONS = IntImmutableList.of(
@@ -95,9 +94,8 @@ public class GTOreByProductWidget extends WidgetGroup {
     protected final static IntSet FINAL_OUTPUT_INDICES = IntSet.of(
             0, 4, 8, 10, 12, 16, 20, 22, 24, 28, 30, 32, 40, 44, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66);
 
-    public GTOreByProductWidget(Material material) {
-        super(0, 0, 176, 166);
-        setClientSideWidget();
+    public OreProcessingRecipeWidget(Material material) {
+        size(176, 166);
         setRecipe(new GTOreByProduct(material));
     }
 
@@ -105,37 +103,34 @@ public class GTOreByProductWidget extends WidgetGroup {
         BooleanList itemOutputExists = new BooleanArrayList();
 
         // only draw slot on inputs if it is the ore
-        addWidget(new ImageWidget(ITEM_INPUT_LOCATIONS.getInt(0), ITEM_INPUT_LOCATIONS.getInt(1), 18, 18,
-                GuiTextures.SLOT));
+        child(brachy.modularui.drawable.GuiTextures.SLOT_ITEM.asWidget()
+                .pos(ITEM_INPUT_LOCATIONS.getInt(0), ITEM_INPUT_LOCATIONS.getInt(1)));
         boolean hasSifter = recipeWrapper.hasSifter();
 
-        addWidget(new ImageWidget(0, 0, 176, 166, GuiTextures.OREBY_BASE));
+        child(GTGuiTextures.OREBY_BASE.asWidget());
         if (recipeWrapper.hasDirectSmelt()) {
-            addWidget(new ImageWidget(0, 0, 176, 166, GuiTextures.OREBY_SMELT));
+            child(GTGuiTextures.OREBY_SMELT.asWidget());
         }
         if (recipeWrapper.hasChemBath()) {
-            addWidget(new ImageWidget(0, 0, 176, 166, GuiTextures.OREBY_CHEM));
+            child(GTGuiTextures.OREBY_CHEM.asWidget());
         }
         if (recipeWrapper.hasSeparator()) {
-            addWidget(new ImageWidget(0, 0, 176, 166, GuiTextures.OREBY_SEP));
+            child(GTGuiTextures.OREBY_SEP.asWidget());
         }
         if (hasSifter) {
-            addWidget(new ImageWidget(0, 0, 176, 166, GuiTextures.OREBY_SIFT));
+            child(GTGuiTextures.OREBY_SIFT.asWidget());
         }
 
         List<ItemEntryList> itemInputs = recipeWrapper.itemInputs;
         CycleItemEntryHandler itemInputsHandler = new CycleItemEntryHandler(itemInputs);
-        WidgetGroup itemStackGroup = new WidgetGroup();
+        ParentWidget<?> itemStackGroup = new ParentWidget<>().sizeRel(1f);
         for (int i = 0; i < ITEM_INPUT_LOCATIONS.size(); i += 2) {
-            final int finalI = i;
-            itemStackGroup.addWidget(new SlotWidget(itemInputsHandler, i / 2, ITEM_INPUT_LOCATIONS.getInt(i),
-                    ITEM_INPUT_LOCATIONS.getInt(i + 1))
-                    .setCanTakeItems(false)
-                    .setCanPutItems(false)
-                    .setIngredientIO(IngredientIO.INPUT)
-                    .setOnAddedTooltips((slot, tooltips) -> recipeWrapper.getTooltip(finalI / 2, tooltips))
-                    .setBackground((IGuiTexture) null));
-        }
+            itemStackGroup.child(new ItemSlot().slot(new ModularSlot(itemInputsHandler, i/2)
+                    .accessibility(false, false))
+                    .recipeRole(RecipeSlotRole.INPUT)
+                    .pos(ITEM_INPUT_LOCATIONS.getInt(i), ITEM_INPUT_LOCATIONS.getInt(i+1))
+                    .tooltipBuilder(recipeWrapper.getTooltip(i / 2))
+            );}
 
         NonNullList<ItemStack> itemOutputs = recipeWrapper.itemOutputs;
         CustomItemStackHandler itemOutputsHandler = new CustomItemStackHandler(itemOutputs);
@@ -143,7 +138,7 @@ public class GTOreByProductWidget extends WidgetGroup {
             int slotIndex = i / 2;
             float xeiChance = 1.0f;
             Content chance = recipeWrapper.getChance(i / 2 + itemInputs.size());
-            IGuiTexture overlay = null;
+            IDrawable overlay = null;
             if (chance != null) {
                 xeiChance = (float) chance.chance / chance.maxChance;
                 overlay = chance.createOverlay(false, 0, 0, null);
@@ -153,41 +148,35 @@ public class GTOreByProductWidget extends WidgetGroup {
                 continue;
             }
 
-            itemStackGroup.addWidget(new SlotWidget(itemOutputsHandler, slotIndex, ITEM_OUTPUT_LOCATIONS.getInt(i),
-                    ITEM_OUTPUT_LOCATIONS.getInt(i + 1))
-                    .setCanTakeItems(false)
-                    .setCanPutItems(false)
-                    .setIngredientIO(FINAL_OUTPUT_INDICES.contains(i) ? IngredientIO.OUTPUT : IngredientIO.BOTH)
-                    .setXEIChance(xeiChance)
-                    .setOnAddedTooltips(
-                            (slot, tooltips) -> recipeWrapper.getTooltip(slotIndex + itemInputs.size(), tooltips))
-                    .setBackground((IGuiTexture) null).setOverlay(overlay));
+            itemStackGroup.child(new ItemSlot()
+                    .slot(new ModularSlot(itemOutputsHandler, slotIndex).accessibility(false, false))
+                    .pos(ITEM_OUTPUT_LOCATIONS.getInt(i), ITEM_OUTPUT_LOCATIONS.getInt(i + 1))
+                    .recipeRole(RecipeSlotRole.OUTPUT)
+                    .tooltip(recipeWrapper.getTooltip(slotIndex + itemInputs.size()))
+                    .overlay(overlay)
+            );
             itemOutputExists.add(true);
         }
 
         List<FluidEntryList> fluidInputs = recipeWrapper.fluidInputs;
         CycleFluidEntryHandler fluidInputsHandler = new CycleFluidEntryHandler(fluidInputs);
-        WidgetGroup fluidStackGroup = new WidgetGroup();
+        ParentWidget<?> fluidStackGroup = new ParentWidget<>().sizeRel(1f);
         for (int i = 0; i < FLUID_LOCATIONS.size(); i += 2) {
             int slotIndex = i / 2;
             if (!fluidInputs.get(slotIndex).isEmpty()) {
-                var tank = new TankWidget(new CustomFluidTank(fluidInputsHandler.getFluidInTank(slotIndex)),
-                        FLUID_LOCATIONS.getInt(i), FLUID_LOCATIONS.getInt(i + 1), false, false)
-                        .setIngredientIO(IngredientIO.INPUT)
-                        .setBackground(GuiTextures.FLUID_SLOT)
-                        .setShowAmount(false);
-                fluidStackGroup.addWidget(tank);
+                fluidStackGroup.child(new FluidDisplayWidget().value(fluidInputsHandler.getFluidInTank(slotIndex))
+                        .recipeSlotRole(RecipeSlotRole.INPUT)
+                        .pos(FLUID_LOCATIONS.getInt(i), FLUID_LOCATIONS.getInt(i + 1)));
             }
         }
 
-        this.addWidget(itemStackGroup);
-        this.addWidget(fluidStackGroup);
+        child(itemStackGroup);
+        child(fluidStackGroup);
 
         for (int i = 0; i < ITEM_OUTPUT_LOCATIONS.size(); i += 2) {
             // stupid hack to show all sifter slots if the first one exists
             if (itemOutputExists.getBoolean(i / 2) || (i > 28 * 2 && itemOutputExists.getBoolean(28) && hasSifter)) {
-                addWidget(this.widgets.size() - 3, new ImageWidget(ITEM_OUTPUT_LOCATIONS.getInt(i),
-                        ITEM_OUTPUT_LOCATIONS.getInt(i + 1), 18, 18, GuiTextures.SLOT));
+                child(getChildren().size() - 3, brachy.modularui.drawable.GuiTextures.SLOT_ITEM.asWidget().pos(ITEM_INPUT_LOCATIONS.getInt(i), ITEM_INPUT_LOCATIONS.getInt(i+1)));
             }
         }
     }

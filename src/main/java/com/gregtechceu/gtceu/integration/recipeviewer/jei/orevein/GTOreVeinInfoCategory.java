@@ -9,7 +9,7 @@ import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreVeinRecipeWidget;
 import net.minecraft.network.chat.Component;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -32,7 +32,7 @@ public class GTOreVeinInfoCategory extends ModularUIRecipeCategory<GTOreVeinInfo
     private final IDrawable icon;
 
     public GTOreVeinInfoCategory(IJeiHelpers helpers) {
-        super(v -> new GTOreVeinWidget(v.oreDefinition),
+        super(v -> new OreVeinRecipeWidget(v.oreDefinition),
                 v -> ClientProxy.CLIENT_ORE_VEINS.inverse().get(v.oreDefinition));
 
         this.icon = helpers.getGuiHelper()
@@ -49,7 +49,7 @@ public class GTOreVeinInfoCategory extends ModularUIRecipeCategory<GTOreVeinInfo
     public void setRecipe(IRecipeLayoutBuilder builder, GTOreVeinInfoWrapper wrapper, IFocusGroup focuses) {
         super.setRecipe(builder, wrapper, focuses);
         builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT)
-                .addItemStacks(GTOreVeinWidget.getContainedOresAndBlocks(wrapper.oreDefinition));
+                .addItemStacks(OreVeinRecipeWidget.getContainedOresAndBlocks(wrapper.oreDefinition));
     }
 
     public static void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {

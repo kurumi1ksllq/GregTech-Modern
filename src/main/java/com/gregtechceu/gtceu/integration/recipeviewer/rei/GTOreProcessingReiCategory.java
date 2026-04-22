@@ -1,21 +1,15 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.rei;
 
+import brachy.modularui.integration.rei.recipe.ModularUIREIDisplay;
+import brachy.modularui.integration.rei.recipe.ModularUIREIDisplayCategory;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreByProductWidget;
-
-import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.rei.IGui2Renderer;
-import com.lowdragmc.lowdraglib.rei.ModularDisplay;
-import com.lowdragmc.lowdraglib.rei.ModularUIDisplayCategory;
-import com.lowdragmc.lowdraglib.utils.Size;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreProcessingRecipeWidget;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 
 import lombok.Getter;
@@ -26,40 +20,24 @@ import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
 import static com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey.ORE;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 
-public class GTOreProcessingDisplayCategory extends
-                                            ModularUIDisplayCategory<GTOreProcessingDisplayCategory.GTOreProcessingDisplay> {
+public class GTOreProcessingReiCategory extends
+        ModularUIREIDisplayCategory<GTOreProcessingReiCategory.GTOreProcessingDisplay> {
 
     public static final CategoryIdentifier<GTOreProcessingDisplay> CATEGORY = CategoryIdentifier
             .of(GTCEu.id("ore_processing_diagram"));
     @Getter
     private final Renderer icon;
 
-    @Getter
-    private final Size size;
-
-    public GTOreProcessingDisplayCategory() {
-        this.icon = IGui2Renderer.toDrawable(new ItemStackTexture(Items.RAW_IRON));
-        this.size = new Size(176, 166);
+    public GTOreProcessingReiCategory() {
+        this.icon = EntryStacks.of(Items.RAW_IRON);
     }
 
     @Override
     public CategoryIdentifier<? extends GTOreProcessingDisplay> getCategoryIdentifier() {
         return CATEGORY;
-    }
-
-    @Override
-    public int getDisplayHeight() {
-        return getSize().height;
-    }
-
-    @Override
-    public int getDisplayWidth(GTOreProcessingDisplay display) {
-        return getSize().width;
     }
 
     @NotNull
@@ -77,34 +55,25 @@ public class GTOreProcessingDisplayCategory extends
     }
 
     public static void registerWorkstations(CategoryRegistry registry) {
-        registry.addWorkstations(GTOreProcessingDisplayCategory.CATEGORY,
+        registry.addWorkstations(GTOreProcessingReiCategory.CATEGORY,
                 EntryStacks.of(MACERATOR[GTValues.LV].asStack()));
-        registry.addWorkstations(GTOreProcessingDisplayCategory.CATEGORY,
+        registry.addWorkstations(GTOreProcessingReiCategory.CATEGORY,
                 EntryStacks.of(ORE_WASHER[GTValues.LV].asStack()));
-        registry.addWorkstations(GTOreProcessingDisplayCategory.CATEGORY,
+        registry.addWorkstations(GTOreProcessingReiCategory.CATEGORY,
                 EntryStacks.of(THERMAL_CENTRIFUGE[GTValues.LV].asStack()));
-        registry.addWorkstations(GTOreProcessingDisplayCategory.CATEGORY,
+        registry.addWorkstations(GTOreProcessingReiCategory.CATEGORY,
                 EntryStacks.of(CENTRIFUGE[GTValues.LV].asStack()));
-        registry.addWorkstations(GTOreProcessingDisplayCategory.CATEGORY,
+        registry.addWorkstations(GTOreProcessingReiCategory.CATEGORY,
                 EntryStacks.of(CHEMICAL_BATH[GTValues.LV].asStack()));
-        registry.addWorkstations(GTOreProcessingDisplayCategory.CATEGORY,
+        registry.addWorkstations(GTOreProcessingReiCategory.CATEGORY,
                 EntryStacks.of(ELECTROMAGNETIC_SEPARATOR[GTValues.LV].asStack()));
-        registry.addWorkstations(GTOreProcessingDisplayCategory.CATEGORY,
+        registry.addWorkstations(GTOreProcessingReiCategory.CATEGORY,
                 EntryStacks.of(SIFTER[GTValues.LV].asStack()));
     }
 
-    public static class GTOreProcessingDisplay extends ModularDisplay<WidgetGroup> {
-
-        private final Material material;
-
+    public static class GTOreProcessingDisplay extends ModularUIREIDisplay {
         public GTOreProcessingDisplay(Material material) {
-            super(() -> new GTOreByProductWidget(material), CATEGORY);
-            this.material = material;
-        }
-
-        @Override
-        public Optional<ResourceLocation> getDisplayLocation() {
-            return Optional.of(material.getResourceLocation());
+            super(material.getResourceLocation(), () -> new OreProcessingRecipeWidget(material), CATEGORY);
         }
     }
 }

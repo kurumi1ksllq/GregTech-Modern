@@ -10,7 +10,6 @@ import com.gregtechceu.gtceu.common.data.machines.GTMultiMachines;
 import com.gregtechceu.gtceu.common.fluid.potion.PotionFluid;
 import com.gregtechceu.gtceu.common.fluid.potion.PotionFluidHelper;
 import com.gregtechceu.gtceu.config.ConfigHolder;
-import com.gregtechceu.gtceu.integration.recipeviewer.rei.multipage.MultiblockInfoDisplayCategory;
 import com.gregtechceu.gtceu.integration.recipeviewer.rei.orevein.GTBedrockFluidDisplayCategory;
 import com.gregtechceu.gtceu.integration.recipeviewer.rei.orevein.GTBedrockOreDisplayCategory;
 import com.gregtechceu.gtceu.integration.recipeviewer.rei.orevein.GTOreVeinDisplayCategory;
@@ -44,9 +43,9 @@ public class GTREIPlugin implements REIClientPlugin {
     @Override
     public void registerCategories(CategoryRegistry registry) {
         // Categories
-        registry.add(new MultiblockInfoDisplayCategory());
+        registry.add(new MultiblockInfoReiCategory());
         if (!ConfigHolder.INSTANCE.compat.hideOreProcessingDiagrams)
-            registry.add(new GTOreProcessingDisplayCategory());
+            registry.add(new GTOreProcessingReiCategory());
         registry.add(new GTOreVeinDisplayCategory());
         registry.add(new GTBedrockFluidDisplayCategory());
         if (ConfigHolder.INSTANCE.machines.doBedrockOres)
@@ -56,12 +55,12 @@ public class GTREIPlugin implements REIClientPlugin {
                 registry.add(new GTRecipeREICategory(category));
             }
         }
-        registry.add(new GTProgrammedCircuitCategory());
+        registry.add(new ProgrammedCircuitReiCategory());
 
         // Workstations
         GTRecipeREICategory.registerWorkStations(registry);
         if (!ConfigHolder.INSTANCE.compat.hideOreProcessingDiagrams)
-            GTOreProcessingDisplayCategory.registerWorkstations(registry);
+            GTOreProcessingReiCategory.registerWorkstations(registry);
         GTOreVeinDisplayCategory.registerWorkstations(registry);
         GTBedrockFluidDisplayCategory.registerWorkstations(registry);
         if (ConfigHolder.INSTANCE.machines.doBedrockOres)
@@ -73,14 +72,14 @@ public class GTREIPlugin implements REIClientPlugin {
     @Override
     public void registerDisplays(DisplayRegistry registry) {
         GTRecipeREICategory.registerDisplays(registry);
-        MultiblockInfoDisplayCategory.registerDisplays(registry);
+        MultiblockInfoReiCategory.registerDisplays(registry);
         if (!ConfigHolder.INSTANCE.compat.hideOreProcessingDiagrams)
-            GTOreProcessingDisplayCategory.registerDisplays(registry);
+            GTOreProcessingReiCategory.registerDisplays(registry);
         GTOreVeinDisplayCategory.registerDisplays(registry);
         GTBedrockFluidDisplayCategory.registerDisplays(registry);
         if (ConfigHolder.INSTANCE.machines.doBedrockOres)
             GTBedrockOreDisplayCategory.registerDisplays(registry);
-        registry.add(new GTProgrammedCircuitCategory.GTProgrammedCircuitDisplay());
+        registry.add(new ProgrammedCircuitReiCategory.GTProgrammedCircuitDisplay());
     }
 
     @Override

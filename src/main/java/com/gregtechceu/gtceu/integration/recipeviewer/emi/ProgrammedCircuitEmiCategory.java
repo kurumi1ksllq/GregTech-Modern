@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.integration.recipeviewer.emi;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTProgrammedCircuitWidget;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.ProgrammedCircuitRecipeWidget;
 
 import net.minecraft.network.chat.Component;
 
@@ -16,16 +16,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class GTProgrammedCircuitCategory extends EmiRecipeCategory {
+public class ProgrammedCircuitEmiCategory extends EmiRecipeCategory {
 
-    public static final GTProgrammedCircuitCategory CATEGORY = new GTProgrammedCircuitCategory();
+    public static final ProgrammedCircuitEmiCategory CATEGORY = new ProgrammedCircuitEmiCategory();
 
-    public GTProgrammedCircuitCategory() {
+    public ProgrammedCircuitEmiCategory() {
         super(GTCEu.id("programmed_circuit"), EmiStack.of(GTItems.PROGRAMMED_CIRCUIT.asItem()));
     }
 
     public static void registerDisplays(EmiRegistry registry) {
-        registry.addRecipe(new GTProgrammedCircuitCategory.GTProgrammedCircuitWrapper());
+        registry.addRecipe(new ProgrammedCircuitEmiCategory.GTProgrammedCircuitWrapper());
     }
 
     @Override
@@ -36,7 +36,7 @@ public class GTProgrammedCircuitCategory extends EmiRecipeCategory {
     public static class GTProgrammedCircuitWrapper extends ModularUIEmiRecipe {
 
         public GTProgrammedCircuitWrapper() {
-            super(GTCEu.id("programmed_circuit"), GTProgrammedCircuitWidget::new);
+            super(GTCEu.id("programmed_circuit"), ProgrammedCircuitRecipeWidget::new);
         }
 
         @Override

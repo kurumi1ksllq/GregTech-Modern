@@ -5,9 +5,8 @@ import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
 
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidgetMui;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
@@ -15,6 +14,7 @@ import net.minecraft.world.item.Items;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -48,7 +48,7 @@ public class GTOreVeinEmiCategory extends EmiRecipeCategory {
         private final GTOreDefinition oreDefinition;
 
         public GTEmiOreVein(GTOreDefinition oreDefinition) {
-            super(ClientProxy.CLIENT_ORE_VEINS.inverse().get(oreDefinition).withPrefix("/ore_vein_diagram/"), () -> new GTOreVeinWidgetMui(oreDefinition));
+            super(ClientProxy.CLIENT_ORE_VEINS.inverse().get(oreDefinition).withPrefix("/ore_vein_diagram/"), () -> new GTOreVeinWidget(oreDefinition));
             this.oreDefinition = oreDefinition;
         }
 
@@ -58,8 +58,8 @@ public class GTOreVeinEmiCategory extends EmiRecipeCategory {
         }
 
         @Override
-        public List<EmiStack> getOutputs() {
-            return GTOreVeinWidgetMui.getContainedOresAndBlocks(oreDefinition)
+        public @NotNull List<EmiStack> getOutputs() {
+            return GTOreVeinWidget.getContainedOresAndBlocks(oreDefinition)
                     .stream()
                     .map(EmiStack::of)
                     .toList();

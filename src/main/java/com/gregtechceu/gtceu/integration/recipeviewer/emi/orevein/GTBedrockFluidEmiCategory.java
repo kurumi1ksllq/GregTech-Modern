@@ -7,7 +7,7 @@ import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidgetMui;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
 
 import dev.emi.emi.api.stack.FluidEmiStack;
 import net.minecraft.network.chat.Component;
@@ -48,7 +48,7 @@ public class GTBedrockFluidEmiCategory extends EmiRecipeCategory {
         private final BedrockFluidDefinition fluid;
 
         public GTBedrockFluid(BedrockFluidDefinition fluid) {
-            super(ClientProxy.CLIENT_FLUID_VEINS.inverse().get(fluid).withPrefix("/bedrock_fluid_diagram/"), () -> new GTOreVeinWidgetMui(fluid));
+            super(ClientProxy.CLIENT_FLUID_VEINS.inverse().get(fluid).withPrefix("/bedrock_fluid_diagram/"), () -> new GTOreVeinWidget(fluid));
             this.fluid = fluid;
         }
 

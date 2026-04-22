@@ -1,17 +1,16 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.rei.orevein;
 
+import brachy.modularui.integration.rei.recipe.ModularUIREIDisplay;
+import brachy.modularui.integration.rei.recipe.ModularUIREIDisplayCategory;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
+
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
-
-import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
-import com.lowdragmc.lowdraglib.rei.IGui2Renderer;
-import com.lowdragmc.lowdraglib.rei.ModularUIDisplayCategory;
-import com.lowdragmc.lowdraglib.utils.Size;
-
+import me.shedaniel.rei.api.common.entry.EntryIngredient;
+import me.shedaniel.rei.api.common.util.EntryIngredients;
 import net.minecraft.network.chat.Component;
 
 import lombok.Getter;
@@ -20,36 +19,27 @@ import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
-public class GTBedrockFluidDisplayCategory extends ModularUIDisplayCategory<GTBedrockFluidDisplay> {
+public class GTBedrockFluidDisplayCategory extends ModularUIREIDisplayCategory<GTBedrockFluidDisplayCategory.GTBedrockFluidDisplay> {
 
     public static final CategoryIdentifier<GTBedrockFluidDisplay> CATEGORY = CategoryIdentifier
             .of(GTCEu.id("bedrock_fluid_diagram"));
 
     private final Renderer icon;
 
-    private final Size size;
-
     public GTBedrockFluidDisplayCategory() {
-        this.icon = IGui2Renderer.toDrawable(new ItemStackTexture(GTMaterials.Oil.getFluid().getBucket().asItem()));
-        this.size = new Size(10 + GTOreVeinWidget.width, 140);
+        this.icon = EntryStacks.of(GTMaterials.Oil.getFluid().getBucket().asItem());
     }
 
     @Override
     public CategoryIdentifier<? extends GTBedrockFluidDisplay> getCategoryIdentifier() {
         return CATEGORY;
-    }
-
-    @Override
-    public int getDisplayHeight() {
-        return getSize().height;
-    }
-
-    @Override
-    public int getDisplayWidth(GTBedrockFluidDisplay display) {
-        return getSize().width;
     }
 
     @NotNull
@@ -59,8 +49,8 @@ public class GTBedrockFluidDisplayCategory extends ModularUIDisplayCategory<GTBe
     }
 
     public static void registerDisplays(DisplayRegistry registry) {
-        for (BedrockFluidDefinition fluid : ClientProxy.CLIENT_FLUID_VEINS.values()) {
-            registry.add(new GTBedrockFluidDisplay(fluid));
+        for (var fluid : ClientProxy.CLIENT_FLUID_VEINS.entrySet()) {
+            registry.add(new GTBedrockFluidDisplay(fluid.getKey(), fluid.getValue()));
         }
     }
 
@@ -70,4 +60,22 @@ public class GTBedrockFluidDisplayCategory extends ModularUIDisplayCategory<GTBe
         registry.addWorkstations(GTBedrockFluidDisplayCategory.CATEGORY,
                 EntryStacks.of(GTItems.PROSPECTOR_LuV.asStack()));
     }
+
+    public static class GTBedrockFluidDisplay extends ModularUIREIDisplay {
+
+        private final BedrockFluidDefinition fluid;
+
+        public GTBedrockFluidDisplay(ResourceLocation id, BedrockFluidDefinition fluid) {
+            super(id, () -> new GTOreVeinWidget(fluid), GTBedrockFluidDisplayCategory.CATEGORY);
+            this.fluid = fluid;
+        }
+
+        @Override
+        public @NotNull List<EntryIngredient> getOutputEntries() {
+            List<EntryIngredient> outputs = new ArrayList<>();
+            outputs.add(EntryIngredients.of(fluid.getStoredFluid().get()));
+            return outputs;
+        }
+    }
+
 }

@@ -9,7 +9,7 @@ import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidgetMui;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
 
 import net.minecraft.network.chat.Component;
 
@@ -49,7 +49,7 @@ public class GTBedrockOreEmiCategory extends EmiRecipeCategory {
         private final BedrockOreDefinition bedrockOre;
 
         public GTBedrockOre(BedrockOreDefinition bedrockOre) {
-            super(ClientProxy.CLIENT_BEDROCK_ORE_VEINS.inverse().get(bedrockOre).withPrefix("/bedrock_ore_diagram/"), () -> new GTOreVeinWidgetMui(bedrockOre));
+            super(ClientProxy.CLIENT_BEDROCK_ORE_VEINS.inverse().get(bedrockOre).withPrefix("/bedrock_ore_diagram/"), () -> new GTOreVeinWidget(bedrockOre));
             this.bedrockOre = bedrockOre;
         }
 
@@ -60,7 +60,7 @@ public class GTBedrockOreEmiCategory extends EmiRecipeCategory {
 
         @Override
         public List<EmiStack> getOutputs() {
-            return GTOreVeinWidgetMui.getRawMaterialList(bedrockOre).stream().map(EmiStack::of).toList();
+            return GTOreVeinWidget.getRawMaterialList(bedrockOre).stream().map(EmiStack::of).toList();
         }
     }
 }

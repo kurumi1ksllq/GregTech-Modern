@@ -380,7 +380,6 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
         getLevel().addParticle(ParticleTypes.FLAME, x, y, z, 0, 0, 0);
     }
 
-    @NotNull
     @Override
     public List<Component> getDataInfo(PortableScannerBehavior.DisplayMode mode) {
         if (mode == PortableScannerBehavior.DisplayMode.SHOW_ALL ||

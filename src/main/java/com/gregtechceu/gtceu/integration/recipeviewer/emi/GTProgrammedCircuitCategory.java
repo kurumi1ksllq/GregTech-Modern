@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.integration.recipeviewer.emi;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTProgrammedCircuitWidgetMui;
+import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTProgrammedCircuitWidget;
 
 import net.minecraft.network.chat.Component;
 
@@ -36,7 +36,7 @@ public class GTProgrammedCircuitCategory extends EmiRecipeCategory {
     public static class GTProgrammedCircuitWrapper extends ModularUIEmiRecipe {
 
         public GTProgrammedCircuitWrapper() {
-            super(GTCEu.id("programmed_circuit"), GTProgrammedCircuitWidgetMui::new);
+            super(GTCEu.id("programmed_circuit"), GTProgrammedCircuitWidget::new);
         }
 
         @Override

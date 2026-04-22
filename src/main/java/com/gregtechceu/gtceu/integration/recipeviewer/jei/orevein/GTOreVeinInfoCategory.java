@@ -1,20 +1,19 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.jei.orevein;
 
+import brachy.modularui.integration.jei.recipe.ModularUIRecipeCategory;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
+
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTOreVeinWidget;
-
-import com.lowdragmc.lowdraglib.jei.ModularUIRecipeCategory;
-
 import net.minecraft.network.chat.Component;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -23,16 +22,19 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import org.jetbrains.annotations.NotNull;
 
-public class GTOreVeinInfoCategory extends ModularUIRecipeCategory<GTOreVeinInfoWrapper> {
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+public class GTOreVeinInfoCategory extends ModularUIRecipeCategory<GTOreVeinInfoCategory.GTOreVeinInfoWrapper> {
 
     public final static RecipeType<GTOreVeinInfoWrapper> RECIPE_TYPE = new RecipeType<>(GTCEu.id("ore_vein_diagram"),
             GTOreVeinInfoWrapper.class);
-    private final IDrawable background;
     private final IDrawable icon;
 
     public GTOreVeinInfoCategory(IJeiHelpers helpers) {
-        IGuiHelper guiHelper = helpers.getGuiHelper();
-        this.background = guiHelper.createBlankDrawable(GTOreVeinWidget.width, 120);
+        super(v -> new GTOreVeinWidget(v.oreDefinition),
+                v -> ClientProxy.CLIENT_ORE_VEINS.inverse().get(v.oreDefinition));
+
         this.icon = helpers.getGuiHelper()
                 .createDrawableItemStack(ChemicalHelper.get(TagPrefix.rawOre, GTMaterials.Iron));
     }
@@ -70,13 +72,9 @@ public class GTOreVeinInfoCategory extends ModularUIRecipeCategory<GTOreVeinInfo
 
     @NotNull
     @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @NotNull
-    @Override
     public IDrawable getIcon() {
         return icon;
     }
+
+    public record GTOreVeinInfoWrapper(GTOreDefinition oreDefinition) {}
 }

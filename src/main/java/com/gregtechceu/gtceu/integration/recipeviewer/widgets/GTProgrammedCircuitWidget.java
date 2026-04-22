@@ -1,34 +1,32 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.widgets;
 
-import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.jei.IngredientIO;
+import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
+import brachy.modularui.widget.ParentWidget;
+import brachy.modularui.widgets.layout.Grid;
+import brachy.modularui.widgets.slot.ItemSlot;
+import brachy.modularui.widgets.slot.ModularSlot;
 
-import net.minecraftforge.items.ItemStackHandler;
-
-public class GTProgrammedCircuitWidget extends WidgetGroup {
+public class GTProgrammedCircuitWidget extends ParentWidget<GTProgrammedCircuitWidget> {
 
     public GTProgrammedCircuitWidget() {
-        super(0, 0, 150, 80);
-        setClientSideWidget();
-        setRecipe();
-    }
+        super();
+        size(150, 80);
 
-    public void setRecipe() {
-        addWidget(new ImageWidget(39, 0, 36, 36, GuiTextures.SLOT));
+        CustomItemStackHandler handler = new CustomItemStackHandler(32);
 
-        ItemStackHandler handler = new CustomItemStackHandler(32);
-        for (int j = 0; j < 4; j++) {
-            for (int i = 0; i < 8; i++) {
-                handler.setStackInSlot((i + j * 8), IntCircuitBehaviour.stack(1 + (i + j * 8)));
-                addWidget(new SlotWidget(handler, (i + j * 8), 3 + 18 * i, 18 * j, false, false)
-                        .setIngredientIO((i + j * 8 == 31 ? IngredientIO.OUTPUT : IngredientIO.BOTH)));
-            }
+        for (int i = 0; i<32; i++) {
+            handler.setStackInSlot(i, IntCircuitBehaviour.stack(i+1));
         }
+
+        Grid circuits = new Grid()
+                .coverChildren()
+                .gridOfSizeWidth(32, 8, (x, y, i) -> new ItemSlot().recipeRole(RecipeSlotRole.INPUT)
+                        .slot(new ModularSlot(handler, i).accessibility(false, false)));
+
+        child(circuits.horizontalCenter());
     }
 }

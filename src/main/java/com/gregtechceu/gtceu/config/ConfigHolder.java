@@ -900,9 +900,6 @@ public class ConfigHolder {
                 "Default: false" })
         public boolean debug = false;
         @Configurable
-        @Configurable.Comment({ "Debug UI? (Will draw widget outlines and widget information)", "Default: false" })
-        public boolean debugUI = GTCEu.isDev();
-        @Configurable
         @Configurable.Comment({ "Debug ore vein placement? (will print placed veins to server's debug.log)",
                 "Default: false (no placement printout in debug.log)" })
         public boolean debugWorldgen = false;
@@ -920,58 +917,5 @@ public class ConfigHolder {
                 "Only works in a development environment", "Default: false" })
         public boolean autoRebuildResources = false;
 
-        @Configurable
-        public DeveloperConfigs.MuiConfigs mui = new DeveloperConfigs.MuiConfigs();
-
-        public static class MuiConfigs {
-
-            @Configurable
-            @Configurable.Comment({ "Color for outlining widgets in debug mode, in ARGB" })
-            @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,8}")
-            @Configurable.Gui.ColorValue
-            public String textColor = "#dcb42873";
-
-            @Configurable
-            @Configurable.Comment({ "Color for outlining widgets in debug mode, in ARGB" })
-            @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,8}")
-            @Configurable.Gui.ColorValue
-            public String outlineColor = "#dcb42873";
-
-            @Configurable
-            @Configurable.Comment({ "Color for cursor in debug mode, in ARGB" })
-            @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,8}")
-            @Configurable.Gui.ColorValue
-            public String cursorColor = "#ff4cAf50";
-
-            @Configurable
-            @Configurable.Comment({ "Scale of debug text",
-                    "Default: 0.8f" })
-            @Configurable.DecimalRange(min = 0.1f, max = 10.0f)
-            public float scale = 0.8f;
-
-            @Configurable
-            public boolean showHovered = true;
-            @Configurable
-            public boolean showPos = true;
-            @Configurable
-            public boolean showSize = true;
-            @Configurable
-            public boolean showWidgetTheme = true;
-            @Configurable
-            public boolean showExtra = true;
-            @Configurable
-            public boolean showOutline = true;
-
-            @Configurable
-            public boolean showParent = true;
-            @Configurable
-            public boolean showParentPos = true;
-            @Configurable
-            public boolean showParentSize = true;
-            @Configurable
-            public boolean showParentWidgetTheme = true;
-            @Configurable
-            public boolean showParentOutline = true;
-        }
     }
 }

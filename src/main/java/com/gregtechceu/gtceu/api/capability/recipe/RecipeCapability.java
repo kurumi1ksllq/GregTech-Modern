@@ -257,8 +257,6 @@ public abstract class RecipeCapability<T> {
                                                 NotifiableRecipeHandlerTrait<?> handler,
                                                 GTRecipeTypeUILayout layout,
                                                 int capabilityAmount,
-                                                int tier,
-                                                String themeId,
                                                 IO io) {
         return null;
     }

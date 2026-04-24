@@ -45,9 +45,8 @@ public class GTRecipeTypeUILayout {
 
     @SuppressWarnings("unchecked")
     public ParentWidget<?> getBackedSlotsRow(@NotNull PanelSyncManager syncManager,
-                                             @NotNull String themeId,
                                              @NotNull MetaMachine machine,
-                                             DoubleSupplier progressSupplier, int tier) {
+                                             DoubleSupplier progressSupplier) {
         Objects.requireNonNull(recipeType);
 
         Map<IO, Map<RecipeCapability<?>, NotifiableRecipeHandlerTrait<?>>> handlers = new Object2ObjectOpenHashMap<>();
@@ -84,14 +83,14 @@ public class GTRecipeTypeUILayout {
                 .coverChildren()
                 .horizontalCenter()
                 .childPadding((progressSize / 2) + 2)
-                .childIf(!handlers.get(IO.IN).isEmpty(), () -> getIOColumn(syncManager, machine, IO.IN, handlers.get(IO.IN), themeId, tier))
+                .childIf(!handlers.get(IO.IN).isEmpty(), () -> getIOColumn(syncManager, machine, IO.IN, handlers.get(IO.IN)))
                 .child(new ProgressWidget()
                         .value(progressPercent)
                         .name("progressBar")
                         .texture(progressBar, progressSize)
                         .size(progressSize)
                         .direction(progressDirection))
-                .childIf(!handlers.get(IO.OUT).isEmpty(), () -> getIOColumn(syncManager, machine, IO.OUT, handlers.get(IO.OUT), themeId, tier));
+                .childIf(!handlers.get(IO.OUT).isEmpty(), () -> getIOColumn(syncManager, machine, IO.OUT, handlers.get(IO.OUT)));
 
         return new ParentWidget<>()
                 .widthRel(1f)
@@ -102,9 +101,7 @@ public class GTRecipeTypeUILayout {
     public Flow getIOColumn(@NotNull PanelSyncManager syncManager,
                              MetaMachine machine,
                              IO io,
-                             Map<RecipeCapability<?>, NotifiableRecipeHandlerTrait<?>> handlers,
-                             String themeId,
-                             int tier) {
+                             Map<RecipeCapability<?>, NotifiableRecipeHandlerTrait<?>> handlers) {
         boolean in = io == IO.IN;
 
         var caps = (in ? recipeType.maxInputs : recipeType.maxOutputs);
@@ -113,7 +110,7 @@ public class GTRecipeTypeUILayout {
 
 
         for (var recipeCap : caps.keySet()) {
-            var ui = recipeCap.createCapabilityUI(machine, syncManager, handlers.get(recipeCap), this, caps.getInt(recipeCap), tier, themeId, io);
+            var ui = recipeCap.createCapabilityUI(machine, syncManager, handlers.get(recipeCap), this, caps.getInt(recipeCap), io);
             if (ui != null) ioColumn.child(ui);
         }
 

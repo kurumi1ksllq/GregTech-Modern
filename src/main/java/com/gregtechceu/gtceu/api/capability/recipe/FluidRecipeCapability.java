@@ -9,6 +9,7 @@ import brachy.modularui.widgets.SlotGroupWidget;
 import brachy.modularui.widgets.slot.FluidSlot;
 import com.gregtechceu.gtceu.api.gui.widget.TankWidget;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.TieredMachine;
 import com.gregtechceu.gtceu.api.machine.trait.*;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
@@ -481,10 +482,10 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
                                                 NotifiableRecipeHandlerTrait<?> handler,
                                                 GTRecipeTypeUILayout layout,
                                                 int maxRecipeTypeSlots,
-                                                int tier,
-                                                String themeId,
                                                 IO io) {
         if (maxRecipeTypeSlots == 0) return null;
+
+        var tier = ((TieredMachine)machine).getTier();
 
         var fluidTank = (NotifiableFluidTank)handler;
         var overlays = layout.getOverlays().computeIfAbsent(io, $ -> new Object2ObjectOpenHashMap<>()).computeIfAbsent(CAP, $ -> new Int2ObjectOpenHashMap<>());
@@ -493,7 +494,7 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
 
         var grid = layout.createGrid(io, CAP, 's', tier, maxMachineSlots);
 
-        IDrawable defaultSlotBackground = ThemeAPI.INSTANCE.getTheme(themeId).getFluidSlotTheme().theme().getBackground();
+        IDrawable defaultSlotBackground = ThemeAPI.INSTANCE.getTheme(machine.getDefinition().getThemeId()).getFluidSlotTheme().theme().getBackground();
 
         SlotGroupWidget.Builder slotWidgetBuilder = SlotGroupWidget.builder()
                 .matrix(grid);

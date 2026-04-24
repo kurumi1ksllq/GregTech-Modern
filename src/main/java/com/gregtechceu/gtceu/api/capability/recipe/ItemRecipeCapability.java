@@ -10,6 +10,7 @@ import brachy.modularui.widgets.slot.ModularSlot;
 import brachy.modularui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.TieredMachine;
 import com.gregtechceu.gtceu.api.machine.trait.*;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
@@ -612,18 +613,18 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
                                                 NotifiableRecipeHandlerTrait<?> handler,
                                                 GTRecipeTypeUILayout layout,
                                                 int maxRecipeTypeSlots,
-                                                int tier,
-                                                String themeId,
                                                 IO io) {
 
         if (maxRecipeTypeSlots == 0) return null;
+
+        var tier = ((TieredMachine)machine).getTier();
 
         var itemHandler = (NotifiableItemStackHandler)handler;
         var overlays = layout.getOverlays().computeIfAbsent(io, $ -> new Object2ObjectOpenHashMap<>()).computeIfAbsent(CAP, $ -> new Int2ObjectOpenHashMap<>());
 
         var grid = layout.createGrid(io, CAP, 's', tier, itemHandler.getSlots());
 
-        IDrawable defaultSlotBackground = ThemeAPI.INSTANCE.getTheme(themeId).getItemSlotTheme().theme().getBackground();
+        IDrawable defaultSlotBackground = ThemeAPI.INSTANCE.getTheme(machine.getDefinition().getThemeId()).getItemSlotTheme().theme().getBackground();
 
         SlotGroupWidget.Builder slotWidgetBuilder = SlotGroupWidget.builder()
                 .matrix(grid);

@@ -9,6 +9,11 @@ public interface RecipeUIModifier {
 
     void buildRecipeUI(GTRecipe recipe, GTMuiRecipeWidget widget);
 
+    /**
+     * A recipe ui modifier that adds a line of the text to the recipe UI
+     * @param text Text to add
+     * @return Recipe ui modifier
+     */
     static RecipeUIModifier textLine(Text text) {
         return (recipe, widget) -> {
             widget.textComponents.child(text.asWidget());

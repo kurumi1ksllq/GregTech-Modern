@@ -1,11 +1,15 @@
 package com.gregtechceu.gtceu.common.recipe.condition;
 
+import brachy.modularui.api.drawable.Text;
+import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
+import brachy.modularui.widgets.ItemDisplayWidget;
 import com.gregtechceu.gtceu.api.data.DimensionMarker;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
+import com.gregtechceu.gtceu.api.recipe.gui.RecipeUIModifier;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTRecipeConditions;
@@ -61,6 +65,27 @@ public class DimensionCondition extends RecipeCondition<DimensionCondition> {
     @Override
     public Component getTooltips() {
         return Component.translatable("recipe.condition.dimension.tooltip", dimension);
+    }
+
+    @Override
+    public RecipeUIModifier modifyUI() {
+        return super.modifyUI()
+                .then((recipe, widget) -> {
+                    DimensionMarker dimMarker = GTRegistries.DIMENSION_MARKERS.getOrDefault(this.dimension.location(),
+                            new DimensionMarker(DimensionMarker.MAX_TIER, () -> Blocks.BARRIER, this.dimension.toString()));
+                    ItemStack icon = dimMarker.getIcon();
+                    String dimTier = "T" + (dimMarker.tier >= DimensionMarker.MAX_TIER ? "?" : dimMarker.tier);
+
+                    ItemDisplayWidget displayWidget = new ItemDisplayWidget()
+                            .item(icon)
+                            .recipeSlotRole(RecipeSlotRole.INPUT)
+                            .posRel(0.75f, 0.75f);
+
+                    if (ConfigHolder.INSTANCE.compat.showDimensionTier) {
+                        displayWidget.overlay(Text.str(dimTier).scale(0.75f));
+                    }
+                    widget.child(displayWidget);
+                });
     }
 
     public SlotWidget setupDimensionMarkers(int xOffset, int yOffset) {

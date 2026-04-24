@@ -56,7 +56,6 @@ public class GTRecipeTypeUILayout {
                                              @Nullable NotifiableFluidTank inputFluids,
                                              @Nullable NotifiableFluidTank outputFluids,
                                              DoubleSupplier progressSupplier, int tier) {
-
         Objects.requireNonNull(recipeType);
 
         DoubleSyncValue progressPercent = syncManager.getOrCreateSyncHandler("progressPercent",
@@ -67,15 +66,15 @@ public class GTRecipeTypeUILayout {
                 .horizontalCenter()
                 .childPadding((progressSize / 2) + 2)
                 .childIf(inputItems != null || inputFluids != null, () -> getIOColumn(syncManager, IO.IN,
-                    inputItems, inputFluids, themeId, tier))
+                        inputItems, inputFluids, themeId, tier))
                 .child(new ProgressWidget()
-                    .value(progressPercent)
-                    .name("progressBar")
-                    .texture(progressBar, progressSize)
-                    .size(progressSize)
-                    .direction(progressDirection))
+                        .value(progressPercent)
+                        .name("progressBar")
+                        .texture(progressBar, progressSize)
+                        .size(progressSize)
+                        .direction(progressDirection))
                 .childIf(outputFluids != null || outputItems != null, () -> getIOColumn(syncManager, IO.OUT,
-                    outputItems, outputFluids, themeId, tier));
+                        outputItems, outputFluids, themeId, tier));
 
         return new ParentWidget<>()
                 .widthRel(1f)
@@ -92,7 +91,8 @@ public class GTRecipeTypeUILayout {
                              int tier) {
         boolean in = io == IO.IN;
 
-        if (items == null && fluids == null) throw new IllegalArgumentException("Item and fluid handler cannot both be null");
+        if (items == null && fluids == null)
+            throw new IllegalArgumentException("Item and fluid handler cannot both be null");
 
         var caps = (in ? recipeType.maxInputs : recipeType.maxOutputs);
 
@@ -132,7 +132,7 @@ public class GTRecipeTypeUILayout {
                     }
 
                     return new ItemSlot().slot(new ModularSlot(items, i)
-                                    .slotGroup(group))
+                            .slotGroup(group))
                             .background(defaultSlotBackground, overlay);
                 });
             } else if (recipeCap == FluidRecipeCapability.CAP) {
@@ -159,7 +159,6 @@ public class GTRecipeTypeUILayout {
                     .name(recipeCap.name + "_" + io.name()));
         }
 
-
         widgetGroups.forEach(ioColumn::child);
         return ioColumn;
     }
@@ -185,7 +184,8 @@ public class GTRecipeTypeUILayout {
         private UITexture progressBar;
         private int progressSize;
         private ProgressWidget.Direction fillDirection;
-        private final Map<IO, Map<RecipeCapability<?>, Int2ObjectOpenHashMap<IDrawable>>> overlays = new EnumMap<>(IO.class);
+        private final Map<IO, Map<RecipeCapability<?>, Int2ObjectOpenHashMap<IDrawable>>> overlays = new EnumMap<>(
+                IO.class);
         private final Map<IO, Map<RecipeCapability<?>, Int2IntArrayMap>> gridLength = new EnumMap<>(IO.class);
         private final Map<IO, Map<RecipeCapability<?>, Int2IntArrayMap>> gridWidths = new EnumMap<>(IO.class);
 

@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.common.mui;
 
-import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.cover.filter.Filter;
@@ -49,6 +48,7 @@ import brachy.modularui.widgets.slot.ModularSlot;
 import brachy.modularui.widgets.textfield.TextFieldWidget;
 import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.*;
 
@@ -321,13 +321,6 @@ public class GTMuiWidgets {
                 return current - 1;
             }
         }
-    }
-
-    public static IDrawable.DrawableWidget createGTLogo() {
-        if (GTValues.XMAS.getAsBoolean()) {
-            return new IDrawable.DrawableWidget(GTGuiTextures.GREGTECH_LOGO_XMAS);
-        }
-        return new IDrawable.DrawableWidget(GTGuiTextures.GREGTECH_LOGO);
     }
 
     public static String[] createGrid(int amount, int rowSize, boolean output, char key) {
@@ -622,12 +615,12 @@ public class GTMuiWidgets {
 
     public static class EnumRowBuilder<T extends Enum<T>> {
 
-        private EnumSyncValue<T> syncValue;
+        private @Nullable EnumSyncValue<T> syncValue;
         private final Class<T> enumValue;
-        private Component lang;
-        private IDrawable[] background;
-        private IDrawable selectedBackground;
-        private IDrawable[] overlay;
+        private @Nullable Component lang;
+        private IDrawable @Nullable [] background;
+        private @Nullable IDrawable selectedBackground;
+        private IDrawable @Nullable [] overlay;
 
         public EnumRowBuilder(Class<T> enumValue) {
             this.enumValue = enumValue;
@@ -672,10 +665,10 @@ public class GTMuiWidgets {
 
         public Flow build() {
             var row = Flow.row().coverChildrenHeight().widthRel(1f);
-            if (this.enumValue != null && this.syncValue != null) {
+            if (syncValue != null) {
                 for (var enumVal : enumValue.getEnumConstants()) {
                     var button = new ToggleButton().size(18).marginRight(2)
-                            .value(boolValueOf(this.syncValue, enumVal));
+                            .value(boolValueOf(syncValue, enumVal));
 
                     if (this.background != null && this.background.length > 0)
                         button.background(this.background);

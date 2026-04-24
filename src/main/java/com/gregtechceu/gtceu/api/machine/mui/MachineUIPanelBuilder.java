@@ -28,6 +28,9 @@ public class MachineUIPanelBuilder {
      * Should the GregTech logo be drawn in the bottom right corner of the panel.
      */
     private boolean drawGTLogo = false;
+    /**
+     * The texture to use for the GregTech logo.
+     */
     private UITexture gtLogoTexture = GTGuiTextures.GREGTECH_LOGO;
     /**
      * Should the player inventory be attached to the bottom of the panel.

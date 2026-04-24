@@ -41,9 +41,7 @@ public class GTSingleblockMachinePanels {
             parent.child(Flow.row()
                     .size(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 18 + 9 + 18 * Math.max(2, slotHeight))
                     .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
-                            .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
-                                    simpleTieredMachine.exportItems,
-                                    simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,
+                            .getBackedSlotsRow(syncManager, theme, simpleTieredMachine,
                                     simpleTieredMachine.recipeLogic::getProgressPercent,
                                     -1)));
         }).build(syncManager, settings).excludeAreaInRecipeViewer();
@@ -73,9 +71,7 @@ public class GTSingleblockMachinePanels {
             parent.child(Flow.row()
                     .size(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 18 + 9 + 18 * Math.max(2, slotHeight))
                     .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
-                            .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
-                                    simpleTieredMachine.exportItems,
-                                    simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,
+                            .getBackedSlotsRow(syncManager, theme, simpleTieredMachine,
                                     simpleTieredMachine.recipeLogic::getProgressPercent,
                                     simpleTieredMachine.getTier())
                             .posRel(Alignment.Center)));
@@ -106,9 +102,7 @@ public class GTSingleblockMachinePanels {
             parent.child(Flow.row()
                     .size(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 18 + 9 + 18 * Math.max(2, slotHeight))
                     .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(simpleTieredMachine.getRecipeType())
-                            .getBackedSlotsRow(syncManager, theme, simpleTieredMachine.importItems,
-                                    simpleTieredMachine.exportItems,
-                                    simpleTieredMachine.importFluids, simpleTieredMachine.exportFluids,
+                            .getBackedSlotsRow(syncManager, theme, simpleTieredMachine,
                                     simpleTieredMachine.recipeLogic::getProgressPercent,
                                     0)
                             .posRel(Alignment.Center)));
@@ -137,9 +131,7 @@ public class GTSingleblockMachinePanels {
             parent.child(Flow.row()
                     .size(MachineUIPanel.DEFAULT_CONTENT_WIDTH, 18 + 9 + 18 * Math.max(2, slotHeight))
                     .childIf(hasXEI, () -> GTRecipeTypeUIs.recipeTypeUIs.get(steamMachine.getRecipeType())
-                            .getBackedSlotsRow(syncManager, theme, steamMachine.importItems,
-                                    steamMachine.exportItems,
-                                    null, null,
+                            .getBackedSlotsRow(syncManager, theme, steamMachine,
                                     steamMachine.recipeLogic::getProgressPercent,
                                     steamMachine.getTier())
                             .posRel(Alignment.Center)));

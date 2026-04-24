@@ -1,32 +1,24 @@
 package com.gregtechceu.gtceu.api.recipe.gui;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.trait.NotifiableRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.common.mui.GTMuiWidgets;
 
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.drawable.UITexture;
-import brachy.modularui.theme.ThemeAPI;
 import brachy.modularui.value.sync.DoubleSyncValue;
 import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.value.sync.SyncHandlers;
 import brachy.modularui.widget.ParentWidget;
 import brachy.modularui.widgets.ProgressWidget;
-import brachy.modularui.widgets.SlotGroupWidget;
 import brachy.modularui.widgets.layout.Flow;
-import brachy.modularui.widgets.slot.FluidSlot;
-import brachy.modularui.widgets.slot.ItemSlot;
-import brachy.modularui.widgets.slot.ModularSlot;
-import brachy.modularui.widgets.slot.SlotGroup;
 import it.unimi.dsi.fastutil.ints.*;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.DoubleSupplier;
@@ -44,19 +36,46 @@ public class GTRecipeTypeUILayout {
     private ProgressWidget.Direction progressDirection;
     @Getter
     private Map<IO, Map<RecipeCapability<?>, Int2ObjectOpenHashMap<IDrawable>>> overlays = new EnumMap<>(IO.class);
+    @Getter
     private Map<IO, Map<RecipeCapability<?>, Int2IntArrayMap>> gridLength = new EnumMap<>(IO.class);
+    @Getter
     private Map<IO, Map<RecipeCapability<?>, Int2IntArrayMap>> gridWidths = new EnumMap<>(IO.class);
 
     public GTRecipeTypeUILayout() {}
 
+    @SuppressWarnings("unchecked")
     public ParentWidget<?> getBackedSlotsRow(@NotNull PanelSyncManager syncManager,
                                              @NotNull String themeId,
-                                             @Nullable NotifiableItemStackHandler inputItems,
-                                             @Nullable NotifiableItemStackHandler outputItems,
-                                             @Nullable NotifiableFluidTank inputFluids,
-                                             @Nullable NotifiableFluidTank outputFluids,
+                                             @NotNull MetaMachine machine,
                                              DoubleSupplier progressSupplier, int tier) {
         Objects.requireNonNull(recipeType);
+
+        Map<IO, Map<RecipeCapability<?>, NotifiableRecipeHandlerTrait<?>>> handlers = new Object2ObjectOpenHashMap<>();
+        handlers.put(IO.IN, new Object2ObjectOpenHashMap<>());
+        handlers.put(IO.OUT, new Object2ObjectOpenHashMap<>());
+
+        for (var capability: recipeType.maxInputs.keySet()) {
+            if (!capability.shouldCreateCapabilityUI()) continue;
+
+            var traitType = capability.getNotifiableHandlerTraitType();
+            List<NotifiableRecipeHandlerTrait<?>> capHandlers = (List<NotifiableRecipeHandlerTrait<?>>)machine.getTraitHolder().getTraits(traitType);
+
+            var ioIn = handlers.get(IO.IN);
+            for (var capHandler: capHandlers) {
+                if (capHandler.getHandlerIO() == IO.IN) ioIn.putIfAbsent(capability, capHandler);
+            }
+        }
+        for (var capability: recipeType.maxOutputs.keySet()) {
+            if (!capability.shouldCreateCapabilityUI()) continue;
+
+            var traitType = capability.getNotifiableHandlerTraitType();
+            List<NotifiableRecipeHandlerTrait<?>> capHandlers = (List<NotifiableRecipeHandlerTrait<?>>)machine.getTraitHolder().getTraits(traitType);
+
+            var ioOut = handlers.get(IO.OUT);
+            for (var capHandler: capHandlers) {
+                if (capHandler.getHandlerIO() == IO.OUT) ioOut.putIfAbsent(capability, capHandler);
+            }
+        }
 
         DoubleSyncValue progressPercent = syncManager.getOrCreateSyncHandler("progressPercent",
                 DoubleSyncValue.class, () -> new DoubleSyncValue(progressSupplier));
@@ -65,16 +84,14 @@ public class GTRecipeTypeUILayout {
                 .coverChildren()
                 .horizontalCenter()
                 .childPadding((progressSize / 2) + 2)
-                .childIf(inputItems != null || inputFluids != null, () -> getIOColumn(syncManager, IO.IN,
-                        inputItems, inputFluids, themeId, tier))
+                .childIf(!handlers.get(IO.IN).isEmpty(), () -> getIOColumn(syncManager, machine, IO.IN, handlers.get(IO.IN), themeId, tier))
                 .child(new ProgressWidget()
                         .value(progressPercent)
                         .name("progressBar")
                         .texture(progressBar, progressSize)
                         .size(progressSize)
                         .direction(progressDirection))
-                .childIf(outputFluids != null || outputItems != null, () -> getIOColumn(syncManager, IO.OUT,
-                        outputItems, outputFluids, themeId, tier));
+                .childIf(!handlers.get(IO.OUT).isEmpty(), () -> getIOColumn(syncManager, machine, IO.OUT, handlers.get(IO.OUT), themeId, tier));
 
         return new ParentWidget<>()
                 .widthRel(1f)
@@ -82,84 +99,24 @@ public class GTRecipeTypeUILayout {
                 .child(backedSlotsRow);
     }
 
-    @Contract("_, _, null, null, _, _ -> fail")
     public Flow getIOColumn(@NotNull PanelSyncManager syncManager,
+                             MetaMachine machine,
                              IO io,
-                             @Nullable NotifiableItemStackHandler items,
-                             @Nullable NotifiableFluidTank fluids,
+                             Map<RecipeCapability<?>, NotifiableRecipeHandlerTrait<?>> handlers,
                              String themeId,
                              int tier) {
         boolean in = io == IO.IN;
-
-        if (items == null && fluids == null)
-            throw new IllegalArgumentException("Item and fluid handler cannot both be null");
 
         var caps = (in ? recipeType.maxInputs : recipeType.maxOutputs);
 
         Flow ioColumn = Flow.col().coverChildren();
 
-        var widgetGroups = new ArrayList<ParentWidget<?>>();
 
         for (var recipeCap : caps.keySet()) {
-            int maxRecipeTypeSlots = caps.getInt(recipeCap);
-            int maxMachineSlots = 0;
-            if (maxRecipeTypeSlots == 0 || recipeCap == EURecipeCapability.CAP) continue;
-            if (recipeCap == ItemRecipeCapability.CAP) {
-                if (items == null) continue;
-                maxMachineSlots = items.getSlots();
-            } else if (recipeCap == FluidRecipeCapability.CAP) {
-                if (fluids == null) continue;
-                maxMachineSlots = fluids.getTanks();
-            }
-
-            var grid = createGrid(io, recipeCap, 's', tier, maxMachineSlots);
-
-            IDrawable defaultSlotBackground = (recipeCap == ItemRecipeCapability.CAP ?
-                    ThemeAPI.INSTANCE.getTheme(themeId).getItemSlotTheme().theme().getBackground() :
-                    ThemeAPI.INSTANCE.getTheme(themeId).getFluidSlotTheme().theme().getBackground());
-
-            SlotGroupWidget.Builder slotWidgetBuilder = SlotGroupWidget.builder()
-                    .matrix(grid);
-
-            if (recipeCap == ItemRecipeCapability.CAP) {
-                SlotGroup group = new SlotGroup("item_" + io.name(), grid[0].length());
-                slotWidgetBuilder.key('s', i -> {
-                    var overlay = IDrawable.EMPTY;
-
-                    if (overlays.containsKey(io) && overlays.get(io).containsKey(recipeCap)) {
-                        overlay = overlays.get(io).get(recipeCap).get(i) != null ?
-                                overlays.get(io).get(recipeCap).get(i) : IDrawable.EMPTY;
-                    }
-
-                    return new ItemSlot().slot(new ModularSlot(items, i)
-                            .slotGroup(group))
-                            .background(defaultSlotBackground, overlay);
-                });
-            } else if (recipeCap == FluidRecipeCapability.CAP) {
-                String syncHandlerName = "fluid_" + io.name();
-                for (int i = 0; i < maxMachineSlots; i++) {
-                    syncManager.syncValue(syncHandlerName, i, SyncHandlers.fluidSlot(fluids.getStorages()[i]));
-                }
-                slotWidgetBuilder.key('s', i -> {
-                    var overlay = IDrawable.EMPTY;
-
-                    if (overlays.containsKey(io) && overlays.get(io).containsKey(recipeCap)) {
-                        overlay = overlays.get(io).get(recipeCap).get(i) != null ?
-                                overlays.get(io).get(recipeCap).get(i) : IDrawable.EMPTY;
-                    }
-
-                    return new FluidSlot()
-                            .syncHandler(syncHandlerName, i)
-                            .background(defaultSlotBackground, overlay);
-                });
-            }
-
-            widgetGroups.add(slotWidgetBuilder.build()
-                    .coverChildren()
-                    .name(recipeCap.name + "_" + io.name()));
+            var ui = recipeCap.createCapabilityUI(machine, syncManager, handlers.get(recipeCap), this, caps.getInt(recipeCap), tier, themeId, io);
+            if (ui != null) ioColumn.child(ui);
         }
 
-        widgetGroups.forEach(ioColumn::child);
         return ioColumn;
     }
 

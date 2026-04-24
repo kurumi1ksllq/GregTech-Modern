@@ -1,14 +1,21 @@
 package com.gregtechceu.gtceu.api.capability.recipe;
 
+import brachy.modularui.api.drawable.IDrawable;
+import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.theme.ThemeAPI;
+import brachy.modularui.value.sync.PanelSyncManager;
+import brachy.modularui.value.sync.SyncHandlers;
+import brachy.modularui.widgets.SlotGroupWidget;
+import brachy.modularui.widgets.slot.FluidSlot;
 import com.gregtechceu.gtceu.api.gui.widget.TankWidget;
-import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroup;
-import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerGroupDistinctness;
-import com.gregtechceu.gtceu.api.machine.trait.RecipeHandlerList;
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.trait.*;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.content.SerializerFluidIngredient;
+import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUILayout;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderFluidIngredient;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.AbstractMapIngredient;
@@ -28,6 +35,7 @@ import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.jei.IngredientIO;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -53,6 +61,11 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
 
     protected FluidRecipeCapability() {
         super("fluid", 0xFF3C70EE, true, 1, SerializerFluidIngredient.INSTANCE);
+    }
+
+    @Override
+    public MachineTraitType<?> getNotifiableHandlerTraitType() {
+        return NotifiableFluidTank.TYPE;
     }
 
     @Override
@@ -455,5 +468,51 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
     @Override
     public boolean shouldBypassDistinct() {
         return false;
+    }
+
+    @Override
+    public boolean shouldCreateCapabilityUI() {
+        return true;
+    }
+
+    @Override
+    public @Nullable IWidget createCapabilityUI(@NotNull MetaMachine machine,
+                                                PanelSyncManager syncManager,
+                                                NotifiableRecipeHandlerTrait<?> handler,
+                                                GTRecipeTypeUILayout layout,
+                                                int maxRecipeTypeSlots,
+                                                int tier,
+                                                String themeId,
+                                                IO io) {
+        if (maxRecipeTypeSlots == 0) return null;
+
+        var fluidTank = (NotifiableFluidTank)handler;
+        var overlays = layout.getOverlays().computeIfAbsent(io, $ -> new Object2ObjectOpenHashMap<>()).computeIfAbsent(CAP, $ -> new Int2ObjectOpenHashMap<>());
+
+        int maxMachineSlots = fluidTank.getTanks();
+
+        var grid = layout.createGrid(io, CAP, 's', tier, maxMachineSlots);
+
+        IDrawable defaultSlotBackground = ThemeAPI.INSTANCE.getTheme(themeId).getFluidSlotTheme().theme().getBackground();
+
+        SlotGroupWidget.Builder slotWidgetBuilder = SlotGroupWidget.builder()
+                .matrix(grid);
+
+            String syncHandlerName = "fluid_" + io.name();
+            for (int i = 0; i < maxMachineSlots; i++) {
+                syncManager.syncValue(syncHandlerName, i, SyncHandlers.fluidSlot(fluidTank.getStorages()[i]));
+            }
+            slotWidgetBuilder.key('s', i -> {
+                var overlay = overlays.get(i) != null ? overlays.get(i) : IDrawable.EMPTY;
+
+                return new FluidSlot()
+                        .syncHandler(syncHandlerName, i)
+                        .background(defaultSlotBackground, overlay);
+            });
+
+        return slotWidgetBuilder.build()
+                .coverChildren()
+                .name(CAP.name + "_" + io.name());
+
     }
 }

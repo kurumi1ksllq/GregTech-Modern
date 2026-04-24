@@ -1,10 +1,16 @@
 package com.gregtechceu.gtceu.api.capability.recipe;
 
+import brachy.modularui.api.widget.IWidget;
+import brachy.modularui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.trait.MachineTraitType;
+import com.gregtechceu.gtceu.api.machine.trait.NotifiableRecipeHandlerTrait;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.content.IContentSerializer;
+import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUILayout;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.AbstractMapIngredient;
 import com.gregtechceu.gtceu.api.recipe.ui.GTRecipeTypeUI;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
@@ -162,10 +168,6 @@ public abstract class RecipeCapability<T> {
         return Integer.MAX_VALUE;
     }
 
-    public boolean doAddGuiSlots() {
-        return isRecipeSearchFilter();
-    }
-
     public void addXEIInfo(WidgetGroup group, int xOffset, GTRecipe recipe, List<Content> contents, boolean perTick,
                            boolean isInput, MutableInt yOffset) {}
 
@@ -223,4 +225,42 @@ public abstract class RecipeCapability<T> {
     public boolean shouldBypassDistinct() {
         return true;
     }
+
+    /**
+     * Gets the trait type of the {@link NotifiableRecipeHandlerTrait} which can handle this capability
+     * @return The recipe handler trait type
+     */
+    public abstract MachineTraitType<?> getNotifiableHandlerTraitType();
+
+    /// Capability UI
+
+    /**
+     * If this capability should be rendered in IO slot columns
+      * @return If this capability has UI components
+     */
+    public boolean shouldCreateCapabilityUI() {
+        return false;
+    }
+
+    /**
+     * Creates the capability UI to be rendered for singleblock machines
+     *
+     * @param machine          Machine
+     * @param syncManager
+     * @param layout           the {@link GTRecipeTypeUILayout} for this recipe type
+     * @param capabilityAmount The capability amount (only relevant for fluids/items, where it represents the slot count)
+     * @param io               IO mode (IN/OUT)
+     * @return Capability UI widget
+     */
+    public @Nullable IWidget createCapabilityUI(@NotNull MetaMachine machine,
+                                                PanelSyncManager syncManager,
+                                                NotifiableRecipeHandlerTrait<?> handler,
+                                                GTRecipeTypeUILayout layout,
+                                                int capabilityAmount,
+                                                int tier,
+                                                String themeId,
+                                                IO io) {
+        return null;
+    }
+
 }

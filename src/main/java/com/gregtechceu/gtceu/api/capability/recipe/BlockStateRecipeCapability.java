@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.recipe.content.SerializerBlockState;
 
 import net.minecraft.world.level.block.state.BlockState;
 
+/*
 public class BlockStateRecipeCapability extends RecipeCapability<BlockState> {
 
     public final static BlockStateRecipeCapability CAP = new BlockStateRecipeCapability();
@@ -17,3 +18,4 @@ public class BlockStateRecipeCapability extends RecipeCapability<BlockState> {
         return content;
     }
 }
+*/

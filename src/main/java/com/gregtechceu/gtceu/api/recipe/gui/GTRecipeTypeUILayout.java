@@ -43,38 +43,10 @@ public class GTRecipeTypeUILayout {
 
     public GTRecipeTypeUILayout() {}
 
-    @SuppressWarnings("unchecked")
     public ParentWidget<?> getBackedSlotsRow(@NotNull PanelSyncManager syncManager,
                                              @NotNull MetaMachine machine,
                                              DoubleSupplier progressSupplier) {
         Objects.requireNonNull(recipeType);
-
-        Map<IO, Map<RecipeCapability<?>, NotifiableRecipeHandlerTrait<?>>> handlers = new Object2ObjectOpenHashMap<>();
-        handlers.put(IO.IN, new Object2ObjectOpenHashMap<>());
-        handlers.put(IO.OUT, new Object2ObjectOpenHashMap<>());
-
-        for (var capability: recipeType.maxInputs.keySet()) {
-            if (!capability.shouldCreateCapabilityUI()) continue;
-
-            var traitType = capability.getNotifiableHandlerTraitType();
-            List<NotifiableRecipeHandlerTrait<?>> capHandlers = (List<NotifiableRecipeHandlerTrait<?>>)machine.getTraitHolder().getTraits(traitType);
-
-            var ioIn = handlers.get(IO.IN);
-            for (var capHandler: capHandlers) {
-                if (capHandler.getHandlerIO() == IO.IN) ioIn.putIfAbsent(capability, capHandler);
-            }
-        }
-        for (var capability: recipeType.maxOutputs.keySet()) {
-            if (!capability.shouldCreateCapabilityUI()) continue;
-
-            var traitType = capability.getNotifiableHandlerTraitType();
-            List<NotifiableRecipeHandlerTrait<?>> capHandlers = (List<NotifiableRecipeHandlerTrait<?>>)machine.getTraitHolder().getTraits(traitType);
-
-            var ioOut = handlers.get(IO.OUT);
-            for (var capHandler: capHandlers) {
-                if (capHandler.getHandlerIO() == IO.OUT) ioOut.putIfAbsent(capability, capHandler);
-            }
-        }
 
         DoubleSyncValue progressPercent = syncManager.getOrCreateSyncHandler("progressPercent",
                 DoubleSyncValue.class, () -> new DoubleSyncValue(progressSupplier));
@@ -83,14 +55,14 @@ public class GTRecipeTypeUILayout {
                 .coverChildren()
                 .horizontalCenter()
                 .childPadding((progressSize / 2) + 2)
-                .childIf(!handlers.get(IO.IN).isEmpty(), () -> getIOColumn(syncManager, machine, IO.IN, handlers.get(IO.IN)))
+                .child(getIOColumn(syncManager, machine, IO.IN))
                 .child(new ProgressWidget()
                         .value(progressPercent)
                         .name("progressBar")
                         .texture(progressBar, progressSize)
                         .size(progressSize)
                         .direction(progressDirection))
-                .childIf(!handlers.get(IO.OUT).isEmpty(), () -> getIOColumn(syncManager, machine, IO.OUT, handlers.get(IO.OUT)));
+                .child(getIOColumn(syncManager, machine, IO.OUT));
 
         return new ParentWidget<>()
                 .widthRel(1f)
@@ -100,17 +72,16 @@ public class GTRecipeTypeUILayout {
 
     public Flow getIOColumn(@NotNull PanelSyncManager syncManager,
                              MetaMachine machine,
-                             IO io,
-                             Map<RecipeCapability<?>, NotifiableRecipeHandlerTrait<?>> handlers) {
-        boolean in = io == IO.IN;
+                             IO io) {
 
-        var caps = (in ? recipeType.maxInputs : recipeType.maxOutputs);
+        var caps = (io == IO.IN ? recipeType.maxInputs : recipeType.maxOutputs);
 
         Flow ioColumn = Flow.col().coverChildren();
-
-
         for (var recipeCap : caps.keySet()) {
-            var ui = recipeCap.createCapabilityUI(machine, syncManager, handlers.get(recipeCap), this, caps.getInt(recipeCap), io);
+            List<NotifiableRecipeHandlerTrait<?>> handlers = (List<NotifiableRecipeHandlerTrait<?>>)machine.getTraitHolder().getTraits(recipeCap.getNotifiableHandlerTraitType());
+            var handler = handlers.stream().filter(h -> h.getHandlerIO() == io).findFirst();
+            if (handler.isEmpty()) continue;
+            var ui = recipeCap.createCapabilityUI(machine, syncManager, handler.get(), this, caps.getInt(recipeCap), io);
             if (ui != null) ioColumn.child(ui);
         }
 

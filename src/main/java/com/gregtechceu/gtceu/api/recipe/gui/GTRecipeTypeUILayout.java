@@ -83,7 +83,7 @@ public class GTRecipeTypeUILayout {
     }
 
     @Contract("_, _, null, null, _, _ -> fail")
-    private Flow getIOColumn(@NotNull PanelSyncManager syncManager,
+    public Flow getIOColumn(@NotNull PanelSyncManager syncManager,
                              IO io,
                              @Nullable NotifiableItemStackHandler items,
                              @Nullable NotifiableFluidTank fluids,

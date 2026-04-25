@@ -2,6 +2,8 @@ package com.gregtechceu.gtceu.api.capability.recipe;
 
 import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
 import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
+import com.gregtechceu.gtceu.api.machine.trait.MachineTraitType;
+import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
@@ -22,6 +24,11 @@ public class EURecipeCapability extends RecipeCapability<EnergyStack> {
 
     protected EURecipeCapability() {
         super("eu", 0xFFFFFF00, false, 2, SerializerEnergyStack.INSTANCE);
+    }
+
+    @Override
+    public MachineTraitType<?> getNotifiableHandlerTraitType() {
+        return NotifiableEnergyContainer.TYPE;
     }
 
     @Override

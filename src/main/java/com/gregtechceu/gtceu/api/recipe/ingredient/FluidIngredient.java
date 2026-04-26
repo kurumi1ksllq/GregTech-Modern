@@ -1,5 +1,8 @@
 package com.gregtechceu.gtceu.api.recipe.ingredient;
 
+import com.gregtechceu.gtceu.GTCEu;
+import com.gregtechceu.gtceu.integration.kjs.recipe.KJSHelpers;
+
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -82,12 +85,13 @@ public class FluidIngredient implements Predicate<FluidStack> {
         }
         if (this.values.length == 1) {
             jsonObject.add("value", this.values[0].serialize());
+        } else {
+            JsonArray jsonArray = new JsonArray();
+            for (FluidIngredient.Value value : this.values) {
+                jsonArray.add(value.serialize());
+            }
+            jsonObject.add("value", jsonArray);
         }
-        JsonArray jsonArray = new JsonArray();
-        for (FluidIngredient.Value value : this.values) {
-            jsonArray.add(value.serialize());
-        }
-        jsonObject.add("value", jsonArray);
         return jsonObject;
     }
 
@@ -165,7 +169,7 @@ public class FluidIngredient implements Predicate<FluidStack> {
     public FluidStack[] getStacks() {
         if (changed || this.stacks == null) {
             List<FluidStack> fluidStacks = new ObjectArrayList<>(1);
-            List<Fluid> found = new ObjectArrayList<>(1);
+            Set<Fluid> found = new HashSet<>();
             for (Value value : this.values) {
                 for (Fluid fluid : value.getFluids()) {
                     if (found.contains(fluid)) continue;
@@ -327,6 +331,10 @@ public class FluidIngredient implements Predicate<FluidStack> {
 
         @Override
         public Collection<Fluid> getFluids() {
+            if (GTCEu.Mods.isKubeJSLoaded()) {
+                var resolved = KJSHelpers.getFluidsDuringLoad(this.tag);
+                if (resolved != null) return resolved;
+            }
             ArrayList<Fluid> list = Lists.newArrayList();
             for (Holder<Fluid> holder : BuiltInRegistries.FLUID.getTagOrEmpty(this.tag)) {
                 list.add(holder.value());

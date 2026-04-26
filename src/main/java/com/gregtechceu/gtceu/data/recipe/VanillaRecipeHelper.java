@@ -10,11 +10,15 @@ import com.gregtechceu.gtceu.api.data.chemical.material.stack.ItemMaterialInfo;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialStack;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.item.module.ItemModule;
 import com.gregtechceu.gtceu.api.item.tool.ToolHelper;
 import com.gregtechceu.gtceu.data.recipe.builder.*;
 
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -23,7 +27,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 
 import com.tterrag.registrate.util.entry.ItemProviderEntry;
-import it.unimi.dsi.fastutil.chars.*;
+import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap;
+import it.unimi.dsi.fastutil.chars.CharArraySet;
+import it.unimi.dsi.fastutil.chars.CharSet;
 import it.unimi.dsi.fastutil.objects.Reference2LongOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,13 +65,13 @@ public class VanillaRecipeHelper {
 
     public static void addSmeltingRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
                                          Ingredient input, ItemStack output, float experience) {
-        new SmeltingRecipeBuilder(regName).input(input).output(output).cookingTime(200).experience(experience)
+        SimpleCookingRecipeBuilder.smelting(regName).input(input).output(output).cookingTime(200).experience(experience)
                 .save(provider);
     }
 
     public static void addSmeltingRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
                                          TagKey<Item> input, ItemStack output, float experience) {
-        new SmeltingRecipeBuilder(regName).input(input).output(output).cookingTime(200).experience(experience)
+        SimpleCookingRecipeBuilder.smelting(regName).input(input).output(output).cookingTime(200).experience(experience)
                 .save(provider);
     }
 
@@ -92,7 +98,7 @@ public class VanillaRecipeHelper {
 
     public static void addSmeltingRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
                                          ItemStack input, ItemStack output, float experience) {
-        new SmeltingRecipeBuilder(regName).input(input).output(output).cookingTime(200).experience(experience)
+        SimpleCookingRecipeBuilder.smelting(regName).input(input).output(output).cookingTime(200).experience(experience)
                 .save(provider);
     }
 
@@ -128,13 +134,13 @@ public class VanillaRecipeHelper {
 
     public static void addBlastingRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
                                          Ingredient input, ItemStack output, float experience) {
-        new BlastingRecipeBuilder(regName).input(input).output(output).cookingTime(100).experience(experience)
+        SimpleCookingRecipeBuilder.blasting(regName).input(input).output(output).cookingTime(100).experience(experience)
                 .save(provider);
     }
 
     public static void addBlastingRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
                                          TagKey<Item> input, ItemStack output, float experience) {
-        new BlastingRecipeBuilder(regName).input(input).output(output).cookingTime(100).experience(experience)
+        SimpleCookingRecipeBuilder.blasting(regName).input(input).output(output).cookingTime(100).experience(experience)
                 .save(provider);
     }
 
@@ -166,13 +172,13 @@ public class VanillaRecipeHelper {
 
     public static void addSmokingRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
                                         TagKey<Item> input, ItemStack output, float experience) {
-        new SmokingRecipeBuilder(regName).input(input).output(output).cookingTime(100).experience(experience)
+        SimpleCookingRecipeBuilder.smoking(regName).input(input).output(output).cookingTime(100).experience(experience)
                 .save(provider);
     }
 
     public static void addSmokingRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
                                         ItemStack input, ItemStack output, float experience) {
-        new SmokingRecipeBuilder(regName).input(input).output(output).cookingTime(100).experience(experience)
+        SimpleCookingRecipeBuilder.smoking(regName).input(input).output(output).cookingTime(100).experience(experience)
                 .save(provider);
     }
 
@@ -194,7 +200,8 @@ public class VanillaRecipeHelper {
 
     public static void addCampfireRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
                                          ItemStack input, ItemStack output, float experience) {
-        new CampfireRecipeBuilder(regName).input(input).output(output).cookingTime(100).experience(experience)
+        SimpleCookingRecipeBuilder.campfireCooking(regName).input(input).output(output).cookingTime(100)
+                .experience(experience)
                 .save(provider);
     }
 
@@ -210,7 +217,8 @@ public class VanillaRecipeHelper {
 
     public static void addCampfireRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
                                          TagKey<Item> input, ItemStack output, float experience) {
-        new CampfireRecipeBuilder(regName).input(input).output(output).cookingTime(100).experience(experience)
+        SimpleCookingRecipeBuilder.campfireCooking(regName).input(input).output(output).cookingTime(100)
+                .experience(experience)
                 .save(provider);
     }
 
@@ -225,7 +233,7 @@ public class VanillaRecipeHelper {
     }
 
     /**
-     * @see #addShapedRecipe(Consumer, boolean, boolean, ResourceLocation, ItemStack, Object...)
+     * @see #addShapedRecipe(Consumer, boolean, boolean, boolean, ResourceLocation, ItemStack, Object...)
      */
     public static void addShapedRecipe(Consumer<FinishedRecipe> provider, @NotNull String regName,
                                        @NotNull ItemStack result, @NotNull Object... recipe) {
@@ -233,7 +241,7 @@ public class VanillaRecipeHelper {
     }
 
     /**
-     * @see #addShapedRecipe(Consumer, boolean, boolean, ResourceLocation, ItemStack, Object...)
+     * @see #addShapedRecipe(Consumer, boolean, boolean, boolean, ResourceLocation, ItemStack, Object...)
      */
     public static void addShapedRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
                                        @NotNull ItemStack result, @NotNull Object... recipe) {
@@ -241,7 +249,7 @@ public class VanillaRecipeHelper {
     }
 
     /**
-     * @see #addShapedRecipe(Consumer, boolean, boolean, ResourceLocation, ItemStack, Object...)
+     * @see #addShapedRecipe(Consumer, boolean, boolean, boolean, ResourceLocation, ItemStack, Object...)
      */
     public static void addStrictShapedRecipe(Consumer<FinishedRecipe> provider, @NotNull String regName,
                                              @NotNull ItemStack result, @NotNull Object... recipe) {
@@ -249,7 +257,7 @@ public class VanillaRecipeHelper {
     }
 
     /**
-     * @see #addShapedRecipe(Consumer, boolean, boolean, ResourceLocation, ItemStack, Object...)
+     * @see #addShapedRecipe(Consumer, boolean, boolean, boolean, ResourceLocation, ItemStack, Object...)
      */
     public static void addStrictShapedRecipe(Consumer<FinishedRecipe> provider, boolean setMaterialInfoData,
                                              @NotNull String regName,
@@ -258,11 +266,36 @@ public class VanillaRecipeHelper {
     }
 
     /**
-     * @see #addShapedRecipe(Consumer, boolean, boolean, ResourceLocation, ItemStack, Object...)
+     * @see #addShapedRecipe(Consumer, boolean, boolean, boolean, ResourceLocation, ItemStack, Object...)
      */
     public static void addStrictShapedRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
                                              @NotNull ItemStack result, @NotNull Object... recipe) {
         addStrictShapedRecipe(provider, false, regName, result, recipe);
+    }
+
+    /**
+     * @see #addShapedRecipe(Consumer, boolean, boolean, boolean, ResourceLocation, ItemStack, Object...)
+     */
+    public static void addStrictSizeShapedRecipe(Consumer<FinishedRecipe> provider, @NotNull String regName,
+                                                 @NotNull ItemStack result, @NotNull Object... recipe) {
+        addStrictSizeShapedRecipe(provider, GTCEu.id(regName), result, recipe);
+    }
+
+    /**
+     * @see #addShapedRecipe(Consumer, boolean, boolean, boolean, ResourceLocation, ItemStack, Object...)
+     */
+    public static void addStrictSizeShapedRecipe(Consumer<FinishedRecipe> provider, boolean setMaterialInfoData,
+                                                 @NotNull String regName,
+                                                 @NotNull ItemStack result, @NotNull Object... recipe) {
+        addStrictSizeShapedRecipe(provider, setMaterialInfoData, GTCEu.id(regName), result, recipe);
+    }
+
+    /**
+     * @see #addShapedRecipe(Consumer, boolean, boolean, boolean, ResourceLocation, ItemStack, Object...)
+     */
+    public static void addStrictSizeShapedRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
+                                                 @NotNull ItemStack result, @NotNull Object... recipe) {
+        addStrictSizeShapedRecipe(provider, false, regName, result, recipe);
     }
 
     /**
@@ -287,15 +320,18 @@ public class VanillaRecipeHelper {
      * </ul>
      *
      * @param setMaterialInfoData whether to add material decomposition information to the recipe output
+     *
+     * @param matchSize
      * @param regName             the registry name for the recipe
      * @param result              the output for the recipe
      * @param recipe              the contents of the recipe
      */
     public static void addShapedRecipe(Consumer<FinishedRecipe> provider, boolean setMaterialInfoData, boolean isStrict,
-                                       @NotNull ResourceLocation regName, @NotNull ItemStack result,
+                                       boolean matchSize, @NotNull ResourceLocation regName, @NotNull ItemStack result,
                                        @NotNull Object... recipe) {
         var builder = new ShapedRecipeBuilder(regName).output(result);
         builder.isStrict(isStrict);
+        builder.matchSize(matchSize);
         final CharSet tools = ToolHelper.getToolSymbols();
         CharSet foundTools = new CharArraySet(9);
         for (int i = 0; i < recipe.length; i++) {
@@ -328,8 +364,9 @@ public class VanillaRecipeHelper {
                 } else if (content instanceof TagKey<?> key) {
                     builder.define(sign, (TagKey<Item>) key);
                 } else if (content instanceof TagPrefix prefix) {
-                    if (prefix.getItemParentTags().length > 0) {
-                        builder.define(sign, prefix.getItemParentTags()[0]);
+                    var parentTags = prefix.getItemParentTags();
+                    if (!parentTags.isEmpty()) {
+                        builder.define(sign, parentTags.get(0));
                     }
                 } else if (content instanceof ItemLike itemLike) {
                     builder.define(sign, itemLike);
@@ -355,7 +392,7 @@ public class VanillaRecipeHelper {
     }
 
     /**
-     * @see #addShapedRecipe(Consumer, boolean, boolean, ResourceLocation, ItemStack, Object...)
+     * @see #addShapedRecipe(Consumer, boolean, boolean, boolean, ResourceLocation, ItemStack, Object...)
      */
     public static void addShapedRecipe(Consumer<FinishedRecipe> provider, boolean setMaterialInfoData,
                                        @NotNull String regName, @NotNull ItemStack result, @NotNull Object... recipe) {
@@ -363,21 +400,30 @@ public class VanillaRecipeHelper {
     }
 
     /**
-     * @see #addShapedRecipe(Consumer, boolean, boolean, ResourceLocation, ItemStack, Object...)
+     * @see #addShapedRecipe(Consumer, boolean, boolean, boolean, ResourceLocation, ItemStack, Object...)
      */
     public static void addShapedRecipe(Consumer<FinishedRecipe> provider, boolean setMaterialInfoData,
                                        @NotNull ResourceLocation regName, @NotNull ItemStack result,
                                        @NotNull Object... recipe) {
-        addShapedRecipe(provider, setMaterialInfoData, false, regName, result, recipe);
+        addShapedRecipe(provider, setMaterialInfoData, false, false, regName, result, recipe);
     }
 
     /**
-     * @see #addShapedRecipe(Consumer, boolean, boolean, ResourceLocation, ItemStack, Object...)
+     * @see #addShapedRecipe(Consumer, boolean, boolean, boolean, ResourceLocation, ItemStack, Object...)
      */
     public static void addStrictShapedRecipe(Consumer<FinishedRecipe> provider, boolean setMaterialInfoData,
                                              @NotNull ResourceLocation regName, @NotNull ItemStack result,
                                              @NotNull Object... recipe) {
-        addShapedRecipe(provider, setMaterialInfoData, true, regName, result, recipe);
+        addShapedRecipe(provider, setMaterialInfoData, true, false, regName, result, recipe);
+    }
+
+    /**
+     * @see #addShapedRecipe(Consumer, boolean, boolean, boolean, ResourceLocation, ItemStack, Object...)
+     */
+    public static void addStrictSizeShapedRecipe(Consumer<FinishedRecipe> provider, boolean setMaterialInfoData,
+                                                 @NotNull ResourceLocation regName, @NotNull ItemStack result,
+                                                 @NotNull Object... recipe) {
+        addShapedRecipe(provider, setMaterialInfoData, true, true, regName, result, recipe);
     }
 
     public static void addShapelessRecipe(Consumer<FinishedRecipe> provider, @NotNull String regName,
@@ -492,8 +538,9 @@ public class VanillaRecipeHelper {
                 } else if (content instanceof TagKey<?> key) {
                     builder.define(sign, (TagKey<Item>) key);
                 } else if (content instanceof TagPrefix prefix) {
-                    if (prefix.getItemParentTags().length > 0) {
-                        builder.define(sign, prefix.getItemParentTags()[0]);
+                    var parentTags = prefix.getItemParentTags();
+                    if (!parentTags.isEmpty()) {
+                        builder.define(sign, parentTags.get(0));
                     }
                 } else if (content instanceof ItemLike itemLike) {
                     builder.define(sign, itemLike);
@@ -580,6 +627,38 @@ public class VanillaRecipeHelper {
             }
         }
         builder.save(provider);
+    }
+
+    public static void addSmithingTransformRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,
+                                                  @NotNull Item result, @NotNull ItemLike baseInput,
+                                                  @NotNull ItemLike template, @NotNull ItemLike addition,
+                                                  @NotNull RecipeCategory category) {
+        SmithingTransformRecipeBuilder
+                .smithing(Ingredient.of(template), Ingredient.of(baseInput), Ingredient.of(addition), category, result)
+                .unlocks(String.format("has_%s", baseInput), InventoryChangeTrigger.TriggerInstance.hasItems(baseInput))
+                .save(provider, regName);
+    }
+
+    public static void addSmithingTransformRecipe(Consumer<FinishedRecipe> provider, @NotNull String regName,
+                                                  @NotNull Item result, @NotNull ItemLike baseInput,
+                                                  @NotNull ItemLike template, @NotNull ItemLike addition) {
+        addSmithingTransformRecipe(provider, GTCEu.id(regName), result, baseInput, template, addition,
+                RecipeCategory.MISC);
+    }
+
+    public static void addToolUpgradingRecipe(@NotNull Consumer<FinishedRecipe> provider, @NotNull GTToolType tool,
+                                              @NotNull Material upgradeMaterial, @NotNull Material baseMaterial,
+                                              @NotNull ItemLike template, @NotNull ItemLike addition) {
+        ItemStack upgradeToolStack = ToolHelper.get(tool, upgradeMaterial);
+        ItemStack baseToolStack = ToolHelper.get(tool, baseMaterial);
+
+        if (upgradeToolStack.isEmpty() || baseToolStack.isEmpty()) return;
+
+        VanillaRecipeHelper.addSmithingTransformRecipe(provider,
+                String.format("%s_%s_smithing_transform_from_%s", upgradeMaterial.getName(), tool.name,
+                        baseMaterial.getName()),
+                upgradeToolStack.getItem(), baseToolStack.getItem(),
+                template, addition);
     }
 
     public static void addEquipmentFoundryRecipe(Consumer<FinishedRecipe> provider, @NotNull ResourceLocation regName,

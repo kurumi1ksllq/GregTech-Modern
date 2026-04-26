@@ -7,8 +7,8 @@ import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.TankWidget;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.common.data.GTMachines;
-import com.gregtechceu.gtceu.syncsystem.annotations.SaveField;
 import com.gregtechceu.gtceu.utils.GTTransferUtils;
 import com.gregtechceu.gtceu.utils.ISubscription;
 
@@ -42,8 +42,8 @@ public class DualHatchPartMachine extends ItemBusPartMachine {
 
     public DualHatchPartMachine(BlockEntityCreationInfo info, int tier, IO io) {
         super(info, tier, io);
-        this.tank = new NotifiableFluidTank(this, (int) Math.sqrt(getInventorySize()),
-                getTankCapacity(INITIAL_TANK_CAPACITY, getTier()), io);
+        this.tank = attachTrait(new NotifiableFluidTank((int) Math.sqrt(getInventorySize()),
+                getTankCapacity(INITIAL_TANK_CAPACITY, getTier()), io));
     }
 
     ////////////////////////////////

@@ -450,7 +450,7 @@ public class CommonEventListener {
     public static void stepAssistHandler(LivingEvent.LivingTickEvent event) {
         float MAGIC_STEP_HEIGHT = 1.0023f;
         LivingEntity entity = event.getEntity();
-        CompoundTag tag = player.getItemBySlot(EquipmentSlot.FEET).getOrCreateTag();
+        CompoundTag tag = entity.getItemBySlot(EquipmentSlot.FEET).getOrCreateTag();
         if (!entity.isCrouching() && entity.getItemBySlot(EquipmentSlot.FEET).is(CustomTags.STEP_BOOTS) &&
                 (!tag.contains("stepAssist") || tag.getBoolean("stepAssist"))) {
             if (entity.getStepHeight() < MAGIC_STEP_HEIGHT) {

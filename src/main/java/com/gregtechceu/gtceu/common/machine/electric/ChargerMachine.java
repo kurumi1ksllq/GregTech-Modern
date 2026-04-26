@@ -301,7 +301,7 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
                     }
                 }
             }
-            for (ItemStack electricItemStack : machine.linkedItems) {
+            for (ItemStack electricItemStack : getMachine().linkedItems) {
                 var electricItem = GTCapabilityHelper.getElectricItem(electricItemStack);
                 if (electricItem != null) {
                     energyCapacity += electricItem.getMaxCharge();
@@ -337,7 +337,7 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
                     }
                 }
             }
-            for (ItemStack electricItemStack : machine.linkedItems) {
+            for (ItemStack electricItemStack : getMachine().linkedItems) {
                 var electricItem = GTCapabilityHelper.getElectricItem(electricItemStack);
                 if (electricItem != null) {
                     energyStored += electricItem.getCharge();

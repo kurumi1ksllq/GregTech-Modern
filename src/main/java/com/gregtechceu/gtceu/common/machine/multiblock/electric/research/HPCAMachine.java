@@ -271,7 +271,7 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine
         widgets.add(GTMultiblockTextUtil.addEnergyUsageExactLine(this, syncManager));
         widgets.add(new TextWidget<>(Text.dynamic(text::getValue)));
         widgets.add(new Grid()
-                .mapTo(3, 9, i -> hpcaHandler.getComponentTexture(i).asWidget()
+                .gridOfSizeWidth(9, 3, (x, y, i) -> hpcaHandler.getComponentTexture(i).asWidget()
                         .tooltip(hpcaHandler.getComponentTooltip(i)))
                 .horizontalCenter());
         return widgets;

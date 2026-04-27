@@ -1,7 +1,5 @@
 package com.gregtechceu.gtceu.api.capability.recipe;
 
-import com.gregtechceu.gtceu.api.machine.trait.MachineTraitType;
-import com.gregtechceu.gtceu.api.machine.trait.NotifiableComputationContainer;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
@@ -22,11 +20,6 @@ public class CWURecipeCapability extends RecipeCapability<Integer> {
 
     protected CWURecipeCapability() {
         super("cwu", 0xFFEEEE00, false, 3, SerializerInteger.INSTANCE);
-    }
-
-    @Override
-    public MachineTraitType<?> getNotifiableHandlerTraitType() {
-        return NotifiableComputationContainer.TYPE;
     }
 
     @Override

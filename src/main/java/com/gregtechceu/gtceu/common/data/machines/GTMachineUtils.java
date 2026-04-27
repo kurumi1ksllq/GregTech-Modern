@@ -373,7 +373,7 @@ public class GTMachineUtils {
                         .recipeType(recipeType)
                         .recipeModifier(SimpleSteamMachine::recipeModifier)
                         .themeId((i) -> i > 0 ? GTGuiTheme.STEEL.getId() : GTGuiTheme.BRONZE.getId())
-                        .ui(GTSingleblockMachinePanels.STEAM_MACHINE)
+                        .ui(GTSingleblockMachinePanels.GENERAL_MACHINE)
                         .modelProperty(GTMachineModelProperties.VENT_DIRECTION, RelativeDirection.BACK)
                         .workableSteamHullModel(pressure, GTCEu.id("block/machines/" + name))
                         .register());

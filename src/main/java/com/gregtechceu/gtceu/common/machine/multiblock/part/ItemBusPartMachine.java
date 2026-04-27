@@ -299,7 +299,7 @@ public class ItemBusPartMachine extends TieredIOPartMachine
                 .coverChildren()
                 .center()
                 .margin(7, 5)
-                .mapTo(rowSize, rowSize * rowSize, index -> new ItemSlot()
+                .gridOfSizeHeight(rowSize * rowSize, rowSize, (x, y, index) -> new ItemSlot()
                         .slot(SyncHandlers.itemSlot(inventory, index)
                                 .slotGroup(group)
                                 .changeListener((newItem, amount, client, init) -> {

@@ -10,14 +10,17 @@ import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.TankWidget;
+import com.gregtechceu.gtceu.api.machine.feature.ITieredMachine;
 import com.gregtechceu.gtceu.api.recipe.*;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
+import com.gregtechceu.gtceu.api.recipe.gui.MachineCapabilityUILayoutBuilder;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.sound.ExistingSoundEntry;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.FusionReactorMachine;
 import com.gregtechceu.gtceu.common.machine.trait.customlogic.*;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
+import com.gregtechceu.gtceu.common.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.recipe.condition.AdjacentFluidCondition;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.integration.kjs.GTRegistryInfo;
@@ -107,8 +110,10 @@ public class GTRecipeTypes {
     public final static GTRecipeType ARC_FURNACE_RECIPES = register("arc_furnace", ELECTRIC).setMaxIOSize(1, 4, 1, 1)
             .setEUIO(IO.IN)
             .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_BAR_ARROW, 20)
-                    .setIOSlotWidth(IO.OUT, ItemRecipeCapability.CAP, 0, 2))
-            // .setProgressBar(GuiTextures.PROGRESS_BAR_ARC_FURNACE, LEFT_TO_RIGHT)
+                    .setMachineLayoutGridBuilder(ItemRecipeCapability.CAP, IO.OUT, (machine, layout) -> {
+                        var slots = layout.getRecipeType().getMaxOutputs(ItemRecipeCapability.CAP);
+                        return GTMuiWidgets.createGrid(slots, 2, true, 's');
+                    }))
             .setSound(GTSoundEntries.ARC)
             .onRecipeBuild((recipeBuilder, provider) -> {
                 if (recipeBuilder.input.getOrDefault(FluidRecipeCapability.CAP, Collections.emptyList()).isEmpty() &&
@@ -160,14 +165,20 @@ public class GTRecipeTypes {
             .setEUIO(IO.IN)
             .prepareBuilder(recipeBuilder -> recipeBuilder.duration(150).EUt(2))
             .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_BAR_MACERATE, 20)
+                    .setMachineLayoutGridBuilder(ItemRecipeCapability.CAP, IO.OUT, (machine, layout) -> {
+                        var slots = layout.getRecipeType().getMaxOutputs(ItemRecipeCapability.CAP);
+
+                        if (machine instanceof ITieredMachine tieredMachine) {
+                            if (tieredMachine.getTier() < GTValues.HV) slots = 1;
+                            else if (tieredMachine.getTier() == GTValues.HV) slots = 3;
+                            else slots = 4;
+                        }
+
+                        return GTMuiWidgets.createGrid(slots, Math.min(3, slots), true, 's');
+                    })
                     .setItemSlotOverlay(IO.IN, 0, GTGuiTextures.CRUSHED_ORE_OVERLAY)
                     .setItemSlotsOverlay(IO.OUT, 0, 3, GTGuiTextures.DUST_OVERLAY)
-                    .setIOSlotLengths(IO.OUT, ItemRecipeCapability.CAP, 0, 2, 1)
-                    .setIOSlotLength(IO.OUT, ItemRecipeCapability.CAP, 3, 3)
-                    .setIOSlotWidths(IO.OUT, ItemRecipeCapability.CAP, 4, GTValues.MAX, 2))
-            // .setSlotOverlay(false, false, GuiTextures.CRUSHED_ORE_OVERLAY)
-            // .setSlotOverlay(true, false, GuiTextures.DUST_OVERLAY)
-            // .setProgressBar(GuiTextures.PROGRESS_BAR_MACERATE, LEFT_TO_RIGHT)
+            )
             .setIconSupplier(() -> GTMachines.MACERATOR[GTValues.LV].asStack())
             .setSteamProgressBar(GuiTextures.PROGRESS_BAR_MACERATE_STEAM, LEFT_TO_RIGHT)
             .addCustomRecipeLogic(MaceratorLogic.INSTANCE)
@@ -182,12 +193,6 @@ public class GTRecipeTypes {
                     .setItemSlotOverlay(IO.OUT, 0, GTGuiTextures.CANISTER_OVERLAY)
                     .setFluidSlotOverlay(IO.IN, 0, GTGuiTextures.DARK_CANISTER_OVERLAY)
                     .setFluidSlotOverlay(IO.OUT, 0, GTGuiTextures.DARK_CANISTER_OVERLAY))
-            // .setSlotOverlay(false, false, false, GuiTextures.CANNER_OVERLAY)
-            // .setSlotOverlay(false, false, true, GuiTextures.CANISTER_OVERLAY)
-            // .setSlotOverlay(true, false, GuiTextures.CANISTER_OVERLAY)
-            // .setSlotOverlay(false, true, GuiTextures.DARK_CANISTER_OVERLAY)
-            // .setSlotOverlay(true, true, GuiTextures.DARK_CANISTER_OVERLAY)
-            // .setProgressBar(GuiTextures.PROGRESS_BAR_CANNER, LEFT_TO_RIGHT)
             .addCustomRecipeLogic(CannerLogic.INSTANCE)
             .setSound(GTSoundEntries.BATH);
 

@@ -223,7 +223,7 @@ public class GTMuiWidgets {
         syncManager.syncValue("circuit_slot", circuitSyncValue);
         Grid buttonGrid = new Grid()
                 .coverChildren()
-                .mapTo(8, 32, i -> new ToggleButton()
+                .gridOfSizeWidth(32, 8, (x, y, i) -> new ToggleButton()
                         .size(18)
                         .padding(1)
                         .overlay(new ItemDrawable().setItem(IntCircuitBehaviour.stack(i + 1)))

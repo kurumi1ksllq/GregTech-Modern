@@ -152,6 +152,8 @@ public class GTRecipeTypeBuilder extends BuilderBase<GTRecipeType> {
         var type = GTRecipeTypes.register(name, category);
         type.maxInputs.putAll(maxInputs);
         type.maxOutputs.putAll(maxOutputs);
+        type.capabilities.addAll(maxInputs.keySet());
+        type.capabilities.addAll(maxOutputs.keySet());
         type.getRecipeUI().getSlotOverlays().putAll(slotOverlays);
         type.getRecipeUI().setProgressBarTexture(progressBarTexture);
         type.getRecipeUI().setSteamProgressBarTexture(steamProgressBarTexture);

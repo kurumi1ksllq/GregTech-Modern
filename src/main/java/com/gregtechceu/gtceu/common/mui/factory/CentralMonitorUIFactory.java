@@ -255,7 +255,7 @@ public class CentralMonitorUIFactory implements PanelFactory {
                                                 moduleEditor.openPanel();
                                             return true;
                                         })))
-                        .child(new Grid().matrix(matrix).leftRel(0.5f).size(matrixWidth, matrixHeight)))
+                        .child(new Grid().grid(matrix).leftRel(0.5f).size(matrixWidth, matrixHeight)))
                 .child(new ButtonWidget<>()
                         .posRel(Alignment.TopRight)
                         .background(GuiTextures.HELP)

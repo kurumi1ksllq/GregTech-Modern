@@ -126,7 +126,7 @@ public class SimpleFluidFilter implements FluidFilter {
 
         Grid filterGrid = new Grid()
                 .coverChildren()
-                .mapTo(3, 9, i -> new FluidSlot().syncHandler("filter_slot_" + i));
+                .gridOfSizeWidth(9, 3,  (x, y, i) -> new FluidSlot().syncHandler("filter_slot_" + i));
 
         BooleanSyncValue blacklist = new BooleanSyncValue(this::isBlackList, this::setBlackList);
         syncManager.syncValue("blacklist", blacklist);

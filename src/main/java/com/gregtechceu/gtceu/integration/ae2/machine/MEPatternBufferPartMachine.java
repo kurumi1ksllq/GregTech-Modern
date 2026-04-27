@@ -300,7 +300,7 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                                     .minElementMargin(0, 0)
                                     .minColWidth(18).minRowHeight(18)
                                     .leftRel(0.5f)
-                                    .mapTo(3, 9, index -> new ItemSlot()
+                                    .gridOfSizeWidth(9, 3, (x, y, index) -> new ItemSlot()
                                             .slot(SyncHandlers.itemSlot(shareInventory, index)
                                                     .slotGroup(sharedItemSlotGroup)
                                                     .accessibility(true, true))));
@@ -405,7 +405,7 @@ public class MEPatternBufferPartMachine extends MEBusPartMachine
                 .minElementMargin(0, 0)
                 .minColWidth(18).minRowHeight(18)
                 .leftRel(0.5f)
-                .mapTo(9, MAX_PATTERN_COUNT, index -> new ItemSlot()
+                .gridOfSizeWidth(MAX_PATTERN_COUNT, 9, (x, y, index) -> new ItemSlot()
                         .slot(SyncHandlers.itemSlot(patternInventory, index)
                                 .slotGroup(patternSlotGroup)
                                 .accessibility(true, true)

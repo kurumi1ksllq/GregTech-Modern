@@ -143,7 +143,7 @@ public class ItemMagnetBehavior implements IInteractionItem, IItemLifeCycle, IAd
 
         Grid filterGrid = new Grid()
                 .coverChildren()
-                .mapTo(3, 9, i -> new PhantomItemSlot()
+                .gridOfSizeWidth(9, 3, (x, y, i) -> new PhantomItemSlot()
                         .size(16)
                         .syncHandler(new PhantomItemSlotSyncHandler(new ModularSlot(handler, i)
                                 .changeListener((stack, amount, client, init) -> handler.setStackInSlot(i, stack))

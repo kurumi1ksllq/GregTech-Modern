@@ -1,16 +1,7 @@
 package com.gregtechceu.gtceu.api.capability.recipe;
 
-import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.api.widget.IWidget;
-import brachy.modularui.theme.ThemeAPI;
-import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widgets.SlotGroupWidget;
-import brachy.modularui.widgets.slot.ItemSlot;
-import brachy.modularui.widgets.slot.ModularSlot;
-import brachy.modularui.widgets.slot.SlotGroup;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.api.machine.TieredMachine;
 import com.gregtechceu.gtceu.api.machine.trait.*;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
@@ -18,7 +9,6 @@ import com.gregtechceu.gtceu.api.recipe.ResearchData;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.content.SerializerIngredient;
-import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUILayout;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntCircuitIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredient;
@@ -38,7 +28,6 @@ import com.gregtechceu.gtceu.utils.*;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.jei.IngredientIO;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.valueproviders.IntProvider;
@@ -68,11 +57,6 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
 
     protected ItemRecipeCapability() {
         super("item", 0xFFD96106, true, 0, SerializerIngredient.INSTANCE);
-    }
-
-    @Override
-    public MachineTraitType<?> getNotifiableHandlerTraitType() {
-        return NotifiableItemStackHandler.TYPE;
     }
 
     @Override
@@ -603,45 +587,9 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
         return false;
     }
 
-    @Override
-    public boolean shouldCreateCapabilityUI() {
-        return true;
+    public @Nullable NotifiableItemStackHandler getCapabilityHandler(MetaMachine machine, IO io) {
+        var handlers = machine.getTraitHolder().getTraits(NotifiableItemStackHandler.TYPE);
+        return handlers.stream().filter(v -> v.handlerIO == io).findFirst().orElse(null);
     }
 
-    @Override
-    public @Nullable IWidget createCapabilityUI(@NotNull MetaMachine machine,
-                                                PanelSyncManager syncManager,
-                                                NotifiableRecipeHandlerTrait<?> handler,
-                                                GTRecipeTypeUILayout layout,
-                                                int maxRecipeTypeSlots,
-                                                IO io) {
-
-        if (maxRecipeTypeSlots == 0) return null;
-
-        var tier = ((TieredMachine)machine).getTier();
-
-        var itemHandler = (NotifiableItemStackHandler)handler;
-        var overlays = layout.getOverlays().computeIfAbsent(io, $ -> new Object2ObjectOpenHashMap<>()).computeIfAbsent(CAP, $ -> new Int2ObjectOpenHashMap<>());
-
-        var grid = layout.createGrid(io, CAP, 's', tier, itemHandler.getSlots());
-
-        IDrawable defaultSlotBackground = ThemeAPI.INSTANCE.getTheme(machine.getDefinition().getThemeId()).getItemSlotTheme().theme().getBackground();
-
-        SlotGroupWidget.Builder slotWidgetBuilder = SlotGroupWidget.builder()
-                .matrix(grid);
-
-            SlotGroup group = new SlotGroup("item_" + io.name(), grid[0].length());
-            slotWidgetBuilder.key('s', i -> {
-                var overlay = overlays.get(i) != null ?
-                            overlays.get(i) : IDrawable.EMPTY;
-
-                return new ItemSlot().slot(new ModularSlot(itemHandler, i)
-                                .slotGroup(group))
-                        .background(defaultSlotBackground, overlay);
-            });
-
-        return slotWidgetBuilder.build()
-                .coverChildren()
-                .name(CAP.name + "_" + io.name());
-    }
 }

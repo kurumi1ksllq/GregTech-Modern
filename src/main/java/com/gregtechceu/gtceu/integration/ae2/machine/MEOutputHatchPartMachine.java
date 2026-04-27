@@ -123,7 +123,7 @@ public class MEOutputHatchPartMachine extends MEHatchPartMachine {
                     col.child(new ScrollPreservingGrid(savedScroll)
                             .size(167, 80)
                             .scrollable(new VerticalScrollData())
-                            .mapTo(9, list, (index, stack) -> new AEStackDisplayWidget(list, index)));
+                            .gridOfSizeWidth(9, 1, (x, y, index) -> new AEStackDisplayWidget(list, index)));
                     return col;
                 });
 

@@ -460,5 +460,4 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
         var handlers = machine.getTraitHolder().getTraits(NotifiableFluidTank.TYPE);
         return handlers.stream().filter(v -> v.handlerIO == io).findFirst().orElse(null);
     }
-
 }

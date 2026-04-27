@@ -1,20 +1,17 @@
 package com.gregtechceu.gtceu.api.recipe;
 
-import brachy.modularui.api.drawable.Text;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.api.recipe.gui.RecipeUIModifier;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 
+import brachy.modularui.api.drawable.Text;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.Products;
 import com.mojang.serialization.Codec;
@@ -98,5 +95,4 @@ public abstract class RecipeCondition<T extends RecipeCondition<T>> {
         var ops = RegistryOps.create(NbtOps.INSTANCE, GTRegistries.builtinRegistry());
         return buf.readWithCodec(ops, CODEC);
     }
-
 }

@@ -1,7 +1,8 @@
 package com.gregtechceu.gtceu.api.recipe.gui;
 
-import brachy.modularui.api.drawable.Text;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+
+import brachy.modularui.api.drawable.Text;
 
 @FunctionalInterface
 public interface RecipeUIModifier {
@@ -10,6 +11,7 @@ public interface RecipeUIModifier {
 
     /**
      * A recipe ui modifier that adds a line of the text to the recipe UI
+     * 
      * @param text Text to add
      * @return Recipe ui modifier
      */
@@ -22,7 +24,7 @@ public interface RecipeUIModifier {
     default RecipeUIModifier then(RecipeUIModifier... modifiers) {
         return (recipe, widget) -> {
             buildRecipeUI(recipe, widget);
-            for (var modifier: modifiers) {
+            for (var modifier : modifiers) {
                 modifier.buildRecipeUI(recipe, widget);
             }
         };
@@ -30,7 +32,7 @@ public interface RecipeUIModifier {
 
     static RecipeUIModifier all(RecipeUIModifier... modifiers) {
         return (recipe, widget) -> {
-            for (var modifier: modifiers) {
+            for (var modifier : modifiers) {
                 modifier.buildRecipeUI(recipe, widget);
             }
         };

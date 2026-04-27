@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.jei;
 
-import brachy.modularui.integration.jei.recipe.ModularUIRecipeCategory;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
@@ -8,10 +7,11 @@ import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
-
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreProcessingRecipeWidget;
+
 import net.minecraft.network.chat.Component;
 
+import brachy.modularui.integration.jei.recipe.ModularUIRecipeCategory;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
@@ -23,7 +23,8 @@ import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.rawOre;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.Iron;
 
-public class GTOreProcessingJeiCategory extends ModularUIRecipeCategory<GTOreProcessingJeiCategory.GTOreProcessingInfoWrapper> {
+public class GTOreProcessingJeiCategory extends
+                                        ModularUIRecipeCategory<GTOreProcessingJeiCategory.GTOreProcessingInfoWrapper> {
 
     public final static RecipeType<GTOreProcessingInfoWrapper> RECIPE_TYPE = new RecipeType<>(
             GTCEu.id("ore_processing_diagram"), GTOreProcessingInfoWrapper.class);
@@ -70,5 +71,5 @@ public class GTOreProcessingJeiCategory extends ModularUIRecipeCategory<GTOrePro
         return icon;
     }
 
-    public record GTOreProcessingInfoWrapper(Material material) { }
+    public record GTOreProcessingInfoWrapper(Material material) {}
 }

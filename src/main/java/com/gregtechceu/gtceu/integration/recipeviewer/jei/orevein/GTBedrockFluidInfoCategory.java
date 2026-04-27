@@ -1,15 +1,15 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.jei.orevein;
 
-import brachy.modularui.integration.jei.recipe.ModularUIRecipeCategory;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreVeinRecipeWidget;
+
 import net.minecraft.network.chat.Component;
 
+import brachy.modularui.integration.jei.recipe.ModularUIRecipeCategory;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
@@ -17,7 +17,8 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import org.jetbrains.annotations.NotNull;
 
-public class GTBedrockFluidInfoCategory extends ModularUIRecipeCategory<GTBedrockFluidInfoCategory.BedrockFluidInfoWrapper> {
+public class GTBedrockFluidInfoCategory extends
+                                        ModularUIRecipeCategory<GTBedrockFluidInfoCategory.BedrockFluidInfoWrapper> {
 
     public final static RecipeType<BedrockFluidInfoWrapper> RECIPE_TYPE = new RecipeType<>(
             GTCEu.id("bedrock_fluid_diagram"), BedrockFluidInfoWrapper.class);

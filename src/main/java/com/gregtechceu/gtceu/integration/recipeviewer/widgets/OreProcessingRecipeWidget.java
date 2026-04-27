@@ -1,24 +1,23 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.widgets;
 
-import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
-import brachy.modularui.widget.ParentWidget;
-import brachy.modularui.widgets.FluidDisplayWidget;
-import brachy.modularui.widgets.slot.ItemSlot;
-import brachy.modularui.widgets.slot.ModularSlot;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
-
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 
+import brachy.modularui.api.drawable.IDrawable;
+import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
 import brachy.modularui.integration.recipeviewer.entry.fluid.FluidEntryList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
 import brachy.modularui.integration.recipeviewer.handlers.fluid.CycleFluidEntryHandler;
 import brachy.modularui.integration.recipeviewer.handlers.item.CycleItemEntryHandler;
+import brachy.modularui.widget.ParentWidget;
+import brachy.modularui.widgets.FluidDisplayWidget;
+import brachy.modularui.widgets.slot.ItemSlot;
+import brachy.modularui.widgets.slot.ModularSlot;
 import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
@@ -125,12 +124,12 @@ public class OreProcessingRecipeWidget extends ParentWidget<OreProcessingRecipeW
         CycleItemEntryHandler itemInputsHandler = new CycleItemEntryHandler(itemInputs);
         ParentWidget<?> itemStackGroup = new ParentWidget<>().sizeRel(1f);
         for (int i = 0; i < ITEM_INPUT_LOCATIONS.size(); i += 2) {
-            itemStackGroup.child(new ItemSlot().slot(new ModularSlot(itemInputsHandler, i/2)
+            itemStackGroup.child(new ItemSlot().slot(new ModularSlot(itemInputsHandler, i / 2)
                     .accessibility(false, false))
                     .recipeRole(RecipeSlotRole.INPUT)
-                    .pos(ITEM_INPUT_LOCATIONS.getInt(i), ITEM_INPUT_LOCATIONS.getInt(i+1))
-                    .tooltipBuilder(recipeWrapper.getTooltip(i / 2))
-            );}
+                    .pos(ITEM_INPUT_LOCATIONS.getInt(i), ITEM_INPUT_LOCATIONS.getInt(i + 1))
+                    .tooltipBuilder(recipeWrapper.getTooltip(i / 2)));
+        }
 
         NonNullList<ItemStack> itemOutputs = recipeWrapper.itemOutputs;
         CustomItemStackHandler itemOutputsHandler = new CustomItemStackHandler(itemOutputs);
@@ -153,8 +152,7 @@ public class OreProcessingRecipeWidget extends ParentWidget<OreProcessingRecipeW
                     .pos(ITEM_OUTPUT_LOCATIONS.getInt(i), ITEM_OUTPUT_LOCATIONS.getInt(i + 1))
                     .recipeRole(RecipeSlotRole.OUTPUT)
                     .tooltip(recipeWrapper.getTooltip(slotIndex + itemInputs.size()))
-                    .overlay(overlay)
-            );
+                    .overlay(overlay));
             itemOutputExists.add(true);
         }
 
@@ -176,7 +174,8 @@ public class OreProcessingRecipeWidget extends ParentWidget<OreProcessingRecipeW
         for (int i = 0; i < ITEM_OUTPUT_LOCATIONS.size(); i += 2) {
             // stupid hack to show all sifter slots if the first one exists
             if (itemOutputExists.getBoolean(i / 2) || (i > 28 * 2 && itemOutputExists.getBoolean(28) && hasSifter)) {
-                child(getChildren().size() - 3, brachy.modularui.drawable.GuiTextures.SLOT_ITEM.asWidget().pos(ITEM_INPUT_LOCATIONS.getInt(i), ITEM_INPUT_LOCATIONS.getInt(i+1)));
+                child(getChildren().size() - 3, brachy.modularui.drawable.GuiTextures.SLOT_ITEM.asWidget()
+                        .pos(ITEM_INPUT_LOCATIONS.getInt(i), ITEM_INPUT_LOCATIONS.getInt(i + 1)));
             }
         }
     }

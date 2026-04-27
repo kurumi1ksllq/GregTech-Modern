@@ -1,21 +1,20 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.rei;
 
-import brachy.modularui.integration.rei.recipe.ModularUIREIDisplay;
-import brachy.modularui.integration.rei.recipe.ModularUIREIDisplayCategory;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.common.data.GTItems;
-
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.ProgrammedCircuitRecipeWidget;
 
-import me.shedaniel.rei.api.common.util.EntryStacks;
 import net.minecraft.network.chat.Component;
 
+import brachy.modularui.integration.rei.recipe.ModularUIREIDisplay;
+import brachy.modularui.integration.rei.recipe.ModularUIREIDisplayCategory;
 import lombok.Getter;
 import me.shedaniel.rei.api.client.gui.Renderer;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
+import me.shedaniel.rei.api.common.util.EntryStacks;
 
 public class ProgrammedCircuitReiCategory extends
-        ModularUIREIDisplayCategory<ProgrammedCircuitReiCategory.GTProgrammedCircuitDisplay> {
+                                          ModularUIREIDisplayCategory<ProgrammedCircuitReiCategory.GTProgrammedCircuitDisplay> {
 
     public static CategoryIdentifier<GTProgrammedCircuitDisplay> CATEGORY = CategoryIdentifier
             .of(GTCEu.id("programmed_circuit"));
@@ -40,7 +39,8 @@ public class ProgrammedCircuitReiCategory extends
     public static class GTProgrammedCircuitDisplay extends ModularUIREIDisplay {
 
         public GTProgrammedCircuitDisplay() {
-            super(GTCEu.id("programmed_circuit"), ProgrammedCircuitRecipeWidget::new, ProgrammedCircuitReiCategory.CATEGORY);
+            super(GTCEu.id("programmed_circuit"), ProgrammedCircuitRecipeWidget::new,
+                    ProgrammedCircuitReiCategory.CATEGORY);
         }
     }
 }

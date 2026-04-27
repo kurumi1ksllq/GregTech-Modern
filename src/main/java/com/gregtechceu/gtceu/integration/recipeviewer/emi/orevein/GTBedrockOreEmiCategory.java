@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.emi.orevein;
 
-import brachy.modularui.integration.emi.recipe.ModularUIEmiRecipe;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
@@ -8,11 +7,11 @@ import com.gregtechceu.gtceu.api.data.worldgen.bedrockore.BedrockOreDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreVeinRecipeWidget;
 
 import net.minecraft.network.chat.Component;
 
+import brachy.modularui.integration.emi.recipe.ModularUIEmiRecipe;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiStack;
@@ -49,7 +48,8 @@ public class GTBedrockOreEmiCategory extends EmiRecipeCategory {
         private final BedrockOreDefinition bedrockOre;
 
         public GTBedrockOre(BedrockOreDefinition bedrockOre) {
-            super(ClientProxy.CLIENT_BEDROCK_ORE_VEINS.inverse().get(bedrockOre).withPrefix("/bedrock_ore_diagram/"), () -> new OreVeinRecipeWidget(bedrockOre));
+            super(ClientProxy.CLIENT_BEDROCK_ORE_VEINS.inverse().get(bedrockOre).withPrefix("/bedrock_ore_diagram/"),
+                    () -> new OreVeinRecipeWidget(bedrockOre));
             this.bedrockOre = bedrockOre;
         }
 

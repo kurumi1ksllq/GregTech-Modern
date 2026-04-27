@@ -916,6 +916,5 @@ public class ConfigHolder {
         @Configurable.Comment({ "Executes ./gradlew :processResources when F3+T is pressed",
                 "Only works in a development environment", "Default: false" })
         public boolean autoRebuildResources = false;
-
     }
 }

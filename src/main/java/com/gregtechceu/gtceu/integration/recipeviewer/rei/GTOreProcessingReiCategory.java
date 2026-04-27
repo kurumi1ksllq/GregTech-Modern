@@ -1,7 +1,5 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.rei;
 
-import brachy.modularui.integration.rei.recipe.ModularUIREIDisplay;
-import brachy.modularui.integration.rei.recipe.ModularUIREIDisplayCategory;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
@@ -12,6 +10,8 @@ import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreProcessingRecip
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
 
+import brachy.modularui.integration.rei.recipe.ModularUIREIDisplay;
+import brachy.modularui.integration.rei.recipe.ModularUIREIDisplayCategory;
 import lombok.Getter;
 import me.shedaniel.rei.api.client.gui.Renderer;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
@@ -24,7 +24,7 @@ import static com.gregtechceu.gtceu.api.data.chemical.material.properties.Proper
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 
 public class GTOreProcessingReiCategory extends
-        ModularUIREIDisplayCategory<GTOreProcessingReiCategory.GTOreProcessingDisplay> {
+                                        ModularUIREIDisplayCategory<GTOreProcessingReiCategory.GTOreProcessingDisplay> {
 
     public static final CategoryIdentifier<GTOreProcessingDisplay> CATEGORY = CategoryIdentifier
             .of(GTCEu.id("ore_processing_diagram"));
@@ -72,6 +72,7 @@ public class GTOreProcessingReiCategory extends
     }
 
     public static class GTOreProcessingDisplay extends ModularUIREIDisplay {
+
         public GTOreProcessingDisplay(Material material) {
             super(material.getResourceLocation(), () -> new OreProcessingRecipeWidget(material), CATEGORY);
         }

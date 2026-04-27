@@ -1,20 +1,19 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.emi.orevein;
 
-import brachy.modularui.integration.emi.recipe.ModularUIEmiRecipe;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreVeinRecipeWidget;
 
-import dev.emi.emi.api.stack.FluidEmiStack;
 import net.minecraft.network.chat.Component;
 
+import brachy.modularui.integration.emi.recipe.ModularUIEmiRecipe;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.stack.FluidEmiStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -48,7 +47,8 @@ public class GTBedrockFluidEmiCategory extends EmiRecipeCategory {
         private final BedrockFluidDefinition fluid;
 
         public GTBedrockFluid(BedrockFluidDefinition fluid) {
-            super(ClientProxy.CLIENT_FLUID_VEINS.inverse().get(fluid).withPrefix("/bedrock_fluid_diagram/"), () -> new OreVeinRecipeWidget(fluid));
+            super(ClientProxy.CLIENT_FLUID_VEINS.inverse().get(fluid).withPrefix("/bedrock_fluid_diagram/"),
+                    () -> new OreVeinRecipeWidget(fluid));
             this.fluid = fluid;
         }
 

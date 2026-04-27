@@ -1,8 +1,5 @@
 package com.gregtechceu.gtceu.api.recipe.content;
 
-import brachy.modularui.api.drawable.IDrawable;
-import brachy.modularui.screen.viewport.GuiContext;
-import brachy.modularui.theme.WidgetTheme;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.chance.boost.ChanceBoostFunction;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
@@ -24,6 +21,9 @@ import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import brachy.modularui.api.drawable.IDrawable;
+import brachy.modularui.screen.viewport.GuiContext;
+import brachy.modularui.theme.WidgetTheme;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -125,8 +125,9 @@ public class Content {
     }
 
     public IGuiTexture createOverlayLDLib(boolean perTick, int recipeTier, int chanceTier,
-                                   @Nullable ChanceBoostFunction function) {
+                                          @Nullable ChanceBoostFunction function) {
         return new IGuiTexture() {
+
             @Override
             public void draw(GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
                 drawChance(graphics, x, y, width, height, recipeTier, chanceTier, function);
@@ -138,7 +139,6 @@ public class Content {
             }
         };
     }
-
 
     @OnlyIn(Dist.CLIENT)
     public void drawRangeAmount(GuiGraphics graphics, float x, float y, int width, int height) {

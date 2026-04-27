@@ -1,6 +1,5 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.widgets;
 
-import brachy.modularui.screen.RichTooltip;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -25,6 +24,7 @@ import brachy.modularui.integration.recipeviewer.entry.fluid.FluidTagList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemEntryList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemStackList;
 import brachy.modularui.integration.recipeviewer.entry.item.ItemTagList;
+import brachy.modularui.screen.RichTooltip;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -298,9 +298,11 @@ public class GTOreByProduct {
                 if (entry.tierChanceBoost != 0) {
                     float boost = entry.tierChanceBoost / 100.0f;
                     tooltip.addLine(FormattingUtil.formatPercentage2Places("gtceu.gui.content.chance_base", chance));
-                    tooltip.addLine(FormattingUtil.formatPercentage2Places("gtceu.gui.content.chance_tier_boost_plus", boost));
+                    tooltip.addLine(
+                            FormattingUtil.formatPercentage2Places("gtceu.gui.content.chance_tier_boost_plus", boost));
                 } else {
-                    tooltip.addLine(FormattingUtil.formatPercentage2Places("gtceu.gui.content.chance_no_boost", chance));
+                    tooltip.addLine(
+                            FormattingUtil.formatPercentage2Places("gtceu.gui.content.chance_no_boost", chance));
                 }
             }
         };

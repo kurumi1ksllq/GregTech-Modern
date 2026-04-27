@@ -13,15 +13,16 @@ import com.lowdragmc.lowdraglib.rei.ModularDisplay;
 import com.lowdragmc.lowdraglib.rei.ModularUIDisplayCategory;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import me.shedaniel.rei.api.client.gui.Renderer;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
-public class MultiblockInfoReiCategory extends ModularUIDisplayCategory<MultiblockInfoReiCategory.MultiblockInfoDisplay> {
+public class MultiblockInfoReiCategory extends
+                                       ModularUIDisplayCategory<MultiblockInfoReiCategory.MultiblockInfoDisplay> {
 
     public static final CategoryIdentifier<MultiblockInfoDisplay> CATEGORY = CategoryIdentifier
             .of(GTCEu.id("multiblock_info"));

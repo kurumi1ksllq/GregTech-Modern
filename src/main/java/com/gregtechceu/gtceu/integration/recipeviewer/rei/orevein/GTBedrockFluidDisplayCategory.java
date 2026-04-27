@@ -1,32 +1,33 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.rei.orevein;
 
-import brachy.modularui.integration.rei.recipe.ModularUIREIDisplay;
-import brachy.modularui.integration.rei.recipe.ModularUIREIDisplayCategory;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidDefinition;
 import com.gregtechceu.gtceu.client.ClientProxy;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.OreVeinRecipeWidget;
-import me.shedaniel.rei.api.common.entry.EntryIngredient;
-import me.shedaniel.rei.api.common.util.EntryIngredients;
-import net.minecraft.network.chat.Component;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+
+import brachy.modularui.integration.rei.recipe.ModularUIREIDisplay;
+import brachy.modularui.integration.rei.recipe.ModularUIREIDisplayCategory;
 import lombok.Getter;
 import me.shedaniel.rei.api.client.gui.Renderer;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
+import me.shedaniel.rei.api.common.entry.EntryIngredient;
+import me.shedaniel.rei.api.common.util.EntryIngredients;
 import me.shedaniel.rei.api.common.util.EntryStacks;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class GTBedrockFluidDisplayCategory extends ModularUIREIDisplayCategory<GTBedrockFluidDisplayCategory.GTBedrockFluidDisplay> {
+public class GTBedrockFluidDisplayCategory extends
+                                           ModularUIREIDisplayCategory<GTBedrockFluidDisplayCategory.GTBedrockFluidDisplay> {
 
     public static final CategoryIdentifier<GTBedrockFluidDisplay> CATEGORY = CategoryIdentifier
             .of(GTCEu.id("bedrock_fluid_diagram"));
@@ -77,5 +78,4 @@ public class GTBedrockFluidDisplayCategory extends ModularUIREIDisplayCategory<G
             return outputs;
         }
     }
-
 }

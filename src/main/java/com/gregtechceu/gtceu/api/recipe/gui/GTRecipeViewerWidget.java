@@ -1,8 +1,9 @@
 package com.gregtechceu.gtceu.api.recipe.gui;
 
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+
 import brachy.modularui.widget.ParentWidget;
 import brachy.modularui.widgets.layout.Flow;
-import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
 public class GTRecipeViewerWidget extends ParentWidget<GTRecipeViewerWidget> {
 
@@ -14,6 +15,5 @@ public class GTRecipeViewerWidget extends ParentWidget<GTRecipeViewerWidget> {
         this.recipe = recipe;
 
         textComponents = Flow.col();
-
     }
 }

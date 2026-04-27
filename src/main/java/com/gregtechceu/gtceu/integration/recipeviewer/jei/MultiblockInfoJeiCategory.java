@@ -8,8 +8,8 @@ import com.gregtechceu.gtceu.common.data.machines.GTMultiMachines;
 
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.jei.ModularUIRecipeCategory;
-
 import com.lowdragmc.lowdraglib.jei.ModularWrapper;
+
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.network.chat.Component;
@@ -36,7 +36,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class MultiblockInfoJeiCategory extends ModularUIRecipeCategory<MultiblockInfoJeiCategory.MultiblockInfoWrapper> {
+public class MultiblockInfoJeiCategory extends
+                                       ModularUIRecipeCategory<MultiblockInfoJeiCategory.MultiblockInfoWrapper> {
 
     public final static RecipeType<MultiblockInfoWrapper> RECIPE_TYPE = new RecipeType<>(GTCEu.id("multiblock_info"),
             MultiblockInfoWrapper.class);

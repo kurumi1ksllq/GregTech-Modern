@@ -1,8 +1,5 @@
 package com.gregtechceu.gtceu.common.recipe.condition;
 
-import brachy.modularui.api.drawable.Text;
-import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
-import brachy.modularui.widgets.ItemDisplayWidget;
 import com.gregtechceu.gtceu.api.data.DimensionMarker;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
@@ -25,6 +22,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
+import brachy.modularui.api.drawable.Text;
+import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
+import brachy.modularui.widgets.ItemDisplayWidget;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
@@ -72,7 +72,8 @@ public class DimensionCondition extends RecipeCondition<DimensionCondition> {
         return super.modifyUI()
                 .then((recipe, widget) -> {
                     DimensionMarker dimMarker = GTRegistries.DIMENSION_MARKERS.getOrDefault(this.dimension.location(),
-                            new DimensionMarker(DimensionMarker.MAX_TIER, () -> Blocks.BARRIER, this.dimension.toString()));
+                            new DimensionMarker(DimensionMarker.MAX_TIER, () -> Blocks.BARRIER,
+                                    this.dimension.toString()));
                     ItemStack icon = dimMarker.getIcon();
                     String dimTier = "T" + (dimMarker.tier >= DimensionMarker.MAX_TIER ? "?" : dimMarker.tier);
 

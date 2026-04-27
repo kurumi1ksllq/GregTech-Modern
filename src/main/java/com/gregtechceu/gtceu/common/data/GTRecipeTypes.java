@@ -176,8 +176,7 @@ public class GTRecipeTypes {
                         return GTMuiWidgets.createGrid(slots, Math.min(3, slots), true, 's');
                     })
                     .setItemSlotOverlay(IO.IN, 0, GTGuiTextures.CRUSHED_ORE_OVERLAY)
-                    .setItemSlotsOverlay(IO.OUT, 0, 3, GTGuiTextures.DUST_OVERLAY)
-            )
+                    .setItemSlotsOverlay(IO.OUT, 0, 3, GTGuiTextures.DUST_OVERLAY))
             .setIconSupplier(() -> GTMachines.MACERATOR[GTValues.LV].asStack())
             .setSteamProgressBar(GuiTextures.PROGRESS_BAR_MACERATE_STEAM, LEFT_TO_RIGHT)
             .addCustomRecipeLogic(MaceratorLogic.INSTANCE)

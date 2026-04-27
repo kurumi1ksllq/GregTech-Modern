@@ -1,12 +1,12 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.jei;
 
-import brachy.modularui.integration.jei.recipe.ModularUIRecipeCategory;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.common.data.GTItems;
-
 import com.gregtechceu.gtceu.integration.recipeviewer.widgets.ProgrammedCircuitRecipeWidget;
+
 import net.minecraft.network.chat.Component;
 
+import brachy.modularui.integration.jei.recipe.ModularUIRecipeCategory;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ProgrammedCircuitJeiCategory extends
-        ModularUIRecipeCategory<ProgrammedCircuitJeiCategory.GTProgrammedCircuitWrapper> {
+                                          ModularUIRecipeCategory<ProgrammedCircuitJeiCategory.GTProgrammedCircuitWrapper> {
 
     public final static RecipeType<GTProgrammedCircuitWrapper> RECIPE_TYPE = new RecipeType<>(
             GTCEu.id("programmed_circuit"), GTProgrammedCircuitWrapper.class);

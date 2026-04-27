@@ -591,5 +591,4 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
         var handlers = machine.getTraitHolder().getTraits(NotifiableItemStackHandler.TYPE);
         return handlers.stream().filter(v -> v.handlerIO == io).findFirst().orElse(null);
     }
-
 }

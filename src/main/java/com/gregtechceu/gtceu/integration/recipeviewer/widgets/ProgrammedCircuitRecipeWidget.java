@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.widgets;
 
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
-
 import com.gregtechceu.gtceu.common.item.behavior.IntCircuitBehaviour;
 
 import brachy.modularui.integration.recipeviewer.RecipeSlotRole;
@@ -18,8 +17,8 @@ public class ProgrammedCircuitRecipeWidget extends ParentWidget<ProgrammedCircui
 
         CustomItemStackHandler handler = new CustomItemStackHandler(32);
 
-        for (int i = 0; i<32; i++) {
-            handler.setStackInSlot(i, IntCircuitBehaviour.stack(i+1));
+        for (int i = 0; i < 32; i++) {
+            handler.setStackInSlot(i, IntCircuitBehaviour.stack(i + 1));
         }
 
         Grid circuits = new Grid()

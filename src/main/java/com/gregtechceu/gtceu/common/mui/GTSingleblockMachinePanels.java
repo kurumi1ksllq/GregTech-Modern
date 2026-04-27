@@ -38,13 +38,14 @@ public class GTSingleblockMachinePanels {
         var rtUI = GTRecipeTypeUIs.recipeTypeUIs.get(type);
 
         if (rtUI == null) {
-            GTCEu.LOGGER.error("Tried to draw a singleblock recipe type UI for {}, but it does not have a recipe type UI",
+            GTCEu.LOGGER.error(
+                    "Tried to draw a singleblock recipe type UI for {}, but it does not have a recipe type UI",
                     machine.getDefinition().getName());
             return new ModularPanel<>(machine.getDefinition().getName());
         }
 
-        return MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine).mainContents((parent) ->
-                parent.child(rtUI.getBackedSlotsRow(syncManager, machine, recipeLogic::getProgressPercent)))
+        return MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine).mainContents(
+                (parent) -> parent.child(rtUI.getBackedSlotsRow(syncManager, machine, recipeLogic::getProgressPercent)))
                 .build(syncManager, settings)
                 .excludeAreaInRecipeViewer();
     };

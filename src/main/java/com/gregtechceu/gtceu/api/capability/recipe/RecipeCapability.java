@@ -225,5 +225,4 @@ public abstract class RecipeCapability<T> {
     public @Nullable NotifiableRecipeHandlerTrait<?> getCapabilityHandler(MetaMachine machine, IO io) {
         return null;
     }
-
 }

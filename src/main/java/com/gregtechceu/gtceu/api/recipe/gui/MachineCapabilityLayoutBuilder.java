@@ -18,10 +18,10 @@ import org.jetbrains.annotations.Nullable;
 
 
 /**
- * Builds and attaches the UI for a specific capability in a simple singleblock machine ui
+ * Builds the UI for a specific capability in a simple singleblock machine ui
  */
 @FunctionalInterface
-public interface MachineCapabilityUILayoutBuilder {
+public interface MachineCapabilityLayoutBuilder {
 
     /**
      * Builds and attaches the UI for a specific capability in a simple singleblock machine ui.
@@ -30,12 +30,12 @@ public interface MachineCapabilityUILayoutBuilder {
      * @param layout  The {@link GTRecipeTypeUILayout} which holds UI layout data.
      * @param io      The IO mode widgets are being created for.
      */
-    @Nullable IWidget createCapabilityUILayout(MetaMachine machine, SingleblockMachineUILayout layout, IO io);
+    @Nullable IWidget createCapabilityUILayout(MetaMachine machine, GTRecipeTypeUILayout layout, IO io);
 
-    MachineCapabilityUILayoutBuilder ITEM = (machine, layout, io) -> {
+    MachineCapabilityLayoutBuilder ITEM = (machine, layout, io) -> {
 
         NotifiableItemStackHandler itemHandler = ItemRecipeCapability.CAP.getCapabilityHandler(machine, io);
-        if (itemHandler == null || layout.recipeTypeUILayout.getRecipeType().getMaxSlots(ItemRecipeCapability.CAP, io) == 0) return null;
+        if (itemHandler == null || layout.getRecipeType().getMaxSlots(ItemRecipeCapability.CAP, io) == 0) return null;
 
         var slotGroup = new SlotGroup(ItemRecipeCapability.CAP.name + "_" + io.name(), 3);
 
@@ -47,21 +47,21 @@ public interface MachineCapabilityUILayoutBuilder {
                            .slot(new ModularSlot(itemHandler, i)
                                     .slotGroup(slotGroup)
                                     .accessibility(io == IO.IN, true))
-                         .backgroundOverlay(layout.recipeTypeUILayout.getOverlay(io, ItemRecipeCapability.CAP, i)))
+                         .backgroundOverlay(layout.getOverlay(io, ItemRecipeCapability.CAP, i)))
                 .build()
                 .coverChildren();
     };
 
-    MachineCapabilityUILayoutBuilder FLUID = (machine, layout, io) -> {
+    MachineCapabilityLayoutBuilder FLUID = (machine, layout, io) -> {
 
         NotifiableFluidTank fluidTank = FluidRecipeCapability.CAP.getCapabilityHandler(machine, io);
-        if (fluidTank == null || layout.recipeTypeUILayout.getRecipeType().getMaxSlots(FluidRecipeCapability.CAP, io) == 0) return null;
+        if (fluidTank == null || layout.getRecipeType().getMaxSlots(FluidRecipeCapability.CAP, io) == 0) return null;
 
         return SlotGroupWidget.builder()
                 .matrix(layout.getMachineGridLayout(FluidRecipeCapability.CAP, io, machine))
                 .key('s', i -> new FluidSlot()
                     .tank(fluidTank.getStorages()[i])
-                    .backgroundOverlay(layout.recipeTypeUILayout.getOverlay(io, FluidRecipeCapability.CAP, i)))
+                    .backgroundOverlay(layout.getOverlay(io, FluidRecipeCapability.CAP, i)))
                 .build()
                 .coverChildren();
     };

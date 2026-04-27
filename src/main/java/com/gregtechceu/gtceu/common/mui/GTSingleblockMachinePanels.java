@@ -22,6 +22,7 @@ public class GTSingleblockMachinePanels {
 
         GTRecipeType type;
         RecipeLogic recipeLogic;
+
         if (machine instanceof SimpleTieredMachine simpleTieredMachine) {
             type = simpleTieredMachine.getRecipeType();
             recipeLogic = simpleTieredMachine.getRecipeLogic();
@@ -34,13 +35,17 @@ public class GTSingleblockMachinePanels {
             return new ModularPanel<>(machine.getDefinition().getName());
         }
 
-        return MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine).mainContents((parent) -> {
-            if (!GTRecipeTypeUIs.recipeTypeUIs.containsKey(type))return;
+        var rtUI = GTRecipeTypeUIs.recipeTypeUIs.get(type);
 
-            parent.child(GTRecipeTypeUIs.recipeTypeUIs.get(type)
-                    .getSingleblockMachineUILayout().getBackedSlotsRow(syncManager, machine,
-                                    recipeLogic::getProgressPercent));
+        if (rtUI == null) {
+            GTCEu.LOGGER.error("Tried to draw a singleblock recipe type UI for {}, but it does not have a recipe type UI",
+                    machine.getDefinition().getName());
+            return new ModularPanel<>(machine.getDefinition().getName());
+        }
 
-        }).build(syncManager, settings).excludeAreaInRecipeViewer();
+        return MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine).mainContents((parent) ->
+                parent.child(rtUI.getBackedSlotsRow(syncManager, machine, recipeLogic::getProgressPercent)))
+                .build(syncManager, settings)
+                .excludeAreaInRecipeViewer();
     };
 }

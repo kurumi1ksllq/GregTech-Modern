@@ -2,12 +2,11 @@ package com.gregtechceu.gtceu.api.recipe.gui;
 
 import brachy.modularui.api.drawable.Text;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.integration.recipeviewer.widgets.GTMuiRecipeWidget;
 
 @FunctionalInterface
 public interface RecipeUIModifier {
 
-    void buildRecipeUI(GTRecipe recipe, GTMuiRecipeWidget widget);
+    void buildRecipeUI(GTRecipe recipe, GTRecipeViewerWidget widget);
 
     /**
      * A recipe ui modifier that adds a line of the text to the recipe UI

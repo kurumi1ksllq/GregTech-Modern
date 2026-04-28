@@ -155,7 +155,7 @@ public class PrimitiveBlastFurnaceMachine extends PrimitiveWorkableMachine imple
 
     @Override
     public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultPanelBuilder(this).addTraitConfigurators(false)
+        return MachineUIPanelBuilder.panelBuilder(this).addTraitConfigurators(false)
                 .addDefaultConfigurators(false);
     }
 

@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.gui.SteamTexture;
 import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.recipe.chance.boost.ChanceBoostFunction;
 import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUILayout;
-import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUIs;
 import com.gregtechceu.gtceu.api.recipe.gui.RecipeUIModifier;
 import com.gregtechceu.gtceu.api.recipe.lookup.RecipeAdditionHandler;
 import com.gregtechceu.gtceu.api.recipe.lookup.RecipeDB;
@@ -103,6 +102,9 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
     private int minRecipeConditions = 0;
 
     @Getter
+    private @Nullable GTRecipeTypeUILayout uiLayout;
+
+    @Getter
     private final List<RecipeUIModifier> uiModifiers = new ArrayList<>();
 
     public GTRecipeType(ResourceLocation registryName, String group, RecipeType<?>... proxyRecipes) {
@@ -146,9 +148,7 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
     }
 
     public GTRecipeType UI(UnaryOperator<GTRecipeTypeUILayout.Builder> builder) {
-        var recipeLayout = builder.apply(new GTRecipeTypeUILayout.Builder()).build();
-        recipeLayout.setRecipeType(this);
-        GTRecipeTypeUIs.addRecipeTypeUI(this, recipeLayout);
+        uiLayout = builder.apply(new GTRecipeTypeUILayout.Builder(this)).build();
         return this;
     }
 

@@ -1,7 +1,9 @@
 package com.gregtechceu.gtceu.integration.recipeviewer.widgets;
 
+import brachy.modularui.drawable.GuiTextures;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
+import com.gregtechceu.gtceu.api.recipe.gui.ContentOverlay;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 
@@ -102,7 +104,7 @@ public class OreProcessingRecipeWidget extends ParentWidget<OreProcessingRecipeW
         BooleanList itemOutputExists = new BooleanArrayList();
 
         // only draw slot on inputs if it is the ore
-        child(brachy.modularui.drawable.GuiTextures.SLOT_ITEM.asWidget()
+        child(GuiTextures.SLOT_ITEM.asWidget()
                 .pos(ITEM_INPUT_LOCATIONS.getInt(0), ITEM_INPUT_LOCATIONS.getInt(1)));
         boolean hasSifter = recipeWrapper.hasSifter();
 
@@ -140,7 +142,7 @@ public class OreProcessingRecipeWidget extends ParentWidget<OreProcessingRecipeW
             IDrawable overlay = null;
             if (chance != null) {
                 xeiChance = (float) chance.chance / chance.maxChance;
-                overlay = chance.createOverlay(false, 0, 0, null);
+                overlay = new ContentOverlay(chance, false, 0, 0, null);
             }
             if (itemOutputs.get(slotIndex).isEmpty()) {
                 itemOutputExists.add(false);

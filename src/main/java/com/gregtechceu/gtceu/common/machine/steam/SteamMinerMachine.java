@@ -153,7 +153,7 @@ public class SteamMinerMachine extends SteamWorkableMachine implements IControll
 
     @Override
     public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultSteamMachineBuilder(this);
+        return MachineUIPanelBuilder.defaultSteamMachinePanelBuilder(this);
     }
 
     @Override

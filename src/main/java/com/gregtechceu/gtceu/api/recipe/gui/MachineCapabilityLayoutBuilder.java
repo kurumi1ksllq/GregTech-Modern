@@ -9,61 +9,71 @@ import com.gregtechceu.gtceu.api.machine.steam.SimpleSteamMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 
-import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.widgets.SlotGroupWidget;
 import brachy.modularui.widgets.slot.FluidSlot;
 import brachy.modularui.widgets.slot.ItemSlot;
 import brachy.modularui.widgets.slot.ModularSlot;
 import brachy.modularui.widgets.slot.SlotGroup;
-import org.jetbrains.annotations.Nullable;
 
 /**
- * Builds the UI for a specific capability in a simple singleblock machine ui
+ * Builds and attaches the UI for a specific capability in a singleblock recipe machine UI.
  */
 @FunctionalInterface
 public interface MachineCapabilityLayoutBuilder {
 
     /**
-     * Builds and attaches the UI for a specific capability in a simple singleblock machine ui.
+     * Builds and attaches the UI for a specific capability in a singleblock recipe machine UI.
      *
      * @param machine The singleblock machine, will be either a {@link SimpleTieredMachine} or
      *                {@link SimpleSteamMachine}.
      * @param layout  The {@link GTRecipeTypeUILayout} which holds UI layout data.
+     * @param widget The recipe type widget. Generally, UIs should be attached to either {@link GTRecipeTypeMachineWidget#inputColumn} or {@link GTRecipeTypeMachineWidget#outputColumn}.
      * @param io      The IO mode widgets are being created for.
      */
-    @Nullable
-    IWidget createCapabilityUILayout(MetaMachine machine, GTRecipeTypeUILayout layout, IO io);
+    void createCapabilityUILayout(MetaMachine machine, GTRecipeTypeUILayout layout, GTRecipeTypeMachineWidget widget, IO io);
 
-    MachineCapabilityLayoutBuilder ITEM = (machine, layout, io) -> {
+    /**
+     * The default UI layout for item slots.
+     */
+    MachineCapabilityLayoutBuilder ITEM = (machine, layout, widget, io) -> {
 
         NotifiableItemStackHandler itemHandler = ItemRecipeCapability.CAP.getCapabilityHandler(machine, io);
-        if (itemHandler == null || layout.getRecipeType().getMaxSlots(ItemRecipeCapability.CAP, io) == 0) return null;
+        if (itemHandler == null || layout.recipeType.getMaxSlots(ItemRecipeCapability.CAP, io) == 0) return;
 
         var slotGroup = new SlotGroup(ItemRecipeCapability.CAP.name + "_" + io.name(), 3);
 
-        return SlotGroupWidget
+        var slotGroupWidget = SlotGroupWidget
                 .builder()
-                .matrix(layout.getMachineGridLayout(ItemRecipeCapability.CAP, io, machine))
+                .matrix(layout.capabilityInfo(ItemRecipeCapability.CAP).getMachineGrid(io, machine))
                 .key('s', i -> new ItemSlot()
                         .slot(new ModularSlot(itemHandler, i)
                                 .slotGroup(slotGroup)
                                 .accessibility(io == IO.IN, true))
-                        .backgroundOverlay(layout.getOverlay(io, ItemRecipeCapability.CAP, i)))
+                        .backgroundOverlay(layout.capabilityInfo(ItemRecipeCapability.CAP).getOverlay(io, i)))
                 .build()
                 .coverChildren();
+
+        if (io == IO.IN) widget.inputColumn.child(slotGroupWidget);
+        else widget.outputColumn.child(slotGroupWidget);
     };
 
-    MachineCapabilityLayoutBuilder FLUID = (machine, layout, io) -> {
+    /**
+     * The default UI layout for fluid slots.
+     */
+    MachineCapabilityLayoutBuilder FLUID = (machine, layout, widget, io) -> {
 
         NotifiableFluidTank fluidTank = FluidRecipeCapability.CAP.getCapabilityHandler(machine, io);
-        if (fluidTank == null || layout.getRecipeType().getMaxSlots(FluidRecipeCapability.CAP, io) == 0) return null;
+        if (fluidTank == null || layout.recipeType.getMaxSlots(FluidRecipeCapability.CAP, io) == 0) return;
 
-        return SlotGroupWidget.builder()
-                .matrix(layout.getMachineGridLayout(FluidRecipeCapability.CAP, io, machine))
+        var slotGroupWidget = SlotGroupWidget.builder()
+                .matrix(layout.capabilityInfo(FluidRecipeCapability.CAP).getMachineGrid(io, machine))
                 .key('s', i -> new FluidSlot()
                         .tank(fluidTank.getStorages()[i])
-                        .backgroundOverlay(layout.getOverlay(io, FluidRecipeCapability.CAP, i)))
+                        .backgroundOverlay(layout.capabilityInfo(FluidRecipeCapability.CAP).getOverlay(io, i)))
                 .build()
                 .coverChildren();
+
+        if (io == IO.IN) widget.inputColumn.child(slotGroupWidget);
+        else widget.outputColumn.child(slotGroupWidget);
     };
 }

@@ -310,7 +310,7 @@ public abstract class SteamBoilerMachine extends SteamWorkableMachine
 
     @Override
     public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultSteamMachineBuilder(this);
+        return MachineUIPanelBuilder.defaultSteamMachinePanelBuilder(this);
     }
 
     @Override

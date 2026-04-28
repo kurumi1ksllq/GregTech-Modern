@@ -202,7 +202,7 @@ public class CreativeEnergyContainerMachine extends TieredMachine
 
     @Override
     public MachineUIPanelBuilder getPanelBuilder(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
-        return MachineUIPanelBuilder.defaultPanelBuilder(this).attachInventory(false);
+        return MachineUIPanelBuilder.panelBuilder(this).attachInventory(false);
     }
 
     @Override

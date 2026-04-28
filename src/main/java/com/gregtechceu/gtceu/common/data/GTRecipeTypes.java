@@ -109,10 +109,7 @@ public class GTRecipeTypes {
     public final static GTRecipeType ARC_FURNACE_RECIPES = register("arc_furnace", ELECTRIC).setMaxIOSize(1, 4, 1, 1)
             .setEUIO(IO.IN)
             .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_BAR_ARROW, 20)
-                    .setMachineLayoutGridBuilder(ItemRecipeCapability.CAP, IO.OUT, (machine, layout) -> {
-                        var slots = layout.getRecipeType().getMaxOutputs(ItemRecipeCapability.CAP);
-                        return GTMuiWidgets.createGrid(slots, 2, true, 's');
-                    }))
+                    .setLayoutGridBuilder(ItemRecipeCapability.CAP, IO.OUT, l -> GTMuiWidgets.createGrid(4, 2, true, 's')))
             .setSound(GTSoundEntries.ARC)
             .onRecipeBuild((recipeBuilder, provider) -> {
                 if (recipeBuilder.input.getOrDefault(FluidRecipeCapability.CAP, Collections.emptyList()).isEmpty() &&
@@ -165,7 +162,7 @@ public class GTRecipeTypes {
             .prepareBuilder(recipeBuilder -> recipeBuilder.duration(150).EUt(2))
             .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_BAR_MACERATE, 20)
                     .setMachineLayoutGridBuilder(ItemRecipeCapability.CAP, IO.OUT, (machine, layout) -> {
-                        var slots = layout.getRecipeType().getMaxOutputs(ItemRecipeCapability.CAP);
+                        var slots = layout.recipeType.getMaxOutputs(ItemRecipeCapability.CAP);
 
                         if (machine instanceof ITieredMachine tieredMachine) {
                             if (tieredMachine.getTier() < GTValues.HV) slots = 1;

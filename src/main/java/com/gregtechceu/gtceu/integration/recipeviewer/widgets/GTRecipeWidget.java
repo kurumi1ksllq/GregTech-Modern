@@ -15,6 +15,7 @@ import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.chance.boost.ChanceBoostFunction;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
+import com.gregtechceu.gtceu.api.recipe.gui.ContentOverlay;
 import com.gregtechceu.gtceu.api.recipe.ingredient.EnergyStack;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.FusionReactorMachine;
@@ -443,8 +444,8 @@ public class GTRecipeWidget extends WidgetGroup {
                                     cap.applyWidgetInfo(widget, index, true, io, null, recipe.getType(), recipe,
                                             content,
                                             null, minTier, tier);
-                                    widget.setOverlay(content.createOverlayLDLib(index >= nonTickCount, minTier, tier,
-                                            recipe.getType().getChanceFunction()));
+                                    widget.setOverlay(new ContentOverlay(content, index >= nonTickCount, minTier, tier,
+                                            recipe.getType().getChanceFunction()).createOverlayLDLib());
                                 }
                             });
                 }

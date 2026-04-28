@@ -100,7 +100,7 @@ public interface IMEStockingPart extends IAutoPullPart {
                                         .setNumbers(1, 200))
                                 .margin(5)));
 
-        return MachineUIPanelBuilder.defaultPanelBuilder(this.self())
+        return MachineUIPanelBuilder.panelBuilder(this.self())
                 .rightConfigurators(f -> {
                     f.child(new ToggleButton()
                             .value(new BoolValue.Dynamic(this::isAutoPull, this::setAutoPull))

@@ -8,12 +8,12 @@ import com.gregtechceu.gtceu.api.machine.steam.SimpleSteamMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.mui.factory.PanelFactory;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
-import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeUIs;
 
 import brachy.modularui.factory.PosGuiData;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.value.sync.PanelSyncManager;
+import com.gregtechceu.gtceu.api.recipe.gui.GTRecipeTypeMachineWidget;
 
 public class GTSingleblockMachinePanels {
 
@@ -22,6 +22,7 @@ public class GTSingleblockMachinePanels {
 
         GTRecipeType type;
         RecipeLogic recipeLogic;
+        boolean isSteam = false;
 
         if (machine instanceof SimpleTieredMachine simpleTieredMachine) {
             type = simpleTieredMachine.getRecipeType();
@@ -29,23 +30,23 @@ public class GTSingleblockMachinePanels {
         } else if (machine instanceof SimpleSteamMachine simpleSteamMachine) {
             type = simpleSteamMachine.getRecipeType();
             recipeLogic = simpleSteamMachine.recipeLogic;
+            isSteam = true;
         } else {
             GTCEu.LOGGER.error("{} is not a SimpleTieredMachine or SimpleSteamMachine, cannot add slots to its content",
                     machine.getDefinition().getName());
             return new ModularPanel<>(machine.getDefinition().getName());
         }
 
-        var rtUI = GTRecipeTypeUIs.recipeTypeUIs.get(type);
-
-        if (rtUI == null) {
+        if (type.getUiLayout() == null) {
             GTCEu.LOGGER.error(
                     "Tried to draw a singleblock recipe type UI for {}, but it does not have a recipe type UI",
                     machine.getDefinition().getName());
             return new ModularPanel<>(machine.getDefinition().getName());
         }
 
-        return MachineUIPanelBuilder.defaultSimpleSingleblockPanelBuilder(machine).mainContents(
-                (parent) -> parent.child(rtUI.getBackedSlotsRow(syncManager, machine, recipeLogic::getProgressPercent)))
+        var builder = isSteam ? MachineUIPanelBuilder.panelBuilder(machine).drawGTLogo(true) : MachineUIPanelBuilder.defaultSteamMachinePanelBuilder(machine);
+        return builder.mainContents(
+                (parent) -> parent.child(new GTRecipeTypeMachineWidget(type, syncManager, machine, recipeLogic::getProgressPercent)))
                 .build(syncManager, settings)
                 .excludeAreaInRecipeViewer();
     };

@@ -101,15 +101,11 @@ public class MachineUIPanelBuilder {
         return panel;
     }
 
-    public static MachineUIPanelBuilder defaultSimpleSingleblockPanelBuilder(MetaMachine machine) {
-        return new MachineUIPanelBuilder(machine).drawGTLogo(true);
-    }
-
-    public static MachineUIPanelBuilder defaultPanelBuilder(MetaMachine machine) {
+    public static MachineUIPanelBuilder panelBuilder(MetaMachine machine) {
         return new MachineUIPanelBuilder(machine);
     }
 
-    public static MachineUIPanelBuilder defaultSteamMachineBuilder(MetaMachine machine) {
+    public static MachineUIPanelBuilder defaultSteamMachinePanelBuilder(MetaMachine machine) {
         return new MachineUIPanelBuilder(machine).drawGTLogo(true).addDefaultConfigurators(false)
                 .addTraitConfigurators(false);
     }

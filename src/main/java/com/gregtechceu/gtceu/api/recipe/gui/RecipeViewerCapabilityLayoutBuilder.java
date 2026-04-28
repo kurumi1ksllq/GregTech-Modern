@@ -6,6 +6,9 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import brachy.modularui.api.widget.IWidget;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Builds and attaches the UI for a specific capability in a recipe viewer UI.
+ */
 @FunctionalInterface
 public interface RecipeViewerCapabilityLayoutBuilder {
 

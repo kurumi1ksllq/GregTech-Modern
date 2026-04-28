@@ -8,146 +8,120 @@ import com.gregtechceu.gtceu.common.mui.GTMuiWidgets;
 
 import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.drawable.UITexture;
-import brachy.modularui.value.sync.DoubleSyncValue;
-import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widget.ParentWidget;
 import brachy.modularui.widgets.ProgressWidget;
-import brachy.modularui.widgets.layout.Flow;
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.NotImplementedException;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.DoubleSupplier;
+import java.util.function.Function;
 
 /**
  * Holds UI information for a recipe type UI.
  */
-@Getter
 public class GTRecipeTypeUILayout {
 
-    @Setter
-    private GTRecipeType recipeType;
-    private UITexture progressBar;
-    private int progressSize;
-    private ProgressWidget.Direction progressDirection;
-    private Map<IO, Map<RecipeCapability<?>, Int2ObjectOpenHashMap<IDrawable>>> overlays = new EnumMap<>(IO.class);
+    public final GTRecipeType recipeType;
+    public UITexture progressBar = UITexture.DEFAULT;
+    public int progressSize = 10;
+    public ProgressWidget.Direction progressDirection = ProgressWidget.Direction.RIGHT;
 
-    private Map<RecipeCapability<?>, Map<IO, BiFunction<MetaMachine, GTRecipeTypeUILayout, String[]>>> machineLayoutGridBuilders = new Object2ObjectOpenHashMap<>();
+    private final Map<RecipeCapability<?>, CapabilityUIInfo> capabilityInfo;
 
-    private Map<RecipeCapability<?>, MachineCapabilityLayoutBuilder> machineCapabilityLayoutBuilders = new Object2ObjectOpenHashMap<>();
-
-    private Map<RecipeCapability<?>, RecipeViewerCapabilityLayoutBuilder> recipeViewerCapLayoutBuilders = new Object2ObjectOpenHashMap<>();
-    private Map<RecipeCapability<?>, Map<IO, BiFunction<GTRecipe, GTRecipeTypeUILayout, String[]>>> recipeViewerLayoutGridBuilders = new Object2ObjectOpenHashMap<>();
-
-    public IDrawable getOverlay(IO io, RecipeCapability<?> cap, int index) {
-        return getOverlays()
-                .computeIfAbsent(io, $ -> new Object2ObjectOpenHashMap<>())
-                .computeIfAbsent(cap, $ -> new Int2ObjectOpenHashMap<>())
-                .getOrDefault(index, IDrawable.EMPTY);
+    public GTRecipeTypeUILayout(GTRecipeType recipeType, Map<RecipeCapability<?>, CapabilityUIInfo> capabilityInfo) {
+        this.recipeType = recipeType;
+        this.capabilityInfo = capabilityInfo;
     }
 
-    /**
-     * Gets the recipe type UI for a singleblock machine.
-     */
-    public ParentWidget<?> getBackedSlotsRow(@NotNull PanelSyncManager syncManager,
-                                             @NotNull MetaMachine machine,
-                                             DoubleSupplier progressSupplier) {
-        Objects.requireNonNull(getRecipeType());
-
-        DoubleSyncValue progressPercent = syncManager.getOrCreateSyncHandler("progressPercent",
-                DoubleSyncValue.class, () -> new DoubleSyncValue(progressSupplier));
-
-        Flow inColumn = Flow.col().coverChildren();
-        Flow outColumn = Flow.col().coverChildren();
-
-        var backedSlotsRow = Flow.row()
-                .coverChildren()
-                .center()
-                .childPadding((progressSize / 2) + 2)
-                .child(inColumn)
-                .child(new ProgressWidget()
-                        .value(progressPercent)
-                        .name("progressBar")
-                        .texture(progressBar, progressSize)
-                        .size(progressSize)
-                        .direction(progressDirection))
-                .child(outColumn);
-
-        for (var recipeCap : recipeType.maxInputs.keySet()) {
-            if (!machineCapabilityLayoutBuilders.containsKey(recipeCap)) continue;
-            var ui = machineCapabilityLayoutBuilders.get(recipeCap).createCapabilityUILayout(machine, this, IO.IN);
-            if (ui != null) inColumn.child(ui);
-        }
-
-        for (var recipeCap : recipeType.maxOutputs.keySet()) {
-            if (!machineCapabilityLayoutBuilders.containsKey(recipeCap)) continue;
-            var ui = machineCapabilityLayoutBuilders.get(recipeCap).createCapabilityUILayout(machine, this, IO.OUT);
-            if (ui != null) outColumn.child(ui);
-        }
-
-        return backedSlotsRow;
+    public CapabilityUIInfo capabilityInfo(RecipeCapability<?> cap) {
+        var info = capabilityInfo.computeIfAbsent(cap, CapabilityUIInfo::new);
+        if (info.layout == null) info.layout = this;
+        return info;
     }
 
-    public String[] getMachineGridLayout(RecipeCapability<?> cap, IO io, MetaMachine machine) {
-        if (machineLayoutGridBuilders.computeIfAbsent(cap, $ -> new Object2ObjectOpenHashMap<>()).containsKey(io)) {
-            return machineLayoutGridBuilders.get(cap).get(io).apply(machine, this);
+    public static class CapabilityUIInfo {
+        private final Map<IO, Int2ObjectOpenHashMap<IDrawable>> overlays = new Object2ObjectOpenHashMap<>();
+
+        private final Map<IO, MachineCapabilityGridBuilder> machineLayoutGridBuilders = new EnumMap<>(IO.class);
+
+        public @Nullable MachineCapabilityLayoutBuilder machineLayoutBuilder;
+
+        private final Map<IO, RecipeViewerCapabilityGridBuilder> recipeViewerLayoutGridBuilders = new EnumMap<>(IO.class);
+
+        public @Nullable RecipeViewerCapabilityLayoutBuilder recipeViewerLayoutBuilder;
+
+        private @UnknownNullability GTRecipeTypeUILayout layout;
+        private final RecipeCapability<?> cap;
+        private CapabilityUIInfo(RecipeCapability<?> cap) {
+            this.cap = cap;
         }
-        var slots = getRecipeType().getMaxSlots(cap, io);
-        return GTMuiWidgets.createGrid(slots, Math.min(3, slots), io.support(IO.OUT), 's');
+
+        public IDrawable getOverlay(IO io, int index) {
+            return overlays.computeIfAbsent(io, $ -> new Int2ObjectOpenHashMap<>()).getOrDefault(index, IDrawable.EMPTY);
+        }
+
+        public String[] getMachineGrid(IO io, MetaMachine machine) {
+            if (machineLayoutGridBuilders.containsKey(io)) return machineLayoutGridBuilders.get(io).buildGrid(machine, layout);
+            var slots = layout.recipeType.getMaxSlots(cap, io);
+            return GTMuiWidgets.createGrid(slots, Math.min(3, slots), io.support(IO.OUT), 's');
+        }
+
+        public String[] getRecipeViewerGrid(IO io, GTRecipe recipe) {
+            if (recipeViewerLayoutGridBuilders.containsKey(io)) return recipeViewerLayoutGridBuilders.get(io).buildGrid(recipe, layout);
+            return GTMuiWidgets.createGrid(layout.recipeType.getMaxSlots(cap, io),
+                    Math.min(3, layout.recipeType.getMaxSlots(cap, io)), io.support(IO.OUT), 's');
+        }
     }
 
-    public String[] getRecipeViewerGridLayout(RecipeCapability<?> cap, IO io, GTRecipe recipe) {
-        if (recipeViewerLayoutGridBuilders.computeIfAbsent(cap, $ -> new Object2ObjectOpenHashMap<>())
-                .containsKey(io)) {
-            return recipeViewerLayoutGridBuilders.get(cap).get(io).apply(recipe, this);
-        }
+    @FunctionalInterface
+    public interface MachineCapabilityGridBuilder {
+        String[] buildGrid(MetaMachine machine, GTRecipeTypeUILayout layout);
+    }
 
-        return GTMuiWidgets.createGrid(getRecipeType().getMaxSlots(cap, io),
-                Math.min(3, getRecipeType().getMaxSlots(cap, io)), io.support(IO.OUT), 's');
+    @FunctionalInterface
+    public interface RecipeViewerCapabilityGridBuilder {
+        String[] buildGrid(GTRecipe recipe, GTRecipeTypeUILayout layout);
     }
 
     public static class Builder {
 
-        private UITexture progressBar;
-        private int progressSize;
-        private ProgressWidget.Direction fillDirection;
-        private final Map<IO, Map<RecipeCapability<?>, Int2ObjectOpenHashMap<IDrawable>>> overlays = new EnumMap<>(
-                IO.class);
-        private final Map<RecipeCapability<?>, MachineCapabilityLayoutBuilder> machineCapLayoutBuilders = new Object2ObjectOpenHashMap<>();
-        private final Map<RecipeCapability<?>, Map<IO, BiFunction<MetaMachine, GTRecipeTypeUILayout, String[]>>> machineLayoutGridBuilders = new Object2ObjectOpenHashMap<>();
+        private UITexture progressBar = UITexture.DEFAULT;
+        private int progressSize = 10;
+        private ProgressWidget.Direction fillDirection = ProgressWidget.Direction.RIGHT;
 
-        private final Map<RecipeCapability<?>, RecipeViewerCapabilityLayoutBuilder> recipeViewerCapLayoutBuilders = new Object2ObjectOpenHashMap<>();
-        private final Map<RecipeCapability<?>, Map<IO, BiFunction<GTRecipe, GTRecipeTypeUILayout, String[]>>> recipeViewerLayoutGridBuilders = new Object2ObjectOpenHashMap<>();
+        private final Map<RecipeCapability<?>, CapabilityUIInfo> capabilityInfo = new Object2ObjectOpenHashMap<>();
+        private final GTRecipeType recipeType;
 
-        public Builder() {
-            machineCapLayoutBuilders.put(ItemRecipeCapability.CAP, MachineCapabilityLayoutBuilder.ITEM);
-            machineCapLayoutBuilders.put(FluidRecipeCapability.CAP, MachineCapabilityLayoutBuilder.FLUID);
+        public Builder(GTRecipeType recipeType) {
+            this.recipeType = recipeType;
+
+            getCapInfo(ItemRecipeCapability.CAP).machineLayoutBuilder = MachineCapabilityLayoutBuilder.ITEM;
+            getCapInfo(FluidRecipeCapability.CAP).machineLayoutBuilder = MachineCapabilityLayoutBuilder.FLUID;
+        }
+
+        private CapabilityUIInfo getCapInfo(RecipeCapability<?> cap) {
+            return capabilityInfo.computeIfAbsent(cap, CapabilityUIInfo::new);
         }
 
         /**
          * Adds a slot overlay for a specific slot
-         * 
+         *
          * @param ioMode    The IO of the slot
          * @param slotIndex The index of the slot.
          * @param cap       The slot capability
          * @param overlay   The slot overlay.
          */
         public Builder setSlotOverlay(IO ioMode, int slotIndex, RecipeCapability<?> cap, IDrawable overlay) {
-            overlays.computeIfAbsent(ioMode, it -> new Object2ReferenceOpenHashMap<>())
-                    .computeIfAbsent(cap, it -> new Int2ObjectOpenHashMap<>())
-                    .put(slotIndex, overlay);
+            getCapInfo(cap).overlays.computeIfAbsent(ioMode, $ -> new Int2ObjectOpenHashMap<>())
+                            .put(slotIndex, overlay);
             return this;
         }
 
         /**
          * Adds a slot overlay for an item slot
-         * 
+         *
          * @param ioMode    The IO of the slot
          * @param slotIndex The index of the slot.
          * @param overlay   The slot overlay.
@@ -158,7 +132,7 @@ public class GTRecipeTypeUILayout {
 
         /**
          * Adds a slot overlay for a fluid slot
-         * 
+         *
          * @param ioMode    The IO of the slot
          * @param slotIndex The index of the slot.
          * @param overlay   The slot overlay.
@@ -169,7 +143,7 @@ public class GTRecipeTypeUILayout {
 
         /**
          * Adds a slot overlay for multiple item slots.
-         * 
+         *
          * @param ioMode         The IO of the slot
          * @param slotIndexStart The first item slot to add the overlay to.
          * @param slotIndexEnd   The last item slot to add the overlay to.
@@ -184,7 +158,7 @@ public class GTRecipeTypeUILayout {
 
         /**
          * Adds a slot overlay for multiple fluid slots.
-         * 
+         *
          * @param ioMode         The IO of the slot
          * @param slotIndexStart The first fluid slot to add the overlay to.
          * @param slotIndexEnd   The last fluid slot to add the overlay to.
@@ -199,7 +173,7 @@ public class GTRecipeTypeUILayout {
 
         /**
          * Sets the texture and size of the progress bar
-         * 
+         *
          * @param progressBar  Progress bar texture
          * @param progressSize Progress bar size
          */
@@ -209,7 +183,7 @@ public class GTRecipeTypeUILayout {
 
         /**
          * Sets the texture, size and fill direction of the progress bar
-         * 
+         *
          * @param progressBar   Progress bar texture
          * @param progressSize  Progress bar size
          * @param fillDirection Progress bar fill direction
@@ -224,31 +198,32 @@ public class GTRecipeTypeUILayout {
         /**
          * For singleblock machines using this recipe type, sets a function that builds the ui for a specific capability
          * type.
-         * 
+         *
          * @param cap     The capability type
          * @param builder UI builder.
          */
         public Builder setMachineCapabilityLayoutBuilder(RecipeCapability<?> cap,
                                                          MachineCapabilityLayoutBuilder builder) {
-            machineCapLayoutBuilders.put(cap, builder);
+            getCapInfo(cap).machineLayoutBuilder = builder;
             return this;
         }
 
         /**
          * For singleblock machines using this recipe type, sets a function that builds the slot grid layout.
-         * 
+         *
          * @param cap         The capability type
          * @param gridBuilder Function that returns a {@code String[]}, where 's' should be used to denote a slot.
          */
         public Builder setMachineLayoutGridBuilder(RecipeCapability<?> cap, IO io,
-                                                   BiFunction<MetaMachine, GTRecipeTypeUILayout, String[]> gridBuilder) {
-            machineLayoutGridBuilders.computeIfAbsent(cap, $ -> new Object2ObjectOpenHashMap<>()).put(io, gridBuilder);
+                                                   MachineCapabilityGridBuilder gridBuilder) {
+            getCapInfo(cap).machineLayoutGridBuilders.put(io, gridBuilder);
             return this;
         }
 
         /**
-         * Loads a recipe type UI from a file.
-         * 
+         * Loads a recipe type UI from a file.<br>
+         * <b>Loading a recipe type UI from a file will override all other builder options.</b>
+         *
          * @param fileName Filename
          */
         public Builder loadRecipeTypeUIFromFile(String fileName) {
@@ -257,39 +232,45 @@ public class GTRecipeTypeUILayout {
 
         /**
          * For the recipe viewer UI, sets a function that builds the ui for a specific capability type.
-         * 
+         *
          * @param cap     The capability type
          * @param builder UI builder.
          */
         public Builder setRecipeViewerLayoutCapabilityLayoutBuilder(RecipeCapability<?> cap,
                                                                     RecipeViewerCapabilityLayoutBuilder builder) {
-            recipeViewerCapLayoutBuilders.put(cap, builder);
+            getCapInfo(cap).recipeViewerLayoutBuilder = builder;
             return this;
         }
 
         /**
          * For the recipe viewer UI, sets a function that builds the slot grid layout.
-         * 
+         *
          * @param cap         The capability type
          * @param gridBuilder Function that returns a {@code String[]}, where 's' should be used to denote a slot.
          */
         public Builder setRecipeViewerLayoutGridBuilder(RecipeCapability<?> cap, IO io,
-                                                        BiFunction<GTRecipe, GTRecipeTypeUILayout, String[]> gridBuilder) {
-            recipeViewerLayoutGridBuilders.computeIfAbsent(cap, $ -> new Object2ObjectOpenHashMap<>()).put(io,
-                    gridBuilder);
+                                                        RecipeViewerCapabilityGridBuilder gridBuilder) {
+            getCapInfo(cap).recipeViewerLayoutGridBuilders.put(io, gridBuilder);
+            return this;
+        }
+
+        /**
+         * Sets a function that builds the slot grid layout for both machine and recipe viewer UI
+         * @param cap The capability
+         * @param io IO
+         * @param gridBuilder Function that returns a {@code String[]}, where 's' should be used to denote a slot.
+         */
+        public Builder setLayoutGridBuilder(RecipeCapability<?> cap, IO io, Function<GTRecipeTypeUILayout, String[]> gridBuilder) {
+            setRecipeViewerLayoutGridBuilder(cap, io, (r, l) -> gridBuilder.apply(l));
+            setMachineLayoutGridBuilder(cap, io, (m, l) -> gridBuilder.apply(l));
             return this;
         }
 
         public GTRecipeTypeUILayout build() {
-            GTRecipeTypeUILayout layout = new GTRecipeTypeUILayout();
-            layout.progressBar = progressBar;
+            var layout = new GTRecipeTypeUILayout(recipeType, capabilityInfo);
             layout.progressSize = progressSize;
             layout.progressDirection = fillDirection;
-            layout.overlays = overlays;
-            layout.recipeViewerCapLayoutBuilders = recipeViewerCapLayoutBuilders;
-            layout.recipeViewerLayoutGridBuilders = recipeViewerLayoutGridBuilders;
-            layout.machineCapabilityLayoutBuilders = machineCapLayoutBuilders;
-            layout.machineLayoutGridBuilders = machineLayoutGridBuilders;
+            layout.progressBar = progressBar;
             return layout;
         }
     }

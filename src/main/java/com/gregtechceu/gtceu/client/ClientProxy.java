@@ -31,10 +31,7 @@ import com.gregtechceu.gtceu.client.renderer.machine.impl.*;
 import com.gregtechceu.gtceu.client.renderer.machine.impl.BoilerMultiPartRender;
 import com.gregtechceu.gtceu.common.CommonEventListener;
 import com.gregtechceu.gtceu.common.CommonProxy;
-import com.gregtechceu.gtceu.common.data.GTBlockEntities;
-import com.gregtechceu.gtceu.common.data.GTEntityTypes;
-import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
-import com.gregtechceu.gtceu.common.data.GTParticleTypes;
+import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
 import com.gregtechceu.gtceu.common.entity.GTBoat;
 import com.gregtechceu.gtceu.common.item.DrumMachineItem;
@@ -54,6 +51,8 @@ import com.gregtechceu.gtceu.integration.map.layer.builtin.OreRenderLayer;
 import com.gregtechceu.gtceu.utils.data.RuntimeBlockstateProvider;
 import com.gregtechceu.gtceu.utils.input.SyncedKeyMapping;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Timer;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
@@ -66,12 +65,18 @@ import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.mojang.blaze3d.systems.RenderSystem;
+import lombok.Getter;
 
 public class ClientProxy extends CommonProxy {
+
+    @Getter
+    private static final Timer timer60Fps = new Timer(60f, 0);
 
     public static final BiMap<ResourceLocation, GTOreDefinition> CLIENT_ORE_VEINS = HashBiMap.create();
     public static final BiMap<ResourceLocation, BedrockFluidDefinition> CLIENT_FLUID_VEINS = HashBiMap.create();
@@ -84,12 +89,22 @@ public class ClientProxy extends CommonProxy {
 
     public static void init() {
         if (!GTCEu.isDataGen()) {
+
             ClientCacheManager.registerClientCache(GTClientCache.instance, "gtceu");
             Layers.registerLayer(OreRenderLayer::new, "ore_veins");
             Layers.registerLayer(FluidRenderLayer::new, "bedrock_fluids");
             CommonEventListener.registerCapes(new RegisterGTCapesEvent());
         }
         initializeDynamicRenders();
+    }
+
+    @Override
+    public void preInit(FMLConstructModEvent event) {
+        super.preInit(event);
+        if (!GTCEu.isDataGen()) {
+            // enable stencil bits, must call on render thread
+            RenderSystem.recordRenderCall(() -> Minecraft.getInstance().getMainRenderTarget().enableStencil());
+        }
     }
 
     @SubscribeEvent

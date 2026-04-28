@@ -29,7 +29,6 @@ import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.gregtechceu.gtceu.api.misc.virtualregistry.VirtualEnderRegistry;
 import com.gregtechceu.gtceu.api.pattern.MultiblockWorldSavedData;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.capability.EnvironmentalHazardSavedData;
@@ -318,7 +317,6 @@ public class CommonEventListener {
     @SubscribeEvent
     public static void serverStopped(ServerStoppedEvent event) {
         ServerCache.instance.clear();
-        VirtualEnderRegistry.release();
     }
 
     @SubscribeEvent

@@ -16,9 +16,8 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.data.worldgen.WorldGenLayers;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.IndicatorGenerators;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.VeinGenerators;
-import com.gregtechceu.gtceu.api.gui.factory.CoverUIFactory;
-import com.gregtechceu.gtceu.api.gui.factory.GTUIEditorFactory;
-import com.gregtechceu.gtceu.api.gui.factory.MachineUIFactory;
+import com.gregtechceu.gtceu.api.mui.factory.CoverUIFactory;
+import com.gregtechceu.gtceu.api.mui.factory.MachineUIFactory;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.ingredient.*;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.*;
@@ -32,6 +31,7 @@ import com.gregtechceu.gtceu.common.data.materials.GTFoods;
 import com.gregtechceu.gtceu.common.item.tool.rotation.CustomBlockRotations;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.FusionReactorMachine;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
+import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.network.GTNetwork;
 import com.gregtechceu.gtceu.common.registry.GTRegistration;
 import com.gregtechceu.gtceu.common.unification.material.MaterialRegistryManager;
@@ -55,8 +55,6 @@ import com.gregtechceu.gtceu.integration.map.WaypointManager;
 import com.gregtechceu.gtceu.utils.input.KeyBind;
 import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
 
-import com.lowdragmc.lowdraglib.gui.factory.UIFactory;
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
@@ -79,6 +77,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import net.minecraftforge.registries.RegisterEvent;
 
+import brachy.modularui.factory.GuiManager;
 import com.google.common.collect.Multimaps;
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.providers.RegistrateLangProvider;
@@ -98,6 +97,12 @@ public class CommonProxy {
         GTCEuAPI.materialManager = MaterialRegistryManager.getInstance();
         ConfigHolder.init();
         GTCEuAPI.initializeHighTier();
+
+        // MUI stuff
+        GTGuiTextures.init();
+        GuiManager.registerFactory(MachineUIFactory.INSTANCE);
+        GuiManager.registerFactory(CoverUIFactory.INSTANCE);
+
         if (GTCEu.isDev()) {
             ConfigHolder.INSTANCE.recipes.generateLowQualityGems = true;
             ConfigHolder.INSTANCE.compat.energy.enableFEConverters = true;
@@ -114,9 +119,6 @@ public class CommonProxy {
     public static void init() {
         GTCEu.LOGGER.info("GTCEu common proxy init!");
         GTNetwork.init();
-        UIFactory.register(MachineUIFactory.INSTANCE);
-        UIFactory.register(CoverUIFactory.INSTANCE);
-        UIFactory.register(GTUIEditorFactory.INSTANCE);
 
         // Initialize the model generator before any content is loaded so machine models can use the generated data
         GregTechDatagen.initPre();
@@ -142,6 +144,10 @@ public class CommonProxy {
 
         GTCovers.init();
         GTCreativeModeTabs.init();
+
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        GTMenuTypes.init(modBus);
+
         GTBlocks.init();
         GTFluids.init();
         GTEntityTypes.init();
@@ -202,6 +208,9 @@ public class CommonProxy {
         FusionReactorMachine.registerFusionTier(GTValues.ZPM, " (MKII)");
         FusionReactorMachine.registerFusionTier(GTValues.UV, " (MKIII)");
     }
+
+    @SubscribeEvent
+    public void preInit(FMLConstructModEvent event) {}
 
     private static void initMaterials() {
         // First, register other mods' Registries

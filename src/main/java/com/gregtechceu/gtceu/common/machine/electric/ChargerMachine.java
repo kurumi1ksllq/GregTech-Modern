@@ -4,31 +4,37 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.blockentity.BlockEntityCreationInfo;
 import com.gregtechceu.gtceu.api.capability.*;
 import com.gregtechceu.gtceu.api.capability.compat.FeCompat;
-import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.machine.TieredEnergyMachine;
-import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IMuiMachine;
+import com.gregtechceu.gtceu.api.machine.mui.MachineUIPanel;
 import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer;
 import com.gregtechceu.gtceu.api.sync_system.annotations.RerenderOnChanged;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
+import com.gregtechceu.gtceu.common.mui.GTMuiMachineUtil;
 import com.gregtechceu.gtceu.config.ConfigHolder;
+import com.gregtechceu.gtceu.utils.GTStringUtils;
 import com.gregtechceu.gtceu.utils.GTUtil;
-
-import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.utils.Position;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraftforge.energy.IEnergyStorage;
 
+import brachy.modularui.api.drawable.IKey;
+import brachy.modularui.factory.PosGuiData;
+import brachy.modularui.screen.UISettings;
+import brachy.modularui.value.sync.DoubleSyncValue;
+import brachy.modularui.value.sync.PanelSyncManager;
+import brachy.modularui.widget.ParentWidget;
+import brachy.modularui.widgets.ProgressWidget;
+import brachy.modularui.widgets.layout.Flow;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +48,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class ChargerMachine extends TieredEnergyMachine implements IControllable, IFancyUIMachine {
+public class ChargerMachine extends TieredEnergyMachine implements IControllable, IMuiMachine {
 
     public static final long AMPS_PER_ITEM = 4L;
 
@@ -124,39 +130,41 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
     //////////////////////////////////////
 
     @Override
-    public Widget createUIWidget() {
-        int rowSize = (int) Math.sqrt(inventorySize);
-        int colSize = rowSize;
-        if (inventorySize == 8) {
-            rowSize = 4;
-            colSize = 2;
-        }
-        var template = new WidgetGroup(0, 0, 18 * rowSize + 8, 18 * colSize + 8);
-        template.setBackground(GuiTextures.BACKGROUND_INVERSE);
-        int index = 0;
-        for (int y = 0; y < colSize; y++) {
-            for (int x = 0; x < rowSize; x++) {
-                template.addWidget(new SlotWidget(chargerInventory, index++, 4 + x * 18, 4 + y * 18, true, true)
-                        .setBackgroundTexture(new GuiTextureGroup(GuiTextures.SLOT, GuiTextures.CHARGER_OVERLAY)));
-            }
-        }
+    public void buildMainUI(ParentWidget<?> mainWidget, PosGuiData guiData, PanelSyncManager syncManager,
+                            UISettings settings) {
+        String[] matrix;
+        if (inventorySize == 8) matrix = new String[] { "BBBB", "BBBB" };
+        else matrix = GTMuiMachineUtil.createSquareMatrix(inventorySize, 'B');
 
-        var editableUI = createEnergyBar();
-        var energyBar = editableUI.createDefault();
+        DoubleSyncValue energyPercentage = syncManager.getOrCreateSyncHandler("energyPercentage", DoubleSyncValue.class,
+                () -> new DoubleSyncValue(this::getEnergyPercentage));
 
-        var group = new WidgetGroup(0, 0,
-                Math.max(energyBar.getSize().width + template.getSize().width + 4 + 8, 172),
-                Math.max(template.getSize().height + 8, energyBar.getSize().height + 8));
-        var size = group.getSize();
-        energyBar.setSelfPosition(new Position(3, (size.height - energyBar.getSize().height) / 2));
-        template.setSelfPosition(new Position(
-                (size.width - energyBar.getSize().width - 4 - template.getSize().width) / 2 + 2 +
-                        energyBar.getSize().width + 2,
-                (size.height - template.getSize().height) / 2));
-        group.addWidget(energyBar);
-        group.addWidget(template);
-        editableUI.setupUI(group, this);
-        return group;
+        var flow = Flow.row().width(MachineUIPanel.DEFAULT_CONTENT_WIDTH).height(90);
+
+        flow.child(new ProgressWidget()
+                .texture(GTGuiTextures.PROGRESS_BAR_BOILER_EMPTY_STEEL,
+                        GTGuiTextures.PROGRESS_BAR_BOILER_HEAT, 60)
+                .direction(ProgressWidget.Direction.UP)
+                .value(energyPercentage)
+                .marginLeft(5)
+                .size(18, 60)
+                .addTooltipLine(IKey.dynamic(() -> Component.literal(
+                        "%s/%s EU".formatted(
+                                GTStringUtils.formatInt(energyContainer.getEnergyStored()),
+                                GTStringUtils.formatInt(energyContainer.getEnergyCapacity()))))))
+                .child(GTMuiMachineUtil.createSlotGroupFromInventory(
+                        chargerInventory, "batteries",
+                        inventorySize, 'B',
+                        slot -> slot.background(GTGuiTextures.SLOT, GTGuiTextures.CHARGER_OVERLAY),
+                        syncManager,
+                        matrix)
+                        .center());
+
+        mainWidget.child(flow);
+    }
+
+    private double getEnergyPercentage() {
+        return (double) this.energyContainer.getEnergyStored() / this.energyContainer.getEnergyCapacity();
     }
 
     //////////////////////////////////////
@@ -274,7 +282,7 @@ public class ChargerMachine extends TieredEnergyMachine implements IControllable
                 }
 
                 if (changed) {
-                    getMachine().markAsDirty();
+                    getMachine().markAsChanged();
                     getMachine().changeState(State.RUNNING);
                 }
 

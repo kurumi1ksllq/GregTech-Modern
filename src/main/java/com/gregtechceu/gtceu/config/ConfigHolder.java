@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.GTCEuAPI;
 
 import net.minecraft.commands.Commands;
 
+import brachy.modularui.screen.RichTooltip;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
@@ -769,13 +770,6 @@ public class ConfigHolder {
         @Configurable.Gui.ColorValue
         public String defaultPaintingColor = "#FFFFFF";
         @Configurable
-        @Configurable.Comment({ "The default color to overlay onto Machine (and other) UIs.",
-                "#FFFFFF is no coloring (like GTCE) (default).",
-                "#D2DCFF is the classic blue from GT5." })
-        @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,6}")
-        @Configurable.Gui.ColorValue
-        public String defaultUIColor = "#FFFFFF";
-        @Configurable
         @Configurable.Comment({ "Use VBO cache for multiblock preview.",
                 "Disable if you have issues with rendering multiblocks.", "Default: true" })
         public boolean useVBO = true;
@@ -784,15 +778,13 @@ public class ConfigHolder {
         @Configurable.Range(min = 1, max = 999)
         public int inWorldPreviewDuration = 10;
         @Configurable
-        @Configurable.Comment({ "Duration of UI animations in ms", "Default: 300" })
-        @Configurable.Range(min = 1)
-        public int animationTime = 300;
-        @Configurable
         public ArmorHud armorHud = new ArmorHud();
         @Configurable
         public RendererConfigs renderer = new RendererConfigs();
         @Configurable
         public TankItemFluidPreview tankItemFluidPreview = new TankItemFluidPreview();
+        @Configurable
+        public UIConfigs ui = new UIConfigs();
 
         public int getDefaultPaintingColor() {
             // OR with full alpha to differentiate from a machine that's painted white (map color 0xffffff)
@@ -816,14 +808,88 @@ public class ConfigHolder {
             public int hudOffsetY = 0;
         }
 
+        public static class RendererConfigs {
+
+            @Configurable
+            @Configurable.Comment({ "Render fluids in multiblocks that support them?", "Default: true" })
+            public boolean renderFluids = true;
+
+            @Configurable
+            @Configurable.Comment({ "Render growing plants in multiblocks that support them?", "Default: true" })
+            public boolean renderGrowingPlants = true;
+
+            @Configurable
+            @Configurable.Comment({ "Whether or not to color material/ore block highlights in the material color",
+                    "Default: true" })
+            public boolean coloredMaterialBlockOutline = true;
+
+            @Configurable
+            @Configurable.Comment({ "Whether or not to color tiered machine highlights in the tier color",
+                    "Default: true" })
+            public boolean coloredTieredMachineOutline = true;
+
+            @Configurable
+            @Configurable.Comment({
+                    "Whether or not to color wire/cable highlights based on voltage tier or material color",
+                    "Default: true" })
+            public boolean coloredWireOutline = true;
+        }
+
         public static class TankItemFluidPreview {
 
             @Configurable
-            @Configurable.Comment({ "Set true to render the including fluid icons to GT Drums" })
+            @Configurable.Comment({ "Set true to render the including fluid icons to GT Drums",
+                    "Default: false" })
             public boolean drum = false;
             @Configurable
-            @Configurable.Comment({ "Set true to render the including fluid icons to Super (Quantum) Tanks" })
+            @Configurable.Comment({ "Set true to render the including fluid icons to Super and Quantum Tanks",
+                    "Default: false" })
             public boolean quantumTank = false;
+        }
+
+        public static class UIConfigs {
+
+            @Configurable
+            @Configurable.Comment({
+                    "If progress bar should step in texture pixels or screen pixels. (Screen pixels are way smaller and therefore smoother)",
+                    "Default: true" })
+            public boolean smoothProgressBar = true;
+            @Configurable
+            @Configurable.Comment({ "Duration of UI animations in ms.",
+                    "Default: 100" })
+            @Configurable.Range(min = 1, max = 500)
+            public int animationTime = 100;
+            @Configurable
+            @Configurable.Comment({ "Default tooltip position around the widget or its panel.",
+                    "Default: VERTICAL" })
+            public RichTooltip.Pos tooltipPos = RichTooltip.Pos.NEXT_TO_MOUSE;
+
+            @Configurable
+            @Configurable.Comment({ "The default color to overlay onto Machine (and other) UIs.",
+                    "#FFFFFF is no coloring (like GTCE) (default).",
+                    "#D2DCFF is the classic blue from GT5." })
+            @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,6}")
+            @Configurable.Gui.ColorValue
+            public String defaultUIColor = "#FFFFFF";
+            @Configurable
+            @Configurable.Comment({
+                    "If true, pressing the ESC key in a text field will restore the last text instead of confirming current one.",
+                    "Default: fakse" })
+            public boolean escRestoresLastText = false;
+            @Configurable
+            @Configurable.Comment({
+                    "If true and not specified otherwise, screens will try to use the 'vanilla_dark' theme.",
+                    "Default: false" })
+            public boolean useDarkThemeByDefault = false;
+
+            @Configurable
+            @Configurable.Comment({ "If true, vanilla tooltips will be replaced with MUI's RichTooltip",
+                    "Default: false" })
+            public boolean replaceVanillaTooltips = false;
+
+            public int getDefaultUIColor() {
+                return Long.decode(ConfigHolder.INSTANCE.client.ui.defaultUIColor).intValue() | 0xFF000000;
+            }
         }
     }
 
@@ -833,6 +899,9 @@ public class ConfigHolder {
         @Configurable.Comment({ "Debug general events? (will print recipe conficts etc. to server's debug.log)",
                 "Default: false" })
         public boolean debug = false;
+        @Configurable
+        @Configurable.Comment({ "Debug UI? (Will draw widget outlines and widget information)", "Default: false" })
+        public boolean debugUI = GTCEu.isDev();
         @Configurable
         @Configurable.Comment({ "Debug ore vein placement? (will print placed veins to server's debug.log)",
                 "Default: false (no placement printout in debug.log)" })
@@ -850,31 +919,59 @@ public class ConfigHolder {
         @Configurable.Comment({ "Executes ./gradlew :processResources when F3+T is pressed",
                 "Only works in a development environment", "Default: false" })
         public boolean autoRebuildResources = false;
-    }
-
-    public static class RendererConfigs {
 
         @Configurable
-        @Configurable.Comment({ "Render fluids in multiblocks that support them?", "Default: true" })
-        public boolean renderFluids = true;
+        public DeveloperConfigs.MuiConfigs mui = new DeveloperConfigs.MuiConfigs();
 
-        @Configurable
-        @Configurable.Comment({ "Render growing plants in multiblocks that support them?", "Default: true" })
-        public boolean renderGrowingPlants = true;
+        public static class MuiConfigs {
 
-        @Configurable
-        @Configurable.Comment({ "Whether or not to color material/ore block highlights in the material color",
-                "Default: true" })
-        public boolean coloredMaterialBlockOutline = true;
+            @Configurable
+            @Configurable.Comment({ "Color for outlining widgets in debug mode, in ARGB" })
+            @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,8}")
+            @Configurable.Gui.ColorValue
+            public String textColor = "#dcb42873";
 
-        @Configurable
-        @Configurable.Comment({ "Whether or not to color tiered machine highlights in the tier color",
-                "Default: true" })
-        public boolean coloredTieredMachineOutline = true;
+            @Configurable
+            @Configurable.Comment({ "Color for outlining widgets in debug mode, in ARGB" })
+            @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,8}")
+            @Configurable.Gui.ColorValue
+            public String outlineColor = "#dcb42873";
 
-        @Configurable
-        @Configurable.Comment({ "Whether or not to color wire/cable highlights based on voltage tier or material color",
-                "Default: true" })
-        public boolean coloredWireOutline = true;
+            @Configurable
+            @Configurable.Comment({ "Color for cursor in debug mode, in ARGB" })
+            @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,8}")
+            @Configurable.Gui.ColorValue
+            public String cursorColor = "#ff4cAf50";
+
+            @Configurable
+            @Configurable.Comment({ "Scale of debug text",
+                    "Default: 0.8f" })
+            @Configurable.DecimalRange(min = 0.1f, max = 10.0f)
+            public float scale = 0.8f;
+
+            @Configurable
+            public boolean showHovered = true;
+            @Configurable
+            public boolean showPos = true;
+            @Configurable
+            public boolean showSize = true;
+            @Configurable
+            public boolean showWidgetTheme = true;
+            @Configurable
+            public boolean showExtra = true;
+            @Configurable
+            public boolean showOutline = true;
+
+            @Configurable
+            public boolean showParent = true;
+            @Configurable
+            public boolean showParentPos = true;
+            @Configurable
+            public boolean showParentSize = true;
+            @Configurable
+            public boolean showParentWidgetTheme = true;
+            @Configurable
+            public boolean showParentOutline = true;
+        }
     }
 }

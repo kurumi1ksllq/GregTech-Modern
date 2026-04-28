@@ -117,7 +117,7 @@ public class SyncDataHolder {
                         new ValueTransformer.TransformerContext<>(holder, field.type, currentValue, field.fieldName,
                                 writeClientFields, fullSync));
             } else if (currentValue instanceof ISyncManaged syncObj) {
-                return syncObj.getSyncDataHolder().serializeNBT(writeClientFields);
+                return syncObj.getSyncDataHolder().serializeNBT(writeClientFields, fullSync);
             } else {
                 GTCEu.LOGGER.error("Sync: Failed to serialize field {} in class {}: Missing value transformer for {}",
                         field.fieldName, holder.getClass().getName(), field.type);

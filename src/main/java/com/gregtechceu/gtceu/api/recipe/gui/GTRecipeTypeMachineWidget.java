@@ -39,14 +39,14 @@ public class GTRecipeTypeMachineWidget extends Flow {
 
         coverChildren();
         center();
-        childPadding((layout.progressSize / 2) + 2);
+        childPadding((layout.getProgressSize() / 2) + 2);
         child(inputColumn);
         child(new ProgressWidget()
                         .value(progressPercent)
                         .name("progressBar")
-                        .texture(layout.progressBar, layout.progressSize)
-                        .size(layout.progressSize)
-                        .direction(layout.progressDirection));
+                        .texture(layout.getProgressBar(), layout.getProgressSize())
+                        .size(layout.getProgressSize())
+                        .direction(layout.getProgressDirection()));
 
         child(outputColumn);
 

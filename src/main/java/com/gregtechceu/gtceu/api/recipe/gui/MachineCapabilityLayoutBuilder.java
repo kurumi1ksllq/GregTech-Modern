@@ -38,7 +38,7 @@ public interface MachineCapabilityLayoutBuilder {
     MachineCapabilityLayoutBuilder ITEM = (machine, layout, widget, io) -> {
 
         NotifiableItemStackHandler itemHandler = ItemRecipeCapability.CAP.getCapabilityHandler(machine, io);
-        if (itemHandler == null || layout.recipeType.getMaxSlots(ItemRecipeCapability.CAP, io) == 0) return;
+        if (itemHandler == null || layout.getRecipeType().getMaxSlots(ItemRecipeCapability.CAP, io) == 0) return;
 
         var slotGroup = new SlotGroup(ItemRecipeCapability.CAP.name + "_" + io.name(), 3);
 
@@ -63,7 +63,7 @@ public interface MachineCapabilityLayoutBuilder {
     MachineCapabilityLayoutBuilder FLUID = (machine, layout, widget, io) -> {
 
         NotifiableFluidTank fluidTank = FluidRecipeCapability.CAP.getCapabilityHandler(machine, io);
-        if (fluidTank == null || layout.recipeType.getMaxSlots(FluidRecipeCapability.CAP, io) == 0) return;
+        if (fluidTank == null || layout.getRecipeType().getMaxSlots(FluidRecipeCapability.CAP, io) == 0) return;
 
         var slotGroupWidget = SlotGroupWidget.builder()
                 .matrix(layout.capabilityInfo(FluidRecipeCapability.CAP).getMachineGrid(io, machine))

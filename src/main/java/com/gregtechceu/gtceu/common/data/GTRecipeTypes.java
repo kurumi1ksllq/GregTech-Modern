@@ -162,7 +162,7 @@ public class GTRecipeTypes {
             .prepareBuilder(recipeBuilder -> recipeBuilder.duration(150).EUt(2))
             .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_BAR_MACERATE, 20)
                     .setMachineLayoutGridBuilder(ItemRecipeCapability.CAP, IO.OUT, (machine, layout) -> {
-                        var slots = layout.recipeType.getMaxOutputs(ItemRecipeCapability.CAP);
+                        var slots = layout.getRecipeType().getMaxOutputs(ItemRecipeCapability.CAP);
 
                         if (machine instanceof ITieredMachine tieredMachine) {
                             if (tieredMachine.getTier() < GTValues.HV) slots = 1;

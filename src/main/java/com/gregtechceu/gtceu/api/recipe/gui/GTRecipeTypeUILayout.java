@@ -12,6 +12,7 @@ import brachy.modularui.widgets.ProgressWidget;
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.Getter;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
@@ -24,13 +25,18 @@ import java.util.function.Function;
  */
 public class GTRecipeTypeUILayout {
 
-    public final GTRecipeType recipeType;
-    public UITexture progressBar = UITexture.DEFAULT;
-    public int progressSize = 10;
-    public ProgressWidget.Direction progressDirection = ProgressWidget.Direction.RIGHT;
+    @Getter
+    private final GTRecipeType recipeType;
+    @Getter
+    private UITexture progressBar = UITexture.DEFAULT;
+    @Getter
+    private int progressSize = 10;
+    @Getter
+    private ProgressWidget.Direction progressDirection = ProgressWidget.Direction.RIGHT;
 
     private final Map<RecipeCapability<?>, CapabilityUIInfo> capabilityInfo;
 
+    @Getter
     private final List<RecipeUIModifier> recipeUIModifiers;
 
     public GTRecipeTypeUILayout(GTRecipeType recipeType, Map<RecipeCapability<?>, CapabilityUIInfo> capabilityInfo, List<RecipeUIModifier> recipeUIModifiers) {

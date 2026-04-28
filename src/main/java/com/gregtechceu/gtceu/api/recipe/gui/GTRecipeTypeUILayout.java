@@ -11,6 +11,7 @@ import brachy.modularui.drawable.UITexture;
 import brachy.modularui.widgets.ProgressWidget;
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
@@ -30,9 +31,12 @@ public class GTRecipeTypeUILayout {
 
     private final Map<RecipeCapability<?>, CapabilityUIInfo> capabilityInfo;
 
-    public GTRecipeTypeUILayout(GTRecipeType recipeType, Map<RecipeCapability<?>, CapabilityUIInfo> capabilityInfo) {
+    private final List<RecipeUIModifier> recipeUIModifiers;
+
+    public GTRecipeTypeUILayout(GTRecipeType recipeType, Map<RecipeCapability<?>, CapabilityUIInfo> capabilityInfo, List<RecipeUIModifier> recipeUIModifiers) {
         this.recipeType = recipeType;
         this.capabilityInfo = capabilityInfo;
+        this.recipeUIModifiers = recipeUIModifiers;
     }
 
     public CapabilityUIInfo capabilityInfo(RecipeCapability<?> cap) {
@@ -93,6 +97,7 @@ public class GTRecipeTypeUILayout {
 
         private final Map<RecipeCapability<?>, CapabilityUIInfo> capabilityInfo = new Object2ObjectOpenHashMap<>();
         private final GTRecipeType recipeType;
+        private final List<RecipeUIModifier> recipeUIModifiers = new ObjectArrayList<>();
 
         public Builder(GTRecipeType recipeType) {
             this.recipeType = recipeType;
@@ -266,8 +271,18 @@ public class GTRecipeTypeUILayout {
             return this;
         }
 
+        /**
+         * Adds a {@link RecipeUIModifier}, which modifies the recipe viewer UI after creation. Useful for adding extra information to recipe viewer recipes.
+         * @param recipeUIModifier Recipe UI modifier.
+         * @see RecipeUIModifier
+         */
+        public Builder addRecipeUIModifier(RecipeUIModifier recipeUIModifier) {
+            recipeUIModifiers.add(recipeUIModifier);
+            return this;
+        }
+
         public GTRecipeTypeUILayout build() {
-            var layout = new GTRecipeTypeUILayout(recipeType, capabilityInfo);
+            var layout = new GTRecipeTypeUILayout(recipeType, capabilityInfo, recipeUIModifiers);
             layout.progressSize = progressSize;
             layout.progressDirection = fillDirection;
             layout.progressBar = progressBar;

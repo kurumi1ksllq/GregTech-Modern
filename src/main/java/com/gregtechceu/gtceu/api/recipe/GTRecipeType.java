@@ -104,9 +104,6 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
     @Getter
     private @Nullable GTRecipeTypeUILayout uiLayout;
 
-    @Getter
-    private final List<RecipeUIModifier> uiModifiers = new ArrayList<>();
-
     public GTRecipeType(ResourceLocation registryName, String group, RecipeType<?>... proxyRecipes) {
         this.registryName = registryName;
         this.group = group;
@@ -190,11 +187,6 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
 
     public GTRecipeType addDataInfo(Function<CompoundTag, String> dataInfo) {
         this.dataInfos.add(dataInfo);
-        return this;
-    }
-
-    public GTRecipeType addUIModifier(RecipeUIModifier modifier) {
-        this.uiModifiers.add(modifier);
         return this;
     }
 

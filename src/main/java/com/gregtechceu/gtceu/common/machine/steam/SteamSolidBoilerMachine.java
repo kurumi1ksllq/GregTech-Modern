@@ -56,7 +56,7 @@ public class SteamSolidBoilerMachine extends SteamBoilerMachine {
                 return recipeLogic.getRecipeManager().getAllRecipesFor(getRecipeType()).stream().anyMatch(recipe -> {
                     var list = recipe.inputs.getOrDefault(ItemRecipeCapability.CAP, Collections.emptyList());
                     if (!list.isEmpty()) {
-                        return Arrays.stream(ItemRecipeCapability.CAP.of(list.get(0).content).getItems())
+                        return Arrays.stream(ItemRecipeCapability.CAP.of(list.get(0).content()).getItems())
                                 .map(ItemStack::getItem).anyMatch(i -> i == item);
                     }
                     return false;
@@ -91,7 +91,7 @@ public class SteamSolidBoilerMachine extends SteamBoilerMachine {
             var inputs = recipeLogic.getLastRecipe().inputs.getOrDefault(ItemRecipeCapability.CAP,
                     Collections.emptyList());
             if (!inputs.isEmpty()) {
-                var input = ItemRecipeCapability.CAP.of(inputs.get(0).content).getItems();
+                var input = ItemRecipeCapability.CAP.of(inputs.get(0).content()).getItems();
                 if (input.length > 0) {
                     var remaining = getBurningFuelRemainder(input[0]);
                     if (!remaining.isEmpty()) {

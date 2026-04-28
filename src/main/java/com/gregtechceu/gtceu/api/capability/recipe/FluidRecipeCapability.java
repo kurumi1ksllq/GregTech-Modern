@@ -145,7 +145,7 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
         int maxAmount = 0;
         List<FluidIngredient> ingredients = new ArrayList<>(outputContents.size());
         for (var content : outputContents) {
-            var ing = this.of(content.content);
+            var ing = this.of(content.content());
             maxAmount = Math.max(maxAmount, ing.getAmount());
             ingredients.add(ing);
         }
@@ -190,13 +190,13 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
         var nonConsumables = new Object2LongOpenHashMap<FluidIngredient>();
         var consumables = new Object2LongOpenHashMap<FluidIngredient>();
         for (Content content : inputs) {
-            FluidIngredient ing = of(content.content);
+            FluidIngredient ing = of(content.content());
 
             int amount;
             if (ing instanceof IntProviderFluidIngredient provider) amount = provider.getCountProvider().getMaxValue();
             else amount = ing.getAmount();
 
-            if (content.chance == 0) {
+            if (content.chance() == 0) {
                 nonConsumables.addTo(ing, amount);
             } else {
                 boolean has = false;
@@ -328,7 +328,7 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
     @Override
     public @NotNull List<Object> createXEIContainerContents(List<Content> contents, GTRecipe recipe, IO io) {
         List<Object> entryLists = contents.stream()
-                .map(Content::getContent)
+                .map(Content::content)
                 .map(this::of)
                 .map(FluidRecipeCapability::mapFluid)
                 .collect(Collectors.toList());
@@ -378,10 +378,10 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
             if (isXEI) tank.setShowAmount(false);
             if (content != null) {
                 float chance = (float) recipeType.getChanceFunction()
-                        .getBoostedChance(content, recipeTier, chanceTier) / content.maxChance;
+                        .getBoostedChance(content, recipeTier, chanceTier) / content.maxChance();
                 tank.setXEIChance(chance);
                 tank.setOnAddedTooltips((w, tooltips) -> {
-                    FluidIngredient ingredient = FluidRecipeCapability.CAP.of(content.content);
+                    FluidIngredient ingredient = FluidRecipeCapability.CAP.of(content.content());
                     if (!isXEI && ingredient.getStacks().length > 0) {
                         FluidStack stack = ingredient.getStacks()[0];
                         TooltipsHandler.appendFluidTooltips(stack, tooltips::add, TooltipFlag.NORMAL);
@@ -399,7 +399,7 @@ public class FluidRecipeCapability extends RecipeCapability<FluidIngredient> {
                         tooltips.add(Component.translatable("gtceu.gui.content.per_tick"));
                     }
                 });
-                if (io == IO.IN && (content.chance == 0)) {
+                if (io == IO.IN && (content.chance() == 0)) {
                     tank.setIngredientIO(IngredientIO.CATALYST);
                 }
             }

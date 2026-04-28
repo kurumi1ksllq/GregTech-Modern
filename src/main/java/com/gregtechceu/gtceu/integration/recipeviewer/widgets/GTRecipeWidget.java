@@ -206,7 +206,7 @@ public class GTRecipeWidget extends WidgetGroup {
             if (recipe.data.getBoolean("duration_is_total_cwu") &&
                     recipe.tickInputs.containsKey(CWURecipeCapability.CAP)) {
                 int minimumCWUt = Math.max(recipe.tickInputs.get(CWURecipeCapability.CAP).stream()
-                        .map(Content::getContent).mapToInt(CWURecipeCapability.CAP::of).sum(), 1);
+                        .map(Content::content).mapToInt(CWURecipeCapability.CAP::of).sum(), 1);
                 texts.add(Component.translatable("gtceu.recipe.max_eu",
                         FormattingUtil.formatNumbers(euTotal / minimumCWUt)));
             } else {
@@ -297,14 +297,14 @@ public class GTRecipeWidget extends WidgetGroup {
 
     public static void setConsumedChance(Content content, ChanceLogic logic, List<Component> tooltips, int recipeTier,
                                          int chanceTier, ChanceBoostFunction function) {
-        if (content.chance < ChanceLogic.getMaxChancedValue()) {
+        if (content.chance() < ChanceLogic.getMaxChancedValue()) {
             int boostedChance = function.getBoostedChance(content, recipeTier, chanceTier);
             if (boostedChance == 0) {
                 tooltips.add(Component.translatable("gtceu.gui.content.chance_nc"));
             } else {
-                float baseChanceFloat = 100f * content.chance / content.maxChance;
-                if (content.tierChanceBoost != 0) {
-                    float boostedChanceFloat = 100f * boostedChance / content.maxChance;
+                float baseChanceFloat = 100f * content.chance() / content.maxChance();
+                if (content.tierChanceBoost() != 0) {
+                    float boostedChanceFloat = 100f * boostedChance / content.maxChance();
 
                     if (logic != ChanceLogic.NONE && logic != ChanceLogic.OR) {
                         tooltips.add(Component.translatable("gtceu.gui.content.chance_base_logic",
@@ -317,9 +317,9 @@ public class GTRecipeWidget extends WidgetGroup {
                     }
 
                     String key = "gtceu.gui.content.chance_tier_boost_" +
-                            ((content.tierChanceBoost > 0) ? "plus" : "minus");
+                            ((content.tierChanceBoost() > 0) ? "plus" : "minus");
                     tooltips.add(FormattingUtil.formatPercentage2Places(key,
-                            Math.abs(100f * content.tierChanceBoost / content.maxChance)));
+                            Math.abs(100f * content.tierChanceBoost() / content.maxChance())));
 
                     if (logic != ChanceLogic.NONE && logic != ChanceLogic.OR) {
                         tooltips.add(Component.translatable("gtceu.gui.content.chance_boosted_logic",

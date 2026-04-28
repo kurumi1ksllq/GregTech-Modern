@@ -1,5 +1,7 @@
 package com.gregtechceu.gtceu.api.recipe.gui;
 
+import brachy.modularui.api.value.IDoubleValue;
+import brachy.modularui.widget.Widget;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
@@ -33,16 +35,18 @@ public class GTRecipeTypeUILayout {
     private int progressSize = 10;
     @Getter
     private ProgressWidget.Direction progressDirection = ProgressWidget.Direction.RIGHT;
-
+    @Getter
+    private final ProgressWidgetSupplier progressWidgetSupplier;
     private final Map<RecipeCapability<?>, CapabilityUIInfo> capabilityInfo;
 
     @Getter
     private final List<RecipeUIModifier> recipeUIModifiers;
 
-    public GTRecipeTypeUILayout(GTRecipeType recipeType, Map<RecipeCapability<?>, CapabilityUIInfo> capabilityInfo, List<RecipeUIModifier> recipeUIModifiers) {
+    public GTRecipeTypeUILayout(GTRecipeType recipeType, Map<RecipeCapability<?>, CapabilityUIInfo> capabilityInfo, List<RecipeUIModifier> recipeUIModifiers, ProgressWidgetSupplier progressWidgetSupplier) {
         this.recipeType = recipeType;
         this.capabilityInfo = capabilityInfo;
         this.recipeUIModifiers = recipeUIModifiers;
+        this.progressWidgetSupplier = progressWidgetSupplier;
     }
 
     public CapabilityUIInfo capabilityInfo(RecipeCapability<?> cap) {
@@ -95,6 +99,11 @@ public class GTRecipeTypeUILayout {
         String[] buildGrid(GTRecipe recipe, GTRecipeTypeUILayout layout);
     }
 
+    @FunctionalInterface
+    public interface ProgressWidgetSupplier {
+        Widget<?> get(GTRecipeTypeUILayout layout, IDoubleValue<Double> value);
+    }
+
     public static class Builder {
 
         private UITexture progressBar = UITexture.DEFAULT;
@@ -104,7 +113,7 @@ public class GTRecipeTypeUILayout {
         private final Map<RecipeCapability<?>, CapabilityUIInfo> capabilityInfo = new Object2ObjectOpenHashMap<>();
         private final GTRecipeType recipeType;
         private final List<RecipeUIModifier> recipeUIModifiers = new ObjectArrayList<>();
-
+        private @Nullable ProgressWidgetSupplier progressWidgetSupplier = null;
         public Builder(GTRecipeType recipeType) {
             this.recipeType = recipeType;
 
@@ -206,6 +215,11 @@ public class GTRecipeTypeUILayout {
             return this;
         }
 
+        public Builder setProgressBarSupplier(ProgressWidgetSupplier progressBarSupplier) {
+            this.progressWidgetSupplier = progressBarSupplier;
+            return this;
+        }
+
         /**
          * For singleblock machines using this recipe type, sets a function that builds the ui for a specific capability
          * type.
@@ -288,7 +302,15 @@ public class GTRecipeTypeUILayout {
         }
 
         public GTRecipeTypeUILayout build() {
-            var layout = new GTRecipeTypeUILayout(recipeType, capabilityInfo, recipeUIModifiers);
+            var progressWidgetSupplier = this.progressWidgetSupplier;
+            if (progressWidgetSupplier == null) progressWidgetSupplier = (l, v) -> new ProgressWidget()
+                    .value(v)
+                    .name("progressBar")
+                    .texture(l.getProgressBar(), l.getProgressSize())
+                    .size(l.getProgressSize())
+                    .direction(l.getProgressDirection());
+
+            var layout = new GTRecipeTypeUILayout(recipeType, capabilityInfo, recipeUIModifiers, progressWidgetSupplier);
             layout.progressSize = progressSize;
             layout.progressDirection = fillDirection;
             layout.progressBar = progressBar;

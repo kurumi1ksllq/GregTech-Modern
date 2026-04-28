@@ -61,7 +61,7 @@ public class EURecipeCapability extends RecipeCapability<EnergyStack> {
             int maxMultiplier = multiplier;
 
             long totalEU = 0L;
-            for (var content : outputs) totalEU += of(content.content).getTotalEU();
+            for (var content : outputs) totalEU += of(content.content()).getTotalEU();
             if (totalEU != 0 && multiplier > Long.MAX_VALUE / totalEU) {
                 maxMultiplier = multiplier = GTMath.saturatedCast(Long.MAX_VALUE / totalEU);
             }
@@ -104,8 +104,8 @@ public class EURecipeCapability extends RecipeCapability<EnergyStack> {
             long nonConsumable = 0;
             long consumable = 0;
             for (Content content : inputs) {
-                EnergyStack s = of(content.content);
-                if (content.chance == 0) nonConsumable += s.getTotalEU();
+                EnergyStack s = of(content.content());
+                if (content.chance() == 0) nonConsumable += s.getTotalEU();
                 else consumable += s.getTotalEU();
             }
 

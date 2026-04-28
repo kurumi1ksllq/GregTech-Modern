@@ -141,7 +141,7 @@ public class OreProcessingRecipeWidget extends ParentWidget<OreProcessingRecipeW
             Content chance = recipeWrapper.getChance(i / 2 + itemInputs.size());
             IDrawable overlay = null;
             if (chance != null) {
-                xeiChance = (float) chance.chance / chance.maxChance;
+                xeiChance = (float) chance.chance() / chance.maxChance();
                 overlay = new ContentOverlay(chance, false, 0, 0, null);
             }
             if (itemOutputs.get(slotIndex).isEmpty()) {
@@ -176,8 +176,11 @@ public class OreProcessingRecipeWidget extends ParentWidget<OreProcessingRecipeW
         for (int i = 0; i < ITEM_OUTPUT_LOCATIONS.size(); i += 2) {
             // stupid hack to show all sifter slots if the first one exists
             if (itemOutputExists.getBoolean(i / 2) || (i > 28 * 2 && itemOutputExists.getBoolean(28) && hasSifter)) {
-                child(getChildren().size() - 3, brachy.modularui.drawable.GuiTextures.SLOT_ITEM.asWidget()
-                        .pos(ITEM_INPUT_LOCATIONS.getInt(i), ITEM_INPUT_LOCATIONS.getInt(i + 1)));
+
+                //TODO why is this broken
+
+                //child(getChildren().size() - 3, brachy.modularui.drawable.GuiTextures.SLOT_ITEM.asWidget()
+                //        .pos(ITEM_INPUT_LOCATIONS.getInt(i), ITEM_INPUT_LOCATIONS.getInt(i + 1)));
             }
         }
     }

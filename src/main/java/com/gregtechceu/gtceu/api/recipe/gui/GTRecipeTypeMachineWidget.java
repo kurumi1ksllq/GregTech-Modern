@@ -3,7 +3,6 @@ package com.gregtechceu.gtceu.api.recipe.gui;
 import brachy.modularui.api.GuiAxis;
 import brachy.modularui.value.sync.DoubleSyncValue;
 import brachy.modularui.value.sync.PanelSyncManager;
-import brachy.modularui.widgets.ProgressWidget;
 import brachy.modularui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -41,20 +40,21 @@ public class GTRecipeTypeMachineWidget extends Flow {
         center();
         childPadding((layout.getProgressSize() / 2) + 2);
         child(inputColumn);
-        child(new ProgressWidget()
-                        .value(progressPercent)
-                        .name("progressBar")
-                        .texture(layout.getProgressBar(), layout.getProgressSize())
-                        .size(layout.getProgressSize())
-                        .direction(layout.getProgressDirection()));
-
+        child(layout.getProgressWidgetSupplier().get(layout, progressPercent));
         child(outputColumn);
 
-        for (var cap: recipeType.capabilities) {
-            var layoutFunc = layout.capabilityInfo(cap).machineLayoutBuilder;
-            if (layoutFunc == null) continue;
-            if (recipeType.getMaxInputs(cap) != 0) layoutFunc.createCapabilityUILayout(machine, layout, this, IO.IN);
-            if (recipeType.getMaxOutputs(cap) != 0) layoutFunc.createCapabilityUILayout(machine, layout, this, IO.OUT);
+        for (var entry: recipeType.maxInputs.object2IntEntrySet()) {
+            var layoutFunc = layout.capabilityInfo(entry.getKey()).machineLayoutBuilder;
+            if (layoutFunc == null || entry.getIntValue() == 0) continue;
+            layoutFunc.createCapabilityUILayout(machine, layout, this, IO.IN);
+
+        }
+
+        for (var entry: recipeType.maxOutputs.object2IntEntrySet()) {
+            var layoutFunc = layout.capabilityInfo(entry.getKey()).machineLayoutBuilder;
+            if (layoutFunc == null || entry.getIntValue() == 0) continue;
+            layoutFunc.createCapabilityUILayout(machine, layout, this, IO.OUT);
+
         }
     }
 }

@@ -162,7 +162,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
         int maxCount = 0;
         List<Ingredient> ingredients = new ArrayList<>(outputContents.size());
         for (var content : outputContents) {
-            var ing = of(content.content);
+            var ing = of(content.content());
 
             int count;
             if (ing instanceof SizedIngredient sized) count = sized.getAmount();
@@ -213,7 +213,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
         var nonConsumables = new Object2LongOpenHashMap<Ingredient>();
         var consumables = new Object2LongOpenHashMap<Ingredient>();
         for (Content content : inputs) {
-            Ingredient ing = of(content.content);
+            Ingredient ing = of(content.content());
             if (ing instanceof IntCircuitIngredient) continue;
 
             int count;
@@ -221,7 +221,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
             else if (ing instanceof IntProviderIngredient provider) count = provider.getCountProvider().getMaxValue();
             else count = 1;
 
-            if (content.chance == 0) {
+            if (content.chance() == 0) {
                 nonConsumables.addTo(ing, count);
             } else {
                 boolean has = false;
@@ -355,7 +355,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
     @Override
     public @NotNull List<Object> createXEIContainerContents(List<Content> contents, GTRecipe recipe, IO io) {
         List<Object> entryLists = contents.stream()
-                .map(Content::getContent)
+                .map(Content::content)
                 .map(this::of)
                 .map(ItemRecipeCapability::mapItem)
                 .collect(Collectors.toList());
@@ -365,7 +365,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
             // Scanner Output replacing, used for cycling research outputs
             ResearchManager.ResearchItem researchData = null;
             for (Content stack : recipe.getOutputContents(this)) {
-                ItemStack[] stacks = this.of(stack.content).getItems();
+                ItemStack[] stacks = this.of(stack.content()).getItems();
                 if (stacks.length == 0 || stacks[0].isEmpty()) continue;
 
                 researchData = ResearchManager.readResearchId(stacks[0]);
@@ -381,7 +381,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
                         if (outputs.isEmpty()) continue;
 
                         Content outputContent = outputs.get(0);
-                        ItemStack[] stacks = this.of(outputContent.content).getItems();
+                        ItemStack[] stacks = this.of(outputContent.content()).getItems();
                         if (stacks.length == 0) continue;
 
                         ItemStack researchStack = stacks[0];
@@ -465,19 +465,19 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
             }
             if (content != null) {
                 float chance = (float) recipeType.getChanceFunction()
-                        .getBoostedChance(content, recipeTier, chanceTier) / content.maxChance;
+                        .getBoostedChance(content, recipeTier, chanceTier) / content.maxChance();
                 slot.setXEIChance(chance);
                 slot.setOnAddedTooltips((w, tooltips) -> {
                     GTRecipeWidget.setConsumedChance(content,
                             recipe.getChanceLogicForCapability(this, io, isTickSlot(index, io, recipe)),
                             tooltips, recipeTier, chanceTier, recipeType.getChanceFunction());
                     // spotless:off
-                    if (this.of(content.content) instanceof IntProviderIngredient ingredient) {
+                    if (this.of(content.content()) instanceof IntProviderIngredient ingredient) {
                         IntProvider countProvider = ingredient.getCountProvider();
                         tooltips.add(Component.translatable("gtceu.gui.content.count_range",
                                 countProvider.getMinValue(), countProvider.getMaxValue())
                                 .withStyle(ChatFormatting.GOLD));
-                    } else if (this.of(content.content) instanceof SizedIngredient sizedIngredient &&
+                    } else if (this.of(content.content()) instanceof SizedIngredient sizedIngredient &&
                             sizedIngredient.getInner() instanceof IntProviderIngredient ingredient) {
                         IntProvider countProvider = ingredient.getCountProvider();
                         tooltips.add(Component.translatable("gtceu.gui.content.count_range",
@@ -489,7 +489,7 @@ public class ItemRecipeCapability extends RecipeCapability<Ingredient> {
                         tooltips.add(Component.translatable("gtceu.gui.content.per_tick"));
                     }
                 });
-                if (io == IO.IN && (content.chance == 0 || this.of(content.content) instanceof IntCircuitIngredient)) {
+                if (io == IO.IN && (content.chance() == 0 || this.of(content.content()) instanceof IntCircuitIngredient)) {
                     slot.setIngredientIO(IngredientIO.CATALYST);
                 }
             }

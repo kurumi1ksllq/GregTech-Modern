@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.data;
 
+import brachy.modularui.widgets.layout.Flow;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.GTValues;
@@ -373,9 +374,17 @@ public class GTRecipeTypes {
     public final static GTRecipeType FORGE_HAMMER_RECIPES = register("forge_hammer", ELECTRIC).setMaxIOSize(1, 1, 0, 0)
             .setEUIO(IO.IN)
             .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_BAR_HAMMER, 20, ProgressWidget.Direction.DOWN)
-                    .setItemSlotOverlay(IO.IN, 0, GTGuiTextures.HAMMER_OVERLAY))
-            // .setSlotOverlay(false, false, GuiTextures.HAMMER_OVERLAY)
-            // .setProgressBar(GuiTextures.PROGRESS_BAR_HAMMER, UP_TO_DOWN)
+                    .setItemSlotOverlay(IO.IN, 0, GTGuiTextures.HAMMER_OVERLAY)
+                    .setProgressBarSupplier((layout, value) ->
+                            Flow.col().coverChildren().child(new ProgressWidget()
+                                            .value(value)
+                                            .name("progressBar")
+                                            .texture(layout.getProgressBar(), 20)
+                                            .size(layout.getProgressSize())
+                                            .direction(layout.getProgressDirection()))
+                                    .child(GTGuiTextures.PROGRESS_BAR_HAMMER_BASE.asWidget().height(5))
+                    )
+            )
             .setIconSupplier(() -> GTMachines.FORGE_HAMMER[GTValues.LV].asStack())
             .setSteamProgressBar(GuiTextures.PROGRESS_BAR_HAMMER_STEAM, UP_TO_DOWN)
             .setSound(GTSoundEntries.FORGE_HAMMER);
@@ -391,11 +400,17 @@ public class GTRecipeTypes {
             .UI(builder -> builder.setProgressBar(GTGuiTextures.PROGRESS_BAR_LATHE, 20)
                     .setItemSlotOverlay(IO.IN, 0, GTGuiTextures.PIPE_OVERLAY_1)
                     .setItemSlotOverlay(IO.OUT, 0, GTGuiTextures.PIPE_OVERLAY_2)
-                    .setItemSlotOverlay(IO.OUT, 1, GTGuiTextures.DUST_OVERLAY))
-            // .setSlotOverlay(false, false, GuiTextures.PIPE_OVERLAY_1)
-            // .setSlotOverlay(true, false, false, GuiTextures.PIPE_OVERLAY_2)
-            // .setSlotOverlay(true, false, true, GuiTextures.DUST_OVERLAY)
-            // .setProgressBar(GuiTextures.PROGRESS_BAR_LATHE, LEFT_TO_RIGHT)
+                    .setItemSlotOverlay(IO.OUT, 1, GTGuiTextures.DUST_OVERLAY)
+                    .setProgressBarSupplier((layout, value) ->
+                        Flow.row().coverChildren().child(new ProgressWidget()
+                                .value(value)
+                                .name("progressBar")
+                                .texture(layout.getProgressBar(), 20)
+                                .size(layout.getProgressSize())
+                                .direction(layout.getProgressDirection()))
+                                .child(GTGuiTextures.PROGRESS_BAR_LATHE_BASE.asWidget().width(5))
+                    )
+            )
             .setSound(GTSoundEntries.CUT);
 
     public final static GTRecipeType MIXER_RECIPES = register("mixer", ELECTRIC).setMaxIOSize(6, 1, 2, 1).setEUIO(IO.IN)
@@ -663,10 +678,10 @@ public class GTRecipeTypes {
                 if (recipeBuilder.data.getBoolean("disable_distillery")) return;
                 if (recipeBuilder.output.containsKey(FluidRecipeCapability.CAP)) {
                     Content inputContent = recipeBuilder.input.get(FluidRecipeCapability.CAP).get(0);
-                    FluidIngredient input = FluidRecipeCapability.CAP.of(inputContent.getContent());
+                    FluidIngredient input = FluidRecipeCapability.CAP.of(inputContent.content());
                     ItemStack[] outputs = recipeBuilder.output.containsKey(ItemRecipeCapability.CAP) ?
                             ItemRecipeCapability.CAP
-                                    .of(recipeBuilder.output.get(ItemRecipeCapability.CAP).get(0).getContent())
+                                    .of(recipeBuilder.output.get(ItemRecipeCapability.CAP).get(0).content())
                                     .getItems() :
                             null;
                     ItemStack outputItem = outputs == null || outputs.length == 0 ? ItemStack.EMPTY : outputs[0];
@@ -674,7 +689,7 @@ public class GTRecipeTypes {
                     List<Content> contents = recipeBuilder.output.get(FluidRecipeCapability.CAP);
                     for (int i = 0; i < contents.size(); ++i) {
                         Content outputContent = contents.get(i);
-                        FluidIngredient output = FluidRecipeCapability.CAP.of(outputContent.getContent());
+                        FluidIngredient output = FluidRecipeCapability.CAP.of(outputContent.content());
                         if (output.isEmpty()) continue;
                         GTRecipeBuilder builder = DISTILLERY_RECIPES
                                 .recipeBuilder(recipeBuilder.id.getPath() + "_to_" +
@@ -695,11 +710,11 @@ public class GTRecipeTypes {
                         dividedOutputFluid.setAmount(Math.max(1, dividedOutputFluid.getAmount() / ratio));
 
                         if (shouldDivide && fluidsDivisible) {
-                            builder.chance(inputContent.chance)
-                                    .tierChanceBoost(inputContent.tierChanceBoost)
+                            builder.chance(inputContent.chance())
+                                    .tierChanceBoost(inputContent.tierChanceBoost())
                                     .inputFluids(dividedInputFluid)
-                                    .chance(outputContent.chance)
-                                    .tierChanceBoost(outputContent.tierChanceBoost)
+                                    .chance(outputContent.chance())
+                                    .tierChanceBoost(outputContent.tierChanceBoost())
                                     .outputFluids(dividedOutputFluid)
                                     .duration(Math.max(1, recipeDuration / ratio));
                         } else if (!shouldDivide) {
@@ -707,11 +722,11 @@ public class GTRecipeTypes {
                                 builder.outputItems(outputItem);
                             }
                             builder.conditions.addAll(recipeBuilder.conditions);
-                            builder.chance(inputContent.chance)
-                                    .tierChanceBoost(inputContent.tierChanceBoost)
+                            builder.chance(inputContent.chance())
+                                    .tierChanceBoost(inputContent.tierChanceBoost())
                                     .inputFluids(input)
-                                    .chance(outputContent.chance)
-                                    .tierChanceBoost(outputContent.tierChanceBoost)
+                                    .chance(outputContent.chance())
+                                    .tierChanceBoost(outputContent.tierChanceBoost())
                                     .outputFluids(output)
                                     .duration(recipeDuration)
                                     .save(provider);

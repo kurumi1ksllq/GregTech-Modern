@@ -39,7 +39,7 @@ public record ContentOverlay(Content content, boolean perTick, int recipeTier, i
     }
 
     public void drawRangeAmount(GuiGraphics graphics, float x, float y, int width, int height) {
-        if (content.content instanceof IntProviderIngredient ingredient) {
+        if (content.content() instanceof IntProviderIngredient ingredient) {
             graphics.pose().pushPose();
             graphics.pose().translate(0, 0, 400);
             graphics.pose().scale(0.5f, 0.5f, 1);
@@ -60,14 +60,14 @@ public record ContentOverlay(Content content, boolean perTick, int recipeTier, i
     }
 
     public void drawFluidAmount(GuiGraphics graphics, float x, float y, int width, int height) {
-        if (content.content instanceof FluidIngredient ingredient) {
+        if (content.content() instanceof FluidIngredient ingredient) {
             graphics.pose().pushPose();
             graphics.pose().translate(0, 0, 400);
             graphics.pose().scale(0.5f, 0.5f, 1);
             Font fontRenderer = Minecraft.getInstance().font;
             int color;
             String s;
-            if (content.content instanceof IntProviderFluidIngredient) {
+            if (content.content() instanceof IntProviderFluidIngredient) {
                 // with only 5 characters worth of space, that's not enough for a fluid range
                 color = ChatFormatting.GOLD.getColor();
                 s = "X-Y";
@@ -88,17 +88,17 @@ public record ContentOverlay(Content content, boolean perTick, int recipeTier, i
 
     public void drawChance(GuiGraphics graphics, float x, float y, int width, int height, int recipeTier,
                            int chanceTier, @Nullable ChanceBoostFunction function) {
-        if (content.chance == ChanceLogic.getMaxChancedValue()) return;
+        if (content.chance() == ChanceLogic.getMaxChancedValue()) return;
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, 400);
         graphics.pose().scale(0.5f, 0.5f, 1);
         var func = function == null ? ChanceBoostFunction.NONE : function;
         int chance = func.getBoostedChance(content, recipeTier, chanceTier);
-        float chanceFloat = 1f * chance / content.maxChance;
+        float chanceFloat = 1f * chance / content.maxChance();
         String percent = FormattingUtil.formatNumber2Places(100 * chanceFloat);
 
-        String s = chance == 0 ? Component.translatable("gtceu.gui.content.chance_nc_short").getString() :
-                percent + "%";
+        Component s = chance == 0 ? Component.translatable("gtceu.gui.content.chance_nc_short") :
+                Component.literal(percent + "%");
 
         int color = chance == 0 ? 0xFF0000 : GradientUtil.toRGB(Mth.lerp(chanceFloat, 29f, 167f), 100f, 50f);
         Font fontRenderer = Minecraft.getInstance().font;
@@ -112,11 +112,13 @@ public record ContentOverlay(Content content, boolean perTick, int recipeTier, i
         RenderSystem.disableDepthTest();
         graphics.pose().translate(0, 0, 400);
         graphics.pose().scale(0.5f, 0.5f, 1);
-        String s = Component.translatable("gtceu.gui.content.tips.per_tick_short").getString();
+
+        Component s = Component.translatable("gtceu.gui.content.tips.per_tick_short");
+
         int color = 0xFFFF00;
         Font fontRenderer = Minecraft.getInstance().font;
         graphics.drawString(fontRenderer, s, (int) ((x + (width / 3f)) * 2 - fontRenderer.width(s) + 23),
-                (int) ((y + (height / 3f) + 6) * 2 - height + (content.chance == ChanceLogic.getMaxChancedValue() ? 0 : 10)),
+                (int) ((y + (height / 3f) + 6) * 2 - height + (content.chance() == ChanceLogic.getMaxChancedValue() ? 0 : 10)),
                 color);
         graphics.pose().popPose();
     }

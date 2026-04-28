@@ -294,9 +294,9 @@ public class GTOreByProduct {
         return tooltip -> {
             if (chances.containsKey(slotIndex)) {
                 Content entry = chances.get(slotIndex);
-                float chance = 100 * (float) entry.chance / entry.maxChance;
-                if (entry.tierChanceBoost != 0) {
-                    float boost = entry.tierChanceBoost / 100.0f;
+                float chance = 100 * (float) entry.chance() / entry.maxChance();
+                if (entry.tierChanceBoost() != 0) {
+                    float boost = entry.tierChanceBoost() / 100.0f;
                     tooltip.addLine(FormattingUtil.formatPercentage2Places("gtceu.gui.content.chance_base", chance));
                     tooltip.addLine(
                             FormattingUtil.formatPercentage2Places("gtceu.gui.content.chance_tier_boost_plus", boost));

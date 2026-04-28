@@ -50,7 +50,6 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
             RecipeCapability.COMPARATOR);
     public final Object2IntSortedMap<RecipeCapability<?>> maxOutputs = new Object2IntAVLTreeMap<>(
             RecipeCapability.COMPARATOR);
-    public final ObjectSet<RecipeCapability<?>> capabilities = new ObjectArraySet<>();
     @Setter
     private GTRecipeBuilder recipeBuilder;
     @Getter

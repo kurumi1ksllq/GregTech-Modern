@@ -372,27 +372,27 @@ public class GTMultiblockTextUtil {
         double countD = 1;
         // number of items output which is actually displayed. Can be either a number, or a range.
         Component displaycount;
-        if (itemOutput.content instanceof IntProviderIngredient provider) {
+        if (itemOutput.content() instanceof IntProviderIngredient provider) {
             rounded = true;
             stack = provider.getMaxSizeStack();
             displaycount = Component.translatable("gtceu.gui.content.range",
                     provider.getCountProvider().getMinValue(),
                     provider.getCountProvider().getMaxValue());
-            if (itemOutput.chance < itemOutput.maxChance) {
+            if (itemOutput.chance() < itemOutput.maxChance()) {
                 countD = countD * runs * function.getBoostedChance(itemOutput, recipeTier, chanceTier) /
-                        itemOutput.maxChance;
+                        itemOutput.maxChance();
             }
             countD = countD * provider.getMidRoll();
         } else {
-            var stacks = ItemRecipeCapability.CAP.of(itemOutput.content).getItems();
+            var stacks = ItemRecipeCapability.CAP.of(itemOutput.content()).getItems();
             if (stacks.length == 0) return Optional.empty();
             stack = stacks[0];
             count = stack.getCount();
             countD *= count;
-            if (itemOutput.chance < itemOutput.maxChance) {
+            if (itemOutput.chance() < itemOutput.maxChance()) {
                 rounded = true;
                 countD = countD * runs * function.getBoostedChance(itemOutput, recipeTier, chanceTier) /
-                        itemOutput.maxChance;
+                        itemOutput.maxChance();
             }
             count = Math.max(1, (int) Math.round(countD));
             displaycount = Component.literal(String.valueOf(count));
@@ -440,27 +440,27 @@ public class GTMultiblockTextUtil {
         double amountD = 1;
         // amount of fluid output which is actually displayed. Can be either a number, or a range.
         Component displaycount;
-        if (fluidOutput.content instanceof IntProviderFluidIngredient provider) {
+        if (fluidOutput.content() instanceof IntProviderFluidIngredient provider) {
             rounded = true;
             stack = provider.getMaxSizeStack();
             displaycount = Component.translatable("gtceu.gui.content.range",
                     provider.getCountProvider().getMinValue(),
                     provider.getCountProvider().getMaxValue());
-            if (fluidOutput.chance < fluidOutput.maxChance) {
+            if (fluidOutput.chance() < fluidOutput.maxChance()) {
                 amountD = amountD * runs * function.getBoostedChance(fluidOutput, recipeTier, chanceTier) /
-                        fluidOutput.maxChance;
+                        fluidOutput.maxChance();
             }
             amountD = amountD * provider.getMidRoll();
         } else {
-            var stacks = FluidRecipeCapability.CAP.of(fluidOutput.content).getStacks();
+            var stacks = FluidRecipeCapability.CAP.of(fluidOutput.content()).getStacks();
             if (stacks.length == 0) return Optional.empty();
             stack = stacks[0];
             amount = stack.getAmount();
             amountD *= amount;
-            if (fluidOutput.chance < fluidOutput.maxChance) {
+            if (fluidOutput.chance() < fluidOutput.maxChance()) {
                 rounded = true;
                 amountD = amountD * runs * function.getBoostedChance(fluidOutput, recipeTier, chanceTier) /
-                        fluidOutput.maxChance;
+                        fluidOutput.maxChance();
             }
             amount = Math.max(1, (int) Math.round(amountD));
             displaycount = Component.literal(String.valueOf(amount));

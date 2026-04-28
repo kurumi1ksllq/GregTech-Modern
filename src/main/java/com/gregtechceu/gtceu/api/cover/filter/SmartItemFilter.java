@@ -119,7 +119,7 @@ public class SmartItemFilter implements ItemFilter {
             return 0;
         }
         for (Content content : recipe.getInputContents(ItemRecipeCapability.CAP)) {
-            var stacks = ItemRecipeCapability.CAP.of(content.getContent()).getItems();
+            var stacks = ItemRecipeCapability.CAP.of(content.content()).getItems();
             for (var stack : stacks) {
                 if (ItemStack.isSameItem(stack, itemStack)) return stack.getCount();
             }

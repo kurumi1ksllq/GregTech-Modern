@@ -1073,6 +1073,18 @@ public class TagPrefix {
                 .generationCondition(hasOreProperty);
     }
 
+    public static TagPrefix oreTagPrefix(String name) {
+        return new TagPrefix(name)
+                .defaultTagPath("ores/%s")
+                .prefixOnlyTagPath("ores_in_ground/%s")
+                .unformattedTagPath("ores")
+                .materialIconType(MaterialIconType.ore)
+                .unificationEnabled(true)
+                .blockConstructor(OreBlock::new)
+                .generationCondition(hasOreProperty);
+    }
+
+
     public void addSecondaryMaterial(MaterialStack secondaryMaterial) {
         Preconditions.checkNotNull(secondaryMaterial, "secondaryMaterial");
         secondaryMaterials.add(secondaryMaterial);

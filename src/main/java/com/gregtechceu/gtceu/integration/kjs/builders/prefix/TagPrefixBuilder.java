@@ -5,7 +5,6 @@ import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconType;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialStack;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.registry.registrate.BuilderBase;
-import com.gregtechceu.gtceu.integration.kjs.built.KJSTagPrefix;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -28,7 +27,7 @@ import java.util.function.Predicate;
 @Accessors(chain = true)
 public abstract class TagPrefixBuilder extends BuilderBase<TagPrefix> {
 
-    public final KJSTagPrefix base;
+    public final TagPrefix base;
 
     @Getter
     private final List<MaterialStack> secondaryMaterials = new ArrayList<>();
@@ -38,7 +37,7 @@ public abstract class TagPrefixBuilder extends BuilderBase<TagPrefix> {
         this.base = create(id.getPath());
     }
 
-    public abstract KJSTagPrefix create(String id);
+    public abstract TagPrefix create(String id);
 
     public TagPrefixBuilder idPattern(String idPattern) {
         base.idPattern(idPattern);

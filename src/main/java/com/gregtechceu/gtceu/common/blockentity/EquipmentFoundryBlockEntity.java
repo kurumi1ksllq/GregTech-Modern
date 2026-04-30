@@ -2,8 +2,6 @@ package com.gregtechceu.gtceu.common.blockentity;
 
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.gregtechceu.gtceu.api.gui.UITemplate;
-import com.gregtechceu.gtceu.api.gui.widget.BlockableSlotWidget;
 import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.IModularItem;
@@ -160,8 +158,8 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         int y = 13;
         for (int i = 0; i < MAX_MODIFIER_SLOTS; i++) {
             final int finalI = i;
-            SlotWidget slotWidget = new BlockableSlotWidget(moduleSlots, i, x, y)
-                    .setIsBlocked(() -> isModifierSlotBlocked(finalI))
+            SlotWidget slotWidget = new SlotWidget(moduleSlots, i, x, y)
+                    /*.setIsBlocked(() -> isModifierSlotBlocked(finalI))*/
                     .setBackgroundTexture(null);
             modularUI.widget(slotWidget);
             slotWidgets.add(slotWidget);
@@ -171,7 +169,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
                 y = 52;
             }
         }
-        modularUI.widget(UITemplate.bindPlayerInventory(entityPlayer.getInventory(), slotTexture, 7, 84, true));
+        // modularUI.widget(UITemplate.bindPlayerInventory(entityPlayer.getInventory(), slotTexture, 7, 84, true));
         return modularUI;
     }
 

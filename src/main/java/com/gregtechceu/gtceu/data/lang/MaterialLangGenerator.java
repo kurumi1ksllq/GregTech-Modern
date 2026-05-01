@@ -1,10 +1,7 @@
 package com.gregtechceu.gtceu.data.lang;
 
-import com.gregtechceu.gtceu.api.GTCEuAPI;
-import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.data.chemical.material.registry.MaterialRegistry;
-
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
+
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 
 import static com.gregtechceu.gtceu.utils.FormattingUtil.toEnglishName;

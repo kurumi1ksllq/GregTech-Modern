@@ -1,7 +1,6 @@
 package com.gregtechceu.gtceu.common.data.models;
 
 import com.gregtechceu.gtceu.GTCEu;
-import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.block.*;
 import com.gregtechceu.gtceu.api.block.property.GTBlockStateProperties;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet;

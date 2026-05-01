@@ -1,10 +1,8 @@
 package com.gregtechceu.gtceu.common.data;
 
-import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
-import com.gregtechceu.gtceu.api.data.chemical.material.registry.MaterialRegistry;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.IGTTool;
@@ -72,11 +70,12 @@ public class GTMaterialItems {
         REGISTRATE.creativeModeTab(() -> MATERIAL_ITEM);
         for (var tagPrefix : TagPrefix.values()) {
             if (tagPrefix.doGenerateItem()) {
-                    for (Material material : GTRegistries.MATERIALS.getAllMaterials()) {
-                        if (tagPrefix.doGenerateItem(material)) {
-                            generateMaterialItem(tagPrefix, material, GTRegistrate.createIgnoringListenerErrors(material.getModid()));
-                        }
+                for (Material material : GTRegistries.MATERIALS.getAllMaterials()) {
+                    if (tagPrefix.doGenerateItem(material)) {
+                        generateMaterialItem(tagPrefix, material,
+                                GTRegistrate.createIgnoringListenerErrors(material.getModid()));
                     }
+                }
             }
         }
         MATERIAL_ITEMS = MATERIAL_ITEMS_BUILDER.build();
@@ -101,14 +100,15 @@ public class GTMaterialItems {
     public static void generateTools() {
         REGISTRATE.creativeModeTab(() -> TOOL);
         for (GTToolType toolType : GTToolType.getTypes().values()) {
-                for (Material material : GTRegistries.MATERIALS.getAllMaterials()) {
-                    if (material.hasProperty(PropertyKey.TOOL)) {
-                        var property = material.getProperty(PropertyKey.TOOL);
-                        if (property.hasType(toolType)) {
-                            generateTool(material, toolType, GTRegistrate.createIgnoringListenerErrors(material.getModid()));
-                        }
+            for (Material material : GTRegistries.MATERIALS.getAllMaterials()) {
+                if (material.hasProperty(PropertyKey.TOOL)) {
+                    var property = material.getProperty(PropertyKey.TOOL);
+                    if (property.hasType(toolType)) {
+                        generateTool(material, toolType,
+                                GTRegistrate.createIgnoringListenerErrors(material.getModid()));
                     }
                 }
+            }
         }
     }
 
@@ -130,10 +130,10 @@ public class GTMaterialItems {
     public static void generateArmors() {
         REGISTRATE.creativeModeTab(() -> TOOL);
         for (ArmorItem.Type type : ArmorItem.Type.values()) {
-                for (Material material : GTRegistries.MATERIALS.getAllMaterials()) {
-                    if (material.hasProperty(PropertyKey.ARMOR)) {
-                        generateArmor(material, type, GTRegistrate.createIgnoringListenerErrors(material.getModid()));
-                    }
+            for (Material material : GTRegistries.MATERIALS.getAllMaterials()) {
+                if (material.hasProperty(PropertyKey.ARMOR)) {
+                    generateArmor(material, type, GTRegistrate.createIgnoringListenerErrors(material.getModid()));
+                }
             }
         }
     }

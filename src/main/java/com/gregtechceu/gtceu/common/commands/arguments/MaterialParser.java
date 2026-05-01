@@ -1,8 +1,8 @@
 package com.gregtechceu.gtceu.common.commands.arguments;
 
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-
 import com.gregtechceu.gtceu.api.data.chemical.material.registry.MaterialRegistry;
+
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

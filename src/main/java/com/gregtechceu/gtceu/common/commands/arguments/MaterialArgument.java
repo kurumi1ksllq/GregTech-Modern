@@ -1,9 +1,8 @@
 package com.gregtechceu.gtceu.common.commands.arguments;
 
-import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
+
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;

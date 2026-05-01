@@ -3,12 +3,12 @@ package com.gregtechceu.gtceu.api.data.chemical.material.registry;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.registry.GTRegistry;
-
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import lombok.Getter;
+
 import net.minecraft.resources.ResourceLocation;
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -73,7 +73,8 @@ public class MaterialRegistry extends GTRegistry.RL<Material> {
      */
     @NotNull
     public Collection<Material> getAllMaterials() {
-        if (registrationPhase == Phase.PRE || registrationPhase == Phase.OPEN) throw new IllegalStateException("Cannot retrieve all materials before registration");
+        if (registrationPhase == Phase.PRE || registrationPhase == Phase.OPEN)
+            throw new IllegalStateException("Cannot retrieve all materials before registration");
         return values();
     }
 

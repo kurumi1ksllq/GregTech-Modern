@@ -203,7 +203,7 @@ public class CommonProxy {
         GTCEu.LOGGER.info("Registering GTCEu Materials");
         GTMaterials.init();
         GTRegistries.MATERIALS
-                .setFallbackMaterial(GTMaterials.Aluminium);
+                .setFallbackMaterial(GTCEu.MOD_ID, GTMaterials.Aluminium);
 
         // Then, register addon Materials
         GTCEu.LOGGER.info("Registering addon Materials");

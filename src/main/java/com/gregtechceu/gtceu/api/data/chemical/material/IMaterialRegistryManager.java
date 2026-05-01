@@ -97,7 +97,7 @@ public interface IMaterialRegistryManager {
     default Codec<Material> codec() {
         return ResourceLocation.CODEC
                 .flatXmap(
-                        id -> Optional.ofNullable(this.getRegistry(id.getNamespace()).get(id.getPath()))
+                        id -> Optional.ofNullable(this.getRegistry(id.getNamespace()).get(id))
                                 .map(DataResult::success)
                                 .orElseGet(() -> DataResult
                                         .error(() -> "Unknown registry key in material registry: " + id)),

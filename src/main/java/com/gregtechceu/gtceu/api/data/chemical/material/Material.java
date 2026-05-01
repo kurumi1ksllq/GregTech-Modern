@@ -1875,7 +1875,7 @@ public class Material implements Comparable<Material> {
 
         @Override
         @HideFromJS
-        public Material register() {
+        public @NotNull Material register() {
             return value = buildAndRegister();
         }
     }

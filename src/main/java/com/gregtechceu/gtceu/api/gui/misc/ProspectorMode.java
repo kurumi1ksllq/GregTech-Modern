@@ -340,7 +340,7 @@ public abstract class ProspectorMode<T> {
         public OreInfo deserialize(FriendlyByteBuf buf) {
             ResourceLocation materialId = buf.readResourceLocation();
             return new OreInfo(
-                    GTCEuAPI.materialManager.getRegistry(materialId.getNamespace()).get(materialId.getPath()),
+                    GTCEuAPI.materialManager.getRegistry(materialId.getNamespace()).get(materialId),
                     buf.readVarInt(), buf.readVarInt(), buf.readVarInt());
         }
 

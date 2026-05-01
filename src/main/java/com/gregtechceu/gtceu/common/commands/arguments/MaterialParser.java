@@ -72,7 +72,7 @@ public class MaterialParser {
         int i = this.reader.getCursor();
         ResourceLocation id = ResourceLocation.read(this.reader);
 
-        Material material = this.materials.getRegistry(id.getNamespace()).get(id.getPath());
+        Material material = this.materials.getRegistry(id.getNamespace()).get(id);
         if (material == null || material.isNull()) {
             this.reader.setCursor(i);
             throw ERROR_UNKNOWN_ITEM.createWithContext(this.reader, id);

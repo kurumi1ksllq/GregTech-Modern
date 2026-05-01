@@ -48,7 +48,7 @@ public class GTRegistryInfo<K, V> {
     public static final List<BuilderBase<?>> ALL_BUILDERS = new ArrayList<>();
 
     public static final GTRegistryInfo<String, Element> ELEMENT = add(GTRegistries.ELEMENTS, Element.class);
-    public static final GTRegistryInfo<String, Material> MATERIAL = add(
+    public static final GTRegistryInfo<ResourceLocation, Material> MATERIAL = add(
             MaterialRegistryManager.getInstance().getRegistry(GTCEu.MOD_ID), Material.class);
     public static final GTRegistryInfo<ResourceLocation, GTRecipeType> RECIPE_TYPE = add(GTRegistries.RECIPE_TYPES,
             GTRecipeType.class);

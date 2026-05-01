@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public class MaterialRegistry extends GTRegistry.String<Material> {
+public class MaterialRegistry extends GTRegistry.RL<Material> {
 
     private static int networkIdCounter;
     @Getter
@@ -30,11 +30,11 @@ public class MaterialRegistry extends GTRegistry.String<Material> {
     }
 
     public void register(Material material) {
-        this.register(material.getName(), material);
+        this.register(material.getResourceLocation(), material);
     }
 
     @Override
-    public <T extends Material> T register(@NotNull java.lang.String key, @NotNull T value) {
+    public <T extends Material> T register(@NotNull ResourceLocation key, @NotNull T value) {
         if (isRegistryClosed) {
             GTCEu.LOGGER.error(
                     "Materials cannot be registered in the PostMaterialEvent (or after)! Must be added in the MaterialEvent. Skipping material {}...",

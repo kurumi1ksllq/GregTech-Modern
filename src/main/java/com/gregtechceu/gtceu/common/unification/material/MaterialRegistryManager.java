@@ -94,24 +94,20 @@ public final class MaterialRegistryManager implements IMaterialRegistryManager {
     @Override
     public Material getMaterial(@NotNull String name) {
         if (!name.isEmpty()) {
-            String modid;
-            String materialName;
-            int index = name.indexOf(':');
-            if (index >= 0) {
-                modid = name.substring(0, index);
-                materialName = name.substring(index + 1);
+            if (name.contains(":")) {
+                ResourceLocation resLoc = ResourceLocation.tryParse(name);
+                if (resLoc == null) return GTMaterials.NULL;
+                return getRegistry(resLoc.getNamespace()).get(resLoc);
             } else {
-                modid = GTCEu.MOD_ID;
-                materialName = name;
+                return getRegistry(GTCEu.MOD_ID).get(GTCEu.id(name));
             }
-            return getRegistry(modid).get(materialName);
         }
         return GTMaterials.NULL;
     }
 
     @Override
     public Material getMaterial(ResourceLocation resourceLocation) {
-        return getRegistry(resourceLocation.getNamespace()).get(resourceLocation.getPath());
+        return getRegistry(resourceLocation.getNamespace()).get(resourceLocation);
     }
 
     @Override

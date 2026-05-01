@@ -8,7 +8,6 @@ import com.gregtechceu.gtceu.api.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.capability.GTCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialEvent;
-import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialRegistryEvent;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.PostMaterialEvent;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconType;
@@ -204,9 +203,6 @@ public class CommonProxy {
     private static void initMaterials() {
         // First, register other mods' Registries
         MaterialRegistryManager managerInternal = (MaterialRegistryManager) GTCEuAPI.materialManager;
-
-        GTCEu.LOGGER.info("Registering material registries");
-        ModLoader.get().postEvent(new MaterialRegistryEvent());
 
         // First, register CEu Materials
         managerInternal.unfreezeRegistries();

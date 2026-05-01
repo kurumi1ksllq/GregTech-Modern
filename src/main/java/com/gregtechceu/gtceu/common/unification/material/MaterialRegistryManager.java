@@ -24,13 +24,13 @@ public final class MaterialRegistryManager implements IMaterialRegistryManager {
 
     private static MaterialRegistryManager INSTANCE;
 
-    private final Object2ObjectMap<String, MaterialRegistryImpl> registries = new Object2ObjectOpenHashMap<>();
-    private final Int2ObjectMap<MaterialRegistryImpl> networkIds = new Int2ObjectOpenHashMap<>();
+    private final Object2ObjectMap<String, MaterialRegistry> registries = new Object2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<MaterialRegistry> networkIds = new Int2ObjectOpenHashMap<>();
 
     @Nullable
     private Collection<Material> registeredMaterials;
 
-    private final MaterialRegistryImpl gregtechRegistry = createInternalRegistry();
+    private final MaterialRegistry gregtechRegistry = createInternalRegistry();
 
     private Phase registrationPhase = Phase.PRE;
 
@@ -52,7 +52,7 @@ public final class MaterialRegistryManager implements IMaterialRegistryManager {
 
         Preconditions.checkArgument(!registries.containsKey(modid),
                 "Material registry already exists for modid %s", modid);
-        MaterialRegistryImpl registry = new MaterialRegistryImpl(modid);
+        MaterialRegistry registry = new MaterialRegistry(modid);
         registries.put(modid, registry);
         networkIds.put(registry.getNetworkId(), registry);
         return registry;
@@ -126,12 +126,12 @@ public final class MaterialRegistryManager implements IMaterialRegistryManager {
     }
 
     public void unfreezeRegistries() {
-        registries.values().forEach(MaterialRegistryImpl::unfreeze);
+        registries.values().forEach(MaterialRegistry::unfreeze);
         registrationPhase = Phase.OPEN;
     }
 
     public void closeRegistries() {
-        registries.values().forEach(MaterialRegistryImpl::closeRegistry);
+        registries.values().forEach(MaterialRegistry::closeRegistry);
         Collection<Material> collection = new ArrayList<>();
         for (MaterialRegistry registry : registries.values()) {
             collection.addAll(registry.getAllMaterials());
@@ -141,13 +141,13 @@ public final class MaterialRegistryManager implements IMaterialRegistryManager {
     }
 
     public void freezeRegistries() {
-        registries.values().forEach(MaterialRegistryImpl::freeze);
+        registries.values().forEach(MaterialRegistry::freeze);
         registrationPhase = Phase.FROZEN;
     }
 
     @NotNull
-    private MaterialRegistryImpl createInternalRegistry() {
-        MaterialRegistryImpl registry = new MaterialRegistryImpl(GTCEu.MOD_ID);
+    private MaterialRegistry createInternalRegistry() {
+        MaterialRegistry registry = new MaterialRegistry(GTCEu.MOD_ID);
         this.registries.put(GTCEu.MOD_ID, registry);
         return registry;
     }

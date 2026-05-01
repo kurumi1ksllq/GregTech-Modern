@@ -44,6 +44,8 @@ import java.util.function.Function;
 public final class GTRegistries {
 
     // GT Registry
+
+
     public static final GTRegistry.String<Element> ELEMENTS = new GTRegistry.String<>(GTCEu.id("element"));
 
     public static final GTRegistry.RL<GTRecipeType> RECIPE_TYPES = new GTRegistry.RL<>(GTCEu.id("recipe_type"));

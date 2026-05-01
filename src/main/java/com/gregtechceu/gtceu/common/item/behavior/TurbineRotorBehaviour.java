@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.component.IMaterialPartItem;
 import com.gregtechceu.gtceu.api.item.component.ISubItemHandler;
 
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -26,7 +27,7 @@ public class TurbineRotorBehaviour implements IMaterialPartItem, ISubItemHandler
 
     @Override
     public void fillItemCategory(Item item, CreativeModeTab category, NonNullList<ItemStack> items) {
-        for (Material material : GTCEuAPI.materialManager.getRegisteredMaterials()) {
+        for (Material material : GTRegistries.MATERIALS.values()) {
             if (!material.shouldGenerateRecipesFor(turbineBlade) || !material.hasProperty(PropertyKey.INGOT)) {
                 continue;
             }

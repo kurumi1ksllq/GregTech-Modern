@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.addon.AddonFinder;
 import com.gregtechceu.gtceu.api.data.chemical.material.ItemMaterialData;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.data.recipe.MaterialInfoLoader;
 import com.gregtechceu.gtceu.data.recipe.configurable.RecipeAddition;
 import com.gregtechceu.gtceu.data.recipe.configurable.RecipeRemoval;
@@ -51,7 +52,7 @@ public class GTRecipes {
         MaterialInfoLoader.init();
 
         // com.gregtechceu.gtceu.data.recipe.generated.*
-        for (Material material : GTCEuAPI.materialManager.getRegisteredMaterials()) {
+        for (Material material : GTRegistries.MATERIALS.values()) {
             if (material.hasFlag(MaterialFlags.NO_UNIFICATION) ||
                     material.hasFlag(MaterialFlags.DISABLE_MATERIAL_RECIPES)) {
                 continue;

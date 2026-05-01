@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.fluids.GTFluid;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorage;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKey;
 import com.gregtechceu.gtceu.api.machine.multiblock.IBatteryData;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
 import com.gregtechceu.gtceu.common.block.*;
 import com.gregtechceu.gtceu.core.MixinHelpers;
@@ -289,7 +290,7 @@ public class GTModels {
      * register fluid models for materials
      */
     public static void registerMaterialFluidModels() {
-        for (var material : GTCEuAPI.materialManager.getRegisteredMaterials()) {
+        for (var material : GTRegistries.MATERIALS.values()) {
             var fluidProperty = material.getProperty(PropertyKey.FLUID);
             if (fluidProperty == null) continue;
             MaterialIconSet iconSet = material.getMaterialIconSet();

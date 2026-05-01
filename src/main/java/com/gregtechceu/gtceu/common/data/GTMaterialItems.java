@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.item.IGTTool;
 import com.gregtechceu.gtceu.api.item.TagPrefixItem;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.gregtechceu.gtceu.common.item.armor.GTArmorItem;
 import com.gregtechceu.gtceu.common.item.armor.GTDyeableArmorItem;
@@ -56,12 +57,12 @@ public class GTMaterialItems {
     // Reference Tables
     public static Table<TagPrefix, Material, ItemEntry<? extends Item>> MATERIAL_ITEMS;
     public static final Table<Material, GTToolType, ItemProviderEntry<IGTTool>> TOOL_ITEMS = ArrayTable.create(
-            GTCEuAPI.materialManager.getRegisteredMaterials().stream()
+            GTRegistries.MATERIALS.values().stream()
                     .filter(mat -> mat.hasProperty(PropertyKey.TOOL))
                     .toList(),
             GTToolType.getTypes().values().stream().toList());
     public static final Table<Material, ArmorItem.Type, ItemEntry<? extends ArmorItem>> ARMOR_ITEMS = ArrayTable.create(
-            GTCEuAPI.materialManager.getRegisteredMaterials().stream()
+            GTRegistries.MATERIALS.values().stream()
                     .filter(mat -> mat.hasProperty(PropertyKey.ARMOR))
                     .toList(),
             Arrays.asList(ArmorItem.Type.values()));
@@ -71,14 +72,11 @@ public class GTMaterialItems {
         REGISTRATE.creativeModeTab(() -> MATERIAL_ITEM);
         for (var tagPrefix : TagPrefix.values()) {
             if (tagPrefix.doGenerateItem()) {
-                for (MaterialRegistry registry : GTCEuAPI.materialManager.getRegistries()) {
-                    GTRegistrate registrate = GTRegistrate.createIgnoringListenerErrors(registry.getModid());
-                    for (Material material : registry.getAllMaterials()) {
+                    for (Material material : GTRegistries.MATERIALS.getAllMaterials()) {
                         if (tagPrefix.doGenerateItem(material)) {
-                            generateMaterialItem(tagPrefix, material, registrate);
+                            generateMaterialItem(tagPrefix, material, GTRegistrate.createIgnoringListenerErrors(material.getModid()));
                         }
                     }
-                }
             }
         }
         MATERIAL_ITEMS = MATERIAL_ITEMS_BUILDER.build();
@@ -103,17 +101,14 @@ public class GTMaterialItems {
     public static void generateTools() {
         REGISTRATE.creativeModeTab(() -> TOOL);
         for (GTToolType toolType : GTToolType.getTypes().values()) {
-            for (MaterialRegistry registry : GTCEuAPI.materialManager.getRegistries()) {
-                GTRegistrate registrate = GTRegistrate.createIgnoringListenerErrors(registry.getModid());
-                for (Material material : registry.getAllMaterials()) {
+                for (Material material : GTRegistries.MATERIALS.getAllMaterials()) {
                     if (material.hasProperty(PropertyKey.TOOL)) {
                         var property = material.getProperty(PropertyKey.TOOL);
                         if (property.hasType(toolType)) {
-                            generateTool(material, toolType, registrate);
+                            generateTool(material, toolType, GTRegistrate.createIgnoringListenerErrors(material.getModid()));
                         }
                     }
                 }
-            }
         }
     }
 
@@ -135,12 +130,10 @@ public class GTMaterialItems {
     public static void generateArmors() {
         REGISTRATE.creativeModeTab(() -> TOOL);
         for (ArmorItem.Type type : ArmorItem.Type.values()) {
-            for (MaterialRegistry registry : GTCEuAPI.materialManager.getRegistries()) {
-                for (Material material : registry.getAllMaterials()) {
+                for (Material material : GTRegistries.MATERIALS.getAllMaterials()) {
                     if (material.hasProperty(PropertyKey.ARMOR)) {
-                        generateArmor(material, type, GTRegistrate.createIgnoringListenerErrors(registry.getModid()));
+                        generateArmor(material, type, GTRegistrate.createIgnoringListenerErrors(material.getModid()));
                     }
-                }
             }
         }
     }

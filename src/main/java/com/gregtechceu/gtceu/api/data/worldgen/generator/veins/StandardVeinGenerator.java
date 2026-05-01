@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.data.worldgen.generator.VeinGenerator;
 import com.gregtechceu.gtceu.api.data.worldgen.ores.OreBlockPlacer;
 import com.gregtechceu.gtceu.api.data.worldgen.ores.OreVeinUtil;
 
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -47,7 +48,7 @@ public class StandardVeinGenerator extends VeinGenerator {
                     .apply(instance, StandardVeinGenerator::new));
 
     public static final Codec<StandardVeinGenerator> CODEC_LIST = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.either(OreConfiguration.TargetBlockState.CODEC.listOf(), GTCEuAPI.materialManager.codec())
+            Codec.either(OreConfiguration.TargetBlockState.CODEC.listOf(), GTRegistries.MATERIALS.codec())
                     .fieldOf("targets").forGetter(ext -> ext.blocks))
             .apply(instance, StandardVeinGenerator::new));
 

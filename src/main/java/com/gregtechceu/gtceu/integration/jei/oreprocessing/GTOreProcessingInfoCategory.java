@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.lowdragmc.lowdraglib.jei.ModularUIRecipeCategory;
 
 import net.minecraft.network.chat.Component;
@@ -37,7 +38,7 @@ public class GTOreProcessingInfoCategory extends ModularUIRecipeCategory<GTOrePr
     }
 
     public static void registerRecipes(IRecipeRegistration registry) {
-        registry.addRecipes(RECIPE_TYPE, GTCEuAPI.materialManager.getRegisteredMaterials().stream()
+        registry.addRecipes(RECIPE_TYPE, GTRegistries.MATERIALS.values().stream()
                 .filter((material) -> material.hasProperty(PropertyKey.ORE) &&
                         !material.hasFlag(MaterialFlags.NO_ORE_PROCESSING_TAB))
                 .map(GTOreProcessingInfoWrapper::new)

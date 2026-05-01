@@ -548,7 +548,7 @@ public class CommonEventListener {
 
     @SubscribeEvent
     public static void addAlloyBlastProperties(PostMaterialEvent event) {
-        for (Material material : GTCEuAPI.materialManager.getRegisteredMaterials()) {
+        for (Material material : GTRegistries.MATERIALS.values()) {
             if (!material.hasFlag(MaterialFlags.DISABLE_ALLOY_PROPERTY)) {
                 addAlloyBlastProperty(material);
             }
@@ -720,7 +720,7 @@ public class CommonEventListener {
                 Matcher matcher = idPattern.matcher(mapping.getKey().getPath());
                 if (matcher.matches()) {
                     BlockEntry<? extends Block> block = GTMaterialBlocks.MATERIAL_BLOCKS.get(prefix,
-                            GTCEuAPI.materialManager.getRegistry(GTCEu.MOD_ID).get(GTCEu.id(matcher.group(1))));
+                            GTRegistries.MATERIALS.get(GTCEu.id(matcher.group(1))));
                     if (block != null && block.isPresent()) {
                         mapping.remap(block.get());
                     }
@@ -730,12 +730,12 @@ public class CommonEventListener {
                 Matcher matcher = idPattern.matcher(mapping.getKey().getPath());
                 if (matcher.matches()) {
                     BlockEntry<? extends Block> block = GTMaterialBlocks.MATERIAL_BLOCKS.get(prefix,
-                            GTCEuAPI.materialManager.getRegistry(GTCEu.MOD_ID).get(GTCEu.id(matcher.group(1))));
+                            GTRegistries.MATERIALS.get(GTCEu.id(matcher.group(1))));
                     if (block != null && block.isPresent()) {
                         mapping.remap(block.asItem());
                     } else {
                         ItemEntry<? extends Item> item = GTMaterialItems.MATERIAL_ITEMS.get(prefix,
-                                GTCEuAPI.materialManager.getRegistry(GTCEu.MOD_ID).get(GTCEu.id(matcher.group(1))));
+                                GTRegistries.MATERIALS.get(GTCEu.id(matcher.group(1))));
                         if (item != null && item.isPresent()) {
                             mapping.remap(item.asItem());
                         }

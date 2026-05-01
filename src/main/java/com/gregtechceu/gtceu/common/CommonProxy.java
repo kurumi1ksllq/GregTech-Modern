@@ -25,6 +25,7 @@ import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.*;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.fluid.*;
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.item.*;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
+import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.common.data.GTPlaceholders;
 import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils;
@@ -33,7 +34,6 @@ import com.gregtechceu.gtceu.common.item.tool.rotation.CustomBlockRotations;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.FusionReactorMachine;
 import com.gregtechceu.gtceu.common.machine.owner.MachineOwner;
 import com.gregtechceu.gtceu.common.network.GTNetwork;
-import com.gregtechceu.gtceu.common.registry.GTRegistration;
 import com.gregtechceu.gtceu.common.unification.material.MaterialRegistryManager;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.core.mixins.registrate.AbstractRegistrateAccessor;
@@ -158,13 +158,12 @@ public class CommonProxy {
         WaypointManager.init();
         AddonFinder.getAddons().forEach(IGTAddon::initializeAddon);
 
-        GTRegistration.REGISTRATE.registerRegistrate();
-
         GregTechDatagen.initPost();
         // Register all material manager registries, for materials with mod ids.
         GTCEuAPI.materialManager.getRegistries().forEach(registry -> {
             // Force the material lang generator to be at index 0, so that addons' lang generators can override it.
-            AbstractRegistrateAccessor accessor = (AbstractRegistrateAccessor) registry.getRegistrate();
+            var registrate = GTRegistrate.createIgnoringListenerErrors(registry.getModid());
+            AbstractRegistrateAccessor accessor = (AbstractRegistrateAccessor) registrate;
             if (accessor.getDoDatagen().get()) {
                 // noinspection UnstableApiUsage
                 List<NonNullConsumer<? extends RegistrateProvider>> providers = Multimaps.asMap(accessor.getDatagens())
@@ -178,7 +177,7 @@ public class CommonProxy {
                 }
             }
 
-            registry.getRegistrate()
+            registrate
                     .registerEventListeners(ModList.get().getModContainerById(registry.getModid())
                             .filter(FMLModContainer.class::isInstance)
                             .map(FMLModContainer.class::cast)

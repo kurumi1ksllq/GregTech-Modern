@@ -41,7 +41,7 @@ public class GTFluids {
         // register fluids for materials
         REGISTRATE.creativeModeTab(() -> GTCreativeModeTabs.MATERIAL_FLUID);
         for (MaterialRegistry registry : GTCEuAPI.materialManager.getRegistries()) {
-            GTRegistrate registrate = registry.getRegistrate();
+            GTRegistrate registrate = GTRegistrate.createIgnoringListenerErrors(registry.getModid());
             for (var material : registry.getAllMaterials()) {
                 var fluidProperty = material.getProperty(PropertyKey.FLUID);
 

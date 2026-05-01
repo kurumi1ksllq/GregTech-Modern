@@ -72,7 +72,7 @@ public class GTMaterialItems {
         for (var tagPrefix : TagPrefix.values()) {
             if (tagPrefix.doGenerateItem()) {
                 for (MaterialRegistry registry : GTCEuAPI.materialManager.getRegistries()) {
-                    GTRegistrate registrate = registry.getRegistrate();
+                    GTRegistrate registrate = GTRegistrate.createIgnoringListenerErrors(registry.getModid());
                     for (Material material : registry.getAllMaterials()) {
                         if (tagPrefix.doGenerateItem(material)) {
                             generateMaterialItem(tagPrefix, material, registrate);
@@ -104,7 +104,7 @@ public class GTMaterialItems {
         REGISTRATE.creativeModeTab(() -> TOOL);
         for (GTToolType toolType : GTToolType.getTypes().values()) {
             for (MaterialRegistry registry : GTCEuAPI.materialManager.getRegistries()) {
-                GTRegistrate registrate = registry.getRegistrate();
+                GTRegistrate registrate = GTRegistrate.createIgnoringListenerErrors(registry.getModid());
                 for (Material material : registry.getAllMaterials()) {
                     if (material.hasProperty(PropertyKey.TOOL)) {
                         var property = material.getProperty(PropertyKey.TOOL);
@@ -136,10 +136,9 @@ public class GTMaterialItems {
         REGISTRATE.creativeModeTab(() -> TOOL);
         for (ArmorItem.Type type : ArmorItem.Type.values()) {
             for (MaterialRegistry registry : GTCEuAPI.materialManager.getRegistries()) {
-                GTRegistrate registrate = registry.getRegistrate();
                 for (Material material : registry.getAllMaterials()) {
                     if (material.hasProperty(PropertyKey.ARMOR)) {
-                        generateArmor(material, type, registrate);
+                        generateArmor(material, type, GTRegistrate.createIgnoringListenerErrors(registry.getModid()));
                     }
                 }
             }

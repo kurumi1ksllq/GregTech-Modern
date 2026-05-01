@@ -96,7 +96,7 @@ public class GTRegistrate extends AbstractRegistrate<GTRegistrate> {
      * @return The {@link GTRegistrate} instance
      */
     public static GTRegistrate create(String modId, boolean registerEvents) {
-        return innerCreate(modId, false, registerEvents);
+        return innerCreate(modId, registerEvents, registerEvents);
     }
 
     /**
@@ -114,10 +114,11 @@ public class GTRegistrate extends AbstractRegistrate<GTRegistrate> {
     }
 
     private static GTRegistrate innerCreate(String modId, boolean registerEvents, boolean requireValidEventBus) {
-        if (EXISTING_REGISTRATES.containsKey(modId)) {
-            return EXISTING_REGISTRATES.get(modId);
-        }
+
+        var existing = EXISTING_REGISTRATES.get(modId);
+        if (existing != null) return existing;
         var registrate = new GTRegistrate(modId);
+
         if (registerEvents) {
             Optional<IEventBus> modEventBus = ModList.get().getModContainerById(modId)
                     .filter(FMLModContainer.class::isInstance)

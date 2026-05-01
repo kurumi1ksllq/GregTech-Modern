@@ -39,7 +39,7 @@ public class GTFluids {
 
         // register fluids for materials
         REGISTRATE.creativeModeTab(() -> GTCreativeModeTabs.MATERIAL_FLUID);
-        for (var material : GTRegistries.MATERIALS.getAllMaterials()) {
+        for (var material : GTRegistries.MATERIALS.values()) {
             var fluidProperty = material.getProperty(PropertyKey.FLUID);
 
             if (fluidProperty != null) {

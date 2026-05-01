@@ -172,13 +172,6 @@ public class CommonProxy {
                     providers.add(0, generator);
                 }
             }
-
-            registrate
-                    .registerEventListeners(ModList.get().getModContainerById(location.getNamespace())
-                            .filter(FMLModContainer.class::isInstance)
-                            .map(FMLModContainer.class::cast)
-                            .map(FMLModContainer::getEventBus)
-                            .orElse(FMLJavaModLoadingContext.get().getModEventBus()));
         });
 
         WorldGenLayers.registerAll();

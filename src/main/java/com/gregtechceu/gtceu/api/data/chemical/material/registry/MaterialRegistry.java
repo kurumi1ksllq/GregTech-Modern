@@ -10,8 +10,8 @@ import net.minecraft.resources.ResourceLocation;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.Collection;
 import java.util.Set;
 
 public class MaterialRegistry extends GTRegistry.RL<Material> {
@@ -38,10 +38,6 @@ public class MaterialRegistry extends GTRegistry.RL<Material> {
         return GTMaterials.NULL;
     }
 
-    public void register(Material material) {
-        this.register(material.getResourceLocation(), material);
-    }
-
     @Override
     public <T extends Material> T register(@NotNull ResourceLocation key, @NotNull T value) {
         if (registrationPhase == Phase.CLOSED || registrationPhase == Phase.FROZEN) {
@@ -65,10 +61,10 @@ public class MaterialRegistry extends GTRegistry.RL<Material> {
      * @return all registered materials.
      */
     @NotNull
-    public Collection<Material> getAllMaterials() {
+    public @UnmodifiableView Set<Material> values() {
         if (registrationPhase == Phase.PRE || registrationPhase == Phase.OPEN)
             throw new IllegalStateException("Cannot retrieve all materials before registration");
-        return values();
+        return super.values();
     }
 
     public void closeRegistry() {

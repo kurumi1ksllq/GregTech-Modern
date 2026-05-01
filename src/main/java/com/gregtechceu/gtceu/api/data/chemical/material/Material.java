@@ -150,7 +150,7 @@ public class Material implements Comparable<Material> {
     }
 
     protected void registerMaterial() {
-        GTRegistries.MATERIALS.register(this);
+        GTRegistries.MATERIALS.register(getResourceLocation(), this);
     }
 
     public String getName() {

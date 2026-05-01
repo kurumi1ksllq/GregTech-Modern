@@ -202,8 +202,6 @@ public class CommonProxy {
         GTRegistries.MATERIALS.unfreeze();
         GTCEu.LOGGER.info("Registering GTCEu Materials");
         GTMaterials.init();
-        GTRegistries.MATERIALS
-                .setFallbackMaterial(GTCEu.MOD_ID, GTMaterials.Aluminium);
 
         // Then, register addon Materials
         GTCEu.LOGGER.info("Registering addon Materials");

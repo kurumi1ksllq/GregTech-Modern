@@ -7,13 +7,11 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 
 import net.minecraft.resources.ResourceLocation;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 public class MaterialRegistry extends GTRegistry.RL<Material> {
@@ -22,9 +20,6 @@ public class MaterialRegistry extends GTRegistry.RL<Material> {
     private final Set<java.lang.String> usedNamespaces = new ObjectOpenHashSet<>();
 
     private Phase registrationPhase = Phase.PRE;
-
-    @NotNull
-    private Map<java.lang.String, Material> fallbackMaterial = new Object2ObjectOpenHashMap<>();
 
     public MaterialRegistry() {
         super(GTCEu.id("material"));
@@ -74,15 +69,6 @@ public class MaterialRegistry extends GTRegistry.RL<Material> {
         if (registrationPhase == Phase.PRE || registrationPhase == Phase.OPEN)
             throw new IllegalStateException("Cannot retrieve all materials before registration");
         return values();
-    }
-
-    public void setFallbackMaterial(java.lang.String modId, @NotNull Material material) {
-        this.fallbackMaterial.put(modId, material);
-    }
-
-    @NotNull
-    public Material getFallbackMaterial(java.lang.String modId) {
-        return fallbackMaterial.get(modId);
     }
 
     public void closeRegistry() {

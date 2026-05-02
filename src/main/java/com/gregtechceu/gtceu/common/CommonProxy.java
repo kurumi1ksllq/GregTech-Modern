@@ -69,12 +69,10 @@ import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import net.minecraftforge.registries.RegisterEvent;
 
 import com.google.common.collect.Multimaps;

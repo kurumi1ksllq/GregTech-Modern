@@ -9,10 +9,10 @@ import static com.gregtechceu.gtceu.utils.FormattingUtil.toEnglishName;
 public class MaterialLangGenerator {
 
     public static void generate(RegistrateLangProvider provider, String modId) {
-        GTRegistries.MATERIALS.values().stream()
-                .filter(mat -> mat.getModid().equals(modId))
-                .forEach(material -> {
-                    provider.add(material.getUnlocalizedName(), toEnglishName(material.getName()));
-                });
+        for (var material : GTRegistries.MATERIALS) {
+            if (material.getModid().equals(modId)) {
+                provider.add(material.getUnlocalizedName(), toEnglishName(material.getName()));
+            }
+        }
     }
 }

@@ -114,7 +114,6 @@ public class GTRegistrate extends AbstractRegistrate<GTRegistrate> {
     }
 
     private static GTRegistrate innerCreate(String modId, boolean registerEvents, boolean requireValidEventBus) {
-
         var existing = EXISTING_REGISTRATES.get(modId);
         if (existing != null) return existing;
         var registrate = new GTRegistrate(modId);

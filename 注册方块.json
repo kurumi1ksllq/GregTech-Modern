@@ -1,0 +1,26 @@
+{
+  "蒸汽机器": {
+    "gtceu:steam_oven": "蒸汽熔炼炉",
+    "gtceu:steam_grinder": "蒸汽碾磨机",
+    "gtceu:steam_compressor": "蒸汽压缩机",
+    "gtceu:steam_alloy_smelter": "蒸汽合金炉",
+    "gtceu:steam_mixer": "蒸汽搅拌机",
+    "gtceu:steam_ore_washer": "蒸汽洗矿机",
+    "gtceu:steam_bath": "蒸汽浸洗机",
+    "gtceu:steam_forge_hammer": "蒸汽锻造锤",
+    "gtceu:steam_centrifuge": "蒸汽离心机",
+    "gtceu:steam_thermal_centrifuge": "蒸汽热力离心机"
+  },
+  "lv": {
+    "gtceu:electric_blast_furnace": "电力高炉",
+    "gtceu:electric_industrial_blast_furnace": "电力工业高炉"
+  },
+  "mv": {
+    "gtceu:multi_smelter": "电力熔炉",
+    "gtceu:multi_industrial_smelter": "电力工业熔炉"
+  },
+  "hv": {
+    "gtceu:large_chemical_reactor": "大型化学反应釜",
+    "gtceu:distillation_tower": "蒸馏塔"
+  }
+}

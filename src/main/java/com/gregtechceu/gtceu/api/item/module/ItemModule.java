@@ -24,6 +24,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,15 @@ public abstract class ItemModule {
         if (electricItem != null && useEnergyInInventory(player, module)) {
             electricItem.discharge(energy, electricItem.getTier(), true, false, false);
         }
+    }
+
+    /**
+     * @return name displayed in the modules UI
+     */
+    public Component getDisplayName(AppliedItemModule module) {
+        List<Component> list = new ArrayList<>();
+        appendHoverText(null, TooltipFlag.NORMAL, list, module);
+        return list.isEmpty() ? Component.empty() : list.get(0);
     }
 
     public void appendHoverText(Level level, TooltipFlag isAdvanced, List<Component> tooltips,

@@ -45,7 +45,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fml.ModLoader;
 
 import brachy.modularui.widgets.ProgressWidget;
-
 import com.tterrag.registrate.util.entry.RegistryEntry;
 
 import java.util.ArrayList;

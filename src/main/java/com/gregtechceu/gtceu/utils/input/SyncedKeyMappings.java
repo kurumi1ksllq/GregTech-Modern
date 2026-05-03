@@ -1,15 +1,15 @@
 package com.gregtechceu.gtceu.utils.input;
 
-import brachy.modularui.factory.GuiData;
-import brachy.modularui.factory.GuiManager;
 import com.gregtechceu.gtceu.GTCEu;
-
 import com.gregtechceu.gtceu.api.mui.factory.ModularItemUIFactory;
+
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModLoader;
 
+import brachy.modularui.factory.GuiData;
+import brachy.modularui.factory.GuiManager;
 import com.mojang.blaze3d.platform.InputConstants;
 
 public final class SyncedKeyMappings {
@@ -49,7 +49,7 @@ public final class SyncedKeyMappings {
             InputConstants.KEY_V).registerGlobalListener((player, key, isDown) -> {
                 if (isDown)
                     GuiManager.open(ModularItemUIFactory.INSTANCE, new GuiData(player), player);
-    });
+            });
 
     public static void init() {
         if (GTCEu.isClientSide()) {

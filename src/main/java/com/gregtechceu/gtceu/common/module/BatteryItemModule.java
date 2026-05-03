@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.common.module;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.GTCapability;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.capability.IElectricItem;
@@ -33,6 +34,14 @@ public class BatteryItemModule extends ItemModule implements ICapabilityModule, 
 
     public BatteryItemModule(ResourceLocation id) {
         super(id);
+    }
+
+    @Override
+    public Component getDisplayName(AppliedItemModule module) {
+        IElectricItem electricItem = GTCapabilityHelper.getElectricItem(module.getModuleItem());
+        if (electricItem != null)
+            return Component.translatable("metaarmor.tooltip.modifier.battery", GTValues.VNF[electricItem.getTier()]);
+        else return super.getDisplayName(module);
     }
 
     @Override

@@ -6,6 +6,8 @@ import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
+import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.recipe.type.EquipmentFoundryRecipe;
@@ -18,8 +20,6 @@ import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.syncdata.IManaged;
 import com.lowdragmc.lowdraglib.syncdata.IManagedStorage;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.blockentity.IAsyncAutoSyncBlockEntity;
 import com.lowdragmc.lowdraglib.syncdata.blockentity.IAutoPersistBlockEntity;
 import com.lowdragmc.lowdraglib.syncdata.blockentity.IManagedBlockEntity;
@@ -62,11 +62,11 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
     @Getter
     private final FieldManagedStorage syncStorage = new FieldManagedStorage(this);
 
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private final CustomItemStackHandler equipmentSlot;
-    @Persisted
-    @DescSynced
+    @SaveField
+    @SyncToClient
     private final CustomItemStackHandler moduleSlots;
 
     public EquipmentFoundryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
@@ -159,7 +159,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         for (int i = 0; i < MAX_MODIFIER_SLOTS; i++) {
             final int finalI = i;
             SlotWidget slotWidget = new SlotWidget(moduleSlots, i, x, y)
-                    /*.setIsBlocked(() -> isModifierSlotBlocked(finalI))*/
+                    /* .setIsBlocked(() -> isModifierSlotBlocked(finalI)) */
                     .setBackgroundTexture(null);
             modularUI.widget(slotWidget);
             slotWidgets.add(slotWidget);

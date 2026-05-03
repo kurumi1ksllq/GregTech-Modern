@@ -3,12 +3,14 @@ package com.gregtechceu.gtceu.api.mui.factory;
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.IModularItem;
+import com.gregtechceu.gtceu.api.item.module.ItemModule;
 import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
 import com.gregtechceu.gtceu.api.mui.GTGuiScreen;
 import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
 import com.gregtechceu.gtceu.common.mui.GTMuiWidgets;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -17,18 +19,20 @@ import brachy.modularui.api.drawable.IDrawable;
 import brachy.modularui.api.drawable.IKey;
 import brachy.modularui.api.widget.IWidget;
 import brachy.modularui.drawable.GuiDraw;
-import brachy.modularui.drawable.ItemDrawable;
+import brachy.modularui.drawable.text.TextIcon;
 import brachy.modularui.factory.GuiData;
 import brachy.modularui.screen.ModularPanel;
 import brachy.modularui.screen.ModularScreen;
 import brachy.modularui.screen.UISettings;
 import brachy.modularui.screen.viewport.ModularGuiContext;
 import brachy.modularui.theme.WidgetThemeEntry;
+import brachy.modularui.utils.Alignment;
 import brachy.modularui.value.sync.DynamicSyncHandler;
 import brachy.modularui.value.sync.PanelSyncManager;
 import brachy.modularui.value.sync.SyncHandlers;
 import brachy.modularui.widgets.*;
 import brachy.modularui.widgets.layout.Flow;
+import brachy.modularui.widgets.layout.Grid;
 import brachy.modularui.widgets.slot.ItemSlot;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -63,21 +67,23 @@ public class ModularItemUIHolder implements IUIHolder<GuiData> {
         registerSyncValues(syncManager);
         return new ModularPanel<>("modularItem")
                 .leftRel(.2f)
-                .child(GTMuiWidgets.createTitleBar(IDrawable.EMPTY.asIcon(), "Modules", 176, GTGuiTextures.BACKGROUND))
+                .width(250)
+                .child(GTMuiWidgets.createTitleBar(IDrawable.EMPTY.asIcon().size(0), "Modules", 250,
+                        GTGuiTextures.BACKGROUND))
                 .child(playerInventory())
                 .child(new ToggleButton()
                         .syncHandler("inventoryUnlocked")
                         .overlay(true, GTGuiTextures.BUTTON_LOCK)
                         .overlay(false, GTGuiTextures.BUTTON_LOCK)
                         .invertSelected(true)
-                        .left(7).bottom(86))
+                        .left(7).bottom(7))
                 .child(new DynamicSyncedWidget<>()
                         .syncHandler(dynamicSyncHandler)
-                        .initialChild(new TextWidget<>("Select an item"))
+                        .initialChild(new TextWidget<>("Select an item")
+                                .center())
                         .widthRel(1)
                         .height(85)
-                        .top(5)
-                        .padding(5));
+                        .top(5));
     }
 
     private IWidget getStackInfoWidget(PanelSyncManager psm, FriendlyByteBuf buf) {
@@ -85,42 +91,39 @@ public class ModularItemUIHolder implements IUIHolder<GuiData> {
         IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
         List<ItemModuleSlot> slots = modularItem == null ? List.of() : modularItem.getSlots();
         return Flow.col()
-                .coverChildren()
+                .horizontalCenter()
+                .widthRel(1)
                 .child(Flow.row()
                         .coverChildren()
                         .childPadding(5)
                         .child(new ItemDisplayWidget().item(stack))
                         .child(new TextWidget<>(IKey.dynamic(stack::getHoverName))))
-                .childIf(modularItem != null, () -> Flow.row()
-                        .child(Flow.col()
-                                .coverChildren()
-                                .children(slots.size() / 2 + slots.size() % 2, index -> {
-                                    AppliedItemModule module = modularItem.getModuleInSlot(index);
-                                    return Flow.row()
-                                            .coverChildren()
-                                            .childIf(module == null,
-                                                    () -> new TextWidget<>(
-                                                            IKey.lang("metaarmor.tooltip.modifier.empty")))
-                                            .childIf(module != null,
-                                                    () -> new ItemDrawable(module.getModuleItem()).asWidget())
-                                            .childIf(module != null, () -> new TextWidget<>(
-                                                    IKey.dynamic(() -> module.getModuleItem().getHoverName())));
-                                }))
-                        .child(Flow.col()
-                                .coverChildren()
-                                .children(slots.size() / 2, index -> {
-                                    AppliedItemModule module = modularItem
-                                            .getModuleInSlot(slots.size() / 2 + slots.size() % 2 + index);
-                                    return Flow.row()
-                                            .coverChildren()
-                                            .childIf(module == null,
-                                                    () -> new TextWidget<>(
-                                                            IKey.lang("metaarmor.tooltip.modifier.empty")))
-                                            .childIf(module != null,
-                                                    () -> new ItemDrawable(module.getModuleItem()).asWidget())
-                                            .childIf(module != null, () -> new TextWidget<>(
-                                                    IKey.dynamic(() -> module.getModuleItem().getHoverName())));
-                                })));
+                .childIf(modularItem == null,
+                        () -> new TextWidget<>(IKey.str("This item does not accept modules")).center())
+                .childIf(modularItem != null, () -> new Grid()
+                        .minColWidth(100)
+                        .widthRel(1)
+                        .minRowHeight(10)
+                        .margin(5)
+                        .mapTo(2, slots.size(), index -> {
+                            assert modularItem != null;
+                            AppliedItemModule appliedModule = modularItem.getModuleInSlot(index);
+                            if (appliedModule == null) {
+                                return new ButtonWidget<>()
+                                        .height(10)
+                                        .widthRel(0.5f)
+                                        .overlay(
+                                                new TextIcon(Component.translatable("metaarmor.tooltip.modifier.empty"),
+                                                        100, 10, 0.75f, Alignment.CENTER));
+                            } else {
+                                ItemModule module = appliedModule.getModule();
+                                return new ButtonWidget<>()
+                                        .height(10)
+                                        .widthRel(0.5f)
+                                        .overlay(new TextIcon(module.getDisplayName(appliedModule), 100, 10, 0.75f,
+                                                Alignment.CENTER));
+                            }
+                        }));
     }
 
     private ItemStack getSelectedItem() {

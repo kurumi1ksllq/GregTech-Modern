@@ -1,31 +1,20 @@
 package com.gregtechceu.gtceu.common.blockentity;
 
 import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import com.gregtechceu.gtceu.api.gui.GuiTextures;
-import com.gregtechceu.gtceu.api.gui.widget.SlotWidget;
 import com.gregtechceu.gtceu.api.item.module.AppliedItemModule;
 import com.gregtechceu.gtceu.api.item.module.IModularItem;
 import com.gregtechceu.gtceu.api.item.module.ItemModuleSlot;
+import com.gregtechceu.gtceu.api.mui.GTGuiScreen;
+import com.gregtechceu.gtceu.api.sync_system.ISyncManaged;
+import com.gregtechceu.gtceu.api.sync_system.SyncDataHolder;
 import com.gregtechceu.gtceu.api.sync_system.annotations.SaveField;
-import com.gregtechceu.gtceu.api.sync_system.annotations.SyncToClient;
 import com.gregtechceu.gtceu.api.transfer.item.CustomItemStackHandler;
+import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
+import com.gregtechceu.gtceu.common.mui.GTGuiTextures;
+import com.gregtechceu.gtceu.common.mui.GTGuiTheme;
+import com.gregtechceu.gtceu.common.mui.GTMuiWidgets;
 import com.gregtechceu.gtceu.common.recipe.type.EquipmentFoundryRecipe;
-
-import com.lowdragmc.lowdraglib.gui.modular.IUIHolder;
-import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.syncdata.IManaged;
-import com.lowdragmc.lowdraglib.syncdata.IManagedStorage;
-import com.lowdragmc.lowdraglib.syncdata.blockentity.IAsyncAutoSyncBlockEntity;
-import com.lowdragmc.lowdraglib.syncdata.blockentity.IAutoPersistBlockEntity;
-import com.lowdragmc.lowdraglib.syncdata.blockentity.IManagedBlockEntity;
-import com.lowdragmc.lowdraglib.syncdata.blockentity.IRPCBlockEntity;
-import com.lowdragmc.lowdraglib.syncdata.field.FieldManagedStorage;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -43,6 +32,16 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 
+import brachy.modularui.api.IUIHolder;
+import brachy.modularui.factory.PosGuiData;
+import brachy.modularui.screen.ModularPanel;
+import brachy.modularui.screen.ModularScreen;
+import brachy.modularui.screen.UISettings;
+import brachy.modularui.value.sync.PanelSyncManager;
+import brachy.modularui.widget.Widget;
+import brachy.modularui.widgets.layout.Grid;
+import brachy.modularui.widgets.slot.ItemSlot;
+import brachy.modularui.widgets.slot.ModularSlot;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,22 +50,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAutoSyncBlockEntity, IRPCBlockEntity,
-                                         IAutoPersistBlockEntity, IManaged, IManagedBlockEntity, IUIHolder,
-                                         ICapabilityProvider {
+public class EquipmentFoundryBlockEntity extends BlockEntity
+                                         implements ICapabilityProvider, IUIHolder<PosGuiData>, ISyncManaged {
 
     public static final int MAX_MODIFIER_SLOTS = 10;
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            EquipmentFoundryBlockEntity.class);
     @Getter
-    private final FieldManagedStorage syncStorage = new FieldManagedStorage(this);
+    private final SyncDataHolder syncDataHolder = new SyncDataHolder(this);
 
     @SaveField
-    @SyncToClient
     private final CustomItemStackHandler equipmentSlot;
     @SaveField
-    @SyncToClient
     private final CustomItemStackHandler moduleSlots;
 
     public EquipmentFoundryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
@@ -132,46 +126,82 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
     }
 
     @Override
-    public ModularUI createUI(Player entityPlayer) {
-        ModularUI modularUI = new ModularUI(176, 166, this, entityPlayer);
-        modularUI.background(GuiTextures.BACKGROUND.copy().setColor(0xff69645f));
-
-        IGuiTexture slotTexture = GuiTextures.SLOT.copy().setColor(0xff69645f);
-
-        TextTexture titleText = new TextTexture(getBlockState().getBlock().getDescriptionId())
-                .setColor(0xffffff)
-                .setDropShadow(false)
-                .setType(TextTexture.TextType.ROLL)
-                .setWidth(105);
-        titleText.setRollSpeed(0.7f);
-        modularUI.widget(new WidgetGroup(9, -16, 160, 16)
-                .addWidget(new ImageWidget(
-                        16, 2, 105, 16, titleText))
-                .setBackground(GuiTextures.TITLE_BAR_BACKGROUND.copy().setColor(0xff69645f)));
-        modularUI.widget(new ImageWidget(4, 4, 168, 75, GuiTextures.EQUIPMENT_FOUNDRY_BACKGROUND));
-        List<SlotWidget> slotWidgets = new ArrayList<>();
-        modularUI.widget(new SlotWidget(equipmentSlot, 0, 14, 32)
-                .setChangeListener(() -> this.onEquipmentSlotChanged(entityPlayer, slotWidgets))
-                .setBackgroundTexture(null));
-
-        int x = 42;
-        int y = 13;
+    public ModularPanel<?> buildUI(PosGuiData posGuiData, PanelSyncManager panelSyncManager, UISettings uiSettings) {
+        List<ItemSlot> moduleSlots = new ArrayList<>();
         for (int i = 0; i < MAX_MODIFIER_SLOTS; i++) {
-            final int finalI = i;
-            SlotWidget slotWidget = new SlotWidget(moduleSlots, i, x, y)
-                    /* .setIsBlocked(() -> isModifierSlotBlocked(finalI)) */
-                    .setBackgroundTexture(null);
-            modularUI.widget(slotWidget);
-            slotWidgets.add(slotWidget);
-            x += 26;
-            if (i == 4) {
-                x = 42;
-                y = 52;
-            }
+            moduleSlots.add(new ItemSlot()
+                    .background()
+                    .slot(new ModularSlot(this.moduleSlots, i)
+                            .singletonSlotGroup()));
         }
-        // modularUI.widget(UITemplate.bindPlayerInventory(entityPlayer.getInventory(), slotTexture, 7, 84, true));
-        return modularUI;
+        return new ModularPanel<>("equipment_foundry")
+                .size(168, 75)
+                .bindPlayerInventory(-80)
+                .child(GTMuiWidgets.createTitleBar(GTBlocks.EQUIPMENT_FOUNDRY.asStack(), 176,
+                        GTGuiTextures.BACKGROUND_STEEL))
+                .child(new ItemSlot()
+                        .left(10)
+                        .top(28)
+                        .background()
+                        .slot(equipmentSlot, 0)
+                        .slot(new ModularSlot(equipmentSlot, 0)
+                                .singletonSlotGroup()
+                                .changeListener((stack, onlyAmount, client, init) -> {
+                                    onEquipmentSlotChanged(posGuiData.getPlayer(), moduleSlots);
+
+                                })))
+                .child(new Grid()
+                        .background()
+                        .left(34)
+                        .top(-1)
+                        .minColWidth(26)
+                        .minRowHeight(39)
+                        .mapTo(5, moduleSlots));
     }
+
+    /*
+     * @Override
+     * public ModularUI createUI(Player entityPlayer) {
+     * ModularUI modularUI = new ModularUI(176, 166, this, entityPlayer);
+     * modularUI.background(GuiTextures.BACKGROUND.copy().setColor(0xff69645f));
+     * 
+     * IGuiTexture slotTexture = GuiTextures.SLOT.copy().setColor(0xff69645f);
+     * 
+     * TextTexture titleText = new TextTexture(getBlockState().getBlock().getDescriptionId())
+     * .setColor(0xffffff)
+     * .setDropShadow(false)
+     * .setType(TextTexture.TextType.ROLL)
+     * .setWidth(105);
+     * titleText.setRollSpeed(0.7f);
+     * modularUI.widget(new WidgetGroup(9, -16, 160, 16)
+     * .addWidget(new ImageWidget(
+     * 16, 2, 105, 16, titleText))
+     * .setBackground(GuiTextures.TITLE_BAR_BACKGROUND.copy().setColor(0xff69645f)));
+     * modularUI.widget(new ImageWidget(4, 4, 168, 75, GuiTextures.EQUIPMENT_FOUNDRY_BACKGROUND));
+     * List<SlotWidget> slotWidgets = new ArrayList<>();
+     * modularUI.widget(new SlotWidget(equipmentSlot, 0, 14, 32)
+     * .setChangeListener(() -> this.onEquipmentSlotChanged(entityPlayer, slotWidgets))
+     * .setBackgroundTexture(null));
+     * 
+     * int x = 42;
+     * int y = 13;
+     * for (int i = 0; i < MAX_MODIFIER_SLOTS; i++) {
+     * final int finalI = i;
+     * SlotWidget slotWidget = new SlotWidget(moduleSlots, i, x, y)
+     * // .setIsBlocked(() -> isModifierSlotBlocked(finalI))
+     * .setBackgroundTexture(null);
+     * modularUI.widget(slotWidget);
+     * slotWidgets.add(slotWidget);
+     * x += 26;
+     * if (i == 4) {
+     * x = 42;
+     * y = 52;
+     * }
+     * }
+     * // modularUI.widget(UITemplate.bindPlayerInventory(entityPlayer.getInventory(), slotTexture, 7, 84, true));
+     * return modularUI;
+     * }
+     */
 
     public boolean isModifierSlotBlocked(int slot) {
         ItemStack equipment = equipmentSlot.getStackInSlot(0);
@@ -182,7 +212,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         return modularItem.getSlots().size() <= slot;
     }
 
-    public void onEquipmentSlotChanged(@Nullable Player player, List<SlotWidget> slotWidgets) {
+    public void onEquipmentSlotChanged(@Nullable Player player, List<ItemSlot> slotWidgets) {
         ItemStack stack = equipmentSlot.getStackInSlot(0);
         if (stack.isEmpty()) {
             for (int i = 0; i < moduleSlots.getSlots(); i++) {
@@ -198,7 +228,7 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
                     Block.popResource(getLevel(), getBlockPos(), out);
                 }
             }
-            slotWidgets.forEach(slotWidget -> slotWidget.setBackgroundTexture(null));
+            slotWidgets.forEach(Widget::background);
         } else {
             IModularItem modularItem = GTCapabilityHelper.getModularItem(stack);
             if (modularItem == null) return;
@@ -209,9 +239,9 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
             }
             List<ItemModuleSlot> slots = modularItem.getSlots();
             for (int i = 0; i < slots.size() && i < slotWidgets.size(); i++) {
-                SlotWidget slotWidget = slotWidgets.get(i);
+                ItemSlot slotWidget = slotWidgets.get(i);
                 if (slots.get(i) != null && slotWidget != null) {
-                    slotWidget.setBackgroundTexture(slots.get(i).getSlotTexture());
+                    slotWidget.background(slots.get(i).getSlotTexture());
                 }
             }
         }
@@ -246,36 +276,6 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
     }
 
     @Override
-    public boolean isInvalid() {
-        return isRemoved();
-    }
-
-    @Override
-    public boolean isRemote() {
-        return getLevel() != null && getLevel().isClientSide;
-    }
-
-    @Override
-    public void markAsDirty() {
-        setChanged();
-    }
-
-    @Override
-    public IManagedStorage getRootStorage() {
-        return syncStorage;
-    }
-
-    @Override
-    public ManagedFieldHolder getFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
-    }
-
-    @Override
-    public void onChanged() {
-        this.setChanged();
-    }
-
-    @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == ForgeCapabilities.ITEM_HANDLER && side != null) {
             if (side.getAxis().isVertical())
@@ -285,4 +285,15 @@ public class EquipmentFoundryBlockEntity extends BlockEntity implements IAsyncAu
         }
         return super.getCapability(cap, side);
     }
+
+    @Override
+    public ModularScreen createScreen(PosGuiData posGuiData, ModularPanel<?> modularPanel) {
+        return new GTGuiScreen(modularPanel, GTGuiTheme.EQUIPMENT_FOUNDRY);
+    }
+
+    @Override
+    public void scheduleRenderUpdate() {}
+
+    @Override
+    public void markAsChanged() {}
 }

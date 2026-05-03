@@ -1,13 +1,12 @@
 package com.gregtechceu.gtceu.api.item.module;
 
 import com.gregtechceu.gtceu.api.GTValues;
-
-import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.gregtechceu.gtceu.common.mui.drawable.BorderDrawable;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
+import brachy.modularui.api.drawable.IDrawable;
 import lombok.Getter;
 
 import java.util.function.BiFunction;
@@ -48,7 +47,7 @@ public class TieredItemModuleSlot extends ItemModuleSlot {
     }
 
     @Override
-    public IGuiTexture getSlotTexture() {
-        return new ColorBorderTexture(1, 0xFF000000 | GTValues.VCM[getTier()]);
+    public IDrawable getSlotTexture() {
+        return new BorderDrawable(0xFF000000 | GTValues.VCM[getTier()], 1);
     }
 }

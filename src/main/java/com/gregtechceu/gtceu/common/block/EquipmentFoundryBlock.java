@@ -1,13 +1,9 @@
 package com.gregtechceu.gtceu.common.block;
 
-import com.gregtechceu.gtceu.common.blockentity.EquipmentFoundryBlockEntity;
 import com.gregtechceu.gtceu.common.data.GTBlockEntities;
-
-import com.lowdragmc.lowdraglib.gui.factory.BlockEntityUIFactory;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
-import org.jetbrains.annotations.NotNull;
+import brachy.modularui.factory.BlockEntityUIFactory;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -43,12 +39,10 @@ public class EquipmentFoundryBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @NotNull InteractionResult use(BlockState state, Level level, BlockPos pos,
-                                          Player player, InteractionHand hand, BlockHitResult hit) {
-        if (player instanceof ServerPlayer serverPlayer &&
-                level.getBlockEntity(pos) instanceof EquipmentFoundryBlockEntity equipmentFoundry) {
-            BlockEntityUIFactory.INSTANCE.openUI(equipmentFoundry, serverPlayer);
-        }
+    public InteractionResult use(BlockState state, Level level, BlockPos pos,
+                                 Player player, InteractionHand hand, BlockHitResult hit) {
+        if (!level.isClientSide)
+            BlockEntityUIFactory.INSTANCE.open(player, pos);
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 }

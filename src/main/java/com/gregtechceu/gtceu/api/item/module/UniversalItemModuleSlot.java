@@ -1,10 +1,11 @@
 package com.gregtechceu.gtceu.api.item.module;
 
-import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.gregtechceu.gtceu.common.mui.drawable.BorderDrawable;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+
+import brachy.modularui.api.drawable.IDrawable;
 
 public class UniversalItemModuleSlot extends ItemModuleSlot {
 
@@ -23,7 +24,7 @@ public class UniversalItemModuleSlot extends ItemModuleSlot {
     }
 
     @Override
-    public IGuiTexture getSlotTexture() {
-        return new ColorBorderTexture(1, 0xFFFFFFFF);
+    public IDrawable getSlotTexture() {
+        return new BorderDrawable(0xFFFFFFFF, 1);
     }
 }

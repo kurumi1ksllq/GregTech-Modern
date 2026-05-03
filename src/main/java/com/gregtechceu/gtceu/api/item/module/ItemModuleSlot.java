@@ -1,11 +1,10 @@
 package com.gregtechceu.gtceu.api.item.module;
 
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
+import brachy.modularui.api.drawable.IDrawable;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +41,7 @@ public abstract class ItemModuleSlot {
 
     public abstract Component getDisplayName();
 
-    public IGuiTexture getSlotTexture() {
+    public IDrawable getSlotTexture() {
         return null;
     }
 }

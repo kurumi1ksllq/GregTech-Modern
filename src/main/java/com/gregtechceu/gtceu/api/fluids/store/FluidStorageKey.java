@@ -38,8 +38,8 @@ public final class FluidStorageKey {
 
     public FluidStorageKey(@NotNull ResourceLocation resourceLocation, @Nullable TagKey<Fluid> extraTag,
                            @NotNull MaterialIconType iconType,
-                           @NotNull Function<@NotNull Material, @NotNull String> registryNameFunction,
-                           @NotNull Function<@NotNull Material, @NotNull String> translationKeyFunction,
+                           @NotNull Function<Material, String> registryNameFunction,
+                           @NotNull Function<Material, String> translationKeyFunction,
                            @Nullable FluidState defaultFluidState, int registrationPriority) {
         this.resourceLocation = resourceLocation;
         this.extraTag = extraTag;
@@ -57,8 +57,8 @@ public final class FluidStorageKey {
 
     public FluidStorageKey(@NotNull ResourceLocation resourceLocation, @NotNull String tagKey,
                            @NotNull MaterialIconType iconType,
-                           @NotNull Function<@NotNull Material, @NotNull String> registryNameFunction,
-                           @NotNull Function<@NotNull Material, @NotNull String> translationKeyFunction,
+                           @NotNull Function<Material, String> registryNameFunction,
+                           @NotNull Function<Material, String> translationKeyFunction,
                            @Nullable FluidState defaultFluidState, int registrationPriority) {
         this(resourceLocation, TagUtil.createFluidTag(tagKey), iconType,
                 registryNameFunction, translationKeyFunction,
@@ -66,8 +66,8 @@ public final class FluidStorageKey {
     }
 
     public FluidStorageKey(@NotNull ResourceLocation resourceLocation, @NotNull MaterialIconType iconType,
-                           @NotNull Function<@NotNull Material, @NotNull String> registryNameFunction,
-                           @NotNull Function<@NotNull Material, @NotNull String> translationKeyFunction,
+                           @NotNull Function<Material, String> registryNameFunction,
+                           @NotNull Function<Material, String> translationKeyFunction,
                            @Nullable FluidState defaultFluidState, int registrationPriority) {
         this(resourceLocation, (TagKey<Fluid>) null, iconType,
                 registryNameFunction, translationKeyFunction,

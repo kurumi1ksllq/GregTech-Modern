@@ -74,7 +74,7 @@ public interface IPropertyFluidFilter extends Predicate<FluidStack> {
 
     @NotNull
     @UnmodifiableView
-    Collection<@NotNull FluidAttribute> getContainedAttributes();
+    Collection<FluidAttribute> getContainedAttributes();
 
     /**
      * Append tooltips about containment info

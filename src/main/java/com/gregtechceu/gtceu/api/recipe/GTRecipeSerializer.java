@@ -232,7 +232,7 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
                             Codec.unboundedMap(RecipeCapability.DIRECT_CODEC, GTRegistries.CHANCE_LOGICS.codec())
                                     .optionalFieldOf("tickOutputChanceLogics", Map.of()).forGetter(val -> val.tickOutputChanceLogics),
                             RecipeCondition.CODEC.listOf().optionalFieldOf("recipeConditions", List.of()).forGetter(val -> val.conditions),
-                            KJSCallWrapper.INGREDIENT_ACTION_CODEC.optionalFieldOf("kubejs:actions", List.of()).forGetter(val -> (List<IngredientAction>) val.ingredientActions),
+                            KJSCallWrapper.INGREDIENT_ACTION_CODEC.optionalFieldOf("kubejs:actions", List.of()).forGetter(GTRecipeSerializer::getIngredientActions),
                             CompoundTag.CODEC.optionalFieldOf("data", new CompoundTag()).forGetter(val -> val.data),
                             ExtraCodecs.NON_NEGATIVE_INT.fieldOf("duration").forGetter(val -> val.duration),
                             GTRegistries.RECIPE_CATEGORIES.codec().optionalFieldOf("category", GTRecipeCategory.DEFAULT).forGetter(val -> val.recipeCategory),
@@ -240,6 +240,11 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
                     .apply(instance, GTRecipe::new));
         }
         // spotless:on
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<IngredientAction> getIngredientActions(GTRecipe recipe) {
+        return (List<IngredientAction>) recipe.ingredientActions;
     }
 
     public static class KJSCallWrapper {
@@ -262,8 +267,8 @@ public class GTRecipeSerializer implements RecipeSerializer<GTRecipe> {
             return IngredientAction.readList(buf);
         }
 
+        @SuppressWarnings("unchecked")
         public static void writeIngredientActions(List<?> ingredientActions, FriendlyByteBuf buf) {
-            // noinspection unchecked must be List<?> to be able to load without KJS.
             IngredientAction.writeList(buf, (List<IngredientAction>) ingredientActions);
         }
     }

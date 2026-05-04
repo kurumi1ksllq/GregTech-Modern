@@ -19,11 +19,11 @@ import static com.gregtechceu.gtceu.client.model.machine.MachineModelLoader.MISS
 
 public class UnbakedPipeModel implements IUnbakedGeometry<UnbakedPipeModel> {
 
-    private final Map<@Nullable Direction, UnbakedModel> parts;
-    private final Map<@NotNull Direction, UnbakedModel> restrictors;
+    private final Map<Direction, UnbakedModel> parts;
+    private final Map<Direction, UnbakedModel> restrictors;
 
-    public UnbakedPipeModel(Map<@Nullable Direction, UnbakedModel> parts,
-                            Map<@NotNull Direction, UnbakedModel> restrictors) {
+    public UnbakedPipeModel(Map<Direction, UnbakedModel> parts,
+                            Map<Direction, UnbakedModel> restrictors) {
         this.parts = parts;
         this.restrictors = restrictors;
     }

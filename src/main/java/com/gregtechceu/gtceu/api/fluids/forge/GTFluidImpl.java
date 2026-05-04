@@ -72,7 +72,7 @@ public abstract class GTFluidImpl extends GTFluid implements IForgeFluid {
             // registerDefaultState(getStateDefinition().any().setValue(LEVEL, 7));
         }
 
-        protected void createFluidStateDefinition(StateDefinition.@NotNull Builder<Fluid, net.minecraft.world.level.material.FluidState> builder) {
+        protected void createFluidStateDefinition(@NotNull StateDefinition.Builder<Fluid, net.minecraft.world.level.material.FluidState> builder) {
             super.createFluidStateDefinition(builder);
             builder.add(LEVEL);
         }

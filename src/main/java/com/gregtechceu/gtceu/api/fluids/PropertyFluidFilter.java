@@ -57,7 +57,7 @@ public class PropertyFluidFilter implements IPropertyFluidFilter {
     }
 
     @Override
-    public @NotNull @UnmodifiableView Collection<@NotNull FluidAttribute> getContainedAttributes() {
+    public @NotNull @UnmodifiableView Collection<FluidAttribute> getContainedAttributes() {
         return containmentPredicate.keySet();
     }
 

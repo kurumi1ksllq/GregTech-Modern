@@ -119,7 +119,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition, TYPE extends M
     private Consumer<ItemBuilder<? extends MetaMachineItem, ?>> itemBuilder;
     private NonNullConsumer<BlockEntityType<BlockEntity>> onBlockEntityRegister = NonNullConsumer.noop();
     @Getter // getter for KJS
-    private @NotNull GTRecipeType @NotNull [] recipeTypes = new GTRecipeType[0];
+    private @NotNull GTRecipeType[] recipeTypes = new GTRecipeType[0];
     @Getter // getter for KJS
     private int tier;
     private Reference2IntMap<RecipeCapability<?>> recipeOutputLimits = new Reference2IntOpenHashMap<>();

@@ -16,7 +16,7 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -94,6 +94,7 @@ public class ChemicalHelper {
         return info.getMaterial();
     }
 
+    @SuppressWarnings("deprecation")
     public static Material getMaterial(Fluid fluid) {
         if (FLUID_MATERIAL.isEmpty()) {
             Set<TagKey<Fluid>> allFluidTags = BuiltInRegistries.FLUID.getTagNames().collect(Collectors.toSet());
@@ -207,7 +208,7 @@ public class ChemicalHelper {
         if (TAG_MATERIAL_ENTRY.isEmpty()) {
             // If the map is empty, resolve all possible tags to their values in an attempt to save time on later
             // lookups.
-            Set<TagKey<Item>> allItemTags = BuiltInRegistries.ITEM.getTagNames().collect(Collectors.toSet());
+            Set<TagKey<Item>> allItemTags = Registries.ITEM.getTagNames().collect(Collectors.toSet());
             for (TagPrefix prefix : TagPrefix.values()) {
                 for (Material material : GTCEuAPI.materialManager.getRegisteredMaterials()) {
                     Arrays.stream(prefix.getItemTags(material))
@@ -229,7 +230,7 @@ public class ChemicalHelper {
             TagPrefix prefix = entry.tagPrefix();
             var items = new ArrayList<Supplier<? extends Item>>();
             for (TagKey<Item> tag : prefix.getItemTags(entry.material())) {
-                for (Holder<Item> itemHolder : BuiltInRegistries.ITEM.getTagOrEmpty(tag)) {
+                for (Holder<Item> itemHolder : Registries.ITEM.getTagOrEmpty(tag)) {
                     items.add(itemHolder::value);
                 }
             }

@@ -88,7 +88,7 @@ public class KJSTieredMachineBuilder extends BuilderBase<MachineDefinition[]> {
     }
 
     @Override
-    public @Nullable MachineDefinition @NotNull [] register() {
+    public @Nullable @NotNull MachineDefinition[] register() {
         Preconditions.checkNotNull(tiers, "Tiers can't be null!");
         Preconditions.checkArgument(tiers.length > 0, "tiers must have at least one tier!");
         Preconditions.checkNotNull(machine, "You must set a machine creation function! " +

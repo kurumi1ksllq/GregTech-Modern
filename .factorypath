@@ -1,0 +1,5 @@
+<factorypath>
+    <factorypathentry kind="EXTJAR" id="C:\Users\admin\.gradle\caches\modules-2\files-2.1\io.github.llamalad7\mixinextras-common\0.5.0-rc.3\247922815d51788605ba93aa1efbf87f0352627c\mixinextras-common-0.5.0-rc.3.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="C:\Users\admin\.gradle\caches\modules-2\files-2.1\org.projectlombok\lombok\1.18.38\57f8f5e02e92a30fd21b80cbd426a4172b5f8e29\lombok-1.18.38.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="C:\Users\admin\.gradle\caches\modules-2\files-2.1\org.spongepowered\mixin\0.8.7\3d051c66329d162a52fc062f7da912c37904a6a0\mixin-0.8.7-processor.jar" enabled="true" runInBatchMode="false"/>
+</factorypath>

@@ -134,7 +134,7 @@ public class SizedIngredient extends Ingredient {
     }
 
     @Override
-    public ItemStack @NotNull [] getItems() {
+    public @NotNull ItemStack[] getItems() {
         if (getInner() instanceof IntProviderIngredient intProviderIngredient) {
             return intProviderIngredient.getItems();
         }

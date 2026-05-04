@@ -24,6 +24,7 @@ import com.lowdragmc.lowdraglib.side.fluid.forge.FluidHelperImpl;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -66,7 +67,7 @@ public abstract class ProspectorMode<T> {
                         var state = chunk.getBlockState(pos);
                         if (state.is(oreTag)) {
                             var itemName = BLOCK_CACHE.computeIfAbsent(state, blockState -> {
-                                var name = BuiltInRegistries.BLOCK.getKey(blockState.getBlock()).toString();
+                                var name = Registries.BLOCK.getKey(blockState.getBlock()).toString();
                                 var entry = ChemicalHelper.getMaterialEntry(blockState.getBlock());
                                 if (!entry.isEmpty()) {
                                     name = "material_" + entry.material();
@@ -88,7 +89,7 @@ public abstract class ProspectorMode<T> {
                     return mat.getMaterialRGB();
                 }
             }
-            return BuiltInRegistries.BLOCK.get(new ResourceLocation(item)).defaultMapColor().col;
+            return Registries.BLOCK.get(new ResourceLocation(item)).defaultMapColor().col;
         }
 
         @Override
@@ -106,7 +107,7 @@ public abstract class ProspectorMode<T> {
                         return new ItemStackTexture(list.toArray(ItemStack[]::new)).scale(0.8f);
                     }
                 }
-                return new ItemStackTexture(new ItemStack(BuiltInRegistries.BLOCK.get(new ResourceLocation(name))))
+                return new ItemStackTexture(new ItemStack(Registries.BLOCK.get(new ResourceLocation(name))))
                         .scale(0.8f);
             });
         }
@@ -119,7 +120,7 @@ public abstract class ProspectorMode<T> {
                     return mat.getUnlocalizedName();
                 }
             }
-            return BuiltInRegistries.BLOCK.get(new ResourceLocation(item)).getDescriptionId();
+            return Registries.BLOCK.get(new ResourceLocation(item)).getDescriptionId();
         }
 
         @Override

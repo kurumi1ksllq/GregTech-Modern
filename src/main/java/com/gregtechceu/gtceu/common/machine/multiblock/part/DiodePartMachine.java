@@ -151,7 +151,7 @@ public class DiodePartMachine extends TieredIOPartMachine {
         return MANAGED_FIELD_HOLDER;
     }
 
-    @SuppressWarnings("unused")
+    // Called by managed field change callback
     public void onAmpUpdated(int newValue, int oldValue) {
         this.scheduleRenderUpdate();
     }

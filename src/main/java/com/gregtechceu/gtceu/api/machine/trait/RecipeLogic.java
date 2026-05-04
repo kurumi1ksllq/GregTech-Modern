@@ -144,13 +144,13 @@ public class RecipeLogic extends MachineTrait implements IEnhancedManaged, IWork
         this.machine = machine;
     }
 
-    @SuppressWarnings("unused")
+    // Called by sync system
     protected void onStatusSynced(Status newValue, Status oldValue) {
         scheduleRenderUpdate();
         updateSound();
     }
 
-    @SuppressWarnings("unused")
+    // Called by sync system
     protected void onActiveSynced(boolean newActive, boolean oldActive) {
         scheduleRenderUpdate();
     }

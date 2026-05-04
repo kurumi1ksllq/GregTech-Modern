@@ -15,8 +15,8 @@ public final class FluidAttribute {
     private final int hashCode;
 
     public FluidAttribute(@NotNull ResourceLocation resourceLocation,
-                          @NotNull Consumer<Consumer<@NotNull Component>> fluidTooltip,
-                          @NotNull Consumer<Consumer<@NotNull Component>> containerTooltip) {
+                          @NotNull Consumer<Consumer<Component>> fluidTooltip,
+                          @NotNull Consumer<Consumer<Component>> containerTooltip) {
         this.resourceLocation = resourceLocation;
         this.fluidTooltip = fluidTooltip;
         this.containerTooltip = containerTooltip;
@@ -27,11 +27,11 @@ public final class FluidAttribute {
         return resourceLocation;
     }
 
-    public void appendFluidTooltips(@NotNull Consumer<@NotNull Component> tooltip) {
+    public void appendFluidTooltips(@NotNull Consumer<Component> tooltip) {
         fluidTooltip.accept(tooltip);
     }
 
-    public void appendContainerTooltips(@NotNull Consumer<@NotNull Component> tooltip) {
+    public void appendContainerTooltips(@NotNull Consumer<Component> tooltip) {
         containerTooltip.accept(tooltip);
     }
 

@@ -116,6 +116,18 @@ public class BlockPattern {
         return new int[] { fingerLength, thumbLength, palmLength };
     }
 
+    public int getFingerLength() {
+        return fingerLength;
+    }
+
+    public int getThumbLength() {
+        return thumbLength;
+    }
+
+    public int getPalmLength() {
+        return palmLength;
+    }
+
     public boolean checkPatternAt(MultiblockState worldState, BlockPos centerPos, Direction frontFacing,
                                   Direction upwardsFacing, boolean isFlipped, boolean savePredicate) {
         boolean findFirstAisle = false;

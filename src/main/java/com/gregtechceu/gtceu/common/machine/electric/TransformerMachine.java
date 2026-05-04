@@ -61,7 +61,7 @@ public class TransformerMachine extends TieredEnergyMachine implements IControll
         return MANAGED_FIELD_HOLDER;
     }
 
-    @SuppressWarnings("unused")
+    // Called by managed field change callback
     private void onTransformUpdated(boolean newValue, boolean oldValue) {
         updateEnergyContainer(newValue);
     }

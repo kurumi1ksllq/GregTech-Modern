@@ -1131,31 +1131,26 @@ public class TagPrefix {
         return PREFIXES.getOrDefault(prefixName, replacement);
     }
 
-    @SuppressWarnings("unchecked")
     public TagKey<Item>[] getItemParentTags() {
         return tags.stream().filter(TagType::isParentTag).map(type -> type.getTag(this, GTMaterials.NULL))
                 .toArray(TagKey[]::new);
     }
 
-    @SuppressWarnings("unchecked")
     public TagKey<Item>[] getItemTags(@NotNull Material mat) {
         return tags.stream().filter(type -> !type.isParentTag()).map(type -> type.getTag(this, mat))
                 .filter(Objects::nonNull)
                 .toArray(TagKey[]::new);
     }
 
-    @SuppressWarnings("unchecked")
     public TagKey<Item>[] getAllItemTags(@NotNull Material mat) {
         return tags.stream().map(type -> type.getTag(this, mat)).filter(Objects::nonNull).toArray(TagKey[]::new);
     }
 
-    @SuppressWarnings("unchecked")
     public TagKey<Block>[] getBlockTags(@NotNull Material mat) {
         return tags.stream().filter(type -> !type.isParentTag()).map(type -> type.getTag(this, mat))
                 .map(itemTagKey -> TagKey.create(Registries.BLOCK, itemTagKey.location())).toArray(TagKey[]::new);
     }
 
-    @SuppressWarnings("unchecked")
     public TagKey<Block>[] getAllBlockTags(@NotNull Material mat) {
         return tags.stream().map(type -> type.getTag(this, mat))
                 .map(itemTagKey -> TagKey.create(Registries.BLOCK, itemTagKey.location())).toArray(TagKey[]::new);

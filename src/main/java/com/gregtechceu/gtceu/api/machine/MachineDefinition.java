@@ -63,7 +63,7 @@ public class MachineDefinition implements Supplier<IMachineBlock> {
     private Function<IMachineBlockEntity, MetaMachine> machineSupplier;
     @Getter
     @Setter
-    private @NotNull GTRecipeType @NotNull [] recipeTypes;
+    private @NotNull GTRecipeType[] recipeTypes;
     @Getter
     @Setter
     private int tier;

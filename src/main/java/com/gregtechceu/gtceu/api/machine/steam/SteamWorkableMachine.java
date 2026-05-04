@@ -116,7 +116,7 @@ public abstract class SteamWorkableMachine extends SteamMachine
         }
     }
 
-    protected RecipeLogic createRecipeLogic(@SuppressWarnings("unused") Object... args) {
+    protected RecipeLogic createRecipeLogic(Object... args) {
         return new RecipeLogic(this);
     }
 

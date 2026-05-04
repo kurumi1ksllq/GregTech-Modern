@@ -467,7 +467,6 @@ public class ColorSprayBehaviour implements IDurabilityBar, IInteractionItem, IA
         return parent.getPaintingColor() == child.getPaintingColor();
     };
 
-    @SuppressWarnings("rawtypes")
     private static final TriPredicate<IPipeNode, IPipeNode, Direction> gtPipePredicate = (parent, child, direction) -> {
         if (parent == null) return true;
         if (!paintablePredicate.test(parent, child, direction)) {

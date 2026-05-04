@@ -64,7 +64,7 @@ public class BreadthFirstBlockSearch {
     }
 
     public static <T> Set<T> conditionalSearch(Class<T> clazz, T start, @Nullable Level level,
-                                               Function<T, @NotNull BlockPos> posGetter,
+                                               Function<T, BlockPos> posGetter,
                                                TriPredicate<T, T, Direction> condition,
                                                int blockLimit, int iterationLimit) {
         if (level == null) return Collections.emptySet();

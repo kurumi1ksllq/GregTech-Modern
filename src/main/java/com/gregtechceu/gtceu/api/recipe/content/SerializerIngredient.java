@@ -41,7 +41,7 @@ public class SerializerIngredient implements IContentSerializer<Ingredient> {
     }
 
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
     public Ingredient of(Object o) {
         if (o instanceof Ingredient ingredient) {
             return ingredient;

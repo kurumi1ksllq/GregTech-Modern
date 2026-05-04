@@ -98,7 +98,7 @@ public class IntProviderIngredient extends Ingredient implements IRangedIngredie
      * @return a {@link ItemStack ItemStack[]} with count {@link IntProviderIngredient#sampledCount}
      */
     @Override
-    public ItemStack @NotNull [] getItems() {
+    public @NotNull ItemStack[] getItems() {
         if (itemStacks == null) {
             int cachedCount = rollSampledCount();
             if (cachedCount == 0) {

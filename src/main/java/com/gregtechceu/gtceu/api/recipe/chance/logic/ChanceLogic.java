@@ -39,8 +39,8 @@ public abstract class ChanceLogic {
     public static final ChanceLogic OR = new ChanceLogic("or") {
 
         @Override
-        public @Unmodifiable List<@NotNull Content> roll(RecipeCapability<?> cap,
-                                                         @NotNull @Unmodifiable List<@NotNull Content> chancedEntries,
+        public @Unmodifiable List<Content> roll(RecipeCapability<?> cap,
+                                                 @NotNull @Unmodifiable List<Content> chancedEntries,
                                                          @NotNull ChanceBoostFunction boostFunction, int recipeTier,
                                                          int chanceTier, @Nullable Object2IntMap<?> cache, int times) {
             ImmutableList.Builder<Content> builder = ImmutableList.builder();
@@ -85,8 +85,8 @@ public abstract class ChanceLogic {
     public static final ChanceLogic AND = new ChanceLogic("and") {
 
         @Override
-        public @Unmodifiable List<@NotNull Content> roll(RecipeCapability<?> cap,
-                                                         @NotNull @Unmodifiable List<@NotNull Content> chancedEntries,
+        public @Unmodifiable List<Content> roll(RecipeCapability<?> cap,
+                                                         @NotNull @Unmodifiable List<Content> chancedEntries,
                                                          @NotNull ChanceBoostFunction boostFunction, int recipeTier,
                                                          int chanceTier, @Nullable Object2IntMap<?> cache, int times) {
             ImmutableList.Builder<Content> builder = ImmutableList.builder();
@@ -125,8 +125,8 @@ public abstract class ChanceLogic {
     public static final ChanceLogic FIRST = new ChanceLogic("first") {
 
         @Override
-        public @Unmodifiable List<@NotNull Content> roll(RecipeCapability<?> cap,
-                                                         @NotNull @Unmodifiable List<@NotNull Content> chancedEntries,
+        public @Unmodifiable List<Content> roll(RecipeCapability<?> cap,
+                                                         @NotNull @Unmodifiable List<Content> chancedEntries,
                                                          @NotNull ChanceBoostFunction boostFunction, int recipeTier,
                                                          int chanceTier, @Nullable Object2IntMap<?> cache, int times) {
             ImmutableList.Builder<Content> builder = ImmutableList.builder();
@@ -165,8 +165,8 @@ public abstract class ChanceLogic {
     public static final ChanceLogic XOR = new ChanceLogic("xor") {
 
         @Override
-        public @Unmodifiable List<@NotNull Content> roll(RecipeCapability<?> cap,
-                                                         @NotNull @Unmodifiable List<@NotNull Content> chancedEntries,
+        public @Unmodifiable List<Content> roll(RecipeCapability<?> cap,
+                                                         @NotNull @Unmodifiable List<Content> chancedEntries,
                                                          @NotNull ChanceBoostFunction boostFunction, int recipeTier,
                                                          int chanceTier, @Nullable Object2IntMap<?> cache, int times) {
             // Have to set up a system where all chances are set to be out of 10000
@@ -261,8 +261,8 @@ public abstract class ChanceLogic {
     public static final ChanceLogic NONE = new ChanceLogic("none") {
 
         @Override
-        public @Unmodifiable List<@NotNull Content> roll(RecipeCapability<?> cap,
-                                                         @NotNull @Unmodifiable List<@NotNull Content> chancedEntries,
+        public @Unmodifiable List<Content> roll(RecipeCapability<?> cap,
+                                                         @NotNull @Unmodifiable List<Content> chancedEntries,
                                                          @NotNull ChanceBoostFunction boostFunction, int recipeTier,
                                                          int chanceTier, @Nullable Object2IntMap<?> cache, int times) {
             return Collections.emptyList();
@@ -345,8 +345,8 @@ public abstract class ChanceLogic {
      * @param times          the number of times to roll
      * @return a list of the produced outputs, empty if roll fails
      */
-    public abstract @Unmodifiable List<@NotNull Content> roll(RecipeCapability<?> cap,
-                                                              @NotNull @Unmodifiable List<@NotNull Content> chancedEntries,
+    public abstract @Unmodifiable List<Content> roll(RecipeCapability<?> cap,
+                                                              @NotNull @Unmodifiable List<Content> chancedEntries,
                                                               @NotNull ChanceBoostFunction boostFunction,
                                                               int recipeTier, int chanceTier,
                                                               @Nullable Object2IntMap<?> cache, int times);
@@ -362,8 +362,8 @@ public abstract class ChanceLogic {
      * @return a list of the produced outputs
      */
     @Unmodifiable
-    public List<@NotNull Content> roll(RecipeCapability<?> cap,
-                                       @NotNull @Unmodifiable List<@NotNull Content> chancedEntries,
+    public List<Content> roll(RecipeCapability<?> cap,
+                                       @NotNull @Unmodifiable List<Content> chancedEntries,
                                        @NotNull ChanceBoostFunction boostFunction, int recipeTier, int chanceTier,
                                        int times) {
         return roll(cap, chancedEntries, boostFunction, recipeTier, chanceTier, null, times);

@@ -68,7 +68,7 @@ import static com.gregtechceu.gtceu.utils.FormattingUtil.DECIMAL_FORMAT_SIC_2F;
 public class GTUtil {
 
     public static final Direction[] DIRECTIONS = Direction.values();
-    public static final @Nullable Direction @NotNull [] DIRECTIONS_WITH_NULL = ArrayUtils.add(DIRECTIONS, null);
+    public static final @Nullable @NotNull Direction[] DIRECTIONS_WITH_NULL = ArrayUtils.add(DIRECTIONS, null);
 
     @SuppressWarnings("UnstableApiUsage")
     public static final ImmutableList<BlockPos> NON_CORNER_NEIGHBOURS = Util.make(() -> {

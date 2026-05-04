@@ -44,7 +44,7 @@ public class ArmorProperty implements IMaterialProperty {
 
     @Nullable
     @Setter
-    private Supplier<@NotNull Ingredient> repairIngredient;
+    private Supplier<Ingredient> repairIngredient;
     private boolean noRepair;
 
     @Setter
@@ -153,7 +153,7 @@ public class ArmorProperty implements IMaterialProperty {
         /**
          * Set an Ingredient to use as the repair ingredient when repairing armors made of this Material in an Anvil.
          */
-        public ArmorProperty.Builder repairIngredient(@Nullable Supplier<@NotNull Ingredient> repairIngredient) {
+        public ArmorProperty.Builder repairIngredient(@Nullable Supplier<Ingredient> repairIngredient) {
             if (repairIngredient == null) {
                 armorProperty.repairIngredient = null;
                 armorProperty.noRepair = true;
@@ -197,7 +197,7 @@ public class ArmorProperty implements IMaterialProperty {
         /**
          * Set a custom worn armor texture for armor made of this Material.
          */
-        public ArmorProperty.Builder customTexture(ArmorProperty.@NotNull CustomTextureGetter textureGetter) {
+        public ArmorProperty.Builder customTexture(ArmorProperty.CustomTextureGetter textureGetter) {
             armorProperty.customTextureGetter = textureGetter;
             return this;
         }
@@ -224,12 +224,12 @@ public class ArmorProperty implements IMaterialProperty {
                 });
 
         @Override
-        public int getDurabilityForType(ArmorItem.@NotNull Type type) {
+        public int getDurabilityForType(@NotNull ArmorItem.Type type) {
             return HEALTH_FUNCTION_FOR_TYPE.get(type) * ArmorProperty.this.durabilityMultiplier;
         }
 
         @Override
-        public int getDefenseForType(ArmorItem.@NotNull Type type) {
+        public int getDefenseForType(@NotNull ArmorItem.Type type) {
             return ArmorProperty.this.protectionValues.get(type);
         }
 
